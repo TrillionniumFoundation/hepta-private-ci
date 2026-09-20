@@ -1044,6 +1044,7 @@ mod tests {
         let path = test_path("assignment");
         let input = "durable input".to_string();
         let payload_digest = sha256(input.as_bytes());
+        let now = now_ms().unwrap();
         let mut owner = DurableInferenceControl::open(&path, 16).unwrap();
         owner
             .submit(
@@ -1054,7 +1055,7 @@ mod tests {
                     model_digest: "1".repeat(64),
                     payload_digest: payload_digest.clone(),
                     maximum_tokens: 32,
-                    deadline_ms: 9_000,
+                    deadline_ms: now + 9_000,
                     semantic_digest: "8".repeat(64),
                 },
             )
@@ -1069,7 +1070,7 @@ mod tests {
                     quota_units: 90,
                     maximum_tokens: 40,
                     authority_epoch: 2,
-                    valid_until_ms: 8_000,
+                    valid_until_ms: now + 8_000,
                 },
             )
             .unwrap();
@@ -1100,7 +1101,7 @@ mod tests {
         assert_eq!(request.reservation_id, "reservation.local.product");
         assert_eq!(request.maximum_tokens, 32);
         assert_eq!(request.reservation_maximum_tokens, 40);
-        assert_eq!(request.deadline_ms, 9_000);
+        assert_eq!(request.deadline_ms, now + 9_000);
         assert_eq!(
             control
                 .lock()
@@ -1120,6 +1121,7 @@ mod tests {
         let path = test_path("no-replay");
         let input = "once".to_string();
         let payload_digest = sha256(input.as_bytes());
+        let now = now_ms().unwrap();
         let mut owner = DurableInferenceControl::open(&path, 16).unwrap();
         owner
             .submit(
@@ -1130,7 +1132,7 @@ mod tests {
                     model_digest: "1".repeat(64),
                     payload_digest,
                     maximum_tokens: 16,
-                    deadline_ms: 9_000,
+                    deadline_ms: now + 9_000,
                     semantic_digest: "8".repeat(64),
                 },
             )
@@ -1145,7 +1147,7 @@ mod tests {
                     quota_units: 50,
                     maximum_tokens: 16,
                     authority_epoch: 2,
-                    valid_until_ms: 8_000,
+                    valid_until_ms: now + 8_000,
                 },
             )
             .unwrap();
