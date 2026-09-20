@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e0d78276505a091a213d3efad51e44f2cb42e6bd",
-    "tree": "493ba2c17e9f9a83907b19aa060fcf4caa882425"
+    "commit": "fa676991b4eaa89962f9d57dbad39d557973d65d",
+    "tree": "de49f9de2f1917df2099029093bc25d7282c43dc"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -18,8 +18,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "composed_cognitive_read_and_qualification_write",
-  "productionWriterState": "not_established_qualification_only",
+  "productCallerState": "composed_cognitive_read_and_candidate_default_agentd_write_pending_exact_head",
+  "productionWriterState": "candidate_agentd_default_fail_closed_pending_exact_head",
   "operations": [
     {
       "operation": "build_complete_generation",
@@ -63,7 +63,9 @@
       "tests": [
         "codex-rs/hepta-kg/src/generation_tests.rs",
         "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
-        "codex-rs/hepta-memory/src/cognitive_store_tests.rs"
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+        "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs::qualification_knowledge_graph_capacity_receipt"
       ],
       "sourcePathExists": true,
       "designOperation": "publish_generation",
@@ -81,7 +83,8 @@
       "tests": [
         "codex-rs/hepta-kg/src/generation_tests.rs",
         "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
-        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs::qualification_knowledge_graph_capacity_receipt"
       ],
       "sourcePathExists": true,
       "designOperation": "query_relations",
@@ -92,9 +95,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "The default Agentd product binary still keeps cognitive KG writes disabled; the durable SQLite writer path is composed only in the explicit qualification-cognitive-write profile.",
-    "The prompt-factor graph projection target is not yet composed through a durable owner and real prompt.registry consumer.",
-    "Current exact-head and deterministic synthetic-merge execution receipts must be green before productExecutionProved or the module-wide productionImplementation claim can change."
+    "The Agentd default product profile now selects scoped cognitive mutation tools and fails closed when the cognitive owner store is unavailable, but current exact-head and deterministic synthetic-merge execution receipts must be green before this candidate writer is treated as established.",
+    "The prompt-factor graph projection target is not yet composed through an owner-authenticated prompt.registry relation source and canonical optimizer consumer; this remains a separate stacked convergence task.",
+    "The current durable writer rebuilds a complete bounded generation per logical mutation. The PERF-LIBRARY qualification receipt measures the 4096-node/32768-edge pilot profile; target-host results must determine whether the runtime writer remains full-generation or promotes the already-qualified incremental algorithm."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -115,18 +118,28 @@
   ],
   "sourceBaseSemantics": "module_source_snapshot_zero_diff_to_candidate",
   "compositionRoots": [
-    "codex-rs/hepta-memory/Cargo.toml",
-    "codex-rs/hepta-memory/migrations/0011_kg_generation_semantics.sql",
-    "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
-    "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
-    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
-    "codex-rs/hepta-memory/src/cognitive_model.rs",
-    "codex-rs/hepta-memory/src/cognitive_store.rs",
-    "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-    "codex-rs/hepta-memory/src/lib.rs",
+    ".github/workflows/hepta-knowledge-graph-qualification.yml",
     "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
     "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
     "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
-    "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+    "codex-rs/hepta-agentd/Cargo.toml",
+    "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/hepta-agentd/src/error.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+    "codex-rs/hepta-contracts/CALLERS.toml",
+    "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
+    "codex-rs/hepta-memory/Cargo.toml",
+    "codex-rs/hepta-memory/migrations/0011_kg_generation_semantics.sql",
+    "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_model.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+    "codex-rs/hepta-memory/src/lib.rs",
+    "scripts/hepta-implementation-maps.py"
   ]
 }
