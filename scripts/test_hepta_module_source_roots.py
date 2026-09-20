@@ -179,7 +179,6 @@ class SourceRootTests(unittest.TestCase):
             resolve_source_roots(self.root, self.module)
 
 
-
 class ImplementationMapFreshnessTests(unittest.TestCase):
     def load_maps(self):
         spec = importlib.util.spec_from_file_location(
@@ -200,7 +199,13 @@ class ImplementationMapFreshnessTests(unittest.TestCase):
                 return commit
             if args == ("rev-parse", f"{commit}^{{tree}}"):
                 return tree
-            if args[:5] == ("diff", "--name-only", "-z", "--no-renames", commit):
+            if args[:5] == (
+                "diff",
+                "--name-only",
+                "-z",
+                "--no-renames",
+                commit,
+            ):
                 return ""
             raise AssertionError(args)
 
