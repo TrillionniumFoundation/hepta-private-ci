@@ -213,3 +213,68 @@ fn checkpoint_publication_rejects_forged_owner_summary() {
         ))
     );
 }
+
+
+#[test]
+fn canonical_tick_input_roundtrip_rejects_unknown_fields() {
+    let value = crate::NeuronTickInputV1 {
+        tick_id: id("tick.input.protocol.1"),
+        subject_id: id("subject.protocol.1"),
+        logical_sequence: 1,
+        monotonic_time_micros: 42,
+        checkpoint_digest: Digest32::ZERO,
+        input_feature_digest: crate::canonical_feature_vector_digest_v1(&[Q, 0, -Q]),
+        feature_vector_q24: vec![Q, 0, -Q],
+        objective_digest: Digest32::of_bytes(b"objective"),
+        ndu_snapshot_digest: Digest32::of_bytes(b"ndu"),
+        body_generation: Some(7),
+        modulator_digest: Some(Digest32::of_bytes(b"modulator")),
+    };
+    let bytes = checked(encode_neuron_tick_input_v1(&value));
+    assert_eq!(checked(decode_neuron_tick_input_v1(&bytes)), value);
+
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    let object = match json.as_object_mut() {
+        Some(value) => value,
+        None => panic!("tick input DTO must be an object"),
+    };
+    object.insert("unknownCritical".to_owned(), serde_json::Value::Bool(true));
+    let changed = checked(serde_json::to_vec(&json));
+    assert_eq!(
+        decode_neuron_tick_input_v1(&changed).err(),
+        Some(NeuronProtocolError::Json)
+    );
+}
+
+#[test]
+fn canonical_tick_receipt_projects_only_registered_resource_fields() {
+    let (_, _, tick) = committed();
+    let wire = checked(canonical_tick_receipt_v1(&tick));
+    assert_eq!(
+        wire.execution_micros,
+        tick.resource_receipt.execution_micros
+    );
+    let bytes = checked(encode_neuron_tick_receipt_v1(&wire));
+    let text = match std::str::from_utf8(&bytes) {
+        Ok(value) => value,
+        Err(error) => panic!("canonical JSON must be UTF-8: {error:?}"),
+    };
+    assert!(!text.contains("journalBytesWritten"));
+    assert!(!text.contains("writeAmplificationPpm"));
+    assert_eq!(checked(decode_neuron_tick_receipt_v1(&bytes)), wire);
+
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    let resource = match json
+        .get_mut("resourceReceipt")
+        .and_then(serde_json::Value::as_object_mut)
+    {
+        Some(value) => value,
+        None => panic!("resourceReceipt must be an object"),
+    };
+    resource.insert("writeAmplificationPpm".to_owned(), serde_json::json!(1));
+    let changed = checked(serde_json::to_vec(&json));
+    assert_eq!(
+        decode_neuron_tick_receipt_v1(&changed).err(),
+        Some(NeuronProtocolError::Json)
+    );
+}
