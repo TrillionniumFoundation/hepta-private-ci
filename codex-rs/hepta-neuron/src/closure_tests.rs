@@ -8,6 +8,8 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 const Q: i64 = 1 << 24;
 static NEXT: AtomicU64 = AtomicU64::new(0);
@@ -185,6 +187,169 @@ fn calibration_policy() -> CalibrationPolicyV1 {
         minimum_confidence_ppm: 500_000,
         saturation_limit: 64,
         maximum_active_fraction_ppm: 200_000,
+    }
+}
+
+fn selected_model_manifest() -> SelectedNeuronModelManifestV1 {
+    let execution = model_execution();
+    SelectedNeuronModelManifestV1 {
+        encoder_digest: execution.runtime_receipt.weights_digest,
+        head_digest: execution.head_digest,
+        tokenizer_digest: execution.runtime_receipt.tokenizer_digest,
+        preprocessor_digest: execution.runtime_receipt.preprocessor_digest,
+        quantization_id: execution.runtime_receipt.quantization_id,
+        backend_id: execution.runtime_receipt.backend_id,
+        device_identity_digest: execution.runtime_receipt.device_identity_digest,
+        runtime_binary_digest: execution.runtime_binary_digest,
+        sbom_digest: execution.sbom_digest,
+        license_digest: execution.license_digest,
+        ood_detector_digest: execution.ood_detector_digest,
+    }
+}
+
+fn canonical_config_digest() -> Digest32 {
+    checked(bound_runtime_profile_digest(
+        &config(),
+        &native(),
+        &selected_model_manifest(),
+    ))
+}
+
+fn canonical_calibration_artifact() -> NeuronCalibrationArtifactV1 {
+    let config = config();
+    let execution = model_execution();
+    let mut artifact = NeuronCalibrationArtifactV1 {
+        artifact_digest: Digest32::ZERO,
+        config_digest: canonical_config_digest(),
+        policy_digest: checked(calibration_policy().digest()),
+        model_identity_digest: checked(execution.model_identity_digest()),
+        generation: config.generation,
+        valid_from_sequence: 1,
+        expires_after_sequence: 128,
+        measured_ece_ppm: 10_000,
+        measured_ood_false_acceptance_ppm: 10_000,
+        subgroup_audit_digest: digest("subgroup-audit"),
+        detector_digest: digest("ood-detector"),
+        support_digest: digest("calibration-support"),
+        maximum_in_domain_ood_q24: Q / 2,
+        bins: vec![
+            CalibrationBinV1 {
+                maximum_prediction_error_q24: 2 * Q,
+                confidence_ppm: 900_000,
+            },
+            CalibrationBinV1 {
+                maximum_prediction_error_q24: 16 * Q,
+                confidence_ppm: 100_000,
+            },
+        ],
+    };
+    artifact.artifact_digest = checked(artifact.calculate_digest());
+    artifact
+}
+
+fn canonical_request_digest(input: &NeuronTickInputV1) -> Digest32 {
+    let encoded = checked(encode_neuron_tick_input_v1(input));
+    let mut bytes = b"hepta.neuron.runtime-operation-request.v1".to_vec();
+    bytes.extend_from_slice(canonical_config_digest().as_array());
+    bytes.extend_from_slice(
+        &u32::try_from(encoded.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
+    bytes.extend_from_slice(&encoded);
+    Digest32::of_bytes(&bytes)
+}
+
+fn canonical_required_lineage(input: &NeuronTickInputV1) -> Vec<Digest32> {
+    let mut values = checked(selected_model_manifest().lineage_digests());
+    values.extend([
+        scope().objective_digest,
+        scope().body_digest,
+        input.input_feature_digest,
+        input.objective_digest,
+        input.ndu_snapshot_digest,
+    ]);
+    if let Some(modulator) = input.modulator_digest {
+        values.push(modulator);
+    }
+    let calibration = canonical_calibration_artifact();
+    values.extend([
+        calibration.artifact_digest,
+        calibration.subgroup_audit_digest,
+        calibration.detector_digest,
+        calibration.support_digest,
+    ]);
+    values
+}
+
+fn canonical_result(
+    input: &NeuronTickInputV1,
+    previous: Option<&SparseCheckpoint>,
+) -> RuntimeTickResultV1 {
+    let execution = model_execution();
+    let sparse_config = checked(bound_sparse_config(
+        &config(),
+        &native(),
+        &selected_model_manifest(),
+    ));
+    let sparse_input = input.to_sparse_tick(&scope(), &execution);
+    let (checkpoint, sparse_receipt) = checked(sparse_tick(
+        &sparse_config,
+        &sparse_input,
+        previous,
+    ));
+    let calibration = checked(apply_calibration(
+        calibration_policy(),
+        Some(&canonical_calibration_artifact()),
+        CalibrationObservationV1 {
+            config_digest: canonical_config_digest(),
+            model_identity_digest: checked(execution.model_identity_digest()),
+            ood_detector_digest: execution.ood_detector_digest,
+            generation: config().generation,
+            sequence: input.logical_sequence,
+            prediction_error_q24: sparse_receipt.prediction_error_q24,
+            ood_score_q24: execution.ood_score_q24,
+            active_fraction_ppm: sparse_receipt.active_fraction_ppm,
+            projection_count: sparse_receipt.projection_count,
+        },
+    ));
+    let resources = NeuronResourceReceiptV1 {
+        execution_micros: execution.runtime_receipt.latency_micros,
+        transient_allocation_bytes: execution.transient_allocation_bytes,
+        checkpoint_bytes: u64::try_from(checkpoint.estimated_encoded_bytes()).unwrap_or(u64::MAX),
+        saturation_count: sparse_receipt.projection_count,
+        queue_age_micros: 0,
+    };
+    let tick_receipt = NeuronTickReceiptV1 {
+        tick_id: input.tick_id.clone(),
+        checkpoint_before: sparse_receipt.checkpoint_before,
+        checkpoint_after: sparse_receipt.checkpoint_after,
+        activation_digest: checkpoint.activation_digest(),
+        active_indices: checked(active_indices(&sparse_receipt.activation_q24)),
+        sparsity_ppm: sparse_receipt.active_fraction_ppm,
+        threshold_digest: checkpoint.threshold_digest(),
+        eligibility_digest: checkpoint.eligibility_digest(),
+        prediction_error_q24: sparse_receipt.prediction_error_q24,
+        confidence_ppm: calibration.confidence_ppm,
+        ood_ppm: calibration.ood_ppm,
+        abstain: calibration.abstain,
+        resource_receipt: resources,
+    };
+    RuntimeTickResultV1 {
+        signal_receipt: NeuronSignalReceiptV1 {
+            signal_set_id: input.tick_id.clone(),
+            model_runtime_digest: checked(execution.model_runtime_digest()),
+            temporal_state_digest: checkpoint.digest(),
+            signals_q24: sparse_receipt.activation_q24.clone(),
+            activation_sparsity_ppm: sparse_receipt.active_fraction_ppm,
+            ood_ppm: calibration.ood_ppm,
+            abstain: calibration.abstain,
+        },
+        tick_receipt,
+        sparse_receipt,
+        model_runtime_receipt: execution.runtime_receipt,
+        calibration,
+        authority: AuthorityPosture::DENY_ALL,
     }
 }
 
@@ -841,4 +1006,465 @@ fn runtime_rejects_revoked_calibration_evidence_before_model_execution() {
         1,
     );
     assert!(matches!(result, Err(RuntimeError::RevokedLineage)));
+}
+
+
+#[derive(Clone)]
+struct CountingExecutor {
+    execution: BoundModelExecutionV1,
+    calls: Arc<AtomicU64>,
+}
+
+impl FrozenModelExecutor for CountingExecutor {
+    fn execute(
+        &mut self,
+        _request: &FrozenModelRequestV1,
+    ) -> Result<BoundModelExecutionV1, String> {
+        self.calls.fetch_add(1, Ordering::Relaxed);
+        Ok(self.execution.clone())
+    }
+}
+
+#[derive(Clone)]
+struct SharedLineage {
+    denied: Arc<Mutex<Option<Digest32>>>,
+}
+
+impl LineagePolicy for SharedLineage {
+    fn allows(&mut self, value: Digest32) -> Result<bool, String> {
+        let denied = self
+            .denied
+            .lock()
+            .map_err(|_| "lineage lock poisoned".to_string())?;
+        Ok(*denied != Some(value))
+    }
+}
+
+fn prepare_canonical_operation_only(
+    fixture: &Fixture,
+    operation_name: &str,
+    input: &NeuronTickInputV1,
+    result: &RuntimeTickResultV1,
+) -> crate::operation::PreparedRuntimeOperationV1 {
+    let context = witness_context_digest(canonical_config_digest(), &scope());
+    let mut operations = checked(crate::operation::FileRuntimeOperationJournal::open(
+        fixture.file(operation_name),
+        context,
+        16,
+    ));
+    let prepared = checked(crate::operation::PreparedRuntimeOperationV1::new(
+        input.tick_id.as_str().to_string(),
+        input.logical_sequence,
+        canonical_request_digest(input),
+        canonical_required_lineage(input),
+        result,
+    ));
+    checked(operations.prepare(prepared.clone()));
+    prepared
+}
+
+fn commit_canonical_sparse_only(
+    fixture: &Fixture,
+    journal_name: &str,
+    input: &NeuronTickInputV1,
+) {
+    let config = checked(bound_sparse_config(
+        &config(),
+        &native(),
+        &selected_model_manifest(),
+    ));
+    let mut journal = checked(SparseJournal::open(
+        fixture.file(journal_name),
+        config,
+        JournalScope {
+            scope_digest: scope().scope_digest,
+            objective_digest: scope().objective_digest,
+        },
+        16,
+    ));
+    let sparse_input = input.to_sparse_tick(&scope(), &model_execution());
+    checked(journal.commit(input.checkpoint_digest, &sparse_input));
+}
+
+#[test]
+fn canonical_prepared_without_state_is_aborted_then_reexecuted() {
+    let fixture = Fixture::new();
+    let tick = input(1, Digest32::ZERO);
+    let expected = canonical_result(&tick, None);
+    prepare_canonical_operation_only(&fixture, "operations-pre-state", &tick, &expected);
+
+    let calls = Arc::new(AtomicU64::new(0));
+    let witness = checked(open_file_witness(
+        fixture.file("witness-pre-state"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    let mut runtime = checked(NeuronRuntimeHost::open(
+        fixture.file("journal-pre-state"),
+        fixture.file("operations-pre-state"),
+        config(),
+        native(),
+        selected_model_manifest(),
+        scope(),
+        16,
+        CountingExecutor {
+            execution: model_execution(),
+            calls: Arc::clone(&calls),
+        },
+        witness,
+        Lineage { denied: None },
+        calibration_policy(),
+        Some(canonical_calibration_artifact()),
+        1,
+    ));
+    let result = checked(runtime.tick(
+        tick,
+        RuntimeTickObservationV1 {
+            now_unix_micros: 2,
+            queue_age_micros: 0,
+        },
+    ));
+    assert_eq!(calls.load(Ordering::Relaxed), 1);
+    assert_eq!(result.tick_receipt.checkpoint_after, expected.tick_receipt.checkpoint_after);
+}
+
+#[test]
+fn canonical_post_state_pre_terminal_recovery_returns_exact_result_without_reexecution() {
+    let fixture = Fixture::new();
+    let tick = input(1, Digest32::ZERO);
+    let expected = canonical_result(&tick, None);
+    prepare_canonical_operation_only(&fixture, "operations-post-state", &tick, &expected);
+    commit_canonical_sparse_only(&fixture, "journal-post-state", &tick);
+
+    let calls = Arc::new(AtomicU64::new(0));
+    let witness = checked(open_file_witness(
+        fixture.file("witness-post-state"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    let mut runtime = checked(NeuronRuntimeHost::open(
+        fixture.file("journal-post-state"),
+        fixture.file("operations-post-state"),
+        config(),
+        native(),
+        selected_model_manifest(),
+        scope(),
+        16,
+        CountingExecutor {
+            execution: model_execution(),
+            calls: Arc::clone(&calls),
+        },
+        witness,
+        Lineage { denied: None },
+        calibration_policy(),
+        Some(canonical_calibration_artifact()),
+        1,
+    ));
+    let recovered = checked(runtime.tick(
+        tick.clone(),
+        RuntimeTickObservationV1 {
+            now_unix_micros: 2,
+            queue_age_micros: 0,
+        },
+    ));
+    let duplicate = checked(runtime.tick(
+        tick,
+        RuntimeTickObservationV1 {
+            now_unix_micros: 3,
+            queue_age_micros: 0,
+        },
+    ));
+    assert_eq!(recovered, expected);
+    assert_eq!(duplicate, expected);
+    assert_eq!(calls.load(Ordering::Relaxed), 0);
+}
+
+#[test]
+fn canonical_post_terminal_pre_witness_recovery_advances_first_anchor_and_returns_exact_result() {
+    let fixture = Fixture::new();
+    let tick = input(1, Digest32::ZERO);
+    let expected = canonical_result(&tick, None);
+    let prepared =
+        prepare_canonical_operation_only(&fixture, "operations-post-terminal", &tick, &expected);
+    commit_canonical_sparse_only(&fixture, "journal-post-terminal", &tick);
+    let context = witness_context_digest(canonical_config_digest(), &scope());
+    let mut operations = checked(crate::operation::FileRuntimeOperationJournal::open(
+        fixture.file("operations-post-terminal"),
+        context,
+        16,
+    ));
+    checked(operations.mark_committed(
+        &prepared.operation_id,
+        prepared.request_digest,
+        prepared.checkpoint_after,
+        prepared.result_digest,
+    ));
+    drop(operations);
+
+    let calls = Arc::new(AtomicU64::new(0));
+    let witness = checked(open_file_witness(
+        fixture.file("witness-post-terminal"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    let mut runtime = checked(NeuronRuntimeHost::open(
+        fixture.file("journal-post-terminal"),
+        fixture.file("operations-post-terminal"),
+        config(),
+        native(),
+        selected_model_manifest(),
+        scope(),
+        16,
+        CountingExecutor {
+            execution: model_execution(),
+            calls: Arc::clone(&calls),
+        },
+        witness,
+        Lineage { denied: None },
+        calibration_policy(),
+        Some(canonical_calibration_artifact()),
+        1,
+    ));
+    let recovered = checked(runtime.tick(
+        tick,
+        RuntimeTickObservationV1 {
+            now_unix_micros: 2,
+            queue_age_micros: 0,
+        },
+    ));
+    assert_eq!(recovered, expected);
+    assert_eq!(calls.load(Ordering::Relaxed), 0);
+}
+
+#[test]
+fn canonical_ack_loss_reopen_replays_exact_durable_result_without_model_reexecution() {
+    let fixture = Fixture::new();
+    let calls = Arc::new(AtomicU64::new(0));
+    let witness = checked(open_file_witness(
+        fixture.file("witness-ack-loss"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    let mut runtime = checked(NeuronRuntimeHost::open(
+        fixture.file("journal-ack-loss"),
+        fixture.file("operations-ack-loss"),
+        config(),
+        native(),
+        selected_model_manifest(),
+        scope(),
+        16,
+        CountingExecutor {
+            execution: model_execution(),
+            calls: Arc::clone(&calls),
+        },
+        FailOnceWitness {
+            inner: witness,
+            fail_sequence: 1,
+        },
+        Lineage { denied: None },
+        calibration_policy(),
+        Some(canonical_calibration_artifact()),
+        1,
+    ));
+    let tick = input(1, Digest32::ZERO);
+    let checkpoint = match runtime.tick(
+        tick.clone(),
+        RuntimeTickObservationV1 {
+            now_unix_micros: 2,
+            queue_age_micros: 0,
+        },
+    ) {
+        Err(RuntimeError::WitnessIndeterminate(checkpoint)) => checkpoint,
+        other => panic!("expected post-terminal witness uncertainty: {other:?}"),
+    };
+    assert_eq!(calls.load(Ordering::Relaxed), 1);
+    drop(runtime);
+
+    let reopened_calls = Arc::new(AtomicU64::new(0));
+    let witness = checked(open_file_witness(
+        fixture.file("witness-ack-loss"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    let mut reopened = checked(NeuronRuntimeHost::open(
+        fixture.file("journal-ack-loss"),
+        fixture.file("operations-ack-loss"),
+        config(),
+        native(),
+        selected_model_manifest(),
+        scope(),
+        16,
+        CountingExecutor {
+            execution: model_execution(),
+            calls: Arc::clone(&reopened_calls),
+        },
+        witness,
+        Lineage { denied: None },
+        calibration_policy(),
+        Some(canonical_calibration_artifact()),
+        3,
+    ));
+    let first = checked(reopened.tick(
+        tick.clone(),
+        RuntimeTickObservationV1 {
+            now_unix_micros: 4,
+            queue_age_micros: 0,
+        },
+    ));
+    let second = checked(reopened.tick(
+        tick,
+        RuntimeTickObservationV1 {
+            now_unix_micros: 5,
+            queue_age_micros: 0,
+        },
+    ));
+    assert_eq!(first, second);
+    assert_eq!(first.tick_receipt.checkpoint_after, checkpoint);
+    assert_eq!(reopened_calls.load(Ordering::Relaxed), 0);
+}
+
+#[test]
+fn canonical_selected_model_manifest_drift_rejects_before_state_commit() {
+    let fixture = Fixture::new();
+    let mut drifted = model_execution();
+    drifted.runtime_receipt.tokenizer_digest = digest("other-tokenizer");
+    drifted.output_digest = checked(drifted.calculate_output_digest());
+    let witness = checked(open_file_witness(
+        fixture.file("witness-model-drift"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    let mut runtime = checked(NeuronRuntimeHost::open(
+        fixture.file("journal-model-drift"),
+        fixture.file("operations-model-drift"),
+        config(),
+        native(),
+        selected_model_manifest(),
+        scope(),
+        16,
+        Executor { execution: drifted },
+        witness,
+        Lineage { denied: None },
+        calibration_policy(),
+        Some(canonical_calibration_artifact()),
+        1,
+    ));
+    assert!(matches!(
+        runtime.tick(
+            input(1, Digest32::ZERO),
+            RuntimeTickObservationV1 {
+                now_unix_micros: 2,
+                queue_age_micros: 0,
+            },
+        ),
+        Err(RuntimeError::Protocol(ProtocolError::InvalidModelExecution(
+            "selected model manifest drift"
+        )))
+    ));
+    assert!(checked(runtime.current_checkpoint()).is_none());
+}
+
+#[test]
+fn canonical_tick_time_revocation_blocks_calibration_support_before_model_execution() {
+    let fixture = Fixture::new();
+    let denied = Arc::new(Mutex::new(None));
+    let calls = Arc::new(AtomicU64::new(0));
+    let witness = checked(open_file_witness(
+        fixture.file("witness-tick-revocation"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    let mut runtime = checked(NeuronRuntimeHost::open(
+        fixture.file("journal-tick-revocation"),
+        fixture.file("operations-tick-revocation"),
+        config(),
+        native(),
+        selected_model_manifest(),
+        scope(),
+        16,
+        CountingExecutor {
+            execution: model_execution(),
+            calls: Arc::clone(&calls),
+        },
+        witness,
+        SharedLineage {
+            denied: Arc::clone(&denied),
+        },
+        calibration_policy(),
+        Some(canonical_calibration_artifact()),
+        1,
+    ));
+    {
+        let mut value = checked(denied.lock());
+        *value = Some(canonical_calibration_artifact().support_digest);
+    }
+    assert_eq!(
+        runtime.tick(
+            input(1, Digest32::ZERO),
+            RuntimeTickObservationV1 {
+                now_unix_micros: 2,
+                queue_age_micros: 0,
+            },
+        ),
+        Err(RuntimeError::RevokedLineage)
+    );
+    assert_eq!(calls.load(Ordering::Relaxed), 0);
+    assert!(checked(runtime.current_checkpoint()).is_none());
+}
+
+#[test]
+fn canonical_recovery_rechecks_revocation_before_advancing_witness() {
+    let fixture = Fixture::new();
+    let tick = input(1, Digest32::ZERO);
+    let expected = canonical_result(&tick, None);
+    let prepared =
+        prepare_canonical_operation_only(&fixture, "operations-revoke-recovery", &tick, &expected);
+    commit_canonical_sparse_only(&fixture, "journal-revoke-recovery", &tick);
+    let context = witness_context_digest(canonical_config_digest(), &scope());
+    let mut operations = checked(crate::operation::FileRuntimeOperationJournal::open(
+        fixture.file("operations-revoke-recovery"),
+        context,
+        16,
+    ));
+    checked(operations.mark_committed(
+        &prepared.operation_id,
+        prepared.request_digest,
+        prepared.checkpoint_after,
+        prepared.result_digest,
+    ));
+    drop(operations);
+
+    let denied = Arc::new(Mutex::new(Some(
+        canonical_calibration_artifact().support_digest,
+    )));
+    let witness = checked(open_file_witness(
+        fixture.file("witness-revoke-recovery"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    let result = NeuronRuntimeHost::open(
+        fixture.file("journal-revoke-recovery"),
+        fixture.file("operations-revoke-recovery"),
+        config(),
+        native(),
+        selected_model_manifest(),
+        scope(),
+        16,
+        Executor {
+            execution: model_execution(),
+        },
+        witness,
+        SharedLineage { denied },
+        calibration_policy(),
+        Some(canonical_calibration_artifact()),
+        1,
+    );
+    assert!(matches!(result, Err(RuntimeError::RevokedLineage)));
+
+    let witness = checked(open_file_witness(
+        fixture.file("witness-revoke-recovery"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    assert_eq!(checked(witness.current_anchor()), None);
 }
