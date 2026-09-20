@@ -320,6 +320,7 @@ fn indeterminate_recovery_preserves_exact_learning_decision_binding() {
         .require_learning_closure_binding(
             "run.1",
             &binding.episode_id,
+            binding.event_digest,
             binding.chain_digest,
         )
         .expect("recovered binding must authorize exact terminal learning closure");
@@ -327,6 +328,7 @@ fn indeterminate_recovery_preserves_exact_learning_decision_binding() {
         restarted.require_learning_closure_binding(
             "run.1",
             &binding.episode_id,
+            binding.event_digest,
             v3_digest("wrong-chain"),
         ),
         Err(AgentRunError::LearningDecisionBindingMismatch)
@@ -513,6 +515,7 @@ fn terminal_learning_closure_is_bound_to_the_exact_run_decision() {
         coordinator.require_learning_closure_binding(
             "run.1",
             &v3_id("episode:other"),
+            binding.event_digest,
             binding.chain_digest,
         ),
         Err(AgentRunError::LearningDecisionBindingMismatch)
@@ -521,7 +524,17 @@ fn terminal_learning_closure_is_bound_to_the_exact_run_decision() {
         coordinator.require_learning_closure_binding(
             "run.1",
             &binding.episode_id,
+            binding.event_digest,
             v3_digest("different-decision-chain"),
+        ),
+        Err(AgentRunError::LearningDecisionBindingMismatch)
+    );
+    assert_eq!(
+        coordinator.require_learning_closure_binding(
+            "run.1",
+            &binding.episode_id,
+            v3_digest("different-decision-event"),
+            binding.chain_digest,
         ),
         Err(AgentRunError::LearningDecisionBindingMismatch)
     );
@@ -529,6 +542,7 @@ fn terminal_learning_closure_is_bound_to_the_exact_run_decision() {
         .require_learning_closure_binding(
             "run.1",
             &binding.episode_id,
+            binding.event_digest,
             binding.chain_digest,
         )
         .expect("exact binding");
