@@ -322,12 +322,13 @@ impl FileRuntimeOperationJournal {
         self.require_healthy()?;
         prepared.validate()?;
         if let Some(existing) = self.records.get(&prepared.operation_id) {
-            if existing.prepared.request_digest != prepared.request_digest
-                || existing.prepared.result_digest != prepared.result_digest
-            {
+            if existing.prepared.request_digest != prepared.request_digest {
                 return Err(RuntimeOperationError::Conflict);
             }
             if existing.state != RuntimeOperationStateV1::Aborted {
+                if existing.prepared.result_digest != prepared.result_digest {
+                    return Err(RuntimeOperationError::Conflict);
+                }
                 return Ok(existing.prepared.clone());
             }
         } else if self.records.len() >= self.max_operations {
@@ -518,8 +519,13 @@ impl FileRuntimeOperationJournal {
                 }
                 match self.records.get(&prepared.operation_id) {
                     Some(existing)
-                        if existing.prepared.request_digest != prepared.request_digest
-                            || existing.prepared.result_digest != prepared.result_digest =>
+                        if existing.prepared.request_digest != prepared.request_digest =>
+                    {
+                        return Err(RuntimeOperationError::Conflict);
+                    }
+                    Some(existing)
+                        if existing.state != RuntimeOperationStateV1::Aborted
+                            && existing.prepared.result_digest != prepared.result_digest =>
                     {
                         return Err(RuntimeOperationError::Conflict);
                     }
