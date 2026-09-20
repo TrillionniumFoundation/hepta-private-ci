@@ -80,6 +80,86 @@ fn damped_preference_update_emits_local_solver_receipts() {
 }
 
 #[test]
+fn already_converged_solve_is_revision_stable_no_op() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-noop"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    let revision = initial.revision;
+    let digest = initial.state_digest;
+
+    let (terminal, termination, receipts) = must(solve_preference_target(
+        initial,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+        FixedQ32::from_raw(1_i64 << 30),
+    ));
+
+    assert_eq!(terminal.revision, revision);
+    assert_eq!(terminal.state_digest, digest);
+    assert_eq!(termination.iterations, 0);
+    assert_eq!(termination.terminal_residual_raw, 0);
+    assert_eq!(termination.maximum_residual_raw, 0);
+    assert!(receipts.is_empty());
+}
+
+#[test]
+fn preference_dimension_and_value_bounds_fail_at_boundary() {
+    let too_many = (0..65)
+        .map(|index| AxisValue {
+            axis: id(&format!("axis-{index}")),
+            value: FixedQ32::ZERO,
+        })
+        .collect();
+    assert_eq!(
+        must_err(PreferenceState::genesis(
+            id("too-wide"),
+            SubjectClass::Agent,
+            too_many,
+        )),
+        NduError::PreferenceDimensionLimitExceeded
+    );
+
+    assert_eq!(
+        must_err(PreferenceState::genesis(
+            id("out-of-range"),
+            SubjectClass::Agent,
+            vec![AxisValue {
+                axis: id("quality"),
+                value: FixedQ32::from_raw(FixedQ32::ONE.raw() + 1),
+            }],
+        )),
+        NduError::PreferenceValueOutOfRange("quality".to_string())
+    );
+
+    let initial = must(PreferenceState::genesis(
+        id("target-check"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    assert_eq!(
+        must_err(solve_preference_target(
+            initial,
+            vec![AxisValue {
+                axis: id("quality"),
+                value: FixedQ32::from_raw(-FixedQ32::ONE.raw() - 1),
+            }],
+            FixedQ32::from_raw(1_i64 << 30),
+        )),
+        NduError::PreferenceValueOutOfRange("quality".to_string())
+    );
+}
+
+#[test]
 fn iteration_exhaustion_is_unavailable() {
     let initial = must(PreferenceState::genesis(
         id("agent-slow"),
