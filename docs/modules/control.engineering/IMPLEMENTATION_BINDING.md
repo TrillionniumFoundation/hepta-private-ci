@@ -10,8 +10,11 @@ owns evaluator mutation testing; `integration_controller.py` owns base-bound dur
 integration queues plus signed role-bound candidate/review/CI stage observations;
 `external_controls.py` verifies distributed fencing, external audit anchoring and
 HSM/KMS custody; and `product_gate.py` is the named repository CI product caller. The package-root API intentionally does not export
-`facade.issue_work_envelope` or `facade.schedule_ready_packages`; those remain explicit
-local compatibility primitives and do not authenticate canonical source/completion facts.
+`facade.issue_work_envelope`, `facade.schedule_ready_packages`, or the raw
+`integration_controller.reconcile_integration_item`; those remain explicit local
+compatibility/state-machine primitives and do not authenticate canonical source,
+completion, or integration-stage facts. New product callers use
+`observe_integration_stage` through `EngineeringControlProduct`.
 New composition uses `issue_repository_work_envelope` or `issue_signed_work_envelope`
 plus `plan_engineering_work`. `hepta_engineering_control.py` is compatibility-only and is not a native mapping or
 supported integration surface for new callers. Its legacy `schedule()` rejects by
