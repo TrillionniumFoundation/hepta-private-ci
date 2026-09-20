@@ -191,9 +191,7 @@ impl AgentRunCoordinator {
         if !self.accepting_runs {
             return Err(AgentRunError::AdmissionClosed);
         }
-        if self.active_run_count() >= self.max_active_runs
-            || self.runs.len() >= MAX_RETAINED_RUNS
-        {
+        if self.active_run_count() >= self.max_active_runs || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
         }
         let record = RunRecord {
@@ -388,9 +386,7 @@ impl AgentRunCoordinator {
             }
             return Err(AgentRunError::Conflict);
         }
-        if self.active_run_count() >= self.max_active_runs
-            || self.runs.len() >= MAX_RETAINED_RUNS
-        {
+        if self.active_run_count() >= self.max_active_runs || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
         }
         let record = RunRecord {
