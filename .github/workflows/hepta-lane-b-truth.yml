@@ -135,3 +135,163 @@ jobs:
           cd ..
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+  native-product:
+    name: Qualify ui.native synthetic merge (${{ matrix.os }})
+    if: github.event_name == 'pull_request'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - name: Check out ui.native source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Construct deterministic native merge candidate
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Native CI
+          author-email: hepta-native-ci@users.noreply.github.com
+          message: Synthetic ui.native merge
+
+      - name: Install Linux native UI dependencies
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev \
+            libxcb-shape0-dev \
+            libxcb-xfixes0-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev \
+            libwayland-dev \
+            libgl1-mesa-dev \
+            libssl-dev
+
+      - name: Install Rust components
+        run: rustup component add rustfmt clippy
+
+      - name: Resolve reproducible native dependency lock
+        working-directory: apps/hepta-native
+        run: cargo generate-lockfile
+
+      - name: Format native product
+        working-directory: apps/hepta-native
+        run: cargo fmt --check
+
+      - name: Clippy native product
+        working-directory: apps/hepta-native
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test native product
+        working-directory: apps/hepta-native
+        run: cargo test --all-targets
+
+      - name: Run native fault and restart suites
+        working-directory: apps/hepta-native
+        run: cargo test --test runtime --test journal --test security_updater
+
+      - name: Test authenticated native gateway
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-native-gateway
+
+      - name: Qualify Windows kernel final-use durability
+        if: runner.os == 'Windows'
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-contracts final_use::windows_tests::
+
+      - name: Build native release binaries
+        working-directory: apps/hepta-native
+        run: cargo build --release --bins
+
+      - name: Assemble and smoke packaged Unix product
+        if: runner.os != 'Windows'
+        working-directory: apps/hepta-native
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist
+          mkdir -p dist/package
+          cp target/release/hepta-native dist/package/
+          cp target/release/hepta-native-updater dist/package/
+          cp target/release/hepta-native-credential dist/package/
+          ./dist/package/hepta-native --self-test
+
+      - name: Assemble and smoke packaged Windows product
+        if: runner.os == 'Windows'
+        working-directory: apps/hepta-native
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force dist/package | Out-Null
+          Copy-Item target/release/hepta-native.exe dist/package/
+          Copy-Item target/release/hepta-native-updater.exe dist/package/
+          Copy-Item target/release/hepta-native-credential.exe dist/package/
+          .\dist\package\hepta-native.exe --self-test
+
+      - name: Write native qualification receipt
+        working-directory: apps/hepta-native
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          SYNTHETIC_SHA: ${{ steps.merge.outputs.sha }}
+          SYNTHETIC_TREE: ${{ steps.merge.outputs.tree }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib
+          root = pathlib.Path("target/release")
+          suffix = ".exe" if os.environ["RUNNER_OS"] == "Windows" else ""
+          binaries = [
+              "hepta-native" + suffix,
+              "hepta-native-updater" + suffix,
+              "hepta-native-credential" + suffix,
+          ]
+          receipt = {
+              "schema": "hepta.ui-native-qualification-receipt.v2",
+              "candidate_class": "deterministic_synthetic_merge",
+              "source_head_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": os.environ["SYNTHETIC_SHA"],
+              "tested_tree": os.environ["SYNTHETIC_TREE"],
+              "runner_os": os.environ["RUNNER_OS"],
+              "runner_arch": os.environ["RUNNER_ARCH"],
+              "fault_restart_suite": True,
+              "packaged_product_smoke": True,
+              "unsigned_development_artifact": True,
+              "production_signing_observed": False,
+              "independent_accessibility_acceptance": False,
+              "release_authority": False,
+              "binary_sha256": {
+                  name: hashlib.sha256((root / name).read_bytes()).hexdigest()
+                  for name in binaries
+              },
+          }
+          out = pathlib.Path("dist")
+          out.mkdir(exist_ok=True)
+          (out / "qualification-receipt.json").write_text(
+              json.dumps(receipt, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Preserve resolved native dependency lock
+        working-directory: apps/hepta-native
+        shell: bash
+        run: cp Cargo.lock dist/Cargo.lock
+
+      - name: Upload native qualification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-native-${{ runner.os }}-${{ runner.arch }}-${{ github.run_id }}
+          path: apps/hepta-native/dist/**
+          if-no-files-found: error
