@@ -55,6 +55,7 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
+pub const AGENTD_PROMPT_REGISTRY_MAX_RECORDS: usize = 16_384;
 const MAX_STAGED_TURNS: usize = 256;
 const MAX_DISPATCH_RECORDS: usize = 1024;
 const MAX_TERMINAL_RECORDS: usize = 1024;
