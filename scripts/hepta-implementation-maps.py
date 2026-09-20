@@ -393,7 +393,10 @@ def verify():
                 if source:
                     relevant_exact.add(source)
                 for test in op.get("tests", []):
-                    relevant_exact.add(test)
+                    if isinstance(test, str):
+                        relevant_exact.add(test)
+                    elif isinstance(test, dict) and isinstance(test.get("path"), str):
+                        relevant_exact.add(test["path"])
             relevant_exact.discard(None)
             changed = [
                 changed_path
