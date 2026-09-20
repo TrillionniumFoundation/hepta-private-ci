@@ -50,6 +50,9 @@ use crate::local_lease_outbox::dispatch_operation_digest;
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.
 pub const PRODUCTION_DURABLE_WRITER_NAMESPACE: &str = "production_durable_writer";
+pub const PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION: u32 = 1;
+pub const PRODUCTION_COGNITIVE_MUTATION_NAMESPACE: &str = "production_cognitive_mutation";
+const PRODUCTION_COGNITIVE_MUTATION_TOPIC: &str = "cognitive.store.semantic-mutation.v1";
 /// The store opened by `CognitiveStore` must use this journal mode.
 pub const PRODUCTION_DURABLE_WRITER_JOURNAL_MODE: &str = "wal";
 /// SQLite `PRAGMA synchronous` value for FULL.
@@ -268,10 +271,55 @@ pub enum ProductionCognitiveMutationError {
     Store(#[from] CognitiveStoreError),
 }
 
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct ProductionCognitiveMutationReceiptV1 {
+    pub schema_version: u32,
+    pub namespace: String,
+    pub mutation_kind: String,
+    pub operation_digest: Sha256Digest,
+    pub input_payload_sha256: Sha256Digest,
+    pub expected_predecessor_revision: Option<u64>,
+    pub authority_grant_digest: Sha256Digest,
+    pub authority_epoch: u64,
+    pub owner_epoch: u64,
+    pub lease_id: String,
+    pub generation: u64,
+    pub provenance_event_id: String,
+    pub provenance_outbox_id: String,
+    pub provenance_commit_event_id: String,
+    pub write_digest: Sha256Digest,
+    pub write: CognitiveWriteReceipt,
+    pub receipt_sha256: Sha256Digest,
+    pub external_effect: bool,
+}
+
+impl ProductionCognitiveMutationReceiptV1 {
+    #[must_use]
+    pub fn compute_receipt_sha256(&self) -> Sha256Digest {
+        production_cognitive_receipt_digest(self)
+    }
+
+    pub fn validate(&self) -> Result<(), ProductionWriterError> {
+        if self.schema_version != PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION
+            || self.namespace != PRODUCTION_COGNITIVE_MUTATION_NAMESPACE
+            || self.external_effect
+            || self.write_digest != production_cognitive_write_digest(&self.write)?
+            || self.receipt_sha256 != self.compute_receipt_sha256()
+        {
+            return Err(ProductionWriterError::StaleReceipt);
+        }
+        Ok(())
+    }
+}
+
 pub type ProductionCognitiveMutationFuture<'a> = Pin<
     Box<
-        dyn Future<Output = Result<CognitiveWriteReceipt, ProductionCognitiveMutationError>>
-            + Send
+        dyn Future<
+                Output = Result<
+                    ProductionCognitiveMutationReceiptV1,
+                    ProductionCognitiveMutationError,
+                >,
+            > + Send
             + 'a,
     >,
 >;
@@ -866,12 +914,20 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
         facts: &'a KgFactSetDraft,
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
-            self.writer.verify_current_authority().await?;
-            Ok(self
-                .writer
-                .store()
-                .remember_with_kg(access, source, draft, facts)
-                .await?)
+            self.execute_semantic_mutation(
+                "remember",
+                source,
+                /*expected_predecessor_revision*/ None,
+                &(draft, facts),
+                |transaction| {
+                    Box::pin(
+                        self.writer
+                            .store()
+                            .remember_with_kg_tx(transaction, access, source, draft, facts),
+                    )
+                },
+            )
+            .await
         })
     }
 
@@ -885,12 +941,24 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
         facts: &'a KgFactSetDraft,
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
-            self.writer.verify_current_authority().await?;
-            Ok(self
-                .writer
-                .store()
-                .correct_with_kg(access, memory_id, expected_revision, source, draft, facts)
-                .await?)
+            self.execute_semantic_mutation(
+                "correct",
+                source,
+                Some(expected_revision),
+                &(memory_id.as_str(), draft, facts),
+                |transaction| {
+                    Box::pin(self.writer.store().correct_with_kg_tx(
+                        transaction,
+                        access,
+                        memory_id,
+                        expected_revision,
+                        source,
+                        draft,
+                        facts,
+                    ))
+                },
+            )
+            .await
         })
     }
 
@@ -903,14 +971,259 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
         draft: &'a ForgetMemoryDraft,
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
-            self.writer.verify_current_authority().await?;
-            Ok(self
-                .writer
-                .store()
-                .forget_with_kg(access, memory_id, expected_revision, source, draft)
-                .await?)
+            self.execute_semantic_mutation(
+                "forget",
+                source,
+                Some(expected_revision),
+                &(memory_id.as_str(), draft),
+                |transaction| {
+                    Box::pin(self.writer.store().forget_with_kg_tx(
+                        transaction,
+                        access,
+                        memory_id,
+                        expected_revision,
+                        source,
+                        draft,
+                    ))
+                },
+            )
+            .await
         })
     }
+}
+
+type SemanticMutationTxFuture<'a> = Pin<
+    Box<
+        dyn Future<Output = Result<CognitiveWriteReceipt, CognitiveStoreError>>
+            + Send
+            + 'a,
+    >,
+>;
+
+impl ProductionCognitiveMutationCapability {
+    async fn execute_semantic_mutation<T, F>(
+        &self,
+        mutation_kind: &str,
+        source: &SourceDraft,
+        expected_predecessor_revision: Option<u64>,
+        semantic_input: &T,
+        mutate: F,
+    ) -> Result<ProductionCognitiveMutationReceiptV1, ProductionCognitiveMutationError>
+    where
+        T: Serialize + ?Sized,
+        F: for<'tx> FnOnce(
+            &'tx mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        ) -> SemanticMutationTxFuture<'tx>,
+    {
+        self.writer.verify_current_authority().await?;
+        let input_payload_sha256 =
+            production_cognitive_input_digest(mutation_kind, source, semantic_input)?;
+        let operation_digest = production_cognitive_operation_digest(
+            &self.writer,
+            mutation_kind,
+            &input_payload_sha256,
+            expected_predecessor_revision,
+        );
+        let occurrence_key = format!("cognitive-mutation:{}", operation_digest.as_str());
+        let intent_json = serde_json::to_string(&ProductionCognitiveMutationIntentJournalV1 {
+            schema_version: PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION,
+            namespace: PRODUCTION_COGNITIVE_MUTATION_NAMESPACE,
+            mutation_kind,
+            operation_digest: &operation_digest,
+            input_payload_sha256: &input_payload_sha256,
+            expected_predecessor_revision,
+            authority_grant_digest: &self.writer.authority.grant_digest,
+            authority_epoch: self.writer.authority.authority_epoch,
+            owner_epoch: self.writer.authority.owner_epoch,
+            lease_id: self.writer.lease_id(),
+            generation: self.writer.generation(),
+            owner_agent_id: self.writer.store().owner_agent_id().as_str(),
+        })
+        .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
+
+        let mut transaction = self
+            .writer
+            .store()
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let queued = self
+            .writer
+            .lease
+            .admit_in_transaction(
+                &mut transaction,
+                occurrence_key.clone(),
+                PRODUCTION_COGNITIVE_MUTATION_TOPIC.to_string(),
+                intent_json,
+            )
+            .await
+            .map_err(ProductionWriterError::from)?;
+        let queued = match queued {
+            LocalAdmission::Queued(receipt) | LocalAdmission::Replay(receipt) => receipt,
+        };
+
+        let write = mutate(&mut transaction).await?;
+        let write_digest = production_cognitive_write_digest(&write)?;
+        let commit_json = serde_json::to_string(&ProductionCognitiveMutationCommitJournalV1 {
+            schema_version: PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION,
+            namespace: PRODUCTION_COGNITIVE_MUTATION_NAMESPACE,
+            operation_digest: &operation_digest,
+            write_digest: &write_digest,
+            memory_id: write.memory.id.memory_id.as_str(),
+            memory_revision: write.memory.id.revision,
+            source_id: write.source.source_id.as_str(),
+            source_revision: write.source.revision,
+            projection_output_sha256: &write.projection.output_sha256,
+        })
+        .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
+        let terminal = self
+            .writer
+            .lease
+            .apply_in_transaction(&mut transaction, occurrence_key, commit_json)
+            .await
+            .map_err(ProductionWriterError::from)?;
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+
+        let mut receipt = ProductionCognitiveMutationReceiptV1 {
+            schema_version: PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION,
+            namespace: PRODUCTION_COGNITIVE_MUTATION_NAMESPACE.to_string(),
+            mutation_kind: mutation_kind.to_string(),
+            operation_digest,
+            input_payload_sha256,
+            expected_predecessor_revision,
+            authority_grant_digest: self.writer.authority.grant_digest.clone(),
+            authority_epoch: self.writer.authority.authority_epoch,
+            owner_epoch: self.writer.authority.owner_epoch,
+            lease_id: self.writer.lease_id().to_string(),
+            generation: self.writer.generation(),
+            provenance_event_id: queued.event_id,
+            provenance_outbox_id: queued.outbox_id,
+            provenance_commit_event_id: terminal.event_id,
+            write_digest,
+            write,
+            receipt_sha256: Sha256Digest::for_bytes(b"pending"),
+            external_effect: false,
+        };
+        receipt.receipt_sha256 = receipt.compute_receipt_sha256();
+        receipt.validate()?;
+        Ok(receipt)
+    }
+}
+
+#[derive(Serialize)]
+struct ProductionCognitiveMutationIntentJournalV1<'a> {
+    schema_version: u32,
+    namespace: &'static str,
+    mutation_kind: &'a str,
+    operation_digest: &'a Sha256Digest,
+    input_payload_sha256: &'a Sha256Digest,
+    expected_predecessor_revision: Option<u64>,
+    authority_grant_digest: &'a Sha256Digest,
+    authority_epoch: u64,
+    owner_epoch: u64,
+    lease_id: &'a str,
+    generation: u64,
+    owner_agent_id: &'a str,
+}
+
+#[derive(Serialize)]
+struct ProductionCognitiveMutationCommitJournalV1<'a> {
+    schema_version: u32,
+    namespace: &'static str,
+    operation_digest: &'a Sha256Digest,
+    write_digest: &'a Sha256Digest,
+    memory_id: &'a str,
+    memory_revision: u64,
+    source_id: &'a str,
+    source_revision: u64,
+    projection_output_sha256: &'a Sha256Digest,
+}
+
+fn production_cognitive_input_digest<T: Serialize + ?Sized>(
+    mutation_kind: &str,
+    source: &SourceDraft,
+    semantic_input: &T,
+) -> Result<Sha256Digest, ProductionWriterError> {
+    let bytes = serde_json::to_vec(&(mutation_kind, source, semantic_input))
+        .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
+    Ok(Sha256Digest::for_bytes(&bytes))
+}
+
+fn production_cognitive_operation_digest(
+    writer: &ProductionDurableWriter,
+    mutation_kind: &str,
+    input_payload_sha256: &Sha256Digest,
+    expected_predecessor_revision: Option<u64>,
+) -> Sha256Digest {
+    let predecessor = expected_predecessor_revision
+        .map(|value| value.to_be_bytes())
+        .unwrap_or([0; 8]);
+    digest_framed(
+        b"hepta:production-cognitive-mutation-operation:v1",
+        &[
+            writer.authority.grant_digest.as_str().as_bytes(),
+            &writer.authority.authority_epoch.to_be_bytes(),
+            &writer.authority.owner_epoch.to_be_bytes(),
+            writer.lease_id().as_bytes(),
+            &writer.generation().to_be_bytes(),
+            mutation_kind.as_bytes(),
+            input_payload_sha256.as_str().as_bytes(),
+            &predecessor,
+        ],
+    )
+}
+
+fn production_cognitive_write_digest(
+    write: &CognitiveWriteReceipt,
+) -> Result<Sha256Digest, ProductionWriterError> {
+    let bytes = serde_json::to_vec(write)
+        .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
+    Ok(digest_framed(
+        b"hepta:production-cognitive-mutation-write:v1",
+        &[&bytes],
+    ))
+}
+
+fn production_cognitive_receipt_digest(
+    receipt: &ProductionCognitiveMutationReceiptV1,
+) -> Sha256Digest {
+    let predecessor = receipt
+        .expected_predecessor_revision
+        .map(|value| value.to_be_bytes())
+        .unwrap_or([0; 8]);
+    digest_framed(
+        b"hepta:production-cognitive-mutation-receipt:v1",
+        &[
+            &receipt.schema_version.to_be_bytes(),
+            receipt.namespace.as_bytes(),
+            receipt.mutation_kind.as_bytes(),
+            receipt.operation_digest.as_str().as_bytes(),
+            receipt.input_payload_sha256.as_str().as_bytes(),
+            &predecessor,
+            receipt.authority_grant_digest.as_str().as_bytes(),
+            &receipt.authority_epoch.to_be_bytes(),
+            &receipt.owner_epoch.to_be_bytes(),
+            receipt.lease_id.as_bytes(),
+            &receipt.generation.to_be_bytes(),
+            receipt.provenance_event_id.as_bytes(),
+            receipt.provenance_outbox_id.as_bytes(),
+            receipt.provenance_commit_event_id.as_bytes(),
+            receipt.write_digest.as_str().as_bytes(),
+        ],
+    )
+}
+
+fn digest_framed(domain: &[u8], parts: &[&[u8]]) -> Sha256Digest {
+    let mut bytes = Vec::new();
+    for part in std::iter::once(domain).chain(parts.iter().copied()) {
+        bytes.extend_from_slice(&(part.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(part);
+    }
+    Sha256Digest::for_bytes(&bytes)
 }
 
 /// Queue receipt returned by the production writer. It carries enough data to
