@@ -101,6 +101,31 @@ pub fn complete_restart(run_root: &Path) -> Result<(), RestartBudgetError> {
     write_restart_budget(run_root, &state)
 }
 
+pub fn restart_available(
+    run_root: &Path,
+    maximum_attempts: u32,
+    window: Duration,
+) -> Result<bool, RestartBudgetError> {
+    let Some(state) = read_restart_budget(run_root)? else {
+        return Ok(true);
+    };
+    if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION
+        || state.attempts > maximum_attempts
+    {
+        return Err(RestartBudgetError::Invalid(
+            "restart budget state is outside configured bounds".to_string(),
+        ));
+    }
+    if state.pending {
+        return Ok(true);
+    }
+    let window_ms = u64::try_from(window.as_millis())
+        .map_err(|_| RestartBudgetError::Invalid("restart window exceeds u64".to_string()))?;
+    let now_ms = unix_ms()?;
+    Ok(now_ms.saturating_sub(state.window_started_unix_ms) >= window_ms
+        || state.attempts < maximum_attempts)
+}
+
 pub fn pending_restart(
     run_root: &Path,
     maximum_attempts: u32,
