@@ -101,12 +101,49 @@ test("file journal recovers a validated prefix after a crash-torn final append",
   assert.equal(stored.status, "indeterminate");
   assert.equal(stored.terminalObserved, false);
 
+  // The first reopen must physically repair the torn tail before continuing.
+  await reopened.recordObservation(record({
+    status: "failed",
+    outcomeDigest: D2,
+    terminalObserved: true,
+    observationReason: "terminal_observed",
+  }));
+  const reopenedAgain = new FileBrowserOperationJournal(path);
+  const repaired = await reopenedAgain.getOperation("profile.1", 1, "operation.1");
+  assert.equal(repaired.status, "failed");
+  assert.equal(repaired.terminalObserved, true);
+
   await writeFile(path, `${lines[0]}\n{"broken":\n`, { mode: 0o600 });
   const newlineTerminatedCorruption = new FileBrowserOperationJournal(path);
   await assert.rejects(
     newlineTerminatedCorruption.getOperation("profile.1", 1, "operation.1"),
     /malformed JSON/,
   );
+});
+
+test("first journal creation reaches the parent-directory durability boundary", async () => {
+  const { path } = await journalFixture();
+  let reached = false;
+  const journal = new FileBrowserOperationJournal(path, {
+    faultInjector(name) {
+      if (name === "append_created_fsynced_before_parent_fsync") {
+        reached = true;
+        throw new Error("qualification crash before parent fsync");
+      }
+    },
+  });
+  await assert.rejects(
+    journal.recordDispatch(record()),
+    /qualification crash before parent fsync/,
+  );
+  assert.equal(reached, true);
+
+  // The injected cut is before the directory fsync. On a live filesystem the
+  // file may still be visible, but no production dispatch can proceed because
+  // recordDispatch did not return success.
+  const reopened = new FileBrowserOperationJournal(path);
+  const stored = await reopened.getOperation("profile.1", 1, "operation.1");
+  assert.notEqual(stored, null);
 });
 
 test("journal validates every hydrated record and rejects secret-bearing unknown fields", async () => {
