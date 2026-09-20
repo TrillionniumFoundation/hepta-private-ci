@@ -4,6 +4,7 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_cognitive_store::DurableCognitiveStoreError;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_memory::ProductionWriterError;
 
@@ -27,6 +28,8 @@ pub enum AgentdError {
     Json(#[from] serde_json::Error),
     #[error(transparent)]
     ProductionWriter(#[from] ProductionWriterError),
+    #[error(transparent)]
+    CognitiveStore(#[from] DurableCognitiveStoreError),
 }
 
 #[derive(Debug)]

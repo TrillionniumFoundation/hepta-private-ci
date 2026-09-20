@@ -8,8 +8,16 @@
 use std::fmt;
 use std::sync::Arc;
 
+use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
+use codex_hepta_cognitive_store::CognitiveWriteReceipt;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_cognitive_store::ForgetMemoryDraft;
+use codex_hepta_cognitive_store::KgFactSetDraft;
+use codex_hepta_cognitive_store::MemoryDraft;
+use codex_hepta_cognitive_store::MemoryRevisionDraft;
+use codex_hepta_cognitive_store::SourceDraft;
+use codex_hepta_cognitive_store::StableMemoryId;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
 use codex_hepta_cognitive_store::ProductionDispatchReceipt;
@@ -41,69 +49,67 @@ impl fmt::Debug for AgentdProductionWriterHost {
 }
 
 impl AgentdProductionWriterHost {
-    /// Open the writer against Agentd's exact private cognitive store. The
-    /// verifier is mandatory and runs before any lease/event/outbox mutation.
-    pub async fn open<V>(
+    /// Open a production writer only from an independently authenticated exact
+    /// current cut. No ordinary writable `CognitiveStore::open` fallback exists
+    /// at this product boundary.
+    pub async fn open(
         config: &AgentdConfig,
+        requirement: CognitiveRecoveryRequirement<'_>,
         authority: ProductionAuthorityLease,
-        verifier: &V,
+        verifier: Arc<dyn ProductionAuthorityVerifier>,
         lease_id: impl Into<String>,
         lease_generation: u64,
-    ) -> Result<Self, AgentdError>
-    where
-        V: ProductionAuthorityVerifier + ?Sized,
-    {
-        let store = CognitiveStore::open(&config.identity().layout)
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!("open production cognitive store: {error}"))
-            })?;
-        let writer =
-            ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
-                .await?;
-        Ok(Self {
-            writer: Arc::new(writer),
-            dispatcher: None,
-        })
+    ) -> Result<Self, AgentdError> {
+        Self::open_with_recovery(
+            config,
+            requirement,
+            authority,
+            verifier,
+            lease_id,
+            lease_generation,
+        )
+        .await
     }
 
     /// Recover the exact independently retained current cut and immediately
     /// bind the recovered generation to the same externally verified authority
     /// lease used by the production writer. Recovery keeps its exclusive store
     /// fence for the lifetime of the returned writer generation.
-    pub async fn open_with_recovery<V>(
+    pub async fn open_with_recovery(
         config: &AgentdConfig,
         requirement: CognitiveRecoveryRequirement<'_>,
         authority: ProductionAuthorityLease,
-        verifier: &V,
+        verifier: Arc<dyn ProductionAuthorityVerifier>,
         lease_id: impl Into<String>,
         lease_generation: u64,
-    ) -> Result<Self, AgentdError>
-    where
-        V: ProductionAuthorityVerifier + ?Sized,
-    {
+    ) -> Result<Self, AgentdError> {
         let store = CognitiveStore::open_with_recovery(
             &config.identity().layout,
             requirement,
             &authority,
-            verifier,
+            verifier.as_ref(),
         )
         .await
         .map_err(|error| {
             AgentdError::Protocol(format!("recover production cognitive store: {error}"))
         })?;
-        let writer =
-            ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
-                .await?;
+        let writer = ProductionDurableWriter::open_with_live_verifier(
+            store,
+            authority,
+            verifier,
+            lease_id,
+            lease_generation,
+        )
+        .await?;
         Ok(Self {
             writer: Arc::new(writer),
             dispatcher: None,
         })
     }
 
-    /// Build a host handle around an already-open Agentd-owned store. This is
-    /// useful when the runtime has already attached a CognitiveStore and keeps
-    /// the same mandatory external verifier contract.
+    /// Qualification-only compatibility seam around an already-open store.
+    /// It does not retain the verifier, so production semantic mutation methods
+    /// below reject this handle with `LiveVerifierRequired`.
     pub async fn open_with_store<V>(
         store: CognitiveStore,
         authority: ProductionAuthorityLease,
@@ -121,6 +127,61 @@ impl AgentdProductionWriterHost {
             writer: Arc::new(writer),
             dispatcher: None,
         })
+    }
+
+    pub async fn remember_with_kg(
+        &self,
+        access: &CognitiveAccess,
+        source: &SourceDraft,
+        draft: &MemoryDraft,
+        facts: &KgFactSetDraft,
+    ) -> Result<CognitiveWriteReceipt, AgentdError> {
+        self.writer.verify_current_authority().await?;
+        Ok(self
+            .writer
+            .store()
+            .remember_with_kg(access, source, draft, facts)
+            .await?)
+    }
+
+    pub async fn correct_with_kg(
+        &self,
+        access: &CognitiveAccess,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &MemoryRevisionDraft,
+        facts: &KgFactSetDraft,
+    ) -> Result<CognitiveWriteReceipt, AgentdError> {
+        self.writer.verify_current_authority().await?;
+        Ok(self
+            .writer
+            .store()
+            .correct_with_kg(
+                access,
+                memory_id,
+                expected_revision,
+                source,
+                draft,
+                facts,
+            )
+            .await?)
+    }
+
+    pub async fn forget_with_kg(
+        &self,
+        access: &CognitiveAccess,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &ForgetMemoryDraft,
+    ) -> Result<CognitiveWriteReceipt, AgentdError> {
+        self.writer.verify_current_authority().await?;
+        Ok(self
+            .writer
+            .store()
+            .forget_with_kg(access, memory_id, expected_revision, source, draft)
+            .await?)
     }
 
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {

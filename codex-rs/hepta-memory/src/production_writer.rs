@@ -65,6 +65,8 @@ pub enum ProductionWriterError {
     StaleReceipt,
     #[error("production writer already has an active owner for this local lease")]
     WriterBusy,
+    #[error("production semantic mutation requires a retained live authority verifier")]
+    LiveVerifierRequired,
 }
 
 /// Opaque authority token supplied by an external grant verifier.
@@ -256,6 +258,7 @@ pub struct ProductionDurableWriter {
     authority: ProductionAuthorityLease,
     lease: LocalLeaseOutbox,
     lease_id: Arc<str>,
+    live_verifier: Option<Arc<dyn ProductionAuthorityVerifier>>,
     // Retain the OS-level lock for the lifetime of the writer.  SQLite's
     // transaction lock serializes individual mutations, but it does not
     // establish the H4 single-writer boundary: two processes could otherwise
@@ -440,8 +443,35 @@ impl ProductionDurableWriter {
             authority,
             lease,
             lease_id: Arc::from(lease_id),
+            live_verifier: None,
             _writer_lock: writer_lock,
         })
+    }
+
+    /// Open a writer with a verifier retained for every final-use authority
+    /// check. Production semantic mutation must use this constructor.
+    pub async fn open_with_live_verifier(
+        store: CognitiveStore,
+        authority: ProductionAuthorityLease,
+        verifier: Arc<dyn ProductionAuthorityVerifier>,
+        lease_id: impl Into<String>,
+        generation: u64,
+    ) -> Result<Self, ProductionWriterError> {
+        let retained_verifier = Arc::clone(&verifier);
+        let mut writer =
+            Self::open(store, authority, verifier.as_ref(), lease_id, generation).await?;
+        writer.live_verifier = Some(retained_verifier);
+        writer.verify_authority().await?;
+        Ok(writer)
+    }
+
+    /// Revalidate the external authority immediately before a semantic owner
+    /// mutation. Legacy qualification writers fail closed at this boundary.
+    pub async fn verify_current_authority(&self) -> Result<(), ProductionWriterError> {
+        if self.live_verifier.is_none() {
+            return Err(ProductionWriterError::LiveVerifierRequired);
+        }
+        self.verify_authority().await
     }
 
     pub fn authority(&self) -> &ProductionAuthorityLease {
@@ -580,6 +610,11 @@ impl ProductionDurableWriter {
     async fn verify_authority(&self) -> Result<(), ProductionWriterError> {
         self.authority
             .validate_for_agent(self.store.owner_agent_id())?;
+        if let Some(verifier) = &self.live_verifier {
+            verifier
+                .verify(&self.authority, self.store.owner_agent_id())
+                .map_err(ProductionWriterError::AuthorityRejected)?;
+        }
         verify_durable_store(&self.store).await?;
         self.lease.verify_current().await?;
         Ok(())
