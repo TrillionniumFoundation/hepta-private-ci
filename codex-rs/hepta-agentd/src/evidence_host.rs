@@ -47,12 +47,22 @@ impl EvidenceHost {
     pub(crate) async fn open(
         identity: &AgentdIdentity,
         trust_file: PathBuf,
+        recovery_frontier: Option<(PathBuf, PathBuf)>,
     ) -> Result<Self, AgentdError> {
         EvidenceTrust::load(&trust_file, identity)?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let store = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
             .await
             .map_err(evidence_error)?;
+        if let Some((frontier_file, signer_trust_file)) = recovery_frontier {
+            crate::evidence_frontier::verify_evidence_recovery_frontier(
+                identity,
+                &store,
+                &frontier_file,
+                &signer_trust_file,
+            )
+            .await?;
+        }
         Ok(Self { store, trust_file })
     }
 
