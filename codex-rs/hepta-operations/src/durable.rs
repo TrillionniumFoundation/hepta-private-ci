@@ -249,6 +249,59 @@ impl DurableOperationLedger {
         .await
     }
 
+    /// Atomically persist the admitted authority lineage and the dispatch
+    /// intent before the product host crosses the real owner/effect boundary.
+    /// This removes the crash window between an Authorized row and a dispatch
+    /// attempt while keeping the final outcome non-terminal.
+    pub async fn record_authorized_dispatch(
+        &self,
+        operation_id: &StableId,
+        evidence_digest: Digest32,
+        authority_generation: Generation,
+        dispatch_digest: Digest32,
+    ) -> Result<DurableOperationRecord, OperationError> {
+        if evidence_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("authority evidence"));
+        }
+        if dispatch_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("dispatch"));
+        }
+        self.transition(operation_id, |mut record| {
+            match record.operation.state.clone() {
+                OperationState::Pending => {
+                    advance(&mut record.operation)?;
+                    advance(&mut record.operation)?;
+                    record.operation.state = OperationState::Dispatched { dispatch_digest };
+                    record.authority_evidence_digest = Some(evidence_digest);
+                    record.authority_generation = Some(authority_generation);
+                    record.dispatch_digest = Some(dispatch_digest);
+                }
+                OperationState::Authorized {
+                    witness_digest,
+                    authority_generation: existing_generation,
+                } if witness_digest == evidence_digest
+                    && existing_generation == authority_generation =>
+                {
+                    advance(&mut record.operation)?;
+                    record.operation.state = OperationState::Dispatched { dispatch_digest };
+                    record.dispatch_digest = Some(dispatch_digest);
+                }
+                OperationState::Dispatched {
+                    dispatch_digest: existing,
+                } if existing == dispatch_digest
+                    && record.authority_evidence_digest == Some(evidence_digest)
+                    && record.authority_generation == Some(authority_generation) =>
+                {
+                    return Ok(record);
+                }
+                ref state if state.is_terminal() => return Err(OperationError::Terminal),
+                ref state => return invalid(state, "authorized_dispatch"),
+            }
+            Ok(record)
+        })
+        .await
+    }
+
     pub async fn record_dispatch(
         &self,
         operation_id: &StableId,
