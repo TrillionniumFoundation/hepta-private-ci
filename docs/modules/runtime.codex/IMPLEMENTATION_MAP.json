@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "1a7cc20b30987e41e2f4dfee69a1c4ebfafd1de9",
+    "tree": "95bd19e50787ce79acc8431b92303069c105c936"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -19,7 +19,7 @@
     "codex-rs/hepta-codex-adapter"
   ],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
-  "terminalObserverDisposition": "The App Server observes admission and streaming state; external tool/provider terminality remains with its effect owner.",
+  "terminalObserverDisposition": "The App Server/Core provider boundary owns physical request/terminal observation. The prompt adapter binds the exact wire-semantic request digest, records a host-owned durable dispatch claim before Allow, and reports only terminal provider outcomes; Agentd owns the durable reconciliation projection.",
   "operations": [
     {
       "designOperation": "open_thread",
@@ -145,19 +145,45 @@
       "nativeSymbol": "observe_prompt_delivery_v1",
       "sourcePath": "codex-rs/hepta-codex-adapter/src/lib.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "observe_delivery",
+      "mappingClass": "owner_native_adapter",
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+          "symbol": "AgentdPromptRuntimeOwner",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-codex-adapter/src/runtime_prompt_tests.rs",
+          "kind": "pre_send_dispatch_and_terminal_provider_binding",
+          "command": "cargo test --locked -p codex-hepta-codex-adapter runtime_prompt_tests -- --nocapture"
+        }
+      ],
+      "sourceSemantics": "The installed prompt provider-policy extension binds the exact Core wire-semantic provider request, requires the host to durably record a pre-send dispatch claim before returning Allow, then maps only observed provider terminal classes into PromptDeliveryObservationV1. NotDispatched/Indeterminate never fabricate delivery success.",
+      "operation": "prompt_runtime_provider_boundary",
+      "nativeSymbol": "PromptRuntimeHost",
+      "sourcePath": "codex-rs/hepta-codex-adapter/src/runtime_prompt.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Bind observe_prompt_delivery_v1 to a named non-test App Server/Agentd terminal provider-stream caller without adding a second execution spine."
+    "Execute the installed App Server/Agentd prompt host through a real non-test turn and current exact-head/synthetic-merge qualification; source composition exists but product execution is not proved."
   ],
   "externalEvidenceGates": [
-    "named deployed Agentd caller identity",
-    "real model/provider stream observation",
-    "real tool terminal observation and acknowledgement-loss qualification"
+    "named deployed Agentd/App Server identity",
+    "independently observable real model/provider request and terminal stream evidence",
+    "acknowledgement-loss/restart and target-host load qualification",
+    "operator acceptance"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
-    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledDocumentationGapsClosed": false,
     "repositoryControlledMappingGapsClosed": true,
     "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
@@ -172,13 +198,14 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_composed_not_product_executed",
+  "productionWriterState": "host_owned_durable_reconciliation_delegated_to_runtime_agentd_not_activated",
   "owner": "codex-integration",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
-  ]
+  ],
+  "sourceBaseSemantics": "module_local_provenance_last_reviewed_source_commit_tree"
 }
