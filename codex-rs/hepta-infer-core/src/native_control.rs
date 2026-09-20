@@ -4,8 +4,13 @@
 
 use std::collections::BTreeMap;
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Deserialize;
 use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 
 use super::DurableInferenceControl;
 use super::Error;
@@ -64,6 +69,16 @@ pub struct NativeRunOutput {
     pub stop_reason: Option<String>,
     #[serde(default)]
     pub owner_authority: NativeOwnerAuthority,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeUsageReconciliation {
+    pub request_id: String,
+    pub thread_id: String,
+    pub turn_id: String,
+    pub model_provider: String,
+    pub observed_output_tokens: u64,
+    pub evidence_digest: String,
 }
 
 impl NativeRunOutput {
@@ -326,10 +341,88 @@ impl DurableInferenceControl {
         )
     }
 
-    /// Trusted usage-settlement port. Authentication belongs to the composed
-    /// caller; this owner enforces exact terminal identity, monotonicity and
-    /// durable idempotency. A provider observation is never silently replaced.
-    pub fn reconcile_native_usage(
+    /// Build the exact independently signed binding for terminal usage
+    /// settlement. Provider terminality alone never authorizes billing/resource
+    /// settlement.
+    pub fn native_usage_reconciliation_binding(
+        &self,
+        usage: &NativeUsageReconciliation,
+    ) -> Result<FinalUseBinding, Error> {
+        validate_digest(&usage.evidence_digest, "native usage evidence")?;
+        let record = self
+            .native
+            .records
+            .get(&usage.request_id)
+            .ok_or(Error::RequestNotFound)?;
+        let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
+        let output = record
+            .observation
+            .as_ref()
+            .ok_or(Error::TerminalObservationMissing)?;
+        if !output.terminal_observed
+            || record.turn_id.as_deref() != Some(usage.turn_id.as_str())
+            || dispatch.thread_id != usage.thread_id
+            || dispatch.model_provider != usage.model_provider
+            || output.thread_id != usage.thread_id
+            || output.turn_id != usage.turn_id
+            || output.model_provider != usage.model_provider
+        {
+            return Err(Error::AssignmentMismatch);
+        }
+        if output
+            .observed_output_tokens
+            .is_some_and(|observed| observed != usage.observed_output_tokens)
+        {
+            return Err(Error::Conflict);
+        }
+        Ok(FinalUseBinding {
+            subject_id: record.request.principal_id.clone(),
+            destination_id: "inference:usage-reconciliation".to_string(),
+            request_sha256: digest_json(&(
+                "hepta.inference.usage-reconciliation.request.v1",
+                &usage.request_id,
+                &usage.thread_id,
+                &usage.turn_id,
+                &usage.model_provider,
+            ))?,
+            scope_sha256: digest_json(&(
+                "hepta.inference.usage-reconciliation.scope.v1",
+                record.request.worker_generation,
+                &record.request.model,
+            ))?,
+            payload_sha256: digest_json(&(
+                "hepta.inference.usage-reconciliation.payload.v1",
+                usage.observed_output_tokens,
+                &usage.evidence_digest,
+            ))?,
+        })
+    }
+
+    /// Authenticate exact terminal usage and append it to the same durable
+    /// inference-control journal. The grant nonce is consumed before mutation;
+    /// ambiguous persistence never makes the old grant reusable.
+    pub fn reconcile_native_usage_authorized(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        usage: NativeUsageReconciliation,
+    ) -> Result<NativeRunRecord, Error> {
+        let binding = self.native_usage_reconciliation_binding(&usage)?;
+        let token = authority
+            .claim(signed, &binding)
+            .map_err(|_| Error::AuthorityDenied)?;
+        authority
+            .with_verified_use(token, &binding, || {
+                self.reconcile_native_usage_unchecked(
+                    &usage.request_id,
+                    usage.observed_output_tokens,
+                    usage.evidence_digest.clone(),
+                )
+            })
+            .map_err(|_| Error::AuthorityDenied)?
+    }
+
+    fn reconcile_native_usage_unchecked(
         &mut self,
         request_id: &str,
         observed_output_tokens: u64,
@@ -587,6 +680,12 @@ impl NativeJournal {
             .ok_or(Error::ArithmeticOverflow)?;
         Ok(())
     }
+}
+
+fn digest_json(value: &impl Serialize) -> Result<[u8; 32], Error> {
+    let bytes = serde_json::to_vec(value)
+        .map_err(|_| Error::InvalidIdentity("native usage binding"))?;
+    Ok(Sha256::digest(bytes).into())
 }
 
 fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
