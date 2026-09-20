@@ -126,6 +126,7 @@ class ProductGateTests(unittest.TestCase):
                 "completedState": "completed_observed",
                 "reopenedState": "completed_observed",
                 "resultDigest": "5" * 64,
+                "completionObservationDigest": "6" * 64,
                 "independentlyObservedCompletion": False,
                 "completionEvidenceClass": "ci_reference_hmac_fixture",
                 "trustClass": "ci_reference_hmac_fixture",
