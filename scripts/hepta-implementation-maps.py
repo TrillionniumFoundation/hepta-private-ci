@@ -314,7 +314,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -343,7 +342,75 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            source_commit = source_base["commit"]
+            try:
+                actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base commit is unavailable")
+            else:
+                if actual_tree != source_base["tree"]:
+                    failures.append(f"{mid}: source base tree mismatch")
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
+
+            policy = row.get("sourceEvidencePolicy")
+            if policy is not None and policy != "module_local_anchor_no_mapped_evidence_drift":
+                failures.append(f"{mid}: unknown source evidence policy")
+            if policy == "module_local_anchor_no_mapped_evidence_drift":
+                evidence_paths = row.get("sourceEvidencePaths")
+                if (
+                    not isinstance(evidence_paths, list)
+                    or not evidence_paths
+                    or not all(isinstance(item, str) and item for item in evidence_paths)
+                    or evidence_paths != sorted(set(evidence_paths))
+                ):
+                    failures.append(f"{mid}: source evidence paths")
+                elif source_commit:
+                    for evidence_path in evidence_paths:
+                        if not (ROOT / evidence_path).exists():
+                            failures.append(
+                                f"{mid}: current evidence path missing: {evidence_path}"
+                            )
+                            continue
+                        anchored = subprocess.run(
+                            ["git", "cat-file", "-e", f"{source_commit}:{evidence_path}"],
+                            cwd=ROOT,
+                            capture_output=True,
+                            text=True,
+                            check=False,
+                        )
+                        if anchored.returncode != 0:
+                            failures.append(
+                                f"{mid}: evidence path missing at source base: {evidence_path}"
+                            )
+                    drift = subprocess.run(
+                        [
+                            "git",
+                            "diff",
+                            "--quiet",
+                            source_commit,
+                            "HEAD",
+                            "--",
+                            *evidence_paths,
+                        ],
+                        cwd=ROOT,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    if drift.returncode == 1:
+                        failures.append(
+                            f"{mid}: mapped source/evidence changed after source base"
+                        )
+                    elif drift.returncode != 0:
+                        failures.append(f"{mid}: cannot compare source evidence")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -372,8 +439,9 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    # Source baselines are module-local immutable provenance. A module may opt
+    # into strict mapped-evidence no-drift checking without forcing unrelated
+    # modules to rewrite their maps merely because another module advanced.
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
