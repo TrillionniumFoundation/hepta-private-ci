@@ -1606,6 +1606,165 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
 }
 
 #[test]
+fn recovery_closes_selection_only_pre_dispatch_cut_as_rolled_back()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let (source_id, target_id, binding) =
+        install_release_pair_for_selection(&fleet, "predispatch", 7)?;
+    let source =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &source_id)?)?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    supervisor.start_release(&fleet.first, source, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let running = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .expect("registered agent")
+        .lifecycle
+        .clone();
+    assert_eq!(running.lifecycle, AgentLifecycle::Running);
+
+    // Persist only the authoritative selection. This is the exact crash cut
+    // before the execution intent and before drain can linearize.
+    let grant = selection_test_grant(
+        &fleet.first,
+        &source_id,
+        &target_id,
+        binding,
+        running.generation,
+        b"predispatch-grant",
+    );
+    let selection = crate::release_selection::ReleaseSelectionRecord::prepared(
+        &grant,
+        1,
+        running.generation,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    crate::release_selection::write_release_selection(record.layout.run_root(), &selection)?;
+    drop(supervisor);
+
+    let (recovered, recovery_report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(recovery_report, TickReport::default());
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Running,
+        "provably pre-dispatch recovery must not kill the healthy predecessor"
+    );
+    assert_eq!(
+        recovered
+            .production_mutation_receipt(&fleet.first)?
+            .expect("terminal receipt")
+            .status,
+        crate::ProductionMutationStatus::RolledBack
+    );
+    assert_eq!(
+        crate::release_selection::read_release_selection(record.layout.run_root())?
+            .expect("selection")
+            .status,
+        crate::release_selection::ReleaseSelectionStatus::RolledBack
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("reconstructed intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::RolledBack
+    );
+    Ok(())
+}
+
+#[test]
+fn recovery_repairs_committed_selection_when_release_state_and_bytes_match()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let (source_id, target_id, binding) =
+        install_release_pair_for_selection(&fleet, "terminal-repair", 7)?;
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(target_id.clone()),
+        Some(source_id.clone()),
+    )?;
+    let grant = selection_test_grant(
+        &fleet.first,
+        &source_id,
+        &target_id,
+        binding,
+        1,
+        b"terminal-repair-grant",
+    );
+    let queued_intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant.grant_sha256.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        source_id.to_string(),
+        target_id.to_string(),
+        0,
+        1,
+        19,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    crate::signed_intent::write_intent(record.layout.run_root(), &queued_intent)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let committed =
+        crate::release_selection::ReleaseSelectionRecord::prepared(&grant, 1, 1)?
+            .with_status(crate::release_selection::ReleaseSelectionStatus::Committed)?;
+    crate::release_selection::write_release_selection(record.layout.run_root(), &committed)?;
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    let receipt = recovered
+        .production_mutation_receipt(&fleet.first)?
+        .expect("terminal receipt");
+    assert_eq!(receipt.status, crate::ProductionMutationStatus::Committed);
+    assert_eq!(
+        receipt.intent_sha256,
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("repaired intent")
+            .intent_sha256
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("repaired intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::Committed
+    );
+    Ok(())
+}
+
+#[test]
 fn recovery_converges_selection_terminal_intent_queued_crash_cut()
 -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
@@ -1922,6 +2081,98 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
         crate::release_selection::ReleaseSelectionStatus::Committed
     );
     Ok(())
+}
+
+fn install_release_pair_for_selection(
+    fleet: &TestFleet,
+    prefix: &str,
+    revocation_frontier: u64,
+) -> Result<
+    (
+        ReleaseId,
+        ReleaseId,
+        crate::ReleaseSelectionBinding,
+    ),
+    SupervisorError,
+> {
+    let source_id = ReleaseId::parse(format!("{prefix}-source"))?;
+    let target_id = ReleaseId::parse(format!("{prefix}-target"))?;
+    let source_program = fleet.write_release_source()?;
+    fleet
+        .registry
+        .install_release(source_id.clone(), &source_program, Vec::new())?;
+    std::fs::write(
+        &source_program,
+        format!("#!/bin/sh\necho {prefix}-target\n").as_bytes(),
+    )?;
+    fleet
+        .registry
+        .install_release(target_id.clone(), &source_program, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &source_id)?;
+    fleet.registry.allow_release(&fleet.first, &target_id)?;
+
+    let parse_digest = |value: String| {
+        Sha256Digest::parse(value).map_err(|error| SupervisorError::Invalid(error.to_string()))
+    };
+    let source = fleet
+        .registry
+        .release_provenance(&fleet.first, &source_id)?;
+    let target = fleet
+        .registry
+        .release_provenance(&fleet.first, &target_id)?;
+    let binding = crate::ReleaseSelectionBinding::new(
+        parse_digest(source.manifest_sha256)?,
+        parse_digest(source.agentd_sha256)?,
+        source
+            .matrixd_sha256
+            .map(&parse_digest)
+            .transpose()?,
+        parse_digest(target.manifest_sha256)?,
+        parse_digest(target.agentd_sha256)?,
+        target
+            .matrixd_sha256
+            .map(&parse_digest)
+            .transpose()?,
+        Sha256Digest::for_bytes(format!("{prefix}-compatibility").as_bytes()),
+        revocation_frontier,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    Ok((source_id, target_id, binding))
+}
+
+fn selection_test_grant(
+    agent_id: &AgentId,
+    source_id: &ReleaseId,
+    target_id: &ReleaseId,
+    binding: crate::ReleaseSelectionBinding,
+    lifecycle_generation: u64,
+    grant_label: &[u8],
+) -> crate::H7H89ProductionGrant {
+    crate::H7H89ProductionGrant {
+        schema_version: crate::SIGNED_AUTHORITY_SCHEMA_VERSION,
+        namespace: crate::SIGNED_AUTHORITY_NAMESPACE.to_string(),
+        agent_id: agent_id.to_string(),
+        source_release: source_id.to_string(),
+        target_release: target_id.to_string(),
+        transition: crate::H7H89ProductionTransition::Upgrade,
+        h7_envelope_sha256: Sha256Digest::for_bytes(b"selection-test-h7"),
+        artifact_sha256: Sha256Digest::for_bytes(b"selection-test-artifact"),
+        release_selection: binding,
+        expected_control_revision: 0,
+        expected_lifecycle_generation: lifecycle_generation,
+        authority_epoch: 19,
+        signer_id: "operator".to_string(),
+        signer_epoch: 4,
+        issued_at_unix_seconds: 100,
+        expires_at_unix_seconds: 200,
+        production_authority: true,
+        external_effects: true,
+        operator_acceptance: true,
+        promotion: true,
+        governance_bypass: false,
+        signature_base64: "AA==".to_string(),
+        grant_sha256: Sha256Digest::for_bytes(grant_label),
+    }
 }
 
 fn write_matrix_binding(
