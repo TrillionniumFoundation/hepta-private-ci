@@ -17,3 +17,5 @@ The implementation guide, component map and security profile live in
 registry-count validators are required. Linux strong isolation must pass the actual
 Bubblewrap probe; portable fixture success cannot become strong review evidence.
 Review eligibility and dormant proposals do not merge, activate or deploy changes.
+
+The named product composition is `EngineeringControlProduct`, which owns one SQLite v7 `EngineeringStore`, repository identity, verifier port, resource-aware planner and durable worker claim lifecycle. Product CI exercises exact-source and deterministic base-merge lanes; GitHub reviewer observations are identity evidence only and never confer independent acceptance or merge authority.

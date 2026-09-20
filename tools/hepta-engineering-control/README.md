@@ -1,7 +1,7 @@
 # Hepta engineering control
 
 The canonical implementation is `control_engineering_v2`. It provides exact-source
-envelope admission, durable SQLite v6 work coordination, resource-aware orchestration,
+envelope admission, durable SQLite v7 work coordination, resource-aware orchestration,
 atomic candidate change sets, strong sandbox qualification, mutation testing, sealed
 integration evidence and fail-closed external production-control contracts. The legacy
 `hepta_engineering_control.py` module is compatibility-only for historical fixtures
@@ -77,3 +77,9 @@ implicitly trusted: its first migration also requires a newer generation. These
 profile numbers identify the two reviewed implementations in this file, not
 arbitrary executable provenance. The existing pre/post-commit crash and
 post-upgrade-write preservation tests remain part of the same suite.
+
+## Durable worker lifecycle
+
+The canonical v2 path now persists resource-aware orchestration plans, authenticated worker registrations and fenced claims in SQLite v7. Claims require the worker selected by the durable plan plus an active path lease. Signed heartbeats maintain liveness; only infrastructure/time-out failures may be retried within the bounded attempt budget; semantic failures are terminal. A worker-reported success is not predecessor completion until an independent CI completion receipt is observed.
+
+`EngineeringControlProduct` is the named product owner composition used by the repository product gate. The historical `hepta_engineering_control.py` remains compatibility-only and must not be used as a canonical native mapping.
