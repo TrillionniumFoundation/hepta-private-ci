@@ -105,12 +105,15 @@ impl SignedUpdateManifestV1 {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PendingUpdateStatus {
     Staged,
     ActivationStarted,
     ActivatedUnconfirmed,
+    RollbackStarted,
+    RolledBack,
+    RecoveryRequired,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -122,6 +125,10 @@ pub struct PendingUpdateV1 {
     pub target_path: Option<PathBuf>,
     pub backup_path: Option<PathBuf>,
     pub status: PendingUpdateStatus,
+    #[serde(default)]
+    pub transition_unix_ms: u64,
+    #[serde(default)]
+    pub recovery_reason: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -174,6 +181,16 @@ impl UpdateManager {
                 "native update package digest mismatch".to_owned(),
             ));
         }
+        if let Some(existing) = self.load_pending()? {
+            if existing.status != PendingUpdateStatus::RolledBack {
+                return Err(ShellError::Update(
+                    "an unresolved native update already exists; reconcile it before staging another"
+                        .to_owned(),
+                ));
+            }
+            persist_json_atomic(&self.root.join("last-rollback.json"), &existing)?;
+            self.clear_pending()?;
+        }
         let staged_dir = self.root.join("staged");
         std::fs::create_dir_all(&staged_dir)?;
         let staged_package = staged_dir.join(format!("{}.package", manifest.package_digest));
@@ -191,6 +208,8 @@ impl UpdateManager {
             target_path: None,
             backup_path: None,
             status: PendingUpdateStatus::Staged,
+            transition_unix_ms: now_unix_ms()?,
+            recovery_reason: None,
         };
         persist_json_atomic(&self.pending_path(), &pending)?;
         Ok(pending)
@@ -215,30 +234,63 @@ impl UpdateManager {
     }
 
     pub fn rollback_unconfirmed(&self) -> Result<bool, ShellError> {
-        let Some(pending) = self.load_pending()? else {
+        let Some(mut pending) = self.load_pending()? else {
             return Ok(false);
         };
         if !matches!(
             pending.status,
-            PendingUpdateStatus::ActivationStarted | PendingUpdateStatus::ActivatedUnconfirmed
+            PendingUpdateStatus::ActivationStarted
+                | PendingUpdateStatus::ActivatedUnconfirmed
+                | PendingUpdateStatus::RollbackStarted
+                | PendingUpdateStatus::RecoveryRequired
         ) {
             return Ok(false);
         }
         let target = pending
             .target_path
-            .as_deref()
+            .clone()
             .ok_or_else(|| ShellError::Update("pending update lacks target path".to_owned()))?;
         let backup = pending
             .backup_path
-            .as_deref()
+            .clone()
             .ok_or_else(|| ShellError::Update("pending update lacks backup path".to_owned()))?;
+        transition_pending(
+            &self.pending_path(),
+            &mut pending,
+            PendingUpdateStatus::RollbackStarted,
+            None,
+        )?;
         if !backup.is_file() {
-            return Err(ShellError::Update(
-                "native update predecessor backup is unavailable".to_owned(),
-            ));
+            return recovery_required(
+                &self.pending_path(),
+                &mut pending,
+                "native update predecessor backup is unavailable",
+            );
         }
-        copy_and_sync(backup, target)?;
-        self.clear_pending()?;
+        if digest_file(&backup)? != pending.manifest.predecessor_digest {
+            return recovery_required(
+                &self.pending_path(),
+                &mut pending,
+                "native update predecessor backup digest mismatch",
+            );
+        }
+        if let Err(error) = copy_and_sync(&backup, &target) {
+            let message = format!("native update rollback copy failed: {error}");
+            return recovery_required(&self.pending_path(), &mut pending, &message);
+        }
+        if digest_file(&target)? != pending.manifest.predecessor_digest {
+            return recovery_required(
+                &self.pending_path(),
+                &mut pending,
+                "native update rollback did not restore the admitted predecessor digest",
+            );
+        }
+        transition_pending(
+            &self.pending_path(),
+            &mut pending,
+            PendingUpdateStatus::RolledBack,
+            None,
+        )?;
         Ok(true)
     }
 
@@ -301,25 +353,31 @@ pub fn activate_staged_update(
     copy_and_sync(target_path, &backup)?;
     pending.target_path = Some(target_path.to_owned());
     pending.backup_path = Some(backup.clone());
-    pending.status = PendingUpdateStatus::ActivationStarted;
-    persist_json_atomic(pending_path, &pending)?;
+    transition_pending(
+        pending_path,
+        &mut pending,
+        PendingUpdateStatus::ActivationStarted,
+        None,
+    )?;
 
     if let Err(error) = copy_and_sync(&pending.staged_package, target_path) {
-        if backup.is_file() {
-            let _ = copy_and_sync(&backup, target_path);
-        }
+        let reason = format!("native update activation copy failed: {error}");
+        rollback_after_activation_failure(pending_path, &mut pending, target_path, &backup, &reason)?;
         return Err(error);
     }
     if digest_file(target_path)? != pending.manifest.package_digest {
-        if backup.is_file() {
-            copy_and_sync(&backup, target_path)?;
-        }
+        let reason = "installed native update digest mismatch after replacement";
+        rollback_after_activation_failure(pending_path, &mut pending, target_path, &backup, reason)?;
         return Err(ShellError::Security(
-            "installed native update digest mismatch; predecessor restored".to_owned(),
+            "installed native update digest mismatch; predecessor rollback recorded".to_owned(),
         ));
     }
-    pending.status = PendingUpdateStatus::ActivatedUnconfirmed;
-    persist_json_atomic(pending_path, &pending)?;
+    transition_pending(
+        pending_path,
+        &mut pending,
+        PendingUpdateStatus::ActivatedUnconfirmed,
+        None,
+    )?;
     Ok(())
 }
 
@@ -329,7 +387,86 @@ fn validate_pending(pending: &PendingUpdateV1) -> Result<(), ShellError> {
             "pending native update record is invalid".to_owned(),
         ));
     }
+    let activated = !matches!(pending.status, PendingUpdateStatus::Staged);
+    if activated
+        && (!pending.target_path.as_ref().is_some_and(|path| path.is_absolute())
+            || !pending.backup_path.as_ref().is_some_and(|path| path.is_absolute()))
+    {
+        return Err(ShellError::Update(
+            "activated native update lacks absolute target/backup identity".to_owned(),
+        ));
+    }
     Ok(())
+}
+
+fn transition_pending(
+    pending_path: &Path,
+    pending: &mut PendingUpdateV1,
+    status: PendingUpdateStatus,
+    recovery_reason: Option<String>,
+) -> Result<(), ShellError> {
+    pending.status = status;
+    pending.transition_unix_ms = now_unix_ms()?;
+    pending.recovery_reason = recovery_reason;
+    persist_json_atomic(pending_path, pending)
+}
+
+fn recovery_required<T>(
+    pending_path: &Path,
+    pending: &mut PendingUpdateV1,
+    reason: &str,
+) -> Result<T, ShellError> {
+    transition_pending(
+        pending_path,
+        pending,
+        PendingUpdateStatus::RecoveryRequired,
+        Some(reason.to_owned()),
+    )?;
+    Err(ShellError::Update(format!(
+        "{reason}; update remains recovery_required"
+    )))
+}
+
+fn rollback_after_activation_failure(
+    pending_path: &Path,
+    pending: &mut PendingUpdateV1,
+    target: &Path,
+    backup: &Path,
+    reason: &str,
+) -> Result<(), ShellError> {
+    transition_pending(
+        pending_path,
+        pending,
+        PendingUpdateStatus::RollbackStarted,
+        Some(reason.to_owned()),
+    )?;
+    if !backup.is_file() || digest_file(backup)? != pending.manifest.predecessor_digest {
+        return recovery_required(
+            pending_path,
+            pending,
+            "activation failed and predecessor backup is unavailable or invalid",
+        );
+    }
+    if let Err(error) = copy_and_sync(backup, target) {
+        return recovery_required(
+            pending_path,
+            pending,
+            &format!("activation failed and predecessor rollback copy failed: {error}"),
+        );
+    }
+    if digest_file(target)? != pending.manifest.predecessor_digest {
+        return recovery_required(
+            pending_path,
+            pending,
+            "activation failed and predecessor rollback digest could not be proved",
+        );
+    }
+    transition_pending(
+        pending_path,
+        pending,
+        PendingUpdateStatus::RolledBack,
+        Some(reason.to_owned()),
+    )
 }
 
 pub fn digest_file(path: &Path) -> Result<String, ShellError> {
