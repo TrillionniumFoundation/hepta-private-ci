@@ -11,6 +11,10 @@ on:
       - codex-rs/hepta-bellman-operator/**
       - codex-rs/hepta-operator-acceptance/**
       - codex-rs/hepta-intelligence-eval/**
+      - codex-rs/hepta-agentd/src/learning_operator_host.rs
+      - codex-rs/hepta-agentd/src/learning_operator_host_tests.rs
+      - codex-rs/hepta-agentd/Cargo.toml
+      - codex-rs/Cargo.lock
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
       - docs/modules/learning.operator/**
@@ -97,6 +101,20 @@ jobs:
           lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
           --test-threads=1
 
+      - name: Agentd learning.operator product caller
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-agentd --lib
+          cargo test --locked -p codex-hepta-agentd --lib \
+            product_loop_requires_external_selection_then_reloads_into_agentd_consumer \
+            -- --test-threads=1
+          cargo test --locked -p codex-hepta-agentd --lib \
+            coordination_journal_reopens_and_rejects_semantic_reuse \
+            -- --test-threads=1
+          cargo clippy --locked -p codex-hepta-agentd --lib -- -D warnings
+
       - name: Cross-language wire and fault closure
         working-directory: codex-rs
         run: >-
@@ -130,6 +148,12 @@ jobs:
             --package codex-hepta-intelligence-eval \
             --package codex-hepta-shadow-qualification \
             -- --check
+          rustfmt --edition 2024 \
+            codex-rs/hepta-agentd/src/learning_operator_host.rs \
+            codex-rs/hepta-agentd/src/learning_operator_host_tests.rs
+          git diff --exit-code -- \
+            codex-rs/hepta-agentd/src/learning_operator_host.rs \
+            codex-rs/hepta-agentd/src/learning_operator_host_tests.rs
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
@@ -226,6 +250,19 @@ jobs:
           lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
           --test-threads=1
 
+      - name: Test merged Agentd learning.operator product caller
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-agentd --lib
+          cargo test --locked -p codex-hepta-agentd --lib \
+            product_loop_requires_external_selection_then_reloads_into_agentd_consumer \
+            -- --test-threads=1
+          cargo test --locked -p codex-hepta-agentd --lib \
+            coordination_journal_reopens_and_rejects_semantic_reuse \
+            -- --test-threads=1
+
       - name: Test merged cross-language wire and fault closure
         working-directory: codex-rs
         run: >-
@@ -246,6 +283,12 @@ jobs:
             --package codex-hepta-intelligence-eval \
             --package codex-hepta-shadow-qualification \
             -- --check
+          rustfmt --edition 2024 \
+            codex-rs/hepta-agentd/src/learning_operator_host.rs \
+            codex-rs/hepta-agentd/src/learning_operator_host_tests.rs
+          git diff --exit-code -- \
+            codex-rs/hepta-agentd/src/learning_operator_host.rs \
+            codex-rs/hepta-agentd/src/learning_operator_host_tests.rs
           git diff --cached --check
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
