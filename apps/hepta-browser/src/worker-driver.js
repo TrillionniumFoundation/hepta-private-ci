@@ -1199,6 +1199,7 @@ export class SubprocessBrowserDriver {
 
 export class PooledSubprocessBrowserDriver {
   supportsAbort = true;
+  supportsTerminalDrain = true;
   maxOutstandingOperations = 1;
 
   #config;
