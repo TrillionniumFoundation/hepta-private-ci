@@ -78,6 +78,62 @@ INCLUDE_LITERAL = re.compile(
 )
 
 
+MODULE_PATH = re.compile(r"#\s*\[\s*path\s*=")
+OUTLINED_MODULE = re.compile(r"\bmod\s+(?:r#)?([A-Za-z_][A-Za-z0-9_]*)\s*;")
+INLINE_MODULE = re.compile(r"\bmod\s+(?:r#)?[A-Za-z_][A-Za-z0-9_]*\s*\{")
+
+
+def module_source_inputs(path: str, text: str, tracked: set[str]):
+    """Conservative source edges for Rust modules, not only include! macros.
+
+    Top-level #[path] is relative to the physical source file. Inline modules
+    and cfg_attr may change that directory; retain their consumer as opaque
+    instead of guessing an active cfg or silently treating a module as prose.
+    For ordinary outlined modules, consider both Rust directory conventions and
+    root-module placement, retaining only paths in the exact Git tree. This is
+    bounded discovery, not a replacement compiler or a proof of valid Rust.
+    """
+    targets = set()
+    opaque = bool(INLINE_MODULE.search(text)) and bool(MODULE_PATH.search(text))
+    opaque |= bool(re.search(r"#\s*\[\s*cfg_attr\b", text)) and bool(
+        re.search(r"\bpath\s*=", text)
+    )
+    directory = posixpath.dirname(path)
+    for attribute in MODULE_PATH.finditer(text):
+        start = re.compile(r"\s*").match(text, attribute.end()).end()
+        literal = INCLUDE_LITERAL.match(text, start)
+        if literal is None or not re.match(r"\s*\]", text[literal.end():]):
+            opaque = True
+            continue
+        try:
+            relative = (literal.group("raw") if literal.group("raw") is not None
+                        else json.loads('"' + literal.group("plain") + '"'))
+        except (ValueError, TypeError):
+            opaque = True
+            continue
+        if (not relative or "\\" in relative or posixpath.isabs(relative)
+                or any(ord(char) < 32 for char in relative)):
+            opaque = True
+            continue
+        target = posixpath.normpath(posixpath.join(directory, relative))
+        if target in {".", ".."} or target.startswith("../"):
+            opaque = True
+        elif target in tracked:
+            targets.add(target)
+        else:
+            # A malformed/missing source must not acquire a prose-only pass.
+            opaque = True
+    stem = posixpath.splitext(posixpath.basename(path))[0]
+    for module in OUTLINED_MODULE.finditer(text):
+        name = module.group(1)
+        for base in (directory, posixpath.join(directory, stem)):
+            for suffix in (name + ".rs", name + "/mod.rs"):
+                target = posixpath.normpath(posixpath.join(base, suffix))
+                if target in tracked:
+                    targets.add(target)
+    return targets, opaque
+
+
 def presentation_input(path: str) -> bool:
     return path in PRESENTATION_INPUTS or (
         path.startswith("docs/") and path.endswith(".md")
@@ -138,9 +194,11 @@ def embedded_inputs(
     and byte payloads are not parsed as Rust. Comments may over-select. Both old
     and new graphs retain removed edges. Cycles are bounded by (path, owner).
     """
+    tracked = set(git(root, "ls-tree", "-r", "--name-only", "-z", revision)
+                  .decode("utf-8").split("\0"))
     result = subprocess.run(
         ["git", "--no-replace-objects", "-C", str(root), "grep", "-l", "-z", "-E",
-         r"include(_str|_bytes)?", revision, "--", "*.rs"],
+         r"include(_str|_bytes)?|mod[[:space:]]|#[[:space:]]*\[", revision, "--", "*.rs"],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
     if result.returncode not in (0, 1):
@@ -196,7 +254,10 @@ def embedded_inputs(
                 targets.add(target)
                 if include.group("macro") == "include":
                     rust_sources.add(target)
-        return targets, rust_sources, opaque
+        module_inputs, module_opaque = module_source_inputs(path, text, tracked)
+        targets.update(module_inputs)
+        rust_sources.update(module_inputs)
+        return targets, rust_sources, opaque or module_opaque
 
     inputs, opaque, visited = set(source_inputs), set(), set()
     while pending:
