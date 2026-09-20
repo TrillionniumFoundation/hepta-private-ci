@@ -338,6 +338,31 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::OrphanAdopted,
                 );
+                if record.lifecycle.lifecycle == AgentLifecycle::Draining {
+                    // The durable lifecycle transition linearizes before the
+                    // typed Agentd drain RPC. A supervisord crash in that cut
+                    // must not recover into a timer that eventually falls
+                    // back to SIGTERM without ever asking Agentd to stop
+                    // admission and reconcile its already-admitted turns.
+                    //
+                    // Re-issuing Drain is idempotent at the Agentd boundary.
+                    // Keep the adopted handle in slot.runtime before this RPC
+                    // so a transient control failure cannot drop the only
+                    // signal-authoritative process handle.
+                    let runtime = slot.runtime.as_mut().ok_or_else(|| {
+                        SupervisorError::Invalid(format!(
+                            "agent {agent_id} lost adopted runtime before drain replay"
+                        ))
+                    })?;
+                    runtime
+                        .process
+                        .request_drain()
+                        .map_err(|error| driver_error(agent_id, error))?;
+                    slot.event(
+                        record.lifecycle.generation,
+                        SupervisorEventKind::DrainRequested,
+                    );
+                }
                 if record.lifecycle.lifecycle == AgentLifecycle::Running {
                     // A daemon can die after committing the Running lifecycle but before
                     // appending the matching release-state revision. The lease and exact
