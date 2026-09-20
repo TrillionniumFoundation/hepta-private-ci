@@ -125,6 +125,48 @@ fn loads_runs_and_unloads_exact_model_tuple() {
 }
 
 #[test]
+fn cleanup_remains_available_after_resource_grant_expiry() {
+    let mut expiring = grant();
+    expiring.expires_at_ms = 150;
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.cleanup".to_string(),
+        3,
+        VerifiedResourceGrant::trusted_in_process(100, expiring).unwrap(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert!(
+        worker
+            .unload_model(200, "model.1")
+            .expect("cleanup after expiry")
+            .terminal_observed
+    );
+}
+
+#[test]
+fn cancelled_token_before_driver_entry_is_terminal_cancel_without_runtime_call() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.cancel".to_string(),
+        3,
+        VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let cancellation = CancellationToken::new();
+    cancellation.cancel();
+    let observed = worker
+        .run_cancellable(100, "model.1", request(), &cancellation)
+        .expect("cancelled");
+    assert_eq!(observed.status, ExecutionStatus::Cancelled);
+    assert!(observed.terminal_observed);
+    assert_eq!(observed.consumed_tokens, Some(0));
+}
+
+#[test]
 fn aggregate_reserved_memory_cannot_exceed_the_worker_grant() {
     let mut bounded_grant = grant();
     bounded_grant.maximum_memory_bytes = 3_072;
