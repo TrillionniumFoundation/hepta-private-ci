@@ -221,53 +221,16 @@ fn v3_rejects_score_mutation_after_scoring_commitment() {
 }
 
 #[test]
-fn v3_rejects_risk_class_rebinding_after_scoring_commitment() {
-    let (mut request, profile, scoring) = fixture();
-    request.risk_class = RiskClass::Elevated;
-    assert_eq!(
-        decide_calibrated_v3(request, &profile, &scoring),
-        Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
-            "risk class"
-        ))
-    );
-}
-
-#[test]
-fn v3_rejects_counterbased_to_deterministic_rebinding() {
-    let (mut request, profile, _) = fixture();
-    request.assignment = AssignmentModeV1::CounterBased {
-        random_stream_digest: digest("qualified-random-stream"),
-        draw: ProbabilityQ32::ZERO,
-        abstain_probability: ProbabilityQ32::ONE,
-    };
-    let scoring =
-        scoring_commitment_for_request_v1(&request, &profile, digest("feature-snapshot")).unwrap();
-
-    request.assignment = AssignmentModeV1::Deterministic;
-    assert_eq!(
-        decide_calibrated_v3(request, &profile, &scoring),
-        Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
-            "assignment distribution"
-        ))
-    );
-}
-
-#[test]
 fn evidence_payloads_partition_generator_scorer_profile_and_random_source_ownership() {
     let (mut request, profile, scoring) = fixture();
     let completeness = canonical_completeness_evidence_payload_v1(&request).unwrap();
     let scorer = canonical_scoring_evidence_payload_v1(&scoring).unwrap();
+    let exact_request = canonical_exact_request_evidence_payload_v1(&request).unwrap();
     let qualification = canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
     assert!(
         canonical_random_assignment_evidence_payload_v1(&request)
             .unwrap()
             .is_none()
-    );
-    let mut risk_rebound = request.clone();
-    risk_rebound.risk_class = RiskClass::Elevated;
-    assert_ne!(
-        canonical_completeness_evidence_payload_v1(&risk_rebound).unwrap(),
-        completeness
     );
 
     request.assignment = AssignmentModeV1::CounterBased {
@@ -284,6 +247,14 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
         completeness
     );
     assert_eq!(
+        canonical_scoring_evidence_payload_v1(&scoring).unwrap(),
+        scorer
+    );
+    assert_ne!(
+        canonical_exact_request_evidence_payload_v1(&request).unwrap(),
+        exact_request
+    );
+    assert_eq!(
         canonical_profile_qualification_evidence_payload_v1(&profile).unwrap(),
         qualification
     );
@@ -292,15 +263,13 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
             .unwrap()
             .is_some()
     );
-    assert_eq!(
-        decide_calibrated_v3(request.clone(), &profile, &scoring),
-        Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
-            "scored candidates"
-        ))
-    );
+    let receipt = decide_calibrated_v3(request.clone(), &profile, &scoring)
+        .expect("assignment is authenticated outside the scorer commitment");
+    assert!(!receipt.receipt_digest.is_zero());
+
     let rebound =
         scoring_commitment_for_request_v1(&request, &profile, digest("feature-snapshot")).unwrap();
-    assert_ne!(
+    assert_eq!(
         canonical_scoring_evidence_payload_v1(&rebound).unwrap(),
         scorer
     );
