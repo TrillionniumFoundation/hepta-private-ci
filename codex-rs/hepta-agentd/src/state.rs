@@ -75,6 +75,7 @@ impl AgentdState {
             ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
                 .as_str()
                 .to_string(),
+            max_active_runs: usize::from(identity.resources.max_concurrent_turns),
         })
         .map_err(run_error)?;
 
