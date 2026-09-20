@@ -105,7 +105,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
-    fn advance_release_transaction(
+    pub(crate) fn advance_release_transaction(
         &self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
