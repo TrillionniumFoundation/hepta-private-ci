@@ -742,6 +742,7 @@ export class BrowserProfileHost {
         ...durable,
         status: receipt.status,
         outcomeDigest: receipt.outcomeDigest,
+        terminalEvidenceDigest: receipt.terminalEvidenceDigest,
         terminalObserved: receipt.terminalObserved,
         observationReason: receipt.observationReason,
       });
@@ -884,6 +885,18 @@ export class BrowserProfileHost {
     if (observed.status !== "succeeded" && observed.status !== "failed") {
       throw new TypeError("terminal browser status is not registered");
     }
+    const terminalEvidenceDigest =
+      observed.evidenceDigest === undefined
+        ? null
+        : digest(observed.evidenceDigest, "terminal evidenceDigest");
+    if (
+      terminalEvidenceDigest !== null &&
+      observed.observationReason !== "authenticated_persisted_receipt"
+    ) {
+      throw new TypeError(
+        "terminal evidence digest requires an authenticated persisted observer",
+      );
+    }
     return freezeResult({
       kind: "BrowserEffectObservationV1",
       profileId,
@@ -891,8 +904,12 @@ export class BrowserProfileHost {
       semanticDigest,
       status: observed.status,
       outcomeDigest: digest(observed.outcomeDigest, "outcomeDigest"),
+      terminalEvidenceDigest,
       terminalObserved: true,
-      observationReason: "terminal_observed",
+      observationReason:
+        terminalEvidenceDigest === null
+          ? "terminal_observed"
+          : "authenticated_persisted_receipt",
     });
   }
 
@@ -918,6 +935,7 @@ export class BrowserProfileHost {
       verifiedUseTokenWitnessDigest: semantics.verifiedUseTokenWitnessDigest,
       status: entry.receipt.status,
       outcomeDigest: entry.receipt.outcomeDigest,
+      terminalEvidenceDigest: entry.receipt.terminalEvidenceDigest,
       terminalObserved: entry.receipt.terminalObserved,
       observationReason: entry.receipt.observationReason,
     });
@@ -962,6 +980,7 @@ export class BrowserProfileHost {
       semanticDigest: durable.semanticDigest,
       status: durable.status,
       outcomeDigest: durable.outcomeDigest ?? null,
+      terminalEvidenceDigest: durable.terminalEvidenceDigest ?? null,
       terminalObserved: durable.terminalObserved === true,
       observationReason: durable.observationReason ?? "durable_observation",
     });
