@@ -132,19 +132,58 @@
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "daemon_run_lifecycle_control",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/state_control.rs",
+        "symbol": "crate::AgentdMethod::RunStart",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "symbol": "pub fn start_run(",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+          "kind": "daemon_control_lifecycle",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "kind": "bounded_drain_reconciliation",
+          "command": "just test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "The real Agentd control path owns one bounded run coordinator, advertises run.lifecycle/1.0, enforces complete frozen tuple/deadline/cancellation semantics, and keeps terminal reconciliation available during bounded drain.",
+      "operation": "daemon_run_lifecycle_control",
+      "nativeSymbol": "crate::AgentdMethod::RunStart",
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Compose a canonical non-test caller that supplies authenticated request/objective/body/artifact/authority identities to run.lifecycle without synthetic hashes.",
+    "Bind process-restart recovery to that caller's durable exact-operation record; Agentd only rehydrates externally proven prior work as Indeterminate and never redispatches it."
+  ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
-    "non-test caller through the full Codex turn path",
-    "target backpressure/restart measurements"
+    "target-host drain/restart/backpressure measurements",
+    "independent acceptance, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -157,7 +196,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "daemon_lifecycle_control_composed_canonical_run_producer_pending",
   "productionWriterState": "not_established",
   "owner": "agent-runtime",
   "deputy": "runtime-control",
