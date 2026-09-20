@@ -40,7 +40,10 @@ enum CompletedRuntimeTask {
     Plasticity,
 }
 
-pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+pub async fn run(
+    mut config: AgentdConfig,
+    arg0_paths: Arg0DispatchPaths,
+) -> Result<(), AgentdError> {
     let plasticity_runtime = config.take_plasticity_runtime();
     let trust_file = config
         .authbus_trust_file()
@@ -144,9 +147,7 @@ pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Res
     let plasticity_state = Arc::clone(&state);
     let mut plasticity_task = tokio::spawn(async move {
         match plasticity_runtime {
-            Some(owner) => owner
-                .run(plasticity_state, plasticity_cancellation)
-                .await,
+            Some(owner) => owner.run(plasticity_state, plasticity_cancellation).await,
             None => {
                 // Plasticity remains opt-in. Absence means no proposal authority
                 // or writer is composed into this Agentd generation.
