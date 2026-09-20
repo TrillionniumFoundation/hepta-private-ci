@@ -131,15 +131,13 @@ fn revocation_is_scoped_to_objective_and_subject() {
         subject_b,
         projection,
     ));
-    must(journal.revoke_projection(
-        digest("revoke-a"),
-        objective_a,
-        subject_a,
-        projection,
-    ));
+    must(journal.revoke_projection(digest("revoke-a"), objective_a, subject_a, projection));
     must(journal.select_projection(digest("select-b"), objective_b, subject_b, projection));
 
-    assert_eq!(journal.selected_projection_digest(objective_a, subject_a), None);
+    assert_eq!(
+        journal.selected_projection_digest(objective_a, subject_a),
+        None
+    );
     assert_eq!(
         journal.selected_projection_digest(objective_b, subject_b),
         Some(projection)
