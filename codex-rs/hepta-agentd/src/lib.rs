@@ -16,6 +16,8 @@ mod config;
 mod control;
 mod error;
 mod event_buffer;
+mod evidence_host;
+mod evidence_trust;
 mod lane_b_runtime;
 mod production_writer_host;
 mod qualification_writer;
