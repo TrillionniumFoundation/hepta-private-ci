@@ -7,6 +7,7 @@ use std::sync::Mutex;
 
 use anyhow::Context;
 use anyhow::Result;
+use codex_hepta_contracts::{FinalUseAuthority, SignedFinalUseGrant};
 use codex_hepta_control_plane::BodyGraphBindingV1;
 use codex_hepta_control_plane::CnsHierarchyV1;
 use codex_hepta_control_plane::CnsOrganHostV1;
@@ -32,7 +33,6 @@ use codex_hepta_control_plane::OutputPort;
 use codex_hepta_control_plane::RuntimeLinkV1;
 use codex_hepta_control_plane::TrustedReadOnlyOrganV1;
 use codex_hepta_control_plane::admit_compiled_body_graph_v2;
-use codex_hepta_contracts::{FinalUseAuthority, SignedFinalUseGrant};
 use codex_hepta_control_plane::compiled_body_graph_digest_v2;
 use codex_hepta_control_plane::encode_compiled_body_graph_v2;
 use codex_hepta_paths::HeptaStateRoot;
@@ -110,19 +110,14 @@ impl RuntimeOrgans {
             .as_mut()
             .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
 
-        let validated = validate_runtime_topology_transition_v1(
-            &host.route,
-            host.host.generation(),
-            &request,
-        )?;
+        let validated =
+            validate_runtime_topology_transition_v1(&host.route, host.host.generation(), &request)?;
         let token = authority.claim(signed_grant, &validated.binding)?;
         let binding = validated.binding.clone();
         let RuntimeTopologyApplyRequestV1 { successor, .. } = request;
         let replacement = authority.with_verified_use(token, &binding, || {
-            host.host.replace_read_only_generation(
-                validated.predecessor_generation,
-                successor.host,
-            )
+            host.host
+                .replace_read_only_generation(validated.predecessor_generation, successor.host)
         })?;
         replacement?;
         host.route = successor.route;
