@@ -121,6 +121,7 @@ pub struct VerifiedUseToken {
     owner: Arc<Inner>,
     grant: FinalUseGrant,
     claimed_head: FinalUseRevocations,
+    claimed_head_sha256: [u8; 32],
     witness_sha256: [u8; 32],
 }
 
@@ -169,6 +170,10 @@ impl VerifiedUseToken {
 
     pub const fn claimed_revocation_revision(&self) -> u64 {
         self.claimed_head.revision
+    }
+
+    pub const fn claimed_revocation_head_sha256(&self) -> [u8; 32] {
+        self.claimed_head_sha256
     }
 
     /// Revalidate this claimed grant at the final asynchronous effect entry.
@@ -310,17 +315,21 @@ impl FinalUseAuthority {
         // the time sampled before that I/O; its nonce stays consumed on expiry.
         validate_live(&signed.grant, &state.head)?;
         let claimed_head = state.head.clone();
+        let claimed_head_bytes =
+            serde_json::to_vec(&claimed_head).map_err(|_| FinalUseError::InvalidTrust)?;
+        let mut head_witness = b"hepta.kernel.authority.revocation-head.v1\0".to_vec();
+        head_witness.extend_from_slice(&claimed_head_bytes);
+        let claimed_head_sha256: [u8; 32] = Sha256::digest(&head_witness).into();
         let mut witness = b"hepta.kernel.authority.final-use-witness.v2\0".to_vec();
         witness.extend_from_slice(&input);
         witness.extend_from_slice(&signed.signature);
-        witness.extend(
-            serde_json::to_vec(&claimed_head).map_err(|_| FinalUseError::InvalidTrust)?,
-        );
+        witness.extend_from_slice(&claimed_head_bytes);
         let witness_sha256: [u8; 32] = Sha256::digest(&witness).into();
         Ok(VerifiedUseToken {
             owner: Arc::clone(&self.0),
             grant: signed.grant.clone(),
             claimed_head,
+            claimed_head_sha256,
             witness_sha256,
         })
     }
