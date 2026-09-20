@@ -196,14 +196,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node apps/hepta-browser/scripts/public-egress-probe.js | tee deployment-evidence/public-egress-probe.json
+          node apps/hepta-browser/scripts/public-egress-probe.js worker-evidence/hepta-servo-worker | tee deployment-evidence/public-egress-probe.json
           python3 - <<'PY'
           import json, pathlib
           result = json.loads(pathlib.Path("deployment-evidence/public-egress-probe.json").read_text())
           assert result["publicDnsResolved"] is True
           assert result["publicTlsValidated"] is True
+          assert result["realServoPublicHttps"] is True
+          assert result["realServoObservedOrigin"] == "https://example.com"
+          assert result["profileScopeEscapeDenied"] is True
           assert result["ungrantedPublicOriginDenied"] is True
           assert result["grantedOrigin"] == "https://example.com"
+          assert result["workerSha256"] == pathlib.Path("worker-evidence/hepta-servo-worker.sha256").read_text().split()[0]
           PY
 
       - name: Re-run bounded Browser resource soak on trusted target
@@ -230,6 +234,7 @@ jobs:
           root = pathlib.Path('deployment-evidence')
           def digest(path):
               return hashlib.sha256(path.read_bytes()).hexdigest()
+          public_egress = json.loads((root / 'public-egress-probe.json').read_text())
           receipt = {
               'schema': 'hepta.browser.servo-linux-target-qualification.v1',
               'sourceSha': os.environ['SOURCE_SHA'],
@@ -240,6 +245,10 @@ jobs:
               'realWorkerSmokeSha256': digest(root / 'real-worker-smoke.json'),
               'realBrowserE2ESha256': digest(root / 'real-browser-e2e.json'),
               'publicEgressProbeSha256': digest(root / 'public-egress-probe.json'),
+              'publicDnsResolved': public_egress['publicDnsResolved'],
+              'publicTlsValidated': public_egress['publicTlsValidated'],
+              'realServoPublicHttps': public_egress['realServoPublicHttps'],
+              'profileScopeEscapeDenied': public_egress['profileScopeEscapeDenied'],
               'realBrowserSoakSha256': digest(root / 'real-browser-soak.json'),
               'noExternallyReachableWorkerListener': True,
               'crossProfileCookieIsolation': True,
