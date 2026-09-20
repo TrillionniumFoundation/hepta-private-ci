@@ -23,6 +23,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    pub(crate) prompt_pipeline: Arc<crate::AgentdPromptPipelineOwner>,
     pub(crate) prompt_runtime: Arc<crate::AgentdPromptRuntimeOwner>,
 }
 
@@ -45,13 +46,20 @@ impl AgentdState {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
+        let prompt_registry_root = identity.home_root.join("prompt-registry");
         let prompt_runtime_root = identity.run_root.join("prompt-runtime");
-        let prompt_runtime = crate::AgentdPromptRuntimeOwner::open_state_dir(&prompt_runtime_root)
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "prompt runtime durable owner failed to open: {error}"
-                ))
-            })?;
+        let prompt_pipeline = crate::AgentdPromptPipelineOwner::open_state_dirs(
+            &prompt_registry_root,
+            &prompt_runtime_root,
+            crate::prompt_runtime::AGENTD_PROMPT_REGISTRY_MAX_RECORDS,
+        )
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "prompt pipeline durable owners failed to open: {error}"
+            ))
+        })?;
+        let prompt_pipeline = Arc::new(prompt_pipeline);
+        let prompt_runtime = prompt_pipeline.runtime_owner();
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
@@ -66,7 +74,8 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
-            prompt_runtime: Arc::new(prompt_runtime),
+            prompt_pipeline,
+            prompt_runtime,
         })
     }
 
@@ -119,6 +128,10 @@ impl AgentdState {
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {
         &self.identity
+    }
+
+    pub(crate) fn prompt_pipeline_owner(&self) -> Arc<crate::AgentdPromptPipelineOwner> {
+        Arc::clone(&self.prompt_pipeline)
     }
 
     pub(crate) fn prompt_runtime_owner(&self) -> Arc<crate::AgentdPromptRuntimeOwner> {
