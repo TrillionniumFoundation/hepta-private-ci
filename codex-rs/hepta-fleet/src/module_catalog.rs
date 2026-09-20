@@ -87,10 +87,7 @@ pub enum RuntimeModuleCatalogErrorV1 {
         first: String,
         second: String,
     },
-    UnknownDependency {
-        module: String,
-        dependency: String,
-    },
+    UnknownDependency { module: String, dependency: String },
     DependencyCycle,
 }
 
@@ -370,7 +367,14 @@ mod tests {
 
     #[test]
     fn unknown_state_never_falls_back_to_stateless_bootstrap() {
-        for state in ["", "stateles", "Stateful", "stateful_unknown", "unknown", "stateless "] {
+        for state in [
+            "",
+            "stateles",
+            "Stateful",
+            "stateful_unknown",
+            "unknown",
+            "stateless ",
+        ] {
             let mut value = fixture(1);
             value["modules"][0]["state"] = serde_json::json!(state);
             assert!(matches!(
