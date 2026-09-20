@@ -2073,13 +2073,35 @@ impl LocalLeaseOutbox {
             LocalLeaseOutboxError::StaleFence("dispatch claim outbox is missing".to_string())
         })?;
         ensure_current_occurrence_fence(self, &admission, &outbox)?;
-        let expected = dispatch_operation_digest(
-            grant_digest,
-            &self.lease_id,
-            occurrence_key,
-            &outbox.topic,
-            &outbox.payload_sha256,
-        );
+        let operation = find_operation(&mut transaction, occurrence_key).await?;
+        let expected = match operation {
+            Some(operation) => {
+                let semantic = Sha256Digest::parse(&operation.semantic_sha256)
+                    .map_err(|_| corrupt("dispatch claim operation semantic digest is invalid"))?;
+                let predecessor = operation
+                    .expected_predecessor_sha256
+                    .as_deref()
+                    .map(Sha256Digest::parse)
+                    .transpose()
+                    .map_err(|_| corrupt("dispatch claim predecessor digest is invalid"))?;
+                dispatch_operation_digest(
+                    grant_digest,
+                    &self.lease_id,
+                    occurrence_key,
+                    &outbox.topic,
+                    &outbox.payload_sha256,
+                    &semantic,
+                    predecessor.as_ref(),
+                )
+            }
+            None => legacy_dispatch_operation_digest(
+                grant_digest,
+                &self.lease_id,
+                occurrence_key,
+                &outbox.topic,
+                &outbox.payload_sha256,
+            ),
+        };
         if expected != *operation_digest {
             return Err(LocalLeaseOutboxError::StaleFence(
                 "dispatch claim operation digest is not bound to the immutable outbox".to_string(),
@@ -4746,6 +4768,31 @@ fn outbox_digest(
             previous.as_str().as_bytes(),
         ],
     )
+}
+
+/// Compatibility digest for qualification-only local admissions that predate
+/// the complete durable OperationIntent. Product final-use dispatch always has
+/// an operation ledger row and therefore uses v2 below.
+pub(crate) fn legacy_dispatch_operation_digest(
+    grant_digest: &Sha256Digest,
+    lease_id: &str,
+    occurrence_key: &str,
+    topic: &str,
+    payload_sha256: &Sha256Digest,
+) -> Sha256Digest {
+    let mut bytes = Vec::new();
+    for part in [
+        b"hepta:production-outbox-operation:v1".as_slice(),
+        grant_digest.as_str().as_bytes(),
+        lease_id.as_bytes(),
+        occurrence_key.as_bytes(),
+        topic.as_bytes(),
+        payload_sha256.as_str().as_bytes(),
+    ] {
+        bytes.extend_from_slice(&(part.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(part);
+    }
+    Sha256Digest::for_bytes(&bytes)
 }
 
 /// Derive the exact provider operation identity from the signed grant and the
