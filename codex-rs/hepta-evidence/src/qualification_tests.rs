@@ -559,6 +559,87 @@ async fn independent_decision_binds_candidate_principal_key_role_and_evidence_se
 }
 
 #[tokio::test]
+async fn independent_decision_validity_outlives_short_ingress_auth_ttl() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let candidate = candidate('b');
+    let observed = now_ms();
+    let decision_expiry = observed.saturating_add(3_600_000);
+    let (reviewer, key) = issuer("principal:long-lived-architecture", 25);
+
+    let source = evidence(
+        "evidence:long-lived-decision-source",
+        candidate.clone(),
+        EvidenceClaimClassV1::ExactSource,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        None,
+        json!({"exact_head": true}),
+    );
+    append(&store, &reviewer, &key, &source, 1)
+        .await
+        .expect("source");
+    let refs = store
+        .qualification()
+        .query_claim(&candidate, EvidenceClaimClassV1::ExactSource)
+        .await
+        .expect("query source");
+    let decision = IndependentDecisionReceiptV1 {
+        decision_id: "decision:long-lived-architecture".to_string(),
+        candidate_id: candidate.candidate_id.clone(),
+        role: IndependentDecisionRoleV1::Architecture,
+        principal_id: reviewer.issuer_id.to_string(),
+        signing_identity_digest: codex_hepta_contracts::Sha256Digest::for_bytes(
+            reviewer.verifying_key.as_bytes(),
+        ),
+        evidence_set_digest: evidence_set_digest(&refs).expect("evidence set digest"),
+        decision: IndependentDecisionV1::Accept,
+        conditions: Vec::new(),
+        expires_unix_ms: decision_expiry,
+    };
+    let envelope = evidence(
+        "decision:long-lived-architecture",
+        candidate.clone(),
+        EvidenceClaimClassV1::IndependentDecision,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        Some(decision_expiry),
+        serde_json::to_value(decision).expect("decision value"),
+    );
+
+    // The AuthBus message is an admission-freshness envelope, not the durable
+    // lifetime of the admitted independent decision.
+    let short_lived_message = signed(
+        &envelope,
+        &reviewer,
+        &key,
+        2,
+        now_ms().saturating_add(5_000),
+    );
+    store
+        .qualification()
+        .append_receipt(&reviewer, &short_lived_message, &envelope)
+        .await
+        .expect("decision may outlive transport authentication ttl");
+
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(&VerifyChainRequestV1 {
+                candidate,
+                claim_class: EvidenceClaimClassV1::IndependentDecision,
+                required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+                now_unix_ms: observed.saturating_add(60_000),
+            })
+            .await
+            .expect("verify durable decision after ingress ttl"),
+        EvidenceDispositionV1::Supported { .. }
+    ));
+}
+
+#[tokio::test]
 async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_changes() {
     let temp = TempDir::new().expect("temp");
     let store = HeptaEvidenceStore::open(&config(&temp))
