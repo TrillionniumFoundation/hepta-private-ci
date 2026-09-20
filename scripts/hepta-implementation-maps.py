@@ -60,7 +60,9 @@ def source_base_failures(source_base: dict, resolved_roots: list[str]) -> list[s
     except subprocess.CalledProcessError:
         return ["unresolvable source base commit"]
     if actual_tree != tree:
-        failures.append("source base tree mismatch")
+        failures.append(
+            f"source base tree mismatch (recorded={tree}, actual={actual_tree})"
+        )
     if git_returncode("merge-base", "--is-ancestor", commit, "HEAD") != 0:
         failures.append("source base is not an ancestor of HEAD")
     if resolved_roots:
