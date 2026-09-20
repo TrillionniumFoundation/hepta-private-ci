@@ -74,20 +74,24 @@ does not redirect an already opened authority's writes.
 | Entry | Contents and invariant |
 | --- | --- |
 | `authority.lock` | Owner-only regular file; `File::try_lock` held by the shared authority owner |
-| `authority.json` | JSON `{schema:1, signer_id, verifying_key, state:{head, used_nonces}}`; maximum read 8 MiB |
-| `authority.next` | Temporary complete replacement written with owner-only permissions before rename |
+| `authority.json` | JSON schema 2 `{schema:2, signer_id, verifying_key, head}`; maximum read 8 MiB. Schema 1 is migrated fail-closed on open. |
+| `authority.claims` | Fixed-width append-only replay frames `(authority_epoch:u64, nonce:[u8;32])`; synced before dispatch admission. |
+| `authority.next` | Temporary revocation/trust snapshot replacement written with owner-only permissions before rename |
+| `authority.claims.next` | Temporary compacted replay journal used on trusted head/epoch transitions |
 
 Files must be regular, singly linked, owned by the effective user and have no
 group/world permissions; opens reject symlinks. The lock is held until the
 last authority/token reference disappears. It also releases automatically on
 process death. Concurrent opens fail with `StateLocked`.
 
-Every successful claim or head update serializes the complete next state,
-truncates and writes `authority.next`, fsyncs that file, renames it over
-`authority.json`, and fsyncs the root directory. The operation is not admitted
-until persistence succeeds. On a storage error, the live authority becomes
-unavailable and stays fenced; callers cannot remove a bad temporary file and
-silently retry through that same instance.
+Every successful claim appends one fixed 40-byte epoch/nonce frame to
+`authority.claims` and fsyncs it before dispatch admission. Claim cost is thus
+constant in the number of prior claims instead of rewriting the full replay
+set. Trusted revocation/head updates atomically replace `authority.json` and
+compact the journal for the current epoch; this path is not the per-dispatch
+hot path. On a storage error, the live authority becomes unavailable and stays
+fenced; callers cannot remove a bad temporary file and silently retry through
+that same instance.
 
 The lock file also records that initialization has begun. If a later open
 finds it but no durable state file, it fails closed instead of resetting the
@@ -100,8 +104,9 @@ An old configuration cannot roll back a stronger stored head. A newer trusted
 startup head can be applied atomically when its revision increases, its epoch
 does not decrease, and same-epoch revocations are a superset. An epoch increase
 fences every old grant and clears the previous nonce set. There is no silent
-nonce eviction: 16,384 claims fill the epoch and reject further claims until a
-trusted epoch transition.
+nonce eviction. The replay registry has a separate bounded ceiling of 1,048,576
+claims per epoch; revoked-grant IDs retain the independent 16,384-entry bound.
+At the claim ceiling, new dispatch is rejected until a trusted epoch transition.
 
 These files are not an external anti-rollback oracle. Deleting the entire
 store, restoring an old filesystem snapshot, or switching its configured
