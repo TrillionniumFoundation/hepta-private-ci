@@ -177,6 +177,7 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-operations/src/durable_store_tests.rs](../../../codex-rs/hepta-operations/src/durable_store_tests.rs); atomic prepare/reopen, multi-writer identity, safe lease takeover, higher-generation unresolved handoff, acknowledgement loss and tombstone anti-resurrection.
+- [codex-rs/hepta-operations/src/fault_tests.rs](../../../codex-rs/hepta-operations/src/fault_tests.rs); real child-process termination after prepare commit, inside verified-use effect entry and after transport acknowledgement, plus SQLite-full atomicity.
 - [codex-rs/hepta-automation/tests/kernel_operations_destination.rs](../../../codex-rs/hepta-automation/tests/kernel_operations_destination.rs); destination mutation+dedupe atomicity and reopen replay.
 - [codex-rs/hepta-agentd/src/operations_host_tests.rs](../../../codex-rs/hepta-agentd/src/operations_host_tests.rs); generation-two reopen reconciliation without redispatch.
 - [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs); configured runtime/control `AutomationCreate` selects the durable operations host.
