@@ -124,7 +124,6 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
     ));
 }
 
-
 fn digest(byte: char) -> String {
     byte.to_string().repeat(64)
 }
@@ -220,19 +219,21 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
     assert_eq!(dispatched.revision, 3);
 
     state.mark_draining().expect("begin local drain");
-    assert!(state
-        .response(
-            14,
-            1,
-            crate::AgentdMethod::RunStart {
-                snapshot: crate::AgentRunSnapshot {
-                    run_id: "run.control.2".to_string(),
-                    ..snapshot.clone()
+    assert!(
+        state
+            .response(
+                14,
+                1,
+                crate::AgentdMethod::RunStart {
+                    snapshot: crate::AgentRunSnapshot {
+                        run_id: "run.control.2".to_string(),
+                        ..snapshot.clone()
+                    },
                 },
-            },
-        )
-        .await
-        .is_err());
+            )
+            .await
+            .is_err()
+    );
 
     let status = state
         .response(
@@ -244,7 +245,10 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
         )
         .await
         .expect("run remains queryable during drain");
-    let AgentdPayload::RunStatus { run: Some(draining) } = status.payload else {
+    let AgentdPayload::RunStatus {
+        run: Some(draining),
+    } = status.payload
+    else {
         panic!("expected draining run status");
     };
     assert_eq!(draining.phase, crate::AgentRunPhase::Cancelling);
