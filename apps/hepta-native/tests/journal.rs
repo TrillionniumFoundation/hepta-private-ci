@@ -45,3 +45,18 @@ fn killed_operation_journal_owner_releases_lock() {
     child.wait().unwrap();
     OperationJournal::open(path).unwrap();
 }
+
+#[cfg(unix)]
+#[test]
+fn group_or_world_readable_operation_journal_fails_closed() {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let temp = TempDir::new().unwrap();
+    let path = temp.path().join("operations.json");
+    std::fs::write(&path, br#"{"schema":"hepta.native-operation-journal.v2","operations":[]}"#)
+        .unwrap();
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).unwrap();
+
+    let error = OperationJournal::open(&path).unwrap_err();
+    assert!(error.to_string().contains("group/world"));
+}
