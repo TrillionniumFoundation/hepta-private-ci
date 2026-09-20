@@ -153,10 +153,7 @@ impl FederatedCognitiveExtension {
         let now = now_unix_seconds()?;
         let access =
             FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
-        let Ok(statuses) = self
-            .revalidate_many(&access, &prepared.bindings, now)
-            .await
-        else {
+        let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
         if statuses.len() != prepared.bindings.len() {
