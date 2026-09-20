@@ -40,11 +40,18 @@ function readFrame(stream) {
   });
 }
 
-function request({ port, path = "/ok", method = "GET", isRedirect = false, sequence = 1 }) {
+function request({
+  port,
+  path = "/ok",
+  method = "GET",
+  isRedirect = false,
+  sequence = 1,
+  operationId = "operation.1",
+}) {
   return {
     schema: "hepta.browser.egress-request.v1",
     sequence,
-    operationId: "operation.1",
+    operationId,
     profileGrantDigest: D1,
     effectGrantDigest: D2,
     authorityEpoch: 7,
@@ -59,6 +66,11 @@ async function server() {
   const instance = http.createServer((req, res) => {
     if (req.url === "/redirect-escape") {
       res.writeHead(302, { location: "http://forbidden.test/escape" });
+      res.end();
+      return;
+    }
+    if (req.url === "/redirect-ok") {
+      res.writeHead(302, { location: "/ok" });
       res.end();
       return;
     }
@@ -132,6 +144,66 @@ test("broker rejects private DNS answers unless the profile grant names the addr
   assert.equal(response.ok, false);
   assert.match(response.error, /outside the grant/);
   broker.close();
+});
+
+test("redirect admission is scoped to the exact browser operation", async () => {
+  const instance = await server();
+  const port = instance.address().port;
+  const requests = new PassThrough();
+  const responses = new PassThrough();
+  const broker = new GrantScopedEgressBroker({
+    requestStream: requests,
+    responseStream: responses,
+    profileGrantDigest: D1,
+    allowedOrigins: [`http://authorized.test:${port}`],
+    allowedNetworkAddresses: ["127.0.0.1"],
+    dnsLookup: (_host, _options, callback) => {
+      callback(null, [{ address: "127.0.0.1", family: 4 }]);
+    },
+  });
+  for (const operationId of ["operation.1", "operation.2"]) {
+    broker.authorizeEffect({
+      operationId,
+      profileGrantDigest: D1,
+      effectGrantDigest: D2,
+      authorityEpoch: 7,
+      destinationOrigin: `http://authorized.test:${port}`,
+      deadlineMs: Date.now() + 30_000,
+    });
+  }
+
+  let responsePromise = readFrame(responses);
+  requests.write(encode(request({ port, path: "/redirect-ok", operationId: "operation.1" })));
+  let response = await responsePromise;
+  assert.equal(response.ok, true);
+  assert.equal(response.statusCode, 302);
+
+  responsePromise = readFrame(responses);
+  requests.write(encode(request({
+    port,
+    path: "/ok",
+    isRedirect: true,
+    sequence: 2,
+    operationId: "operation.2",
+  })));
+  response = await responsePromise;
+  assert.equal(response.ok, false);
+  assert.match(response.error, /for this operation/);
+
+  responsePromise = readFrame(responses);
+  requests.write(encode(request({
+    port,
+    path: "/ok",
+    isRedirect: true,
+    sequence: 3,
+    operationId: "operation.1",
+  })));
+  response = await responsePromise;
+  assert.equal(response.ok, true);
+  assert.equal(response.statusCode, 200);
+
+  broker.close();
+  await new Promise((resolve) => instance.close(resolve));
 });
 
 test("broker rejects redirect escape before Servo follows it and rejects POST", async () => {
