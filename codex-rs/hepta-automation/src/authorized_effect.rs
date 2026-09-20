@@ -987,6 +987,7 @@ mod intent_tests {
             payload_digest: Sha256Digest::for_bytes(b"payload"),
             final_use_scope_digest: Sha256Digest::for_bytes(b"scope"),
             policy_generation: 7,
+            expected_predecessor_digest: None,
             dependencies: vec![dependency("step.1", b"dep")],
             compensation_for: Some("matrix.send.original".to_string()),
         }
@@ -1024,6 +1025,9 @@ mod intent_tests {
         variants.push(value);
         let mut value = baseline.clone();
         value.policy_generation += 1;
+        variants.push(value);
+        let mut value = baseline.clone();
+        value.expected_predecessor_digest = Some(Sha256Digest::for_bytes(b"predecessor"));
         variants.push(value);
         let mut value = baseline.clone();
         value.dependencies[0].state_digest = Sha256Digest::for_bytes(b"other-dep");
