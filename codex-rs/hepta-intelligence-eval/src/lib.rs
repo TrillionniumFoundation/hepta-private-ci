@@ -203,6 +203,7 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
