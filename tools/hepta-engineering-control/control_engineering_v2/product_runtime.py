@@ -13,6 +13,13 @@ from typing import Iterable
 
 from .control_plane import EngineeringStore, WorkEnvelope
 from .evidence import SignatureTrustStore
+from .integration_controller import (
+    IntegrationQueueGeneration,
+    IntegrationQueueItem,
+    integration_queue_item,
+    publish_integration_queue,
+    reconcile_integration_item,
+)
 from .orchestration import (
     CompletionReceipt,
     EngineeringCapacity,
@@ -32,6 +39,7 @@ from .worker_lifecycle import (
     observe_claim_completion,
     register_worker,
     submit_worker_result,
+    worker_claim,
 )
 
 
@@ -73,6 +81,27 @@ class EngineeringControlProduct:
             self.store,
             envelope,
             expected_repository=self.expected_repository,
+            now_ns=now_ns,
+        )
+
+    def acquire_lease(
+        self,
+        lease_id: str,
+        envelope_id: str,
+        holder: str,
+        paths: Iterable[str],
+        *,
+        authority_epoch: int,
+        expires_unix_ns: int,
+        now_ns: int | None = None,
+    ):
+        return self.store.acquire_path_lease(
+            lease_id,
+            envelope_id,
+            holder,
+            paths,
+            authority_epoch=authority_epoch,
+            expires_unix_ns=expires_unix_ns,
             now_ns=now_ns,
         )
 
@@ -176,6 +205,58 @@ class EngineeringControlProduct:
             self.trust_store,
             now_ns=now_ns,
         )
+
+    def claim_state(self, claim_id: str) -> WorkerClaim:
+        return worker_claim(self.store, claim_id)
+
+    def publish_integration_queue(
+        self,
+        plan: EngineeringPlan,
+        *,
+        queue_generation_id: str,
+        base_commit: str,
+        base_tree: str,
+        now_ns: int | None = None,
+    ) -> IntegrationQueueGeneration:
+        return publish_integration_queue(
+            self.store,
+            plan,
+            queue_generation_id=queue_generation_id,
+            base_commit=base_commit,
+            base_tree=base_tree,
+            now_ns=now_ns,
+        )
+
+    def reconcile_integration(
+        self,
+        queue_generation_id: str,
+        package_id: str,
+        *,
+        current_base_commit: str,
+        current_base_tree: str,
+        candidate_digest: str | None = None,
+        review_digest: str | None = None,
+        ci_digest: str | None = None,
+        terminal_outcome: str | None = None,
+        now_ns: int | None = None,
+    ) -> IntegrationQueueItem:
+        return reconcile_integration_item(
+            self.store,
+            queue_generation_id,
+            package_id,
+            current_base_commit=current_base_commit,
+            current_base_tree=current_base_tree,
+            candidate_digest=candidate_digest,
+            review_digest=review_digest,
+            ci_digest=ci_digest,
+            terminal_outcome=terminal_outcome,
+            now_ns=now_ns,
+        )
+
+    def integration_item(
+        self, queue_generation_id: str, package_id: str
+    ) -> IntegrationQueueItem:
+        return integration_queue_item(self.store, queue_generation_id, package_id)
 
     def audit_anchor(self) -> dict[str, object]:
         return self.store.audit_anchor()
