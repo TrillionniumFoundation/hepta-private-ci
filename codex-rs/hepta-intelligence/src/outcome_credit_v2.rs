@@ -375,13 +375,26 @@ mod tests {
                 .expect("open fixture")
         }
 
+        fn directory(&self) -> File {
+            File::open(self._temp.path()).expect("directory")
+        }
+
         fn writer(&self) -> LedgerWriter {
             let binding = digest("production-ledger-binding");
             let ledger = DurableLedger::create(Self::open(&self.ledger_path), binding, 32)
                 .expect("ledger");
             let witness = LedgerWitnessStore::create(Self::open(&self.witness_path), binding)
                 .expect("witness");
-            LedgerWriter::from_durable(ledger, witness, activated_trust()).expect("writer")
+            let ledger_directory = self.directory();
+            let witness_directory = self.directory();
+            LedgerWriter::from_durable(
+                ledger,
+                witness,
+                activated_trust(),
+                &ledger_directory,
+                &witness_directory,
+            )
+            .expect("writer")
         }
     }
 
