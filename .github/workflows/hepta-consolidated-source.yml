@@ -110,7 +110,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-workspace
-          path: ${{ runner.temp }}/hepta-command-records/*.json
+          path: |
+            ${{ runner.temp }}/hepta-command-records/*.json
+            ${{ runner.temp }}/hepta-command-records/prompt-registry-qualification.log
           if-no-files-found: error
           retention-days: 30
   engineering-sandbox:
@@ -226,6 +228,23 @@ jobs:
           author-name: Hepta Docs CI
           author-email: hepta-docs-ci@users.noreply.github.com
           message: Synthetic merge
+      - name: Qualify prompt registry fault, capacity, and exact exercise delivery
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-prompt-registry-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/hepta-command-records/prompt-registry-qualification.log"
+          : > "$log"
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt-registry-tests.json" -- \
+            cargo test --locked -p codex-hepta-prompt-registry -- --nocapture 2>&1 | tee -a "$log"
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt-registry-exact-delivery.json" -- \
+            cargo test --locked -p codex-hepta-intelligence exercised_registry_payload_is_the_exact_context_attachment_input -- --nocapture 2>&1 | tee -a "$log"
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt-registry-revocation-delivery.json" -- \
+            cargo test --locked -p codex-hepta-intelligence revocation_after_exercise_prevents_delivery_of_the_selected_realization -- --nocapture 2>&1 | tee -a "$log"
       - name: Retain original document and source-owner gates
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
