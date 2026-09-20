@@ -493,6 +493,7 @@ async fn start_uninitialized(args: InProcessStartArgs) -> IoResult<InProcessClie
                 hepta_local_development_policy: None,
                 hepta_qualification_turn_writer_enabled: false,
                 hepta_qualification_turn_writer: None,
+                hepta_prompt_runtime_host: None,
             }));
             let mut thread_created_rx = processor.thread_created_receiver();
             let session = Arc::new(ConnectionSessionState::new());
