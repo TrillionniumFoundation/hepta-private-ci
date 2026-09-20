@@ -14,6 +14,7 @@ use crate::runtime::ReleaseChange;
 use crate::release_transaction::DurableReleaseTransaction;
 use crate::release_transaction::ReleaseTransactionKind;
 use crate::release_transaction::ReleaseTransactionPhase;
+use crate::release_transaction::read_release_transaction;
 use crate::release_transaction::write_release_transaction;
 use crate::runtime::ReleaseChangePhase;
 
@@ -337,6 +338,123 @@ impl<D: ProcessDriver> Supervisor<D> {
                 Ok(true)
             }
         }
+    }
+
+    pub(crate) fn recover_release_transaction(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        let record = self.record(agent_id)?;
+        let Some(mut transaction) = read_release_transaction(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        else {
+            return Ok(());
+        };
+        if transaction.agent_id != agent_id.to_string() {
+            return Err(SupervisorError::Invalid(
+                "release transaction agent binding mismatch".to_string(),
+            ));
+        }
+        slot.release_transaction = Some(transaction.clone());
+        if transaction.phase.terminal() {
+            return Ok(());
+        }
+
+        // Externally-authorized transitions bind the daemon authority epoch.
+        // A restart creates a new epoch, so they never continue automatically;
+        // the signed-intent recovery ceremony resolves them explicitly.
+        if transaction.grant_sha256.is_some() {
+            if transaction.phase != ReleaseTransactionPhase::RecoveryRequired {
+                transaction = transaction
+                    .with_phase(ReleaseTransactionPhase::RecoveryRequired)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                write_release_transaction(record.layout.run_root(), &transaction)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.release_transaction = Some(transaction);
+            }
+            return Ok(());
+        }
+
+        let source_id = codex_hepta_fleet::ReleaseId::parse(transaction.source_release.clone())?;
+        let target_id = codex_hepta_fleet::ReleaseId::parse(transaction.target_release.clone())?;
+        let source =
+            AgentRelease::try_from(self.registry.resolve_release(agent_id, &source_id)?)?;
+        let target =
+            AgentRelease::try_from(self.registry.resolve_release(agent_id, &target_id)?)?;
+        let prior_previous = transaction
+            .rollback_predecessor
+            .as_ref()
+            .map(|value| codex_hepta_fleet::ReleaseId::parse(value.clone()))
+            .transpose()?
+            .map(|release_id| self.registry.resolve_release(agent_id, &release_id))
+            .transpose()?
+            .map(AgentRelease::try_from)
+            .transpose()?;
+        let explicit_rollback =
+            transaction.kind == ReleaseTransactionKind::ExplicitRollback;
+
+        match transaction.phase {
+            ReleaseTransactionPhase::Prepared | ReleaseTransactionPhase::Draining => {
+                slot.release_change = Some(ReleaseChange {
+                    origin: source,
+                    target,
+                    prior_previous,
+                    phase: ReleaseChangePhase::WaitingForTargetExit,
+                    explicit_rollback,
+                });
+                match record.lifecycle.lifecycle {
+                    AgentLifecycle::Running => {
+                        self.drain_slot(agent_id, slot, now)?;
+                        self.advance_release_transaction(
+                            agent_id,
+                            slot,
+                            ReleaseTransactionPhase::Draining,
+                        )?;
+                    }
+                    AgentLifecycle::Draining => {}
+                    AgentLifecycle::Stopped | AgentLifecycle::Failed if slot.runtime.is_none() => {
+                        let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
+                    }
+                    _ => {}
+                }
+            }
+            ReleaseTransactionPhase::TargetStarting => {
+                slot.release_change = Some(ReleaseChange {
+                    origin: source,
+                    target,
+                    prior_previous,
+                    phase: ReleaseChangePhase::TargetStarting,
+                    explicit_rollback,
+                });
+                if slot.runtime.is_none() {
+                    let _ = self.start_automatic_rollback(agent_id, slot, now)?;
+                }
+            }
+            ReleaseTransactionPhase::AutomaticRollbackStarting => {
+                slot.release_change = Some(ReleaseChange {
+                    origin: source.clone(),
+                    target,
+                    prior_previous,
+                    phase: ReleaseChangePhase::AutomaticRollbackStarting,
+                    explicit_rollback,
+                });
+                if slot.runtime.is_none()
+                    && matches!(
+                        record.lifecycle.lifecycle,
+                        AgentLifecycle::Stopped | AgentLifecycle::Failed
+                    )
+                {
+                    slot.active_release = None;
+                    self.start_release_slot(agent_id, slot, source, now)?;
+                }
+            }
+            ReleaseTransactionPhase::Committed
+            | ReleaseTransactionPhase::RolledBack
+            | ReleaseTransactionPhase::RecoveryRequired => {}
+        }
+        Ok(())
     }
 
     fn start_automatic_rollback(
