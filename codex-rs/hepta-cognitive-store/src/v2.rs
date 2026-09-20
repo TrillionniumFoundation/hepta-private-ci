@@ -36,6 +36,10 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+use crate::durable::MemoryLifecycleState as DurableMemoryLifecycleState;
+use crate::durable::MemoryVerification as DurableMemoryVerification;
+use crate::durable::ProductionCognitiveMutationReceiptV1;
+
 pub const MAX_V2_RECORD_REVISIONS: usize = 65_536;
 /// Ordinary writes may consume at most half of the absolute revision budget.
 /// The other half is reserved so every admitted live head can still be
@@ -48,6 +52,7 @@ const FORGET_DOMAIN: &[u8] = b"hepta.cognitive-store.forget-intent.v2";
 const STORE_SNAPSHOT_DOMAIN: &[u8] = b"hepta.cognitive-store.snapshot.v2";
 const STORE_IMAGE_DOMAIN: &[u8] = b"hepta.cognitive-store.image.v2";
 const CANONICAL_EVENT_SHADOW_DOMAIN: &[u8] = b"hepta.cognitive-store.canonical-event-shadow.v1";
+const CANONICAL_DURABLE_EVENT_DOMAIN: &[u8] = b"hepta.cognitive-store.canonical-durable-event.v1";
 
 /// Product hosts must verify the authorization against the current authority
 /// owner. A digest alone never grants a write.
@@ -64,6 +69,139 @@ pub trait StoreAuthorityVerifierV2 {
 struct IntentJournalEntryV2 {
     semantic_digest: Digest32,
     receipt: MemoryWriteReceiptV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalDurableMemoryEventBindingV1 {
+    pub event_id: ContractIdV1,
+    pub event_digest: Digest32,
+    pub production_receipt_digest: Digest32,
+    pub operation_digest: Digest32,
+    pub source_revision: u64,
+    pub binding_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl CanonicalDurableMemoryEventBindingV1 {
+    #[must_use]
+    pub fn compute_binding_digest(&self) -> Digest32 {
+        let mut bytes = CANONICAL_DURABLE_EVENT_DOMAIN.to_vec();
+        push_raw_id(&mut bytes, self.event_id.as_str());
+        push_digest(&mut bytes, self.event_digest);
+        push_digest(&mut bytes, self.production_receipt_digest);
+        push_digest(&mut bytes, self.operation_digest);
+        bytes.extend_from_slice(&self.source_revision.to_be_bytes());
+        Digest32::of_bytes(&bytes)
+    }
+
+    pub fn validate(&self) -> Result<(), CognitiveStoreV2Error> {
+        for (name, digest) in [
+            ("canonical_durable_event", self.event_digest),
+            ("canonical_durable_production_receipt", self.production_receipt_digest),
+            ("canonical_durable_operation", self.operation_digest),
+            ("canonical_durable_binding", self.binding_digest),
+        ] {
+            ensure_digest(name, digest)?;
+        }
+        if self.source_revision == 0 {
+            return Err(CognitiveStoreV2Error::CanonicalDurableSourceMismatch);
+        }
+        if self.authority.grants_any() {
+            return Err(CognitiveStoreV2Error::AuthorityGranted);
+        }
+        if self.binding_digest != self.compute_binding_digest() {
+            return Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch);
+        }
+        Ok(())
+    }
+}
+
+/// Bind one canonical MemoryEventV1 to the exact production durable mutation
+/// receipt that created its authoritative source/Memory revision.
+///
+/// Unlike the legacy admission shadow, this bridge proves source revision
+/// equivalence because the durable owner receipt carries the committed
+/// SourceRevisionId plus the exact source-content digest and observation time.
+pub fn bind_canonical_event_to_durable_receipt(
+    event: &MemoryEventV1,
+    production: &ProductionCognitiveMutationReceiptV1,
+) -> Result<CanonicalDurableMemoryEventBindingV1, CognitiveStoreV2Error> {
+    event
+        .validate()
+        .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
+    production
+        .validate()
+        .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
+    if event.provenance.len() != 1 {
+        return Err(CognitiveStoreV2Error::CanonicalDurableSourceMismatch);
+    }
+    let provenance = &event.provenance[0];
+    let observed_ms = u64::try_from(production.source_observed_at_unix_seconds)
+        .ok()
+        .and_then(|seconds| seconds.checked_mul(1000))
+        .ok_or(CognitiveStoreV2Error::CanonicalDurableSourceMismatch)?;
+    if provenance.source_id.as_str() != production.write.source.source_id.as_str()
+        || provenance.source_revision != production.write.source.revision
+        || provenance.source_sha256.to_string() != production.source_content_sha256.as_str()
+        || provenance.observed_at_unix_ms != observed_ms
+    {
+        return Err(CognitiveStoreV2Error::CanonicalDurableSourceMismatch);
+    }
+
+    let verification_matches = matches!(
+        (
+            production.write.memory.verification,
+            event.verification,
+        ),
+        (
+            DurableMemoryVerification::Verified,
+            MemoryVerificationStateV1::Verified
+        ) | (
+            DurableMemoryVerification::Provisional,
+            MemoryVerificationStateV1::Unverified
+        )
+    );
+    let lifecycle_matches = matches!(
+        (
+            &production.write.memory.lifecycle,
+            &event.lifecycle,
+        ),
+        (
+            DurableMemoryLifecycleState::Active,
+            codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1::Active
+        ) | (
+            DurableMemoryLifecycleState::Tombstoned { .. },
+            codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1::Tombstoned { .. }
+        )
+    );
+    if !verification_matches || !lifecycle_matches {
+        return Err(CognitiveStoreV2Error::CanonicalDurableStateMismatch);
+    }
+
+    let event_digest = canonical_contract_digest_v1(event)
+        .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
+    let production_receipt_digest = production
+        .receipt_sha256
+        .as_str()
+        .parse::<Digest32>()
+        .map_err(|_| CognitiveStoreV2Error::CanonicalDurableSourceMismatch)?;
+    let operation_digest = production
+        .operation_digest
+        .as_str()
+        .parse::<Digest32>()
+        .map_err(|_| CognitiveStoreV2Error::CanonicalDurableSourceMismatch)?;
+    let mut binding = CanonicalDurableMemoryEventBindingV1 {
+        event_id: event.event_id.clone(),
+        event_digest,
+        production_receipt_digest,
+        operation_digest,
+        source_revision: provenance.source_revision,
+        binding_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    binding.binding_digest = binding.compute_binding_digest();
+    binding.validate()?;
+    Ok(binding)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1377,6 +1515,8 @@ pub enum CognitiveStoreV2Error {
     CanonicalVerificationMismatch,
     CanonicalSourceProvenanceMismatch,
     CanonicalShadowReceiptMismatch,
+    CanonicalDurableSourceMismatch,
+    CanonicalDurableStateMismatch,
     EmptyDigest(&'static str),
     DigestMismatch(&'static str),
     InvalidCapacity,
