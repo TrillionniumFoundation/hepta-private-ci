@@ -78,7 +78,7 @@ The bounded components are:
 - `constraint-aware bounded portfolio solver`
 - `delivery-boundary exercise / revalidation emitter`
 
-The source-level composition path continues outside this owner's root through `hepta-intelligence`: an exercised portfolio is materialized from the exact registry payload, compiled by `context.compiler`, revalidated again before attachment preparation, and bound to terminal delivery observation before learning-ledger admission. Those adapters do not transfer registry, context, runtime or learning ownership into `prompt.optimizer`.
+The source-level composition path continues outside this owner's root through `hepta-intelligence`: an exercised portfolio is materialized from the exact registry payload, compiled by `context.compiler`, revalidated again before attachment preparation, and bound to delivery evidence before learning-ledger admission. The physical Responses HTTP path now exposes the canonical encoded JSON body immediately before transport and terminal Completed/Rejected/Indeterminate/Abandoned outcomes through `codex-api` and `core::client`. That seam is not itself product composition: no owner-authenticated Agentd/App Server turn binding currently installs the observer on the real `ModelClientSession`, and ordinary client metadata is not accepted as authority. These adapters do not transfer registry, context, runtime or learning ownership into `prompt.optimizer`.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -232,7 +232,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. The current source candidate now contains the canonical optimizer operations and a source-level cross-owner composition path through context compilation, delivery observation contracts and durable learning-ledger admission. This is still not `production_implementation`: that fact additionally requires a named real product caller at the Codex dispatch boundary plus executable product tests over that callsite. Qualification requires current exact-candidate evidence. Independent causal acceptance, activation, selection, promotion and release remain separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. The current source candidate contains the canonical optimizer operations, cross-owner context/learning composition, and a real Core/Responses encoded-body plus terminal-observation seam. This is still not `production_implementation`: an owner-authenticated Agentd/App Server turn binding must install that observer on the exact real `ModelClientSession`, and executable product tests must prove the resulting Agentd → App Server → Core → Responses HTTP callsite. Qualification requires current exact-candidate evidence. Independent causal acceptance, activation, selection, promotion and release remain separate externally governed states.
 
 For `prompt.optimizer`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
