@@ -1,9 +1,11 @@
-# Durable sparse checkpoint journal
+# Durable neuron owner journals
 
 This NEU-2 sub-slice builds on the Q24 kernel, not a competing implementation.
-`SparseJournal` is an opt-in host adapter; `sparse_tick` stays pure. It implements
-persistence and crash/reopen for one bounded run/generation segment, not full
-NEU-2 completion, calibrated intelligence or production activation.
+`SparseJournal` persists deterministic checkpoint state while
+`FileRuntimeOperationJournal` persists canonical owner-operation results.
+`sparse_tick` stays pure. The pair closes state/result crash reconciliation for
+one bounded generation; it does not establish concrete-model qualification,
+empirical efficacy or production activation.
 
 ## Ownership and admission
 
@@ -15,10 +17,10 @@ elsewhere. `File::try_lock` fences cooperating independent writers; it is
 advisory, not a hostile-writer sandbox. Only the neuron checkpoint owner writes
 this journal. New-file directory synchronization remains the host's obligation.
 
-## Persistent format and transaction
+## Persistent formats and transaction
 
-A 136-byte versioned header binds config, principal/run scope, objective and
-checksum. Each frame is canonical tick inputs (176+16*d bytes), predecessor and
+The sparse journal keeps its existing HPTNSJ01 format. A 136-byte versioned
+header binds config, principal/run scope, objective and checksum. Each frame is canonical tick inputs (176+16*d bytes), predecessor and
 successor checkpoint digests (64 bytes), signal semantics digest (32 bytes) and
 checksum (32 bytes): 304+16*d bytes total. All numbers are big-endian; no untrusted
 record length is allocated. The receipt and checkpoint are reconstructed together
@@ -37,10 +39,28 @@ syncs a valid complete suffix before returning: an earlier sync may have failed
 after writing a full frame. Any write/sync uncertainty returns indeterminate,
 poisons the handle and requires reopen/reconciliation rather than a blind retry.
 
+The companion HPTNOP01 operation journal is independently locked and
+context-bound to the same full runtime profile/scope. A `Prepared` frame contains
+operation ID, sequence, canonical request digest, predecessor/successor checkpoint,
+the exact required-lineage set and exact encoded tick/signal/model/sparse/calibration
+result bytes. A terminal frame changes that record only to `Committed` or
+`Aborted`. One non-aborted operation identity is allowed per logical sequence.
+
+Canonical transaction order is: compute/validate the complete result without
+state mutation; sync `Prepared`; sync the exact sparse checkpoint; sync
+`Committed`; revalidate the operation's current lineage; sync the independent
+witness; acknowledge. Reopen classifies a surviving `Prepared` record by exact
+checkpoint equality. A matching checkpoint becomes committed, no checkpoint
+becomes aborted, and a different checkpoint is a conflict. Sparse history without
+matching committed operation history is rejected by the canonical host.
+
 ## Bounds, migration and rollback
 
-At most 1024 ticks per segment: below 4.6 MB at d=256, plus one incomplete tail.
-Replay and receipt-cache memory are quota-bounded. `NeuronRuntimeHost::rotate`
+At most 1024 sparse ticks per segment: below 4.6 MB at d=256, plus one incomplete
+tail. The canonical operation-result sidecar is independently bounded and fails
+closed at capacity; long-lived deployment therefore still requires governed
+archival/retention before activation. Replay and receipt-cache memory are
+quota-bounded. `NeuronRuntimeHost::rotate`
 implements continuation segments: rotation is allowed only from the exact
 independently witnessed checkpoint, which becomes the next segment's genesis,
 so temporal/homeostatic state is not reset. Compaction and archival across many
