@@ -1,5 +1,6 @@
 //! Domain control dispatch kept separate from process lifecycle state.
 
+use std::str::FromStr;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -15,6 +16,8 @@ use codex_hepta_memory::FederationGrantRequest;
 use codex_hepta_memory::FederationGrantScope;
 use codex_hepta_memory::MAX_FEDERATION_GRANT_LIFETIME_SECONDS;
 use codex_hepta_memory::workspace_binding_digest;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 use crate::AgentdError;
 use crate::AgentdPayload;
@@ -270,7 +273,7 @@ impl AgentdState {
                     .runs
                     .lock()
                     .map_err(poisoned_state)?
-                    .recover_indeterminate(internal_run_recovery(recovery))
+                    .recover_indeterminate(internal_run_recovery(recovery)?)
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
@@ -761,14 +764,40 @@ fn internal_context_attachment(value: crate::AgentContextAttachment) -> crate::C
     }
 }
 
-fn internal_run_recovery(value: crate::AgentRunRecovery) -> crate::RunRecovery {
-    crate::RunRecovery {
+fn internal_run_recovery(value: crate::AgentRunRecovery) -> Result<crate::RunRecovery, AgentdError> {
+    let learning_decision = value
+        .learning_decision
+        .map(internal_learning_decision_binding)
+        .transpose()?;
+    Ok(crate::RunRecovery {
         snapshot: internal_run_snapshot(value.snapshot),
         revision: value.revision,
         context_digest: value.context_digest,
         compilation_receipt_digest: value.compilation_receipt_digest,
         cancel_reason: value.cancel_reason,
+        learning_decision,
+    })
+}
+
+fn internal_learning_decision_binding(
+    value: crate::AgentLearningDecisionBinding,
+) -> Result<crate::LearningDecisionBindingV3, AgentdError> {
+    let episode_id = StableId::new(value.episode_id)
+        .map_err(|error| AgentdError::Invalid(format!("invalid learning episode id: {error}")))?;
+    let event_digest = Digest32::from_str(&value.event_digest)
+        .map_err(|_| AgentdError::Invalid("invalid learning event digest".to_string()))?;
+    let chain_digest = Digest32::from_str(&value.chain_digest)
+        .map_err(|_| AgentdError::Invalid("invalid learning chain digest".to_string()))?;
+    if event_digest.is_zero() || chain_digest.is_zero() {
+        return Err(AgentdError::Invalid(
+            "learning decision recovery digests must be non-zero".to_string(),
+        ));
     }
+    Ok(crate::LearningDecisionBindingV3 {
+        episode_id,
+        event_digest,
+        chain_digest,
+    })
 }
 
 fn internal_run_phase(value: crate::AgentRunPhase) -> crate::RunPhase {
