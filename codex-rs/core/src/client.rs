@@ -3124,6 +3124,7 @@ where
                         &mut provider_terminal,
                         "provider_response_consumer_dropped",
                         &items_added,
+                        encoded_request_observer.as_ref(),
                     ).await;
                     inference_trace_attempt.record_cancelled(
                         STREAM_DROPPED_REASON,
@@ -3149,6 +3150,7 @@ where
                             &mut provider_terminal,
                             "provider_response_consumer_dropped",
                             &items_added,
+                            encoded_request_observer.as_ref(),
                         )
                         .await;
                         inference_trace_attempt.record_cancelled(
@@ -3223,6 +3225,7 @@ where
                             &mut provider_terminal,
                             "provider_response_consumer_dropped",
                             &items_added,
+                            encoded_request_observer.as_ref(),
                         )
                         .await;
                         inference_trace_attempt.record_cancelled(
@@ -3320,6 +3323,7 @@ async fn finish_abandoned_provider_response(
     provider_terminal: &mut ProviderResponseTerminal,
     reason_code: &'static str,
     response_items: &[ResponseItem],
+    encoded_request_observer: Option<&Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 ) {
     if let Err(error) = provider_terminal
         .finish_indeterminate(reason_code, response_items)
@@ -3329,6 +3333,19 @@ async fn finish_abandoned_provider_response(
             reason_code = error.reason_code(),
             detail = error.detail(),
             "failed to persist abandoned provider response terminal"
+        );
+    }
+    if let Some(observer) = encoded_request_observer
+        && let Err(error) = observer
+            .observe_terminal(codex_api::EncodedRequestTerminal::Abandoned {
+                reason_code: reason_code.to_string(),
+            })
+            .await
+    {
+        warn!(
+            reason_code,
+            error = %error,
+            "failed to persist exact-request abandoned terminal observation"
         );
     }
 }
