@@ -3,6 +3,7 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
@@ -38,6 +39,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    neuron_runtime_port: Option<Arc<dyn codex_hepta_intelligence::NeuronRuntimeProductPort>>,
 }
 
 impl AgentdConfig {
@@ -143,6 +145,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            neuron_runtime_port: None,
         })
     }
 
@@ -178,6 +181,28 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Attach the single governed neuron owner port to this Agentd generation.
+    /// Agentd owns composition only; the port retains neuron state ownership and
+    /// cannot grant effect authority.
+    pub fn with_neuron_runtime_port(
+        mut self,
+        port: Arc<dyn codex_hepta_intelligence::NeuronRuntimeProductPort>,
+    ) -> Result<Self, AgentdError> {
+        if self.neuron_runtime_port.is_some() {
+            return Err(AgentdError::Invalid(
+                "neuron runtime port already configured".to_string(),
+            ));
+        }
+        self.neuron_runtime_port = Some(port);
+        Ok(self)
+    }
+
+    pub(crate) fn neuron_runtime_port(
+        &self,
+    ) -> Option<Arc<dyn codex_hepta_intelligence::NeuronRuntimeProductPort>> {
+        self.neuron_runtime_port.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {
