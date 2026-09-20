@@ -33,7 +33,8 @@ const SCHEMA_VERSION: i64 = 1;
 const MAX_DURABLE_OPERATION_RECORDS: i64 = MAX_MODEL_OPERATION_RECORDS as i64;
 
 const SELECT_RECORD: &str = r#"
-SELECT operation_id, payload_digest, owner_generation, revision, state,
+SELECT operation_id, payload_digest, destination_id, context_digest,
+       owner_generation, revision, state,
        authority_evidence_digest, authority_generation, dispatch_digest,
        indeterminate_reason_digest, terminal_evidence_digest
 FROM hepta_operation_ledger_v1
@@ -41,8 +42,27 @@ WHERE operation_id = ?
 "#;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DurableOperationBinding {
+    pub key: OperationKey,
+    pub destination_id: StableId,
+    pub context_digest: Digest32,
+}
+
+impl DurableOperationBinding {
+    fn validate(&self) -> Result<(), OperationError> {
+        self.key.validate()?;
+        if self.context_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("operation context"));
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DurableOperationRecord {
     pub operation: OperationRecord,
+    pub destination_id: StableId,
+    pub context_digest: Digest32,
     pub authority_evidence_digest: Option<Digest32>,
     pub authority_generation: Option<Generation>,
     pub dispatch_digest: Option<Digest32>,
@@ -105,6 +125,8 @@ impl DurableOperationLedger {
             CREATE TABLE IF NOT EXISTS hepta_operation_ledger_v1 (
                 operation_id TEXT PRIMARY KEY NOT NULL,
                 payload_digest BLOB NOT NULL CHECK(length(payload_digest) = 32),
+                destination_id TEXT NOT NULL,
+                context_digest BLOB NOT NULL CHECK(length(context_digest) = 32),
                 owner_generation TEXT NOT NULL,
                 revision TEXT NOT NULL,
                 state TEXT NOT NULL CHECK(state IN (
@@ -161,7 +183,22 @@ impl DurableOperationLedger {
         key: OperationKey,
         owner_generation: Generation,
     ) -> Result<DurableOperationRecord, OperationError> {
-        key.validate()?;
+        let binding = DurableOperationBinding {
+            context_digest: key.payload_digest,
+            destination_id: StableId::new("kernel.operations.reference")
+                .map_err(|_| OperationError::CorruptStore("reference destination"))?,
+            key,
+        };
+        self.begin_bound(binding, owner_generation).await
+    }
+
+    pub async fn begin_bound(
+        &self,
+        binding: DurableOperationBinding,
+        owner_generation: Generation,
+    ) -> Result<DurableOperationRecord, OperationError> {
+        binding.validate()?;
+        let key = binding.key.clone();
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
@@ -169,6 +206,8 @@ impl DurableOperationLedger {
             .map_err(|_| OperationError::StorageUnavailable)?;
         if let Some(existing) = load_in_transaction(&mut tx, &key.id).await? {
             if existing.operation.key == key
+                && existing.destination_id == binding.destination_id
+                && existing.context_digest == binding.context_digest
                 && existing.operation.owner_generation == owner_generation
             {
                 tx.commit()
@@ -196,6 +235,8 @@ impl DurableOperationLedger {
                 revision: revision(1)?,
                 state: OperationState::Pending,
             },
+            destination_id: binding.destination_id,
+            context_digest: binding.context_digest,
             authority_evidence_digest: None,
             authority_generation: None,
             dispatch_digest: None,
@@ -443,14 +484,17 @@ async fn insert_record(
     sqlx::query(
         r#"
         INSERT INTO hepta_operation_ledger_v1(
-            operation_id, payload_digest, owner_generation, revision, state,
-            authority_evidence_digest, authority_generation, dispatch_digest,
-            indeterminate_reason_digest, terminal_evidence_digest
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            operation_id, payload_digest, destination_id, context_digest,
+            owner_generation, revision, state, authority_evidence_digest,
+            authority_generation, dispatch_digest, indeterminate_reason_digest,
+            terminal_evidence_digest
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(record.operation.key.id.as_str())
     .bind(record.operation.key.payload_digest.as_array().to_vec())
+    .bind(record.destination_id.as_str())
+    .bind(record.context_digest.as_array().to_vec())
     .bind(record.operation.owner_generation.get().to_string())
     .bind(record.operation.revision.get().to_string())
     .bind(columns.state)
@@ -476,7 +520,8 @@ async fn update_record(
         SET revision = ?, state = ?, authority_evidence_digest = ?,
             authority_generation = ?, dispatch_digest = ?,
             indeterminate_reason_digest = ?, terminal_evidence_digest = ?
-        WHERE operation_id = ? AND payload_digest = ? AND owner_generation = ?
+        WHERE operation_id = ? AND payload_digest = ? AND destination_id = ?
+          AND context_digest = ? AND owner_generation = ?
         "#,
     )
     .bind(record.operation.revision.get().to_string())
@@ -488,6 +533,8 @@ async fn update_record(
     .bind(columns.terminal)
     .bind(record.operation.key.id.as_str())
     .bind(record.operation.key.payload_digest.as_array().to_vec())
+    .bind(record.destination_id.as_str())
+    .bind(record.context_digest.as_array().to_vec())
     .bind(record.operation.owner_generation.get().to_string())
     .execute(&mut **tx)
     .await
@@ -529,6 +576,12 @@ fn encoded_state(record: &DurableOperationRecord) -> EncodedState {
 fn decode_record(row: sqlx::sqlite::SqliteRow) -> Result<DurableOperationRecord, OperationError> {
     let operation_id = stable_id(row.try_get("operation_id").map_err(storage)?, "operation id")?;
     let payload_digest = digest_blob(row.try_get("payload_digest").map_err(storage)?, "payload digest")?;
+    let destination_id = stable_id(
+        row.try_get("destination_id").map_err(storage)?,
+        "destination id",
+    )?;
+    let context_digest =
+        digest_blob(row.try_get("context_digest").map_err(storage)?, "context digest")?;
     let owner_generation = generation_text(row.try_get("owner_generation").map_err(storage)?, "owner generation")?;
     let revision = revision_text(row.try_get("revision").map_err(storage)?, "revision")?;
     let state: String = row.try_get("state").map_err(storage)?;
@@ -604,6 +657,8 @@ fn decode_record(row: sqlx::sqlite::SqliteRow) -> Result<DurableOperationRecord,
             revision,
             state: operation_state,
         },
+        destination_id,
+        context_digest,
         authority_evidence_digest,
         authority_generation,
         dispatch_digest,
