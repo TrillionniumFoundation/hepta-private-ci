@@ -733,8 +733,7 @@ pub fn settle_engram(
         .collect::<BTreeMap<_, _>>();
     let mut incoming_synapses = BTreeMap::new();
     for synapse in &snapshot.synapses {
-        if expanded.contains(&synapse.source_node_id)
-            && expanded.contains(&synapse.target_node_id)
+        if expanded.contains(&synapse.source_node_id) && expanded.contains(&synapse.target_node_id)
         {
             incoming_synapses
                 .entry(synapse.target_node_id.clone())
