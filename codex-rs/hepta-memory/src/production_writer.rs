@@ -278,6 +278,8 @@ pub struct ProductionCognitiveMutationReceiptV1 {
     pub mutation_kind: String,
     pub operation_digest: Sha256Digest,
     pub input_payload_sha256: Sha256Digest,
+    pub source_content_sha256: Sha256Digest,
+    pub source_observed_at_unix_seconds: i64,
     pub expected_predecessor_revision: Option<u64>,
     pub authority_grant_digest: Sha256Digest,
     pub authority_epoch: u64,
@@ -1018,6 +1020,7 @@ impl ProductionCognitiveMutationCapability {
         self.writer.verify_current_authority().await?;
         let input_payload_sha256 =
             production_cognitive_input_digest(mutation_kind, source, semantic_input)?;
+        let source_content_sha256 = Sha256Digest::for_bytes(&source.content);
         let operation_digest = production_cognitive_operation_digest(
             &self.writer,
             mutation_kind,
@@ -1070,6 +1073,8 @@ impl ProductionCognitiveMutationCapability {
             namespace: PRODUCTION_COGNITIVE_MUTATION_NAMESPACE,
             operation_digest: &operation_digest,
             write_digest: &write_digest,
+            source_content_sha256: &source_content_sha256,
+            source_observed_at_unix_seconds: source.observed_at_unix_seconds,
             memory_id: write.memory.id.memory_id.as_str(),
             memory_revision: write.memory.id.revision,
             source_id: write.source.source_id.as_str(),
@@ -1094,6 +1099,8 @@ impl ProductionCognitiveMutationCapability {
             mutation_kind: mutation_kind.to_string(),
             operation_digest,
             input_payload_sha256,
+            source_content_sha256,
+            source_observed_at_unix_seconds: source.observed_at_unix_seconds,
             expected_predecessor_revision,
             authority_grant_digest: self.writer.authority.grant_digest.clone(),
             authority_epoch: self.writer.authority.authority_epoch,
@@ -1136,6 +1143,8 @@ struct ProductionCognitiveMutationCommitJournalV1<'a> {
     namespace: &'static str,
     operation_digest: &'a Sha256Digest,
     write_digest: &'a Sha256Digest,
+    source_content_sha256: &'a Sha256Digest,
+    source_observed_at_unix_seconds: i64,
     memory_id: &'a str,
     memory_revision: u64,
     source_id: &'a str,
@@ -1203,6 +1212,8 @@ fn production_cognitive_receipt_digest(
             receipt.mutation_kind.as_bytes(),
             receipt.operation_digest.as_str().as_bytes(),
             receipt.input_payload_sha256.as_str().as_bytes(),
+            receipt.source_content_sha256.as_str().as_bytes(),
+            &receipt.source_observed_at_unix_seconds.to_be_bytes(),
             &predecessor,
             receipt.authority_grant_digest.as_str().as_bytes(),
             &receipt.authority_epoch.to_be_bytes(),
