@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Mapping
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import hashlib
 import json
 from pathlib import Path
@@ -19,13 +19,20 @@ import tempfile
 import time
 
 from .control_plane import DENIED_AUTHORITIES, WorkEnvelope
+from .evidence import HmacTrustStore
 from .git_security import run_git, run_git_bytes
 from .product_runtime import EngineeringControlProduct
 from .orchestration import (
+    CompletionReceipt,
     EngineeringCapacity,
     EngineeringWorkPackage,
     ReviewCapacity,
     WorkerProfile,
+)
+from .worker_lifecycle import (
+    WorkerHeartbeatReceipt,
+    WorkerRegistrationReceipt,
+    WorkerResultReceipt,
 )
 
 _SHA1 = re.compile(r"[0-9a-f]{40}\Z")
@@ -54,6 +61,11 @@ class _RejectingTrustStore:
         signature: str,
     ) -> bool:
         return False
+
+
+def _signed_fixture(value, trust: HmacTrustStore, issuer: str, identity: str):
+    """Sign only the bounded CI lifecycle fixture; never CI/review/merge authority."""
+    return replace(value, signature=trust.sign(value, issuer, identity))
 
 
 def _git(root: Path, *args: str) -> str:
@@ -236,12 +248,43 @@ def build_product_receipt(
         architecture_debt_q32=0,
         rollback_cost_q32=0,
     )
+    lifecycle_trust = HmacTrustStore(
+        {
+            ("engineering_worker_identity", "product-worker-registry-key"): b"product-worker-registry",
+            ("github-actions-product-worker", "product-worker-key"): b"product-worker",
+            ("ci_executor", "product-ci-completion-key"): b"product-ci-completion",
+        }
+    )
+    worker_id = "github-actions-product-worker"
+    worker_key = "product-worker-key"
+    result_digest = hashlib.sha256(
+        ("worker-result:" + tested_sha).encode("ascii")
+    ).hexdigest()
+    integration_base_commit = (
+        base_sha
+        if isinstance(base_sha, str)
+        and _SHA1.fullmatch(base_sha) is not None
+        and base_sha != "0" * 40
+        else tested_sha
+    )
+    integration_base_tree = _sha(
+        _git(root, "rev-parse", f"{integration_base_commit}^{{tree}}"),
+        "integration_base_tree",
+    )
+    database_path: Path
+    completed_claim_id = ""
+    completed_state = ""
+    reopened_claim_state = ""
+    queue_generation_id = f"product-integration-{tested_sha[:20]}"
+    integration_state = ""
+    reopened_integration_state = ""
     with tempfile.TemporaryDirectory(prefix="hepta-engineering-product-") as directory:
+        database_path = Path(directory) / "engineering.sqlite3"
         with EngineeringControlProduct(
-            Path(directory) / "engineering.sqlite3",
+            database_path,
             root,
             expected_repository=EXPECTED_REPOSITORY,
-            trust_store=_RejectingTrustStore(),
+            trust_store=lifecycle_trust,
         ) as product:
             product.admit_repository_envelope(envelope, now_ns=now)
             plan = product.plan_work(
@@ -249,7 +292,7 @@ def build_product_receipt(
                 (package,),
                 (
                     WorkerProfile(
-                        "github-actions-product-caller",
+                        worker_id,
                         ("engineering-control",),
                         1,
                         ("tools/hepta-engineering-control",),
@@ -260,7 +303,146 @@ def build_product_receipt(
                 generation_id=f"product-generation-{tested_sha[:20]}",
                 now_ns=now,
             )
+            registration = WorkerRegistrationReceipt(
+                worker_id,
+                worker_key,
+                ("engineering-control",),
+                1,
+                ("tools/hepta-engineering-control",),
+                "engineering_worker_identity",
+                "product-worker-registry-key",
+                now,
+                now + 250_000_000_000,
+            )
+            registration = _signed_fixture(
+                registration,
+                lifecycle_trust,
+                registration.issuer,
+                registration.signing_identity,
+            )
+            registration_digest = product.register_worker(
+                registration,
+                now_ns=now + 1,
+            )
+            lease = product.acquire_lease(
+                f"product-lease-{tested_sha[:20]}",
+                envelope.envelope_id,
+                worker_id,
+                ("tools/hepta-engineering-control",),
+                authority_epoch=1,
+                expires_unix_ns=now + 240_000_000_000,
+                now_ns=now + 2,
+            )
+            claim = product.claim(
+                plan.generation_id,
+                package.package_id,
+                worker_id,
+                lease.lease_id,
+                heartbeat_ttl_ns=60_000_000_000,
+                now_ns=now + 3,
+            )
+            heartbeat = WorkerHeartbeatReceipt(
+                worker_id,
+                worker_key,
+                claim.claim_id,
+                claim.claim_fence,
+                claim.revision,
+                now + 4,
+                now + 120_000_000_000,
+            )
+            heartbeat = _signed_fixture(
+                heartbeat, lifecycle_trust, worker_id, worker_key
+            )
+            running = product.heartbeat(
+                heartbeat,
+                heartbeat_ttl_ns=60_000_000_000,
+                now_ns=now + 4,
+            )
+            result = WorkerResultReceipt(
+                worker_id,
+                worker_key,
+                running.claim_id,
+                running.claim_fence,
+                running.revision,
+                result_digest,
+                "success",
+                now + 5,
+                now + 120_000_000_000,
+            )
+            result = _signed_fixture(result, lifecycle_trust, worker_id, worker_key)
+            submitted = product.submit_result(result, now_ns=now + 5)
+            completion = CompletionReceipt(
+                package.package_id,
+                tested_sha,
+                tested_tree,
+                plan.generation_id,
+                plan.base_schedule_digest,
+                result_digest,
+                "ci_executor",
+                "product-ci-completion-key",
+                now + 6,
+                now + 120_000_000_000,
+                True,
+            )
+            completion = _signed_fixture(
+                completion,
+                lifecycle_trust,
+                completion.issuer,
+                completion.signing_identity,
+            )
+            completed = product.observe_completion(
+                submitted.claim_id,
+                envelope,
+                completion,
+                now_ns=now + 6,
+            )
+            queue = product.publish_integration_queue(
+                plan,
+                queue_generation_id=queue_generation_id,
+                base_commit=integration_base_commit,
+                base_tree=integration_base_tree,
+                now_ns=now + 7,
+            )
+            integration = product.reconcile_integration(
+                queue.queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                candidate_digest=hashlib.sha256(
+                    ("candidate:" + tested_sha).encode("ascii")
+                ).hexdigest(),
+                review_digest=hashlib.sha256(
+                    ("review-observation:" + tested_sha).encode("ascii")
+                ).hexdigest(),
+                ci_digest=hashlib.sha256(
+                    ("ci-observation:" + tested_sha).encode("ascii")
+                ).hexdigest(),
+                now_ns=now + 8,
+            )
             anchor = product.audit_anchor()
+            completed_claim_id = completed.claim_id
+            completed_state = completed.state
+            integration_state = integration.state
+
+        with EngineeringControlProduct(
+            database_path,
+            root,
+            expected_repository=EXPECTED_REPOSITORY,
+            trust_store=lifecycle_trust,
+        ) as reopened:
+            reopened_claim_state = reopened.claim_state(completed_claim_id).state
+            reopened_integration_state = reopened.integration_item(
+                queue_generation_id,
+                package.package_id,
+            ).state
+            reopened_anchor = reopened.audit_anchor()
+
+    if completed_state != "completed_observed" or reopened_claim_state != "completed_observed":
+        raise RuntimeError("product_worker_lifecycle_not_recovered")
+    if integration_state != "ready_external_merge" or reopened_integration_state != "ready_external_merge":
+        raise RuntimeError("product_integration_reconciliation_not_recovered")
+    if reopened_anchor != anchor:
+        raise RuntimeError("product_reopen_audit_anchor_drift")
 
     if tuple(row.package_id for row in plan.assignments) != (
         "control.engineering.repository-product-gate",
@@ -291,7 +473,28 @@ def build_product_receipt(
         "canonicalWorkPackage": canonical_package,
         "plan": asdict(plan),
         "auditAnchor": anchor,
+        "workerLifecycle": {
+            "registrationDigest": registration_digest,
+            "leaseId": lease.lease_id,
+            "claimId": completed_claim_id,
+            "completedState": completed_state,
+            "reopenedState": reopened_claim_state,
+            "resultDigest": result_digest,
+            "independentlyObservedCompletion": True,
+            "trustClass": "ci_reference_hmac_fixture",
+        },
+        "integrationReconciliation": {
+            "queueGenerationId": queue_generation_id,
+            "baseCommit": integration_base_commit,
+            "baseTree": integration_base_tree,
+            "state": integration_state,
+            "reopenedState": reopened_integration_state,
+            "mergeAuthority": False,
+        },
         "productCallerComposed": True,
+        "workerLifecycleObserved": True,
+        "integrationReconciliationObserved": True,
+        "reopenRecoveryObserved": True,
         "productTestsUpstreamRequired": True,
         "runtimeAuthority": False,
         "mergeAuthority": False,
@@ -317,6 +520,9 @@ def _verify_product_receipt(
         value.get("schema") != "hepta.control-engineering-product-execution.v2"
         or value.get("mode") != expected_lane
         or value.get("productCallerComposed") is not True
+        or value.get("workerLifecycleObserved") is not True
+        or value.get("integrationReconciliationObserved") is not True
+        or value.get("reopenRecoveryObserved") is not True
         or value.get("productTestsUpstreamRequired") is not True
     ):
         raise ValueError("product_receipt_identity")
@@ -392,6 +598,27 @@ def _verify_product_receipt(
     for authority in ("runtime_authority", "merge_authority", "release_authority"):
         if plan.get(authority) is not False:
             raise ValueError("product_receipt_plan_authority_delta")
+    lifecycle = value.get("workerLifecycle")
+    if (
+        not isinstance(lifecycle, Mapping)
+        or lifecycle.get("completedState") != "completed_observed"
+        or lifecycle.get("reopenedState") != "completed_observed"
+        or lifecycle.get("independentlyObservedCompletion") is not True
+        or lifecycle.get("trustClass") != "ci_reference_hmac_fixture"
+        or not isinstance(lifecycle.get("claimId"), str)
+        or not lifecycle["claimId"]
+    ):
+        raise ValueError("product_receipt_worker_lifecycle")
+    integration = value.get("integrationReconciliation")
+    if (
+        not isinstance(integration, Mapping)
+        or integration.get("state") != "ready_external_merge"
+        or integration.get("reopenedState") != "ready_external_merge"
+        or integration.get("mergeAuthority") is not False
+        or not isinstance(integration.get("queueGenerationId"), str)
+        or not integration["queueGenerationId"]
+    ):
+        raise ValueError("product_receipt_integration_reconciliation")
     return digest
 
 
