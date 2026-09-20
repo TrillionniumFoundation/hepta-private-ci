@@ -31,7 +31,22 @@ pub enum NduError {
     InvalidEta,
     DimensionMismatch,
     StateDigestMismatch,
+    IterationExhausted {
+        iterations: u32,
+        terminal_residual_raw: i64,
+    },
+    InvalidSolverReceipt(&'static str),
+    ProtocolSubjectMismatch,
     SimultaneousHierarchyUpdate(u64),
+    ConflictingStagedArtifact {
+        generation: u64,
+        subject: String,
+    },
+    InvalidHierarchyRelation {
+        generation: u64,
+        child: String,
+        parent: String,
+    },
     Arithmetic,
 }
 
@@ -48,7 +63,8 @@ impl NduError {
             | Self::EmptyProtocolDigest(_)
             | Self::EmptySupportDigest { .. }
             | Self::MixedObjective
-            | Self::MixedGeneration => "NDU-E002",
+            | Self::MixedGeneration
+            | Self::ProtocolSubjectMismatch => "NDU-E002",
             Self::DuplicateOrganContribution { .. } | Self::MissingRequiredOrgan { .. } => {
                 "NDU-E003"
             }
@@ -64,8 +80,14 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
-            Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::InvalidEta
+            | Self::DimensionMismatch
+            | Self::StateDigestMismatch
+            | Self::IterationExhausted { .. }
+            | Self::InvalidSolverReceipt(_) => "NDU-E008",
+            Self::SimultaneousHierarchyUpdate(_)
+            | Self::ConflictingStagedArtifact { .. }
+            | Self::InvalidHierarchyRelation { .. } => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
         }
     }
@@ -148,9 +170,37 @@ impl fmt::Display for NduError {
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::IterationExhausted {
+                iterations,
+                terminal_residual_raw,
+            } => write!(
+                formatter,
+                "preference solver remained unavailable after {iterations} iterations; terminal residual raw={terminal_residual_raw}"
+            ),
+            Self::InvalidSolverReceipt(field) => {
+                write!(formatter, "invalid local solver receipt invariant: {field}")
+            }
+            Self::ProtocolSubjectMismatch => {
+                formatter.write_str("solver receipt subject does not match iteration context")
+            }
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
-                "multiple hierarchy levels update in generation {generation}"
+                "parent and child hierarchy subjects update in generation {generation}"
+            ),
+            Self::ConflictingStagedArtifact {
+                generation,
+                subject,
+            } => write!(
+                formatter,
+                "subject {subject} selects conflicting staged artifacts in generation {generation}"
+            ),
+            Self::InvalidHierarchyRelation {
+                generation,
+                child,
+                parent,
+            } => write!(
+                formatter,
+                "invalid staged hierarchy relation in generation {generation}: child {child}, parent {parent}"
             ),
             Self::Arithmetic => formatter.write_str("deterministic Q32 arithmetic failed"),
         }
