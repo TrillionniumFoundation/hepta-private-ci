@@ -8,6 +8,7 @@ use hnmf_reference::{
     ReferenceReplayCandidate, ReferenceReplaySelection, ReferenceSynapseRelation,
     ReferenceSynapseState, ReferenceThresholdProposal, ReferenceWeightProposal,
 };
+use codex_hepta_cognitive_types::hnmf_learning::MAX_CANDIDATE_EVENTS;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
@@ -29,7 +30,7 @@ impl Default for HardeningConfig {
     fn default() -> Self {
         Self {
             maximum_stored_events: 16_384,
-            maximum_candidate_events: 512,
+            maximum_candidate_events: MAX_CANDIDATE_EVENTS,
             maximum_graph_hops: 2,
         }
     }
@@ -40,7 +41,7 @@ impl HardeningConfig {
         if self.maximum_stored_events == 0
             || self.maximum_stored_events > MAX_STORED_EVENTS
             || self.maximum_candidate_events == 0
-            || self.maximum_candidate_events > 512
+            || self.maximum_candidate_events > MAX_CANDIDATE_EVENTS
             || self.maximum_candidate_events > self.maximum_stored_events
             || self.maximum_graph_hops == 0
             || self.maximum_graph_hops > MAX_GRAPH_HOPS
