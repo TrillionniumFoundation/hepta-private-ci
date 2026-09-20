@@ -107,12 +107,14 @@ class OwnerTransactionTests(unittest.TestCase):
                 EngineeringStore(path)
             self.assertEqual(path.read_bytes(), before)
 
-    def test_schema_v5_adds_distributed_fence_and_worker_lifecycle(self):
+    def test_schema_v5_adds_current_owner_tables_through_v8(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "owner.sqlite3"
             with EngineeringStore(path):
                 pass
             with sqlite3.connect(path) as connection:
+                connection.execute("DROP TABLE integration_queue_items")
+                connection.execute("DROP TABLE integration_queue_generations")
                 connection.execute("DROP TABLE worker_claims")
                 connection.execute("DROP TABLE worker_registrations")
                 connection.execute("DROP TABLE orchestration_generations")
@@ -125,7 +127,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(
                     store.connection.execute("PRAGMA user_version").fetchone()[0],
-                    7,
+                    8,
                 )
                 for table in (
                     "distributed_cluster_frontiers",
@@ -133,6 +135,8 @@ class OwnerTransactionTests(unittest.TestCase):
                     "orchestration_generations",
                     "worker_registrations",
                     "worker_claims",
+                    "integration_queue_generations",
+                    "integration_queue_items",
                 ):
                     self.assertIsNotNone(
                         store.connection.execute(
@@ -159,7 +163,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(store.audit_projection(), before)
                 self.assertEqual(
-                    store.connection.execute("PRAGMA user_version").fetchone()[0], 7
+                    store.connection.execute("PRAGMA user_version").fetchone()[0], 8
                 )
                 self.assertEqual(
                     store.connection.execute(
