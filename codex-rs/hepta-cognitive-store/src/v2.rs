@@ -17,6 +17,10 @@ use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::build_snapshot;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+use codex_hepta_cognitive_types::hnmf::MemoryVerificationStateV1;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCContractError;
 use codex_hepta_cognitive_types::lane_c::MemoryAdmissionCandidateV1;
@@ -43,6 +47,8 @@ pub const MAX_V2_SNAPSHOT_PAGE_RECORDS: usize = 512;
 const FORGET_DOMAIN: &[u8] = b"hepta.cognitive-store.forget-intent.v2";
 const STORE_SNAPSHOT_DOMAIN: &[u8] = b"hepta.cognitive-store.snapshot.v2";
 const STORE_IMAGE_DOMAIN: &[u8] = b"hepta.cognitive-store.image.v2";
+const CANONICAL_EVENT_SHADOW_DOMAIN: &[u8] =
+    b"hepta.cognitive-store.canonical-event-shadow.v1";
 
 /// Product hosts must verify the authorization against the current authority
 /// owner. A digest alone never grants a write.
@@ -59,6 +65,77 @@ pub trait StoreAuthorityVerifierV2 {
 struct IntentJournalEntryV2 {
     semantic_digest: Digest32,
     receipt: MemoryWriteReceiptV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalMemoryEventShadowReceiptV1 {
+    pub event_id: ContractIdV1,
+    pub event_digest: Digest32,
+    pub candidate_digest: Digest32,
+    pub record_id: StableId,
+    pub record_digest: Digest32,
+    pub snapshot_vector_digest: Digest32,
+    pub disposition: MemoryWriteDisposition,
+    pub binding_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl CanonicalMemoryEventShadowReceiptV1 {
+    #[must_use]
+    pub fn compute_binding_digest(&self) -> Digest32 {
+        let mut bytes = CANONICAL_EVENT_SHADOW_DOMAIN.to_vec();
+        push_raw_id(&mut bytes, self.event_id.as_str());
+        push_digest(&mut bytes, self.event_digest);
+        push_digest(&mut bytes, self.candidate_digest);
+        push_id(&mut bytes, &self.record_id);
+        push_digest(&mut bytes, self.record_digest);
+        push_digest(&mut bytes, self.snapshot_vector_digest);
+        bytes.push(memory_write_disposition_code(self.disposition));
+        Digest32::of_bytes(&bytes)
+    }
+
+    pub fn validate(&self) -> Result<(), CognitiveStoreV2Error> {
+        for (name, digest) in [
+            ("canonical_event", self.event_digest),
+            ("canonical_candidate", self.candidate_digest),
+            ("canonical_record", self.record_digest),
+            ("canonical_snapshot", self.snapshot_vector_digest),
+            ("canonical_shadow_binding", self.binding_digest),
+        ] {
+            ensure_digest(name, digest)?;
+        }
+        if self.authority.grants_any() {
+            return Err(CognitiveStoreV2Error::AuthorityGranted);
+        }
+        if self.binding_digest != self.compute_binding_digest() {
+            return Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalMemoryEventShadowWriteV1 {
+    pub write_receipt: MemoryWriteReceiptV1,
+    pub shadow_receipt: CanonicalMemoryEventShadowReceiptV1,
+}
+
+impl CanonicalMemoryEventShadowWriteV1 {
+    pub fn validate(&self) -> Result<(), CognitiveStoreV2Error> {
+        self.write_receipt
+            .validate()
+            .map_err(CognitiveStoreV2Error::Contract)?;
+        self.shadow_receipt.validate()?;
+        if self.shadow_receipt.record_id != self.write_receipt.record_id
+            || self.shadow_receipt.record_digest != self.write_receipt.record_digest
+            || self.shadow_receipt.snapshot_vector_digest
+                != self.write_receipt.snapshot_key.vector_digest
+            || self.shadow_receipt.disposition != self.write_receipt.disposition
+        {
+            return Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch);
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -233,6 +310,50 @@ impl AdmittedCognitiveStoreV2 {
             state: RecordState::Live,
         };
         self.commit_record(intent.intent_id, semantic_digest, record, disposition)
+    }
+
+    /// Append through the existing authoritative semantic ledger while
+    /// emitting a side-by-side canonical MemoryEventV1 co-observation receipt.
+    ///
+    /// The receipt is shadow-only: it proves the checked verification and
+    /// source ID/digest/observation-time overlap without replacing the durable
+    /// hepta-memory writer or claiming source-revision equivalence.
+    pub fn append_admitted_with_canonical_shadow<V: StoreAuthorityVerifierV2>(
+        &mut self,
+        verifier: &V,
+        candidate: MemoryAdmissionCandidateV1,
+        intent: MemoryWriteIntentV1,
+        event: MemoryEventV1,
+    ) -> Result<CanonicalMemoryEventShadowWriteV1, CognitiveStoreV2Error> {
+        candidate
+            .validate()
+            .map_err(CognitiveStoreV2Error::Contract)?;
+        event
+            .validate()
+            .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
+        validate_canonical_event_candidate_binding(&candidate, &event)?;
+        let candidate_digest = candidate.digest();
+        let event_digest = canonical_contract_digest_v1(&event)
+            .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
+        let event_id = event.event_id.clone();
+
+        let write_receipt = self.append_admitted(verifier, candidate, intent)?;
+        let mut shadow_receipt = CanonicalMemoryEventShadowReceiptV1 {
+            event_id,
+            event_digest,
+            candidate_digest,
+            record_id: write_receipt.record_id.clone(),
+            record_digest: write_receipt.record_digest,
+            snapshot_vector_digest: write_receipt.snapshot_key.vector_digest,
+            disposition: write_receipt.disposition,
+            binding_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        shadow_receipt.binding_digest = shadow_receipt.compute_binding_digest();
+        Ok(CanonicalMemoryEventShadowWriteV1 {
+            write_receipt,
+            shadow_receipt,
+        })
     }
 
     pub fn forget<V: StoreAuthorityVerifierV2>(
@@ -1253,6 +1374,10 @@ fn validate_record_history(
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CognitiveStoreV2Error {
     Contract(LaneCContractError),
+    CanonicalContract(String),
+    CanonicalVerificationMismatch,
+    CanonicalSourceProvenanceMismatch,
+    CanonicalShadowReceiptMismatch,
     EmptyDigest(&'static str),
     DigestMismatch(&'static str),
     InvalidCapacity,
@@ -1306,6 +1431,54 @@ impl fmt::Display for CognitiveStoreV2Error {
 }
 
 impl StdError for CognitiveStoreV2Error {}
+
+fn validate_canonical_event_candidate_binding(
+    candidate: &MemoryAdmissionCandidateV1,
+    event: &MemoryEventV1,
+) -> Result<(), CognitiveStoreV2Error> {
+    let verification_matches = matches!(
+        (candidate.verification, event.verification),
+        (MemoryVerificationState::Unverified, MemoryVerificationStateV1::Unverified)
+            | (MemoryVerificationState::Verified, MemoryVerificationStateV1::Verified)
+            | (MemoryVerificationState::Contradicted, MemoryVerificationStateV1::Contradicted)
+            | (MemoryVerificationState::Revoked, MemoryVerificationStateV1::Revoked)
+    );
+    if !verification_matches {
+        return Err(CognitiveStoreV2Error::CanonicalVerificationMismatch);
+    }
+
+    let mut candidate_sources = BTreeMap::<String, (Digest32, u64)>::new();
+    for support in &candidate.supports {
+        if candidate_sources
+            .insert(
+                support.source_id.to_string(),
+                (support.source_digest, support.observed_at_unix_ms),
+            )
+            .is_some()
+        {
+            return Err(CognitiveStoreV2Error::DuplicateCitationSource(
+                support.source_id.to_string(),
+            ));
+        }
+    }
+
+    let mut event_sources = BTreeMap::<String, (Digest32, u64)>::new();
+    for provenance in &event.provenance {
+        if event_sources
+            .insert(
+                provenance.source_id.to_string(),
+                (provenance.source_sha256.digest(), provenance.observed_at_unix_ms),
+            )
+            .is_some()
+        {
+            return Err(CognitiveStoreV2Error::CanonicalSourceProvenanceMismatch);
+        }
+    }
+    if candidate_sources != event_sources {
+        return Err(CognitiveStoreV2Error::CanonicalSourceProvenanceMismatch);
+    }
+    Ok(())
+}
 
 fn hard_revision_capacity(maximum_record_revisions: usize) -> usize {
     maximum_record_revisions
@@ -1389,6 +1562,11 @@ fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), CognitiveSt
         return Err(CognitiveStoreV2Error::EmptyDigest(name));
     }
     Ok(())
+}
+
+fn push_raw_id(bytes: &mut Vec<u8>, value: &str) {
+    push_len(bytes, value.len());
+    bytes.extend_from_slice(value.as_bytes());
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
