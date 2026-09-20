@@ -1,6 +1,9 @@
 #[cfg(target_os = "macos")]
 use std::process::Command;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
+use codex_hepta_fleet::FleetCapacityMeasurementV1;
 use codex_hepta_fleet::FleetResourceVectorV1;
 use codex_hepta_fleet::lease_ledger::HostObservation;
 
@@ -8,6 +11,9 @@ use crate::SupervisorError;
 
 #[cfg(target_os = "macos")]
 const MIB: u64 = 1024 * 1024;
+const MAX_CAPACITY_OBSERVATION_TTL_MS: u64 = 60_000;
+pub const LOCAL_HOST_CAPACITY_MEASUREMENT_SOURCE_ID: &str =
+    "runtime.supervisor.local-host-capacity.v1";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct HostCapacityPolicyV1 {
@@ -33,7 +39,7 @@ impl HostCapacityPolicyV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MeasuredHostCapacityV1 {
-    pub observation: HostObservation,
+    pub measurement: FleetCapacityMeasurementV1,
     pub logical_processors: u64,
     pub measured_memory_mib: u64,
 }
@@ -46,16 +52,24 @@ pub fn observe_local_host_capacity_v1(
     host_id: String,
     failure_domain_id: String,
     generation: u64,
-    now_ms: u64,
     ttl_ms: u64,
     policy: HostCapacityPolicyV1,
 ) -> Result<MeasuredHostCapacityV1, SupervisorError> {
     policy.validate()?;
-    if generation == 0 || now_ms == 0 || ttl_ms == 0 {
+    if generation == 0 || ttl_ms == 0 || ttl_ms > MAX_CAPACITY_OBSERVATION_TTL_MS {
         return Err(SupervisorError::FleetAllocation(
-            "host capacity observation requires non-zero generation, time and ttl".to_string(),
+            "host capacity observation requires non-zero generation and a bounded ttl".to_string(),
         ));
     }
+    let now_ms = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| SupervisorError::FleetAllocation(error.to_string()))?
+        .as_millis();
+    let now_ms = u64::try_from(now_ms).map_err(|_| {
+        SupervisorError::FleetAllocation(
+            "host capacity observation time does not fit u64 milliseconds".to_string(),
+        )
+    })?;
     let valid_until_ms = now_ms.checked_add(ttl_ms).ok_or_else(|| {
         SupervisorError::FleetAllocation("host capacity observation ttl overflow".to_string())
     })?;
@@ -81,13 +95,20 @@ pub fn observe_local_host_capacity_v1(
         turn_queue_slots: policy.turn_queue_slots,
     };
     Ok(MeasuredHostCapacityV1 {
-        observation: HostObservation {
-            host_id,
-            failure_domain_id,
-            generation,
-            observed_at_ms: now_ms,
-            valid_until_ms,
-            capacity,
+        measurement: FleetCapacityMeasurementV1 {
+            measurement_source_id: LOCAL_HOST_CAPACITY_MEASUREMENT_SOURCE_ID.to_string(),
+            observation: HostObservation {
+                host_id,
+                failure_domain_id,
+                generation,
+                observed_at_ms: now_ms,
+                valid_until_ms,
+                capacity,
+            },
+            // OS-reported total CPU/memory are sampled facts; safety reserve is
+            // already subtracted from allocatable capacity. Any future noisy
+            // sensor must publish a non-zero conservative bound here.
+            uncertainty: FleetResourceVectorV1::default(),
         },
         logical_processors,
         measured_memory_mib,
@@ -175,6 +196,39 @@ mod tests {
         );
         assert!(parse_linux_meminfo("MemFree: 1 kB\n").is_err());
         assert!(parse_linux_meminfo("MemTotal: 10 MB\n").is_err());
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    #[test]
+    fn native_host_capacity_observer_binds_source_time_and_uncertainty() {
+        let measured = observe_local_host_capacity_v1(
+            "host-local".to_string(),
+            "local-domain".to_string(),
+            1,
+            1_000,
+            HostCapacityPolicyV1 {
+                max_concurrent_turns: 1,
+                max_tool_processes: 1,
+                turn_queue_slots: 1,
+                memory_reserve_mib: 0,
+            },
+        )
+        .expect("measure native host");
+        assert_eq!(
+            measured.measurement.measurement_source_id,
+            LOCAL_HOST_CAPACITY_MEASUREMENT_SOURCE_ID
+        );
+        assert!(measured.measurement.observation.observed_at_ms > 0);
+        assert!(
+            measured.measurement.observation.valid_until_ms
+                > measured.measurement.observation.observed_at_ms
+        );
+        assert_eq!(
+            measured.measurement.uncertainty,
+            FleetResourceVectorV1::default()
+        );
+        assert!(measured.logical_processors > 0);
+        assert!(measured.measured_memory_mib > 0);
     }
 
     #[test]
