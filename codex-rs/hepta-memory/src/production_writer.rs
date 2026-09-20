@@ -276,10 +276,17 @@ pub type ProductionCognitiveMutationFuture<'a> = Pin<
     >,
 >;
 
+mod production_cognitive_mutation_sealed {
+    pub trait Sealed {}
+}
+
 /// Opaque production mutation capability. Consumers can request canonical
 /// semantic mutations, but cannot open the durable owner, mint authority, or
-/// manufacture a current-cut witness through this interface.
-pub trait ProductionCognitiveMutation: Send + Sync {
+/// manufacture a current-cut witness through this interface. The trait is
+/// sealed: only this durable-owner crate can mint an implementation.
+pub trait ProductionCognitiveMutation:
+    production_cognitive_mutation_sealed::Sealed + Send + Sync
+{
     fn owner_agent_id(&self) -> &AgentId;
 
     fn remember_with_kg<'a>(
@@ -531,6 +538,19 @@ impl ProductionDurableWriter {
             return Err(ProductionWriterError::LiveVerifierRequired);
         }
         self.verify_authority().await
+    }
+
+    /// Mint the only production cognitive mutation capability. A legacy writer
+    /// opened without a retained live verifier cannot obtain this capability.
+    pub fn cognitive_mutation_capability(
+        self: &Arc<Self>,
+    ) -> Result<ProductionCognitiveMutationCapability, ProductionWriterError> {
+        if self.live_verifier.is_none() {
+            return Err(ProductionWriterError::LiveVerifierRequired);
+        }
+        Ok(ProductionCognitiveMutationCapability {
+            writer: Arc::clone(self),
+        })
     }
 
     pub fn authority(&self) -> &ProductionAuthorityLease {
@@ -798,6 +818,77 @@ impl ProductionDurableWriter {
                 external_effect: false,
             }),
         }
+    }
+}
+
+/// Non-forgeable semantic write capability minted only by a live-verified
+/// ProductionDurableWriter. Its fields are private and the public trait is
+/// sealed, so downstream crates cannot substitute a raw-store implementation.
+#[derive(Clone)]
+pub struct ProductionCognitiveMutationCapability {
+    writer: Arc<ProductionDurableWriter>,
+}
+
+impl production_cognitive_mutation_sealed::Sealed for ProductionCognitiveMutationCapability {}
+
+impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
+    fn owner_agent_id(&self) -> &AgentId {
+        self.writer.store().owner_agent_id()
+    }
+
+    fn remember_with_kg<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        source: &'a SourceDraft,
+        draft: &'a MemoryDraft,
+        facts: &'a KgFactSetDraft,
+    ) -> ProductionCognitiveMutationFuture<'a> {
+        Box::pin(async move {
+            self.writer.verify_current_authority().await?;
+            Ok(self.writer.store().remember_with_kg(access, source, draft, facts).await?)
+        })
+    }
+
+    fn correct_with_kg<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        memory_id: &'a StableMemoryId,
+        expected_revision: u64,
+        source: &'a SourceDraft,
+        draft: &'a MemoryRevisionDraft,
+        facts: &'a KgFactSetDraft,
+    ) -> ProductionCognitiveMutationFuture<'a> {
+        Box::pin(async move {
+            self.writer.verify_current_authority().await?;
+            Ok(self.writer.store().correct_with_kg(
+                access,
+                memory_id,
+                expected_revision,
+                source,
+                draft,
+                facts,
+            ).await?)
+        })
+    }
+
+    fn forget_with_kg<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        memory_id: &'a StableMemoryId,
+        expected_revision: u64,
+        source: &'a SourceDraft,
+        draft: &'a ForgetMemoryDraft,
+    ) -> ProductionCognitiveMutationFuture<'a> {
+        Box::pin(async move {
+            self.writer.verify_current_authority().await?;
+            Ok(self.writer.store().forget_with_kg(
+                access,
+                memory_id,
+                expected_revision,
+                source,
+                draft,
+            ).await?)
+        })
     }
 }
 
