@@ -100,6 +100,11 @@
           "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
           "kind": "real_encrypted_matrix_and_final_use_qualification",
           "command": "main-only exact-SHA workflow: .github/workflows/hepta-lane-b-matrix-real-synapse.yml"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "pre_io_crash_cuts",
+          "command": "cargo test -p codex-hepta-matrix-sdk --test durable_transport"
         }
       ],
       "sourceSemantics": "Claims the canonical durable outbox transaction, obtains a fresh independently signed final-use grant for each physical attempt, consumes the kernel-owned durable nonce, revalidates the exact live revocation frontier at adapter entry, persists that per-attempt authority claim before polling the lazy SDK send future, and treats transport acceptance as non-terminal.",
@@ -136,9 +141,14 @@
           "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
           "kind": "transport_acceptance_is_not_terminal",
           "command": "just test -p codex-hepta-matrix-sdk --test durable_transport"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
+          "kind": "qualified_success_requires_final_use_claim",
+          "command": "cargo test -p codex-hepta-matrix-store --test sync_mutation_v2"
         }
       ],
-      "sourceSemantics": "Carries homeserver unsigned.transaction_id through the atomic sync commit; only that trusted event observation settles success, while redaction evidence remains append-only and separate.",
+      "sourceSemantics": "Carries homeserver unsigned.transaction_id through the atomic sync commit; a matching durable final-use authority claim is required for qualified Succeeded, while legacy/unclaimed remote observations become terminal ObservedUnqualified and redaction evidence remains append-only and separate.",
       "operation": "observe_send",
       "nativeSymbol": "pub async fn commit_response(",
       "sourcePath": "codex-rs/hepta-matrix-sdk/src/sync.rs",
@@ -146,9 +156,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge Matrix source, final-use authority, crash/reopen, and terminal-reconciliation tests for the current-main candidate.",
+    "Run exact-head and deterministic synthetic-merge Matrix source, implementation-map, final-use authority, crash/reopen, and terminal-reconciliation tests for the current candidate.",
     "Run the main-only exact-SHA real Synapse/E2EE qualification including fresh final-use grants across the ACK-loss same-transaction retry.",
-    "Reconcile the generated Lane-B/module truth projections and exact source-base receipt before changing repositoryControlledSourceBoundaryGapsClosed."
+    "Independently qualify the production grant broker/trust root and live revocation distribution, including stale/revoked/wrong-signer/rollback/broker-death/revocation-race cases, before activation."
   ],
   "externalEvidenceGates": [
     "independently operated production final-use grant broker/trust root and live monotonic revocation distribution",

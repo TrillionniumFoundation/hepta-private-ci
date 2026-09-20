@@ -175,7 +175,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. The former in-memory `send_observer` is retired as an owner; its public module is only a compatibility re-export of durable dispatch types. Transport acceptance records `accepted` or `indeterminate` but does not mark the outbox `sent`. A matching homeserver timeline observation carrying `unsigned.transaction_id` settles success in the same SQLite transaction that advances the sync checkpoint. Real homeserver, encryption/session and reconnection qualification still require the selected host profile.
+Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. The former in-memory `send_observer` is retired as an owner; its public module is only a compatibility re-export of durable dispatch types. Transport acceptance records `accepted` or `indeterminate` but does not mark the outbox `sent`. A matching homeserver timeline observation carrying `unsigned.transaction_id` settles **qualified** `Succeeded` only when the durable transaction also has a matching per-attempt final-use authority claim. A legacy or otherwise unclaimed remote observation is terminal `ObservedUnqualified`: it prevents blind replay but is never qualification evidence. The terminal observation and sync checkpoint advance in the same SQLite transaction. Real homeserver, encryption/session and reconnection qualification still require the selected host profile.
 
 Current operating and state-format references:
 
@@ -188,8 +188,8 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs): transport acceptance is non-terminal, retry exhaustion parks reconciliation, and a homeserver sync observation settles the same stable transaction.
-- [codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs](../../../codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs): accepted dispatch state survives reopen; terminal send and later redaction evidence remain separate and durable.
+- [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs): transport acceptance is non-terminal, retry exhaustion parks reconciliation, pre-I/O crash cuts prove the lazy transport is not polled before durable authority evidence, and ACK-loss reconciliation preserves one stable transaction with fresh grants.
+- [codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs](../../../codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs): qualified success requires a matching durable final-use claim; legacy/no-claim homeserver observations remain `ObservedUnqualified`; terminal observation rolls back with a failed sync batch; accepted state survives reopen and later redaction evidence remains separate and durable.
 - [codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs); named case: `empty_page_continues_and_exact_target_preserves_page_and_event_order`.
 - [codex-rs/hepta-matrix-sdk/src/sync_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/sync_tests.rs); named case: `v1_redaction_commits_before_replay_and_survives_reopen`.
 
@@ -277,5 +277,5 @@ This receipt records repository source bindings for the current documentation ca
 | `observe_send` | `pub async fn commit_response(` | `codex-rs/hepta-matrix-sdk/src/sync.rs` | `codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- The production source call chain is `hepta-matrixd -> run_outbox_sender -> MatrixDurableStore` for egress and `Matrix SDK /sync -> commit_response -> apply_sync_decision_v2` for terminal observation. Exact current-head execution evidence remains separate from this source receipt.
+- The production source call chain is `hepta-matrixd -> run_outbox_sender -> final-use entry -> durable authority claim -> Matrix transport` for egress and `Matrix SDK /sync -> commit_response -> apply_sync_decision_v2` for terminal observation. `Succeeded` is reserved for terminal observations backed by the durable final-use claim; compatibility observations without that proof are `ObservedUnqualified`. Exact current-head execution evidence remains separate from this source receipt.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
