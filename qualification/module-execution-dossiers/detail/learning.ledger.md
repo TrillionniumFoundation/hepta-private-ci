@@ -32,7 +32,12 @@ The product-facing source operation set is:
 
 `LedgerWriter::freeze_dataset(DatasetFreezePlanV2, signed_evaluator)`;
 
-`LedgerWriter::rotate_segment(next_segment, expected_anchor)`.
+`LedgerWriter::revalidate_dataset_snapshot(receipt, now)`;
+
+`LedgerWriter::rotate_segment(next_segment, expected_anchor, authorized_segment_directory)`;
+
+`append_observed_outcome_v2` / `append_outcome_credit_v2` in
+`codex-rs/hepta-intelligence` are the source-composed terminal caller surface.
 
 The stable V1 event tags and durable encoding remain readable. Raw
 `LearningLedger`, `DurableLedger`, `SegmentedLedger` and
@@ -95,9 +100,12 @@ do not create another record. A ledger may lead its witness by one record only
 for that lost-acknowledgement case.
 
 Anchored recovery never falls back to unanchored recovery. The witness is
-retained independently from the suspect ledger. Segmented rotation is invoked
-through `LedgerWriter::rotate_segment`; the new segment topology is witnessed
-before success is reported.
+retained independently from the suspect ledger. Writer construction requires
+host-authorized handles for the actual ledger/segment and witness containing
+directories and synchronizes them before acknowledgement. Segmented rotation is
+invoked through `LedgerWriter::rotate_segment`; the successor file is synced,
+the supplied containing directory is synced, and only then is the new segment
+topology witnessed.
 
 ## 5. Trust-root and signer distribution
 
@@ -126,7 +134,11 @@ canonical state and derives:
 - pending and censored outcome counts.
 
 The caller cannot self-report those cuts. `DatasetSnapshotReceiptV3` remains
-self-verifying and deny-all.
+self-verifying and deny-all. `LedgerWriter::revalidate_dataset_snapshot` is the
+final-use currentness check: it verifies the historical receipt and requires
+every frozen source event digest to remain present in the current canonical
+active projection. A later correction, revocation or unlearning event therefore
+invalidates stale use without rewriting history.
 
 Logical unlearning is distinct from physical erasure and parameter unlearning.
 Source→dataset→artifact lineage prevents use of revoked ancestry in the active
@@ -160,8 +172,11 @@ rebuilds the complete checkpoint from canonical history; mismatch discards it.
 
 The checkpoint supplies bounded binary record lookup and auditability but does
 not turn canonical recovery into O(1), implement compaction, or cap total
-retained-history memory. Target-host latency, reopen time, storage growth and
-sustained throughput remain measurement requirements.
+retained-history memory. `examples/target_host_qualification.rs` is the
+executable measurement harness for a named target host. It records exact
+commit/tree/binary identity, append and rotation p50/p95/p99, sustained append
+throughput, reopen time, storage bytes and RSS, while explicitly leaving
+power-loss, longitudinal-efficacy and activation qualification false.
 
 ## 9. Concrete verification cases
 
@@ -216,10 +231,17 @@ or future-time efficacy.
   [src/signed_evidence.rs](../../../codex-rs/hepta-learning-ledger/src/signed_evidence.rs).
 - **Canonical protocol views:** [src/protocol.rs](../../../codex-rs/hepta-learning-ledger/src/protocol.rs).
 - **Verifiable read index:** [src/checkpoint.rs](../../../codex-rs/hepta-learning-ledger/src/checkpoint.rs).
-- **Source-composed qualification consumer:**
-  `run_evaluated_shadow_v1` in `codex-rs/hepta-intelligence` now accepts
+- **Source-composed Decision consumer:**
+  `run_evaluated_shadow_v1` in `codex-rs/hepta-intelligence` accepts
   `LedgerWriter` and generator-signed `ProductionDecisionV2`; it no longer
   appends a V1 `Decision` through `DurableLearningJournal`.
+- **Source-composed terminal consumer:**
+  `append_observed_outcome_v2` and `append_outcome_credit_v2` in
+  `codex-rs/hepta-intelligence/src/outcome_credit_v2.rs` require the current
+  active Decision run/episode binding and use `LedgerWriter` for authenticated
+  Outcome/correction and conserved CreditBatch. A Credit failure after Outcome
+  commit preserves the Outcome receipt for exact reconciliation.
+- **Target-host harness:** `codex-rs/hepta-learning-ledger/examples/target_host_qualification.rs`.
 
 ## 11. Source closure versus external gates
 
@@ -231,14 +253,16 @@ still determine whether this particular candidate is source-qualified.
 
 The repository cannot self-issue the remaining external/product evidence:
 
-- a named live product process/callsite using `LedgerWriter`;
-- actual deployment directory ownership and physical durability;
+- daemon-owned invocation of the source-composed Decision/terminal callsites;
+- actual deployment directory ownership/capability identity and physical durability;
 - production root-public-key provisioning/rotation ceremony and trust-distribution transport/key custody;
 - live independent outcomes;
-- target-host latency/storage/recovery measurements;
+- target-host latency/storage/recovery/throughput/RSS receipts produced on each selected deployment class;
 - physical deletion/backups or model-unlearning proof;
 - independent semantic acceptance, canary, selection, promotion or release.
 
-The existing evaluated-shadow consumer is a source composition/qualification
-consumer only. It does not change `productionImplementation=false` until a real
-product caller and executable product tests are evidenced.
+The source-composed intelligence callers are still library/product-path source
+composition, not a daemon-owned live deployment. They do not change
+`productionImplementation=false` or `productExecutionProved=false` until the
+runtime owner binds them to real terminal observations and current production
+trust/storage dependencies and exact product execution is evidenced.
