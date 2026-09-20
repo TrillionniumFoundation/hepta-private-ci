@@ -6,14 +6,14 @@
 
 use codex_hepta_intelligence::CompositionControlV3;
 use codex_hepta_intelligence::CurrentCapabilitySnapshotProviderV3;
-use codex_hepta_intelligence::Digest32;
+use codex_hepta_types::Digest32;
 use codex_hepta_intelligence::DurableLearningJournal;
-use codex_hepta_intelligence::IntelligenceRunReceiptV3;
 use codex_hepta_intelligence::LaneFRunRequestV3;
 use codex_hepta_intelligence::NativeV3OwnerInputs;
 
 use crate::AgentdError;
 use crate::AgentdState;
+use crate::IntelligenceRunReceiptV3;
 use crate::poisoned_state;
 use crate::run_error;
 
