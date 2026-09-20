@@ -21,8 +21,10 @@ def fixture():
     protection = {
         "enforce_admins": {"enabled": True},
         "allow_force_pushes": {"enabled": False}, "allow_deletions": {"enabled": False},
+        "required_conversation_resolution": {"enabled": True},
         "required_pull_request_reviews": {"required_approving_review_count": 1,
             "dismiss_stale_reviews": True, "require_last_push_approval": True,
+            "require_code_owner_reviews": True,
             "bypass_pull_request_allowances": {"users": [], "teams": [], "apps": []}},
         "required_status_checks": {"strict": True, "contexts": [controls.BLOCKING_CONTEXT], "checks": [
             {"context": controls.BLOCKING_CONTEXT, "app_id": 9999},
@@ -47,6 +49,17 @@ class CheckSourceTests(unittest.TestCase):
 
     def test_valid_distinct_pinned_sources(self):
         self.assertEqual(self.validate(), [100, 200])
+
+    def test_owner_and_conversation_controls_cannot_be_inferred_from_fixture(self):
+        for field in ("owner", "conversation"):
+            for value in (None, False, 1, "true"):
+                self.branch, self.protection, self.checks = fixture()
+                if field == "owner":
+                    self.protection["required_pull_request_reviews"]["require_code_owner_reviews"] = value
+                else:
+                    self.protection["required_conversation_resolution"]["enabled"] = value
+                with self.subTest(field=field, value=value), self.assertRaises(controls.ControlError):
+                    self.validate()
 
     def test_unpinned_blocking_context_rejected(self):
         for value in (None, -1):

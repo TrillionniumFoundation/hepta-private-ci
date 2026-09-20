@@ -107,33 +107,29 @@ jobs:
             args+=(--base "$BASE_SHA")
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}" | tee "$RUNNER_TEMP/hepta-command-records/scope.json"
-      - name: Prove candidate identity cannot write, administer, or mutate its PR
+      - name: Observe candidate Git write denial without mutating repository state
         if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PYTHONPATH: scripts
         shell: bash
         run: |
           set -euo pipefail
-          assert_denied() {
-            local label="$1"
-            shift
-            local output="$RUNNER_TEMP/hepta-command-records/denied-$label.txt"
-            if "$@" >"$output" 2>&1; then
-              cat "$output"
-              echo "candidate unexpectedly obtained $label authority" >&2
-              exit 1
-            fi
-            grep -Eqi '403|forbidden|resource not accessible|permission|admin rights' "$output"
-          }
-          main_sha="$(gh api "repos/$REPO/git/ref/heads/main" --jq '.object.sha')"
-          current_title="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.title')"
-          # Same-value probes never deliberately change the repository state.
-          # Successful authorization still fails the job, even for a no-op.
-          assert_denied contents-write gh api --method PATCH "repos/$REPO/git/refs/heads/main" -f sha="$main_sha"
-          assert_denied repository-admin gh api --method PATCH "repos/$REPO" -f default_branch=main
-          assert_denied pull-request-write gh api --method PATCH "repos/$REPO/pulls/$PR_NUMBER" -f title="$current_title"
+          # GET of receive-pack advertisement performs no ref, PR or settings
+          # write. Do not test a credential by attempting same-value PATCHes:
+          # concurrent owner changes can make a supposed no-op destructive.
+          # This bounded observation is NOT proof of admin/PR-write denial or
+          # independent credential custody. The strict activation observer
+          # remains a separate gate; no missing protection is waived here.
+          python3 - <<'PYCODE' | tee "$RUNNER_TEMP/hepta-command-records/candidate-transport.json"
+          import json
+          import os
+          from hepta_repository_controls import observe_write_transport_denial
+          observation = observe_write_transport_denial(os.environ["REPO"], os.environ["GH_TOKEN"])
+          observation.update(admin_denial_proven=False, pull_request_write_denial_proven=False)
+          print(json.dumps(observation, sort_keys=True))
+          PYCODE
       - name: Test execution-record rejection and retained diagnostics
         run: |
           set -euo pipefail
