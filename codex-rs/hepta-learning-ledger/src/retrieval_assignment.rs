@@ -13,6 +13,7 @@ use codex_hepta_memory_retrieval::RetrievalAssignmentCompletenessV1;
 use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
 use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::CandidateSetCompleteness;
@@ -43,11 +44,37 @@ pub fn retrieval_assignment_event_with_delivery(
     delivered_candidates: &[RetrievalCandidateIdentityV1],
     context_exposed: bool,
 ) -> Result<LedgerEvent, RetrievalAssignmentBridgeError> {
+    retrieval_assignment_event_with_delivery_policy(
+        record_id,
+        episode_id,
+        observation,
+        delivered_candidates,
+        context_exposed,
+        None,
+        ProbabilityQ32::ONE,
+    )
+}
+
+pub fn retrieval_assignment_event_with_delivery_policy(
+    record_id: StableId,
+    episode_id: StableId,
+    observation: &RetrievalAssignmentObservationV1,
+    delivered_candidates: &[RetrievalCandidateIdentityV1],
+    context_exposed: bool,
+    downstream_policy_digest: Option<Digest32>,
+    delivery_propensity: ProbabilityQ32,
+) -> Result<LedgerEvent, RetrievalAssignmentBridgeError> {
     observation
         .validate()
         .map_err(|error| RetrievalAssignmentBridgeError::InvalidObservation(error.to_string()))?;
     if observation.enumerated_candidates.len() > MAX_RETRIEVAL_CANDIDATES {
         return Err(RetrievalAssignmentBridgeError::CandidateLimitExceeded);
+    }
+    if downstream_policy_digest.is_some_and(Digest32::is_zero) {
+        return Err(RetrievalAssignmentBridgeError::EmptyDownstreamPolicyDigest);
+    }
+    if delivery_propensity.raw() == 0 {
+        return Err(RetrievalAssignmentBridgeError::ZeroDeliveryPropensity);
     }
 
     let mut enumerated = observation
@@ -101,6 +128,8 @@ pub fn retrieval_assignment_event_with_delivery(
         context_exposed,
         omitted_by_policy_limits: observation.omitted_by_policy_limits,
         assignment_propensity: observation.assignment_propensity,
+        downstream_policy_digest,
+        delivery_propensity,
         completeness: match observation.completeness {
             RetrievalAssignmentCompletenessV1::Complete => CandidateSetCompleteness::Complete,
             RetrievalAssignmentCompletenessV1::GeneratorRelativeIncomplete => {
@@ -152,6 +181,8 @@ pub enum RetrievalAssignmentBridgeError {
     DuplicateCandidate,
     DeliveredCandidateOutsideSelection,
     ExposureStateMismatch,
+    EmptyDownstreamPolicyDigest,
+    ZeroDeliveryPropensity,
 }
 
 impl fmt::Display for RetrievalAssignmentBridgeError {
