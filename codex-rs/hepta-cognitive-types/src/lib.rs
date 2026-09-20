@@ -5,7 +5,10 @@
 
 #![forbid(unsafe_code)]
 
+pub mod hnmf;
+pub mod hnmf_learning;
 pub mod lane_c;
+pub mod wire;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
