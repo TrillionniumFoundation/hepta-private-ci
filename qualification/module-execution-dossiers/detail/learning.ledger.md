@@ -183,6 +183,16 @@ sustained throughput remain measurement requirements.
 - LEDGER-09: index checkpoint tampering is detected and canonical replay remains
   authoritative.
 - LEDGER-10: segmented rotation/recovery preserves the external witness frontier.
+- LEDGER-11: final-use dataset revalidation rejects a frozen source set after
+  correction, revocation or unlearning removes any source from the current active
+  projection.
+- LEDGER-12: lost acknowledgement, corrupt/missing witness history, containing-
+  directory durability and actual process death between ledger sync and witness
+  advancement fail closed or reconcile the exact original identity.
+- LEDGER-13: the source-composed intelligence terminal closure records
+  authenticated Outcome/correction plus one conserved CreditBatch through
+  `LedgerWriter`, and preserves an already-committed Outcome when the later
+  credit append needs reconciliation.
 
 Passing source tests are not production deployment, live independent observation
 or future-time efficacy.
