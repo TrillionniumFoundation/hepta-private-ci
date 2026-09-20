@@ -87,13 +87,18 @@ signed V2 facts:
   exact terminal-outcome conservation;
 - `append_unlearning` records authenticated source→dataset→artifact invalidation;
 - `freeze_dataset` derives active source rows and correction/revocation cuts
-  from the current canonical ledger rather than accepting caller-supplied cuts.
+  from the current canonical ledger rather than accepting caller-supplied cuts;
+- `revalidate_dataset_snapshot` verifies the historical receipt and requires
+  every frozen source digest to remain active immediately before final use.
 
 The writer's trust state is an `ActivatedLearningTrustV1` created from a
 generation-bound `LearningTrustDistributionV1`. Trust rotation is monotonic in
 distribution generation/effective time and may not roll authority epoch back.
-The host still owns distribution transport, current-key custody and revocation
-publication.
+Construction additionally requires host-authorized containing-directory handles
+for the ledger/segment and witness locations; `LedgerWriter` synchronizes those
+directory entries before it can acknowledge state that depends on them. The host
+still owns correct path/directory authorization, distribution transport,
+current-key custody and revocation publication.
 
 `LedgerIndexCheckpointV1` is a rebuildable, content-addressed read accelerator.
 It binds the exact anchor, record index, active projection, current correction
@@ -197,15 +202,24 @@ constant-time recovery, compaction, physical erasure or sustained throughput.
 
 The normal owner test inventory includes 8,200 records over 257 bounded segments,
 cross-segment outcomes/revocations/retries, shared historical reads, reordered or
-corrupt series, lost seal/empty successor rejection, partial-tail repair and
-actual child-process exit after seal or successor initialization. The existing
-evaluated-shadow consumer is tested through rotation, reopen and old-run replay;
-invalid signatures still reject before any host port or journal mutation.
+corrupt series, lost seal/empty successor rejection, partial-tail repair, actual
+child-process exit after seal/successor initialization, and actual process death
+after ledger sync but before witness advancement. Product-writer regressions also
+cover lost acknowledgement, corrupt/missing witness history, required directory
+handles and stale dataset rejection after unlearning. The evaluated-shadow
+consumer is tested through rotation, reopen and old-run replay; the V2 terminal
+closure tests authenticated Outcome/correction/CreditBatch partial-commit
+reconciliation. Invalid signatures reject before the corresponding mutation.
 Run the existing entrypoint, without an alternate workspace or lowered gates:
 
 ```sh
 just test --locked -p codex-hepta-learning-ledger -p codex-hepta-intelligence
 ```
 
-These are local filesystem and synthetic evaluation scenarios, not physical
-power-loss, independent acceptance, production efficacy or hostile-writer proofs.
+For target-host measurement, run
+`cargo run --locked -p codex-hepta-learning-ledger --example target_host_qualification`
+with `HEPTA_TARGET_HOST_ID` set. The JSON receipt binds exact Git source/tree and
+binary identity and records append/rotation p50/p95/p99, throughput, reopen time,
+storage and RSS. These measurements and all local filesystem/synthetic scenarios
+still do not prove physical power-loss behavior, independent acceptance,
+longitudinal efficacy or hostile-writer resistance.
