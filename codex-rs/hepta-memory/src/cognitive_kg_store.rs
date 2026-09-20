@@ -1,5 +1,16 @@
 use std::collections::BTreeMap;
 
+#[cfg(test)]
+use std::fs::OpenOptions;
+#[cfg(test)]
+use std::io::Write;
+#[cfg(test)]
+use std::path::PathBuf;
+#[cfg(test)]
+use std::thread;
+#[cfg(test)]
+use std::time::Duration;
+
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_kg::KnowledgeEdgeIdentityV2;
 use codex_hepta_kg::KnowledgeEdgeV2;
@@ -40,6 +51,42 @@ pub(crate) const MAX_SCOPE_HEADS: usize = 10_000;
 pub(crate) const MAX_SCOPE_NODES: usize = 10_000;
 pub(crate) const MAX_SCOPE_EDGES: usize = 50_000;
 pub(crate) const MAX_PROJECTION_SCOPES: usize = 10_000;
+
+#[cfg(test)]
+const KG_CRASH_STAGE_ENV: &str = "HEPTA_KG_CRASH_STAGE";
+#[cfg(test)]
+const KG_CRASH_MARKER_ENV: &str = "HEPTA_KG_CRASH_MARKER";
+
+/// Test-only process crash rendezvous. The parent qualification test waits for
+/// the fsynced marker and kills the child while the SQLite transaction remains
+/// open. Production builds contain neither the environment seam nor the stall.
+#[cfg(test)]
+fn kg_projection_crash_rendezvous(stage: &str) {
+    if std::env::var(KG_CRASH_STAGE_ENV).ok().as_deref() != Some(stage) {
+        return;
+    }
+    let marker = std::env::var_os(KG_CRASH_MARKER_ENV)
+        .map(PathBuf::from)
+        .expect("KG crash probe marker path");
+    let parent = marker.parent().expect("KG crash marker parent");
+    std::fs::create_dir_all(parent).expect("create KG crash marker parent");
+    let temporary = marker.with_extension(format!("tmp-{}", std::process::id()));
+    let mut file = OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .open(&temporary)
+        .expect("create KG crash marker");
+    file.write_all(stage.as_bytes()).expect("write KG crash marker");
+    file.sync_all().expect("sync KG crash marker");
+    drop(file);
+    std::fs::rename(&temporary, &marker).expect("publish KG crash marker");
+    if let Ok(directory) = std::fs::File::open(parent) {
+        let _ = directory.sync_all();
+    }
+    loop {
+        thread::sleep(Duration::from_secs(60));
+    }
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ProjectionHead {
@@ -897,6 +944,8 @@ impl CognitiveStore {
         .execute(&mut **transaction)
         .await
         .map_err(unavailable)?;
+        #[cfg(test)]
+        kg_projection_crash_rendezvous("before_semantic_receipt");
         sqlx::query(
             "INSERT INTO kg_projection_generation_semantics (
                 projection_scope, generation, source_snapshot_sha256,
@@ -987,6 +1036,8 @@ impl CognitiveStore {
             .await
             .map_err(unavailable)?;
         }
+        #[cfg(test)]
+        kg_projection_crash_rendezvous("after_semantic_receipt_before_current_pointer");
         let updated = sqlx::query(
             "UPDATE kg_projection SET generation = ?
              WHERE projection_scope = ? AND generation = ?",
