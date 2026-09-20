@@ -220,6 +220,8 @@ pub struct VerifiedPlasticityOwnerEvidenceV1 {
     pub owner_receipt_digest: Digest32,
     pub objective_digest: Digest32,
     pub selected_artifact_digest: Digest32,
+    pub artifact_registry_head_digest: Digest32,
+    pub qualification_evidence_head_digest: Digest32,
     pub window: ProposalWindowV2,
     pub dataset_digest: Digest32,
     pub baseline_generation: Generation,
