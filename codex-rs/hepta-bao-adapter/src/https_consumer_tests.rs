@@ -12,7 +12,6 @@ use codex_hepta_authbus::PolicyEffect;
 use codex_hepta_authbus::PolicySpec;
 use codex_hepta_authbus::QuotaReservation;
 use codex_hepta_authbus::QuotaSpec;
-use codex_hepta_authbus::ReservationState;
 use codex_hepta_authbus::SettlementEvidenceClaims;
 use codex_hepta_authbus::SettlementStatus;
 use codex_hepta_authbus::SignedSettlementEvidence;
