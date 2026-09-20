@@ -9,7 +9,7 @@ requires an explicit new generation.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import re
 
 from .control_plane import (
@@ -19,6 +19,7 @@ from .control_plane import (
     checked_sha256,
     semantic_digest,
 )
+from .evidence import SignatureTrustStore
 from .orchestration import EngineeringPlan
 
 _SHA1 = re.compile(r"[0-9a-f]{40}\Z")
@@ -31,6 +32,21 @@ _MUTABLE_STATES = frozenset(
         "ready_external_merge",
     }
 )
+
+
+@dataclass(frozen=True)
+class IntegrationTerminalReceipt:
+    queue_generation_id: str
+    package_id: str
+    candidate_digest: str
+    review_digest: str
+    ci_digest: str
+    outcome: str
+    issuer: str
+    signing_identity: str
+    observed_unix_ns: int
+    expires_unix_ns: int
+    signature: str = ""
 
 
 @dataclass(frozen=True)
@@ -306,6 +322,8 @@ def reconcile_integration_item(
     review_digest: str | None = None,
     ci_digest: str | None = None,
     terminal_outcome: str | None = None,
+    terminal_receipt: IntegrationTerminalReceipt | None = None,
+    trust_store: SignatureTrustStore | None = None,
     now_ns: int | None = None,
 ) -> IntegrationQueueItem:
     """Advance one item from observed evidence without acquiring merge authority."""
@@ -320,6 +338,18 @@ def reconcile_integration_item(
     ci_digest = _observation_digest(ci_digest, "ci_digest")
     if terminal_outcome not in {None, "merged_observed", "terminal_failure"}:
         raise EngineeringError("invalid_integration_terminal_outcome")
+    if terminal_outcome is not None and terminal_receipt is None:
+        raise EngineeringError("authenticated_terminal_receipt_required")
+    if terminal_receipt is not None and not isinstance(terminal_receipt, IntegrationTerminalReceipt):
+        raise EngineeringError("integration_terminal_receipt_required")
+    if terminal_receipt is not None and terminal_receipt.outcome not in {"merged_observed", "terminal_failure"}:
+        raise EngineeringError("invalid_integration_terminal_outcome")
+    if (
+        terminal_outcome is not None
+        and terminal_receipt is not None
+        and terminal_outcome != terminal_receipt.outcome
+    ):
+        raise EngineeringError("integration_terminal_receipt_binding")
     now = store._now(now_ns)
 
     with store._transaction():
@@ -339,23 +369,35 @@ def reconcile_integration_item(
 
         row_state = str(row["state"])
         if row_state in _TERMINAL_STATES:
+            if terminal_receipt is None or trust_store is None:
+                raise EngineeringError("authenticated_terminal_receipt_required")
             stored_terminal = None if row["terminal_outcome"] is None else str(row["terminal_outcome"])
-            replay_matches = (
-                terminal_outcome is not None
-                and terminal_outcome == stored_terminal
-                and all(
-                    supplied is None
-                    or supplied == (None if row[column] is None else str(row[column]))
-                    for supplied, column in (
-                        (candidate_digest, "candidate_digest"),
-                        (review_digest, "review_digest"),
-                        (ci_digest, "ci_digest"),
-                    )
+            expected = {
+                "candidate": None if row["candidate_digest"] is None else str(row["candidate_digest"]),
+                "review": None if row["review_digest"] is None else str(row["review_digest"]),
+                "ci": None if row["ci_digest"] is None else str(row["ci_digest"]),
+            }
+            if (
+                terminal_receipt.queue_generation_id != queue_generation_id
+                or terminal_receipt.package_id != package_id
+                or terminal_receipt.outcome != stored_terminal
+                or terminal_receipt.candidate_digest != expected["candidate"]
+                or terminal_receipt.review_digest != expected["review"]
+                or terminal_receipt.ci_digest != expected["ci"]
+                or terminal_receipt.issuer != "integration_terminal_observer"
+                or type(terminal_receipt.observed_unix_ns) is not int
+                or type(terminal_receipt.expires_unix_ns) is not int
+                or terminal_receipt.observed_unix_ns > now
+                or now >= terminal_receipt.expires_unix_ns
+                or not trust_store.verify(
+                    terminal_receipt,
+                    terminal_receipt.issuer,
+                    terminal_receipt.signing_identity,
+                    terminal_receipt.signature,
                 )
-            )
-            if replay_matches:
-                return _item(row)
-            raise EngineeringError("integration_item_terminal")
+            ):
+                raise EngineeringError("integration_terminal_receipt_binding")
+            return _item(row)
 
         if (
             str(generation["base_commit"]) != current_base_commit
@@ -440,7 +482,7 @@ def reconcile_integration_item(
                 observed[kind] = supplied[kind]
                 changed = True
 
-        if not changed and terminal_outcome is None:
+        if not changed and terminal_receipt is None:
             return _item(row)
 
         if observed["candidate"] is None:
@@ -453,12 +495,44 @@ def reconcile_integration_item(
             state = "ready_external_merge"
 
         terminal_value = None
+        terminal_receipt_digest = None
         reason = None
-        if terminal_outcome is not None:
+        if terminal_receipt is not None:
             if state != "ready_external_merge":
                 raise EngineeringError("integration_terminal_before_ready")
-            terminal_value = terminal_outcome
-            if terminal_outcome == "merged_observed":
+            if trust_store is None:
+                raise EngineeringError("authenticated_terminal_receipt_required")
+            for value, label in (
+                (terminal_receipt.candidate_digest, "terminal_candidate_digest"),
+                (terminal_receipt.review_digest, "terminal_review_digest"),
+                (terminal_receipt.ci_digest, "terminal_ci_digest"),
+            ):
+                checked_sha256(value, label)
+                if value == "0" * 64:
+                    raise EngineeringError("integration_terminal_receipt_binding")
+            if (
+                terminal_receipt.queue_generation_id != queue_generation_id
+                or terminal_receipt.package_id != package_id
+                or terminal_receipt.candidate_digest != observed["candidate"]
+                or terminal_receipt.review_digest != observed["review"]
+                or terminal_receipt.ci_digest != observed["ci"]
+                or terminal_receipt.issuer != "integration_terminal_observer"
+                or type(terminal_receipt.observed_unix_ns) is not int
+                or type(terminal_receipt.expires_unix_ns) is not int
+                or terminal_receipt.observed_unix_ns < int(row["updated_unix_ns"])
+                or terminal_receipt.observed_unix_ns > now
+                or now >= terminal_receipt.expires_unix_ns
+                or not trust_store.verify(
+                    terminal_receipt,
+                    terminal_receipt.issuer,
+                    terminal_receipt.signing_identity,
+                    terminal_receipt.signature,
+                )
+            ):
+                raise EngineeringError("integration_terminal_receipt_binding")
+            terminal_value = terminal_receipt.outcome
+            terminal_receipt_digest = semantic_digest(asdict(terminal_receipt))
+            if terminal_value == "merged_observed":
                 state = "terminal_merged"
             else:
                 state = "terminal_failed"
@@ -508,6 +582,10 @@ def reconcile_integration_item(
                 "reviewDigest": observed["review"],
                 "ciDigest": observed["ci"],
                 "terminalOutcome": terminal_value,
+                "terminalReceiptDigest": terminal_receipt_digest,
+                "terminalObserver": (
+                    None if terminal_receipt is None else terminal_receipt.signing_identity
+                ),
             },
             now,
         )
