@@ -366,7 +366,6 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     std::fs::remove_file(path).unwrap();
 }
 
-
 #[test]
 fn exact_reconciliation_can_release_dispatch_intent_without_inventing_terminality() {
     let path = path("reconciled-missing");
