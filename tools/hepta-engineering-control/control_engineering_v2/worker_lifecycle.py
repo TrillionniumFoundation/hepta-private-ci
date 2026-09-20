@@ -369,12 +369,19 @@ def claim_assignment(
         attempt = 1
         if previous is not None:
             if str(previous["state"]) != "retryable":
+                replay_deadline = min(
+                    int(previous["claimed_unix_ns"]) + heartbeat_ttl_ns,
+                    int(lease["expires_unix_ns"]),
+                    int(registration["expires_unix_ns"]),
+                    int(envelope["expires_unix_ns"]),
+                )
                 if (
                     str(previous["worker_id"]) == worker_id
                     and str(previous["lease_id"]) == lease_id
+                    and int(previous["heartbeat_deadline_unix_ns"]) == replay_deadline
                 ):
                     return _claim(previous)
-                raise EngineeringError("assignment_already_claimed")
+                raise EngineeringError("assignment_replay_conflict")
             attempt = int(previous["attempt"]) + 1
         if attempt > MAX_CLAIM_ATTEMPTS:
             raise EngineeringError("claim_attempts_exhausted")
@@ -398,6 +405,7 @@ def claim_assignment(
             "leaseId": lease_id,
             "attempt": attempt,
             "claimFence": fence,
+            "heartbeatDeadlineUnixNs": deadline,
         }
         digest = semantic_digest(identity)
         claim_id = digest[:32]
@@ -531,21 +539,36 @@ def heartbeat_claim(
         )
         if deadline <= now:
             raise EngineeringError("claim_window_exhausted")
+        receipt_digest = semantic_digest(asdict(receipt))
         current_revision = int(claim["revision"])
         if receipt.expected_revision != current_revision:
-            replayed = (
-                receipt.expected_revision < current_revision
-                and str(claim["state"])
-                in {"running", "result_submitted", "completed_observed"}
-                and int(claim["last_heartbeat_unix_ns"]) == receipt.observed_unix_ns
-                and int(claim["heartbeat_deadline_unix_ns"]) == deadline
-            )
-            if replayed:
+            observed = store.connection.execute(
+                "SELECT prior_revision,resulting_revision FROM "
+                "worker_heartbeat_observations WHERE claim_id=? AND receipt_digest=?",
+                (receipt.claim_id, receipt_digest),
+            ).fetchone()
+            if (
+                observed is not None
+                and int(observed["prior_revision"]) == receipt.expected_revision
+                and int(observed["resulting_revision"]) <= current_revision
+            ):
                 return _claim(claim)
-            raise EngineeringError("worker_heartbeat_binding")
+            raise EngineeringError("worker_heartbeat_replay_conflict")
         if str(claim["state"]) not in {"claimed", "running"}:
             raise EngineeringError("claim_not_running")
         revision = current_revision + 1
+        store.connection.execute(
+            "INSERT INTO worker_heartbeat_observations VALUES(?,?,?,?,?,?,?)",
+            (
+                receipt.claim_id,
+                receipt_digest,
+                receipt.expected_revision,
+                revision,
+                receipt.observed_unix_ns,
+                receipt.expires_unix_ns,
+                now,
+            ),
+        )
         store.connection.execute(
             "UPDATE worker_claims SET state='running',revision=?,"
             "last_heartbeat_unix_ns=?,heartbeat_deadline_unix_ns=?,updated_unix_ns=? "
@@ -566,7 +589,11 @@ def heartbeat_claim(
         )
         store._append_audit(
             "worker_claim_heartbeat",
-            {"claimId": receipt.claim_id, "revision": revision},
+            {
+                "claimId": receipt.claim_id,
+                "receiptDigest": receipt_digest,
+                "revision": revision,
+            },
             now,
         )
         row = store.connection.execute(
@@ -601,43 +628,13 @@ def submit_worker_result(
             (persisted["worker_id"],),
         ).fetchone()
         persisted_state = str(persisted["state"])
+        receipt_digest = semantic_digest(asdict(receipt))
         if persisted_state in {"result_submitted", "retryable", "failed", "completed_observed"}:
-            if (
-                persisted_registration is None
-                or receipt.worker_id != str(persisted["worker_id"])
-                or receipt.worker_signing_identity
-                != str(persisted_registration["worker_signing_identity"])
-                or receipt.claim_fence != int(persisted["claim_fence"])
-                or receipt.expected_revision >= int(persisted["revision"])
-                or receipt.result_digest != str(persisted["result_digest"])
-                or not (
-                    type(receipt.observed_unix_ns) is int
-                    and type(receipt.expires_unix_ns) is int
-                    and int(persisted["claimed_unix_ns"]) <= receipt.observed_unix_ns
-                    and receipt.observed_unix_ns < receipt.expires_unix_ns
-                )
-                or not trust_store.verify(
-                    receipt,
-                    receipt.worker_id,
-                    receipt.worker_signing_identity,
-                    receipt.signature,
-                )
-            ):
-                raise EngineeringError("worker_result_replay_conflict")
-            expected = (
-                receipt.outcome == "success"
-                and persisted_state in {"result_submitted", "completed_observed"}
-                and persisted["failure_class"] is None
-            ) or (
-                receipt.outcome == "infra_failure"
-                and persisted_state in {"retryable", "failed"}
-                and str(persisted["failure_class"]) == "infrastructure"
-            ) or (
-                receipt.outcome == "semantic_failure"
-                and persisted_state == "failed"
-                and str(persisted["failure_class"]) == "semantic"
-            )
-            if expected:
+            observed = store.connection.execute(
+                "SELECT receipt_digest FROM worker_result_observations WHERE claim_id=?",
+                (receipt.claim_id,),
+            ).fetchone()
+            if observed is not None and str(observed["receipt_digest"]) == receipt_digest:
                 return _claim(persisted)
             raise EngineeringError("worker_result_replay_conflict")
 
@@ -681,6 +678,18 @@ def submit_worker_result(
             failure = "semantic"
         revision = int(claim["revision"]) + 1
         store.connection.execute(
+            "INSERT INTO worker_result_observations VALUES(?,?,?,?,?,?,?)",
+            (
+                receipt.claim_id,
+                receipt_digest,
+                receipt.outcome,
+                receipt.result_digest,
+                receipt.observed_unix_ns,
+                receipt.expires_unix_ns,
+                now,
+            ),
+        )
+        store.connection.execute(
             "UPDATE worker_claims SET state=?,revision=?,result_digest=?,"
             "failure_class=?,updated_unix_ns=? WHERE claim_id=? AND revision=?",
             (
@@ -699,6 +708,7 @@ def submit_worker_result(
                 "claimId": receipt.claim_id,
                 "state": state,
                 "outcome": receipt.outcome,
+                "receiptDigest": receipt_digest,
                 "revision": revision,
             },
             now,
@@ -772,6 +782,12 @@ def observe_claim_completion(
             or completion.result_digest != str(claim["result_digest"])
         ):
             raise EngineeringError("completion_claim_mismatch")
+        result_observation = store.connection.execute(
+            "SELECT receipt_digest FROM worker_result_observations WHERE claim_id=?",
+            (claim_id,),
+        ).fetchone()
+        if result_observation is None:
+            raise EngineeringError("worker_result_observation_missing")
         completion_digest = semantic_digest(asdict(completion))
         if str(claim["state"]) == "completed_observed":
             observed = store.connection.execute(
@@ -850,3 +866,17 @@ def worker_claim(
     if row is None:
         raise EngineeringError("unknown_worker_claim")
     return _claim(row)
+
+
+def worker_completion_observation_digest(
+    store: EngineeringStore,
+    claim_id: str,
+) -> str:
+    checked_id(claim_id, "claim_id")
+    row = store.connection.execute(
+        "SELECT completion_digest FROM worker_completion_observations WHERE claim_id=?",
+        (claim_id,),
+    ).fetchone()
+    if row is None:
+        raise EngineeringError("completion_observation_unknown")
+    return checked_sha256(str(row["completion_digest"]), "completion_observation_digest")
