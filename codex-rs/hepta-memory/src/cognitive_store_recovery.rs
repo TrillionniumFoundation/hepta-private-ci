@@ -282,18 +282,34 @@ impl CognitiveStore {
         }
         .await;
 
-        if result.is_err() {
-            // A pointer rename can succeed while the following directory fsync
-            // reports an error. Never delete a candidate that may already be
-            // the active generation; leaving an unreferenced private candidate
-            // is safer than creating a dangling active pointer.
-            let active = resolve_active_database_path(&canonical_root).ok();
-            if active.as_deref() != Some(candidate.as_path()) {
-                cleanup_recovery_candidate(&candidate);
-            }
+        match result {
+            Ok(store) => Ok(store),
+            Err(error) => Err(reconcile_failed_recovery_candidate(
+                &canonical_root,
+                &candidate,
+                error,
+            )),
         }
-        result
     }
+}
+
+fn reconcile_failed_recovery_candidate(
+    root: &std::path::Path,
+    candidate: &std::path::Path,
+    error: CognitiveRecoveryError,
+) -> CognitiveRecoveryError {
+    // A pointer rename can succeed while the following directory fsync reports
+    // an error. In that state publication durability is unknown: never launder
+    // it into ordinary Unavailable and never delete the possibly-active
+    // generation. A later trusted recovery ceremony must reconcile it.
+    let active = resolve_active_database_path(root).ok();
+    if active.as_deref() == Some(candidate) {
+        return CognitiveRecoveryError::Indeterminate(format!(
+            "active generation publication became ambiguous after pointer rename: {error}"
+        ));
+    }
+    cleanup_recovery_candidate(candidate);
+    error
 }
 
 fn cleanup_candidate_sidecars(path: &std::path::Path) -> Result<(), CognitiveRecoveryError> {
