@@ -56,11 +56,29 @@
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "bind_canonical_replay_outcome_shadow_v1",
+      "nativeSymbol": "bind_canonical_replay_outcome_shadow_v1",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
+      "state": "source_implemented_shadow_only_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_replay_outcome_shadow_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "QualifiedCompactionCandidateV2::validate"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Qualify bind_canonical_replay_outcome_shadow_v1 on exact source-head and deterministic synthetic merge.",
+    "Bind authoritative replay source-bucket ownership and candidate-set generation before treating the replay receipt as a product scheduling input.",
+    "OutcomeSignalV1 is only co-observed evidence in this adapter; add an independently observed causal/credit chain before using it to change compaction priority.",
+    "Bind independent holdout/reconstruction evidence and durable owner publication/reload before changing production-composition claims."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -78,5 +96,16 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-compact-engine"
-  ]
+  ],
+  "canonicalReplayMigration": {
+    "state": "shadow_evidence_binding_source_candidate",
+    "replaySurface": "cognitive.types::hnmf_learning::ReplaySelectionReceiptV1",
+    "outcomeSurface": "cognitive.types::hnmf_learning::OutcomeSignalV1",
+    "selectedEventBridgeRequired": true,
+    "selectedEventMustMapToRetainedLegacyRecord": true,
+    "manyCanonicalEventsToOneLegacyRecordAllowed": false,
+    "outcomeCausalPriorityClaimed": false,
+    "changesCompactionRetentionDecision": false,
+    "productComposed": false
+  }
 }
