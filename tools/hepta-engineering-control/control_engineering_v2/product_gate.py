@@ -15,12 +15,12 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import subprocess
 import tempfile
 import time
 
 from .control_plane import DENIED_AUTHORITIES, EngineeringStore, WorkEnvelope
 from .evidence import HmacTrustStore
+from .git_security import run_git, run_git_bytes
 from .orchestration import (
     EngineeringCapacity,
     EngineeringWorkPackage,
@@ -42,40 +42,15 @@ MAX_CANONICAL_REGISTRY_BYTES = 4 * 1024 * 1024
 
 
 def _git(root: Path, *args: str) -> str:
-    try:
-        result = subprocess.run(
-            ["git", "-C", str(root), *args],
-            check=False,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            timeout=30,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        raise ValueError("git_read_failed") from None
-    if result.returncode != 0:
-        raise ValueError("git_read_failed")
-    return result.stdout.strip()
+    return run_git(root, *args)
 
 
 def _git_bytes(root: Path, *args: str) -> bytes:
-    try:
-        result = subprocess.run(
-            ["git", "-C", str(root), *args],
-            check=False,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            timeout=30,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        raise ValueError("git_read_failed") from None
-    if (
-        result.returncode != 0
-        or len(result.stdout) > MAX_CANONICAL_REGISTRY_BYTES
-        or len(result.stderr) > 1_048_576
-    ):
-        raise ValueError("git_read_failed")
-    return result.stdout
+    return run_git_bytes(
+        root,
+        *args,
+        maximum_output_bytes=MAX_CANONICAL_REGISTRY_BYTES,
+    )
 
 
 def _sha(value: str, label: str) -> str:

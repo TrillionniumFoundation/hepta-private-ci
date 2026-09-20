@@ -7,7 +7,6 @@ import hashlib
 import hmac
 from pathlib import Path
 import re
-import subprocess
 import time
 from collections.abc import Mapping
 from typing import Protocol
@@ -18,6 +17,7 @@ from .control_plane import (
     checked_sha256,
     semantic_digest,
 )
+from .git_security import run_git
 
 SHA1 = re.compile(r"[0-9a-f]{40}\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -26,6 +26,8 @@ SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 @dataclass(frozen=True)
 class CanonicalSourceReceipt:
     repository_full_name: str
+    base_commit: str
+    base_tree: str
     source_commit: str
     source_tree: str
     document_set_digest: str
@@ -33,6 +35,8 @@ class CanonicalSourceReceipt:
     signing_identity: str
     observed_unix_ns: int
     expires_unix_ns: int
+    merge_commit: str = ""
+    merge_tree: str = ""
     signature: str = ""
 
 
@@ -128,20 +132,7 @@ class HmacTrustStore:
 
 
 def _run_git(root: Path, *args: str) -> str:
-    try:
-        result = subprocess.run(
-            ["git", "-C", str(root), *args],
-            check=False,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            timeout=30,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        raise EngineeringError("git_read_failed") from None
-    if result.returncode != 0 or len(result.stdout.encode("utf-8")) > 1_048_576:
-        raise EngineeringError("git_read_failed")
-    return result.stdout.strip()
+    return run_git(root, *args)
 
 
 def _git_identity(root: Path, commit: str) -> tuple[str, tuple[str, ...]]:
@@ -262,13 +253,19 @@ def verify_integration_evidence(
     ):
         reasons.append("evaluator_identity_collision")
     try:
+        base_tree, _base_parents = _git_identity(repository, source.base_commit)
         source_tree, _source_parents = _git_identity(repository, source.source_commit)
+        expected_merge_tree, expected_merge_parents = _git_identity(
+            repository, source.merge_commit
+        )
         exact_tree, exact_parents = _git_identity(repository, source_execution.commit)
         merge_tree, merge_parents = _git_identity(repository, merge_execution.commit)
     except EngineeringError as error:
         reasons.append(error.code)
-        source_tree = exact_tree = merge_tree = ""
-        exact_parents = merge_parents = ()
+        base_tree = source_tree = expected_merge_tree = exact_tree = merge_tree = ""
+        expected_merge_parents = exact_parents = merge_parents = ()
+    if base_tree != source.base_tree:
+        reasons.append("base_tree_mismatch")
     if source_tree != source.source_tree:
         reasons.append("source_tree_mismatch")
     if source_execution.class_name != "exact_source":
@@ -290,9 +287,23 @@ def verify_integration_evidence(
         or merge_execution.ordered_parents != merge_parents
     ):
         reasons.append("merge_execution_identity_mismatch")
-    if len(merge_parents) != 2 or merge_parents[1] != source.source_commit:
+    if source.merge_commit != merge_execution.commit:
+        reasons.append("merge_commit_mismatch")
+    if (
+        source.merge_tree != expected_merge_tree
+        or source.merge_tree != merge_tree
+        or merge_execution.tree != source.merge_tree
+    ):
+        reasons.append("merge_tree_mismatch")
+    if expected_merge_parents != (source.base_commit, source.source_commit):
         reasons.append("merge_parent_order_mismatch")
-    if merge_execution.commit in {source.source_commit, *merge_parents}:
+    if merge_parents != (source.base_commit, source.source_commit):
+        reasons.append("merge_parent_order_mismatch")
+    if merge_execution.commit in {
+        source.base_commit,
+        source.source_commit,
+        *merge_parents,
+    }:
         reasons.append("synthetic_merge_not_distinct")
     if source_execution.passed is not True:
         reasons.append("source_execution_failed")

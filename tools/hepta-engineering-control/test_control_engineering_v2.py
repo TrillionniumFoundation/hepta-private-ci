@@ -349,6 +349,7 @@ class EvidenceTests(unittest.TestCase):
         run_git(self.root, "add", ".")
         run_git(self.root, "commit", "-m", "base")
         self.base = run_git(self.root, "rev-parse", "HEAD")
+        self.base_tree = run_git(self.root, "rev-parse", "HEAD^{tree}")
         (self.root / "file.txt").write_text("source\n", encoding="utf-8")
         run_git(self.root, "commit", "-am", "source")
         self.source = run_git(self.root, "rev-parse", "HEAD")
@@ -379,14 +380,18 @@ class EvidenceTests(unittest.TestCase):
 
     def signed_receipts(self):
         source = CanonicalSourceReceipt(
-            "TrillionniumFoundation/hepta-private-ci",
-            self.source,
-            self.source_tree,
-            self.document_digest,
-            "source_authority",
-            "source-key",
-            self.now - 100,
-            self.now + 100,
+            repository_full_name="TrillionniumFoundation/hepta-private-ci",
+            base_commit=self.base,
+            base_tree=self.base_tree,
+            source_commit=self.source,
+            source_tree=self.source_tree,
+            document_set_digest=self.document_digest,
+            issuer="source_authority",
+            signing_identity="source-key",
+            observed_unix_ns=self.now - 100,
+            expires_unix_ns=self.now + 100,
+            merge_commit=self.merge,
+            merge_tree=self.source_tree,
         )
         source = replace(
             source,
@@ -470,6 +475,83 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(decision.reasons, ())
         self.assertFalse(decision.merge_authority)
         self.assertFalse(decision.release_authority)
+
+    def _resign_source(self, source):
+        return replace(
+            source,
+            signature=self.trust.sign(
+                source,
+                source.issuer,
+                source.signing_identity,
+            ),
+        )
+
+    def test_wrong_base_parent_rejects_even_with_fresh_signatures(self) -> None:
+        source, source_execution, merge_execution, independence = self.signed_receipts()
+        forged = self._resign_source(
+            replace(
+                source,
+                base_commit=self.source,
+                base_tree=self.source_tree,
+                signature="",
+            )
+        )
+        decision = verify_integration_evidence(
+            self.root,
+            "TrillionniumFoundation/hepta-private-ci",
+            forged,
+            source_execution,
+            merge_execution,
+            independence,
+            self.trust,
+            expected_document_set_digest=self.document_digest,
+            now_ns=self.now,
+        )
+        self.assertFalse(decision.eligible_for_independent_review)
+        self.assertIn("merge_parent_order_mismatch", decision.reasons)
+
+    def test_wrong_base_tree_and_merge_tree_reject(self) -> None:
+        source, source_execution, merge_execution, independence = self.signed_receipts()
+        forged = self._resign_source(
+            replace(
+                source,
+                base_tree="f" * 40,
+                merge_tree=self.base_tree,
+                signature="",
+            )
+        )
+        decision = verify_integration_evidence(
+            self.root,
+            "TrillionniumFoundation/hepta-private-ci",
+            forged,
+            source_execution,
+            merge_execution,
+            independence,
+            self.trust,
+            expected_document_set_digest=self.document_digest,
+            now_ns=self.now,
+        )
+        self.assertFalse(decision.eligible_for_independent_review)
+        self.assertIn("base_tree_mismatch", decision.reasons)
+        self.assertIn("merge_tree_mismatch", decision.reasons)
+
+    def test_git_replace_ref_cannot_change_verified_source_identity(self) -> None:
+        values = self.signed_receipts()
+        run_git(self.root, "replace", self.source, self.base)
+        self.assertEqual(
+            run_git(self.root, "rev-parse", f"{self.source}^{{tree}}"),
+            self.base_tree,
+        )
+        decision = verify_integration_evidence(
+            self.root,
+            "TrillionniumFoundation/hepta-private-ci",
+            *values,
+            self.trust,
+            expected_document_set_digest=self.document_digest,
+            now_ns=self.now,
+        )
+        self.assertTrue(decision.eligible_for_independent_review)
+        self.assertEqual(decision.reasons, ())
 
     def test_tamper_and_role_collision_fail_closed(self) -> None:
         source, source_execution, merge_execution, independence = self.signed_receipts()

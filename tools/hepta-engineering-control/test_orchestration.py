@@ -595,14 +595,16 @@ class OrchestrationTests(unittest.TestCase):
     def test_signed_source_receipt_caps_work_envelope_lifetime(self):
         trust = HmacTrustStore({("source_authority", "source"): b"source-secret"})
         source = CanonicalSourceReceipt(
-            "TrillionniumFoundation/hepta-private-ci",
-            self.envelope.source_commit,
-            self.envelope.source_tree,
-            "f" * 64,
-            "source_authority",
-            "source",
-            self.now - 1,
-            self.now + 100,
+            repository_full_name="TrillionniumFoundation/hepta-private-ci",
+            base_commit="9" * 40,
+            base_tree="8" * 40,
+            source_commit=self.envelope.source_commit,
+            source_tree=self.envelope.source_tree,
+            document_set_digest="f" * 64,
+            issuer="source_authority",
+            signing_identity="source",
+            observed_unix_ns=self.now - 1,
+            expires_unix_ns=self.now + 100,
         )
         source = replace(
             source,

@@ -12,7 +12,6 @@ from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
-import subprocess
 import time
 
 from .control_plane import (
@@ -31,12 +30,22 @@ from .control_plane import (
     semantic_digest,
 )
 from .evidence import CanonicalSourceReceipt, SignatureTrustStore
+from .git_security import normal_remote, run_git
 
 MAX_WORKERS = 256
 MAX_SKILLS = 64
 MAX_REVIEW_ROLES = 16
 MAX_CAPACITY_UNITS = 1_000_000
 MAX_SCORE_ABS = 1 << 62
+
+
+def _valid_git_object_id(value: str) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 40
+        and value != "0" * 40
+        and all(character in "0123456789abcdef" for character in value)
+    )
 
 
 @dataclass(frozen=True)
@@ -125,30 +134,11 @@ class EngineeringPlan:
 
 
 def _git(root: Path, *args: str) -> str:
-    try:
-        result = subprocess.run(
-            ["git", "-C", str(root), *args],
-            check=False,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            timeout=30,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        raise EngineeringError("git_read_failed") from None
-    if result.returncode != 0 or len(result.stdout.encode("utf-8")) > 1_048_576:
-        raise EngineeringError("git_read_failed")
-    return result.stdout.strip()
+    return run_git(root, *args)
 
 
 def _normal_remote(value: str) -> str:
-    value = value.strip().removesuffix(".git").removesuffix("/")
-    if value.startswith("git@github.com:"):
-        return value.removeprefix("git@github.com:")
-    for prefix in ("https://github.com/", "http://github.com/"):
-        if value.startswith(prefix):
-            return value.removeprefix(prefix)
-    return value
+    return normal_remote(value)
 
 
 def issue_repository_work_envelope(
@@ -200,6 +190,8 @@ def issue_signed_work_envelope(
         source.source_commit != envelope.source_commit
         or source.source_tree != envelope.source_tree
         or source.document_set_digest != expected_document_set_digest
+        or not _valid_git_object_id(source.base_commit)
+        or not _valid_git_object_id(source.base_tree)
     ):
         raise EngineeringError("source_identity_mismatch")
     if source.issuer != "source_authority":
