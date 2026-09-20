@@ -233,10 +233,13 @@ mod tests {
     use codex_hepta_types::FixedQ32;
     use codex_hepta_types::Generation;
 
+    use crate::DatasetSnapshot;
     use crate::TabularOperatorSampleV1;
+    use crate::TrainingRequest;
+    use crate::Transition;
 
     fn id(value: &str) -> StableId {
-        StableId::new(value.to_owned()).expect("valid fixture id")
+        StableId::new(value.to_owned()).unwrap_or_else(|error| panic!("valid fixture id: {error:?}"))
     }
 
     fn digest(value: &str) -> Digest32 {
@@ -269,7 +272,7 @@ mod tests {
             },
             50,
         )
-        .expect("valid dataset receipt")
+        .unwrap_or_else(|error| panic!("valid dataset receipt: {error:?}"))
     }
 
     fn sample(
@@ -287,16 +290,83 @@ mod tests {
         }
     }
 
+    fn target_request(receipt: &DatasetSnapshotReceiptV3) -> TrainingRequest {
+        TrainingRequest {
+            artifact_id: id("target-artifact"),
+            producer_id: id("trainer"),
+            generation: Generation::new(1).unwrap_or_else(|error| panic!("generation: {error:?}")),
+            gamma: FixedQ32::from_raw(1_i64 << 31),
+            dataset: DatasetSnapshot {
+                snapshot_id: receipt.snapshot.snapshot_id.clone(),
+                objective_digest: receipt.snapshot.objective_digest,
+                source_head_digest: receipt.snapshot.ledger_head_digest,
+                transitions: vec![
+                    Transition {
+                        sample_id: id("row-a"),
+                        state_id: id("state-a"),
+                        action_id: id("action-a"),
+                        reward: FixedQ32::ZERO,
+                        next_value: FixedQ32::ONE,
+                        terminal: false,
+                        support_digest: digest("record-a"),
+                    },
+                    Transition {
+                        sample_id: id("row-b"),
+                        state_id: id("state-b"),
+                        action_id: id("action-b"),
+                        reward: FixedQ32::ONE,
+                        next_value: FixedQ32::ZERO,
+                        terminal: true,
+                        support_digest: digest("record-b"),
+                    },
+                ],
+            },
+        }
+    }
+
+    #[test]
+    fn op_07_bound_target_builder_consumes_exact_v3_dataset_rows() {
+        let receipt = receipt();
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50)
+            .unwrap_or_else(|error| panic!("verified dataset: {error:?}"));
+        let artifact = build_targets_bound_v2(&bound, target_request(&receipt))
+            .unwrap_or_else(|error| panic!("bound target build: {error:?}"));
+        assert_eq!(artifact.dataset_digest, receipt.snapshot.dataset_digest);
+        assert_eq!(artifact.objective_digest, receipt.snapshot.objective_digest);
+    }
+
+    #[test]
+    fn op_07_bound_target_builder_rejects_detached_head_or_relabelled_evidence() {
+        let receipt = receipt();
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50)
+            .unwrap_or_else(|error| panic!("verified dataset: {error:?}"));
+
+        let mut detached = target_request(&receipt);
+        detached.dataset.source_head_digest = digest("detached-head");
+        assert_eq!(
+            build_targets_bound_v2(&bound, detached),
+            Err(OperatorDatasetBindingError::SourceHeadMismatch)
+        );
+
+        let mut replayed = target_request(&receipt);
+        replayed.dataset.transitions[1].sample_id = id("row-b-relabelled");
+        replayed.dataset.transitions[1].support_digest = replayed.dataset.transitions[0].support_digest;
+        assert_eq!(
+            build_targets_bound_v2(&bound, replayed),
+            Err(OperatorDatasetBindingError::DuplicateEvidence)
+        );
+    }
+
     #[test]
     fn op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows() {
         let receipt = receipt();
-        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).expect("verified");
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).unwrap_or_else(|error| panic!("verified: {error:?}"));
         let artifact = fit_tabular_operator_bound_v2(
             &bound,
             TabularOperatorPlanV1 {
                 artifact_id: id("artifact"),
                 producer_id: id("trainer"),
-                generation: Generation::new(1).expect("generation"),
+                generation: Generation::new(1).unwrap_or_else(|error| panic!("generation: {error:?}")),
                 objective_digest: receipt.snapshot.objective_digest,
                 dataset_digest: receipt.snapshot.dataset_digest,
                 sensor_core_digest: digest("sensor-core"),
@@ -310,18 +380,18 @@ mod tests {
                 ],
             },
         )
-        .expect("bound fit");
+        .unwrap_or_else(|error| panic!("bound fit: {error:?}"));
         assert_eq!(artifact.dataset_digest, receipt.snapshot.dataset_digest);
     }
 
     #[test]
     fn op_07_bound_fit_rejects_detached_digest_or_row_set() {
         let receipt = receipt();
-        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).expect("verified");
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).unwrap_or_else(|error| panic!("verified: {error:?}"));
         let mut plan = TabularOperatorPlanV1 {
             artifact_id: id("artifact"),
             producer_id: id("trainer"),
-            generation: Generation::new(1).expect("generation"),
+            generation: Generation::new(1).unwrap_or_else(|error| panic!("generation: {error:?}")),
             objective_digest: receipt.snapshot.objective_digest,
             dataset_digest: digest("detached-dataset"),
             sensor_core_digest: digest("sensor-core"),
@@ -349,7 +419,7 @@ mod tests {
     #[test]
     fn op_07_bound_world_model_takes_dataset_identity_from_receipt() {
         let receipt = receipt();
-        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).expect("verified");
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).unwrap_or_else(|error| panic!("verified: {error:?}"));
         let model = fit_transition_model_bound_v2(
             &bound,
             id("world-model"),
@@ -372,7 +442,7 @@ mod tests {
                 },
             ],
         )
-        .expect("bound world model");
+        .unwrap_or_else(|error| panic!("bound world model: {error:?}"));
         assert_eq!(model.dataset_digest, receipt.snapshot.dataset_digest);
     }
 }
