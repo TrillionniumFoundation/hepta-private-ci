@@ -13,6 +13,7 @@ DOMAIN = b"hepta.cognitive.contract.canonical-json.v1\0"
 CONTRACT = "ModalitySpanRefV1"
 SCHEMA = "hepta.hnmf.modality-span-ref.v1"
 EXPECTED_DIGEST = "1e1c8f2232a1f6ddfea98400f3c2ae9d29ecd39ae2a2ff0e0bac70f91f0ad273"
+EVENT_EXPECTED_DIGEST = "22d5a29e55ad08c3541eb8eb9afe577eb5efd1a75e0d37ea1c64eae436db0540"
 
 PAYLOAD = {
     "spanId": "span:1",
@@ -25,6 +26,32 @@ PAYLOAD = {
     "uncertaintyPpm": 10_000,
     "privacyClass": "agent_private",
     "redactionMaskSha256": None,
+}
+
+EVENT_PAYLOAD = {
+    "eventId": "event:1",
+    "episodeId": "episode:1",
+    "scope": {"kind": "agent_private", "agentId": "agent:a"},
+    "observedInterval": {"startUnixMs": 1, "endUnixMs": None},
+    "modalitySpans": [PAYLOAD],
+    "crossModalBindings": [],
+    "semanticKeys": ["door"],
+    "provenance": [
+        {
+            "sourceId": "source:1",
+            "sourceRevision": 1,
+            "sourceSha256": "c" * 64,
+            "observedAtUnixMs": 1,
+        }
+    ],
+    "verification": "verified",
+    "retentionPolicy": {"kind": "persistent", "retainUntilUnixMs": None},
+    "objectiveDigest": "d" * 64,
+    "nduStateDigest": "e" * 64,
+    "causalParents": [],
+    "temporalNeighbors": [],
+    "behaviorPropensityPpm": 500_000,
+    "lifecycle": {"state": "active"},
 }
 
 
@@ -73,6 +100,13 @@ def main() -> int:
         raise SystemExit("canonical envelope mismatch")
     if digest != EXPECTED_DIGEST:
         raise SystemExit(f"canonical digest mismatch: {digest}")
+
+    event_payload_bytes = canonical(EVENT_PAYLOAD)
+    event_digest = hashlib.sha256(
+        DOMAIN + b"MemoryEventV1" + b"\0" + event_payload_bytes
+    ).hexdigest()
+    if event_digest != EVENT_EXPECTED_DIGEST:
+        raise SystemExit(f"MemoryEventV1 canonical digest mismatch: {event_digest}")
 
     wire = (ROOT / "codex-rs/hepta-cognitive-types/src/wire.rs").read_text(
         encoding="utf-8"
