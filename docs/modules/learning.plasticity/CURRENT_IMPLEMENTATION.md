@@ -75,17 +75,19 @@ override these machine status facts.
 | Append-only host anchor/fence journal | **Implemented source composition** | shared Agentd `AdaptiveAnchorJournalV1`; checksum frames, crash-tail repair, monotonic generation fences |
 | Signed generator authentication | **Implemented adapter** | `propose_authenticated_parameter_plasticity_v1` |
 | Signed current artifact/evidence-frontier witness | **Implemented adapter** | `PlasticityAdmissionEvidenceV1` |
-| Typed owner-evidence resolution boundary | **Implemented host-enforced seam; owner-kind allowlist + concrete deployment adapters required** | `PlasticityOwnerEvidenceResolverV1` and `PlasticityOwnerEvidencePolicyV1` in Agentd |
+| Typed owner-evidence resolution boundary | **Implemented with live-frontier/value binding; Dataset + immutable Policy owners concrete, dynamic signal owners fail closed until bound** | `PlasticityOwnerEvidenceResolverV1`, `ConcretePlasticityOwnerEvidenceResolverV1` and `PlasticityOwnerEvidencePolicyV1` in Agentd |
 | Cryptographically independent evaluator admission | **Implemented adapter** | existing `LearningEvidenceVerifierV1` + signed evaluation path |
 | Evaluation coverage for every generated update | **Implemented adapter** | product adapter rejects missing/duplicate/unexpected evaluations |
-| Product-workspace proposal adapter | **Implemented** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
-| Agentd parameter host adapter entrypoint | **Implemented source composition; not runtime-executed/target-host qualified** | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
+| Product-workspace proposal adapter | **Implemented; update and independently-attested no-admissible-update terminal paths are durable** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
+| Agentd parameter host adapter entrypoint | **Implemented and called by the long-lived Agentd plasticity owner; not target-host executed/qualified** | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
 | Typed topology proposal generation | **Implemented, proposal-only** | `propose_topology_v2` in `topology_v2.rs` |
 | Typed topology writer-handoff governance | **Implemented** | `topology_governance.rs` |
 | Authenticated topology product admission | **Implemented** | `codex-rs/hepta-intelligence/src/topology_product.rs` |
 | Durable anchored topology proposal registry | **Implemented** | `DurableTopologyProposalRegistryV1` |
-| Agentd topology host adapter + external anchor/fence | **Implemented source composition; not runtime-executed/target-host qualified** | `topology_plasticity_host.rs` |
+| Agentd topology host adapter + external anchor/fence | **Implemented and called by the long-lived Agentd plasticity owner; not target-host executed/qualified** | `topology_plasticity_host.rs` |
+| Long-lived Agentd plasticity owner | **Implemented source composition; bounded queue, generation/readiness fenced, no ambient writer fallback** | `PlasticityRuntimeOwnerV1` in `hepta-agentd/src/plasticity_runtime.rs` |
 | Bounded structural canary controller | **Implemented durable-candidate/plan/history-bound observation state machine; explicit finish required; no executed canary evidence** | `StructuralCanaryControllerV1` |
+| Authenticated structural-canary observation | **Implemented source boundary; every safety/lineage/rollback/health assertion is Observer-signed before state transition** | `observe_authenticated_structural_canary_v1` in `hepta-intelligence` |
 | Topology application / writer handoff execution | **Target / not implemented** | intentionally no apply API |
 | Weight training / installation | **Target outside this proposal engine** | no authority granted |
 | Selection / activation / promotion / release | **External gate / not implemented** | explicitly denied |
@@ -105,14 +107,26 @@ proposal crate, and that distinction is intentional and now explicit:
 | selected host rollback domain | MUST implement `PlasticityAnchorCommitterV1` and monotonic writer-fence issuance outside the registry rollback domain |
 
 `codex-hepta-plasticity` itself still does not query owner stores. The source-selected
-host seam is now `codex-hepta-agentd`: it recomputes the current `ArtifactRegistry`
-and durable learning-ledger frontiers immediately before calling the authenticated
-product adapters, requires context-bound owner evidence for every opaque learning digest and the typed mutation-policy digest, and owns separate parameter/topology anchor-fence stores. The resolver trait has no permissive default. Agentd additionally requires a complete
-`PlasticityOwnerEvidencePolicyV1` mapping every evidence kind to allowed owner IDs;
-a correctly signed/context-bound receipt from the wrong owner is rejected. A selected
-deployment must still bind the resolver to the actual owner stores rather than echoing
-caller inputs. This is a source-selected host adapter entrypoint that calls the product adapter; it is not proof that the Agentd runtime or a deployed target host has actually executed or accepted it. `productionImplementation` and `productExecutionProved` therefore remain false
-until exact target-host evidence exists.
+host is now a long-lived `PlasticityRuntimeOwnerV1` supervised by the real Agentd
+`runtime.rs` task set. It exclusively retains the proposal writers, external
+anchor/fence stores, learning-evidence verifier, ArtifactRegistry, DurableLedger and
+owner-evidence resolver behind a bounded typed channel. Every proposal is fenced on
+the current Running/ready Agentd generation before it reaches the parameter or topology
+host entrypoint. There is no public Agentd wire method and no ambient/default writer:
+if the owner is not explicitly attached to `AgentdConfig`, plasticity remains absent.
+
+Immediately before admission, Agentd recomputes the current `ArtifactRegistry` and
+durable learning-ledger heads. Every owner-evidence query binds those heads, the exact
+artifact/window/dataset context and, for `ParameterSignal`, the actual eligibility,
+modulator, learning-rate and bound values consumed by the generator. The concrete
+resolver verifies `DatasetSnapshotReceiptV3` against the live DurableLedger head and
+eligible `Policy` artifacts against the live ArtifactRegistry head. Dynamic
+modulator/modulator-broadcast/eligibility/parameter-signal facts still require their
+real authoritative adapters and fail closed when unavailable; they are not reclassified
+as artifacts. A correctly signed/context-bound receipt from the wrong owner is rejected.
+This source composition is not proof that a deployed target host executed or accepted
+the path, so `productionImplementation` and `productExecutionProved` remain false until
+exact target-host evidence exists.
 
 ## Parameter mutation-policy ownership
 
@@ -155,8 +169,8 @@ product-workspace adapter. It requires, before any durable proposal append:
 3. an `Observer` signature over the selected artifact, artifact-registry binding/head,
    qualification-evidence head, the canonical host-resolved owner-evidence set,
    window, generations, dataset/update/modulator/eligibility digests and generator digest;
-4. signed independent evaluation for every generated update candidate;
-5. one consistent authenticated evaluator identity across those evaluations;
+4. signed independent evaluation for every generated update candidate; if the deterministic generator produces no admissible update, a distinct Evaluator must instead sign the exact `NoAdmissibleUpdate` terminal payload and that no-change proposal is durably recorded;
+5. one consistent authenticated evaluator identity across update evaluations or the authenticated no-change terminal disposition;
 6. exact artifact/window/generation lineage and exact durable predecessor;
 7. a governed V2 `evaluation_digest` that durably binds candidate-evaluation evidence,
    Generator/Observer authentication, the owner-evidence set, generator identity and
@@ -229,13 +243,26 @@ does not auto-accept: an explicit `finish()` transition is required. This preven
 last-observation-only receipt from being replayed across a different plan or truncated
 history.
 
+The product-facing observation boundary is now
+`observe_authenticated_structural_canary_v1`. Its signed payload binds the exact plan
+digest plus sequence, health/evidence digests, regression count, safety violation,
+lineage mismatch and rollback-verification result. The host-owned
+`LearningEvidenceVerifierV1` must authenticate an `Observer` before the observation is
+forwarded to the controller. This removes caller-authored booleans from the product
+trust boundary, but it still does not execute topology, synthesize telemetry or prove a
+real rollback.
+
 ## Remaining external and composition gates
 
-The repository now contains an Agentd source host-adapter entrypoint that supplies current owner
-frontiers and independent anchor/fence services for parameter and topology proposal
-persistence. The generic owner-evidence seam is source-complete, but the selected deployment must
-still bind it to concrete authoritative owner-store adapters. Remaining gates are
-deployment/execution evidence rather than permission to weaken that boundary:
+The repository now contains a long-lived Agentd plasticity owner that calls the
+parameter/topology host entrypoints, supplies current owner frontiers and retains
+independent anchor/fence seams. Dataset and immutable Policy owner adapters are concrete;
+the selected deployment must still bind dynamic modulator/eligibility/signal facts to
+their authoritative owners. The registry/anchor fault fixtures prove that a retained
+external acknowledgement rejects a rolled-back proposal file, but only a target host
+can prove that the journal and registry are physically placed in independent rollback
+domains. Remaining gates are deployment/execution evidence rather than permission to
+weaken those boundaries:
 independent semantic/security review, target-host qualification, operator recovery
 exercise, real structural-canary execution, activation, promotion and release. Those
 states must stay false until their own evidence exists. CI receipts must refer to the
