@@ -149,6 +149,7 @@ fn request(with_optional: bool) -> LaneFRunRequestV3 {
 struct Ports {
     calls: Vec<LaneFStageV3>,
     fail: Option<(LaneFStageV3, PortFailureClassV3)>,
+    objective: PortDecisionV3,
     intuition: PortDecisionV3,
     accepted_envelope: Option<Digest32>,
     cancel_after: Option<(LaneFStageV3, Rc<Cell<bool>>)>,
@@ -183,10 +184,10 @@ impl Ports {
             implementation_digest: input.implementation_digest,
             capability_generation: input.capability_generation,
             output_digest,
-            decision: if input.stage == LaneFStageV3::IntuitionDecided {
-                self.intuition
-            } else {
-                PortDecisionV3::Continue
+            decision: match input.stage {
+                LaneFStageV3::ObjectiveValidated => self.objective,
+                LaneFStageV3::IntuitionDecided => self.intuition,
+                _ => PortDecisionV3::Continue,
             },
             authority: AuthorityPosture::DENY_ALL,
         };
@@ -338,6 +339,51 @@ fn cancellation_fails_before_any_owner_call() {
         receipt.stages.last().map(|trace| trace.stage),
         Some(LaneFStageV3::ObjectiveValidated)
     );
+}
+
+#[test]
+fn objective_explicit_abstain_skips_all_downstream_cognition_and_records_learning() {
+    let mut value = request(false);
+    value.legal_candidates = build_legal_candidates_v1(
+        id("candidate-set:abstain-only"),
+        value.snapshot.digest(),
+        digest("grammar"),
+        0,
+        Vec::new(),
+    )
+    .expect("abstain-only legal set");
+    let mut ports = Ports {
+        objective: PortDecisionV3::Abstain,
+        ..Ports::default()
+    };
+    let receipt = run_composition_v3(value, &mut ports).expect("objective abstain");
+    assert_eq!(receipt.disposition, PipelineDispositionV3::Abstained);
+    assert_eq!(
+        ports.calls,
+        vec![
+            LaneFStageV3::ObjectiveValidated,
+            LaneFStageV3::LearningRecorded
+        ]
+    );
+    assert!(receipt.host_envelope.is_none());
+    assert_eq!(
+        receipt
+            .stages
+            .iter()
+            .map(|stage| (stage.stage, stage.outcome))
+            .collect::<Vec<_>>(),
+        vec![
+            (
+                LaneFStageV3::ObjectiveValidated,
+                StageOutcomeV3::Abstained
+            ),
+            (
+                LaneFStageV3::LearningRecorded,
+                StageOutcomeV3::Completed
+            ),
+        ]
+    );
+    receipt.validate().expect("valid objective-abstain receipt");
 }
 
 #[test]
