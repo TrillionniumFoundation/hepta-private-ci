@@ -3,6 +3,7 @@
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
+mod authbus_recovery;
 mod authbus_store;
 mod canonical;
 mod governance_store;
@@ -28,6 +29,8 @@ pub use authbus_outbox_record::AuthBusDeliveryState;
 pub use authbus_outbox_record::AuthBusDeliveryStatus;
 pub use authbus_outbox_record::AuthBusLease;
 pub use authbus_outbox_record::AuthBusOutboxError;
+pub use authbus_recovery::AuthBusRecoveryError;
+pub use authbus_recovery::ReplayCheckpoint;
 pub use authbus_store::AuthBusAdmissionError;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;
