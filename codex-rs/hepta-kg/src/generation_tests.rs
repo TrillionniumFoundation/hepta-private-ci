@@ -334,7 +334,6 @@ fn invalid_temporal_support_window_is_rejected() {
     );
 }
 
-
 #[test]
 fn duplicate_incremental_upserts_are_rejected_before_last_write_wins() {
     let first = build_complete_generation(
@@ -361,12 +360,7 @@ fn duplicate_incremental_upserts_are_rejected_before_last_write_wins() {
         Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity)
     );
 
-    let duplicate_edge_value = edge(
-        "a",
-        "b",
-        KnowledgeRelationKindV2::Supports,
-        "edge-ab-v2",
-    );
+    let duplicate_edge_value = edge("a", "b", KnowledgeRelationKindV2::Supports, "edge-ab-v2");
     let duplicate_edge = KnowledgeProjectionDeltaV2 {
         expected_predecessor_digest: first.generation_digest,
         source_snapshot_digest: digest("snapshot:2"),
