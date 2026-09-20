@@ -211,6 +211,20 @@ impl CognitiveRuntime {
         }
     }
 
+    /// Returns true only for the canonical V2 federation composition admitted
+    /// to product model-input assembly. Legacy federation may remain available
+    /// through explicit compatibility APIs, but it must not be selected by a
+    /// product caller through a generic "has federation" check.
+    pub fn has_product_federation(&self) -> bool {
+        match self {
+            Self::AvailableFederatedV2 { owner_layouts, .. } => !owner_layouts.is_empty(),
+            Self::Absent
+            | Self::Available(_)
+            | Self::AvailableFederated { .. }
+            | Self::Unavailable(_) => false,
+        }
+    }
+
     pub fn federation_consumer_agent_id(&self) -> Option<&AgentId> {
         match self {
             Self::AvailableFederated { federation, .. } => Some(federation.consumer_agent_id()),
@@ -258,6 +272,69 @@ impl CognitiveRuntime {
             Self::Absent | Self::Available(_) | Self::Unavailable(_) => Err(
                 CognitiveStoreError::AccessDenied("memory federation is unavailable".to_string()),
             ),
+        }
+    }
+
+    /// Executes only the canonical V2 product federation path.
+    ///
+    /// This deliberately rejects the legacy compatibility variant so product
+    /// model-input callers cannot silently inherit its older failure semantics.
+    pub async fn retrieve_product_federated(
+        &self,
+        access: &FederationConsumerAccess,
+        request: &RetrievalRequest,
+    ) -> Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError> {
+        match self {
+            Self::AvailableFederatedV2 {
+                consumer_agent_id,
+                owner_layouts,
+                ..
+            } => {
+                retrieve_federated_product(
+                    consumer_agent_id,
+                    owner_layouts.as_slice(),
+                    access,
+                    request,
+                )
+                .await
+            }
+            Self::Absent
+            | Self::Available(_)
+            | Self::AvailableFederated { .. }
+            | Self::Unavailable(_) => Err(CognitiveStoreError::AccessDenied(
+                "canonical memory federation V2 is unavailable".to_string(),
+            )),
+        }
+    }
+
+    /// Revalidates a product attachment only through canonical V2 composition.
+    pub async fn revalidate_product_federated(
+        &self,
+        access: &FederationConsumerAccess,
+        binding: &FederatedMemoryRevalidationBinding,
+        now_unix_seconds: i64,
+    ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
+        match self {
+            Self::AvailableFederatedV2 {
+                consumer_agent_id,
+                owner_layouts,
+                ..
+            } => {
+                revalidate_federated_product(
+                    consumer_agent_id,
+                    owner_layouts.as_slice(),
+                    access,
+                    binding,
+                    now_unix_seconds,
+                )
+                .await
+            }
+            Self::Absent
+            | Self::Available(_)
+            | Self::AvailableFederated { .. }
+            | Self::Unavailable(_) => Err(CognitiveStoreError::AccessDenied(
+                "canonical memory federation V2 is unavailable".to_string(),
+            )),
         }
     }
 
