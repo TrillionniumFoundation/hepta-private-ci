@@ -71,7 +71,9 @@
       "state": "source_implemented_upstream_score_provenance_contract",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-intuition/src/qualified_tests.rs::v3_rejects_score_mutation_after_scoring_commitment"
+        "codex-rs/hepta-intuition/src/qualified_tests.rs::v3_rejects_score_mutation_after_scoring_commitment",
+        "codex-rs/hepta-intuition/src/qualified_tests.rs::v3_rejects_risk_class_rebinding_after_scoring_commitment",
+        "codex-rs/hepta-intuition/src/qualified_tests.rs::v3_rejects_counterbased_to_deterministic_rebinding"
       ],
       "sourcePathExists": true,
       "designOperation": "consume_upstream_learned_scores",
