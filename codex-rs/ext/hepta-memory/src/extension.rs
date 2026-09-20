@@ -748,7 +748,7 @@ where
     builder.turn_input_contributor(extension.clone());
     builder.ephemeral_model_input_contributor(extension.clone());
     if !matches!(&cognitive_runtime, CognitiveRuntime::Absent) {
-        let has_federation = cognitive_runtime.has_federation();
+        let has_federation = cognitive_runtime.has_product_federation();
         let cognitive = Arc::new(CognitiveExtension::new(cognitive_runtime.clone()));
         builder.turn_input_contributor(cognitive.clone());
         builder.tool_contributor(cognitive.clone());
