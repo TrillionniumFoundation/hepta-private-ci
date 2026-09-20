@@ -4,6 +4,7 @@
 //! text as authority, relaxes hard constraints, selects an action, or executes
 //! an external effect.
 
+#![recursion_limit = "512"]
 #![forbid(unsafe_code)]
 
 mod admission_profile_json;
