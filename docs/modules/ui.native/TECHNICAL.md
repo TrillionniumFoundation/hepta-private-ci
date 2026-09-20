@@ -52,6 +52,7 @@ The registered product source is Rust-only under `apps/hepta-native`: [src/main.
 
 Direct dependencies:
 
+- `kernel.authority`
 - `runtime.agentd`
 
 Authoritative write domains:
@@ -91,7 +92,9 @@ None.
 Consumed contracts:
 
 - `DomainRead::runtime_health_observationV1`
+- `ModulePort::kernel.authority::ui.native`
 - `ModulePort::runtime.agentd::ui.native`
+- `VerifiedUseTokenWitnessV1`
 
 Critical protocol schemas:
 
