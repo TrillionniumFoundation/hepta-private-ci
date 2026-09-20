@@ -34,9 +34,7 @@ pub(crate) async fn run_app_server(
 ) -> std::io::Result<()> {
     let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
     let production_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>> =
-        production_writer_host.map(
-            |host| -> Arc<dyn codex_hepta_memory::ProductionCognitiveMutation> { host },
-        );
+        production_writer_host.and_then(|host| host.production_mutation());
     let cognitive_write_enabled =
         COGNITIVE_WRITE_ENABLED || production_mutation.is_some();
     let config_overrides = app_server_config_overrides(cognitive_write_enabled);
