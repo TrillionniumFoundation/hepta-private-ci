@@ -369,9 +369,13 @@ def verify():
                 source = op.get("sourcePath")
                 if source:
                     evidence_paths.add(source)
-                for evidence_path in op.get("tests", []):
-                    if evidence_path:
-                        evidence_paths.add(evidence_path)
+                for test_evidence in op.get("tests", []):
+                    if isinstance(test_evidence, dict):
+                        test_path = test_evidence.get("path")
+                        if test_path:
+                            evidence_paths.add(test_path)
+                    elif isinstance(test_evidence, str) and test_evidence:
+                        evidence_paths.add(test_evidence)
                 for delegated in op.get("delegatedCallees", []):
                     if isinstance(delegated, dict):
                         delegated_path = delegated.get("path")
