@@ -152,8 +152,8 @@ def graph(root: Path, revision: str) -> Graph:
 def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
     changed = set()
     reasons = set()
-    owners = before.owners | after.owners
-    # Preserve old owners on package renames, including same-directory renames.
+    # Resolve each revision independently: adding/removing a nested package
+    # changes its parent's ownership even when the workspace manifest is unchanged.
     for path in paths:
         parts = path.split("/")
         if not path or path.startswith("/") or ".." in parts or "\\" in path or "\0" in path:
@@ -164,14 +164,20 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
         if path.startswith((".cargo/", f"{WORKSPACE}/.cargo/", ".github/", "scripts/")):
             reasons.add(f"shared CI input: {path}")
             continue
-        matched = [p for p in owners if path.startswith(p + "/")]
-        if not matched:
+        owned = False
+        for mapping in (before.owners, after.owners):
+            # Walking ancestors costs path depth, not a scan of every package
+            # for every changed file. Only the deepest owner in each tree counts.
+            folder = posixpath.dirname(path)
+            while folder:
+                if folder in mapping:
+                    changed.add(mapping[folder])
+                    owned = True
+                    break
+                folder = posixpath.dirname(folder)
+        if not owned:
             reasons.add(f"unowned input: {path}")
             continue
-        folder = max(matched, key=len)
-        for mapping in (before.owners, after.owners):
-            if folder in mapping:
-                changed.add(mapping[folder])
         if path.endswith("/build.rs"):
             reasons.add(f"build script: {path}")
     current = after.targets
