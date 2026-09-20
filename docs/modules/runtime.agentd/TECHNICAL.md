@@ -44,7 +44,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
+`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. The current source also contains a named `AgentdPromptPipelineOwner` composed into the existing App Server host path; this establishes source composition only, not deployed product execution, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
 
 ### Native source and scope
 
@@ -136,7 +136,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. In the prompt path, Agentd startup opens `AgentdPromptPipelineOwner`, which holds the durable prompt registry owner and a separate durable staged/dispatch/terminal runtime projection. `runtime.codex` must persist the exact provider-request dispatch binding through that owner before crossing the provider send boundary; a missing or indeterminate terminal survives reopen and blocks blind retry until reconciliation. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -164,12 +164,13 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-codex-hepta-agentd starts from AgentdConfig::from_process_environment; the optional --authbus-trust-file is protected host configuration. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
+codex-hepta-agentd starts from AgentdConfig::from_process_environment; the optional --authbus-trust-file is protected host configuration. The supervisor supplies the owner identity/generation and existing memory store. Agentd also opens the prompt registry under the agent home and the prompt runtime reconciliation state under the agent run root; App Server receives its `PromptRuntimeHost` from that same pipeline owner rather than constructing a parallel prompt path. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-agentd/src/main.rs](../../../codex-rs/hepta-agentd/src/main.rs).
 - [codex-rs/hepta-agentd/src/config.rs](../../../codex-rs/hepta-agentd/src/config.rs).
+- [codex-rs/hepta-agentd/src/prompt_runtime.rs](../../../codex-rs/hepta-agentd/src/prompt_runtime.rs) — named prompt pipeline owner plus durable staged/dispatch/terminal recovery.
 - [codex-rs/hepta-agentd/AUTHBUS_TEXT.md](../../../codex-rs/hepta-agentd/AUTHBUS_TEXT.md).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 
@@ -181,6 +182,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `context_reads_real_owner_content_and_removes_committed_tombstones`.
 - [codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs); named case: `lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt`.
+- [codex-rs/hepta-agentd/src/prompt_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/prompt_runtime_tests.rs); cases cover durable dispatch-without-terminal reopen, acknowledgement-loss poisoning/reopen, indeterminate reconciliation, retry history, and the named registry → optimizer → context compiler → App Server host source-composition path.
 
 In `codex-rs`, run `just test -p codex-hepta-agentd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md) separately labels target acceptance designs.
 
