@@ -25,6 +25,7 @@ use crate::Error;
 use crate::compile;
 
 pub const CONTEXT_COMPILATION_WIRE_SCHEMA_V2: &str = "hepta.context-compilation-receipt.v2";
+pub const CONTEXT_COMPILATION_WIRE_PRODUCER_V2: &str = "context.compiler";
 const CONTEXT_COMPILATION_WIRE_MAX_BYTES: usize = 256 * 1024;
 const MAX_WIRE_CONTEXT_IDS: usize = 4_096;
 
@@ -121,6 +122,7 @@ pub fn encode_compilation_receipt_wire_v2(
     producer: StableId,
     generation: Generation,
 ) -> Result<WireEnvelopeV2, ContextWireError> {
+    require_context_compilation_producer(&producer)?;
     let codec = ContextCompilationWireCodec::new().map_err(ContextWireError::Schema)?;
     let mut registry = SchemaRegistry::new();
     registry
@@ -156,6 +158,7 @@ pub fn encode_compilation_receipt_wire_v2(
 pub fn decode_compilation_receipt_wire_v2(
     envelope: &WireEnvelopeV2,
 ) -> Result<ContextCompilationWireV2, ContextWireError> {
+    require_context_compilation_producer(envelope.producer())?;
     let codec = ContextCompilationWireCodec::new().map_err(ContextWireError::Schema)?;
     let mut registry = SchemaRegistry::new();
     registry
@@ -186,8 +189,18 @@ pub fn compile_to_wire_v2(
     Ok((receipt, envelope))
 }
 
+fn require_context_compilation_producer(
+    producer: &StableId,
+) -> Result<(), ContextWireError> {
+    if producer.as_str() != CONTEXT_COMPILATION_WIRE_PRODUCER_V2 {
+        return Err(ContextWireError::UnexpectedProducer(producer.clone()));
+    }
+    Ok(())
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ContextWireError {
+    UnexpectedProducer(StableId),
     Schema(SchemaAdmissionError),
     Codec(SchemaCodecError),
     Envelope(WireV2Error),
@@ -205,6 +218,7 @@ impl StdError for ContextWireError {
             Self::Schema(error) => Some(error),
             Self::Codec(error) => Some(error),
             Self::Envelope(error) => Some(error),
+            Self::UnexpectedProducer(_) => None,
         }
     }
 }
