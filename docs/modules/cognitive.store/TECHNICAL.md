@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs). The semantic V2 surface includes `AdmittedCognitiveStoreV2` and exact-cut snapshot paging; the canonical production façade re-exports `DurableCognitiveStore` and production writer/recovery types from [durable.rs](../../../codex-rs/hepta-cognitive-store/src/durable.rs) without creating a second database. The physical implementation remains [hepta-memory::CognitiveStore](../../../codex-rs/hepta-memory/src/cognitive_store.rs), and the named product caller is [AgentdProductionWriterHost](../../../codex-rs/hepta-agentd/src/production_writer_host.rs). These are source bindings; exact-candidate execution, independent acceptance, activation and release remain separate evidence states.
+The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs). The semantic V2 surface includes `AdmittedCognitiveStoreV2`, exact-cut snapshot paging, and shadow-only canonical `MemoryEventV1` co-observation through `append_admitted_with_canonical_shadow`; the canonical production façade re-exports `DurableCognitiveStore` and production writer/recovery types from [durable.rs](../../../codex-rs/hepta-cognitive-store/src/durable.rs) without creating a second database. The physical implementation remains [hepta-memory::CognitiveStore](../../../codex-rs/hepta-memory/src/cognitive_store.rs), and the named product caller is [AgentdProductionWriterHost](../../../codex-rs/hepta-agentd/src/production_writer_host.rs). These are source bindings; exact-candidate execution, independent acceptance, activation and release remain separate evidence states.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -176,6 +176,10 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 The physical writer remains `hepta-memory::CognitiveStore` over `cognitive_1.sqlite3`; `hepta-cognitive-store::durable` is the canonical façade and does not duplicate state. Lane C exposes both bounded whole-scope snapshots and proof-bound durable pages that keyset-page current heads while reconstructing complete ancestry for each selected head. Writable `open_with_recovery` is descriptor-bound and fail-closed: it copies retained database/WAL/journal bytes into a private generation, verifies the independent exact current cut and production authority/fence, checkpoints the copy, and atomically publishes the active generation.
 
+### Canonical MemoryEvent shadow migration
+
+`append_admitted_with_canonical_shadow` validates canonical `MemoryEventV1`, the legacy admission candidate, verification-state correspondence, and the exact source ID/digest/observed-time set before invoking the existing admitted append. The deny-all sidecar binds canonical event digest, legacy candidate digest, final record digest, snapshot-vector digest and write disposition. This folds the useful #970 source work into the canonical #694 line without creating another writer. It does not yet claim source-revision equivalence: legacy `MemoryAdmissionEvidenceV1` has no source-revision field, so production composition must obtain that bridge from the durable owner rather than caller assertion.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
@@ -223,7 +227,7 @@ For `cognitive.store`, this document grants no runtime, production, model, provi
 
 #### `MEM-1-STORE`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `cognitive-platform` / `durability-kernel`.
 - Allowed write paths:
 - `codex-rs/hepta-cognitive-store/**`
@@ -251,7 +255,7 @@ For `cognitive.store`, this document grants no runtime, production, model, provi
 
 #### `MEM-8-PRODUCTION-WRITER`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `cognitive-platform` / `durability-kernel`.
 - Allowed write paths:
 - `codex-rs/hepta-cognitive-store/**`
