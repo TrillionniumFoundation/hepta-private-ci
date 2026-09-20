@@ -240,6 +240,17 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+
+    /// Plasticity proposal admission is available only on the live Running
+    /// generation after App Server readiness. This fences the long-lived
+    /// proposal owner with the same lifecycle boundary as other Agentd work.
+    pub(crate) fn plasticity_admission_ready(&self) -> Result<bool, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        Ok(runtime.lifecycle == AgentLifecycle::Running
+            && runtime.app_server_ready
+            && !runtime.fenced)
+    }
 }
 
 fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
