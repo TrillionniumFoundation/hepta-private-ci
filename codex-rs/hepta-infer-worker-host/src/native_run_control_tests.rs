@@ -69,6 +69,9 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
                 codex_source_admission_digest: None,
                 codex_home_digest: None,
                 codex_connection_id: None,
+                codex_session_id: None,
+                codex_deadline_ms: None,
+                codex_authority_witness_sha256: None,
             },
         )
         .unwrap();
@@ -216,6 +219,9 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
                 codex_source_admission_digest: Some("e".repeat(64)),
                 codex_home_digest: Some("f".repeat(64)),
                 codex_connection_id: Some(9),
+                codex_session_id: Some("session-1".to_string()),
+                codex_deadline_ms: Some(10_000),
+                codex_authority_witness_sha256: Some("1".repeat(64)),
             },
         )
         .unwrap();
