@@ -9,6 +9,7 @@ use std::path::Path;
 
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
+use codex_hepta_evidence::EvidenceIssuerTrustBindingV1;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::VerifyingKey;
@@ -76,6 +77,29 @@ impl EvidenceTrust {
             }
         }
         Ok(trust)
+    }
+
+    pub(crate) fn verification_bindings(
+        &self,
+    ) -> Result<Vec<EvidenceIssuerTrustBindingV1>, AgentdError> {
+        let mut bindings = Vec::new();
+        for configured in &self.issuers {
+            if configured.revoked {
+                continue;
+            }
+            for role in &configured.roles {
+                let role = EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error))?;
+                let issuer = self.issuer_for(
+                    &configured.issuer_id,
+                    configured.key_epoch,
+                    role,
+                )?;
+                bindings.push(EvidenceIssuerTrustBindingV1::from_registration(
+                    &issuer, role,
+                ));
+            }
+        }
+        Ok(bindings)
     }
 
     pub(crate) fn issuer_for(
