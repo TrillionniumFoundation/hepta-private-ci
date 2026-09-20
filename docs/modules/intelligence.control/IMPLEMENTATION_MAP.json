@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "registered_agentd_native_v3_caller_final_use_fence_source_implemented_execution_pending",
+  "productCallerState": "registered_agentd_source_callsite_daemon_composition_pending",
   "productionWriterState": "not_applicable_facade_uses_registered_owner_writers",
   "operations": [
     {
@@ -216,7 +216,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind CurrentCapabilitySnapshotProviderV3 to authenticated current owner/trust surfaces. Agentd now enforces exact final-use snapshot equality immediately before the V3 handoff, but intelligence.control does not mint provider authenticity.",
+    "Wire AgentRunCoordinator and the canonical V3 intelligence path into the real Agentd daemon/App Server product composition under the runtime.agentd owner package; the current Agentd source callsite is not invoked by runtime.rs/state_control.rs/main.rs.",
+    "Bind CurrentCapabilitySnapshotProviderV3 to authenticated current owner/trust surfaces. Agentd source code enforces exact final-use snapshot equality immediately before handoff, but intelligence.control does not mint provider authenticity.",
     "Connect the existing Codex/App Server execution spine after the authority-free Agentd handoff with separately owned final-use model/effect authority and actual delivery/terminal evidence.",
     "Use owner-side cancellable I/O or isolated workers for blocking V3 ports and durable ledger calls; the synchronous coordinator cannot preempt a call that never returns.",
     "Run exact-head and deterministic synthetic-merge qualification for this exact candidate before advancing source-complete or product-execution claims."
@@ -237,9 +238,11 @@
     "release": false,
     "canonicalV3GraphSourceImplemented": true,
     "nativeContractsMaterialized": true,
-    "namedAgentdProductCallerSourceComposed": true,
+    "namedAgentdProductCallerSourceComposed": false,
     "finalUseCapabilityFreshnessFenceSourceImplemented": true,
-    "durableDecisionOutcomeCreditSourceImplemented": true
+    "durableDecisionOutcomeCreditSourceImplemented": true,
+    "namedAgentdSourceCallsiteComposed": true,
+    "realDaemonComposition": false
   },
   "sourceRoot": [
     "codex-rs/hepta-intelligence"
