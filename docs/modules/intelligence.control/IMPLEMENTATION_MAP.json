@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "495256d72c6d0f5a2c0d6e5fb42fcab51702de45",
+    "tree": "97f279f3ea4b035ce849ca12a695bf8a280958cd"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "intelligence.control",
@@ -18,8 +18,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "registered_runtime_native_caller_source_implemented_execution_pending",
-  "productionWriterState": "not_established",
+  "productCallerState": "registered_agentd_native_v3_caller_final_use_fence_source_implemented_execution_pending",
+  "productionWriterState": "not_applicable_facade_uses_registered_owner_writers",
   "operations": [
     {
       "operation": "run_read_only_vertical",
@@ -48,9 +48,9 @@
       "designOperation": "run_evaluated_shadow_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "learning.eval",
-        "learning.ledger",
-        "intuition.policy"
+        "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "codex-rs/hepta-learning-ledger/src/lib.rs",
+        "codex-rs/hepta-intuition/src/lib.rs"
       ]
     },
     {
@@ -71,49 +71,39 @@
       "operation": "run_composition_v3",
       "nativeSymbol": "run_composition_v3",
       "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v3.rs",
-      "state": "source_implemented_registered_product_caller_execution_pending",
+      "state": "source_implemented_registered_agentd_product_caller_final_use_fence_execution_pending",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs",
-        "codex-rs/hepta-intelligence/src/native_ports_v3_tests.rs"
+        "codex-rs/hepta-intelligence/src/native_ports_v3_tests.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "run_composition_v3",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "objective.compiler",
-        "utility.ndu",
-        "learning.eval",
-        "neuron.runtime",
-        "prompt.optimizer",
-        "intuition.policy",
-        "context.compiler",
-        "runtime.agentd",
-        "learning.ledger"
+        "codex-rs/hepta-intelligence/src/native_ports_v3.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "codex-rs/hepta-agentd/src/intelligence_host.rs"
       ]
     },
     {
       "operation": "run_composition_v3_with_control",
       "nativeSymbol": "run_composition_v3_with_control",
       "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v3.rs",
-      "state": "source_implemented_registered_product_caller_execution_pending",
+      "state": "source_implemented_registered_agentd_product_caller_final_use_fence_execution_pending",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs"
+        "codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "run_composition_v3_with_control",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "objective.compiler",
-        "utility.ndu",
-        "learning.eval",
-        "neuron.runtime",
-        "prompt.optimizer",
-        "intuition.policy",
-        "context.compiler",
-        "runtime.agentd",
-        "learning.ledger"
+        "codex-rs/hepta-intelligence/src/native_ports_v3.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "codex-rs/hepta-agentd/src/intelligence_host.rs"
       ]
     },
     {
@@ -131,15 +121,91 @@
       "delegatedCallees": [
         "learning.ledger"
       ]
+    },
+    {
+      "operation": "compose",
+      "nativeSymbol": "compose",
+      "sourcePath": "codex-rs/hepta-intelligence/src/lib.rs",
+      "state": "legacy_source_implemented_compatibility_surface",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/lib_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "legacy_plan_compose",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "run_read_only_vertical_outcome_v1",
+      "nativeSymbol": "run_read_only_vertical_outcome_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/vertical_outcome.rs",
+      "state": "source_implemented_compatibility_explicit_abstain_is_non_error",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/vertical_outcome.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "run_read_only_vertical_outcome_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "run_shadow_pipeline",
+      "nativeSymbol": "run_shadow_pipeline",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline.rs",
+      "state": "legacy_shadow_source_implemented_compatibility_surface",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/pipeline_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "run_shadow_pipeline",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "run_shadow_pipeline_v2",
+      "nativeSymbol": "run_shadow_pipeline_v2",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v2.rs",
+      "state": "shadow_v2_source_implemented_compatibility_surface",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "run_shadow_pipeline_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "native_v3_owner_ports",
+      "nativeSymbol": "NativeV3OwnerPorts",
+      "sourcePath": "codex-rs/hepta-intelligence/src/native_ports_v3.rs",
+      "state": "source_implemented_current_owner_api_adapters",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/native_ports_v3_tests.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_ports",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/lane_b_runtime.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Execute AgentRunCoordinator::run_native_intelligence_v3 with authenticated current owner inputs, the exact frozen implementation generations, actual Codex delivery/terminal observations, and durable Outcome/Credit reconciliation.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the product-execution claim boundary."
+    "Bind CurrentCapabilitySnapshotProviderV3 to authenticated current owner/trust surfaces. Agentd now enforces exact final-use snapshot equality immediately before the V3 handoff, but intelligence.control does not mint provider authenticity.",
+    "Connect the existing Codex/App Server execution spine after the authority-free Agentd handoff with separately owned final-use model/effect authority and actual delivery/terminal evidence.",
+    "Use owner-side cancellable I/O or isolated workers for blocking V3 ports and durable ledger calls; the synchronous coordinator cannot preempt a call that never returns.",
+    "Run exact-head and deterministic synthetic-merge qualification for this exact candidate before advancing source-complete or product-execution claims."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "authenticated current owner/provider enrollment and revocation distribution",
     "product execution and target-host qualification",
+    "independent semantic review",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
@@ -149,9 +215,24 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "canonicalV3GraphSourceImplemented": true,
+    "nativeContractsMaterialized": true,
+    "namedAgentdProductCallerSourceComposed": true,
+    "finalUseCapabilityFreshnessFenceSourceImplemented": true,
+    "durableDecisionOutcomeCreditSourceImplemented": true
   },
   "sourceRoot": [
     "codex-rs/hepta-intelligence"
+  ],
+  "productCallers": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "symbol": "AgentRunCoordinator::run_native_intelligence_v3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_host.rs",
+      "symbol": "AgentdIntelligenceHostV1"
+    }
   ]
 }
