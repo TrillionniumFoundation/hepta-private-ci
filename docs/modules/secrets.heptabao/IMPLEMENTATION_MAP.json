@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "ac9cef926af29149fe1017e0380fd828786a924d",
+    "tree": "3e1045d65aed0d098790a780d05f4ff5ad0cafc2"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -28,8 +28,10 @@
       "nativeSymbol": "consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2",
       "mappingClass": "owner_native",
@@ -41,16 +43,47 @@
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lease_lifecycle_prepare",
+      "nativeSymbol": "DurableLeaseRegistryV1::prepare_issue/prepare_renew/prepare_revoke",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "state": "source_implemented_provider_dispatch_blocked",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "request_secret_lease/renew/revoke local durable intent",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lease_lifecycle_reconcile",
+      "nativeSymbol": "DurableLeaseRegistryV1::mark_unknown/reconcile/expire_at",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "state": "source_implemented_provider_observer_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ambiguous outcome reconciliation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind the lease lifecycle owner to an authenticated product caller and durable host composition.",
+    "Add provider-native dynamic lease issue/renew/revoke dispatch only after the exact HeptaBao/OpenBao endpoint contract is qualified; current compatibility status is blocking partial.",
+    "Run exact-source package tests, crash/fault injection and deterministic synthetic-merge qualification for this candidate."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
