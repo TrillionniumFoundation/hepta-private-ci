@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import tempfile
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -71,6 +72,44 @@ def inside(path: str, roots: list[str]) -> bool:
     return any(path == root or path.startswith(root + "/") for root in roots)
 
 
+def delegated_dependency_matches(
+    root: Path, owner_roots: list[str], anchor: dict[str, Any]
+) -> bool:
+    """Admit a delegated callee only through an owner's real direct Cargo dependency."""
+    source = (root / anchor["path"]).resolve()
+    if not source.is_relative_to(root.resolve()):
+        return False
+    target = anchor["buildTarget"].split("::", 1)[0]
+    workspace_manifest = root / "codex-rs/Cargo.toml"
+    if not workspace_manifest.is_file():
+        return False
+    workspace = tomllib.loads(workspace_manifest.read_text(encoding="utf-8"))["workspace"]
+    for owner_root in owner_roots:
+        manifest = root / owner_root / "Cargo.toml"
+        if not manifest.is_file():
+            continue
+        package = tomllib.loads(manifest.read_text(encoding="utf-8"))
+        for name, dependency in package.get("dependencies", {}).items():
+            if not isinstance(dependency, dict):
+                continue
+            base = manifest.parent
+            if dependency.get("workspace") is True:
+                dependency = workspace.get("dependencies", {}).get(name, {})
+                base = root / "codex-rs"
+            if not isinstance(dependency, dict) or "path" not in dependency:
+                continue
+            dependency_root = (base / dependency["path"]).resolve()
+            if not dependency_root.is_relative_to(root.resolve()):
+                continue
+            dependency_manifest = dependency_root / "Cargo.toml"
+            if not dependency_manifest.is_file():
+                continue
+            declared = tomllib.loads(dependency_manifest.read_text(encoding="utf-8"))["package"]["name"]
+            if declared == target and source.is_relative_to(dependency_root):
+                return True
+    return False
+
+
 def verify_anchor(
     root: Path,
     module: str,
@@ -91,7 +130,11 @@ def verify_anchor(
             isinstance(delegated_owner, str) and delegated_owner in roots,
             f"{module}: delegated owner",
         )
-        need(inside(path, roots[delegated_owner]), f"{module}: delegate-root escape {path}")
+        need(
+            inside(path, roots[delegated_owner])
+            or delegated_dependency_matches(root, roots[delegated_owner], anchor),
+            f"{module}: delegate-root escape {path}",
+        )
     symbol = anchor["symbol"]
     target = anchor["buildTarget"]
     need(isinstance(symbol, str) and bool(symbol.strip()), f"{module}: invalid symbol")
