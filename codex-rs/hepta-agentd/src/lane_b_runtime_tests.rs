@@ -318,6 +318,45 @@ fn v3_digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+#[test]
+fn terminal_learning_closure_is_bound_to_the_exact_run_decision() {
+    let mut coordinator =
+        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
+    coordinator.start_run(100, snapshot()).expect("admit run");
+    let binding = LearningDecisionBindingV3 {
+        episode_id: v3_id("episode:run.1"),
+        event_digest: v3_digest("decision-event:run.1"),
+        chain_digest: v3_digest("decision-chain:run.1"),
+    };
+    coordinator
+        .bind_learning_decision("run.1", binding.clone())
+        .expect("bind durable decision");
+
+    assert_eq!(
+        coordinator.require_learning_closure_binding(
+            "run.1",
+            &v3_id("episode:other"),
+            binding.chain_digest,
+        ),
+        Err(AgentRunError::LearningDecisionBindingMismatch)
+    );
+    assert_eq!(
+        coordinator.require_learning_closure_binding(
+            "run.1",
+            &binding.episode_id,
+            v3_digest("different-decision-chain"),
+        ),
+        Err(AgentRunError::LearningDecisionBindingMismatch)
+    );
+    coordinator
+        .require_learning_closure_binding(
+            "run.1",
+            &binding.episode_id,
+            binding.chain_digest,
+        )
+        .expect("exact binding");
+}
+
 fn v3_snapshot(revocation_frontier: &str) -> CapabilitySnapshotV2 {
     let pairs = [
         ("objective.validation", "objective.compiler"),
