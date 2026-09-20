@@ -72,6 +72,40 @@ jobs:
           node --test apps/hepta-browser/test/runtime.test.js
           node --test apps/hepta-control-ui/test/runtime-client.test.js
 
+      - name: Install Linux native UI dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev
+
+      - name: Resolve native dependency lock
+        working-directory: apps/hepta-native
+        run: cargo generate-lockfile
+
+      - name: Preserve exact-head native dependency lock
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-native-resolved-lock-${{ github.run_id }}
+          path: apps/hepta-native/Cargo.lock
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Verify native product exact head
+        working-directory: apps/hepta-native
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --check
+          cargo clippy --all-targets --all-features -- -D warnings
+          cargo test --all-targets
+          cargo build --release --bins
+          ./target/release/hepta-native --self-test
+
+      - name: Verify authenticated native gateway exact head
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-native-gateway
+
       - name: Verify Rust formatting
         working-directory: codex-rs
         run: cargo fmt --all -- --check
@@ -131,6 +165,15 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
+          sudo apt-get update
+          sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev
+          cargo generate-lockfile --manifest-path apps/hepta-native/Cargo.toml
+          cargo fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          cargo clippy --manifest-path apps/hepta-native/Cargo.toml --all-targets --all-features -- -D warnings
+          cargo test --manifest-path apps/hepta-native/Cargo.toml --all-targets
+          cargo build --manifest-path apps/hepta-native/Cargo.toml --release --bins
+          ./apps/hepta-native/target/release/hepta-native --self-test
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cd ..
           git diff --check
