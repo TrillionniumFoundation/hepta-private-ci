@@ -346,7 +346,6 @@ impl FleetRegistry {
         agent_id: &AgentId,
         release_id: &ReleaseId,
     ) -> Result<(), FleetRegistryError> {
-        let binding = self.resolve_release_binding(agent_id, release_id)?;
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
@@ -354,10 +353,12 @@ impl FleetRegistry {
         if path.exists() {
             let actual: ReleaseRevocation =
                 read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
+            let manifest = release_manifest_path(self.layout().releases_root(), release_id);
+            let manifest_sha256 = sha256_file(&manifest)?;
             if actual.schema_version == RELEASE_METADATA_SCHEMA_VERSION
                 && actual.agent_id == *agent_id
                 && actual.release_id == *release_id
-                && actual.manifest_sha256 == binding.manifest_sha256
+                && actual.manifest_sha256 == manifest_sha256
             {
                 return Ok(());
             }
@@ -365,6 +366,11 @@ impl FleetRegistry {
                 "release revocation changed for agent {agent_id} release {release_id}"
             )));
         }
+
+        // Admission is revalidated immediately before the append-only revocation
+        // marker is created, including the exact per-Agent allowance and immutable
+        // manifest/program digests.
+        let binding = self.resolve_release_binding(agent_id, release_id)?;
         let revocation = ReleaseRevocation {
             schema_version: RELEASE_METADATA_SCHEMA_VERSION,
             agent_id: agent_id.clone(),
@@ -469,7 +475,11 @@ impl FleetRegistry {
                 continue;
             };
             let release_id = ReleaseId::parse(value)?;
-            self.resolve_release(agent_id, &release_id)?;
+            match self.resolve_release(agent_id, &release_id) {
+                Ok(_) => {}
+                Err(FleetRegistryError::ReleaseRevoked { .. }) => continue,
+                Err(error) => return Err(error),
+            }
             if !releases.insert(release_id) || releases.len() > MAX_ALLOWED_RELEASES {
                 return Err(FleetRegistryError::Corrupt(
                     "agent release allowance set is duplicate or exceeds its bound".to_string(),
