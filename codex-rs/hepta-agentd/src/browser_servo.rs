@@ -1595,6 +1595,56 @@ mod tests {
     }
 
     #[test]
+    fn live_revocation_feed_rejects_rollback_and_same_revision_substitution() {
+        let harness = harness();
+        write_revocation_feed(
+            &harness.revocation_feed_path,
+            &FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["revoked.1".to_string()]),
+            },
+        );
+        harness
+            .revocation_feed
+            .refresh_now()
+            .expect("monotonic revocation head");
+        assert_eq!(
+            harness
+                .revocation_feed
+                .applied_revision()
+                .expect("feed revision"),
+            2,
+        );
+
+        write_revocation_feed(
+            &harness.revocation_feed_path,
+            &FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        );
+        assert!(
+            harness.revocation_feed.refresh_now().is_err(),
+            "revocation revision rollback must fail closed",
+        );
+
+        write_revocation_feed(
+            &harness.revocation_feed_path,
+            &FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["different.2".to_string()]),
+            },
+        );
+        assert!(
+            harness.revocation_feed.refresh_now().is_err(),
+            "same revision with substituted revocation set must fail closed",
+        );
+    }
+
+    #[test]
     fn final_use_fence_covers_exactly_the_browser_local_dispatch_boundary() {
         let harness = harness();
         let port = Arc::clone(&harness.port);
