@@ -8,6 +8,9 @@ on:
       - codex-rs/hepta-automation/**
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-operations/**
+      - codex-rs/hepta-types/**
+      - codex-rs/Cargo.lock
       - .github/workflows/automation-taskflow-focused.yml
   workflow_dispatch:
 
@@ -26,9 +29,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Rustfmt changed automation owners
-        run: cargo fmt -p codex-hepta-automation -p codex-hepta-agentd -- --check
-      - name: Check automation and Agentd
-        run: cargo check -p codex-hepta-automation -p codex-hepta-agentd
+        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+      - name: Check automation, operations and Agentd
+        run: cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+      - name: Test kernel operation contract
+        run: cargo test -p codex-hepta-operations
       - name: Test durable automation causal chain
         run: cargo test -p codex-hepta-automation --test durable_causal_chain
       - name: Test automation package
