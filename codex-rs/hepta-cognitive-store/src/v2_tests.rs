@@ -1,5 +1,21 @@
 use super::*;
 
+use std::collections::BTreeSet;
+
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
+use codex_hepta_cognitive_types::hnmf::MemoryScopeV1;
+use codex_hepta_cognitive_types::hnmf::MemoryVerificationStateV1;
+use codex_hepta_cognitive_types::hnmf::ModalityKindV1;
+use codex_hepta_cognitive_types::hnmf::ModalitySpanRefV1;
+use codex_hepta_cognitive_types::hnmf::ObservedIntervalV1;
+use codex_hepta_cognitive_types::hnmf::PrivacyClassV1;
+use codex_hepta_cognitive_types::hnmf::ProvenanceRefV1;
+use codex_hepta_cognitive_types::hnmf::RetentionPolicyV1;
+use codex_hepta_cognitive_types::hnmf::SpanRangeV1;
+
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_cognitive_types::lane_c::MemoryAdmissionEvidenceV1;
 
@@ -62,6 +78,59 @@ fn candidate(
             redaction_manifest_digest: digest("redaction"),
             observed_at_unix_ms: 1,
         }],
+    }
+}
+
+fn contract_id(value: &str) -> ContractIdV1 {
+    ContractIdV1::new(value).unwrap_or_else(|error| panic!("valid contract id: {error}"))
+}
+
+fn contract_digest(value: &str) -> ContractDigestV1 {
+    ContractDigestV1::from_digest(digest(value))
+        .unwrap_or_else(|error| panic!("valid contract digest: {error}"))
+}
+
+fn canonical_event(record_id: &str) -> MemoryEventV1 {
+    MemoryEventV1 {
+        event_id: contract_id(&format!("event:{record_id}")),
+        episode_id: contract_id("episode:1"),
+        scope: MemoryScopeV1::AgentPrivate {
+            agent_id: contract_id("agent:a"),
+        },
+        observed_interval: ObservedIntervalV1 {
+            start_unix_ms: 1,
+            end_unix_ms: None,
+        },
+        modality_spans: vec![ModalitySpanRefV1 {
+            span_id: contract_id("span:1"),
+            modality: ModalityKindV1::Text,
+            asset_sha256: contract_digest("asset"),
+            range: SpanRangeV1::ByteRange { start: 0, end: 4 },
+            preprocessor_manifest_sha256: contract_digest("preprocessor"),
+            feature_blob_sha256: None,
+            symbolic_projection_sha256: None,
+            uncertainty_ppm: 0,
+            privacy_class: PrivacyClassV1::AgentPrivate,
+            redaction_mask_sha256: None,
+        }],
+        cross_modal_bindings: Vec::new(),
+        semantic_keys: BTreeSet::from(["door".to_string()]),
+        provenance: vec![ProvenanceRefV1 {
+            source_id: contract_id(&format!("source:{record_id}")),
+            source_revision: 1,
+            source_sha256: contract_digest(&format!("source-digest:{record_id}")),
+            observed_at_unix_ms: 1,
+        }],
+        verification: MemoryVerificationStateV1::Verified,
+        retention_policy: RetentionPolicyV1::Persistent {
+            retain_until_unix_ms: None,
+        },
+        objective_digest: contract_digest("objective"),
+        ndu_state_digest: contract_digest("ndu"),
+        causal_parents: BTreeSet::new(),
+        temporal_neighbors: BTreeSet::new(),
+        behavior_propensity_ppm: None,
+        lifecycle: MemoryLifecycleV1::Active,
     }
 }
 
@@ -655,5 +724,90 @@ fn paged_snapshot_rejects_forged_cursor_and_broken_page_ancestry() {
     assert_eq!(
         second_page.validate(10),
         Err(CognitiveStoreV2Error::SnapshotPageAncestryMismatch)
+    );
+}
+
+
+#[test]
+fn canonical_event_shadow_binds_exact_admission_and_write_receipt() {
+    let mut store = store();
+    let candidate = candidate("memory:canonical:1", "content:v1", MemoryAdmissionKind::Observation);
+    let event = canonical_event("memory:canonical:1");
+    let write_intent = intent(&store, "intent:canonical:1", &candidate);
+    let result = store
+        .append_admitted_with_canonical_shadow(
+            &Verifier,
+            candidate.clone(),
+            write_intent,
+            event.clone(),
+        )
+        .unwrap_or_else(|error| panic!("canonical shadow append: {error}"));
+
+    result
+        .validate()
+        .unwrap_or_else(|error| panic!("canonical shadow receipt: {error}"));
+    assert_eq!(result.shadow_receipt.event_id, event.event_id);
+    assert_eq!(result.shadow_receipt.candidate_digest, candidate.digest());
+    assert_eq!(result.shadow_receipt.record_digest, result.write_receipt.record_digest);
+    assert_eq!(
+        result.shadow_receipt.snapshot_vector_digest,
+        result.write_receipt.snapshot_key.vector_digest
+    );
+    assert!(!result.shadow_receipt.authority.grants_any());
+}
+
+#[test]
+fn canonical_event_shadow_rejects_provenance_or_verification_drift_before_write() {
+    let mut store = store();
+    let candidate = candidate("memory:canonical:2", "content:v1", MemoryAdmissionKind::Observation);
+
+    let mut wrong_source = canonical_event("memory:canonical:2");
+    wrong_source.provenance[0].source_sha256 = contract_digest("different-source");
+    let write_intent = intent(&store, "intent:canonical:source", &candidate);
+    assert_eq!(
+        store.append_admitted_with_canonical_shadow(
+            &Verifier,
+            candidate.clone(),
+            write_intent,
+            wrong_source,
+        ),
+        Err(CognitiveStoreV2Error::CanonicalSourceProvenanceMismatch)
+    );
+    assert!(store.current_head(&id("memory:canonical:2")).is_none());
+
+    let mut wrong_verification = canonical_event("memory:canonical:2");
+    wrong_verification.verification = MemoryVerificationStateV1::Contradicted;
+    let write_intent = intent(&store, "intent:canonical:verification", &candidate);
+    assert_eq!(
+        store.append_admitted_with_canonical_shadow(
+            &Verifier,
+            candidate.clone(),
+            write_intent,
+            wrong_verification,
+        ),
+        Err(CognitiveStoreV2Error::CanonicalVerificationMismatch)
+    );
+    assert!(store.current_head(&id("memory:canonical:2")).is_none());
+}
+
+#[test]
+fn canonical_event_shadow_receipt_tamper_fails_closed() {
+    let mut store = store();
+    let candidate = candidate("memory:canonical:3", "content:v1", MemoryAdmissionKind::Observation);
+    let write_intent = intent(&store, "intent:canonical:3", &candidate);
+    let result = store
+        .append_admitted_with_canonical_shadow(
+            &Verifier,
+            candidate,
+            write_intent,
+            canonical_event("memory:canonical:3"),
+        )
+        .unwrap_or_else(|error| panic!("canonical shadow append: {error}"));
+
+    let mut tampered = result.clone();
+    tampered.shadow_receipt.record_digest = digest("tampered-record");
+    assert_eq!(
+        tampered.validate(),
+        Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch)
     );
 }
