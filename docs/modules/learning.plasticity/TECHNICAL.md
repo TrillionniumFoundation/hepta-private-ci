@@ -168,7 +168,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Candidate-only parameter/topology library with a durable proposal registry. Preserve the proposal version and exact predecessor; V1 read compatibility is not permission to emit new V1 writes. Structural split/merge/rewire needs an admitted state-migration and writer-handoff implementation before any production application.
+The native plasticity crate remains candidate-only with durable parameter/topology proposal registries. Preserve the proposal version and exact predecessor; V1 read compatibility is not permission to emit new V1 writes. Structural split/merge/rewire is consumed only by the separate `codex-hepta-runtime` execution owner after governed writer-handoff validation and a single-use FinalUse grant; this does not give `learning.plasticity` topology-apply authority.
 
 Current operating and state-format references:
 
@@ -177,6 +177,7 @@ Current operating and state-format references:
 - [docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md).
 - [docs/modules/learning.plasticity/OPERATIONS.md](OPERATIONS.md).
 - [docs/readiness/SELF_ITERATION_EXECUTION.md](../../readiness/SELF_ITERATION_EXECUTION.md).
+- [codex-rs/hepta-runtime/src/topology_execution.rs](../../../codex-rs/hepta-runtime/src/topology_execution.rs) — external FinalUse-authorized consumer for an independently accepted governed topology candidate.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
