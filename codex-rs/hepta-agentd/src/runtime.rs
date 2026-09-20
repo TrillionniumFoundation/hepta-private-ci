@@ -25,6 +25,7 @@ use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::app_runtime::run_app_server;
 use crate::automation::run_automation_scheduler;
+use crate::compact_checkpoint_host::AgentdCompactCheckpointHost;
 
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
@@ -85,6 +86,10 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
+        let compact_checkpoint_host = Arc::new(
+            AgentdCompactCheckpointHost::new(&state, Arc::clone(store))?
+        );
+        state.attach_compact_checkpoint_host(compact_checkpoint_host)?;
     }
     let cognitive_runtime = attach_federation_after_generation_fence(
         &state,
