@@ -201,7 +201,7 @@ pub fn adapt_observed_server_rejection(
         // App Server can synthesize an internal error after awaiting Core turn
         // submission. Without a stronger admission-phase witness, that response
         // is accepted-or-unknown and must be reconciled instead of released.
-        INTERNAL_ERROR_CODE | _ => (
+        _ => (
             AdapterStatus::Indeterminate,
             RetryPosture::ReconcileSameOperation,
         ),
