@@ -81,8 +81,9 @@ The learned scorer is not implemented inside this crate. `policy_digest`,
 `model_artifact_digest` and `scorer_contract_digest` are independent identities
 bound by `CanonicalPolicyProfileV1`. Current-generation V3 decisions additionally
 bind a feature snapshot/schema and the exact utility/confidence/OOD outputs through
-`ScoringCommitmentV1`; assignment randomness is owned and authenticated separately
-by the host consumer.
+`ScoringCommitmentV1`; the exact assignment distribution is authenticated by the
+RequestAttestor exact-request attestation, while randomness is independently owned and authenticated
+by RandomSource in the host consumer.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -179,7 +180,7 @@ The native candidate bound remains `<=128`. Qualification deliberately measures 
 different performance surfaces so security work is not hidden from the fast-path SLO:
 
 - **kernel gate:** [`codex-rs/hepta-intuition/examples/fast_gate.rs`](../../../codex-rs/hepta-intuition/examples/fast_gate.rs) measures V3 policy/profile/scoring validation and selection at 1/16/64/128 candidates, including p50/p95/p99, throughput and allocation behavior;
-- **authenticated end-to-end gate:** [`codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs`](../../../codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs) additionally includes signed Generator/Scorer/Evaluator/RandomSource evidence verification, trust/revocation/window checks, independence checks and exact-request admission.
+- **authenticated end-to-end gate:** [`codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs`](../../../codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs) additionally includes signed Generator/Scorer/RequestAttestor/Evaluator/RandomSource evidence verification, trust/revocation/window checks, independence checks and exact-request admission.
 
 The CI ceilings are source-regression limits, not target-host production SLOs.
 Activation requires retained measurements for the selected host/profile.
@@ -192,7 +193,11 @@ Read-only policy library; inject the complete legal candidate set and exact cali
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs).
+- [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs) — calibrated V1/V2 kernel and request binding;
+- [codex-rs/hepta-intuition/src/qualified.rs](../../../codex-rs/hepta-intuition/src/qualified.rs) — canonical profile, scoring commitment and V3 kernel;
+- [codex-rs/hepta-intelligence/src/intuition_qualification.rs](../../../codex-rs/hepta-intelligence/src/intuition_qualification.rs) — five-role authenticated host admission;
+- [SCORER_CONTRACT.md](SCORER_CONTRACT.md) — learned-scorer ownership and score-provenance contract;
+- [QUALIFICATION_V3.md](QUALIFICATION_V3.md) — reusable profile qualification, exact-request/RNG admission and performance qualification.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -202,7 +207,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs) — request binding, calibration/OOD gates and deterministic/randomized disposition;
 - [codex-rs/hepta-intuition/src/qualified_tests.rs](../../../codex-rs/hepta-intuition/src/qualified_tests.rs) — omission fail-close, canonical-profile enforcement, identity separation and scoring-commitment tamper cases;
-- [codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs](../../../codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs) — frozen model/data qualification with independent Generator/Scorer/Evaluator/RandomSource evidence;
+- [codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs](../../../codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs) — frozen model/data qualification with independent Generator/Scorer/RequestAttestor/Evaluator/RandomSource evidence;
 - [codex-rs/hepta-intuition/examples/fast_gate.rs](../../../codex-rs/hepta-intuition/examples/fast_gate.rs) — pure V3 kernel performance gate;
 - [codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs](../../../codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs) — authenticated end-to-end performance gate.
 
