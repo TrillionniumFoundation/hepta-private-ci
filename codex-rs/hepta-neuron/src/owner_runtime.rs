@@ -304,8 +304,10 @@ where
             .map_err(RuntimeError::Model)?;
         execution.validate_for(&self.config)?;
         self.model_manifest.validate_execution(&execution)?;
-        // Close the model-execution race against current withdrawal/revocation.
-        require_model_lineage(&mut self.lineage, &self.model_manifest)?;
+        // Close the model-I/O race for every authoritative input, not only the
+        // selected model tuple. A revocation during execution must fail before
+        // Prepared or sparse state becomes durable.
+        require_lineage_set(&mut self.lineage, &required_lineage)?;
 
         let model_identity_digest = execution.model_identity_digest()?;
         let model_runtime_digest = execution.model_runtime_digest()?;
