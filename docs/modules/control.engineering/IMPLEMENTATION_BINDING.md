@@ -6,9 +6,10 @@ Concrete source lives in `tools/hepta-engineering-control/control_engineering_v2
 directly owns the SQLite v9 schema/transactions; `orchestration.py` owns exact-source
 admission and resource-aware planning; `candidate.py` is the sole candidate workspace
 owner; `sandbox_control.py` owns sandbox admission/retry ceilings; `mutation_testing.py`
-owns evaluator mutation testing; `external_controls.py` verifies distributed fencing,
-external audit anchoring and HSM/KMS custody; and `product_gate.py` is the named
-repository CI product caller. The package-root API intentionally does not export
+owns evaluator mutation testing; `integration_controller.py` owns base-bound durable
+integration queues plus signed role-bound candidate/review/CI stage observations;
+`external_controls.py` verifies distributed fencing, external audit anchoring and
+HSM/KMS custody; and `product_gate.py` is the named repository CI product caller. The package-root API intentionally does not export
 `facade.issue_work_envelope` or `facade.schedule_ready_packages`; those remain explicit
 local compatibility primitives and do not authenticate canonical source/completion facts.
 New composition uses `issue_repository_work_envelope` or `issue_signed_work_envelope`
@@ -62,4 +63,4 @@ separate externally evidenced deliverables. The repository product caller exists
 source but does not make `production_implementation` true until the exact candidate
 has a successful source/synthetic-merge execution receipt.
 
-`worker_lifecycle.py` owns durable claim/heartbeat/result state, while `product_runtime.py` is the named `EngineeringControlProduct` owner composition. Worker self-report never substitutes for independently observed completion. The historical `hepta_engineering_control.py` remains compatibility-only and is not a native mapping for new callers.
+`worker_lifecycle.py` owns durable claim/heartbeat/result state, while `product_runtime.py` is the named `EngineeringControlProduct` owner composition. Worker self-report never substitutes for independently observed completion. Product integration progression accepts only authenticated `IntegrationStageReceipt` values: candidate evidence is bound to `engineering_evidence_binder`, review observation to `github_review_observer`, and CI observation to `ci_executor`; the review observation remains distinct from independent semantic acceptance. The historical `hepta_engineering_control.py` remains compatibility-only and is not a native mapping for new callers.
