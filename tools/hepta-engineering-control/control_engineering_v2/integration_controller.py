@@ -45,7 +45,7 @@ class IntegrationStageReceipt:
     package_id: str
     stage: str
     evidence_digest: str
-    accepted: bool
+    satisfied: bool
     issuer: str
     signing_identity: str
     observed_unix_ns: int
@@ -354,7 +354,7 @@ def observe_integration_stage(
         or receipt.package_id != package_id
         or receipt.stage not in _STAGE_ISSUERS
         or receipt.issuer != _STAGE_ISSUERS.get(receipt.stage)
-        or receipt.accepted is not True
+        or receipt.satisfied is not True
     ):
         raise EngineeringError("integration_stage_receipt_binding")
     checked_sha256(receipt.evidence_digest, "integration_stage_evidence_digest")
