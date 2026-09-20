@@ -278,3 +278,40 @@ fn canonical_tick_receipt_projects_only_registered_resource_fields() {
         Some(NeuronProtocolError::Json)
     );
 }
+
+
+#[test]
+fn canonical_runtime_config_roundtrip_rejects_unknown_fields() {
+    let native = native_config();
+    let config = runtime_config(&native);
+    let value = checked(canonical_runtime_config_v1(
+        &config,
+        &native,
+        "2099-01-01T00:00:00Z",
+    ));
+    assert_eq!(value.temporal_state_dimension, 5);
+    assert_eq!(value.activation_dimension, 5);
+    assert_eq!(value.top_k_minimum_ratio_ppm, 200_000);
+    assert_eq!(value.top_k_maximum_ratio_ppm, 200_000);
+    assert!(value.per_population_first);
+    assert!(!value.inhibition_digest.is_zero());
+    assert!(!value.eligibility_rule_digest.is_zero());
+
+    let bytes = checked(encode_neuron_runtime_config_v1(&value));
+    assert_eq!(checked(decode_neuron_runtime_config_v1(&bytes)), value);
+
+    let mut json: serde_json::Value = checked(serde_json::from_slice(&bytes));
+    let object = match json.as_object_mut() {
+        Some(value) => value,
+        None => panic!("runtime config DTO must be an object"),
+    };
+    object.insert(
+        "unknownCritical".to_owned(),
+        serde_json::Value::Bool(true),
+    );
+    let changed = checked(serde_json::to_vec(&json));
+    assert_eq!(
+        decode_neuron_runtime_config_v1(&changed).err(),
+        Some(NeuronProtocolError::Json)
+    );
+}
