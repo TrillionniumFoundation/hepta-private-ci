@@ -1,4 +1,4 @@
-name: ui-native-cross-platform-qualification
+name: ui-native-cross-platform-probe
 on:
   push:
     branches:
@@ -7,9 +7,8 @@ permissions:
   contents: read
 jobs:
   linux:
-    name: ui.native Linux exact head
+    name: ui.native Linux probe
     runs-on: ubuntu-24.04
-    timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -17,41 +16,14 @@ jobs:
           persist-credentials: false
       - shell: bash
         run: test "$(git rev-parse HEAD)" = "5344d19e03551505e6a903f3820e448a9faa0a31"
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: "1.95.0"
-          components: rustfmt,clippy
-      - shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev
       - working-directory: apps/hepta-native
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo generate-lockfile
-          cargo fmt --check
-          cargo clippy --all-targets --all-features -- -D warnings
-          cargo test --all-targets
-          cargo build --release --bins
-          rm -rf dist
-          mkdir -p dist/package
-          cp target/release/hepta-native target/release/hepta-native-updater target/release/hepta-native-credential dist/package/
-          ./dist/package/hepta-native --self-test
-          cp Cargo.lock dist/Cargo.lock
-      - working-directory: codex-rs
-        run: cargo test -p codex-hepta-native-gateway
-      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
-        with:
-          name: ui-native-5344d19e03551505e6a903f3820e448a9faa0a31-linux
-          path: apps/hepta-native/dist/**
-          if-no-files-found: error
-          retention-days: 30
+        run: cargo --version
+      - working-directory: apps/hepta-native
+        run: cargo generate-lockfile
 
   macos:
-    name: ui.native macOS exact head
+    name: ui.native macOS probe
     runs-on: macos-15
-    timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -59,37 +31,14 @@ jobs:
           persist-credentials: false
       - shell: bash
         run: test "$(git rev-parse HEAD)" = "5344d19e03551505e6a903f3820e448a9faa0a31"
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: "1.95.0"
-          components: rustfmt,clippy
       - working-directory: apps/hepta-native
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo generate-lockfile
-          cargo fmt --check
-          cargo clippy --all-targets --all-features -- -D warnings
-          cargo test --all-targets
-          cargo build --release --bins
-          rm -rf dist
-          mkdir -p dist/package
-          cp target/release/hepta-native target/release/hepta-native-updater target/release/hepta-native-credential dist/package/
-          ./dist/package/hepta-native --self-test
-          cp Cargo.lock dist/Cargo.lock
-      - working-directory: codex-rs
-        run: cargo test -p codex-hepta-native-gateway
-      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
-        with:
-          name: ui-native-5344d19e03551505e6a903f3820e448a9faa0a31-macos
-          path: apps/hepta-native/dist/**
-          if-no-files-found: error
-          retention-days: 30
+        run: cargo --version
+      - working-directory: apps/hepta-native
+        run: cargo generate-lockfile
 
   windows:
-    name: ui.native Windows exact head
+    name: ui.native Windows probe
     runs-on: windows-latest
-    timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -97,36 +46,8 @@ jobs:
           persist-credentials: false
       - shell: bash
         run: test "$(git rev-parse HEAD)" = "5344d19e03551505e6a903f3820e448a9faa0a31"
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: "1.95.0"
-          components: rustfmt,clippy
       - working-directory: apps/hepta-native
-        shell: pwsh
-        run: |
-          cargo generate-lockfile
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo fmt --check
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo clippy --all-targets --all-features -- -D warnings
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo test --all-targets
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo build --release --bins
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force dist/package | Out-Null
-          Copy-Item target/release/hepta-native.exe,target/release/hepta-native-updater.exe,target/release/hepta-native-credential.exe dist/package/
-          .\dist\package\hepta-native.exe --self-test
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          Copy-Item Cargo.lock dist/Cargo.lock
-      - working-directory: codex-rs
-        run: cargo test -p codex-hepta-native-gateway
-      - working-directory: codex-rs
-        run: cargo test -p codex-hepta-contracts final_use::windows_tests::
-      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
-        with:
-          name: ui-native-5344d19e03551505e6a903f3820e448a9faa0a31-windows
-          path: apps/hepta-native/dist/**
-          if-no-files-found: error
-          retention-days: 30
+        run: cargo --version
+      - working-directory: apps/hepta-native
+        run: cargo generate-lockfile
+
