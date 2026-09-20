@@ -2,12 +2,12 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "3867e3d043dd166291e49c8b5a0e6b0125e493b1",
+    "tree": "ed0d418c67a4d868470f6ef720b1c44d1ebdbc30"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
-  "sourceMaturity": "persistent_agentd_owned_servo_worker_pool_with_grant_scoped_egress",
+  "sourceMaturity": "persistent_agentd_owned_servo_worker_pool_with_live_revocation_and_authenticated_recovery",
   "declaredRoots": [
     "apps/hepta-browser",
     "third_party/servo-patches"
@@ -16,8 +16,8 @@
     "apps/hepta-browser",
     "third_party/servo-patches"
   ],
-  "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict persistent operation journal; long-running Agentd retains the Browser port for the generation; each active profile owns one private Servo worker/profile directory; raw credentials remain outside the admitted capability set.",
-  "terminalObserverDisposition": "Worker admission and terminal response are distinct: final-use authority ends at dispatch_boundary, the bound worker settlement is then persisted when terminal, and post-process-loss reconciliation accepts only a separately trusted exact operation/request/semantic receipt. Missing external truth remains indeterminate.",
+  "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict persistent operation journal; long-running Agentd retains the Browser port and an owner-private monotonic revocation feed for the generation; each active profile owns one private Servo worker/profile directory; raw credentials remain outside the admitted capability set.",
+  "terminalObserverDisposition": "Worker admission and terminal response are distinct: final-use authority ends at dispatch_boundary, the bound worker settlement is persisted when terminal, and post-process-loss terminalization requires an Ed25519-authenticated observer receipt binding observer generation/frontier plus exact operation/request/semantic/outcome identity. Missing or unauthenticated external truth remains indeterminate.",
   "operations": [
     {
       "designOperation": "open_profile",
@@ -28,7 +28,15 @@
         "symbol": "async openProfile(",
         "buildTarget": "hepta-browser"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "persistent_product_owner",
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "symbol": "open_browser_servo_port_from_file",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
       "tests": [
         {
           "path": "apps/hepta-browser/test/runtime.test.js",
@@ -41,7 +49,7 @@
           "command": "node --test apps/hepta-browser/test/worker-driver.test.js"
         }
       ],
-      "sourceSemantics": "Persistent Agentd admits a profile/principal/generation after durable generation fences, exact artifact/launcher verification and bounded global profile capacity; the profile is assigned one private pooled Servo worker and exact-origin egress broker.",
+      "sourceSemantics": "Persistent Agentd admits a profile/principal/generation after durable generation fences, exact artifact/launcher verification and bounded global profile capacity; Agentd retains one private Browser service for its generation and the profile is assigned one private pooled Servo worker plus exact-origin egress broker.",
       "operation": "open_profile",
       "nativeSymbol": "async openProfile(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -91,6 +99,20 @@
           "symbol": "FinalUseAuthority::with_verified_use",
           "buildTarget": "codex-hepta-agentd",
           "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "live_revocation_feed_owner",
+          "path": "codex-rs/hepta-agentd/src/browser_revocation_feed.rs",
+          "symbol": "BrowserRevocationFeed",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "product_dispatch_caller",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "AgentdMethod::BrowserServo",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
         }
       ],
       "tests": [
@@ -113,28 +135,40 @@
           "path": "apps/hepta-browser/scripts/real-browser-e2e.js",
           "kind": "real_servo_lifecycle_egress_recovery",
           "command": "node apps/hepta-browser/scripts/real-browser-e2e.js <qualified-worker>"
+        },
+        {
+          "path": "apps/hepta-browser/test/journal.test.js",
+          "kind": "node_durable_crash_fault_injection",
+          "command": "node --test apps/hepta-browser/test/journal.test.js"
+        },
+        {
+          "path": "apps/hepta-browser/test/persisted-reconciler.test.js",
+          "kind": "node_authenticated_terminal_observer",
+          "command": "node --test apps/hepta-browser/test/persisted-reconciler.test.js"
         }
       ],
-      "sourceSemantics": "Binds proposal provenance, typed payload, current snapshot, grant and live final-use authority; holds revocation through durable intent and worker-side admission/rejection, then releases it. The Servo delegate independently pins top-level navigation to the exact current effect destinationOrigin, so a second profile-allowed origin cannot become this effect's redirect target. Worker terminal settlement is retained and durably recorded; exact trusted persisted receipts can refine a post-process-loss unknown without redispatch.",
+      "sourceSemantics": "Binds proposal provenance, typed payload, current snapshot, grant and live final-use authority. The persistent Agentd owner synchronously refreshes and continuously watches an owner-private monotonic revocation feed using the same FinalUseAuthority fence, so a valid concurrent revocation cannot pass worker admission. Durable intent precedes dispatch_boundary; crash-torn journal tails recover only their fully validated prefix. Post-process-loss success/failure requires an Ed25519-authenticated observer receipt with exact operation/request/semantic/outcome and frontier binding; otherwise the identity remains indeterminate and is never redispatched.",
       "operation": "navigate_or_act",
       "nativeSymbol": "async navigateOrAct(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Obtain terminal-success exact-head Browser Agentd composition, Agentd process qualification and Servo worker-dev receipts for this exact source lineage before claiming repository qualification."
+  ],
   "externalEvidenceGates": [
     "terminal-success exact-head selected-pin build and real Browser E2E",
     "terminal-success exact-head current-pin build must bind the committed Servo-worker Cargo.lock",
     "terminal-success reproducible worker artifact/SPDX receipt",
     "trusted Linux target-host namespace/profile/network/no-listener/descendant-cleanup qualification and platform equivalents where targeted",
     "cross-profile cookie/cache/storage isolation and target resource/soak evidence",
-    "trusted real remote-business persisted-effect observations where business terminality is claimed",
+    "actual signed remote-business receipts from the configured independent terminal observer where business terminality is claimed",
     "independent operator acceptance/promotion/release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
-    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledDocumentationGapsClosed": false,
     "repositoryControlledMappingGapsClosed": true,
     "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
