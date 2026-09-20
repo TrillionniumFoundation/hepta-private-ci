@@ -13,8 +13,12 @@ use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
 use codex_hepta_intelligence_eval::MetricGateV1;
-use codex_hepta_intelligence_eval::decide_independently;
-use codex_hepta_intelligence_eval::freeze_cross_fold_plan;
+use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::MetricRoleV2;
+use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
+use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+use codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactLifecycleEventV1;
 use codex_hepta_learning_artifacts::ArtifactLifecycleStateV1;
@@ -28,8 +32,13 @@ use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::CreditAllocationBatchV1;
 use codex_hepta_learning_ledger::CreditAllocationV1;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::OutcomeTerminalityV1;
 use codex_hepta_learning_ledger::OutcomeWatermarkV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_learning_ledger::finalize_credit_batch;
 use codex_hepta_learning_ledger::freeze_dataset;
 use codex_hepta_learning_ledger::validate_authenticated_outcome;
@@ -38,6 +47,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
     match StableId::new(value.to_owned()) {
@@ -69,6 +80,31 @@ fn actor(name: &str, credential: &str, key: &str) -> AuthenticatedPrincipalV1 {
     }
 }
 
+fn sign_learning_evidence(
+    principal: &AuthenticatedPrincipalV1,
+    key: &SigningKey,
+    role: LearningEvidenceRoleV1,
+    verifier: &LearningEvidenceVerifierV1,
+    objective_digest: Digest32,
+    payload: &[u8],
+) -> SignedLearningEvidenceV1 {
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: principal.principal_id.clone(),
+        principal_id: principal.principal_id.clone(),
+        role,
+        trust_digest: verifier.trust_digest(),
+        scope_digest: principal.scope_digest,
+        objective_digest,
+        authority_epoch: principal.authority_epoch,
+        issued_at: 20,
+        expires_at: 90,
+        payload_digest: Digest32::of_bytes(payload),
+        signature: [0; 64],
+    };
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence
+}
+
 fn bellman_cell(
     sensor: &str,
     action: &str,
@@ -87,9 +123,18 @@ fn bellman_cell(
 
 #[test]
 fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
-    let generator = actor("generator", "generator-credential", "generator-key");
+    let generator_key = SigningKey::from_bytes(&[11; 32]);
+    let evaluator_key = SigningKey::from_bytes(&[22; 32]);
+    let mut generator = actor("generator", "generator-credential", "generator-key");
     let observer = actor("observer", "observer-credential", "observer-key");
-    let evaluator = actor("evaluator", "evaluator-credential", "evaluator-key");
+    let mut evaluator = actor("evaluator", "evaluator-credential", "evaluator-key");
+    let evaluation_scope = digest("lane-e-evaluation-scope");
+    generator.scope_digest = evaluation_scope;
+    evaluator.scope_digest = evaluation_scope;
+    generator.signing_key_digest =
+        Digest32::of_bytes(&generator_key.verifying_key().to_bytes());
+    evaluator.signing_key_digest =
+        Digest32::of_bytes(&evaluator_key.verifying_key().to_bytes());
 
     let candidate_receipt = CandidateSetCompletenessReceiptV1 {
         set_id: id("candidate-set-1"),
@@ -253,49 +298,58 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
     assert!(!artifact.authority.grants_any());
 
     let objective_digest = digest("objective");
-    let estimand_digest = digest("system-longitudinal-task-utility");
-    let frozen_plan = match freeze_cross_fold_plan(CrossFoldPlanV1 {
-        plan_id: id("evaluation-plan"),
-        claim_scope: EvaluationClaimScopeV1::SystemLongitudinal,
-        candidate_id: artifact_id.clone(),
-        baseline_id: id("baseline-1"),
-        objective_digest,
-        dataset_digest: dataset.dataset_digest,
-        estimand_digest,
-        metric_contracts: vec![MetricContractV1 {
-            metric_id: id("task-utility"),
-            direction: EvaluationDirectionV1::Maximize,
-            safety_floor: Some(FixedQ32::from_raw(95)),
-        }],
-        family_alpha_ppm: 50_000,
-        simultaneous_comparisons: 1,
-        folds: vec![
-            CrossFoldPartitionV1 {
-                fold_id: id("evaluation-fold-1"),
-                training_principals: vec![id("evaluation-principal-2")],
-                training_episodes: vec![id("evaluation-episode-2")],
-                training_windows: vec![id("evaluation-train-window-1")],
-                holdout_principals: vec![id("evaluation-principal-1")],
-                holdout_episodes: vec![id("evaluation-episode-1")],
-                holdout_windows: vec![id("window-1")],
-                model_digest: digest("evaluation-model-1"),
-                predictions_digest: digest("evaluation-predictions-1"),
-            },
-            CrossFoldPartitionV1 {
-                fold_id: id("evaluation-fold-2"),
-                training_principals: vec![id("evaluation-principal-1")],
-                training_episodes: vec![id("evaluation-episode-1")],
-                training_windows: vec![id("evaluation-train-window-2")],
-                holdout_principals: vec![id("evaluation-principal-2")],
-                holdout_episodes: vec![id("evaluation-episode-2")],
-                holdout_windows: vec![id("window-2")],
-                model_digest: digest("evaluation-model-2"),
-                predictions_digest: digest("evaluation-predictions-2"),
-            },
-        ],
-        final_holdout_window_id: id("window-2"),
-        final_holdout_digest: digest("final-holdout"),
-    }) {
+    let estimand_digest = digest("qualification-task-utility");
+    let metric_roles = vec![MetricRoleContractV2 {
+        metric_id: id("task-utility"),
+        role: MetricRoleV2::PrimarySuperiority {
+            minimum_improvement: FixedQ32::ZERO,
+        },
+    }];
+    let frozen_plan = match freeze_cross_fold_plan_v2(
+        CrossFoldPlanV1 {
+            plan_id: id("evaluation-plan"),
+            claim_scope: EvaluationClaimScopeV1::Qualification,
+            candidate_id: artifact_id.clone(),
+            baseline_id: id("baseline-1"),
+            objective_digest,
+            dataset_digest: dataset.dataset_digest,
+            estimand_digest,
+            metric_contracts: vec![MetricContractV1 {
+                metric_id: id("task-utility"),
+                direction: EvaluationDirectionV1::Maximize,
+                safety_floor: Some(FixedQ32::from_raw(95)),
+            }],
+            family_alpha_ppm: 50_000,
+            simultaneous_comparisons: 1,
+            folds: vec![
+                CrossFoldPartitionV1 {
+                    fold_id: id("evaluation-fold-1"),
+                    training_principals: vec![id("evaluation-principal-2")],
+                    training_episodes: vec![id("evaluation-episode-2")],
+                    training_windows: vec![id("evaluation-train-window-1")],
+                    holdout_principals: vec![id("evaluation-principal-1")],
+                    holdout_episodes: vec![id("evaluation-episode-1")],
+                    holdout_windows: vec![id("window-1")],
+                    model_digest: digest("evaluation-model-1"),
+                    predictions_digest: digest("evaluation-predictions-1"),
+                },
+                CrossFoldPartitionV1 {
+                    fold_id: id("evaluation-fold-2"),
+                    training_principals: vec![id("evaluation-principal-1")],
+                    training_episodes: vec![id("evaluation-episode-1")],
+                    training_windows: vec![id("evaluation-train-window-2")],
+                    holdout_principals: vec![id("evaluation-principal-2")],
+                    holdout_episodes: vec![id("evaluation-episode-2")],
+                    holdout_windows: vec![id("window-2")],
+                    model_digest: digest("evaluation-model-2"),
+                    predictions_digest: digest("evaluation-predictions-2"),
+                },
+            ],
+            final_holdout_window_id: id("window-2"),
+            final_holdout_digest: digest("final-holdout"),
+        },
+        metric_roles.clone(),
+    ) {
         Ok(receipt) => receipt,
         Err(error) => panic!("frozen evaluation plan failed: {error}"),
     };
@@ -305,47 +359,93 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         Err(error) => panic!("final holdout use failed: {error}"),
     };
 
-    let evaluation = match decide_independently(
-        IndependentEvaluationBundleV1 {
-            evaluation_id: id("evaluation-1"),
-            candidate_id: artifact_id.clone(),
-            baseline_id: id("baseline-1"),
-            claim_scope: EvaluationClaimScopeV1::SystemLongitudinal,
-            generator: generator.clone(),
-            evaluator: evaluator.clone(),
-            frozen_plan,
-            holdout_use,
+    let bundle = IndependentEvaluationBundleV1 {
+        evaluation_id: id("evaluation-1"),
+        candidate_id: artifact_id.clone(),
+        baseline_id: id("baseline-1"),
+        claim_scope: EvaluationClaimScopeV1::Qualification,
+        generator: generator.clone(),
+        evaluator: evaluator.clone(),
+        frozen_plan,
+        holdout_use,
+        objective_digest,
+        dataset_digest: dataset.dataset_digest,
+        estimand_digest,
+        estimate_receipt_digest: bellman.evidence_digest,
+        support_audit_digest: candidate_digest,
+        confidence_receipt_digest: digest("confidence"),
+        retention_receipt_digests: Vec::new(),
+        unlearning_receipt_digest: Digest32::ZERO,
+        snapshot_ids: Vec::new(),
+        future_window_ids: Vec::new(),
+        family_alpha_ppm: 50_000,
+        simultaneous_comparisons: 1,
+        metrics: vec![MetricGateV1 {
+            metric_id: id("task-utility"),
+            direction: EvaluationDirectionV1::Maximize,
+            candidate: EvaluationIntervalV1 {
+                lower: FixedQ32::from_raw(100),
+                upper: FixedQ32::from_raw(110),
+            },
+            baseline: EvaluationIntervalV1 {
+                lower: FixedQ32::from_raw(80),
+                upper: FixedQ32::from_raw(90),
+            },
+            safety_floor: Some(FixedQ32::from_raw(95)),
+            support_digest: outcome_digest,
+        }],
+    };
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: evaluation_scope,
+        objective_digest,
+        authority_epoch: 8,
+        signers: vec![
+            TrustedLearningSignerV1 {
+                principal: generator.clone(),
+                controller_id: id("generator-controller"),
+                verifying_key: generator_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Generator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: evaluator.clone(),
+                controller_id: id("evaluator-controller"),
+                verifying_key: evaluator_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Evaluator],
+                revoked_at: None,
+            },
+        ],
+    })
+    .expect("host-owned evaluation trust");
+    let evaluation_payload =
+        evaluation_signing_payload_v2(&bundle, &metric_roles).expect("evaluation signing payload");
+    let evidence = SignedEvaluationEvidenceV1 {
+        generator_plan: sign_learning_evidence(
+            &generator,
+            &generator_key,
+            LearningEvidenceRoleV1::Generator,
+            &verifier,
             objective_digest,
-            dataset_digest: dataset.dataset_digest,
-            estimand_digest,
-            estimate_receipt_digest: bellman.evidence_digest,
-            support_audit_digest: candidate_digest,
-            confidence_receipt_digest: digest("confidence"),
-            retention_receipt_digests: vec![digest("retention")],
-            unlearning_receipt_digest: digest("unlearning"),
-            snapshot_ids: vec![id("snapshot-1"), id("snapshot-2"), id("snapshot-3")],
-            future_window_ids: vec![id("window-1"), id("window-2")],
-            family_alpha_ppm: 50_000,
-            simultaneous_comparisons: 1,
-            metrics: vec![MetricGateV1 {
-                metric_id: id("task-utility"),
-                direction: EvaluationDirectionV1::Maximize,
-                candidate: EvaluationIntervalV1 {
-                    lower: FixedQ32::from_raw(100),
-                    upper: FixedQ32::from_raw(110),
-                },
-                baseline: EvaluationIntervalV1 {
-                    lower: FixedQ32::from_raw(80),
-                    upper: FixedQ32::from_raw(90),
-                },
-                safety_floor: Some(FixedQ32::from_raw(95)),
-                support_digest: outcome_digest,
-            }],
-        },
+            bundle.frozen_plan.plan_digest.as_array(),
+        ),
+        evaluator_bundle: sign_learning_evidence(
+            &evaluator,
+            &evaluator_key,
+            LearningEvidenceRoleV1::Evaluator,
+            &verifier,
+            objective_digest,
+            &evaluation_payload,
+        ),
+    };
+    let evaluation = match decide_with_signed_evidence_v2(
+        bundle,
+        metric_roles,
+        &evidence,
+        &verifier,
         50,
     ) {
-        Ok(decision) => decision,
-        Err(error) => panic!("independent evaluation failed: {error}"),
+        Ok(decision) => decision.decision,
+        Err(error) => panic!("signed independent evaluation failed: {error}"),
     };
     assert_eq!(
         evaluation.disposition,
