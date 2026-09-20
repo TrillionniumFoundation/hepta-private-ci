@@ -19,8 +19,8 @@ fn id(value: &str) -> StableId {
 }
 
 #[test]
-fn wire_v2_is_admitted_before_existing_runtime_codex_adapter_logic(
-) -> Result<(), Box<dyn StdError>> {
+fn wire_v2_is_admitted_before_existing_runtime_codex_adapter_logic() -> Result<(), Box<dyn StdError>>
+{
     let digest = Digest32::of_bytes(b"payload");
     let intent = CodexOperationIntent {
         operation_id: id("operation.1"),
@@ -30,11 +30,8 @@ fn wire_v2_is_admitted_before_existing_runtime_codex_adapter_logic(
         lease_payload_digest: digest,
         deadline_ms: 100,
     };
-    let envelope = encode_codex_operation_intent_wire_v2(
-        &intent,
-        id("runtime.agentd"),
-        Generation::new(3)?,
-    )?;
+    let envelope =
+        encode_codex_operation_intent_wire_v2(&intent, id("runtime.agentd"), Generation::new(3)?)?;
     let receipt = adapt_wire_v2(
         1,
         &envelope,
@@ -50,8 +47,7 @@ fn wire_v2_is_admitted_before_existing_runtime_codex_adapter_logic(
 }
 
 #[test]
-fn wire_v2_rejects_unknown_fields_and_payload_binding_drift(
-) -> Result<(), Box<dyn StdError>> {
+fn wire_v2_rejects_unknown_fields_and_payload_binding_drift() -> Result<(), Box<dyn StdError>> {
     let digest = Digest32::of_bytes(b"payload");
     let invalid = WireEnvelopeV2::new(
         id(CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2),
