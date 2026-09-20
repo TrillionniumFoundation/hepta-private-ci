@@ -3713,6 +3713,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-infer-core",
  "codex-hepta-types",
+ "codex-protocol",
  "codex-utils-absolute-path",
  "serde_json",
  "sha2 0.10.9",
@@ -3724,7 +3725,11 @@ dependencies = [
 name = "codex-hepta-inferd"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
+ "codex-hepta-infer-core",
+ "codex-hepta-infer-worker-host",
  "codex-hepta-types",
+ "tokio-util",
 ]
 
 [[package]]

@@ -7,6 +7,9 @@
 
 #![forbid(unsafe_code)]
 
+/// Digest-pinned local runtime process implementation of the model driver.
+pub mod local_process_driver;
+
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 

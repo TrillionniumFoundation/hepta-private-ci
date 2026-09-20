@@ -12,6 +12,8 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+pub mod worker_port;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DispatchRequest {
     pub dispatch_id: StableId,
