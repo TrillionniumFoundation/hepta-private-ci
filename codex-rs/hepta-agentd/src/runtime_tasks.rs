@@ -308,7 +308,7 @@ impl RuntimeTasks {
             .map_err(|_| {
                 AgentdError::Protocol("runtime quarantine callback panicked".to_string())
             })??;
-        tracing::warn!(module = %entry.name, "optional runtime component quarantined");
+        lifecycle_warning(&entry.name, "optional runtime component quarantined");
         Ok(())
     }
 
@@ -341,26 +341,92 @@ impl RuntimeTasks {
             self.failed = true;
         }
         self.shutdown().await;
+        if result.is_ok() && self.failed {
+            return Err(AgentdError::Protocol(
+                "runtime failed while draining; shutdown is not successful".to_string(),
+            ));
+        }
         result
+    }
+
+    /// Consume a completion during cleanup without dropping its owner outcome.
+    ///
+    /// A normal host stop is NOT module retirement: only a previously requested
+    /// retirement may run its retirement callback and publish that acknowledgement.
+    /// Host-initiated aborts also never acknowledge drain or external effects.
+    fn observe_shutdown_completion(
+        &mut self,
+        completion: Result<(Id, Result<(), AgentdError>), JoinError>,
+        abort_requested: bool,
+    ) {
+        let id = match &completion {
+            Ok((id, _)) => *id,
+            Err(error) => error.id(),
+        };
+        let Some(entry) = self.entries.get(&id) else {
+            self.failed = true;
+            return;
+        };
+        let name = entry.name.clone();
+        let retiring = entry.retiring;
+        let result = match completion {
+            // Ordinary tasks may return Ok in response to shared cancellation.
+            // Do not reinterpret that as an unexpected pre-shutdown exit.
+            Ok((id, Ok(()))) if !retiring => {
+                self.entries.remove(&id);
+                Ok(())
+            }
+            // Only cancellation caused by this host's final abort is expected.
+            // A concurrent panic or returned owner error must still be observed.
+            Err(error) if abort_requested && error.is_cancelled() => {
+                self.entries.remove(&id);
+                Ok(())
+            }
+            completion => self.observe(completion),
+        };
+        if let Err(error) = result {
+            self.failed = true;
+            if self.failures.len() == MAX_TASKS {
+                self.failures.pop_front();
+            }
+            lifecycle_warning(&name, "runtime owner failure retained during shutdown");
+            self.failures.push_back(RuntimeTaskFailure {
+                name,
+                diagnostic: error.to_string().chars().take(MAX_DIAGNOSTIC_CHARS).collect(),
+            });
+        }
     }
 
     /// Cooperative cancellation first, then abort and join all remaining tasks.
     /// Durable owners, not task completion, determine external-effect outcomes.
+    /// Errors observed here remain latched for run_until, including on reentry.
+    /// A forced abort is cleanup, never a successful module-retirement receipt.
     pub async fn shutdown(&mut self) {
         self.stopped = true;
         self.cancellation.cancel();
         let grace = self.shutdown_grace;
         if timeout(grace, async {
-            while self.tasks.join_next().await.is_some() {}
+            while let Some(completion) = self.tasks.join_next_with_id().await {
+                self.observe_shutdown_completion(completion, /*abort_requested*/ false);
+            }
         })
         .await
         .is_err()
         {
             self.tasks.abort_all();
-            while self.tasks.join_next().await.is_some() {}
+            while let Some(completion) = self.tasks.join_next_with_id().await {
+                self.observe_shutdown_completion(completion, /*abort_requested*/ true);
+            }
         }
         self.entries.clear();
     }
+}
+
+// Agentd does not directly depend on tracing. Keep warnings best-effort and
+// dependency-free; a closed stderr must not panic across a lifecycle boundary.
+fn lifecycle_warning(name: &str, message: &str) {
+    use std::io::Write;
+    let _ = writeln!(std::io::stderr().lock(), "hepta-agentd module={name}: {message}");
 }
 
 impl Drop for RuntimeTasks {
