@@ -390,8 +390,7 @@ pub fn adapt_authoritative_read_to_canonical_shadow_v1(
             event: binding.event.clone(),
         });
     }
-    if let Some((_, unused)) = used.iter().enumerate().find(|(_, used)| !**used) {
-        let _ = unused;
+    if used.iter().any(|used| !*used) {
         return Err(CanonicalReadShadowError::DuplicateRecordBinding(
             "unused canonical binding".to_string(),
         ));
