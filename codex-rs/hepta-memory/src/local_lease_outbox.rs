@@ -266,6 +266,8 @@ pub(crate) struct InheritedQueuedReceipt {
 pub(crate) struct DurableOperationDispatchBinding {
     pub scope_id: String,
     pub destination_id: String,
+    pub operation_semantic_sha256: Sha256Digest,
+    pub expected_predecessor_sha256: Option<Sha256Digest>,
 }
 
 struct DurableOperationRow {
@@ -1699,9 +1701,19 @@ impl LocalLeaseOutbox {
                 "durable operation destination does not match attached target".to_string(),
             ));
         }
+        let operation_semantic_sha256 = Sha256Digest::parse(&operation.semantic_sha256)
+            .map_err(|_| corrupt("durable operation semantic digest is invalid"))?;
+        let expected_predecessor_sha256 = operation
+            .expected_predecessor_sha256
+            .as_deref()
+            .map(Sha256Digest::parse)
+            .transpose()
+            .map_err(|_| corrupt("durable operation predecessor digest is invalid"))?;
         let binding = DurableOperationDispatchBinding {
             scope_id: operation.scope_id,
             destination_id: operation.destination_id,
+            operation_semantic_sha256,
+            expected_predecessor_sha256,
         };
         transaction
             .commit()
@@ -1920,12 +1932,29 @@ impl LocalLeaseOutbox {
                 state.as_str()
             )));
         }
+        let operation = find_operation(&mut transaction, occurrence_key)
+            .await?
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::StaleFence(
+                    "dispatch claim requires a durable operation ledger row".to_string(),
+                )
+            })?;
+        let operation_semantic_sha256 = Sha256Digest::parse(&operation.semantic_sha256)
+            .map_err(|_| corrupt("dispatch claim operation semantic digest is invalid"))?;
+        let expected_predecessor_sha256 = operation
+            .expected_predecessor_sha256
+            .as_deref()
+            .map(Sha256Digest::parse)
+            .transpose()
+            .map_err(|_| corrupt("dispatch claim predecessor digest is invalid"))?;
         let expected = dispatch_operation_digest(
             grant_digest,
             &self.lease_id,
             occurrence_key,
             &outbox.topic,
             &outbox.payload_sha256,
+            &operation_semantic_sha256,
+            expected_predecessor_sha256.as_ref(),
         );
         if expected != *operation_digest {
             return Err(LocalLeaseOutboxError::StaleFence(
@@ -4693,18 +4722,30 @@ pub(crate) fn dispatch_operation_digest(
     occurrence_key: &str,
     topic: &str,
     payload_sha256: &Sha256Digest,
+    operation_semantic_sha256: &Sha256Digest,
+    expected_predecessor_sha256: Option<&Sha256Digest>,
 ) -> Sha256Digest {
     let mut bytes = Vec::new();
     for part in [
-        b"hepta:production-outbox-operation:v1".as_slice(),
+        b"hepta:production-outbox-operation:v2".as_slice(),
         grant_digest.as_str().as_bytes(),
         lease_id.as_bytes(),
         occurrence_key.as_bytes(),
         topic.as_bytes(),
         payload_sha256.as_str().as_bytes(),
+        operation_semantic_sha256.as_str().as_bytes(),
     ] {
         bytes.extend_from_slice(&(part.len() as u64).to_be_bytes());
         bytes.extend_from_slice(part);
+    }
+    match expected_predecessor_sha256 {
+        Some(predecessor) => {
+            bytes.push(1);
+            let part = predecessor.as_str().as_bytes();
+            bytes.extend_from_slice(&(part.len() as u64).to_be_bytes());
+            bytes.extend_from_slice(part);
+        }
+        None => bytes.push(0),
     }
     Sha256Digest::for_bytes(&bytes)
 }
