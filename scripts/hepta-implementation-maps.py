@@ -287,7 +287,7 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
+    candidate_source = current_source_base()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -311,12 +311,28 @@ def verify():
         source_base = row.get("sourceBase")
         if (
             not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
+            or set(source_base) != {"commit", "tree"}
+            or not isinstance(source_base.get("commit"), str)
+            or not isinstance(source_base.get("tree"), str)
+            or re.fullmatch(r"[0-9a-f]{40}", source_base["commit"]) is None
+            or re.fullmatch(r"[0-9a-f]{40}", source_base["tree"]) is None
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            try:
+                if git("rev-parse", f"{source_base['commit']}^{{tree}}") != source_base["tree"]:
+                    failures.append(f"{mid}: source base tree mismatch")
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", source_base["commit"], "HEAD"],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of candidate")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base cannot be resolved")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -345,8 +361,6 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -356,6 +370,7 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "candidateSource": candidate_source,
             },
             sort_keys=True,
         )
