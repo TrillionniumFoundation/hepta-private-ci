@@ -449,10 +449,7 @@ impl OrganHostV1 {
         Ok(())
     }
 
-    fn activate_read_only_successor(
-        &mut self,
-        mut candidate: Self,
-    ) -> Result<(), OrganRuntimeError> {
+    fn activate_read_only_successor(&mut self, mut candidate: Self) -> Result<(), OrganRuntimeError> {
         candidate.start_all()?;
         let predecessor_faults =
             self.stop_indices(self.validated.initialization_order.clone().into_iter().rev());
@@ -721,10 +718,7 @@ impl OrganHostV1 {
         }
     }
 
-    fn stop_indices(
-        &mut self,
-        indices: impl IntoIterator<Item = usize>,
-    ) -> Vec<OrganFaultRecordV1> {
+    fn stop_indices(&mut self, indices: impl IntoIterator<Item = usize>) -> Vec<OrganFaultRecordV1> {
         let mut faults = Vec::new();
         for index in indices {
             let slot = &mut self.slots[index];
