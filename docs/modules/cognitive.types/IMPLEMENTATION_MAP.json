@@ -235,6 +235,7 @@
   ],
   "repositoryControlledGaps": [
     "Run exact-head package/all-target/strict-clippy and deterministic synthetic-merge qualification for this exact candidate.",
+    "Migrate registered consumers through explicit canonical V1 adapters; registry projection alone is not native consumer convergence.",
     "Bind authenticated production consumers to the exact registered V1 wire schemas before changing product-composition claims."
   ],
   "externalEvidenceGates": [
@@ -255,7 +256,7 @@
     "codex-rs/hepta-cognitive-types"
   ],
   "sourceBaseSemantics": "legacy_registry_baseline_only_not_exact_head_evidence",
-  "nativeConsumerState": "source_integrated_multiple_repository_consumers",
+  "nativeConsumerState": "registry_bound_shadow_migration",
   "authenticatedProductCompositionState": "not_composed",
   "canonicalTypeSource": "codex-rs/hepta-cognitive-types",
   "canonicalWire": {
@@ -264,13 +265,6 @@
     "implementation": "codex-rs/hepta-cognitive-types/src/wire.rs",
     "denyUnknownCriticalFields": true
   },
-  "nativeConsumers": [
-    "cognitive.read",
-    "cognitive.store",
-    "memory.retrieval",
-    "compact.engine",
-    "intelligence.control"
-  ],
   "portSchemaBindings": {
     "ModulePort::cognitive.types::cognitive.read": [
       "ModalitySpanRefV1",
@@ -305,5 +299,20 @@
       "MemoryWriteIntentV1",
       "MemoryWriteReceiptV1"
     ]
-  }
+  },
+  "registeredConsumerTargets": [
+    "cognitive.read",
+    "cognitive.store",
+    "memory.retrieval",
+    "compact.engine",
+    "intelligence.control"
+  ],
+  "legacyConsumerSurfacesPresent": [
+    "cognitive.read: MemoryRecord/CognitiveSnapshot compatibility surface",
+    "cognitive.store: MemoryRecord and Lane C local write contracts",
+    "memory.retrieval: generation_bound::RecallPacketV1 compatibility contract",
+    "compact.engine: MemoryRecord and Lane C compaction surface",
+    "intelligence.control: CognitiveSnapshot compatibility surface"
+  ],
+  "canonicalConsumerConvergenceProved": false
 }
