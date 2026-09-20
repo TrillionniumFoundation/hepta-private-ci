@@ -30,6 +30,7 @@ const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
 const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
 const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
 const RECALL_PACKET_DOMAIN: &[u8] = b"hepta.recall-packet.v1";
+const RETRIEVAL_CHANNEL_COUNT: u32 = 8;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum RetrievalChannelV1 {
@@ -409,6 +410,25 @@ impl RecallPacketV1 {
         if self.selections.len() > MAX_GENERATION_BOUND_RESULTS {
             return Err(RecallErrorV1::InvalidMaximumResults);
         }
+        let candidate_count = self
+            .selections
+            .len()
+            .checked_add(usize::try_from(self.omitted_count).unwrap_or(usize::MAX))
+            .ok_or(RecallErrorV1::CandidateLimitExceeded)?;
+        if candidate_count > MAX_GENERATION_BOUND_CANDIDATES {
+            return Err(RecallErrorV1::CandidateLimitExceeded);
+        }
+        if self.distinct_channels > RETRIEVAL_CHANNEL_COUNT {
+            return Err(RecallErrorV1::InvalidRecallChannelCount);
+        }
+        if let Some(engram) = &self.engram
+            && usize::try_from(engram.resources.candidate_records).unwrap_or(usize::MAX)
+                != candidate_count
+        {
+            return Err(RecallErrorV1::InvalidEngram(
+                "engram candidate count differs from recall packet".to_string(),
+            ));
+        }
         if self.authority.grants_any() {
             return Err(RecallErrorV1::AuthorityGranted);
         }
@@ -497,6 +517,14 @@ impl RecallPacketV1 {
                 ));
             }
             previous = Some(selection);
+        }
+        let selected_channels = self
+            .selections
+            .iter()
+            .flat_map(|selection| selection.channels.iter().copied())
+            .collect::<BTreeSet<_>>();
+        if u32::try_from(selected_channels.len()).unwrap_or(u32::MAX) > self.distinct_channels {
+            return Err(RecallErrorV1::InvalidRecallChannelCount);
         }
         if self.packet_digest != self.compute_packet_digest() {
             return Err(RecallErrorV1::DigestMismatch("recall_packet"));
