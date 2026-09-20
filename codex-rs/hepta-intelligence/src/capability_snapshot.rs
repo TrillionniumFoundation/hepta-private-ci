@@ -59,6 +59,9 @@ pub struct CapabilitySnapshotRequestV2 {
 pub struct CapabilitySnapshotV2 {
     objective_digest: Digest32,
     authority_epoch: u64,
+    body_generation: Generation,
+    configuration_digest: Digest32,
+    revocation_frontier_digest: Digest32,
     snapshot_digest: Digest32,
     absent_optional: Vec<StableId>,
     bindings: BTreeMap<StableId, CapabilityBindingV2>,
@@ -193,6 +196,9 @@ impl CapabilitySnapshotV2 {
         Ok(Self {
             objective_digest: request.objective_digest,
             authority_epoch: request.authority_epoch,
+            body_generation: request.body_generation,
+            configuration_digest: request.configuration_digest,
+            revocation_frontier_digest: request.revocation_frontier_digest,
             snapshot_digest: Digest32::of_bytes(&bytes),
             absent_optional,
             bindings: request
@@ -228,6 +234,30 @@ impl CapabilitySnapshotV2 {
 
     pub(super) const fn authority_epoch(&self) -> u64 {
         self.authority_epoch
+    }
+
+    #[must_use]
+    pub const fn current_authority_epoch(&self) -> u64 {
+        self.authority_epoch
+    }
+
+    #[must_use]
+    pub const fn body_generation(&self) -> Generation {
+        self.body_generation
+    }
+
+    #[must_use]
+    pub const fn configuration_digest(&self) -> Digest32 {
+        self.configuration_digest
+    }
+
+    #[must_use]
+    pub const fn revocation_frontier_digest(&self) -> Digest32 {
+        self.revocation_frontier_digest
+    }
+
+    pub fn bindings(&self) -> impl Iterator<Item = &CapabilityBindingV2> {
+        self.bindings.values()
     }
 
     #[must_use]
