@@ -26,7 +26,7 @@ use crate::authority_store::storage;
 use crate::authority_store::u64_bytes;
 
 const MAX_QUOTAS: i64 = 4096;
-const MAX_RESERVATIONS: i64 = 16_384;
+const MAX_ACTIVE_RESERVATIONS: i64 = 16_384;
 const MAX_ACTIVE_RESERVATIONS_PER_PRINCIPAL: i64 = 1024;
 
 impl AuthBusAuthorityStore {
@@ -163,6 +163,7 @@ impl AuthBusAuthorityStore {
         self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
+        ensure_recovery_complete(&mut tx).await?;
         if let Some(existing) =
             load_reservation_by_operation(&mut tx, &request.operation_id).await?
         {
@@ -202,11 +203,14 @@ impl AuthBusAuthorityStore {
         if request.amount > quota.available {
             return Err(AuthBusAuthorityError::QuotaExceeded);
         }
-        let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_quota_reservation")
-            .fetch_one(&mut *tx)
-            .await
-            .map_err(storage)?;
-        if total >= MAX_RESERVATIONS {
+        let total: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_quota_reservation
+             WHERE state IN ('held', 'dispatch_attempted', 'indeterminate')",
+        )
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        if total >= MAX_ACTIVE_RESERVATIONS {
             return Err(AuthBusAuthorityError::CapacityExceeded);
         }
         let active: i64 = sqlx::query_scalar(
@@ -286,6 +290,59 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)?;
         Ok(reservation)
     }
+
+    /// Move bounded terminal history out of the hot reservation table while
+    /// retaining the complete immutable row and operation identity for exact
+    /// retry/conflict detection. Live and indeterminate rows are never deleted.
+    pub async fn compact_terminal_reservations(
+        &self,
+        older_than_ms: u64,
+        limit: u32,
+    ) -> Result<u32, AuthBusAuthorityError> {
+        if older_than_ms == 0 || limit == 0 || limit > 1024 {
+            return Err(AuthBusAuthorityError::InvalidInput(
+                "reservation compaction requires a time and batch in 1..=1024",
+            ));
+        }
+        let mut tx = begin(&self.pool).await?;
+        let ids: Vec<String> = sqlx::query_scalar(
+            "SELECT reservation_id FROM authbus_quota_reservation
+             WHERE state IN ('settled','released','expired','cancelled')
+               AND updated_at_ms < ?
+             ORDER BY updated_at_ms, reservation_id LIMIT ?",
+        )
+        .bind(u64_bytes(older_than_ms).as_slice())
+        .bind(i64::from(limit))
+        .fetch_all(&mut *tx)
+        .await
+        .map_err(storage)?;
+        for id in &ids {
+            sqlx::query(
+                "INSERT INTO authbus_quota_reservation_archive
+                 (reservation_id, operation_id, quota_key, period_id, principal, amount,
+                  effect_digest, policy_id, policy_revision, policy_decision_digest, state,
+                  revision, expires_at_ms, created_at_ms, updated_at_ms, dispatch_digest,
+                  terminal_evidence, observed_cost, settlement_digest, archived_at_ms)
+                 SELECT reservation_id, operation_id, quota_key, period_id, principal, amount,
+                        effect_digest, policy_id, policy_revision, policy_decision_digest, state,
+                        revision, expires_at_ms, created_at_ms, updated_at_ms, dispatch_digest,
+                        terminal_evidence, observed_cost, settlement_digest, ?
+                 FROM authbus_quota_reservation WHERE reservation_id = ?",
+            )
+            .bind(u64_bytes(older_than_ms).as_slice())
+            .bind(id)
+            .execute(&mut *tx)
+            .await
+            .map_err(storage)?;
+            sqlx::query("DELETE FROM authbus_quota_reservation WHERE reservation_id = ?")
+                .bind(id)
+                .execute(&mut *tx)
+                .await
+                .map_err(storage)?;
+        }
+        tx.commit().await.map_err(storage)?;
+        u32::try_from(ids.len()).map_err(|_| AuthBusAuthorityError::CapacityExceeded)
+    }
 }
 
 pub(crate) async fn load_quota(
@@ -309,12 +366,24 @@ pub(crate) async fn load_reservation(
     tx: &mut Transaction<'_, Sqlite>,
     reservation_id: &StableId,
 ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-    let row = sqlx::query("SELECT * FROM authbus_quota_reservation WHERE reservation_id = ?")
-        .bind(reservation_id.as_str())
-        .fetch_optional(&mut **tx)
-        .await
-        .map_err(storage)?
-        .ok_or(AuthBusAuthorityError::ReservationMissing)?;
+    if let Some(row) = sqlx::query(
+        "SELECT * FROM authbus_quota_reservation WHERE reservation_id = ?",
+    )
+    .bind(reservation_id.as_str())
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(storage)?
+    {
+        return reservation_from_row(&row);
+    }
+    let row = sqlx::query(
+        "SELECT * FROM authbus_quota_reservation_archive WHERE reservation_id = ?",
+    )
+    .bind(reservation_id.as_str())
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(storage)?
+    .ok_or(AuthBusAuthorityError::ReservationMissing)?;
     reservation_from_row(&row)
 }
 
@@ -322,13 +391,25 @@ async fn load_reservation_by_operation(
     tx: &mut Transaction<'_, Sqlite>,
     operation_id: &StableId,
 ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
-    sqlx::query("SELECT * FROM authbus_quota_reservation WHERE operation_id = ?")
-        .bind(operation_id.as_str())
-        .fetch_optional(&mut **tx)
-        .await
-        .map_err(storage)?
-        .map(|row| reservation_from_row(&row))
-        .transpose()
+    if let Some(row) = sqlx::query(
+        "SELECT * FROM authbus_quota_reservation WHERE operation_id = ?",
+    )
+    .bind(operation_id.as_str())
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(storage)?
+    {
+        return reservation_from_row(&row).map(Some);
+    }
+    sqlx::query(
+        "SELECT * FROM authbus_quota_reservation_archive WHERE operation_id = ?",
+    )
+    .bind(operation_id.as_str())
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(storage)?
+    .map(|row| reservation_from_row(&row))
+    .transpose()
 }
 
 fn quota_from_row(row: &SqliteRow) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
@@ -444,10 +525,26 @@ fn reservation_state(value: &str) -> Result<ReservationState, AuthBusAuthorityEr
         "settled" => Ok(ReservationState::Settled),
         "released" => Ok(ReservationState::Released),
         "expired" => Ok(ReservationState::Expired),
+        "cancelled" => Ok(ReservationState::Cancelled),
         _ => Err(AuthBusAuthorityError::CorruptState(
             "invalid quota reservation state",
         )),
     }
+}
+
+async fn ensure_recovery_complete(
+    tx: &mut Transaction<'_, Sqlite>,
+) -> Result<(), AuthBusAuthorityError> {
+    let required: i64 = sqlx::query_scalar(
+        "SELECT recovery_required FROM authbus_recovery_state WHERE singleton = 1",
+    )
+    .fetch_one(&mut **tx)
+    .await
+    .map_err(storage)?;
+    if required != 0 {
+        return Err(AuthBusAuthorityError::RecoveryRequired);
+    }
+    Ok(())
 }
 
 fn blob_u64(row: &SqliteRow, column: &str) -> Result<u64, AuthBusAuthorityError> {
