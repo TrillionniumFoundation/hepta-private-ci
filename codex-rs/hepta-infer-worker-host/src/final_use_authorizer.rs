@@ -235,7 +235,9 @@ fn read_private_config(_path: &Path) -> Result<Vec<u8>> {
 #[cfg(unix)]
 fn validate_issuer_peer_uid(actual_uid: u32, expected_uid: u32) -> Result<()> {
     if actual_uid != expected_uid {
-        return Err("connected final-use authority peer UID does not match configured issuer".into());
+        return Err(
+            "connected final-use authority peer UID does not match configured issuer".into(),
+        );
     }
     Ok(())
 }
