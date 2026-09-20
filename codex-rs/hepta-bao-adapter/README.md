@@ -37,6 +37,12 @@ and must not copy secret bytes into model context, logs or receipts. Response
 buffers and decoded secret strings are zeroized on drop; TLS/HTTP libraries
 may retain internal copies, so this is not a locked-memory guarantee.
 
+Secret/value SHA-256 fields are sensitive metadata, not public identifiers. For
+low-entropy secret material they can enable offline guessing, so hosts must use
+bounded retention, exclude them from general telemetry/exports and avoid
+cross-context reuse as stable fingerprints. A future audit profile may replace
+raw value digests with a keyed digest when cross-system equality is unnecessary.
+
 ## Host integration
 
 ```rust,ignore
