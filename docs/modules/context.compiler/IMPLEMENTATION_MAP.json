@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "1ab65444213e47617d16b7fd03f6e141c4a8a400",
+    "tree": "ce640923f09262b664856da31369ae6b3d5fbc1c"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "legacy_v1_read_only_source_composed_verified_v2_not_composed",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -66,6 +66,20 @@
     {
       "operation": "verify_admission_snapshot_v2",
       "nativeSymbol": "verify_admission_snapshot_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_attachment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_admission_snapshot_successor_v2",
+      "nativeSymbol": "verify_admission_snapshot_successor_v2",
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
@@ -160,13 +174,27 @@
       "operation": "observe_delivery",
       "nativeSymbol": "observe_delivery",
       "designOperation": "compile_context"
+    },
+    {
+      "operation": "wire_v2_compatibility_receipt",
+      "nativeSymbol": "encode_compilation_receipt_wire_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/wire.rs",
+      "state": "legacy_v1_semantics_transport_boundary_canonical_producer_enforced",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/wire_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind the verified V2 operations to an authenticated production consumer, authoritative admission verifier, exact tokenizer/serializer, and runtime provider owner.",
-    "At the real provider boundary consume current final-use authority, bind the exact serialized payload into canonical ProviderRequestBinding evidence, retain the provider-owned exact-attempt witness semantics, and qualify an independent provider-evidence resolver that authenticates that witness against ContextDeliveryPreparationV2.",
-    "Migrate context.compiler from the repository's legacy shared sourceBase baseline to strict module-local exact-source provenance after the canonical implementation-map verifier migration; the current sourceBase is not exact-head evidence.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose the verified V2 operations into one authenticated named product caller with the authoritative admission verifier, exact tokenizer/serializer/template/tool-schema profile, and runtime provider owner.",
+    "At the real provider boundary consume current final-use authority in the same effect-bound ceremony that binds ContextDeliveryPreparationV2 to the exact serialized payload and canonical ProviderRequestBinding before physical send.",
+    "Persist and independently resolve provider attempt/terminal evidence, then exercise revoke race, adapter death, provider indeterminate, process death and retry reconciliation without converting uncertainty into success.",
+    "Run exact-head, deterministic synthetic-merge, capacity and target-host qualification before changing productExecutionProved, activation or release."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -184,5 +212,6 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-context-compiler"
-  ]
+  ],
+  "sourceBaseMode": "module_local_strict"
 }
