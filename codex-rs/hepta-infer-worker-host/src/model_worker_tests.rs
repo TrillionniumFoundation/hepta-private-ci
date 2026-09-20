@@ -26,12 +26,14 @@ impl ModelDriver for Driver {
         &mut self,
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
+        _cancellation: &CancellationToken,
         _response_timeout: Duration,
     ) -> Result<DriverRunObservation, Error> {
         if self.indeterminate {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
                 succeeded: false,
+                cancelled: false,
                 output_digest: None,
                 consumed_tokens: Some(4),
                 observed_memory_bytes: 1_024,
@@ -40,6 +42,7 @@ impl ModelDriver for Driver {
         Ok(DriverRunObservation {
             terminal_observed: true,
             succeeded: !self.fail_terminal,
+            cancelled: false,
             output_digest: Some("9".repeat(64)),
             consumed_tokens: Some(16),
             observed_memory_bytes: 1_024,
