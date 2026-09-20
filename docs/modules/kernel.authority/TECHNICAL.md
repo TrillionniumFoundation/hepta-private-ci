@@ -162,7 +162,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed FinalUseAuthority behind a trusted host boundary. Open its owner-only state directory before accepting grants, keep its process lock and preserve nonce/revocation state across restarts. Replacing old state is an authority reset requiring a new trusted epoch, not ordinary backup restore.
+Embed FinalUseAuthority behind a trusted host boundary. Open its owner-only state directory before accepting grants, keep its process lock and preserve nonce/revocation state across restarts. Replacing old state is an authority reset requiring a new trusted epoch, not ordinary backup restore. `claim` snapshots the exact durable authority epoch/revocation frontier and binds it into the opaque token witness; `with_verified_use` and `VerifiedUseToken::enter` require that exact frontier to remain current. Any frontier advance between claim and effect entry fails closed and requires a fresh independently authorized claim rather than silently reusing a previously verified token.
 
 Current operating and state-format references:
 
