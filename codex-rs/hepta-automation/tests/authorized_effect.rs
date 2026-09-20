@@ -124,6 +124,7 @@ fn intent() -> AuthorizedEffectIntent {
         payload_digest: Sha256Digest::for_bytes(b"effect-payload"),
         final_use_scope_digest: Sha256Digest::for_bytes(b"matrix-room-scope"),
         policy_generation: 7,
+        expected_predecessor_digest: None,
         dependencies: Vec::new(),
         compensation_for: None,
     }
@@ -336,6 +337,18 @@ impl AuthorizedEffectDriver for RecordingDriver {
         assert_eq!(
             request.intent_digest,
             &request.intent.digest().expect("driver intent digest")
+        );
+        assert_eq!(
+            request.operation_intent.operation_id().as_str(),
+            request.intent.operation_id.as_str()
+        );
+        assert_eq!(
+            request.operation_intent.subject_id().as_str(),
+            request.intent.subject_id.as_str()
+        );
+        assert_eq!(
+            request.operation_intent.destination_id().as_str(),
+            request.intent.destination_id.as_str()
         );
         assert_eq!(
             request.binding.subject_id.as_str(),
