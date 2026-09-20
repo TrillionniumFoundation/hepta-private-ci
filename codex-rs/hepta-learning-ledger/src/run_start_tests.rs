@@ -68,6 +68,8 @@ fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
         },
         runtime_body_digest: digest("runtime-body"),
         objective_semantic_bytes: objective.to_vec(),
+        objective_function_v1_digest: Digest32::of_bytes(b"{\"objectiveId\":\"fixture\"}"),
+        objective_function_v1_bytes: b"{\"objectiveId\":\"fixture\"}".to_vec(),
     }
 }
 
@@ -359,4 +361,61 @@ fn acknowledged_missing_history_never_repairs_as_success() {
         Some(RunStartStoreError::AcknowledgedHistoryMissing)
     );
     assert_eq!(must(fs::read(fixture.path())), damaged);
+}
+
+
+#[test]
+fn objective_protocol_digest_mismatch_rejects_before_io() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let mut invalid = record("run-protocol", b"objective-semantic");
+    invalid.objective_function_v1_digest = digest("forged-protocol");
+    let before = must(fs::read(fixture.path()));
+    assert_eq!(
+        journal.append(Digest32::ZERO, invalid),
+        Err(RunStartStoreError::ObjectiveProtocolDigestMismatch)
+    );
+    assert_eq!(must(fs::read(fixture.path())), before);
+}
+
+#[test]
+fn committed_record_reopens_and_ack_loss_retry_is_idempotent() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let first_record = record("run-ack-loss", b"objective-semantic");
+    let first = must(journal.append(Digest32::ZERO, first_record.clone()));
+    drop(journal);
+
+    let mut reopened = must(fixture.recover(RunStartRecovery::Unacknowledged));
+    let replay = must(reopened.append(Digest32::ZERO, first_record));
+    assert_eq!(
+        replay.disposition,
+        RunStartAppendDisposition::IdempotentReplay
+    );
+    assert_eq!(replay.record_digest, first.record_digest);
+    assert_eq!(replay.chain_digest, first.chain_digest);
+}
+
+#[test]
+fn semantic_or_protocol_drift_after_reopen_conflicts() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let first_record = record("run-drift", b"objective-semantic");
+    let first = must(journal.append(Digest32::ZERO, first_record));
+    drop(journal);
+
+    let mut reopened = must(fixture.recover(RunStartRecovery::Acknowledged(
+        RunStartAnchor {
+            sequence: first.sequence,
+            chain_digest: first.chain_digest,
+        },
+    )));
+    let mut changed = record("run-drift", b"objective-semantic");
+    changed.objective_function_v1_bytes = b"{\"objectiveId\":\"different\"}".to_vec();
+    changed.objective_function_v1_digest =
+        Digest32::of_bytes(&changed.objective_function_v1_bytes);
+    assert_eq!(
+        reopened.append(first.chain_digest, changed),
+        Err(RunStartStoreError::Conflict)
+    );
 }

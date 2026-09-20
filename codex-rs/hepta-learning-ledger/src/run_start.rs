@@ -23,11 +23,15 @@ use codex_hepta_types::StableId;
 const MAGIC: &[u8; 8] = b"HEPTRS01";
 const HEADER: usize = 72;
 const FRAME_OVERHEAD: usize = 112;
-const RECORD_DOMAIN: &[u8] = b"hepta.run-start-record.v1";
+const RECORD_DOMAIN_V1: &[u8] = b"hepta.run-start-record.v1";
+const RECORD_DOMAIN: &[u8] = b"hepta.run-start-record.v2";
 const CONFLICT_RECORD_DOMAIN: &[u8] = b"hepta.run-start-conflict.v1";
 const CHAIN_DOMAIN: &[u8] = b"hepta.run-start-chain.v1";
 const MAX_RECORDS: usize = 4096;
 const MAX_OBJECTIVE_SEMANTIC_BYTES: usize = 256 * 1024;
+const MAX_OBJECTIVE_PROTOCOL_BYTES: usize = 256 * 1024;
+const MAX_RUN_START_PAYLOAD_BYTES: usize =
+    MAX_OBJECTIVE_SEMANTIC_BYTES + MAX_OBJECTIVE_PROTOCOL_BYTES + 4096;
 const MAX_FILE_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -80,8 +84,12 @@ pub enum RunStartObjectiveDispositionV1 {
     ExplicitAbstain,
 }
 
-/// Durable publication unit. The objective bytes are the objective compiler's
-/// native canonical semantic bytes and MUST hash to `objective_digest`.
+/// Durable publication unit.
+///
+/// objective_semantic_bytes bind the owner-native compiler identity recorded by
+/// RunStartSnapshotV1.objective_digest. objective_function_v1_bytes separately
+/// bind the registered canonical JSON protocol identity. Neither digest may be
+/// substituted for the other.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RunStartRecordV1 {
     pub authentication: RunStartAuthenticationV1,
@@ -90,6 +98,8 @@ pub struct RunStartRecordV1 {
     pub snapshot: RunStartSnapshotV1,
     pub runtime_body_digest: Digest32,
     pub objective_semantic_bytes: Vec<u8>,
+    pub objective_function_v1_digest: Digest32,
+    pub objective_function_v1_bytes: Vec<u8>,
 }
 
 /// Durable hard-conflict outcome for an authenticated objective admission.
@@ -140,6 +150,7 @@ pub enum RunStartStoreError {
     InvalidAnchor,
     InvalidSnapshot(&'static str),
     ObjectiveDigestMismatch,
+    ObjectiveProtocolDigestMismatch,
     Busy,
     NotRegular,
     AlreadyInitialized,
@@ -517,6 +528,13 @@ impl RunStartJournal for DurableRunStartJournal {
 }
 
 fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> {
+    validate_record_compat(record, true)
+}
+
+fn validate_record_compat(
+    record: &RunStartRecordV1,
+    require_protocol: bool,
+) -> Result<(), RunStartStoreError> {
     if record.authentication.key_epoch == 0
         || record.authentication.sequence == 0
         || record.authentication.expires_at_ms == 0
@@ -571,6 +589,25 @@ fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> 
     }
     if Digest32::of_bytes(&record.objective_semantic_bytes) != snapshot.objective_digest {
         return Err(RunStartStoreError::ObjectiveDigestMismatch);
+    }
+    if require_protocol {
+        if record.objective_function_v1_digest.is_zero()
+            || record.objective_function_v1_bytes.is_empty()
+            || record.objective_function_v1_bytes.len() > MAX_OBJECTIVE_PROTOCOL_BYTES
+        {
+            return Err(RunStartStoreError::InvalidSnapshot(
+                "objectiveFunctionV1",
+            ));
+        }
+        if Digest32::of_bytes(&record.objective_function_v1_bytes)
+            != record.objective_function_v1_digest
+        {
+            return Err(RunStartStoreError::ObjectiveProtocolDigestMismatch);
+        }
+    } else if !record.objective_function_v1_digest.is_zero()
+        || !record.objective_function_v1_bytes.is_empty()
+    {
+        return Err(RunStartStoreError::Corrupt);
     }
     Ok(())
 }
@@ -669,6 +706,9 @@ fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     push_digest(&mut bytes, record.runtime_body_digest);
     push_len(&mut bytes, record.objective_semantic_bytes.len());
     bytes.extend_from_slice(&record.objective_semantic_bytes);
+    push_digest(&mut bytes, record.objective_function_v1_digest);
+    push_len(&mut bytes, record.objective_function_v1_bytes.len());
+    bytes.extend_from_slice(&record.objective_function_v1_bytes);
     bytes
 }
 
@@ -707,9 +747,13 @@ fn encode_outcome_record(record: &StoredRunStartRecord) -> Vec<u8> {
 }
 
 fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
-    let input = input
-        .strip_prefix(RECORD_DOMAIN)
-        .ok_or(RunStartStoreError::Corrupt)?;
+    let (input, require_protocol) = if let Some(value) = input.strip_prefix(RECORD_DOMAIN) {
+        (value, true)
+    } else if let Some(value) = input.strip_prefix(RECORD_DOMAIN_V1) {
+        (value, false)
+    } else {
+        return Err(RunStartStoreError::Corrupt);
+    };
     let mut reader = Reader(input);
     let authentication = RunStartAuthenticationV1 {
         issuer_id: reader.id()?,
@@ -740,32 +784,47 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
         1 => RunStartObjectiveDispositionV1::ExplicitAbstain,
         _ => return Err(RunStartStoreError::Corrupt),
     };
+    let snapshot = RunStartSnapshotV1 {
+        run_id: reader.id()?,
+        objective_digest: reader.digest()?,
+        hard_constraint_digest: reader.digest()?,
+        preference_state_digest: reader.digest()?,
+        model_tuple_digest: reader.digest()?,
+        prompt_registry_digest: reader.digest()?,
+        artifact_set_digest: reader.digest()?,
+        authority_epoch: reader.u64()?,
+        generation: reader.u64()?,
+        fence_digest: reader.digest()?,
+    };
+    let runtime_body_digest = reader.digest()?;
+    let objective_semantic_bytes = {
+        let length = reader.len()?;
+        if length == 0 || length > MAX_OBJECTIVE_SEMANTIC_BYTES {
+            return Err(RunStartStoreError::Corrupt);
+        }
+        reader.bytes(length)?.to_vec()
+    };
+    let (objective_function_v1_digest, objective_function_v1_bytes) = if require_protocol {
+        let digest = reader.digest()?;
+        let length = reader.len()?;
+        if length == 0 || length > MAX_OBJECTIVE_PROTOCOL_BYTES {
+            return Err(RunStartStoreError::Corrupt);
+        }
+        (digest, reader.bytes(length)?.to_vec())
+    } else {
+        (Digest32::ZERO, Vec::new())
+    };
     let record = RunStartRecordV1 {
         authentication,
         admission,
         disposition,
-        snapshot: RunStartSnapshotV1 {
-            run_id: reader.id()?,
-            objective_digest: reader.digest()?,
-            hard_constraint_digest: reader.digest()?,
-            preference_state_digest: reader.digest()?,
-            model_tuple_digest: reader.digest()?,
-            prompt_registry_digest: reader.digest()?,
-            artifact_set_digest: reader.digest()?,
-            authority_epoch: reader.u64()?,
-            generation: reader.u64()?,
-            fence_digest: reader.digest()?,
-        },
-        runtime_body_digest: reader.digest()?,
-        objective_semantic_bytes: {
-            let length = reader.len()?;
-            if length == 0 || length > MAX_OBJECTIVE_SEMANTIC_BYTES {
-                return Err(RunStartStoreError::Corrupt);
-            }
-            reader.bytes(length)?.to_vec()
-        },
+        snapshot,
+        runtime_body_digest,
+        objective_semantic_bytes,
+        objective_function_v1_digest,
+        objective_function_v1_bytes,
     };
-    if !reader.0.is_empty() || validate_record(&record).is_err() {
+    if !reader.0.is_empty() || validate_record_compat(&record, require_protocol).is_err() {
         return Err(RunStartStoreError::Corrupt);
     }
     Ok(record)
@@ -823,7 +882,7 @@ fn decode_conflict_record(
 }
 
 fn decode_outcome_record(input: &[u8]) -> Result<StoredRunStartRecord, RunStartStoreError> {
-    if input.starts_with(RECORD_DOMAIN) {
+    if input.starts_with(RECORD_DOMAIN) || input.starts_with(RECORD_DOMAIN_V1) {
         return decode_record(input).map(StoredRunStartRecord::Run);
     }
     if input.starts_with(CONFLICT_RECORD_DOMAIN) {
@@ -834,7 +893,7 @@ fn decode_outcome_record(input: &[u8]) -> Result<StoredRunStartRecord, RunStartS
 
 fn encode_frame(stored: &StoredRunStart) -> Result<Vec<u8>, RunStartStoreError> {
     let payload = encode_outcome_record(&stored.record);
-    if payload.len() > MAX_OBJECTIVE_SEMANTIC_BYTES + 1024 {
+    if payload.len() > MAX_RUN_START_PAYLOAD_BYTES {
         return Err(RunStartStoreError::Capacity);
     }
     let size = u32::try_from(payload.len()).map_err(|_| RunStartStoreError::Capacity)?;
@@ -891,7 +950,7 @@ fn replay_frames(
                 .try_into()
                 .map_err(|_| RunStartStoreError::Corrupt)?,
         );
-        if size == 0 || (size as u32) != !complement || size > MAX_OBJECTIVE_SEMANTIC_BYTES + 1024 {
+        if size == 0 || (size as u32) != !complement || size > MAX_RUN_START_PAYLOAD_BYTES {
             return Err(RunStartStoreError::Corrupt);
         }
         let total = size + FRAME_OVERHEAD;

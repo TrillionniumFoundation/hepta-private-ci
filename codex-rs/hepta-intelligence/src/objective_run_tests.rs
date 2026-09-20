@@ -38,6 +38,8 @@ use codex_hepta_objective::ObjectiveSourcePredicateV1;
 use codex_hepta_objective::ObjectiveSourceTrustV1;
 use codex_hepta_objective::ObjectiveStructuredIntentV1;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
+use codex_hepta_objective::decode_objective_function_v1;
+use codex_hepta_objective::ObjectiveFunctionV1Error;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
 
@@ -358,6 +360,27 @@ fn authenticated_objective_is_durable_before_product_receipt_returns() {
     assert_eq!(
         Digest32::of_bytes(&durable.objective_semantic_bytes),
         receipt.objective.objective.semantic_digest
+    );
+    assert_eq!(
+        durable.objective_function_v1_digest,
+        receipt.objective_function_v1_digest
+    );
+    assert_ne!(
+        durable.objective_function_v1_digest,
+        receipt.objective.objective.semantic_digest,
+        "registered protocol identity must remain distinct from native semantic identity"
+    );
+    let decoded = decode_objective_function_v1(&durable.objective_function_v1_bytes)
+        .expect("canonical ObjectiveFunctionV1");
+    assert_eq!(
+        decoded.protocol_digest(),
+        durable.objective_function_v1_digest
+    );
+    let mut noncanonical = b" ".to_vec();
+    noncanonical.extend_from_slice(&durable.objective_function_v1_bytes);
+    assert_eq!(
+        decode_objective_function_v1(&noncanonical),
+        Err(ObjectiveFunctionV1Error::NonCanonicalEncoding)
     );
 }
 

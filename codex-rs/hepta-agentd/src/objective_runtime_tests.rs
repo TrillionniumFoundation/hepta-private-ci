@@ -32,11 +32,15 @@ fn record(
             signature: [7; 64],
         },
         admission: RunStartAdmissionBindingV1 {
+            profile_id: id("profile.objective"),
+            profile_revision: 1,
             profile_digest: digest("profile"),
+            supplied_source_digest: digest(&format!("supplied:{run_id}")),
             intent_digest: digest("intent"),
             admitted_source_digest: digest(&format!("source:{run_id}")),
             observed_at_unix_micros: 1_000_000,
             deadline_unix_micros: 100_000_000,
+            authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
         },
         disposition,
         snapshot: RunStartSnapshotV1 {
@@ -53,6 +57,10 @@ fn record(
         },
         runtime_body_digest: digest(&format!("body:{run_id}")),
         objective_semantic_bytes: objective,
+        objective_function_v1_digest: Digest32::of_bytes(
+            b"{\"objectiveId\":\"fixture\"}",
+        ),
+        objective_function_v1_bytes: b"{\"objectiveId\":\"fixture\"}".to_vec(),
     }
 }
 
@@ -121,4 +129,45 @@ fn runtime_consumes_compiled_record_but_not_explicit_abstain() {
     let abstain = record("run.2", 2, RunStartObjectiveDispositionV1::ExplicitAbstain);
     ensure_runtime_record(&mut coordinator, &abstain, 1).expect("abstain");
     assert!(coordinator.run("run.2").is_none());
+}
+
+
+#[test]
+fn generation_and_fence_drift_fail_closed_before_runtime_admission() {
+    let fence = digest("fence");
+    let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+        agent_id: "agent.test".to_string(),
+        supervisor_generation: 3,
+        agentd_generation: 3,
+        configuration_digest: digest("config").to_string(),
+        ports_digest: digest("ports").to_string(),
+        fence_digest: fence.to_string(),
+    })
+    .expect("coordinator");
+
+    let mut wrong_generation = record("run.generation", 10, RunStartObjectiveDispositionV1::Compiled);
+    wrong_generation.snapshot.generation = 4;
+    assert!(ensure_runtime_record(&mut coordinator, &wrong_generation, 1).is_err());
+
+    let mut wrong_fence = record("run.fence", 11, RunStartObjectiveDispositionV1::Compiled);
+    wrong_fence.snapshot.fence_digest = digest("other-fence");
+    assert!(ensure_runtime_record(&mut coordinator, &wrong_fence, 1).is_err());
+}
+
+#[test]
+fn legacy_record_without_protocol_identity_is_rejected_at_final_use() {
+    let fence = digest("fence");
+    let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+        agent_id: "agent.test".to_string(),
+        supervisor_generation: 3,
+        agentd_generation: 3,
+        configuration_digest: digest("config").to_string(),
+        ports_digest: digest("ports").to_string(),
+        fence_digest: fence.to_string(),
+    })
+    .expect("coordinator");
+    let mut legacy = record("run.legacy", 12, RunStartObjectiveDispositionV1::Compiled);
+    legacy.objective_function_v1_digest = Digest32::ZERO;
+    legacy.objective_function_v1_bytes.clear();
+    assert!(ensure_runtime_record(&mut coordinator, &legacy, 1).is_err());
 }

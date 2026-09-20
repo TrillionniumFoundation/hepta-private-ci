@@ -26,11 +26,13 @@ use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveAdmissionReceiptV1;
 use codex_hepta_objective::ObjectiveCompileReceipt;
 use codex_hepta_objective::ObjectiveConflictReceipt;
+use codex_hepta_objective::ObjectiveFunctionV1Error;
 use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
 use codex_hepta_objective::admit_objective_v1;
 use codex_hepta_objective::canonical_native_objective_conflict_bytes_v1;
 use codex_hepta_objective::canonical_native_objective_semantic_bytes_v1;
 use codex_hepta_objective::compile_admitted_objective_v1;
+use codex_hepta_objective::encode_objective_function_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -57,6 +59,7 @@ pub struct PublishedObjectiveRunV1 {
     pub objective: ObjectiveCompileReceipt,
     pub run_start: RunStartSnapshotV1,
     pub publication: RunStartAppendReceipt,
+    pub objective_function_v1_digest: Digest32,
     pub authority: AuthorityPosture,
 }
 
@@ -68,6 +71,7 @@ pub enum ObjectiveRunError {
         publication: RunStartAppendReceipt,
     },
     DeadlineMissing,
+    Protocol(ObjectiveFunctionV1Error),
     RunStart(RunStartStoreError),
 }
 
@@ -80,6 +84,11 @@ impl Error for ObjectiveRunError {}
 impl From<ObjectiveAdmissionError> for ObjectiveRunError {
     fn from(error: ObjectiveAdmissionError) -> Self {
         Self::Admission(error)
+    }
+}
+impl From<ObjectiveFunctionV1Error> for ObjectiveRunError {
+    fn from(error: ObjectiveFunctionV1Error) -> Self {
+        Self::Protocol(error)
     }
 }
 impl From<RunStartStoreError> for ObjectiveRunError {
@@ -152,6 +161,13 @@ pub fn compile_and_publish_objective_run_v1(
             RunStartStoreError::ObjectiveDigestMismatch,
         ));
     }
+    let objective_function_v1 =
+        encode_objective_function_v1(&objective, envelope, profile, &receipt)?;
+    if objective_function_v1.native_semantic_digest() != objective.objective.semantic_digest {
+        return Err(ObjectiveRunError::Protocol(
+            ObjectiveFunctionV1Error::ProjectionMismatch("native semantic identity"),
+        ));
+    }
     let run_start = RunStartSnapshotV1 {
         run_id: bindings.run_id,
         objective_digest: objective.objective.semantic_digest,
@@ -177,6 +193,8 @@ pub fn compile_and_publish_objective_run_v1(
             snapshot: run_start.clone(),
             runtime_body_digest: bindings.runtime_body_digest,
             objective_semantic_bytes,
+            objective_function_v1_digest: objective_function_v1.protocol_digest(),
+            objective_function_v1_bytes: objective_function_v1.canonical_bytes().to_vec(),
         },
     )?;
     debug_assert!(matches!(
@@ -188,6 +206,7 @@ pub fn compile_and_publish_objective_run_v1(
         objective,
         run_start,
         publication,
+        objective_function_v1_digest: objective_function_v1.protocol_digest(),
         authority: AuthorityPosture::DENY_ALL,
     })
 }

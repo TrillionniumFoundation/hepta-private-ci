@@ -548,6 +548,13 @@ fn ensure_runtime_record(
     record: &RunStartRecordV1,
     now_ms: u64,
 ) -> Result<(), AgentdError> {
+    if record.objective_function_v1_digest.is_zero()
+        || record.objective_function_v1_bytes.is_empty()
+    {
+        return Err(invalid(
+            "durable objective record lacks canonical ObjectiveFunctionV1 identity",
+        ));
+    }
     if record.disposition == RunStartObjectiveDispositionV1::ExplicitAbstain {
         return Ok(());
     }
