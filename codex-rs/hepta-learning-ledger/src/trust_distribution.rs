@@ -148,9 +148,7 @@ pub fn activate_learning_trust(
             .generation
             .checked_add(1)
             .ok_or(LearningTrustDistributionError::InvalidGeneration)?;
-        if previous.root_digest != root_digest
-            || previous.root_id != root.root_id
-        {
+        if previous.root_digest != root_digest || previous.root_id != root.root_id {
             return Err(LearningTrustDistributionError::RootRotationRequiresCeremony);
         }
         if distribution.generation != expected

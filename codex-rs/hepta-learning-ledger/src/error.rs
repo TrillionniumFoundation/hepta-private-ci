@@ -143,10 +143,9 @@ impl fmt::Display for LedgerError {
             Self::OutcomeAlreadyExists(id) => write!(formatter, "outcome already exists: {id}"),
             Self::OutcomeNotFound(id) => write!(formatter, "outcome not found: {id}"),
             Self::OutcomeRevoked(id) => write!(formatter, "outcome is revoked: {id}"),
-            Self::AuthenticatedOutcomeRequired(id) => write!(
-                formatter,
-                "authenticated V2 outcome required: {id}"
-            ),
+            Self::AuthenticatedOutcomeRequired(id) => {
+                write!(formatter, "authenticated V2 outcome required: {id}")
+            }
             Self::OutcomeEpisodeMismatch => {
                 formatter.write_str("outcome and credit episode identities differ")
             }

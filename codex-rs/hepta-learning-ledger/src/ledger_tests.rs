@@ -299,7 +299,9 @@ fn atomic_credit_batch(outcome_id: &str, terminal: i64) -> CreditAllocationBatch
 #[test]
 fn authenticated_corrections_form_one_linear_head_without_forks() {
     let mut ledger = LearningLedger::new();
-    must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(authenticated_decision())));
+    must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
     must(
         ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-1",
@@ -342,7 +344,9 @@ fn authenticated_corrections_form_one_linear_head_without_forks() {
 #[test]
 fn atomic_credit_batch_enforces_terminal_value_and_conservation() {
     let mut ledger = LearningLedger::new();
-    must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(authenticated_decision())));
+    must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
     must(
         ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-1",
@@ -369,7 +373,9 @@ fn atomic_credit_batch_enforces_terminal_value_and_conservation() {
     );
 
     let mut wrong = LearningLedger::new();
-    must(wrong.append(LedgerEvent::AuthenticatedDecisionV2(authenticated_decision())));
+    must(wrong.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
     must(
         wrong.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-1",
@@ -389,7 +395,9 @@ fn atomic_credit_batch_enforces_terminal_value_and_conservation() {
 #[test]
 fn explicit_unlearning_lineage_revokes_source_and_derived_credit() {
     let mut ledger = LearningLedger::new();
-    must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(authenticated_decision())));
+    must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
     must(
         ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-1",
@@ -434,9 +442,14 @@ fn authenticated_outcome_rejects_legacy_decision_ancestry() {
     must(ledger.append(LedgerEvent::Decision(decision())));
 
     assert_eq!(
-        must_err(ledger.append(LedgerEvent::AuthenticatedOutcomeV2(
-            authenticated_outcome("record-auth-outcome-legacy", "auth-outcome-legacy", None, 120),
-        ))),
+        must_err(
+            ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+                "record-auth-outcome-legacy",
+                "auth-outcome-legacy",
+                None,
+                120,
+            ),))
+        ),
         LedgerError::AuthenticatedDecisionRequired("episode-1".to_owned())
     );
 }
@@ -444,7 +457,9 @@ fn authenticated_outcome_rejects_legacy_decision_ancestry() {
 #[test]
 fn atomic_credit_rejects_legacy_outcome_and_credential_or_key_reuse() {
     let mut legacy_outcome = LearningLedger::new();
-    must(legacy_outcome.append(LedgerEvent::AuthenticatedDecisionV2(authenticated_decision())));
+    must(legacy_outcome.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
     must(legacy_outcome.append(LedgerEvent::Outcome(outcome())));
     let mut batch = atomic_credit_batch("outcome-1", FixedQ32::ONE.raw());
     batch.terminal_outcome = FixedQ32::ONE;
@@ -459,13 +474,19 @@ fn atomic_credit_rejects_legacy_outcome_and_credential_or_key_reuse() {
     );
 
     let mut shared_credential = LearningLedger::new();
-    must(shared_credential.append(LedgerEvent::AuthenticatedDecisionV2(authenticated_decision())));
-    must(shared_credential.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
-        "record-auth-outcome-credential",
-        "auth-outcome-credential",
-        None,
-        120,
-    ))));
+    must(
+        shared_credential.append(LedgerEvent::AuthenticatedDecisionV2(
+            authenticated_decision(),
+        )),
+    );
+    must(
+        shared_credential.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-credential",
+            "auth-outcome-credential",
+            None,
+            120,
+        ))),
+    );
     let mut credential_batch = atomic_credit_batch("auth-outcome-credential", 120);
     credential_batch.allocator_credential_chain_digest =
         Digest32::of_bytes(b"generator-credential");
@@ -475,13 +496,17 @@ fn atomic_credit_rejects_legacy_outcome_and_credential_or_key_reuse() {
     );
 
     let mut shared_key = LearningLedger::new();
-    must(shared_key.append(LedgerEvent::AuthenticatedDecisionV2(authenticated_decision())));
-    must(shared_key.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
-        "record-auth-outcome-key",
-        "auth-outcome-key",
-        None,
-        120,
-    ))));
+    must(shared_key.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
+    must(
+        shared_key.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-key",
+            "auth-outcome-key",
+            None,
+            120,
+        ))),
+    );
     let mut key_batch = atomic_credit_batch("auth-outcome-key", 120);
     key_batch.allocator_signing_key_digest = Digest32::of_bytes(b"observer-key");
     assert_eq!(

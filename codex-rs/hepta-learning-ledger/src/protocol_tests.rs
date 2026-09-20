@@ -3,6 +3,11 @@ use super::*;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 
+use crate::AuthenticatedPrincipalV1;
+use crate::CreditAllocationRecordV2;
+use crate::DatasetFreezeRequestV1;
+use crate::freeze_dataset_receipt_v3;
+
 fn id(value: &str) -> StableId {
     StableId::new(value.to_owned()).unwrap()
 }

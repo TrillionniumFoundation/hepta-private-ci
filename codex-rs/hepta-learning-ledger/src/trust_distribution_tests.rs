@@ -61,9 +61,7 @@ fn signed_distribution(
         expires_at: 90,
         signature: [0; 64],
     };
-    signed.signature = root_key
-        .sign(&signed.signing_bytes().unwrap())
-        .to_bytes();
+    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
     signed
 }
 

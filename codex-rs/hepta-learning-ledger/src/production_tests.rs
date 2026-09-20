@@ -11,6 +11,16 @@ use codex_hepta_types::ProbabilityQ32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+use crate::CreditAllocationV1;
+use crate::LearningEvidenceTrustV1;
+use crate::LearningTrustDistributionV1;
+use crate::LearningTrustRootV1;
+use crate::LedgerRecovery;
+use crate::OutcomeWatermarkV1;
+use crate::SignedLearningTrustDistributionV1;
+use crate::TrustedLearningSignerV1;
+use crate::activate_learning_trust;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 fn id(value: &str) -> StableId {
@@ -98,7 +108,6 @@ fn principal(name: &str) -> AuthenticatedPrincipalV1 {
         .principal
 }
 
-
 fn trust_root_key() -> SigningKey {
     SigningKey::from_bytes(&[99; 32])
 }
@@ -125,9 +134,7 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
         expires_at: 90,
         signature: [0; 64],
     };
-    signed.signature = root_key
-        .sign(&signed.signing_bytes().unwrap())
-        .to_bytes();
+    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
     activate_learning_trust(&root, signed, None, 50).unwrap()
 }
 
@@ -421,17 +428,7 @@ fn production_writer_recovers_against_independent_witness() {
     )
     .unwrap();
     let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
-    let trust = activate_learning_trust(
-        LearningTrustDistributionV1 {
-            distribution_id: id("trust-distribution"),
-            generation: 1,
-            effective_at: 20,
-            trust: trust(),
-        },
-        None,
-        50,
-    )
-    .unwrap();
+    let trust = activated_trust();
     let recovered = LedgerWriter::from_durable(ledger, witness, trust).unwrap();
     assert_eq!(
         recovered.witness_frontier().unwrap().anchor.chain_digest,
