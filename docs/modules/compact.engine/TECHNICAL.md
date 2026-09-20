@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); observed identifiers include `CompactCheckpoint`, `compact`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
+The registered owner-native source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); canonical native identifiers are `plan_compaction`, `build_qualified_candidate`, `prove_compaction` and the re-exported `CompactCheckpointV1`. Durable publication is delegated to the existing CognitiveStore owner and the named Agentd product caller, as recorded in the implementation dossier. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -71,10 +71,12 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `bounded input stage`
-- `deterministic algorithm core`
-- `generation publisher`
-- `checkpoint and recovery layer`
+- `V3 bounded input/planning stage` with record, byte and token accounting;
+- `semantic-compactor receipt boundary`, which binds tokenizer, implementation, source manifest and output digest without granting publication authority;
+- `signed independent-evaluator boundary`, which verifies Ed25519 qualification against a host-trusted evaluator;
+- `canonical checkpoint builder` producing only `CompactCheckpointV1`;
+- `CognitiveStore production publisher/reloader` using the existing `cognitive_1.sqlite3` owner;
+- `Agentd compact checkpoint host`, the named internal product caller.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -109,6 +111,8 @@ Owned authoritative or rebuildable domains:
 
 - `compact_checkpoint`
 
+The physical authoritative writer is implemented in the existing `CognitiveStore` database rather than a second compact.engine database. `publish_production_compact_checkpoint` uses `BEGIN IMMEDIATE`, stable operation-id replay, predecessor/generation CAS and an append-only hash chain in `cognitive_compact_events`. Reload reconstructs and revalidates the full canonical checkpoint and signed proof. A transaction fault before commit leaves the predecessor current.
+
 Read-only data dependencies:
 
 - `cross_owner_outbox`
@@ -122,13 +126,13 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) identifies all three composed surfaces. Planning/proof are deterministic owner-native code in `hepta-compact-engine`; durable state is serialized by the existing CognitiveStore owner under `BEGIN IMMEDIATE`; Agentd constructs the named compact checkpoint host at runtime startup when the CognitiveStore is available. Publication is admitted only while Agentd is Running/Ready/unfenced, and its lifecycle generation becomes the owner epoch.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+The durable owner reloads and verifies the complete production compact event chain before publication or read. Operation-id replay is exact-semantic idempotency; a reused operation id with changed content conflicts. A crash before commit rolls back the candidate and retains the predecessor. Concurrent successors serialize through SQLite and only one predecessor/generation CAS can win. Forged/corrupt row, event, lineage, checkpoint or proof data fails closed. Agentd performs a post-publication lifecycle fence; a concurrent lifecycle change requires stable-id replay/query reconciliation rather than a second publication.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -138,24 +142,26 @@ Owned threat entries:
 
 None.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independently authenticated evidence. V3 qualification requires a host-trusted Ed25519 evaluator whose identity, implementation digest, attestation digest, public-key digest and evaluation artifact are all bound into `CompactionProofV2`; evaluator-provided booleans without a valid signature are not proof. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) specifies the algorithm and qualification surface. Current V3 source limits are 65,536 input revisions, 4,096 protected references, 64 MiB of bounded encoded compaction input/output and 8,000,000 bounded tokens, with stricter per-policy record/byte/token caps. Token accounting is meaningful only with the policy-bound tokenizer digest and per-input tokenization receipt. The 4,096-head deterministic test is a source capacity fixture, not a target-host latency/SLO measurement.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Checkpoint/projection library. Keep source lineage, omissions and deletion frontiers with every compact result and retain the prior complete generation on failed construction. A compact receipt does not implement the entire replay or learned-skill pipeline; lifecycle/storage publication belongs to the composed owner.
+Checkpoint subsystem. Keep source lineage, omissions, byte/token loss accounting, semantic-compactor identity, evaluator provenance and deletion frontiers with every selected generation. The existing CognitiveStore database owns atomic publication/reload; a compact proof does not implement replay scheduling or learned-skill induction.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs).
 - [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs).
+- [codex-rs/hepta-memory/src/production_compact.rs](../../../codex-rs/hepta-memory/src/production_compact.rs).
+- [codex-rs/hepta-agentd/src/compact_checkpoint_host.rs](../../../codex-rs/hepta-agentd/src/compact_checkpoint_host.rs).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -163,10 +169,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs); named case: `latest_revision_and_tombstone_are_preserved`.
-- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs); named case: `protected_live_reference_is_retained_before_higher_priority_optional_record`.
+- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs): deletion non-resurrection, deterministic ordering, protected references, record/byte/token budgets, semantic-receipt mismatch, signed evaluator proof and 4,096-head capacity.
+- [codex-rs/hepta-memory/src/production_compact_tests.rs](../../../codex-rs/hepta-memory/src/production_compact_tests.rs): engine-to-owner publish/reopen/reload, crash-before-commit, concurrent CAS winner and forged-row rejection.
+- [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs): named production compact host composition against the running CognitiveStore owner.
 
-In `codex-rs`, run `just test -p codex-hepta-compact-engine`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-compact-engine`, `just test -p codex-hepta-memory` and the focused Agentd runtime test. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -182,7 +189,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+The named source-composed caller is `AgentdCompactCheckpointHost`; it is constructed by Agentd runtime startup only from the current Agent identity and opened CognitiveStore. This establishes the product caller/writer source path but does not by itself establish target-host qualification, independent evaluator trust enrollment, canary, promotion or release.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
