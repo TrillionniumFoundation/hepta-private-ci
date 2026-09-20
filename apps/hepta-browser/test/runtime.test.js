@@ -819,6 +819,8 @@ test("persisted indeterminate operation requires an explicit crash reconciler af
       terminalObserved: true,
       status: "succeeded",
       outcomeDigest: D1,
+      evidenceDigest: D2,
+      observationReason: "authenticated_persisted_receipt",
     }),
   });
   const recoveredHost = new BrowserProfileHost({
@@ -888,6 +890,8 @@ test("persisted recovery never requires or forwards secret type text", async () 
         terminalObserved: true,
         status: "succeeded",
         outcomeDigest: D1,
+        evidenceDigest: D2,
+        observationReason: "authenticated_persisted_receipt",
       };
     },
   });
@@ -909,6 +913,45 @@ test("persisted recovery never requires or forwards secret type text", async () 
   assert.equal(observedIdentity.finalPayloadDigest, finalPayloadDigest);
   assert.equal("typedAction" in observedIdentity, false);
   assert.equal(JSON.stringify(observedIdentity).includes(secret), false);
+});
+
+test("unsigned persisted terminal observation stays indeterminate", async () => {
+  const journal = new MemoryBrowserOperationJournal();
+  const firstDriver = driver({
+    dispatchImpl: async () => {
+      throw new Error("process lost after submit");
+    },
+  });
+  const first = await preparedHost({ driver: firstDriver, journal });
+  await first.host.navigateOrAct(operation());
+
+  const unsignedDriver = driver({
+    persistedReconcileImpl: async (identity) => ({
+      operationId: identity.operationId,
+      requestDigest: identity.requestDigest,
+      semanticDigest: identity.semanticDigest,
+      terminalObserved: true,
+      status: "succeeded",
+      outcomeDigest: D1,
+    }),
+  });
+  const host = new BrowserProfileHost({
+    driver: unsignedDriver,
+    authority: authority(),
+    journal,
+    clock: () => 20_000,
+    allowVolatileJournalForTests: true,
+    driverCallTimeoutMs: 50,
+  });
+  const receipt = await host.reconcilePersistedOperation({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    operationId: "operation.1",
+  });
+  assert.equal(receipt.status, "indeterminate");
+  assert.equal(receipt.terminalObserved, false);
+  assert.equal((await journal.listOperations("profile.1", 1)).length, 1);
 });
 
 test("misbound persisted terminal observation stays indeterminate", async () => {
