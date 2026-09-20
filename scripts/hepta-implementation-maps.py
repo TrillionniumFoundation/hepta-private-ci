@@ -76,6 +76,8 @@ def tracked_source_paths(row: dict) -> list[str]:
         add_path(caller.get("sourcePath"))
         for test in caller.get("tests", []):
             add_path(test)
+        for callee in caller.get("delegatedCallees", []):
+            add_path(callee)
 
     return sorted(paths)
 
