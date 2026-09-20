@@ -201,6 +201,35 @@ class WorkerLifecycleTests(unittest.TestCase):
                 )
                 self.assertEqual(completed.state, "completed_observed")
 
+    def test_result_after_heartbeat_deadline_is_rejected_before_reconcile(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
+                self.register(store)
+                self.plan_and_lease(store)
+                claim = claim_assignment(
+                    store,
+                    "generation-a",
+                    "package-a",
+                    "worker-a",
+                    "lease-a",
+                    heartbeat_ttl_ns=10,
+                    now_ns=self.now + 2,
+                )
+                running = heartbeat_claim(
+                    store,
+                    self.heartbeat(claim, self.now + 3),
+                    self.trust,
+                    heartbeat_ttl_ns=10,
+                    now_ns=self.now + 3,
+                )
+                with self.assertRaisesRegex(ValueError, "claim_heartbeat_expired"):
+                    submit_worker_result(
+                        store,
+                        self.result(running, self.now + 13, "success"),
+                        self.trust,
+                        now_ns=self.now + 13,
+                    )
+
     def test_timeout_requeues_but_semantic_failure_never_retries(self):
         with tempfile.TemporaryDirectory() as temporary:
             with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:

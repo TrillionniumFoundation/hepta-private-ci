@@ -113,6 +113,9 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path):
                 pass
             with sqlite3.connect(path) as connection:
+                connection.execute("DROP TABLE worker_claims")
+                connection.execute("DROP TABLE worker_registrations")
+                connection.execute("DROP TABLE orchestration_generations")
                 connection.execute("DROP TABLE distributed_fence_frontiers")
                 connection.execute("DROP TABLE distributed_cluster_frontiers")
                 connection.execute("PRAGMA user_version=5")

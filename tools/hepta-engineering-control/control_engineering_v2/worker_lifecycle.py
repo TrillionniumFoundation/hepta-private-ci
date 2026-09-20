@@ -465,6 +465,11 @@ def _active_worker_and_claim(store, claim_id: str, now: int):
         or str(lease["holder"]) != str(claim["worker_id"])
     ):
         raise EngineeringError("claim_lease_invalid")
+    if (
+        str(claim["state"]) in {"claimed", "running"}
+        and int(claim["heartbeat_deadline_unix_ns"]) <= now
+    ):
+        raise EngineeringError("claim_heartbeat_expired")
     return claim, registration, lease
 
 
