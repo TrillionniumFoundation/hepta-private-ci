@@ -1,13 +1,6 @@
 # Evaluated shadow consumer
 
-`run_evaluated_shadow_v1` is an opt-in library composition entry. It verifies the
-single `DatasetSnapshotReceiptV3` manifest against the complete evaluation
-snapshot-ID set, invokes E's signed V2 evaluation, and requires eligibility
-before invoking any F port. The same registered evaluator must additionally
-sign `evaluated_candidate_signing_payload_v1`: the complete E request commitment,
-actual candidate byte digest/length and artifact generation. The bytes must match
-the F snapshot's model-artifact digest. These bounded opaque bytes need not be a
-model; their meaning and evaluation provenance remain the signer's responsibility.
+`run_evaluated_shadow_v1` is an opt-in library composition entry. It verifies a sealed `ProductQualificationReceiptV1`, requires its trust digest to equal the current host verifier, binds the single `DatasetSnapshotReceiptV3` to the receipt's exact dataset/objective/snapshot set, and requires product eligibility before invoking any F port. It does not call the low-level V2 evaluator. The same registered evaluator must additionally sign `evaluated_candidate_signing_payload_v2`, which binds the terminal product qualification evidence/publication, actual candidate byte digest/length and artifact generation. The bytes must match the F snapshot's model-artifact digest.
 
 The host supplies the first seven `LaneFShadowPortsV1` methods. Its intuition
 result must match a recomputed `decide_calibrated_v2` receipt and disposition for
@@ -37,8 +30,7 @@ The adapter does not create files or rotate them implicitly on capacity errors.
 
 Hosts must supply current trusted keys/controller mappings, revocation and time;
 authenticate raw data, candidate completeness and calibration/OOD measurements;
-supply a correctly generated assignment draw; persist frozen plans
-before collecting holdouts; and durably prevent holdout reuse. A self-verifying
+supply a correctly generated assignment draw; supply a `ProductQualificationReceiptV1` from the canonical product runner, whose holdout/evidence publication occurred before this adapter is entered. A self-verifying
 dataset manifest is not proof of raw observations. Signed metrics authenticate
 their attester, not statistical validity. This path grants no selection,
 activation, promotion or release authority and demonstrates no long-term learning

@@ -12,10 +12,10 @@ use std::fmt;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::ProductEvaluationError;
+use codex_hepta_intelligence_eval::ProductQualificationReceiptV1;
 use codex_hepta_intelligence_eval::SignedEvaluationDecisionV1;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
-use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_intuition::CalibratedDispositionV1;
@@ -57,9 +57,9 @@ const SLOW_PATH: &str = "shadow:slow-path";
 pub struct EvaluatedShadowRequestV1<'a> {
     /// The snapshot authority epoch belongs to the supplied verifier's trust domain.
     pub run: LaneFRunRequestV1,
-    pub evaluation: IndependentEvaluationBundleV1,
-    pub metric_roles: Vec<MetricRoleContractV2>,
-    pub evaluation_evidence: &'a SignedEvaluationEvidenceV1,
+    /// Terminal product qualification emitted only after estimator binding,
+    /// fenced holdout use and durable evidence publication.
+    pub qualification: &'a ProductQualificationReceiptV1,
     /// Exact opaque candidate bytes, not a claim that these constitute a model.
     pub candidate_bytes: &'a [u8],
     /// The same evaluator signs `evaluated_candidate_signing_payload_v1`.
@@ -84,6 +84,7 @@ pub enum EvaluatedShadowError {
     Binding(&'static str),
     Ineligible(IndependentEvaluationDispositionV1),
     Evaluation(SignedEvaluationError),
+    Qualification(ProductEvaluationError),
     Evidence(SignedEvidenceError),
     Dataset(DatasetReceiptError),
     Intuition(CalibratedError),
@@ -122,6 +123,36 @@ pub fn evaluated_candidate_signing_payload_v1(
     Ok(bytes)
 }
 
+/// Bind the evaluated candidate to the terminal product qualification receipt.
+/// This is the product/runtime signing contract; callers cannot substitute a
+/// low-level evaluator bundle after qualification has been persisted.
+pub fn evaluated_candidate_signing_payload_v2(
+    qualification: &ProductQualificationReceiptV1,
+    candidate_bytes: &[u8],
+    generation: u64,
+) -> Result<Vec<u8>, EvaluatedShadowError> {
+    qualification
+        .validate_integrity()
+        .map_err(EvaluatedShadowError::Qualification)?;
+    if candidate_bytes.is_empty() || candidate_bytes.len() > MAX_CANDIDATE_BYTES || generation == 0
+    {
+        return Err(EvaluatedShadowError::Binding("candidate bounds"));
+    }
+    let mut bytes = b"hepta.intelligence.evaluated-candidate.v2\0".to_vec();
+    for digest in [
+        qualification.evidence_digest,
+        qualification.publication_digest,
+        qualification.decision.decision.evidence_digest,
+        qualification.decision.authentication_digest,
+        Digest32::of_bytes(candidate_bytes),
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.extend_from_slice(&(candidate_bytes.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(&generation.to_be_bytes());
+    Ok(bytes)
+}
+
 /// Authenticate before invoking any host port. Host ports must be proposal-only
 /// and honor their budgets. The synchronous coordinator cannot interrupt them.
 /// Dataset verification recomputes its manifest identity; the host still owns
@@ -142,16 +173,20 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     }
     let snapshot_digest = request.run.snapshot.digest().map_err(E::Pipeline)?;
     verify_dataset_snapshot_receipt_v3(request.dataset, now).map_err(E::Dataset)?;
-    let bundle = &request.evaluation;
-    if request.dataset.snapshot.dataset_digest != bundle.dataset_digest
-        || request.dataset.snapshot.objective_digest != bundle.objective_digest
-        || bundle.snapshot_ids.as_slice() != [request.dataset.snapshot.snapshot_id.clone()]
+    let qualification = request.qualification;
+    qualification
+        .validate_integrity()
+        .map_err(E::Qualification)?;
+    if qualification.decision.trust_digest != verifier.trust_digest()
+        || request.dataset.snapshot.dataset_digest != qualification.dataset_digest
+        || request.dataset.snapshot.objective_digest != qualification.objective_digest
+        || qualification.snapshot_ids.as_slice()
+            != [request.dataset.snapshot.snapshot_id.clone()]
     {
-        return Err(E::Binding("dataset"));
+        return Err(E::Binding("qualification or dataset"));
     }
-    let candidate_payload = evaluated_candidate_signing_payload_v1(
-        bundle,
-        &request.metric_roles,
+    let candidate_payload = evaluated_candidate_signing_payload_v2(
+        qualification,
         request.candidate_bytes,
         request.run.snapshot.learning_artifact_generation,
     )?;
@@ -166,9 +201,9 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     if request.run.snapshot.authority_epoch != candidate.principal().authority_epoch {
         return Err(E::Binding("authority epoch"));
     }
-    if candidate.principal() != &bundle.evaluator
+    if candidate.principal() != &qualification.evaluator
         || request.run.snapshot.model_artifact_digest != Digest32::of_bytes(request.candidate_bytes)
-        || request.intuition.objective_digest != bundle.objective_digest
+        || request.intuition.objective_digest != qualification.objective_digest
         || request.intuition.state_digest != snapshot_digest
         || request.intuition.policy_digest != request.run.snapshot.model_artifact_digest
         || request.intuition.policy_generation != request.run.snapshot.learning_artifact_generation
@@ -186,15 +221,8 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     {
         return Err(E::Binding("reserved or excessive candidates"));
     }
-    let policy_id = bundle.candidate_id.clone();
-    let evaluation = decide_with_signed_evidence_v2(
-        request.evaluation,
-        request.metric_roles,
-        request.evaluation_evidence,
-        verifier,
-        now,
-    )
-    .map_err(E::Evaluation)?;
+    let policy_id = qualification.candidate_id.clone();
+    let evaluation = qualification.decision.clone();
     if evaluation.decision.disposition
         != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
     {
@@ -203,6 +231,8 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     let intuition = decide_calibrated_v2(request.intuition.clone()).map_err(E::Intuition)?;
     let mut admission = b"hepta.intelligence.evaluated-shadow.v1\0".to_vec();
     for digest in [
+        qualification.evidence_digest,
+        qualification.publication_digest,
         evaluation.decision.evidence_digest,
         evaluation.authentication_digest,
         Digest32::of_bytes(&request.candidate_evidence.signing_bytes()),
