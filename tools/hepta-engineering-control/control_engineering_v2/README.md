@@ -13,9 +13,9 @@ Installing `tools/hepta-engineering-control` also provides `hepta-engineering`.
 Commands are `schedule`, `candidates` and `sandbox`; all accept bounded JSON inputs.
 The implementation guide, component map and security profile live in
 [`docs/modules/control.engineering/`](../../../docs/modules/control.engineering/IMPLEMENTATION.md).
-`SCHEMA.sql` is the sole executable schema, version 8. No import-time patches or
+`SCHEMA.sql` is the sole executable schema, version 9. No import-time patches or
 registry-count validators are required. Linux strong isolation must pass the actual
 Bubblewrap probe; portable fixture success cannot become strong review evidence.
 Review eligibility and dormant proposals do not merge, activate or deploy changes.
 
-The named product composition is `EngineeringControlProduct`, which owns one SQLite v8 `EngineeringStore`, repository identity, verifier port, resource-aware planner, durable worker claim lifecycle and durable integration-queue reconciliation. Product CI exercises exact-source and deterministic base-merge lanes; GitHub reviewer observations are identity evidence only and never confer independent acceptance or merge authority.
+The named product composition is `EngineeringControlProduct`, which owns one SQLite v9 `EngineeringStore`, repository identity, verifier port, resource-aware planner, durable worker claim lifecycle and durable integration-queue reconciliation. Product CI exercises exact-source and deterministic base-merge lanes; GitHub reviewer observations are identity evidence only and never confer independent acceptance or merge authority.
