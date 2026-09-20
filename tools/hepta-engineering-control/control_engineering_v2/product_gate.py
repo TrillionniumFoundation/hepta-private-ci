@@ -398,6 +398,9 @@ def build_product_receipt(
                 completion,
                 now_ns=now + 6,
             )
+            completion_observation_digest = product.completion_observation_digest(
+                completed.claim_id
+            )
             queue = product.publish_integration_queue(
                 plan,
                 queue_generation_id=queue_generation_id,
@@ -433,6 +436,9 @@ def build_product_receipt(
             trust_store=lifecycle_trust,
         ) as reopened:
             reopened_claim_state = reopened.claim_state(completed_claim_id).state
+            reopened_completion_observation_digest = (
+                reopened.completion_observation_digest(completed_claim_id)
+            )
             reopened_integration_state = reopened.integration_item(
                 queue_generation_id,
                 package.package_id,
@@ -441,6 +447,11 @@ def build_product_receipt(
 
     if completed_state != "completed_observed" or reopened_claim_state != "completed_observed":
         raise RuntimeError("product_worker_lifecycle_not_recovered")
+    if (
+        completion_observation_digest != reopened_completion_observation_digest
+        or completion_observation_digest == "0" * 64
+    ):
+        raise RuntimeError("product_completion_evidence_not_recovered")
     if integration_state != "ready_external_merge" or reopened_integration_state != "ready_external_merge":
         raise RuntimeError("product_integration_reconciliation_not_recovered")
     if reopened_anchor != anchor:
@@ -482,6 +493,7 @@ def build_product_receipt(
             "completedState": completed_state,
             "reopenedState": reopened_claim_state,
             "resultDigest": result_digest,
+            "completionObservationDigest": completion_observation_digest,
             "independentlyObservedCompletion": False,
             "completionEvidenceClass": "ci_reference_hmac_fixture",
             "trustClass": "ci_reference_hmac_fixture",
@@ -614,6 +626,9 @@ def _verify_product_receipt(
         or lifecycle.get("reopenedState") != "completed_observed"
         or lifecycle.get("independentlyObservedCompletion") is not False
         or lifecycle.get("completionEvidenceClass") != "ci_reference_hmac_fixture"
+        or not isinstance(lifecycle.get("completionObservationDigest"), str)
+        or _SHA256.fullmatch(lifecycle["completionObservationDigest"]) is None
+        or lifecycle["completionObservationDigest"] == "0" * 64
         or lifecycle.get("trustClass") != "ci_reference_hmac_fixture"
         or not isinstance(lifecycle.get("claimId"), str)
         or not lifecycle["claimId"]
