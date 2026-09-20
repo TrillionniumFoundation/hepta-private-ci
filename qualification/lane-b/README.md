@@ -4,7 +4,7 @@ This directory contains the closed-world, repository-controlled truth for `LANE-
 
 ## Authoritative files
 
-- `LANE_B_IMPLEMENTATION_TRUTH.json` — closed index of eleven modules and 39 design operations.
+- `LANE_B_IMPLEMENTATION_TRUTH.json` — closed index of eleven modules and 43 closed design/product-boundary operations.
 - `docs/modules/<module>/IMPLEMENTATION_MAP.json` — authoritative module roots, ownership, owner entrypoints, delegated callees, tests, source semantics and external evidence gates.
 - `LANE_B_NATIVE_CLOSURE.md` — generated human projection of the eleven module maps.
 - `TEST_TRACEABILITY.json` — generated operation-to-test/workflow projection.
