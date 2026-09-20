@@ -8,6 +8,7 @@ from control_engineering_v2 import (
     EngineeringStore,
     EngineeringWorkPackage,
     HmacTrustStore,
+    IntegrationStageReceipt,
     IntegrationTerminalReceipt,
     ReviewCapacity,
     WorkerProfile,
