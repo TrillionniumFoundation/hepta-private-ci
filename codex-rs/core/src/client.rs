@@ -3055,6 +3055,7 @@ fn map_response_stream(
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
     redact_provider_errors: bool,
+    encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>) {
     let codex_api::ResponseStream {
         rx_event,
@@ -3077,6 +3078,7 @@ fn map_response_stream(
         provider,
         provider_attempt,
         redact_provider_errors,
+        encoded_request_observer,
     )
 }
 
@@ -3088,6 +3090,7 @@ fn map_response_events<S>(
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
     redact_provider_errors: bool,
+    encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
     S: futures::Stream<Item = std::result::Result<ResponseEvent, ApiError>>
