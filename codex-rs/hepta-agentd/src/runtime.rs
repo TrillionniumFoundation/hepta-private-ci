@@ -95,7 +95,12 @@ pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Res
                     "production operations require an available CognitiveStore".to_string(),
                 )
             })?;
-            let (host, interval) = operations.open(store.as_ref().clone()).await?;
+            let (host, interval) =
+                crate::AgentdProductionOperationRuntimeConfig::open(
+                    operations,
+                    store.as_ref().clone(),
+                )
+                .await?;
             state.attach_production_operations(Arc::clone(&host))?;
             Some((host, interval))
         }
