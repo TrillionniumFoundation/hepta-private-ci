@@ -101,6 +101,7 @@ fn unrelated_frontier_advance_after_claim_requires_a_fresh_claim() {
     let token = authority.claim(&signed, &binding).unwrap();
     assert_eq!(token.claimed_authority_epoch(), 9);
     assert_eq!(token.claimed_revocation_revision(), 1);
+    assert_ne!(token.claimed_revocation_head_sha256(), [0; 32]);
     authority
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
