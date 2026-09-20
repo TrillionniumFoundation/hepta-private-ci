@@ -77,8 +77,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let cognitive_runtime = match production_writer_host.as_ref() {
         Some(host) => {
             state.refresh_generation()?;
-            let writer = host.writer();
-            let runtime = CognitiveRuntime::Available(Arc::new(writer.store().clone()));
+            let runtime = host.cognitive_runtime();
             state.refresh_generation()?;
             runtime
         }
