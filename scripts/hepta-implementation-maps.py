@@ -35,6 +35,47 @@ def git(*args: str) -> str:
     return p.stdout.strip()
 
 
+def git_returncode(*args: str) -> int:
+    return subprocess.run(
+        ["git", *args], cwd=ROOT, text=True, capture_output=True, check=False
+    ).returncode
+
+
+def source_base_failures(source_base: dict, resolved_roots: list[str]) -> list[str]:
+    """Verify a committed source base still describes the current module roots.
+
+    The map file itself may be newer than the source base, so requiring
+    sourceBase.commit == HEAD would be self-referential. Instead the recorded
+    commit/tree must be real, the commit must be an ancestor of HEAD, and no
+    resolved module source root may differ between that base and HEAD. Dirty or
+    staged source-root changes also fail closed.
+    """
+    failures = []
+    commit = source_base.get("commit")
+    tree = source_base.get("tree")
+    if not isinstance(commit, str) or not isinstance(tree, str):
+        return ["invalid source base identity"]
+    try:
+        actual_tree = git("rev-parse", f"{commit}^{{tree}}")
+    except subprocess.CalledProcessError:
+        return ["unresolvable source base commit"]
+    if actual_tree != tree:
+        failures.append("source base tree mismatch")
+    if git_returncode("merge-base", "--is-ancestor", commit, "HEAD") != 0:
+        failures.append("source base is not an ancestor of HEAD")
+    if resolved_roots:
+        committed = git_returncode("diff", "--quiet", commit, "--", *resolved_roots)
+        if committed == 1:
+            failures.append("source roots changed after source base")
+        elif committed != 0:
+            failures.append("source-root committed diff failed")
+        if git_returncode("diff", "--quiet", "--", *resolved_roots) != 0:
+            failures.append("source roots have unstaged changes")
+        if git_returncode("diff", "--cached", "--quiet", "--", *resolved_roots) != 0:
+            failures.append("source roots have staged changes")
+    return failures
+
+
 def lane_by_module():
     return {
         m: lane["id"]
@@ -181,7 +222,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -323,11 +364,16 @@ def verify():
             declared = [declared]
         if declared != roots:
             failures.append(f"{mid}: declared roots")
+        resolved_roots = []
         try:
-            if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
+            resolved_roots = resolve_source_roots(ROOT, module)
+            if row.get("resolvedRoots") != resolved_roots:
                 failures.append(f"{mid}: resolved source roots")
         except (ValueError, OSError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
+        if isinstance(source_base, dict):
+            for reason in source_base_failures(source_base, resolved_roots):
+                failures.append(f"{mid}: {reason}")
         ops = row.get("operations")
         if not isinstance(ops, list) or not ops:
             failures.append(f"{mid}: operations")
@@ -342,11 +388,37 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+            tests = op.get("tests")
+            if not isinstance(tests, list):
+                failures.append(f"{mid}: operation tests must be a list")
+            else:
+                for test in tests:
+                    if isinstance(test, dict) and test.get("path"):
+                        if not (ROOT / test["path"]).is_file():
+                            failures.append(f"{mid}: missing test {test['path']}")
+        expected_entrypoints = {
+            (op.get("nativeSymbol"), op.get("sourcePath"))
+            for op in parse_entrypoints(mid)
+            if op.get("nativeSymbol") and op.get("sourcePath")
+        }
+        actual_entrypoints = {
+            (op.get("nativeSymbol"), op.get("sourcePath"))
+            for op in ops
+            if op.get("nativeSymbol") and op.get("sourcePath")
+        }
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+        elif (
+            boundary.get("nativeSourceMappingComplete") is True
+            and not expected_entrypoints.issubset(actual_entrypoints)
+        ):
+            failures.append(f"{mid}: dossier entrypoint missing from complete map")
+    # sourceBase is module-local evidence identity. Different modules may
+    # legitimately pin different ancestor commits as long as each recorded
+    # commit/tree resolves and its own source roots have not changed since.
+    # Requiring one repository-wide identity would make an unrelated module
+    # refresh every map and would reintroduce a documentation-only coupling.
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(

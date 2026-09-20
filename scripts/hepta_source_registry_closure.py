@@ -24,7 +24,7 @@ SOURCE_ROOTS: dict[str, tuple[str, ...]] = {
     "learning.artifacts": ("codex-rs/hepta-learning-artifacts",),
     "learning.eval": ("codex-rs/hepta-intelligence-eval",),
     "learning.ledger": ("codex-rs/hepta-learning-ledger",),
-    "learning.operator": ("codex-rs/hepta-bellman-operator",),
+    "learning.operator": ("codex-rs/hepta-bellman-operator", "codex-rs/hepta-operator-acceptance"),
     "learning.plasticity": ("codex-rs/hepta-plasticity",),
     "neuron.runtime": ("codex-rs/hepta-neuron",),
     "objective.compiler": ("codex-rs/hepta-objective",),

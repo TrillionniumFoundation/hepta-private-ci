@@ -53,12 +53,15 @@ computes Q32 targets, deterministic greedy actions and action gaps; ties break b
 canonical action ID. This reference is the oracle for any later learned model.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile.
-It canonicalizes a frozen sensor-by-action grid, validates every sample and
-requires a configurable positive minimum sample count for every grid cell. The
-artifact stores each cell's mean, minimum, maximum, sample count and evidence
-digest. Caller order cannot change the result. `predict_tabular_operator`
-returns only an explicitly fitted cell; an unknown sensor or action is OOD. Its
-output is marked both learned and synthetic and retains `DENY_ALL` authority.
+It canonicalizes a frozen sensor-by-action grid, validates every sample,
+rejects a repeated evidence digest even when a caller relabels the sample ID,
+and requires a configurable positive minimum sample count for every grid cell.
+The artifact stores each cell's mean, minimum, maximum, sample count and
+evidence digest. Caller order cannot change the result. The raw
+`predict_tabular_operator` compatibility surface now revalidates retained
+structure on every call and is deprecated for new integration; independently
+pinned inference uses `LoadedTabularOperatorV1`. Unknown cells remain OOD and
+all outputs remain learned/synthetic with `DENY_ALL` authority.
 
 This profile deliberately implements the simplest sufficient learner. A neural
 or low-rank tensor candidate is not required merely because the architecture
@@ -84,11 +87,17 @@ profile.
 ## World-model baseline
 
 `fit_transition_model` builds a deterministic action-conditioned tabular model
-from an immutable dataset. For every supported `(state, action)` it records the
-mean bounded outcome and a branch distribution whose Q32 probabilities sum
-exactly to one. `predict_transition` rejects unsupported pairs rather than
-extrapolating and marks every prediction synthetic with deny-all authority.
-Synthetic predictions cannot become independent factual outcomes.
+from an immutable dataset and rejects duplicate underlying evidence globally,
+including replays under a different sample ID. For every supported
+`(state, action)` it records the mean bounded outcome and a branch distribution
+whose Q32 probabilities sum exactly to one. The raw `predict_transition`
+compatibility surface is deprecated for new integration. Persisted inference
+uses `encode_world_model_payload_v1` plus
+`LoadedTabularWorldModelV1::from_pinned_payload`, whose host pin binds the full
+payload, model ID, model digest and dataset digest before private immutable
+prediction. Unsupported pairs abstain and every prediction remains synthetic
+with deny-all authority. Synthetic predictions cannot become independent
+factual outcomes.
 
 ## Host and external obligations
 
@@ -113,7 +122,9 @@ Focused tests live in:
 - `src/lib_tests.rs`;
 - `src/reference_tests.rs`;
 - `src/learned_tests.rs`;
-- `src/world_model_tests.rs`.
+- `src/world_model_tests.rs`;
+- `src/loaded_tests.rs`;
+- `src/loaded_world_model_tests.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
@@ -158,3 +169,19 @@ holds expected payload/manifest/registry pins outside the files being inspected;
 no extra artifact store or production selection is introduced. This is executable
 cross-owner engineering qualification, not an authenticated external operator
 acceptance, future-window efficacy result or live C1 deployment.
+
+
+## Persisted world-model candidate loading
+
+`encode_world_model_payload_v1` emits the complete retained transition
+prediction surface under the bounded `HEPTWM01` format. A host-selected
+`WorldModelPayloadPinV1` binds the payload digest, model identity, model digest
+and dataset digest. `LoadedTabularWorldModelV1::from_pinned_payload` verifies
+that independent pin, canonical state/action ordering, sample-count totals,
+branch-count totals, exact Q32 probabilities, bounded outcomes, the top-level
+model digest reconstructed from the ordered retained estimate digests, and
+deny-all authority once before exposing O(log n) repeated lookup. Because V1 transition
+estimates do not retain the original per-sample evidence set, a raw public
+`TabularWorldModelV1` cannot independently reconstruct its historical
+estimate digests; therefore raw prediction remains compatibility-only and the
+pinned payload is the authenticated load boundary.

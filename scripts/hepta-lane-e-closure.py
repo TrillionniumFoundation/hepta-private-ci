@@ -29,7 +29,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 5)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 6)),
     *(f"EVAL-{index:02d}" for index in range(1, 5)),
     *(f"ART-{index:02d}" for index in range(1, 5)),
 }
@@ -56,8 +56,16 @@ EXPECTED_OPERATIONS = {
         "build_sensor_core",
         "evaluate_bellman_reference",
         "admit_operator_regularity",
+        "fit_tabular_operator",
+        "fit_tabular_operator_strict_v2",
+        "encode_tabular_payload_v1",
+        "load_pinned_tabular_operator",
         "fit_transition_model",
-        "predict_transition",
+        "encode_world_model_payload_v1",
+        "load_pinned_world_model",
+        "prepare_operator_acceptance",
+        "verify_and_seal_operator_acceptance",
+        "verify_operator_acceptance_receipt",
     },
     "learning.eval": {
         "estimate_ope",
@@ -71,6 +79,7 @@ EXPECTED_CRATES = {
     "codex-hepta-learning-ledger",
     "codex-hepta-learning-artifacts",
     "codex-hepta-bellman-operator",
+    "codex-hepta-operator-acceptance",
     "codex-hepta-intelligence-eval",
     "codex-hepta-shadow-qualification",
 }
@@ -450,7 +459,10 @@ def verify_authority_posture(findings: Findings) -> None:
         ROOT / "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
         ROOT / "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/reference.rs",
+        ROOT / "codex-rs/hepta-bellman-operator/src/learned.rs",
+        ROOT / "codex-rs/hepta-bellman-operator/src/loaded.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/world_model.rs",
+        ROOT / "codex-rs/hepta-bellman-operator/src/loaded_world_model.rs",
         ROOT / "codex-rs/hepta-intelligence-eval/src/closure.rs",
     ]
     for path in sources:
@@ -464,6 +476,27 @@ def verify_authority_posture(findings: Findings) -> None:
             "AuthorityPosture::DENY_ALL" in text,
             "deny_all_missing",
             f"{path.relative_to(ROOT)} does not explicitly emit DENY_ALL authority",
+        )
+
+    acceptance = ROOT / "codex-rs/hepta-operator-acceptance/src/lib.rs"
+    if not acceptance.is_file():
+        findings.add("acceptance_source_missing", "operator acceptance source is missing")
+    else:
+        text = acceptance.read_text(encoding="utf-8")
+        findings.require(
+            'const ACCEPTANCE_SCOPE: &str = "qualification_evidence_only";' in text,
+            "acceptance_scope_drift",
+            "operator acceptance must remain qualification-evidence-only",
+        )
+        findings.require(
+            "automatic_transition: false" in text,
+            "acceptance_transition_drift",
+            "operator acceptance must not automatically transition production state",
+        )
+        findings.require(
+            "AuthorityBoundary::evidence_acceptance_only()" in text,
+            "acceptance_authority_drift",
+            "operator acceptance must retain evidence-only authority",
         )
 
 

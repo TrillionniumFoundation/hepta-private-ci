@@ -59,6 +59,7 @@ fn op_04_transition_model_is_action_conditioned_and_probability_exact() {
 }
 
 #[test]
+#[allow(deprecated)]
 fn op_04_prediction_is_synthetic_and_unsupported_pairs_abstain() {
     let model = match fit_transition_model(
         id("world-model-1"),
@@ -96,5 +97,20 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
     assert_eq!(
         fit_transition_model(id("world-model-2"), digest("dataset"), vec![invalid],),
         Err(WorldModelError::InvalidOutcome)
+    );
+}
+
+#[test]
+fn world_model_rejects_relabelled_duplicate_evidence() {
+    let first = sample("sample-1", "state-b", 10);
+    let mut replay = sample("sample-2", "state-c", 20);
+    replay.evidence_digest = first.evidence_digest;
+    assert_eq!(
+        fit_transition_model(
+            id("world-model-replay"),
+            digest("dataset"),
+            vec![first, replay],
+        ),
+        Err(WorldModelError::DuplicateEvidence)
     );
 }
