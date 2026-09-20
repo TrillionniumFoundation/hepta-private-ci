@@ -147,6 +147,11 @@ impl RevalidatingCandidate {
         }
     }
 
+    #[must_use]
+    pub const fn spec(&self) -> &PinnedCandidateSpec {
+        self.candidate.spec()
+    }
+
     /// Invoke a bounded, read-only consumer only after checking an authenticated
     /// current view. The closure must not retain authority or dispatch effects.
     /// Already decoded model state may be captured by the closure: payload bytes
