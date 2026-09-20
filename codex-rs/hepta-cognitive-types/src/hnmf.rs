@@ -204,7 +204,9 @@ pub enum PrivacyClassV1 {
     deny_unknown_fields
 )]
 pub enum MemoryScopeV1 {
-    AgentPrivate { agent_id: ContractIdV1 },
+    AgentPrivate {
+        agent_id: ContractIdV1,
+    },
     WorkspacePrivate {
         agent_id: ContractIdV1,
         workspace_sha256: ContractDigestV1,
@@ -230,9 +232,7 @@ pub struct ObservedIntervalV1 {
 impl ObservedIntervalV1 {
     pub fn validate(self) -> Result<(), HnmfContractError> {
         if self.start_unix_ms == 0 {
-            return Err(HnmfContractError::ZeroValue(
-                "observedInterval.startUnixMs",
-            ));
+            return Err(HnmfContractError::ZeroValue("observedInterval.startUnixMs"));
         }
         if self
             .end_unix_ms
@@ -255,7 +255,10 @@ impl ObservedIntervalV1 {
     deny_unknown_fields
 )]
 pub enum SpanRangeV1 {
-    ByteRange { start: u64, end: u64 },
+    ByteRange {
+        start: u64,
+        end: u64,
+    },
     PixelRect {
         x: u32,
         y: u32,
@@ -273,10 +276,19 @@ pub enum SpanRangeV1 {
         timebase_num: u32,
         timebase_den: u32,
     },
-    AstPath { path: String },
-    GuiNode { stable_node_id: ContractIdV1 },
-    EventRange { start: u64, end: u64 },
-    JsonPointer { pointer: String },
+    AstPath {
+        path: String,
+    },
+    GuiNode {
+        stable_node_id: ContractIdV1,
+    },
+    EventRange {
+        start: u64,
+        end: u64,
+    },
+    JsonPointer {
+        pointer: String,
+    },
     SensorRange {
         start: u64,
         end: u64,
@@ -458,16 +470,8 @@ pub fn validate_span_against_manifest_v1(
             },
             ModalityKindV1::Video,
         ) if end <= frame_count && span_num == timebase_num && span_den == timebase_den => Ok(()),
-        (
-            AssetExtentV1::CodeAst,
-            SpanRangeV1::AstPath { .. },
-            ModalityKindV1::CodeAst,
-        )
-        | (
-            AssetExtentV1::GuiState,
-            SpanRangeV1::GuiNode { .. },
-            ModalityKindV1::GuiState,
-        )
+        (AssetExtentV1::CodeAst, SpanRangeV1::AstPath { .. }, ModalityKindV1::CodeAst)
+        | (AssetExtentV1::GuiState, SpanRangeV1::GuiNode { .. }, ModalityKindV1::GuiState)
         | (
             AssetExtentV1::StructuredData,
             SpanRangeV1::JsonPointer { .. },
@@ -562,12 +566,8 @@ pub enum MemoryVerificationStateV1 {
 )]
 pub enum RetentionPolicyV1 {
     Session,
-    Persistent {
-        retain_until_unix_ms: Option<u64>,
-    },
-    LegalHold {
-        policy_digest: ContractDigestV1,
-    },
+    Persistent { retain_until_unix_ms: Option<u64> },
+    LegalHold { policy_digest: ContractDigestV1 },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -647,10 +647,7 @@ impl MemoryEventV1 {
         {
             return Err(HnmfContractError::LimitExceeded {
                 field: "causalOrTemporalReferences",
-                actual: self
-                    .causal_parents
-                    .len()
-                    .max(self.temporal_neighbors.len()),
+                actual: self.causal_parents.len().max(self.temporal_neighbors.len()),
                 maximum: MAX_CAUSAL_REFERENCES,
             });
         }
@@ -777,9 +774,7 @@ pub(crate) fn validate_text(
     maximum_bytes: usize,
     name: &'static str,
 ) -> Result<(), HnmfContractError> {
-    if value.trim().is_empty()
-        || value.len() > maximum_bytes
-        || value.chars().any(char::is_control)
+    if value.trim().is_empty() || value.len() > maximum_bytes || value.chars().any(char::is_control)
     {
         return Err(HnmfContractError::Invalid(name));
     }
