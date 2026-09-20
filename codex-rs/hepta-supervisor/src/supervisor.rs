@@ -51,6 +51,9 @@ pub struct Supervisor<D: ProcessDriver> {
     /// Host-pinned revocation frontier for production release selection.
     /// None keeps ordinary lifecycle-only embeddings unchanged.
     pub(crate) production_revocation_frontier: Option<u64>,
+    /// Host-pinned current compatibility receipt for production release
+    /// selection. A grant cannot self-assert current compatibility.
+    pub(crate) production_compatibility_receipt_sha256: Option<Sha256Digest>,
     slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
 }
 
@@ -78,6 +81,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             driver,
             config,
             production_revocation_frontier: None,
+            production_compatibility_receipt_sha256: None,
             slots,
         };
         let mut report = TickReport::default();
@@ -116,6 +120,24 @@ impl<D: ProcessDriver> Supervisor<D> {
             ));
         }
         self.production_revocation_frontier = Some(revocation_frontier);
+        Ok(())
+    }
+
+    pub fn set_production_compatibility_receipt(
+        &mut self,
+        compatibility_receipt_sha256: Sha256Digest,
+    ) -> Result<(), SupervisorError> {
+        if self
+            .production_compatibility_receipt_sha256
+            .as_ref()
+            .is_some_and(|current| current != &compatibility_receipt_sha256)
+        {
+            return Err(SupervisorError::ProductionAuthority(
+                "production compatibility receipt is immutable for one supervisor incarnation"
+                    .to_string(),
+            ));
+        }
+        self.production_compatibility_receipt_sha256 = Some(compatibility_receipt_sha256);
         Ok(())
     }
 
@@ -600,6 +622,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         verifier: &H7H89ProductionGrantVerifier,
         expected_authority_epoch: u64,
         expected_revocation_frontier: u64,
+        expected_compatibility_receipt_sha256: &Sha256Digest,
         now_unix_seconds: u64,
         now: Instant,
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
@@ -610,6 +633,18 @@ impl<D: ProcessDriver> Supervisor<D> {
                 return Err(SupervisorError::ProductionAuthority(format!(
                     "production revocation frontier mismatch: configured {configured_frontier}, requested {expected_revocation_frontier}"
                 )));
+            }
+            let Some(configured_compatibility) =
+                supervisor.production_compatibility_receipt_sha256.as_ref()
+            else {
+                return Err(SupervisorError::ProductionAuthority(
+                    "production compatibility receipt is not configured".to_string(),
+                ));
+            };
+            if configured_compatibility != expected_compatibility_receipt_sha256 {
+                return Err(SupervisorError::ProductionAuthority(
+                    "production compatibility receipt does not match current host pin".to_string(),
+                ));
             }
             let record = supervisor.record(agent_id)?;
             let current = slot.active_release.as_ref().ok_or_else(|| {
@@ -637,7 +672,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 agent_id,
                 current,
                 &target,
-                grant.release_selection.compatibility_receipt_sha256.clone(),
+                expected_compatibility_receipt_sha256.clone(),
                 expected_revocation_frontier,
             )?;
             verifier
@@ -911,6 +946,19 @@ impl<D: ProcessDriver> Supervisor<D> {
                     "production recovery revocation frontier mismatch: configured {configured_frontier}, requested {expected_revocation_frontier}"
                 )));
             }
+            let Some(configured_compatibility) =
+                supervisor.production_compatibility_receipt_sha256.as_ref()
+            else {
+                return Err(SupervisorError::ProductionAuthority(
+                    "production recovery compatibility receipt is not configured".to_string(),
+                ));
+            };
+            if configured_compatibility != expected_compatibility_receipt_sha256 {
+                return Err(SupervisorError::ProductionAuthority(
+                    "production recovery compatibility receipt does not match current host pin"
+                        .to_string(),
+                ));
+            }
             let record = supervisor.record(agent_id)?;
             let intent = read_intent(record.layout.run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
@@ -925,6 +973,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             if selection.grant_sha256 != intent.grant_sha256 {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
+                ));
+            }
+            if &selection.binding.compatibility_receipt_sha256
+                != expected_compatibility_receipt_sha256
+            {
+                return Err(SupervisorError::ProductionAuthority(
+                    "production recovery selection uses a stale compatibility receipt".to_string(),
                 ));
             }
             if slot.runtime.as_ref().is_some_and(|runtime| !runtime.fenced) {
