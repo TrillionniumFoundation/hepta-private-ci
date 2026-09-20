@@ -169,6 +169,7 @@ Focused source tests include:
 - `codex-rs/hepta-automation/tests/taskflow_step.rs`
 - `codex-rs/hepta-automation/src/schedule_v2.rs`
 - `codex-rs/hepta-automation/src/authorized_effect.rs`
+- `codex-rs/hepta-automation/tests/authorized_effect.rs`
 - `codex-rs/hepta-automation/src/effect_dispatch_ledger.rs`
 - legacy `src/effect_executor_tests.rs` only through the test-only reducer
 - Agentd automation/recovery unit and process qualification paths.
