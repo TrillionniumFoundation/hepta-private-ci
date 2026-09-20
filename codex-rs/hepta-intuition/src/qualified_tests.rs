@@ -263,6 +263,12 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
             .unwrap()
             .is_none()
     );
+    let mut risk_rebound = request.clone();
+    risk_rebound.risk_class = RiskClass::Elevated;
+    assert_ne!(
+        canonical_completeness_evidence_payload_v1(&risk_rebound).unwrap(),
+        completeness
+    );
 
     request.assignment = AssignmentModeV1::CounterBased {
         random_stream_digest: digest("rng-stream"),
