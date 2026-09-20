@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); observed identifiers include `MAX_MODEL_OPERATION_RECORDS`, `OperationLedger`, `begin`, `authorize`, `record_dispatch`, `mark_indeterminate`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) for the implemented subset and remaining product work.
+The reference-model source remains [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs). The durable owner source is [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs); observed identifiers include `DurableOperationLedger`, `begin`, `record_authority_evidence`, `record_dispatch`, `mark_indeterminate`, `observe_terminal` and `get`. `record_authority_evidence` records externally admitted final-use evidence but does not authenticate or authorize by itself. These are source navigation bindings, not proof that a product caller or real effect adapter is composed. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -163,10 +163,11 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-OperationLedger and outbox types are embedded owner components. Their state transition result is not a remote effect observation. The host must bind each durable destination/outbox and current-fence reconciler; an in-memory ledger does not supply crash durability by itself.
+`DurableOperationLedger` is the SQLite-backed authoritative operation owner candidate: it requires WAL + FULL durability, serializes mutations with `BEGIN IMMEDIATE`, preserves immutable operation identity and authority/dispatch/terminal lineage across reopen, and keeps dispatch acknowledgement non-terminal. `OperationLedger` and `Outbox` remain deterministic reference models. The host must still bind the durable ledger to the real authenticated product caller, final-use authority consumer, destination owner and current-fence terminal observer; the durable cross-owner outbox is not yet implemented.
 
 Current operating and state-format references:
 
+- [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs).
 - [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs).
 - [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs).
 
@@ -176,6 +177,7 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-operations/src/durable_tests.rs](../../../codex-rs/hepta-operations/src/durable_tests.rs); named cases: `reopen_preserves_indeterminate_and_terminal_history` and `dispatch_acknowledgement_never_becomes_terminal_by_itself`.
 - [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs); named case: `dispatch_ack_is_not_terminal_success`.
 - [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs); named case: `claim_and_ack_are_generation_fenced`.
 
@@ -308,9 +310,10 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `pending` |
-| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `pending` |
+| `durable_operation_ledger` | `DurableOperationLedger` | `codex-rs/hepta-operations/src/durable.rs` | `codex-rs/hepta-operations/src/durable_tests.rs` |
+| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `codex-rs/hepta-operations/src/ledger_tests.rs` |
+| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `codex-rs/hepta-operations/src/outbox_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- The durable operation owner is source-present. Product composition, real final-use consumption, destination owner adapters and the durable cross-owner outbox remain explicit follow-up work.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
