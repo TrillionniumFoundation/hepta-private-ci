@@ -2162,6 +2162,7 @@ impl ModelClientSession {
                             .take()
                             .map(AdmittedProviderAttempt::into_owner),
                         has_ephemeral_input,
+                        self.encoded_request_body_observer.clone(),
                     );
                     return Ok(stream);
                 }
@@ -2641,6 +2642,7 @@ impl ModelClientSession {
                     .take()
                     .map(AdmittedProviderAttempt::into_owner),
                 /*redact_provider_errors*/ false,
+                /*encoded_request_observer*/ None,
             );
             self.websocket_session.last_response_rx = Some(last_request_rx);
             return Ok(WebsocketStreamOutcome::Stream(stream));
