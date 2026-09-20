@@ -873,6 +873,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     != binding.agentd_program_sha256.as_str()
                 || expected_wire.matrixd_program_sha256.as_deref()
                     != binding.matrixd_program_sha256.as_deref()
+                || expected_wire.admission_frontier_sha256.as_str()
+                    != binding.admission_frontier_sha256.as_str()
             {
                 return Err(SupervisorError::ProductionAuthority(
                     "release binding changed since the production transition was admitted"
