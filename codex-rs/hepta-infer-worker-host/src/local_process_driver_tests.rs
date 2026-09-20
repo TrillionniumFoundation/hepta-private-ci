@@ -133,11 +133,8 @@ for line in sys.stdin:
     fn driver(&self) -> LocalProcessDriver {
         let mut models = BTreeMap::new();
         models.insert(self.manifest.model_id.clone(), self.artifacts.clone());
-        LocalProcessDriver::new(LocalProcessDriverConfig::new(
-            self.runtime.clone(),
-            models,
-        ))
-        .unwrap()
+        LocalProcessDriver::new(LocalProcessDriverConfig::new(self.runtime.clone(), models))
+            .unwrap()
     }
 
     fn grant(&self) -> ResourceGrant {
@@ -266,8 +263,7 @@ for line in sys.stdin:
     .unwrap();
     fixture.manifest.runtime_digest = sha256_file(&fixture.runtime).unwrap();
 
-    let verified =
-        VerifiedResourceGrant::trusted_in_process(100, fixture.grant()).unwrap();
+    let verified = VerifiedResourceGrant::trusted_in_process(100, fixture.grant()).unwrap();
     let mut worker = InferenceWorker::new(
         100,
         "worker.local.deadline".to_string(),
