@@ -158,7 +158,11 @@ impl LedgerWriter {
         ledger: DurableLedger,
         witness: LedgerWitnessStore,
         trust: ActivatedLearningTrustV1,
+        ledger_directory: &File,
+        witness_directory: &File,
     ) -> Result<Self, ProductionLedgerError> {
+        sync_directory_handle(ledger_directory)?;
+        sync_directory_handle(witness_directory)?;
         Self::new(LedgerBackend::Durable(ledger), witness, trust)
     }
 
@@ -166,7 +170,11 @@ impl LedgerWriter {
         ledger: SegmentedLedger,
         witness: LedgerWitnessStore,
         trust: ActivatedLearningTrustV1,
+        segment_directory: &File,
+        witness_directory: &File,
     ) -> Result<Self, ProductionLedgerError> {
+        sync_directory_handle(segment_directory)?;
+        sync_directory_handle(witness_directory)?;
         Self::new(LedgerBackend::Segmented(ledger), witness, trust)
     }
 
@@ -262,12 +270,16 @@ impl LedgerWriter {
         &mut self,
         next_segment: File,
         expected: LedgerAnchor,
+        segment_directory: &File,
     ) -> Result<LedgerSegmentCheckpoint, ProductionLedgerError> {
         let before = self.witness.frontier()?;
         let LedgerBackend::Segmented(ledger) = &mut self.backend else {
             return Err(ProductionLedgerError::UnsupportedBackend);
         };
         ledger.rotate(next_segment, expected)?;
+        if let Err(witness_error) = sync_directory_handle(segment_directory) {
+            return Err(ProductionLedgerError::IndeterminateAfterTopologyChange { witness_error });
+        }
         let after = self.backend.frontier()?;
         if let Err(witness_error) = self.witness.advance(before, after) {
             return Err(ProductionLedgerError::IndeterminateAfterTopologyChange { witness_error });
@@ -526,6 +538,19 @@ impl LedgerWriter {
         }
         Ok(receipt)
     }
+}
+
+/// Durably publish an already-created ledger, witness, or segment directory
+/// entry before the product writer can acknowledge any frontier that depends on
+/// it. The host supplies an authorized handle for the actual containing
+/// directory; no path lookup or directory creation occurs inside the ledger.
+pub fn sync_directory_handle(directory: &File) -> Result<(), DurableLedgerError> {
+    if !directory.metadata()?.is_dir() {
+        return Err(DurableLedgerError::NotDirectory);
+    }
+    directory
+        .sync_all()
+        .map_err(|error| DurableLedgerError::Io(error.kind()))
 }
 
 pub fn candidate_ids_digest_v2(candidate_ids: &[StableId]) -> Digest32 {
