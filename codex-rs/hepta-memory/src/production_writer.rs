@@ -581,6 +581,9 @@ impl ProductionDurableWriter {
             payload_json: receipt.payload_json.clone(),
             payload_sha256: receipt.payload_sha256.clone(),
             idempotency_key: receipt.occurrence_key.clone(),
+            operation_scope_id: operation.scope_id.clone(),
+            operation_owner_id: operation.owner_id.clone(),
+            operation_destination_id: operation.destination_id.clone(),
             operation_semantic_sha256: operation.operation_semantic_sha256.clone(),
             expected_predecessor_sha256: operation.expected_predecessor_sha256.clone(),
             operation_digest: operation_digest(&self.authority, receipt, &operation),
@@ -780,6 +783,9 @@ impl ProductionDurableWriter {
             payload_json: receipt.payload_json.clone(),
             payload_sha256: receipt.payload_sha256.clone(),
             idempotency_key: receipt.occurrence_key.clone(),
+            operation_scope_id: String::new(),
+            operation_owner_id: String::new(),
+            operation_destination_id: String::new(),
             operation_semantic_sha256: receipt.payload_sha256.clone(),
             expected_predecessor_sha256: None,
             operation_digest: legacy_operation_digest(&self.authority, &receipt),
@@ -862,6 +868,9 @@ impl ProductionDurableWriter {
             payload_json: receipt.payload_json.clone(),
             payload_sha256: receipt.payload_sha256.clone(),
             idempotency_key: receipt.occurrence_key.clone(),
+            operation_scope_id: durable_operation.scope_id.clone(),
+            operation_owner_id: durable_operation.owner_id.clone(),
+            operation_destination_id: durable_operation.destination_id.clone(),
             operation_semantic_sha256: durable_operation.operation_semantic_sha256.clone(),
             expected_predecessor_sha256: durable_operation.expected_predecessor_sha256.clone(),
             operation_digest: operation_digest(&self.authority, &receipt, &durable_operation),
@@ -1169,6 +1178,11 @@ pub struct ProductionDispatchRequest {
     pub payload_json: String,
     pub payload_sha256: Sha256Digest,
     pub idempotency_key: String,
+    /// Exact semantic fields needed by the destination to revalidate the
+    /// durable OperationIntent rather than trusting an opaque source digest.
+    pub operation_scope_id: String,
+    pub operation_owner_id: String,
+    pub operation_destination_id: String,
     /// Canonical digest of the complete durable OperationIntent.
     pub operation_semantic_sha256: Sha256Digest,
     /// Destination-owned CAS expectation. The destination must compare this
