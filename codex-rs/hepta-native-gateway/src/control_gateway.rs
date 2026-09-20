@@ -381,18 +381,6 @@ impl UiControlGateway {
             scope_sha256: scope_digest.into_array(),
             payload_sha256: payload_digest.into_array(),
         };
-        let signed_grant = self
-            .grant_provider
-            .grant_for(&principal, &binding)
-            .map_err(|_| UiControlGatewayError::AuthorityUnavailable)?;
-        let evidence_digest = signed_grant_evidence_digest(&signed_grant)?;
-        let authority_generation = Generation::new(signed_grant.grant.authority_epoch)
-            .map_err(|_| UiControlGatewayError::AuthorityRejected)?;
-        let token = self
-            .authority
-            .claim(&signed_grant, &binding)
-            .map_err(|_| UiControlGatewayError::AuthorityRejected)?;
-
         let dispatch_digest = owner_dispatch_digest(
             &normalized.operation_id,
             normalized.semantic_digest,
@@ -414,6 +402,18 @@ impl UiControlGateway {
         self.owner
             .preflight(&principal, &dispatch)
             .map_err(|_| UiControlGatewayError::OwnerRejected)?;
+
+        let signed_grant = self
+            .grant_provider
+            .grant_for(&principal, &binding)
+            .map_err(|_| UiControlGatewayError::AuthorityUnavailable)?;
+        let evidence_digest = signed_grant_evidence_digest(&signed_grant)?;
+        let authority_generation = Generation::new(signed_grant.grant.authority_epoch)
+            .map_err(|_| UiControlGatewayError::AuthorityRejected)?;
+        let token = self
+            .authority
+            .claim(&signed_grant, &binding)
+            .map_err(|_| UiControlGatewayError::AuthorityRejected)?;
 
         self.ledger
             .record_authorized_dispatch(
