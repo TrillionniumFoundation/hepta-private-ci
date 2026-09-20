@@ -19,6 +19,8 @@ use crate::production_writer::ProductionDispatchFuture;
 use crate::production_writer::ProductionDispatchRequest;
 use crate::production_writer::ProductionOutboxTarget;
 use crate::production_writer::ProductionTargetOutcome;
+use crate::production_writer::ProductionTerminalObservation;
+use crate::production_writer::ProductionTerminalObservationFuture;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use codex_hepta_contracts::Sha256Digest;
@@ -390,6 +392,30 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
 impl FinalUseProductionOutboxTarget for CognitiveSourceOutboxTarget {
     fn destination_id(&self) -> &str {
         COGNITIVE_SOURCE_DESTINATION_V1
+    }
+
+    fn observe_terminal<'a>(
+        &'a self,
+        request: &'a ProductionDispatchRequest,
+    ) -> ProductionTerminalObservationFuture<'a> {
+        Box::pin(async move {
+            match CognitiveSourceOutboxTarget::observe_terminal(self, request).await {
+                CognitiveSourceTerminalObservation::Applied { receipt } => {
+                    ProductionTerminalObservation::Applied { receipt }
+                }
+                CognitiveSourceTerminalObservation::NotApplied => {
+                    ProductionTerminalObservation::NotApplied {
+                        reason: "destination has no committed source row".to_string(),
+                    }
+                }
+                CognitiveSourceTerminalObservation::Quarantined { reason } => {
+                    ProductionTerminalObservation::Quarantined { reason }
+                }
+                CognitiveSourceTerminalObservation::Unavailable { reason } => {
+                    ProductionTerminalObservation::Unavailable { reason }
+                }
+            }
+        })
     }
 }
 
