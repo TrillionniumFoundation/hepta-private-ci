@@ -213,7 +213,7 @@ fn validate_advance(
     }
     match (previous.segment, next.segment) {
         (None, None) => {}
-        (None, Some(segment)) if segment == 0 => {}
+        (None, Some(0)) => {}
         (Some(previous_segment), Some(next_segment)) if next_segment == previous_segment => {}
         _ => return Err(DurableLedgerError::InvalidAnchor),
     }
