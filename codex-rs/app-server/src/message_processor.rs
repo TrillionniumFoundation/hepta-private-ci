@@ -400,8 +400,8 @@ impl MessageProcessor {
                         http_client_factory: config.http_client_factory(),
                         queue_service: queue_service.clone(),
                         hepta_cognitive_runtime: hepta_cognitive_runtime.clone(),
-                        hepta_cognitive_production_mutation:
-                            hepta_cognitive_production_mutation.clone(),
+                        hepta_cognitive_production_mutation: hepta_cognitive_production_mutation
+                            .clone(),
                         hepta_local_turn_lifecycle_enabled,
                         hepta_local_development_policy,
                         hepta_qualification_turn_writer_enabled,
