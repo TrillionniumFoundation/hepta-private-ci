@@ -114,10 +114,14 @@ pub enum SupervisordMethod {
     Restart {
         fence: SupervisordControlFence,
     },
+    /// Retained for wire compatibility only. The daemon rejects this unsigned
+    /// release mutation and requires `SignedUpgrade`.
     Upgrade {
         fence: SupervisordControlFence,
         release_id: ReleaseId,
     },
+    /// Retained for wire compatibility only. The daemon rejects this unsigned
+    /// release mutation and requires `SignedRollback`.
     Rollback {
         fence: SupervisordControlFence,
     },

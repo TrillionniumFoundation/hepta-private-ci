@@ -95,7 +95,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Transitions the lifecycle fence to Draining, requires an exact Agentd Drain acknowledgement that closes admission for the current spawn/draining generation, and never relabels unknown in-flight work as complete.",
+      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement that closes admission for the current spawn/draining generation. A process without that typed boundary fails closed; drain never falls back to SIGTERM and never relabels unknown in-flight work as complete.",
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -197,7 +197,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "In production-authority mode consumes an independently signed exact release selection, binds source/target manifest and executable digests plus compatibility/frontier/CAS facts, rejects unsigned release changes, re-admits rollback against current provenance/frontier, and requires an independent signed recovery decision for ambiguous outcomes.",
+      "sourceSemantics": "The daemon product executes release changes only through an independently signed exact release selection, binding source/target manifest and executable digests plus compatibility/frontier/CAS facts. Unsigned daemon Upgrade/Rollback are compatibility rejection surfaces; library-only qualification transitions cannot establish production state.",
       "operation": "load_next",
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -357,5 +357,7 @@
   "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-supervisor"
-  ]
+  ],
+  "sourceBaseSemantics": "historical_provenance_only_exact_candidate_derived_from_git_at_verification_time",
+  "candidateIdentity": "derived_from_git_head_or_deterministic_merge_at_verification_time"
 }

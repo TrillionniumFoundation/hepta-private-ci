@@ -1664,6 +1664,9 @@ mod tests {
     use super::AppServerRuntimeOptions;
     use super::HeptaLocalDevelopmentLifecycleOwner;
     use super::LogFormat;
+    use super::ShutdownAction;
+    use super::ShutdownSignal;
+    use super::ShutdownState;
     use super::enforce_required_sqlite_home;
     use super::enforce_required_thread_store_mode;
     #[cfg(debug_assertions)]
@@ -1676,6 +1679,19 @@ mod tests {
     use pretty_assertions::assert_eq;
     use std::io::ErrorKind;
     use std::path::Path;
+
+    #[test]
+    fn external_product_drain_waits_for_admitted_turns_before_finish() {
+        let mut state = ShutdownState::default();
+        state.on_signal(
+            ShutdownSignal::ExternalDrain,
+            /*connection_count*/ 1,
+            /*running_turn_count*/ 1,
+        );
+        assert!(state.requested());
+        assert!(matches!(state.update(1, 0), ShutdownAction::Noop));
+        assert!(matches!(state.update(0, 0), ShutdownAction::Finish));
+    }
 
     #[test]
     fn ordinary_codex_runtime_does_not_enable_a_database_wide_queue_capacity() {
