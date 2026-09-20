@@ -815,12 +815,16 @@ fn candidate_cleanup_precedes_state_restoration_even_when_callbacks_fail() {
             migration.rollbacks,
             vec![(generation(7), generation(8), b"state-v1".to_vec())]
         );
-        if rollback_fails {
+        if cleanup_fails || rollback_fails {
             assert!(
                 host.statuses()
                     .iter()
                     .all(|status| status.state == HostedOrganStateV1::Quarantined)
             );
+            assert!(matches!(
+                host.dispatch_once(generation(7), &id("source"), 0, b"uncertain-cleanup"),
+                Err(OrganRuntimeError::OrganNotReady { .. })
+            ));
         } else {
             assert_eq!(host.statuses(), before);
         }
