@@ -76,10 +76,7 @@ Ineligible
 InsufficientEvidence
 ```
 
-Even the first state has `DENY_ALL` authority. A separate selector must consume
-it together with all other gates. The repository's current signed consumer is
-`codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`;
-that composition is not activation, promotion or release.
+Even the first state has `DENY_ALL` authority. A separate selector must consume it together with all other gates. The repository's current consumer `codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1` consumes the sealed `ProductQualificationReceiptV1` and does not re-run the low-level evaluator; that composition is still not activation, promotion or release.
 
 ## Identity, causal and statistical obligations
 

@@ -100,8 +100,7 @@ and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
 ## Canonical product consumer
 
 The repository's current signed consumer is
-`codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`.
-It currently calls the low-level signed V2 admission boundary before any host port is invoked. New qualification production composition must consume a `ProductQualificationReceiptV1` emitted by `ProductEvaluationRunnerV1`; the existing adapter remains a migration consumer until that handoff is completed. Neither path by itself proves runtime activation, target-host qualification or production longitudinal efficacy.
+`codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`. It now accepts only a sealed `ProductQualificationReceiptV1`, checks its trust digest against the current host verifier, binds its dataset/objective/snapshot set and requires the same evaluator to sign the candidate bytes against that terminal receipt. It no longer re-runs low-level V2 admission. This closes the repository-controlled product qualification spine without claiming runtime activation, target-host qualification or production longitudinal efficacy.
 
 ## CI closure evidence
 
