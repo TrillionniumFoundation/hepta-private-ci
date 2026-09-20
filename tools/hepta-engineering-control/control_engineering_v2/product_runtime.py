@@ -16,8 +16,10 @@ from .evidence import SignatureTrustStore
 from .integration_controller import (
     IntegrationQueueGeneration,
     IntegrationQueueItem,
+    IntegrationStageReceipt,
     IntegrationTerminalReceipt,
     integration_queue_item,
+    observe_integration_stage,
     publish_integration_queue,
     reconcile_integration_item,
 )
@@ -239,22 +241,30 @@ class EngineeringControlProduct:
         *,
         current_base_commit: str,
         current_base_tree: str,
-        candidate_digest: str | None = None,
-        review_digest: str | None = None,
-        ci_digest: str | None = None,
+        stage_receipt: IntegrationStageReceipt | None = None,
         terminal_outcome: str | None = None,
         terminal_receipt: IntegrationTerminalReceipt | None = None,
         now_ns: int | None = None,
     ) -> IntegrationQueueItem:
+        if stage_receipt is not None:
+            if terminal_outcome is not None or terminal_receipt is not None:
+                raise ValueError("integration_stage_terminal_mix")
+            return observe_integration_stage(
+                self.store,
+                queue_generation_id,
+                package_id,
+                current_base_commit=current_base_commit,
+                current_base_tree=current_base_tree,
+                receipt=stage_receipt,
+                trust_store=self.trust_store,
+                now_ns=now_ns,
+            )
         return reconcile_integration_item(
             self.store,
             queue_generation_id,
             package_id,
             current_base_commit=current_base_commit,
             current_base_tree=current_base_tree,
-            candidate_digest=candidate_digest,
-            review_digest=review_digest,
-            ci_digest=ci_digest,
             terminal_outcome=terminal_outcome,
             terminal_receipt=terminal_receipt,
             trust_store=self.trust_store,
