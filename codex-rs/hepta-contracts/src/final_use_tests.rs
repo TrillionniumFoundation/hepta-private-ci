@@ -95,6 +95,26 @@ fn async_effect_entry_is_denied_if_revoked_after_claim_before_entry() {
 }
 
 #[test]
+fn unrelated_frontier_advance_after_claim_requires_a_fresh_claim() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    assert_eq!(token.claimed_authority_epoch(), 9);
+    assert_eq!(token.claimed_revocation_revision(), 1);
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::new(),
+        })
+        .unwrap();
+    assert_eq!(
+        token.enter(&binding).unwrap_err(),
+        FinalUseError::StaleRevocationHead
+    );
+}
+
+#[test]
 fn changing_signed_data_or_substituting_a_key_does_not_authorize() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.binding.request_sha256 = [6; 32];
