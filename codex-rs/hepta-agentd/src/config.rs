@@ -38,6 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
 }
 
 impl AgentdConfig {
@@ -143,6 +144,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            production_operations: None,
         })
     }
 
@@ -178,6 +180,29 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Attach an externally-authorized long-lived production operation host.
+    /// This is source composition only: default process-environment startup
+    /// does not synthesize or load authority material.
+    pub fn with_production_operations(
+        mut self,
+        operations: crate::AgentdProductionOperationRuntimeConfig,
+    ) -> Result<Self, AgentdError> {
+        operations.validate_for(&self)?;
+        if self.production_operations.is_some() {
+            return Err(AgentdError::Invalid(
+                "production operation runtime already configured".to_string(),
+            ));
+        }
+        self.production_operations = Some(operations);
+        Ok(self)
+    }
+
+    pub(crate) fn take_production_operations(
+        &mut self,
+    ) -> Option<crate::AgentdProductionOperationRuntimeConfig> {
+        self.production_operations.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {
