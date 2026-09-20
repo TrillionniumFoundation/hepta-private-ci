@@ -217,9 +217,6 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                         cancellation,
                     } => {
                         let request_id = request.request_id.clone();
-                        if let Ok(mut slot) = current_owner.lock() {
-                            *slot = Some((request_id.clone(), cancellation.clone()));
-                        }
                         let result = host.run(
                             now_ms().unwrap_or(0),
                             &model_id,
@@ -301,6 +298,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                     continue;
                 }
                 let payload_digest = sha256(input.as_bytes());
+                let active_request_id = request_id.clone();
                 let request = WorkerRequest {
                     request_id,
                     reservation_id,
@@ -315,10 +313,28 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                     cancelled: false,
                 };
                 let cancellation = CancellationToken::new();
-                owner_tx.send(OwnerCommand::Run {
-                    request,
-                    cancellation,
-                })?;
+                match current.lock() {
+                    Ok(mut slot) => {
+                        *slot = Some((active_request_id, cancellation.clone()));
+                    }
+                    Err(_) => {
+                        busy.store(false, Ordering::Release);
+                        return Err("local cancellation registry unavailable".into());
+                    }
+                }
+                if owner_tx
+                    .send(OwnerCommand::Run {
+                        request,
+                        cancellation,
+                    })
+                    .is_err()
+                {
+                    if let Ok(mut slot) = current.lock() {
+                        *slot = None;
+                    }
+                    busy.store(false, Ordering::Release);
+                    return Err("local inference owner stopped".into());
+                }
             }
             ControlCommand::Cancel { request_id } => {
                 let cancelled = current
