@@ -24,6 +24,8 @@ pub enum LearningEvidenceRoleV1 {
     Generator,
     Observer,
     Evaluator,
+    Scorer,
+    RandomSource,
 }
 
 impl LearningEvidenceRoleV1 {
@@ -32,6 +34,8 @@ impl LearningEvidenceRoleV1 {
             Self::Generator => 0,
             Self::Observer => 1,
             Self::Evaluator => 2,
+            Self::Scorer => 3,
+            Self::RandomSource => 4,
         }
     }
 }
@@ -272,6 +276,29 @@ impl LearningEvidenceVerifierV1 {
     }
 }
 
+pub fn verify_signed_evidence_independence(
+    left: &VerifiedLearningEvidenceV1,
+    right: &VerifiedLearningEvidenceV1,
+    now: u64,
+) -> Result<(), SignedEvidenceError> {
+    if left.trust_digest != right.trust_digest || left.objective_digest != right.objective_digest {
+        return Err(SignedEvidenceError::ContextMismatch);
+    }
+    for evidence in [left, right] {
+        if now < evidence.issued_at || now > evidence.expires_at {
+            return Err(SignedEvidenceError::ValidityWindow);
+        }
+        if evidence.revoked_at.is_some_and(|at| now >= at) {
+            return Err(SignedEvidenceError::Revoked);
+        }
+    }
+    verify_independent_roles(&left.principal, &right.principal, now)?;
+    if left.controller_id == right.controller_id {
+        return Err(SignedEvidenceError::ControllerCollision);
+    }
+    Ok(())
+}
+
 pub fn verify_signed_role_separation(
     generator: &VerifiedLearningEvidenceV1,
     observer: &VerifiedLearningEvidenceV1,
@@ -282,24 +309,7 @@ pub fn verify_signed_role_separation(
     {
         return Err(SignedEvidenceError::RoleMismatch);
     }
-    if generator.trust_digest != observer.trust_digest
-        || generator.objective_digest != observer.objective_digest
-    {
-        return Err(SignedEvidenceError::ContextMismatch);
-    }
-    for evidence in [generator, observer] {
-        if now < evidence.issued_at || now > evidence.expires_at {
-            return Err(SignedEvidenceError::ValidityWindow);
-        }
-        if evidence.revoked_at.is_some_and(|at| now >= at) {
-            return Err(SignedEvidenceError::Revoked);
-        }
-    }
-    verify_independent_roles(&generator.principal, &observer.principal, now)?;
-    if generator.controller_id == observer.controller_id {
-        return Err(SignedEvidenceError::ControllerCollision);
-    }
-    Ok(())
+    verify_signed_evidence_independence(generator, observer, now)
 }
 
 fn push_id(bytes: &mut Vec<u8>, id: &StableId) {
