@@ -66,14 +66,12 @@ impl AppServerModelDriver {
             .into());
         }
         if record.state != NativeReservationState::Reserved {
-            if record
+            if let Some(output) = record
                 .observation
                 .as_ref()
-                .is_some_and(|output| output.terminal_observed)
+                .filter(|output| output.terminal_observed)
             {
-                return Ok(record
-                    .observation
-                    .expect("terminal observation checked above"));
+                return Ok(output.clone());
             }
             if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
                 control.settle_native(&record.request.request_id, reconciled.clone())?;
