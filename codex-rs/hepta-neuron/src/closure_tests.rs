@@ -260,6 +260,17 @@ fn canonical_request_digest(input: &NeuronTickInputV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+fn plasticity_ancestry() -> PlasticityAncestryV1 {
+    PlasticityAncestryV1 {
+        selected_artifact_digest: digest("selected-artifact"),
+        generation: generation(1),
+        parameter_manifest_digest: digest("parameter-manifest"),
+        window_digest: digest("plasticity-window"),
+        update_rule_digest: digest("local-rule"),
+        predecessor_digest: digest("selected-artifact"),
+    }
+}
+
 fn canonical_required_lineage(input: &NeuronTickInputV1) -> Vec<Digest32> {
     let mut values = checked(selected_model_manifest().lineage_digests());
     values.extend([
@@ -570,18 +581,40 @@ fn plasticity_requires_explicit_parameter_group_broadcast_and_is_deterministic()
         maximum_group_absolute_q24: Q,
         maximum_total_l1_q24: 2 * Q,
     };
-    let first = checked(accumulate_plasticity(&history, &groups, &broadcast, trust));
+    let first = checked(accumulate_plasticity(&plasticity_ancestry(), &history, &groups, &broadcast, trust));
     let mut shuffled = broadcast.clone();
     shuffled.reverse();
     assert_eq!(
-        checked(accumulate_plasticity(&history, &groups, &shuffled, trust)),
+        checked(accumulate_plasticity(&plasticity_ancestry(), &history, &groups, &shuffled, trust)),
         first
     );
     assert_eq!(first.sample_count, 2);
     assert!(!first.statistics_digest.is_zero());
+    assert_eq!(
+        first.selected_artifact_digest,
+        plasticity_ancestry().selected_artifact_digest
+    );
+    assert_eq!(first.generation, plasticity_ancestry().generation);
+    assert_eq!(
+        first.parameter_manifest_digest,
+        plasticity_ancestry().parameter_manifest_digest
+    );
+    let mut changed_ancestry = plasticity_ancestry();
+    changed_ancestry.window_digest = digest("other-window");
+    assert_ne!(
+        checked(accumulate_plasticity(
+            &changed_ancestry,
+            &history,
+            &groups,
+            &broadcast,
+            trust,
+        ))
+        .statistics_digest,
+        first.statistics_digest
+    );
 
     assert_eq!(
-        accumulate_plasticity(&history, &groups, &broadcast[..1], trust),
+        accumulate_plasticity(&plasticity_ancestry(), &history, &groups, &broadcast[..1], trust),
         Err(PlasticityError::BroadcastMismatch)
     );
 }
