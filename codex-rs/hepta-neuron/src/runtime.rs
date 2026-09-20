@@ -319,25 +319,16 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         {
             abstain = true;
         }
-        let active_indices = sparse_receipt
-            .activation_q24
+        let active_indices = checkpoint
+            .activation_q24()
             .iter()
             .enumerate()
             .filter(|(_, value)| **value > 0)
             .map(|(index, _)| u32::try_from(index).map_err(|_| NeuronRuntimeError::Arithmetic))
             .collect::<Result<Vec<_>, _>>()?;
-        let activation_digest = digest_q24_vector(
-            b"hepta.neuron.activation.q24.v1",
-            &sparse_receipt.activation_q24,
-        );
-        let threshold_digest = digest_q24_vector(
-            b"hepta.neuron.threshold.q24.v1",
-            checkpoint.thresholds_q24(),
-        );
-        let eligibility_digest = digest_q24_vector(
-            b"hepta.neuron.eligibility.q24.v1",
-            checkpoint.eligibility_q24(),
-        );
+        let activation_digest = checkpoint.activation_digest();
+        let threshold_digest = checkpoint.threshold_digest();
+        let eligibility_digest = checkpoint.eligibility_digest();
         let resource_receipt = NeuronResourceReceiptV1 {
             execution_micros,
             transient_allocation_bytes: model_output.transient_allocation_bytes,
