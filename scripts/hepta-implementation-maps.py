@@ -19,9 +19,64 @@ from hepta_module_source_roots import resolve_source_roots
 ROOT = Path(__file__).resolve().parents[1]
 
 
+MAP_REFRESH_SUPPORT_PATHS = {
+    "scripts/hepta-implementation-maps.py",
+    "scripts/test_hepta_implementation_maps.py",
+}
+
+
+def _parents(commit: str) -> list[str]:
+    return git("show", "-s", "--format=%P", commit).split()
+
+
+def _map_refresh_parent(commit: str) -> str | None:
+    """Return the exact source parent for a maps-only refresh wrapper.
+
+    A tracked file cannot contain the SHA/tree of the commit that contains that
+    file without becoming self-referential.  The repository therefore permits
+    exactly one maps-only wrapper commit whose sole parent is the source commit.
+    Any code/config/source change in the wrapper makes it ineligible.
+    """
+    parents = _parents(commit)
+    if len(parents) != 1:
+        return None
+    parent = parents[0]
+    changed = [
+        path
+        for path in git("diff", "--name-only", parent, commit).splitlines()
+        if path
+    ]
+    if not changed:
+        return None
+    for path in changed:
+        if path in MAP_REFRESH_SUPPORT_PATHS:
+            continue
+        if path.startswith("docs/modules/") and path.endswith("/IMPLEMENTATION_MAP.json"):
+            continue
+        return None
+    return parent
+
+
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
-    return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+    """Return the immutable source identity that canonical maps must bind.
+
+    Ordinary source heads bind directly to HEAD.  A maps-only refresh wrapper
+    binds to its sole parent.  For repository synthetic merges (ordered
+    base/source parents), the source parent may itself be that wrapper; in that
+    case bind to the wrapper's source parent.
+    """
+    head = git("rev-parse", "HEAD")
+    parents = _parents(head)
+    candidate = head
+    if len(parents) == 2:
+        source_parent = parents[1]
+        candidate = _map_refresh_parent(source_parent) or source_parent
+    else:
+        candidate = _map_refresh_parent(head) or head
+    return {
+        "commit": git("rev-parse", candidate),
+        "tree": git("rev-parse", f"{candidate}^{{tree}}"),
+    }
 
 
 def load(rel: str):
@@ -286,6 +341,11 @@ def generate():
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
+    expected_source_base = current_source_base()
+    expected_source_tuple = (
+        expected_source_base["commit"],
+        expected_source_base["tree"],
+    )
     failures = []
     source_bases = set()
     for module in modules:
@@ -316,7 +376,13 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            observed_source_tuple = (source_base["commit"], source_base["tree"])
+            source_bases.add(observed_source_tuple)
+            if observed_source_tuple != expected_source_tuple:
+                failures.append(
+                    f"{mid}: source base {observed_source_tuple} != current source "
+                    f"{expected_source_tuple}"
+                )
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -355,6 +421,7 @@ def verify():
                 "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
                 "modules": len(modules),
                 "maps": len(modules),
+                "sourceBase": expected_source_base,
                 "productionImplementationProved": False,
             },
             sort_keys=True,
