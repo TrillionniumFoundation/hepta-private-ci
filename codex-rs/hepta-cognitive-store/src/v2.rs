@@ -36,6 +36,7 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+use crate::durable::CognitiveScope as DurableCognitiveScope;
 use crate::durable::MemoryLifecycleState as DurableMemoryLifecycleState;
 use crate::durable::MemoryVerification as DurableMemoryVerification;
 use crate::durable::ProductionCognitiveMutationReceiptV1;
@@ -146,6 +147,27 @@ pub fn bind_canonical_event_to_durable_receipt(
         || provenance.observed_at_unix_ms != observed_ms
     {
         return Err(CognitiveStoreV2Error::CanonicalDurableSourceMismatch);
+    }
+
+    let scope_matches = match (&production.write.memory.scope, &event.scope) {
+        (
+            DurableCognitiveScope::AgentPrivate,
+            codex_hepta_cognitive_types::hnmf::MemoryScopeV1::AgentPrivate { agent_id },
+        ) => agent_id.as_str() == production.owner_agent_id.as_str(),
+        (
+            DurableCognitiveScope::WorkspacePrivate { workspace_sha256 },
+            codex_hepta_cognitive_types::hnmf::MemoryScopeV1::WorkspacePrivate {
+                agent_id,
+                workspace_sha256: canonical_workspace,
+            },
+        ) => {
+            agent_id.as_str() == production.owner_agent_id.as_str()
+                && canonical_workspace.to_string() == workspace_sha256.as_str()
+        }
+        _ => false,
+    };
+    if !scope_matches {
+        return Err(CognitiveStoreV2Error::CanonicalDurableStateMismatch);
     }
 
     let verification_matches = matches!(
