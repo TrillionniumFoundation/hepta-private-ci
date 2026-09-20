@@ -288,6 +288,7 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
+    legacy_source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -334,6 +335,8 @@ def verify():
                     )
                     if ancestor.returncode != 0:
                         failures.append(f"{mid}: source base is not an ancestor of HEAD")
+            else:
+                legacy_source_bases.add((source_base["commit"], source_base["tree"]))
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -399,10 +402,13 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    # Source baselines are module-local provenance. A module is upgraded to
-    # strict source-base enforcement only after its map is rebound to an exact
-    # reviewed commit/tree; unrelated modules are not forced to share one stale
-    # global identity.
+    # Strict modules use module-local provenance. Until the remaining modules
+    # are migrated, preserve their legacy closed-world invariant: they must all
+    # name one common baseline rather than being allowed to drift independently.
+    if len(legacy_source_bases) != 1:
+        failures.append(
+            f"maps: legacy source base drift ({len(legacy_source_bases)} identities)"
+        )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
