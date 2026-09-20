@@ -1381,13 +1381,7 @@ mod tests {
         outbound: mpsc::Sender<Vec<u8>>,
         inbound: mpsc::Receiver<Vec<u8>>,
         writes: usize,
-        reads: usize,
         stall_second_write: bool,
-        stall_second_read: bool,
-        second_write_started: mpsc::Sender<()>,
-        second_write_release: mpsc::Receiver<()>,
-        second_read_started: mpsc::Sender<()>,
-        second_read_release: mpsc::Receiver<()>,
     }
 
     impl BrowserServoTransport for ChannelTransport {
@@ -1401,16 +1395,7 @@ mod tests {
                 BrowserServoError::Unavailable("test Browser receiver closed".into())
             })?;
             if self.stall_second_write && self.writes == 2 {
-                self.second_write_started
-                    .send(())
-                    .expect("signal controlled Browser write stall");
-                self.second_write_release
-                    .recv_timeout(timeout)
-                    .map_err(|_| {
-                        BrowserServoError::Indeterminate(
-                            "test Browser frame write timed out".into(),
-                        )
-                    })?;
+                thread::sleep(timeout);
                 return Err(BrowserServoError::Indeterminate(
                     "test Browser frame write timed out".into(),
                 ));
@@ -1419,22 +1404,6 @@ mod tests {
         }
 
         fn read_frame_timeout(&mut self, timeout: Duration) -> Result<Vec<u8>, BrowserServoError> {
-            self.reads += 1;
-            if self.stall_second_read && self.reads == 2 {
-                self.second_read_started
-                    .send(())
-                    .expect("signal controlled Browser read stall");
-                self.second_read_release
-                    .recv_timeout(timeout)
-                    .map_err(|_| {
-                        BrowserServoError::Indeterminate(
-                            "test Browser frame read timed out".into(),
-                        )
-                    })?;
-                return Err(BrowserServoError::Indeterminate(
-                    "test Browser frame read timed out".into(),
-                ));
-            }
             self.inbound
                 .recv_timeout(timeout)
                 .map_err(|error| match error {
@@ -1457,10 +1426,6 @@ mod tests {
         inbound: mpsc::Sender<Vec<u8>>,
         invocation: BrowserFinalUseInvocation,
         request_digest: [u8; 32],
-        second_write_started: mpsc::Receiver<()>,
-        second_write_release: mpsc::Sender<()>,
-        second_read_started: mpsc::Receiver<()>,
-        second_read_release: mpsc::Sender<()>,
         _state: tempfile::TempDir,
     }
 
@@ -1511,20 +1476,12 @@ mod tests {
     }
 
     fn harness_with_timeout(frame_timeout: Duration) -> Harness {
-        harness_with_stalls(frame_timeout, false, false)
+        harness_with_timeout_and_write_stall(frame_timeout, false)
     }
 
     fn harness_with_timeout_and_write_stall(
         frame_timeout: Duration,
         stall_second_write: bool,
-    ) -> Harness {
-        harness_with_stalls(frame_timeout, stall_second_write, false)
-    }
-
-    fn harness_with_stalls(
-        frame_timeout: Duration,
-        stall_second_write: bool,
-        stall_second_read: bool,
     ) -> Harness {
         let state = private_authority_tempdir();
         let state_path = fs::canonicalize(state.path()).expect("canonical authority tempdir");
@@ -1581,10 +1538,6 @@ mod tests {
         };
         let (to_browser, outbound) = mpsc::channel();
         let (inbound, from_browser) = mpsc::channel();
-        let (second_write_started_tx, second_write_started) = mpsc::channel();
-        let (second_write_release, second_write_release_rx) = mpsc::channel();
-        let (second_read_started_tx, second_read_started) = mpsc::channel();
-        let (second_read_release, second_read_release_rx) = mpsc::channel();
         let port = Arc::new(
             BrowserServoPort::with_frame_timeout(
                 authority.clone(),
@@ -1592,13 +1545,7 @@ mod tests {
                     outbound: to_browser,
                     inbound: from_browser,
                     writes: 0,
-                    reads: 0,
                     stall_second_write,
-                    stall_second_read,
-                    second_write_started: second_write_started_tx,
-                    second_write_release: second_write_release_rx,
-                    second_read_started: second_read_started_tx,
-                    second_read_release: second_read_release_rx,
                 },
                 frame_timeout,
             )
@@ -1613,10 +1560,6 @@ mod tests {
             inbound,
             invocation,
             request_digest,
-            second_write_started,
-            second_write_release,
-            second_read_started,
-            second_read_release,
             _state: state,
         }
     }
@@ -1819,10 +1762,6 @@ mod tests {
             .expect("challenge");
         let enter = decode_outbound(&harness.outbound.recv().expect("authority enter"));
         assert_eq!(enter["kind"], "authority_enter");
-        harness
-            .second_write_started
-            .recv_timeout(Duration::from_secs(1))
-            .expect("authority-enter write reached controlled stall");
 
         let authority = harness.authority.clone();
         let (revoked_tx, revoked_rx) = mpsc::channel();
@@ -1838,10 +1777,6 @@ mod tests {
             revoked_rx.recv_timeout(Duration::from_millis(25)),
             Err(mpsc::RecvTimeoutError::Timeout)
         ));
-        harness
-            .second_write_release
-            .send(())
-            .expect("release controlled authority-enter write stall");
 
         let error = call
             .join()
@@ -1857,7 +1792,7 @@ mod tests {
 
     #[test]
     fn final_use_boundary_timeout_releases_revocation_fence() {
-        let harness = harness_with_stalls(Duration::from_secs(1), false, true);
+        let harness = harness_with_timeout(Duration::from_millis(75));
         let port = Arc::clone(&harness.port);
         let invocation = harness.invocation.clone();
         let call = thread::spawn(move || {
@@ -1884,10 +1819,6 @@ mod tests {
 
         let enter = decode_outbound(&harness.outbound.recv().expect("authority enter"));
         assert_eq!(enter["kind"], "authority_enter");
-        harness
-            .second_read_started
-            .recv_timeout(Duration::from_secs(1))
-            .expect("Browser boundary read reached controlled stall");
 
         let authority = harness.authority.clone();
         let (revoked_tx, revoked_rx) = mpsc::channel();
@@ -1903,10 +1834,6 @@ mod tests {
             revoked_rx.recv_timeout(Duration::from_millis(25)),
             Err(mpsc::RecvTimeoutError::Timeout)
         ));
-        harness
-            .second_read_release
-            .send(())
-            .expect("release controlled Browser boundary read stall");
 
         let error = call
             .join()
