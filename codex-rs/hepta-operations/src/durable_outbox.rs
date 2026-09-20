@@ -101,7 +101,7 @@ impl DurableOperationLedger {
             if operation_count >= super::MAX_DURABLE_OPERATION_RECORDS {
                 return Err(OperationError::CapacityExceeded {
                     resource: "durable operation ledger",
-                    maximum: super::MAX_MODEL_OPERATION_RECORDS,
+                    maximum: crate::MAX_MODEL_OPERATION_RECORDS,
                 });
             }
             let record = DurableOperationRecord {
@@ -210,7 +210,7 @@ impl DurableOperationLedger {
                 owner_generation: existing,
                 lease_expires_at_ms: existing_expiry,
                 attempts,
-            } if existing_expiry <= now_ms && owner_generation > existing => {
+            } if existing_expiry <= now_ms && owner_generation.get() > existing.get() => {
                 attempts
                     .checked_add(1)
                     .ok_or(OperationError::CapacityExceeded {
