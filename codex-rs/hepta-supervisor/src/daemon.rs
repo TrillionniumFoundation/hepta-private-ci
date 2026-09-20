@@ -681,6 +681,18 @@ async fn handle_mutation<D: ProcessDriver>(
             Some(actual),
         );
     }
+    if state.production_grant_verifier.is_some()
+        && matches!(
+            operation,
+            SupervisordMutation::Upgrade | SupervisordMutation::Rollback
+        )
+    {
+        return error_payload(
+            "signed_release_authority_required",
+            "production mode requires SignedUpgrade or SignedRollback for release transitions",
+            Some(actual),
+        );
+    }
 
     let prepared = match (operation, target) {
         (SupervisordMutation::Start, Some(target)) => PreparedMutation::Start(target),
