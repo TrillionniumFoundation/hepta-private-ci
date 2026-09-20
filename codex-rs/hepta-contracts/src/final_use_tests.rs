@@ -103,6 +103,26 @@ fn revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back() {
 }
 
 #[test]
+fn current_revalidation_fences_long_lived_generation_after_revocation() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    assert_eq!(
+        authority.revalidate(&signed, &signed.grant.binding),
+        Ok(())
+    );
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        })
+        .unwrap();
+    assert_eq!(
+        authority.revalidate(&signed, &signed.grant.binding),
+        Err(FinalUseError::Revoked)
+    );
+}
+
+#[test]
 fn epoch_change_fences_outstanding_claims_and_old_grants() {
     let (authority, signed, _directory) = fixture().unwrap();
     let token = authority.claim(&signed, &signed.grant.binding).unwrap();
