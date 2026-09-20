@@ -24,6 +24,7 @@ pub struct RestartBudgetState {
     pub window_started_unix_ms: u64,
     pub attempts: u32,
     pub pending: bool,
+    pub next_eligible_unix_ms: u64,
 }
 
 #[derive(Debug, Error)]
@@ -57,6 +58,7 @@ pub fn claim_restart(
         window_started_unix_ms: now_ms,
         attempts: 0,
         pending: false,
+        next_eligible_unix_ms: now_ms,
     });
     if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION
         || state.window_started_unix_ms == 0
@@ -70,12 +72,15 @@ pub fn claim_restart(
         state.window_started_unix_ms = now_ms;
         state.attempts = 0;
         state.pending = false;
+        state.next_eligible_unix_ms = now_ms;
     }
     if state.pending {
         // Exact replay of a pending restart does not consume another attempt.
         return Ok(RestartClaim {
             attempt: state.attempts,
-            backoff: backoff_for(state.attempts, base_backoff)?,
+            backoff: Duration::from_millis(
+                state.next_eligible_unix_ms.saturating_sub(now_ms),
+            ),
         });
     }
     if state.attempts >= maximum_attempts {
@@ -86,10 +91,16 @@ pub fn claim_restart(
         .checked_add(1)
         .ok_or_else(|| RestartBudgetError::Invalid("restart attempts overflow".to_string()))?;
     state.pending = true;
+    let backoff = backoff_for(state.attempts, base_backoff)?;
+    let backoff_ms = u64::try_from(backoff.as_millis())
+        .map_err(|_| RestartBudgetError::Invalid("restart backoff exceeds u64".to_string()))?;
+    state.next_eligible_unix_ms = now_ms
+        .checked_add(backoff_ms)
+        .ok_or_else(|| RestartBudgetError::Invalid("restart eligibility overflow".to_string()))?;
     write_restart_budget(run_root, &state)?;
     Ok(RestartClaim {
         attempt: state.attempts,
-        backoff: backoff_for(state.attempts, base_backoff)?,
+        backoff,
     })
 }
 
@@ -98,6 +109,7 @@ pub fn complete_restart(run_root: &Path) -> Result<(), RestartBudgetError> {
         return Ok(());
     };
     state.pending = false;
+    state.next_eligible_unix_ms = unix_ms()?;
     write_restart_budget(run_root, &state)
 }
 
@@ -129,7 +141,7 @@ pub fn restart_available(
 pub fn pending_restart(
     run_root: &Path,
     maximum_attempts: u32,
-) -> Result<Option<u32>, RestartBudgetError> {
+) -> Result<Option<RestartClaim>, RestartBudgetError> {
     let Some(state) = read_restart_budget(run_root)? else {
         return Ok(None);
     };
@@ -140,7 +152,16 @@ pub fn pending_restart(
             "restart budget state is outside configured bounds".to_string(),
         ));
     }
-    Ok(state.pending.then_some(state.attempts))
+    if !state.pending {
+        return Ok(None);
+    }
+    let now_ms = unix_ms()?;
+    Ok(Some(RestartClaim {
+        attempt: state.attempts,
+        backoff: Duration::from_millis(
+            state.next_eligible_unix_ms.saturating_sub(now_ms),
+        ),
+    }))
 }
 
 fn backoff_for(attempt: u32, base: Duration) -> Result<Duration, RestartBudgetError> {
