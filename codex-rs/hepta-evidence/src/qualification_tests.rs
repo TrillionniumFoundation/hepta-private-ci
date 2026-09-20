@@ -221,18 +221,18 @@ async fn evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independen
         .qualification()
         .verify_chain(
             &VerifyChainRequestV1 {
-            candidate,
-            claim_class: EvidenceClaimClassV1::MandatoryTests,
-            required_roles: vec![
-                EvidenceIssuerRoleV1::Generator,
-                EvidenceIssuerRoleV1::Evaluator,
-            ],
-            now_unix_ms: observed,
+                candidate,
+                claim_class: EvidenceClaimClassV1::MandatoryTests,
+                required_roles: vec![
+                    EvidenceIssuerRoleV1::Generator,
+                    EvidenceIssuerRoleV1::Evaluator,
+                ],
+                now_unix_ms: observed,
             },
             &[
-            trust_binding(&same_principal, EvidenceIssuerRoleV1::Generator),
-            trust_binding(&same_principal, EvidenceIssuerRoleV1::Evaluator),
-        ],
+                trust_binding(&same_principal, EvidenceIssuerRoleV1::Generator),
+                trust_binding(&same_principal, EvidenceIssuerRoleV1::Evaluator),
+            ],
         )
         .await
         .expect("verify");
@@ -282,18 +282,18 @@ async fn evid_01_distinct_authenticated_principals_satisfy_independence() {
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate,
-                claim_class: EvidenceClaimClassV1::MandatoryTests,
-                required_roles: vec![
-                    EvidenceIssuerRoleV1::Generator,
-                    EvidenceIssuerRoleV1::Evaluator,
-                ],
-                now_unix_ms: observed,
+                    candidate,
+                    claim_class: EvidenceClaimClassV1::MandatoryTests,
+                    required_roles: vec![
+                        EvidenceIssuerRoleV1::Generator,
+                        EvidenceIssuerRoleV1::Evaluator,
+                    ],
+                    now_unix_ms: observed,
                 },
                 &[
-                trust_binding(&generator_issuer, EvidenceIssuerRoleV1::Generator),
-                trust_binding(&evaluator_issuer, EvidenceIssuerRoleV1::Evaluator),
-            ],
+                    trust_binding(&generator_issuer, EvidenceIssuerRoleV1::Generator),
+                    trust_binding(&evaluator_issuer, EvidenceIssuerRoleV1::Evaluator),
+                ],
             )
             .await
             .expect("verify"),
@@ -458,15 +458,15 @@ async fn evid_02_wrong_tree_and_expired_candidate_are_unavailable() {
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate: candidate('c'),
-                claim_class: EvidenceClaimClassV1::ExactSource,
-                required_roles: vec![EvidenceIssuerRoleV1::Architecture],
-                now_unix_ms: observed,
+                    candidate: candidate('c'),
+                    claim_class: EvidenceClaimClassV1::ExactSource,
+                    required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+                    now_unix_ms: observed,
                 },
                 &[trust_binding(
-                &source_issuer,
-                EvidenceIssuerRoleV1::Architecture,
-            )],
+                    &source_issuer,
+                    EvidenceIssuerRoleV1::Architecture,
+                )],
             )
             .await
             .expect("wrong tree verify"),
@@ -477,15 +477,15 @@ async fn evid_02_wrong_tree_and_expired_candidate_are_unavailable() {
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate: exact,
-                claim_class: EvidenceClaimClassV1::ExactSource,
-                required_roles: vec![EvidenceIssuerRoleV1::Architecture],
-                now_unix_ms: expiry.saturating_add(1),
+                    candidate: exact,
+                    claim_class: EvidenceClaimClassV1::ExactSource,
+                    required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+                    now_unix_ms: expiry.saturating_add(1),
                 },
                 &[trust_binding(
-                &source_issuer,
-                EvidenceIssuerRoleV1::Architecture,
-            )],
+                    &source_issuer,
+                    EvidenceIssuerRoleV1::Architecture,
+                )],
             )
             .await
             .expect("expired verify"),
@@ -647,10 +647,10 @@ async fn evid_04_fixture_cannot_satisfy_hardware_claim() {
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate,
-                claim_class: EvidenceClaimClassV1::Hardware,
-                required_roles: vec![EvidenceIssuerRoleV1::Evaluator],
-                now_unix_ms: observed,
+                    candidate,
+                    claim_class: EvidenceClaimClassV1::Hardware,
+                    required_roles: vec![EvidenceIssuerRoleV1::Evaluator],
+                    now_unix_ms: observed,
                 },
                 &[trust_binding(&issuer, EvidenceIssuerRoleV1::Evaluator)],
             )
@@ -727,9 +727,9 @@ async fn independent_decision_binds_candidate_principal_key_role_and_evidence_se
                 now_unix_ms: observed,
                 },
                 &[trust_binding(
-                &reviewer,
-                EvidenceIssuerRoleV1::Architecture,
-            )],
+                    &reviewer,
+                    EvidenceIssuerRoleV1::Architecture,
+                )],
             )
             .await
             .expect("verify decision"),
@@ -814,9 +814,9 @@ async fn independent_decision_validity_outlives_short_ingress_auth_ttl() {
                 now_unix_ms: observed.saturating_add(60_000),
                 },
                 &[trust_binding(
-                &reviewer,
-                EvidenceIssuerRoleV1::Architecture,
-            )],
+                    &reviewer,
+                    EvidenceIssuerRoleV1::Architecture,
+                )],
             )
             .await
             .expect("verify durable decision after ingress ttl"),
@@ -889,9 +889,9 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
                 now_unix_ms: observed,
                 },
                 &[trust_binding(
-                &reviewer,
-                EvidenceIssuerRoleV1::Architecture,
-            )],
+                    &reviewer,
+                    EvidenceIssuerRoleV1::Architecture,
+                )],
             )
             .await
             .expect("initial decision"),
@@ -922,9 +922,9 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
                 now_unix_ms: observed,
                 },
                 &[trust_binding(
-                &reviewer,
-                EvidenceIssuerRoleV1::Architecture,
-            )],
+                    &reviewer,
+                    EvidenceIssuerRoleV1::Architecture,
+                )],
             )
             .await
             .expect("stale decision"),
@@ -1033,10 +1033,10 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate: base.candidate.clone(),
-                claim_class: EvidenceClaimClassV1::Conformance,
-                required_roles: vec![EvidenceIssuerRoleV1::Reviewer],
-                now_unix_ms: observed.saturating_add(3),
+                    candidate: base.candidate.clone(),
+                    claim_class: EvidenceClaimClassV1::Conformance,
+                    required_roles: vec![EvidenceIssuerRoleV1::Reviewer],
+                    now_unix_ms: observed.saturating_add(3),
                 },
                 &[trust_binding(&issuer, EvidenceIssuerRoleV1::Reviewer)],
             )
@@ -1124,15 +1124,15 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate: base.candidate.clone(),
-                claim_class: EvidenceClaimClassV1::Conformance,
-                required_roles: vec![EvidenceIssuerRoleV1::Reviewer],
-                now_unix_ms: observed.saturating_add(4),
+                    candidate: base.candidate.clone(),
+                    claim_class: EvidenceClaimClassV1::Conformance,
+                    required_roles: vec![EvidenceIssuerRoleV1::Reviewer],
+                    now_unix_ms: observed.saturating_add(4),
                 },
                 &[
-                trust_binding(&owner, EvidenceIssuerRoleV1::Reviewer),
-                trust_binding(&security, EvidenceIssuerRoleV1::Security),
-            ],
+                    trust_binding(&owner, EvidenceIssuerRoleV1::Reviewer),
+                    trust_binding(&security, EvidenceIssuerRoleV1::Security),
+                ],
             )
             .await
             .expect("verify security-revoked"),
