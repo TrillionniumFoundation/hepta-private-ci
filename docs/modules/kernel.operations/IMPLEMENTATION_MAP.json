@@ -19,7 +19,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "stacked_followup_not_composed",
-  "productionWriterState": "durable_operation_ledger_source_present_not_host_composed",
+  "productionWriterState": "durable_operation_and_outbox_source_present_not_host_composed",
   "operations": [
     {
       "operation": "durable_operation_ledger",
@@ -32,6 +32,20 @@
       ],
       "sourcePathExists": true,
       "designOperation": "operationledger",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "durable_outbox",
+      "nativeSymbol": "DurableOutboxRecord",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_outbox.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none_dispatch_claim_state_only",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_outbox_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "outbox",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -61,8 +75,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose the durable operation owner into the authenticated ui.control product gateway and real owner adapters.",
-    "Implement the durable cross-owner outbox/claim lease with crash takeover; the current Outbox remains a reference model.",
+    "Compose the durable operation ledger and durable outbox into the authenticated ui.control product gateway and real owner dispatcher/reconciler.",
+    "Bind real destination owner adapters and final-use authority consumption to the durable outbox claim generation/fence.",
     "Run exact-head and deterministic synthetic-merge tests before changing production or activation claims."
   ],
   "externalEvidenceGates": [

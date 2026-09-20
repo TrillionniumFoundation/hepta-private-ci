@@ -163,11 +163,12 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-`DurableOperationLedger` is the SQLite-backed authoritative operation owner candidate: it requires WAL + FULL durability, serializes mutations with `BEGIN IMMEDIATE`, preserves immutable operation identity and authority/dispatch/terminal lineage across reopen, and keeps dispatch acknowledgement non-terminal. `OperationLedger` and `Outbox` remain deterministic reference models. The host must still bind the durable ledger to the real authenticated product caller, final-use authority consumer, destination owner and current-fence terminal observer; the durable cross-owner outbox is not yet implemented.
+`DurableOperationLedger` is the SQLite-backed authoritative operation owner candidate: it requires WAL + FULL durability, serializes mutations with `BEGIN IMMEDIATE`, preserves immutable operation identity and authority/dispatch/terminal lineage across reopen, and keeps dispatch acknowledgement non-terminal. Its durable outbox sub-owner atomically persists operation identity plus destination intent, uses bounded generation-fenced claim leases with crash takeover, and persists acknowledgements without converting them into terminal effect success. `OperationLedger` and `Outbox` remain deterministic reference models. The host must still compose the durable ledger/outbox with the real authenticated caller, final-use authority consumer, destination dispatcher and current-fence terminal observer.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs).
+- [codex-rs/hepta-operations/src/durable_outbox.rs](../../../codex-rs/hepta-operations/src/durable_outbox.rs).
 - [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs).
 - [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs).
 
@@ -178,6 +179,7 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-operations/src/durable_tests.rs](../../../codex-rs/hepta-operations/src/durable_tests.rs); named cases: `reopen_preserves_indeterminate_and_terminal_history` and `dispatch_acknowledgement_never_becomes_terminal_by_itself`.
+- [codex-rs/hepta-operations/src/durable_outbox_tests.rs](../../../codex-rs/hepta-operations/src/durable_outbox_tests.rs); named cases cover atomic operation/outbox reopen, lease takeover, stale-generation acknowledgement rejection and non-terminal outbox acknowledgement.
 - [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs); named case: `dispatch_ack_is_not_terminal_success`.
 - [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs); named case: `claim_and_ack_are_generation_fenced`.
 
@@ -311,9 +313,10 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `durable_operation_ledger` | `DurableOperationLedger` | `codex-rs/hepta-operations/src/durable.rs` | `codex-rs/hepta-operations/src/durable_tests.rs` |
+| `durable_outbox` | `DurableOutboxRecord` | `codex-rs/hepta-operations/src/durable_outbox.rs` | `codex-rs/hepta-operations/src/durable_outbox_tests.rs` |
 | `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `codex-rs/hepta-operations/src/ledger_tests.rs` |
 | `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `codex-rs/hepta-operations/src/outbox_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- The durable operation owner is source-present. Product composition, real final-use consumption, destination owner adapters and the durable cross-owner outbox remain explicit follow-up work.
+- The durable operation owner and generation-fenced durable outbox are source-present. Product composition, real final-use consumption, destination owner adapters/dispatcher, terminal observer attachment and target-host qualification remain explicit follow-up work.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
