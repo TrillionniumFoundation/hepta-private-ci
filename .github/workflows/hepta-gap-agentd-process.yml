@@ -56,6 +56,52 @@ jobs:
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           git rev-parse HEAD HEAD^{tree}
 
+      - name: Verify runtime.agentd exact source evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          row = json.loads(Path("docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json").read_text())
+          evidence = row.get("currentSourceEvidence") or {}
+          commit = evidence.get("commit")
+          tree = evidence.get("tree")
+          paths = evidence.get("evidencePaths")
+          if not commit or not tree or not isinstance(paths, list) or not paths:
+              raise SystemExit("runtime.agentd currentSourceEvidence is incomplete")
+
+          def git(*args):
+              return subprocess.run(
+                  ["git", *args],
+                  check=True,
+                  text=True,
+                  stdout=subprocess.PIPE,
+                  stderr=subprocess.PIPE,
+              ).stdout.strip()
+
+          git("cat-file", "-e", commit + "^{commit}")
+          if git("rev-parse", commit + "^{tree}") != tree:
+              raise SystemExit("runtime.agentd source evidence tree mismatch")
+          subprocess.run(["git", "merge-base", "--is-ancestor", commit, "HEAD"], check=True)
+          missing = [path for path in paths if not Path(path).is_file()]
+          if missing:
+              raise SystemExit("runtime.agentd evidence path missing: " + ", ".join(missing))
+          changed = subprocess.run(
+              ["git", "diff", "--name-only", commit, "HEAD", "--", *paths],
+              check=True,
+              text=True,
+              stdout=subprocess.PIPE,
+          ).stdout.splitlines()
+          if changed:
+              raise SystemExit(
+                  "runtime.agentd evidence drift after exact anchor: " + ", ".join(changed)
+              )
+          print("PASS_RUNTIME_AGENTD_EXACT_SOURCE_EVIDENCE", commit, tree)
+          PY
+
       - name: Fail fast on manifest and formatting errors
         shell: bash
         run: |
