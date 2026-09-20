@@ -57,7 +57,7 @@
     "ui.control",
     "ui.native"
   ],
-  "operationCount": 39,
+  "operationCount": 46,
   "modules": [
     {
       "module": "runtime.supervisor",
@@ -66,7 +66,14 @@
         "start_instance",
         "observe_health",
         "drain",
-        "load_next"
+        "stop_instance",
+        "kill_instance",
+        "restart_instance",
+        "load_next",
+        "rollback_release",
+        "signed_upgrade",
+        "signed_rollback",
+        "reconcile_signed_intent"
       ]
     },
     {

@@ -102,6 +102,75 @@
       "sourcePathExists": true
     },
     {
+      "designOperation": "stop_instance",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn stop(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "graceful_stop",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Escalates an already fenced lifecycle through graceful process stop without treating process termination as user-task success.",
+      "operation": "stop_instance",
+      "nativeSymbol": "pub fn stop(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "kill_instance",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn kill(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "hard_kill_and_fencing",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Issues a hard kill only to the exact managed process identity after generation fencing; it is an emergency lifecycle action, not release success.",
+      "operation": "kill_instance",
+      "nativeSymbol": "pub fn kill(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "restart_instance",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn restart(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "bounded_restart_budget",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Restarts the current admitted release under generation fencing; automatic crash restarts are separately bounded by the durable restart window/backoff record.",
+      "operation": "restart_instance",
+      "nativeSymbol": "pub fn restart(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
+    },
+    {
       "designOperation": "load_next",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
@@ -131,6 +200,128 @@
       "sourceSemantics": "In production-authority mode consumes an independently signed exact release selection, binds source/target manifest and executable digests plus compatibility/frontier/CAS facts, rejects unsigned release changes, re-admits rollback against current provenance/frontier, and requires an independent signed recovery decision for ambiguous outcomes.",
       "operation": "load_next",
       "nativeSymbol": "pub fn upgrade(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "rollback_release",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn rollback(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "rollback_readmission",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Re-resolves the recorded predecessor from the current allowance/catalog before rollback; production daemon callers must use the separately signed rollback surface.",
+      "operation": "rollback_release",
+      "nativeSymbol": "pub fn rollback(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "signed_upgrade",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn apply_production_grant(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "signed_upgrade_authority",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+          "kind": "signed_authority_contract",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/release_selection.rs",
+          "kind": "durable_selection_integrity",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target bytes, compatibility evidence, control/lifecycle/authority fences and current pinned revocation frontier.",
+      "operation": "signed_upgrade",
+      "nativeSymbol": "pub fn apply_production_grant(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "signed_rollback",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn apply_production_grant(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "signed_rollback_authority",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+          "kind": "signed_authority_contract",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/release_selection.rs",
+          "kind": "durable_selection_integrity",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Admits a production rollback only with a signed exact predecessor selection and fresh current release provenance/frontier checks; cached predecessor identity alone is insufficient.",
+      "operation": "signed_rollback",
+      "nativeSymbol": "pub fn apply_production_grant(",
+      "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "reconcile_signed_intent",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "symbol": "pub fn resolve_production_recovery(",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "kind": "signed_recovery_ceremony",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+          "kind": "signed_recovery_contract",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/release_selection.rs",
+          "kind": "recovery_terminal_state",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        }
+      ],
+      "sourceSemantics": "Resolves only recovery_required signed mutations using an independently signed recovery decision bound to the durable intent, observed release bytes, current lifecycle/control/authority fences and revocation frontier.",
+      "operation": "reconcile_signed_intent",
+      "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true
     }
