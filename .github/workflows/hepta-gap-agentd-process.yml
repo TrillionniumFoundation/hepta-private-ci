@@ -16,6 +16,7 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/app-server-transport/**
       - codex-rs/uds/**
+      - docs/modules/MODULES.json
       - scripts/hepta_workspace.py
       - scripts/test_hepta_workspace.py
       - .github/workflows/hepta-gap-agentd-process.yml
@@ -28,7 +29,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  catalog-admission:
+    name: Runtime catalog admission (${{ matrix.candidate }})
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","merge-candidate"]' || '["source-head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.candidate == 'source-head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact catalog candidate
+        env:
+          EXPECTED_SHA: ${{ matrix.candidate == 'source-head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git rev-parse HEAD HEAD^{tree}
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-fleet -- --check
+      - name: Reject unknown state and conflicting writers before host compilation
+        run: cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet --lib module_catalog
+      - name: Verify source remained unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
   process-qualification:
+    # The small registry gate fails before paying for V8 and full host builds.
+    # It does not replace the native process, recovery, or lint suites below.
+    needs: catalog-admission
     strategy:
       fail-fast: false
       matrix:
