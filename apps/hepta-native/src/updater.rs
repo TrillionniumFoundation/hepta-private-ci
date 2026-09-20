@@ -228,9 +228,23 @@ impl UpdateManager {
     pub fn clear_pending(&self) -> Result<(), ShellError> {
         let path = self.pending_path();
         if path.exists() {
-            std::fs::remove_file(path)?;
+            std::fs::remove_file(&path)?;
+            sync_parent_directory(&path)?;
         }
         Ok(())
+    }
+
+    pub fn recover_interrupted_activation(&self) -> Result<bool, ShellError> {
+        let Some(pending) = self.load_pending()? else {
+            return Ok(false);
+        };
+        match pending.status {
+            PendingUpdateStatus::Staged | PendingUpdateStatus::RolledBack => Ok(false),
+            PendingUpdateStatus::ActivationStarted
+            | PendingUpdateStatus::ActivatedUnconfirmed
+            | PendingUpdateStatus::RollbackStarted
+            | PendingUpdateStatus::RecoveryRequired => self.rollback_unconfirmed(),
+        }
     }
 
     pub fn rollback_unconfirmed(&self) -> Result<bool, ShellError> {
@@ -512,6 +526,7 @@ fn copy_and_sync(source: &Path, destination: &Path) -> Result<(), ShellError> {
     destination_file.flush()?;
     destination_file.sync_all()?;
     destination_file.commit()?;
+    sync_parent_directory(destination)?;
     Ok(())
 }
 
@@ -524,5 +539,19 @@ fn persist_json_atomic(path: &Path, value: &impl Serialize) -> Result<(), ShellE
     file.write_all(&bytes)?;
     file.sync_all()?;
     file.commit()?;
+    sync_parent_directory(path)?;
+    Ok(())
+}
+
+#[cfg(unix)]
+fn sync_parent_directory(path: &Path) -> Result<(), ShellError> {
+    if let Some(parent) = path.parent() {
+        File::open(parent)?.sync_all()?;
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn sync_parent_directory(_path: &Path) -> Result<(), ShellError> {
     Ok(())
 }
