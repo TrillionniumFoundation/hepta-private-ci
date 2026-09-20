@@ -1,14 +1,15 @@
-//! In-memory reference model for Hepta operation, outbox and reconciliation
-//! semantics.
+//! Hepta operation, durable-ledger/outbox, and reconciliation semantics.
 //!
 //! Queue acknowledgement is deliberately separate from terminal effect
 //! observation. Once dispatch may have crossed an external boundary, the
 //! operation cannot be blindly retried; it remains indeterminate until a
 //! current-fence observer reconciles it.
 //!
-//! This crate does not provide durable storage, crash/reopen recovery, a
-//! background dispatcher or production authority. Product code must not infer
-//! durability from cloning this model.
+//! The SQLite-backed durable owner provides crash/reopen persistence for the
+//! operation ledger and generation-fenced outbox. The in-memory `OperationLedger`
+//! and `Outbox` remain deterministic reference models. This crate still does not
+//! authenticate callers, mint/consume final-use authority on its own, dispatch a
+//! background effect, or establish production activation.
 
 #![forbid(unsafe_code)]
 
