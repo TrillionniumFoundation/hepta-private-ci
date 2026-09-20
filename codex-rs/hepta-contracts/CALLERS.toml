@@ -591,7 +591,7 @@ qualification_callers = [
 qualification_tests = [
   "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
   "two_real_agentd_app_servers_never_cross_recall",
-  "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools",
+  "cognitive_store_unavailable_fails_closed_before_provider",
 ]
 qualification_lifecycle_actions = ["kill", "restart"]
 product_caller_named = true
