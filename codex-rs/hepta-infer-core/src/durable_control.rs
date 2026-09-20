@@ -28,6 +28,7 @@ pub enum RequestState {
     Assigned,
     Running,
     Cancelling,
+    AwaitingSettlement,
     Completed,
     Failed,
     Cancelled,
@@ -42,6 +43,7 @@ impl RequestState {
             Self::Assigned => "assigned",
             Self::Running => "running",
             Self::Cancelling => "cancelling",
+            Self::AwaitingSettlement => "awaiting_settlement",
             Self::Completed => "completed",
             Self::Failed => "failed",
             Self::Cancelled => "cancelled",
@@ -56,6 +58,7 @@ impl RequestState {
             "assigned" => Ok(Self::Assigned),
             "running" => Ok(Self::Running),
             "cancelling" => Ok(Self::Cancelling),
+            "awaiting_settlement" => Ok(Self::AwaitingSettlement),
             "completed" => Ok(Self::Completed),
             "failed" => Ok(Self::Failed),
             "cancelled" => Ok(Self::Cancelled),
@@ -100,6 +103,21 @@ pub struct Assignment {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ExecutionObservation {
+    pub request_id: String,
+    pub reservation_id: String,
+    pub worker_id: String,
+    pub worker_generation: u64,
+    pub model_digest: String,
+    pub payload_digest: String,
+    pub terminal_status: RequestState,
+    pub output_digest: Option<String>,
+    /// None means the worker observed terminality but does not own
+    /// authoritative token/usage settlement for this attempt.
+    pub consumed_tokens: Option<u32>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TerminalObservation {
     pub request_id: String,
     pub reservation_id: String,
@@ -121,6 +139,8 @@ pub struct RequestRecord {
     pub state: RequestState,
     pub reservation: Option<Reservation>,
     pub assignment: Option<Assignment>,
+    pub execution_observation_digest: Option<String>,
+    pub execution_observation: Option<ExecutionObservation>,
     pub terminal_observation_digest: Option<String>,
     pub indeterminate_evidence_digest: Option<String>,
     pub consumed_tokens: u32,
@@ -418,6 +438,43 @@ impl DurableInferenceControl {
         })
     }
 
+    /// Persist the worker-observed terminal model outcome without inventing
+    /// economic usage. This blocks replay while leaving final settlement to the
+    /// inference.control usage authority.
+    pub fn observe_execution(
+        &mut self,
+        request_id: &str,
+        expected_revision: u64,
+        observation_digest: String,
+        observation: ExecutionObservation,
+    ) -> Result<ControlReceipt, Error> {
+        validate_identity(request_id, "request")?;
+        validate_digest(&observation_digest, "execution observation")?;
+        validate_execution_observation(&observation)?;
+        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+        if record.revision != expected_revision {
+            return Err(Error::StaleRevision);
+        }
+        if record.execution_observation_digest.as_ref() == Some(&observation_digest)
+            && record.execution_observation.as_ref() == Some(&observation)
+        {
+            return Ok(receipt(record, /*idempotent*/ true));
+        }
+        if !matches!(
+            record.state,
+            RequestState::Running | RequestState::Cancelling
+        ) {
+            return Err(Error::InvalidTransition);
+        }
+        validate_execution_binding(record, &observation)?;
+        self.commit(Event::ObserveExecution {
+            request_id: request_id.to_string(),
+            expected_revision,
+            observation_digest,
+            observation,
+        })
+    }
+
     pub fn settle(
         &mut self,
         request_id: &str,
@@ -457,6 +514,17 @@ impl DurableInferenceControl {
         }
         if observation.consumed_tokens > reservation.maximum_tokens {
             return Err(Error::UsageExceeded);
+        }
+        if let Some(execution) = &record.execution_observation {
+            if !observation.terminal_observed
+                || observation.terminal_status != Some(execution.terminal_status)
+                || observation.output_digest != execution.output_digest
+                || execution
+                    .consumed_tokens
+                    .is_some_and(|tokens| tokens != observation.consumed_tokens)
+            {
+                return Err(Error::Conflict);
+            }
         }
         if observation.terminal_observed {
             let status = observation
@@ -558,6 +626,12 @@ enum Event {
         expected_revision: u64,
         evidence_digest: String,
     },
+    ObserveExecution {
+        request_id: String,
+        expected_revision: u64,
+        observation_digest: String,
+        observation: ExecutionObservation,
+    },
     Cancel {
         request_id: String,
         expected_revision: u64,
@@ -578,6 +652,7 @@ impl Event {
             | Self::Assign { request_id, .. }
             | Self::BeginExecution { request_id, .. }
             | Self::ExecutionIndeterminate { request_id, .. }
+            | Self::ObserveExecution { request_id, .. }
             | Self::Cancel { request_id, .. }
             | Self::Settle { request_id, .. } => request_id,
         }
@@ -605,6 +680,8 @@ fn apply_event(
                     state: RequestState::Pending,
                     reservation: None,
                     assignment: None,
+                    execution_observation_digest: None,
+                    execution_observation: None,
                     terminal_observation_digest: None,
                     indeterminate_evidence_digest: None,
                     consumed_tokens: 0,
@@ -672,6 +749,27 @@ fn apply_event(
             record.usage_observed = false;
             record.revision = next_revision(record.revision)?;
         }
+        Event::ObserveExecution {
+            request_id,
+            expected_revision,
+            observation_digest,
+            observation,
+        } => {
+            let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
+            require_revision(record, *expected_revision, replay)?;
+            if !matches!(
+                record.state,
+                RequestState::Running | RequestState::Cancelling
+            ) {
+                return Err(Error::InvalidTransition);
+            }
+            validate_execution_observation(observation)?;
+            validate_execution_binding(record, observation)?;
+            record.execution_observation_digest = Some(observation_digest.clone());
+            record.execution_observation = Some(observation.clone());
+            record.state = RequestState::AwaitingSettlement;
+            record.revision = next_revision(record.revision)?;
+        }
         Event::Cancel {
             request_id,
             expected_revision,
@@ -695,7 +793,10 @@ fn apply_event(
             require_revision(record, *expected_revision, replay)?;
             if !matches!(
                 record.state,
-                RequestState::Assigned | RequestState::Running | RequestState::Cancelling
+                RequestState::Assigned
+                    | RequestState::Running
+                    | RequestState::Cancelling
+                    | RequestState::AwaitingSettlement
             ) {
                 return Err(Error::InvalidTransition);
             }
@@ -763,6 +864,57 @@ fn validate_assignment(value: &Assignment) -> Result<(), Error> {
     validate_digest(&value.assignment_digest, "assignment")?;
     if value.worker_generation == 0 {
         return Err(Error::InvalidTransition);
+    }
+    Ok(())
+}
+
+fn validate_execution_observation(value: &ExecutionObservation) -> Result<(), Error> {
+    validate_identity(&value.request_id, "request")?;
+    validate_identity(&value.reservation_id, "reservation")?;
+    validate_identity(&value.worker_id, "worker")?;
+    validate_digest(&value.model_digest, "model")?;
+    validate_digest(&value.payload_digest, "payload")?;
+    if value.worker_generation == 0
+        || !matches!(
+            value.terminal_status,
+            RequestState::Completed | RequestState::Failed | RequestState::Cancelled
+        )
+        || value.consumed_tokens.is_some_and(|tokens| tokens > MAX_TOKENS)
+    {
+        return Err(Error::InvalidTransition);
+    }
+    if matches!(value.terminal_status, RequestState::Completed) && value.output_digest.is_none() {
+        return Err(Error::TerminalObservationMissing);
+    }
+    if let Some(output) = &value.output_digest {
+        validate_digest(output, "output")?;
+    }
+    Ok(())
+}
+
+fn validate_execution_binding(
+    record: &RequestRecord,
+    value: &ExecutionObservation,
+) -> Result<(), Error> {
+    let reservation = record
+        .reservation
+        .as_ref()
+        .ok_or(Error::ReservationMismatch)?;
+    let assignment = record
+        .assignment
+        .as_ref()
+        .ok_or(Error::AssignmentMismatch)?;
+    if value.request_id != record.request.request_id
+        || value.reservation_id != reservation.reservation_id
+        || value.worker_id != assignment.worker_id
+        || value.worker_generation != assignment.worker_generation
+        || value.model_digest != record.request.model_digest
+        || value.payload_digest != record.request.payload_digest
+        || value
+            .consumed_tokens
+            .is_some_and(|tokens| tokens > reservation.maximum_tokens)
+    {
+        return Err(Error::AssignmentMismatch);
     }
     Ok(())
 }
@@ -858,6 +1010,25 @@ fn encode_event(event: &Event) -> String {
             evidence_digest,
         } => format!(
             "execution-indeterminate|{request_id}|{expected_revision}|{evidence_digest}"
+        ),
+        Event::ObserveExecution {
+            request_id,
+            expected_revision,
+            observation_digest,
+            observation,
+        } => format!(
+            "observe-execution|{request_id}|{expected_revision}|{observation_digest}|{}|{}|{}|{}|{}|{}|{}|{}|{}",
+            observation.reservation_id,
+            observation.worker_id,
+            observation.worker_generation,
+            observation.model_digest,
+            observation.payload_digest,
+            observation.terminal_status.as_str(),
+            observation.output_digest.as_deref().unwrap_or("none"),
+            observation
+                .consumed_tokens
+                .map_or_else(|| "none".to_string(), |tokens| tokens.to_string()),
+            observation.request_id
         ),
         Event::Cancel {
             request_id,
@@ -955,6 +1126,40 @@ fn decode_event(line: &str) -> Result<Event, Error> {
                 evidence_digest: (*evidence_digest).to_string(),
             })
         }
+        [
+            "observe-execution",
+            request_id,
+            revision,
+            observation_digest,
+            reservation_id,
+            worker_id,
+            worker_generation,
+            model,
+            payload,
+            status,
+            output,
+            tokens,
+            observed_request_id,
+        ] => Ok(Event::ObserveExecution {
+            request_id: (*request_id).to_string(),
+            expected_revision: parse_u64(revision)?,
+            observation_digest: (*observation_digest).to_string(),
+            observation: ExecutionObservation {
+                request_id: (*observed_request_id).to_string(),
+                reservation_id: (*reservation_id).to_string(),
+                worker_id: (*worker_id).to_string(),
+                worker_generation: parse_u64(worker_generation)?,
+                model_digest: (*model).to_string(),
+                payload_digest: (*payload).to_string(),
+                terminal_status: RequestState::parse(status)?,
+                output_digest: (*output != "none").then(|| (*output).to_string()),
+                consumed_tokens: if *tokens == "none" {
+                    None
+                } else {
+                    Some(parse_u32(tokens)?)
+                },
+            },
+        }),
         ["cancel", request_id, revision] => Ok(Event::Cancel {
             request_id: (*request_id).to_string(),
             expected_revision: parse_u64(revision)?,
