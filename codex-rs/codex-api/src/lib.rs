@@ -52,6 +52,7 @@ pub use crate::common::create_text_param_for_request;
 pub use crate::common::response_create_client_metadata;
 pub use crate::dispatch_metadata::RequestDispatchMetadata;
 pub use crate::encoded_body_observer::EncodedRequestBodyObserver;
+pub use crate::encoded_body_observer::EncodedRequestTerminal;
 pub use crate::endpoint::CompactClient;
 pub use crate::endpoint::ImagesClient;
 pub use crate::endpoint::MemoriesClient;
