@@ -1178,7 +1178,9 @@ export class SubprocessBrowserDriver {
     this.#verifiedWorkerPath = null;
     this.#terminalReceiptPath = null;
     this.#terminalReceiptHandle = null;
-    await terminalReceiptHandle?.close?.().catch?.(() => {});
+    if (terminalReceiptHandle) {
+      await terminalReceiptHandle.close().catch(() => {});
+    }
     if (profileOwnerPath) {
       await rm(profileOwnerPath, { force: true });
     }
