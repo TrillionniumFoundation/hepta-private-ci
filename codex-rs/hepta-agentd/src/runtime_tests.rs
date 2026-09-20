@@ -202,15 +202,15 @@ async fn unavailable_cognitive_store_degrades_without_leaking_open_error() {
     assert!(!format!("{reason:?}").contains("/private/raw"));
 }
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 #[test]
-fn qualification_profile_fails_closed_when_cognitive_store_is_unavailable() {
+fn product_write_profile_fails_closed_when_cognitive_store_is_unavailable() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
         codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
     ));
     assert!(matches!(
         result,
-        Err(crate::AgentdError::QualificationCognitiveRuntimeUnavailable)
+        Err(crate::AgentdError::CognitiveWriteRuntimeUnavailable)
     ));
 }
 
@@ -615,13 +615,13 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     );
 }
 
-#[cfg(not(feature = "qualification-cognitive-write"))]
+#[cfg(not(feature = "production-cognitive-write"))]
 #[test]
-fn default_profile_preserves_degraded_cognitive_runtime_behavior() {
+fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
         codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
     ))
-    .expect("default profile remains availability tolerant");
+    .expect("read-only profile remains availability tolerant");
     assert!(matches!(
         result,
         CognitiveRuntime::Unavailable(
