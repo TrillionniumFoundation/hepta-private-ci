@@ -2380,6 +2380,28 @@ async fn startup_rejects_same_name_counterfeit_v2_schema_objects() -> TestResult
     Ok(())
 }
 
+#[tokio::test]
+async fn startup_requires_final_use_claim_schema_guards() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store.close().await;
+
+    let database_path = store_layout.matrix_root().join("matrix_1.sqlite3");
+    let pool = open_hostile_fixture_pool(&database_path).await?;
+    sqlx::query("DROP TRIGGER matrix_dispatch_succeeded_requires_authority_claim")
+        .execute(&pool)
+        .await?;
+    pool.close().await;
+
+    assert!(matches!(
+        MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await,
+        Err(MatrixDurableError::Corrupt)
+    ));
+    Ok(())
+}
+
 #[test]
 fn v2_validation_rejects_wrong_schema() -> TestResult {
     let room_id = room("!wire:example.test")?;

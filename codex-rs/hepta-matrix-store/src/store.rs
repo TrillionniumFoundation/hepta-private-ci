@@ -3657,6 +3657,11 @@ async fn verify_store(
             ('matrix_dispatch_terminal_event_unique', 'index'),
             ('matrix_dispatch_observations', 'table'),
             ('matrix_dispatch_observations_by_txn', 'index'),
+            ('matrix_dispatch_authority_claims', 'table'),
+            ('matrix_dispatch_authority_claims_by_txn', 'index'),
+            ('matrix_dispatch_authority_claims_no_update', 'trigger'),
+            ('matrix_dispatch_authority_claims_no_delete', 'trigger'),
+            ('matrix_dispatch_succeeded_requires_authority_claim', 'trigger'),
             ('matrix_dispatch_ledger_identity_immutable', 'trigger'),
             ('matrix_dispatch_ledger_no_delete', 'trigger'),
             ('matrix_dispatch_observations_no_update', 'trigger'),
@@ -3668,7 +3673,7 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 41 {
+    if required_objects != 46 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
@@ -3719,6 +3724,39 @@ async fn verify_store(
     .await
     .map_err(unavailable)?;
     if invalid_dispatch_identities != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_authority_claims: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_authority_claims AS claim
+         JOIN matrix_dispatch_ledger AS dispatch
+           ON dispatch.stable_txn_id = claim.stable_txn_id
+         WHERE claim.subject_id != ?
+            OR claim.operation_id != dispatch.operation_id
+            OR claim.payload_sha256 != dispatch.payload_sha256",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_authority_claims != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_qualified_successes: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_ledger AS dispatch
+         WHERE dispatch.state = 'succeeded'
+           AND NOT EXISTS (
+               SELECT 1 FROM matrix_dispatch_authority_claims AS claim
+               WHERE claim.stable_txn_id = dispatch.stable_txn_id
+                 AND claim.operation_id = dispatch.operation_id
+                 AND claim.payload_sha256 = dispatch.payload_sha256
+           )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_qualified_successes != 0 {
         return Err(MatrixDurableError::Corrupt);
     }
     let foreign_checkpoint: i64 =
