@@ -29,7 +29,7 @@ bind them to native source.
 | HPTA V2 metadata-bound frame digest | implemented | `src/envelope_v2.rs`, `WIRE_V2.md` |
 | HPTN version/capability negotiation | implemented | `src/version.rs`, `NEGOTIATION_V1.md` |
 | Multi-version frame dispatch | implemented | `src/frame.rs` |
-| Schema admission + typed payload codec boundary | implemented framework | `src/schema.rs` |
+| Schema admission + typed payload codec boundary | implemented framework | `src/schema.rs`; registered port adapters additionally pin producer identity |
 | Bounded incremental stream decoder | implemented | `src/stream.rs` |
 | Property tests + fuzz target | implemented source evidence | `src/property_tests.rs`, `fuzz/fuzz_targets/decode_frames.rs` |
 | Rust↔Python raw binary session | implemented qualification source | `hepta-shadow-qualification/tests/cross_runtime_wire_session.rs` |
@@ -71,7 +71,7 @@ None.
 
 ### Native source and scope
 
-The frozen V1 source remains [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). Current versioned source additionally includes `envelope_v2.rs`, `version.rs`, `frame.rs`, `schema.rs` and `stream.rs`; public exports are collected in `src/lib.rs`. A named read-only caller is source-composed through `hepta-runtime` and `hepta-native-gateway`, while production activation and acceptance remain separate gates. Read [CURRENT_IMPLEMENTATION.md](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md) and the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the target requirements in this guide.
+The frozen V1 source remains [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). Current versioned source additionally includes `envelope_v2.rs`, `version.rs`, `frame.rs`, `schema.rs` and `stream.rs`; public exports are collected in `src/lib.rs`. A named read-only caller is source-composed through `hepta-runtime` and `hepta-native-gateway`; registered `context.compiler` and `runtime.codex` adapters enforce schema plus canonical producer admission before domain decode, while production activation and acceptance remain separate gates. Read [CURRENT_IMPLEMENTATION.md](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md) and the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the target requirements in this guide.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -193,6 +193,7 @@ Current focused test sources (source references, not pass receipts):
 - `codex-rs/hepta-wire/src/property_tests.rs` and `codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs`: property/fuzz surfaces.
 - `codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs`: raw-binary Rust↔Python negotiation and typed V2 load.
 - `codex-rs/hepta-native-gateway/src/lib.rs`: explicit content-negotiated read-only product callsite tests.
+- `codex-rs/hepta-context-compiler/src/wire_tests.rs` and `codex-rs/hepta-codex-adapter/src/wire_tests.rs`: strict schema, payload and wrong-producer rejection at registered product ports.
 
 In `codex-rs`, run `just test -p codex-hepta-wire`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
 
@@ -300,5 +301,5 @@ This receipt records repository source bindings for the current documentation ca
 | `stream_decode` | `StreamingDecoder` | `codex-rs/hepta-wire/src/stream.rs` | incremental/buffer-bound tests |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- The read-only runtime status path is now a named source-composed caller; this source fact is not deployment or operator acceptance.
+- The read-only runtime status path is now a named source-composed caller, and the registered context/compiler and runtime/Codex adapters pin canonical producer identities; these source facts are not deployment or operator acceptance.
 - Exact-head and synthetic-merge execution, authenticated transport/session binding, target-host qualification, independent acceptance, activation, promotion and release remain separate evidence gates.
