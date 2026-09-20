@@ -133,7 +133,6 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
                     candidate: wire_candidate(&candidate),
                     claim_class: EvidenceClaimClassV1::ExactSource.as_str().to_string(),
                     required_roles: vec!["architecture".to_string()],
-                    now_unix_ms: observed,
                 })
                 .await?,
             EvidenceDispositionV1::Supported { .. }
@@ -248,7 +247,6 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
                     candidate: wire_candidate(&candidate),
                     claim_class: EvidenceClaimClassV1::IndependentDecision.as_str().to_string(),
                     required_roles: vec!["architecture".to_string(), "security".to_string()],
-                    now_unix_ms: observed,
                 })
                 .await?,
             EvidenceDispositionV1::Supported { evidence } if evidence.len() == 2
