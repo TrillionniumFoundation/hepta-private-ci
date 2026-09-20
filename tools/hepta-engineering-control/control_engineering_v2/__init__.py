@@ -67,9 +67,11 @@ from .evidence import (
 from .integration_controller import (
     IntegrationQueueGeneration,
     IntegrationQueueItem,
+    IntegrationStageReceipt,
     IntegrationTerminalReceipt,
     integration_queue_generation,
     integration_queue_item,
+    observe_integration_stage,
     publish_integration_queue,
     reconcile_integration_item,
 )
@@ -186,6 +188,7 @@ __all__ = [
     "KeyCustodyReceipt",
     "IntegrationQueueGeneration",
     "IntegrationQueueItem",
+    "IntegrationStageReceipt",
     "IntegrationTerminalReceipt",
     "LeaseReceipt",
     "MergeQueueProposal",
@@ -241,6 +244,7 @@ __all__ = [
     "issue_signed_work_envelope",
     "integration_queue_generation",
     "integration_queue_item",
+    "observe_integration_stage",
     "publish_integration_queue",
     "reconcile_integration_item",
     "plan_engineering_work",
