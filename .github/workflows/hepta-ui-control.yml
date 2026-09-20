@@ -46,8 +46,10 @@ jobs:
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-      - name: Verify ui.control source provenance
-        run: python3 scripts/hepta-ui-control-source-base.py
+      - name: Verify implementation-map provenance
+        run: |
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-ui-control-source-base.py
       - name: Check and test ui.control
         run: npm --prefix apps/hepta-control-ui run check
       - name: Build deployable browser artifact
@@ -89,6 +91,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta-implementation-maps.py verify
           python3 scripts/hepta-ui-control-source-base.py
           npm --prefix apps/hepta-control-ui run check
           npm --prefix apps/hepta-control-ui run build
