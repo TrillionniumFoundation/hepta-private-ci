@@ -131,12 +131,17 @@ fn population_profile_is_deterministic_and_supports_recurrent_successors() {
 fn population_partition_must_be_complete_and_non_overlapping() {
     let mut invalid = config();
     invalid.populations[1].start = 2;
-    assert_eq!(invalid.digest().err(), Some(PopulationSparseError::InvalidConfig));
+    assert_eq!(
+        invalid.digest().err(),
+        Some(PopulationSparseError::InvalidConfig)
+    );
 }
 
 #[test]
 fn every_activation_requires_a_registered_temporal_projection() {
     let mut invalid = config();
-    invalid.projection.retain(|edge| edge.target_activation != 5);
+    invalid
+        .projection
+        .retain(|edge| edge.target_activation != 5);
     assert_eq!(invalid.digest().err(), Some(PopulationSparseError::InvalidConfig));
 }
