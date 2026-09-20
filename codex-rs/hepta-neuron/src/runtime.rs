@@ -32,6 +32,7 @@ use crate::NeuronSignalReceiptV1;
 use crate::NeuronTickInputV1;
 use crate::NeuronTickReceiptV1;
 use crate::ProtocolError;
+use crate::operation::RuntimeOperationError;
 use crate::RecoveryWitnessStore;
 use crate::RuntimeScopeBindingV1;
 use crate::SignalFallbackReasonV1;
@@ -86,12 +87,15 @@ pub enum RuntimeError {
     Calibration(CalibrationError),
     Journal(JournalError),
     Witness(WitnessError),
+    Operation(RuntimeOperationError),
     Model(String),
     Lineage(String),
     RevokedLineage,
     ConfigExpired,
     Poisoned,
     UnwitnessedHistory,
+    UntrackedJournalHistory,
+    OperationConflict,
     RotationRequiresAcknowledgedCheckpoint,
     RotationRequired,
     WitnessIndeterminate(Digest32),
@@ -129,6 +133,12 @@ impl From<JournalError> for RuntimeError {
 impl From<WitnessError> for RuntimeError {
     fn from(error: WitnessError) -> Self {
         Self::Witness(error)
+    }
+}
+
+impl From<RuntimeOperationError> for RuntimeError {
+    fn from(error: RuntimeOperationError) -> Self {
+        Self::Operation(error)
     }
 }
 
