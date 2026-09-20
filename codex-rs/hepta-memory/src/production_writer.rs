@@ -1297,6 +1297,49 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn semantic_capability_requires_retained_live_verifier() {
+        let temp = TempDir::new().unwrap();
+        let store = store(&temp).await;
+        let owner = store.owner_agent_id().clone();
+        let auth = authority(owner.clone());
+        let lease_id = "production:h4:semantic-capability";
+
+        let legacy = Arc::new(
+            ProductionDurableWriter::open(
+                store.clone(),
+                auth.clone(),
+                &AllowVerifier,
+                lease_id,
+                1,
+            )
+            .await
+            .unwrap(),
+        );
+        assert!(matches!(
+            legacy.cognitive_mutation_capability(),
+            Err(ProductionWriterError::LiveVerifierRequired)
+        ));
+        drop(legacy);
+
+        let live_verifier: Arc<dyn ProductionAuthorityVerifier> = Arc::new(AllowVerifier);
+        let live = Arc::new(
+            ProductionDurableWriter::open_with_live_verifier(
+                store,
+                auth,
+                live_verifier,
+                lease_id,
+                1,
+            )
+            .await
+            .unwrap(),
+        );
+        let capability = live
+            .cognitive_mutation_capability()
+            .expect("live-verified writer mints semantic capability");
+        assert_eq!(capability.owner_agent_id(), &owner);
+    }
+
+    #[tokio::test]
     async fn production_writer_requires_verifier_and_records_commit() {
         let temp = TempDir::new().unwrap();
         let store = store(&temp).await;
