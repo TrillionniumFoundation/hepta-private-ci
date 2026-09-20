@@ -353,7 +353,13 @@ pub fn population_sparse_tick_v2(
     config: &PopulationSparseConfigV2,
     input: &PopulationSparseTickV2,
     previous: Option<&PopulationSparseCheckpointV2>,
-) -> Result<(PopulationSparseCheckpointV2, PopulationSparseSignalReceiptV2), PopulationSparseError> {
+) -> Result<
+    (
+        PopulationSparseCheckpointV2,
+        PopulationSparseSignalReceiptV2,
+    ),
+    PopulationSparseError,
+> {
     let config_digest = config.digest()?;
     validate_input(config, input)?;
     let before = previous.map_or(Digest32::ZERO, PopulationSparseCheckpointV2::digest);
@@ -392,11 +398,7 @@ pub fn population_sparse_tick_v2(
     ] {
         binding.extend_from_slice(digest.as_array());
     }
-    for value in input
-        .temporal_drive_q24
-        .iter()
-        .chain(&input.prediction_q24)
-    {
+    for value in input.temporal_drive_q24.iter().chain(&input.prediction_q24) {
         binding.extend_from_slice(&value.to_be_bytes());
     }
 
@@ -432,10 +434,7 @@ pub fn population_sparse_tick_v2(
     let mut projected = vec![0_i64; config.activation_width];
     for edge in &config.projection {
         projected[edge.target_activation] = projected[edge.target_activation]
-            .checked_add(mul(
-                edge.weight_q24,
-                next.temporal[edge.source_temporal],
-            ))
+            .checked_add(mul(edge.weight_q24, next.temporal[edge.source_temporal]))
             .ok_or(PopulationSparseError::Arithmetic)?;
     }
     for value in &mut projected {
@@ -482,13 +481,11 @@ pub fn population_sparse_tick_v2(
             .collect::<Vec<_>>();
         local.sort_by(|left, right| right.1.cmp(&left.1).then(left.0.cmp(&right.0)));
         let selected = local.into_iter().take(population.top_k).collect::<Vec<_>>();
-        population_candidate_counts.push(
-            u32::try_from(selected.len()).map_err(|_| PopulationSparseError::Arithmetic)?,
-        );
+        population_candidate_counts
+            .push(u32::try_from(selected.len()).map_err(|_| PopulationSparseError::Arithmetic)?);
         population_candidates.extend(selected);
     }
-    population_candidates
-        .sort_by(|left, right| right.1.cmp(&left.1).then(left.0.cmp(&right.0)));
+    population_candidates.sort_by(|left, right| right.1.cmp(&left.1).then(left.0.cmp(&right.0)));
     for (index, score) in population_candidates.into_iter().take(config.global_top_k) {
         next.activation[index] = score.min(H);
         projections = projections
