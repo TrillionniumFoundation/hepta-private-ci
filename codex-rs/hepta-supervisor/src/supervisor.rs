@@ -72,6 +72,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             let result = supervisor.with_slot(&agent_id, |supervisor, slot| {
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
                 supervisor.recover_slot(&agent_id, slot, &record, now)?;
+                supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
                 supervisor.recover_signed_intent(&agent_id, slot, &record)
             });
