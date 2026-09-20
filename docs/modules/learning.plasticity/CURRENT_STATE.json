@@ -10,8 +10,8 @@
   "current": {
     "sourceRootPresent": true,
     "productionImplementation": false,
-    "productCallerState": "agentd_long_lived_plasticity_owner_source_composed_not_target_host_executed_or_qualified",
-    "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_source_implemented_independent_domain_target_host_unproved",
+    "productCallerState": "agentd_named_runtime_bootstrap_creates_owner_handle_pair_and_agentd_state_holds_producer_source_composed_not_target_host_executed_or_qualified",
+    "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved",
     "claimBoundary": {
       "nativeSourceMappingComplete": true,
       "sourceRootPresent": true,
@@ -113,10 +113,11 @@
     },
     {
       "operation": "agentd_plasticity_runtime_owner",
-      "state": "long_lived_agentd_daemon_owner_source_composed_generation_fenced_bounded_queue_not_target_host_executed",
+      "state": "named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
       "tests": [
-        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_queue_capacity_is_bounded"
+        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_queue_capacity_is_bounded",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
       ]
     },
     {
@@ -131,7 +132,7 @@
     },
     {
       "operation": "agentd_owner_evidence_resolution",
-      "state": "host_enforced_live_frontier_exact_signal_value_and_owner_allowlist_dynamic_owner_adapters_still_required",
+      "state": "host_enforced_live_frontier_exact_signal_value_owner_allowlist_and_dynamic_ndu_neuron_broadcast_resolution",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_receipt_is_context_bound",
@@ -143,11 +144,14 @@
     },
     {
       "operation": "concrete_owner_evidence_adapters",
-      "state": "dataset_and_policy_owner_adapters_bind_live_ledger_and_artifact_frontiers_dynamic_signal_owners_fail_closed",
+      "state": "dataset_policy_ndu_neuron_broadcast_and_parameter_signal_adapters_bind_live_frontiers_and_exact_values_fail_closed",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs::tests::concrete_dataset_and_policy_adapters_bind_live_frontiers",
-        "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner"
+        "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner",
+        "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs::tests::dynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values",
+        "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs::tests::dynamic_owner_adapters_reject_stale_wrong_owner_and_value_substitution",
+        "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs::tests::dynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner"
       ]
     },
     {
@@ -216,18 +220,34 @@
       "tests": [
         "codex-rs/hepta-intelligence/src/topology_canary_product.rs::tests::payload_binds_every_caller_asserted_canary_fact"
       ]
+    },
+    {
+      "operation": "runtime_topology_execution",
+      "state": "source_implemented_final_use_authorized_live_cns_generation_replacement_not_target_host_qualified",
+      "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
+      "tests": [
+        "codex-rs/hepta-runtime/src/organs_tests.rs::governed_topology_requires_final_use_and_replaces_the_live_cns_generation",
+        "codex-rs/hepta-runtime/src/organs_tests.rs::revoked_final_use_never_mutates_the_live_topology"
+      ]
+    },
+    {
+      "operation": "runtime_structural_canary_fault_rollback",
+      "state": "qualification_composed_live_apply_forced_host_fault_authorized_rollforward_rollback_and_authenticated_observer_receipt_not_target_host_qualified",
+      "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
+      "tests": [
+        "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics"
+      ]
     }
   ],
   "remainingToTarget": {
     "repositoryControlledGaps": [
-      "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification and Lane F qualification for this final source/document head.",
-      "Bind the remaining dynamic Modulator, ModulatorBroadcast, Eligibility and ParameterSignal evidence classes to their concrete authoritative owner stores in the selected deployment; the Dataset and immutable Policy paths are concrete and fail closed when dynamic owners are unavailable."
+      "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head."
     ],
     "externalEvidenceGates": [
       "independent semantic and security review",
       "target-host execution with the anchor/fence journal placed in a rollback domain physically independent from each proposal registry, plus crash/recovery telemetry",
       "operator acceptance and incident-recovery exercise",
-      "real topology application/migration owner execution with authenticated canary telemetry, forced fault, actual rollback and reconciliation",
+      "target-host topology application with production telemetry and a forced-fault rollback/reconciliation canary; the repository now contains a live-runtime source qualification but not deployment evidence",
       "promotion, activation and release"
     ]
   }
