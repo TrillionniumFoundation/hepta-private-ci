@@ -20,8 +20,8 @@ fn id(value: &str) -> StableId {
 }
 
 #[test]
-fn compiler_composes_into_admitted_v2_transport_without_serializing_authority(
-) -> Result<(), Box<dyn StdError>> {
+fn compiler_composes_into_admitted_v2_transport_without_serializing_authority()
+-> Result<(), Box<dyn StdError>> {
     let request = CompilationRequest {
         compilation_id: id("compile.wire.v2"),
         run_snapshot_digest: Digest32::of_bytes(b"snapshot"),
@@ -52,8 +52,8 @@ fn compiler_composes_into_admitted_v2_transport_without_serializing_authority(
 }
 
 #[test]
-fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions(
-) -> Result<(), Box<dyn StdError>> {
+fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions() -> Result<(), Box<dyn StdError>>
+{
     let digest = Digest32::of_bytes(b"context");
     let invalid = WireEnvelopeV2::new(
         id(CONTEXT_COMPILATION_WIRE_SCHEMA_V2),

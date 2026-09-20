@@ -14,9 +14,9 @@ use std::path::Path;
 use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantSigner;
 use crate::signed_authority::H7H89ProductionTransition;
-use crate::signed_authority::ReleaseSelectionBinding;
 use crate::signed_authority::ProductionRecoveryDecision;
 use crate::signed_authority::ProductionRecoveryOutcome;
+use crate::signed_authority::ReleaseSelectionBinding;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::H7Artifact;
@@ -96,9 +96,15 @@ pub enum SignRequest {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SignResponse {
-    H7Envelope { envelope: H7SignedArtifactEnvelope },
-    ProductionGrant { grant: H7H89ProductionGrant },
-    ProductionRecovery { decision: ProductionRecoveryDecision },
+    H7Envelope {
+        envelope: H7SignedArtifactEnvelope,
+    },
+    ProductionGrant {
+        grant: H7H89ProductionGrant,
+    },
+    ProductionRecovery {
+        decision: ProductionRecoveryDecision,
+    },
 }
 
 #[derive(Debug, Error)]
