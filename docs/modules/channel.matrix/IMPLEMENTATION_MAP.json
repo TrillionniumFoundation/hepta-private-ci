@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "9bb2309a5329c56557c0838a00e127554b7a2230",
-    "tree": "988a7bf3723f99c99cd3fbb7df087be064a3b6b9"
+    "commit": "a8d9efe19c24a6b48e801a0655a215493af7461b",
+    "tree": "da9c1dbb5a7e9ae93ce9a945f41ab4f9e92fb369"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
@@ -148,7 +148,7 @@
           "command": "cargo test -p codex-hepta-matrix-store --test sync_mutation_v2"
         }
       ],
-      "sourceSemantics": "Carries homeserver unsigned.transaction_id through the atomic sync commit; a matching durable final-use authority claim is required for qualified Succeeded, while legacy/unclaimed remote observations become terminal ObservedUnqualified and redaction evidence remains append-only and separate.",
+      "sourceSemantics": "Carries homeserver unsigned.transaction_id through the atomic sync commit; matching durable final-use evidence is required for qualified Succeeded or Redacted, while legacy/unclaimed remote observations remain terminal ObservedUnqualified even after redaction and cannot satisfy qualification.",
       "operation": "observe_send",
       "nativeSymbol": "pub async fn commit_response(",
       "sourcePath": "codex-rs/hepta-matrix-sdk/src/sync.rs",
