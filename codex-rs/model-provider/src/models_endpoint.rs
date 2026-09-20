@@ -80,11 +80,28 @@ impl OpenAiModelsEndpoint {
     ) -> CoreResult<(Vec<ModelInfo>, Option<String>)> {
         let _timer =
             codex_otel::start_global_timer("codex.remote_models.fetch_update.duration_ms", &[]);
-        let auth = self.auth().await;
+        let host_auth = match self.auth_manager.as_ref() {
+            Some(auth_manager) => auth_manager
+                .host_provider_auth_for(&self.provider_info)
+                .map_err(|error| {
+                    CodexErr::InvalidRequest(format!(
+                        "host provider auth rejected runtime provider: {error}"
+                    ))
+                })?,
+            None => None,
+        };
+        let auth = if host_auth.is_some() {
+            None
+        } else {
+            self.auth().await
+        };
         let auth_mode = auth.as_ref().map(CodexAuth::auth_mode);
         let mut api_provider = self.provider_info.to_api_provider(auth_mode)?;
         enforce_managed_residency(&mut api_provider);
-        let api_auth = resolve_provider_auth(auth.as_ref(), &self.provider_info)?;
+        let api_auth = match host_auth {
+            Some(host_auth) => host_auth,
+            None => resolve_provider_auth(auth.as_ref(), &self.provider_info)?,
+        };
         let request_url =
             ModelsClient::<ReqwestTransport>::request_url(&api_provider, client_version);
         let auth_telemetry = auth_header_telemetry(api_auth.as_ref());
