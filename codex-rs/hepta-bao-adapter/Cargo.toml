@@ -14,12 +14,14 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-contracts = { path = "../hepta-contracts" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-http-client = { workspace = true }
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+thiserror = { workspace = true }
 url = { workspace = true }
 zeroize = { workspace = true, features = ["serde"] }
 
