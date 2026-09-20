@@ -1,15 +1,16 @@
 //! Bounded registry of reviewed, compiled-in read-only organ factories.
 //!
-//! A registry may contain more drivers than a graph selects.  Construction
+//! A registry may contain more drivers than a graph selects. Construction
 //! validates the complete graph and binding set before invoking any factory,
-//! then creates exactly one handler for each graph organ.  Factories are
+//! then creates exactly one handler for each graph organ. Factories are
 //! trusted product code: this registry does not load code, sandbox callbacks,
-//! start handlers, or grant authority.
+//! or grant authority. Replacement reuses the existing host lifecycle.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::OrganDriverBindingV1;
@@ -155,7 +156,6 @@ impl OrganHandlerRegistryV1 {
                 actual: bindings.len(),
             });
         }
-
         let organ_ids = graph
             .organs
             .iter()
@@ -187,7 +187,6 @@ impl OrganHandlerRegistryV1 {
                 });
             }
         }
-
         let mut handlers = Vec::with_capacity(graph.organs.len());
         for organ in &graph.organs {
             let binding = by_organ
@@ -197,13 +196,22 @@ impl OrganHandlerRegistryV1 {
                 .factories
                 .get(&binding.driver)
                 .expect("driver was validated above");
-            let handler = (registered.factory)(&organ.id).map_err(|fault| {
-                OrganHandlerRegistryError::Factory {
-                    driver: binding.driver.clone(),
-                    fault,
-                }
+            let handler = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                (registered.factory)(&organ.id)
+            }))
+            .unwrap_or_else(|_| {
+                Err(OrganHandlerFaultV1::new(
+                    StableId::new("organ_factory_panicked").expect("static fault identity"),
+                ))
+            })
+            .map_err(|fault| OrganHandlerRegistryError::Factory {
+                driver: binding.driver.clone(),
+                fault,
             })?;
-            let actual = handler.id().clone();
+            let actual = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                handler.id().clone()
+            }))
+            .map_err(|_| OrganRuntimeError::HandlerIdentityPanicked)?;
             if actual != organ.id {
                 return Err(OrganHandlerRegistryError::HandlerIdentityMismatch {
                     expected: organ.id.clone(),
@@ -214,8 +222,29 @@ impl OrganHandlerRegistryV1 {
         }
         OrganHostV1::new(graph, handlers).map_err(Into::into)
     }
+
+    /// Add, replace or retire instances through the same reviewed factories.
+    /// The predecessor fence is checked before constructing anything. The host
+    /// owns start, cleanup and cutover; this adds no second execution loop and
+    /// provides neither durable writer migration nor independent selection.
+    pub fn replace_host(
+        &self,
+        host: &mut OrganHostV1,
+        expected: Generation,
+        graph: OrganGraphsV1,
+        bindings: &[OrganDriverBindingV1],
+    ) -> Result<(), OrganHandlerRegistryError> {
+        host.validate_read_only_successor(expected, graph.generation)?;
+        let candidate = self.create_host(graph, bindings)?;
+        host.replace_admitted_read_only_generation(expected, candidate)?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
 #[path = "organ_registry_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "organ_extension_lifecycle_tests.rs"]
+mod extension_tests;
