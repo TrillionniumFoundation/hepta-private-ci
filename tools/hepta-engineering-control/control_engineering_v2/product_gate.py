@@ -452,7 +452,7 @@ def build_product_receipt(
         raise RuntimeError("product_caller_authority_delta")
 
     receipt = {
-        "schema": "hepta.control-engineering-product-execution.v2",
+        "schema": "hepta.control-engineering-product-execution.v3",
         "mode": mode,
         "ciIdentity": {
             "repository": repository_full_name,
@@ -517,7 +517,7 @@ def _verify_product_receipt(
     if not isinstance(value, Mapping):
         raise ValueError("product_receipt_shape")
     if (
-        value.get("schema") != "hepta.control-engineering-product-execution.v2"
+        value.get("schema") != "hepta.control-engineering-product-execution.v3"
         or value.get("mode") != expected_lane
         or value.get("productCallerComposed") is not True
         or value.get("workerLifecycleObserved") is not True
@@ -787,6 +787,21 @@ def verify_product_receipt_pair(
     ):
         raise ValueError("product_receipt_pair_merge_identity")
 
+    for receipt in (source_head, base_merge):
+        integration = receipt.get("integrationReconciliation")
+        if (
+            not isinstance(integration, Mapping)
+            or integration.get("baseCommit") != expected_base_sha
+            or not isinstance(integration.get("baseTree"), str)
+            or _SHA1.fullmatch(integration["baseTree"]) is None
+        ):
+            raise ValueError("product_receipt_pair_integration_base")
+    if (
+        source_head["integrationReconciliation"].get("baseTree")
+        != base_merge["integrationReconciliation"].get("baseTree")
+    ):
+        raise ValueError("product_receipt_pair_integration_base")
+
     source_canonical = source_head["canonicalWorkPackage"]
     merge_canonical = base_merge["canonicalWorkPackage"]
     if not isinstance(source_canonical, Mapping) or not isinstance(
@@ -804,7 +819,7 @@ def verify_product_receipt_pair(
         )
 
     pair = {
-        "schema": "hepta.control-engineering-product-receipt-pair.v1",
+        "schema": "hepta.control-engineering-product-receipt-pair.v2",
         "repository": expected_repository,
         "repositoryId": expected_repository_id,
         "runId": expected_run_id,
@@ -879,7 +894,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             json.dumps(
                 {
-                    "schema": "hepta.control-engineering-product-execution.v2",
+                    "schema": "hepta.control-engineering-product-execution.v3",
                     "status": "rejected",
                     "error": str(error),
                     "authorityGranted": False,
