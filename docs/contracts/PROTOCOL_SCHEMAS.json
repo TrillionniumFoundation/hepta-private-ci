@@ -3579,6 +3579,16 @@
           "required": true
         },
         {
+          "name": "validFromUnixMs",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "validToUnixMs",
+          "type": "u64",
+          "required": false
+        },
+        {
           "name": "snapshotGeneration",
           "type": "u64",
           "required": true
@@ -3590,7 +3600,9 @@
         "semantic_digest_stable",
         "digest_before_authority_use",
         "unknown_critical_fields_rejected",
-        "authority_delta_none"
+        "authority_delta_none",
+        "q16_unit_range",
+        "validity_interval_increasing"
       ]
     },
     {
@@ -3636,6 +3648,11 @@
           "maxBytes": 64
         },
         {
+          "name": "eligibilityPpm",
+          "type": "i32",
+          "required": true
+        },
+        {
           "name": "supportManifestSha256",
           "type": "sha256",
           "required": true,
@@ -3653,7 +3670,9 @@
         "semantic_digest_stable",
         "digest_before_authority_use",
         "unknown_critical_fields_rejected",
-        "authority_delta_none"
+        "authority_delta_none",
+        "q16_unit_range",
+        "eligibility_ppm_bounded"
       ]
     },
     {
@@ -3805,7 +3824,9 @@
         "semantic_digest_stable",
         "digest_before_authority_use",
         "unknown_critical_fields_rejected",
-        "authority_delta_none"
+        "authority_delta_none",
+        "abstain_iff_no_selected_events",
+        "selected_event_revision_nonzero"
       ]
     },
     {
@@ -3964,7 +3985,8 @@
         "semantic_digest_stable",
         "digest_before_authority_use",
         "unknown_critical_fields_rejected",
-        "authority_delta_none"
+        "authority_delta_none",
+        "q16_ppm_delta_exact_binding"
       ]
     },
     {
