@@ -13,6 +13,8 @@ use hepta_native::backend::AuthenticatedRuntimeStatus;
 use hepta_native::backend::BackendAdapter;
 use hepta_native::error::ShellError;
 use hepta_native::journal::OperationJournal;
+use hepta_native::journal::OperationPhase;
+use hepta_native::journal::OperationRecord;
 use hepta_native::model::EndpointManifest;
 use hepta_native::model::PlatformObservation;
 use hepta_native::model::PlatformPayload;
@@ -372,6 +374,62 @@ fn indeterminate_retry_reconciles_instead_of_replaying_or_reclaiming() {
     assert!(second.terminal_observed);
     let state = platform_state.lock().unwrap();
     assert_eq!(state.invoke_calls, 1);
+    assert_eq!(state.reconcile_calls, 1);
+}
+
+#[test]
+fn crash_after_dispatch_before_ack_reconciles_invoking_without_reinvoke() {
+    let temp = TempDir::new().unwrap();
+    let (final_use, _, _) = authority_fixture(&temp);
+    let path = temp.path().join("operations.json");
+    let payload = PlatformPayload::CopyText {
+        text: "possibly dispatched".to_owned(),
+    };
+    {
+        let mut journal = OperationJournal::open(&path).unwrap();
+        journal
+            .upsert(OperationRecord {
+                endpoint_id: "runtime.1".to_owned(),
+                key: hepta_native::model::OperationKey {
+                    session_id: "session.crashed".to_owned(),
+                    session_generation: 41,
+                    operation_id: "operation.ack-loss".to_owned(),
+                },
+                action: payload.action(),
+                payload_digest: payload.digest().unwrap(),
+                phase: OperationPhase::Invoking,
+                terminal_status: None,
+                outcome_digest: None,
+            })
+            .unwrap();
+    }
+
+    let platform_state = Arc::new(Mutex::new(PlatformState {
+        reconcile_terminal: true,
+        ..Default::default()
+    }));
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.restarted".to_owned(),
+        generation: 42,
+    };
+    let mut runtime = NativeShellRuntime::new(
+        Box::new(MockBackend {
+            sessions: vec![session].into(),
+        }),
+        Box::new(MockPlatform {
+            state: platform_state.clone(),
+        }),
+        Some(final_use),
+        OperationJournal::open(path).unwrap(),
+    );
+    runtime.connect_runtime(&manifest()).unwrap();
+
+    let history = runtime.operation_history();
+    assert_eq!(history.len(), 1);
+    assert!(history[0].terminal_observed);
+    let state = platform_state.lock().unwrap();
+    assert_eq!(state.invoke_calls, 0);
     assert_eq!(state.reconcile_calls, 1);
 }
 
