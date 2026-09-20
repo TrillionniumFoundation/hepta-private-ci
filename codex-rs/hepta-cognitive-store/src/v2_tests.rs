@@ -354,19 +354,19 @@ fn saturated_retry_journal_blocks_new_admission_but_not_forget() {
         MemoryAdmissionKind::Observation,
     );
     let first_intent = intent(&store, "intent:journal:1", &value);
-    store
-        .append_admitted(&Verifier, value.clone(), first_intent)
+    let original = store
+        .append_admitted(&Verifier, value.clone(), first_intent.clone())
         .unwrap_or_else(|error| panic!("append first: {error}"));
 
-    for index in 2..=4 {
+    for index in 2..=3 {
         let retry = intent(&store, &format!("intent:journal:{index}"), &value);
         store
             .append_admitted(&Verifier, value.clone(), retry)
             .unwrap_or_else(|error| panic!("retain bounded unchanged receipt: {error}"));
     }
-    let overflow = intent(&store, "intent:journal:5", &value);
+    let overflow = intent(&store, "intent:journal:4", &value);
     assert_eq!(
-        store.append_admitted(&Verifier, value, overflow),
+        store.append_admitted(&Verifier, value.clone(), overflow),
         Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded)
     );
 
@@ -380,11 +380,17 @@ fn saturated_retry_journal_blocks_new_admission_but_not_forget() {
     };
     store
         .forget(&Verifier, forget)
-        .unwrap_or_else(|error| panic!("forget must shed retained retry receipt: {error}"));
+        .unwrap_or_else(|error| panic!("forget must use reserved journal capacity: {error}"));
+
+    let retry = store
+        .append_admitted(&Verifier, value, first_intent)
+        .unwrap_or_else(|error| panic!("original retry receipt must remain retained: {error}"));
+    assert_eq!(retry, original);
+
     let image = store
         .export_image()
         .unwrap_or_else(|error| panic!("bounded image: {error}"));
-    assert!(image.journal.len() <= 4);
+    assert_eq!(image.journal.len(), 4);
 }
 
 #[test]
