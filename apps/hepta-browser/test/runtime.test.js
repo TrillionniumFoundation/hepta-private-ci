@@ -84,21 +84,28 @@ function authority({ authorized = true, witnessDigest = W1, delay = 0 } = {}) {
 
 function driver({
   terminalOnReconcile = true,
+  supportsTerminalDrain = false,
   dispatchImpl,
   observeImpl,
+  reconcileImpl,
   persistedReconcileImpl,
 } = {}) {
   let dispatchCalls = 0;
+  let reconcileCalls = 0;
   let persistedReconcileCalls = 0;
   let containCalls = 0;
   let stopCalls = 0;
   return {
     supportsAbort: true,
+    supportsTerminalDrain,
     get actCalls() {
       return dispatchCalls;
     },
     get dispatchCalls() {
       return dispatchCalls;
+    },
+    get reconcileCalls() {
+      return reconcileCalls;
     },
     get persistedReconcileCalls() {
       return persistedReconcileCalls;
@@ -131,7 +138,9 @@ function driver({
       if (dispatchImpl) return dispatchImpl(semantics, context);
       return { terminalObserved: false };
     },
-    async reconcile() {
+    async reconcile(payload, context) {
+      reconcileCalls += 1;
+      if (reconcileImpl) return reconcileImpl(payload, context);
       return terminalOnReconcile
         ? { terminalObserved: true, status: "succeeded", outcomeDigest: D1 }
         : { terminalObserved: false };
@@ -585,6 +594,50 @@ test("durable intent and local dispatch occur inside the final-use fence", async
   const { host } = await preparedHost({ driver: fakeDriver, authority: finalAuthority, journal });
   await host.navigateOrAct(operation());
   assert.equal(insideFence, false);
+});
+
+test("subprocess-style terminal drain runs outside final-use fence and persists terminality", async () => {
+  let insideFence = false;
+  const journal = new MemoryBrowserOperationJournal();
+  const finalAuthority = {
+    async withVerifiedUse(request, consumer) {
+      insideFence = true;
+      try {
+        return await consumer({
+          authorized: true,
+          witnessDigest: W1,
+          authorityEpoch: request.authorityEpoch,
+          requestDigest: request.requestDigest,
+        });
+      } finally {
+        insideFence = false;
+      }
+    },
+  };
+  const fakeDriver = driver({
+    supportsTerminalDrain: true,
+    dispatchImpl: async () => {
+      assert.equal(insideFence, true);
+      return { terminalObserved: false };
+    },
+    reconcileImpl: async () => {
+      assert.equal(insideFence, false);
+      return { terminalObserved: true, status: "succeeded", outcomeDigest: D1 };
+    },
+  });
+  const { host } = await preparedHost({
+    driver: fakeDriver,
+    authority: finalAuthority,
+    journal,
+  });
+  const receipt = await host.navigateOrAct(operation());
+  assert.equal(receipt.terminalObserved, true);
+  assert.equal(receipt.status, "succeeded");
+  assert.equal(fakeDriver.dispatchCalls, 1);
+  assert.equal(fakeDriver.reconcileCalls, 1);
+  const durable = await journal.getOperation("profile.1", 1, "operation.1");
+  assert.equal(durable.terminalObserved, true);
+  assert.equal(durable.status, "succeeded");
 });
 
 test("generic type text never enters the durable operation journal", async () => {
