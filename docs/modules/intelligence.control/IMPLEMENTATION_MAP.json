@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "495256d72c6d0f5a2c0d6e5fb42fcab51702de45",
-    "tree": "97f279f3ea4b035ce849ca12a695bf8a280958cd"
+    "commit": "2d23f809e8653346d93ffd1ef72a64336a1b161d",
+    "tree": "fc55d3d79c44ccdc4d1627a5aba21b3095cbd74c"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "intelligence.control",
@@ -190,6 +190,23 @@
       ],
       "sourcePathExists": true,
       "designOperation": "owner_ports",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/lane_b_runtime.rs"
+      ]
+    },
+    {
+      "operation": "revalidate_current_capability_snapshot",
+      "nativeSymbol": "CapabilitySnapshotV2::revalidate_current",
+      "sourcePath": "codex-rs/hepta-intelligence/src/capability_snapshot.rs",
+      "state": "source_implemented_final_use_freshness_fence",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/capability_snapshot_tests.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "final_use_capability_revalidation",
       "mappingClass": "owner_native",
       "delegatedCallees": [
         "codex-rs/hepta-agentd/src/lane_b_runtime.rs"
