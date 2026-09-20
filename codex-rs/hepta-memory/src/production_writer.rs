@@ -1209,6 +1209,7 @@ mod tests {
     use super::*;
     use codex_hepta_paths::HeptaFleetRoot;
     use codex_utils_absolute_path::AbsolutePathBuf;
+    use std::sync::atomic::AtomicBool;
     use std::sync::atomic::AtomicUsize;
     use std::sync::atomic::Ordering;
     use std::time::Duration;
@@ -1258,6 +1259,24 @@ mod tests {
             _expected_agent: &AgentId,
         ) -> Result<(), String> {
             Ok(())
+        }
+    }
+
+    struct RevocableVerifier {
+        revoked: Arc<AtomicBool>,
+    }
+
+    impl ProductionAuthorityVerifier for RevocableVerifier {
+        fn verify(
+            &self,
+            _authority: &ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<(), String> {
+            if self.revoked.load(Ordering::SeqCst) {
+                Err("grant revoked after writer open".to_string())
+            } else {
+                Ok(())
+            }
         }
     }
 
@@ -1358,6 +1377,71 @@ mod tests {
             .cognitive_mutation_capability()
             .expect("live-verified writer mints semantic capability");
         assert_eq!(capability.owner_agent_id(), &owner);
+    }
+
+    #[tokio::test]
+    async fn post_open_revocation_blocks_semantic_use_dispatch_and_reconcile() {
+        let temp = TempDir::new().unwrap();
+        let store = store(&temp).await;
+        let owner = store.owner_agent_id().clone();
+        let auth = authority(owner);
+        let revoked = Arc::new(AtomicBool::new(false));
+        let verifier: Arc<dyn ProductionAuthorityVerifier> = Arc::new(RevocableVerifier {
+            revoked: Arc::clone(&revoked),
+        });
+        let writer = Arc::new(
+            ProductionDurableWriter::open_with_live_verifier(
+                store,
+                auth,
+                verifier,
+                "production:h4:post-open-revoke",
+                1,
+            )
+            .await
+            .unwrap(),
+        );
+        let queued = writer
+            .admit(
+                "occurrence:post-open-revoke",
+                "memory.write",
+                "payload",
+            )
+            .await
+            .unwrap();
+
+        revoked.store(true, Ordering::SeqCst);
+
+        assert!(matches!(
+            writer.verify_current_authority().await,
+            Err(ProductionWriterError::AuthorityRejected(_))
+        ));
+        assert!(matches!(
+            writer
+                .admit(
+                    "occurrence:post-open-revoke:new",
+                    "memory.write",
+                    "payload",
+                )
+                .await,
+            Err(ProductionWriterError::AuthorityRejected(_))
+        ));
+        assert!(matches!(
+            writer.recover("occurrence:post-open-revoke").await,
+            Err(ProductionWriterError::AuthorityRejected(_))
+        ));
+
+        let target = Arc::new(Target {
+            calls: AtomicUsize::new(0),
+            outcome: ProductionTargetOutcome::Committed {
+                receipt: "must-not-run-after-revoke".to_string(),
+            },
+        });
+        let dispatcher = ProductionOutboxDispatcher::attach(target.clone());
+        assert!(matches!(
+            dispatcher.dispatch(&writer, queued).await,
+            Err(ProductionWriterError::AuthorityRejected(_))
+        ));
+        assert_eq!(target.calls.load(Ordering::SeqCst), 0);
     }
 
     #[tokio::test]
