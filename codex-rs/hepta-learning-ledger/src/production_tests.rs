@@ -511,7 +511,7 @@ fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
         candidate_completeness_digest: validate_production_completeness(&request).unwrap(),
         support_digest: request.support_digest,
         authentication_digest: signed_evidence_digest(&evidence),
-    }));
+    });
 
     let mut raw = DurableLedger::create(fixture.file("ledger"), binding(), 64).unwrap();
     let committed = raw.append(Digest32::ZERO, event).unwrap();
@@ -643,7 +643,7 @@ fn crash_after_ledger_sync_before_witness_child() {
         candidate_completeness_digest: validate_production_completeness(&decision()).unwrap(),
         support_digest: request.support_digest,
         authentication_digest: signed_evidence_digest(&evidence),
-    }));
+    });
 
     drop(LedgerWitnessStore::create(open("witness"), binding()).unwrap());
     let mut ledger = DurableLedger::create(open("ledger"), binding(), 64).unwrap();
