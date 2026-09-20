@@ -106,6 +106,7 @@ pub struct RunRecovery {
     pub context_digest: String,
     pub compilation_receipt_digest: String,
     pub cancel_reason: Option<String>,
+    pub learning_decision: Option<LearningDecisionBindingV3>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -221,6 +222,7 @@ struct AgentdRuntimePorts<'a, P> {
     expected_revision: u64,
     frozen_snapshot: CapabilitySnapshotV2,
     current_snapshot_provider: Option<&'a mut dyn CurrentCapabilitySnapshotProviderV3>,
+    control: &'a dyn CompositionControlV3,
 }
 
 impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
@@ -314,9 +316,15 @@ impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
             ));
         }
 
+        let now_ms = self
+            .control
+            .now_unix_micros()
+            .checked_add(999)
+            .ok_or_else(|| agentd_handoff_failure(input, envelope, "runtime-clock-overflow"))?
+            / 1_000;
         let run = self
             .coordinator
-            .attach_intelligence_envelope(self.expected_revision, envelope)
+            .attach_intelligence_envelope(now_ms, self.expected_revision, envelope)
             .map_err(|error| {
                 agentd_handoff_failure(input, envelope, &format!("runtime:{error:?}"))
             })?;
@@ -490,6 +498,7 @@ impl AgentRunCoordinator {
     /// Codex/App Server remains the execution owner after this handoff.
     pub fn attach_intelligence_envelope(
         &mut self,
+        now_ms: u64,
         expected_revision: u64,
         envelope: &IntelligenceHostEnvelopeV1,
     ) -> Result<RunReceipt, AgentRunError> {
@@ -524,6 +533,7 @@ impl AgentRunCoordinator {
             return Ok(receipt(record, /*idempotent*/ true));
         }
         require_revision(record, expected_revision)?;
+        require_live_deadline(record, now_ms)?;
         if record.phase != RunPhase::Admitted {
             return Err(AgentRunError::InvalidTransition);
         }
@@ -584,6 +594,7 @@ impl AgentRunCoordinator {
                 expected_revision,
                 frozen_snapshot,
                 current_snapshot_provider,
+                control,
             };
             run_composition_v3_with_control(request, &mut runtime_ports, control)
                 .map_err(|_| AgentRunError::IntelligenceCompositionFailed)?
@@ -672,9 +683,7 @@ impl AgentRunCoordinator {
         run_id: &str,
         binding: LearningDecisionBindingV3,
     ) -> Result<(), AgentRunError> {
-        if binding.event_digest.is_zero() || binding.chain_digest.is_zero() {
-            return Err(AgentRunError::LearningDecisionBindingMismatch);
-        }
+        validate_learning_decision_binding(&binding)?;
         let record = self
             .runs
             .get_mut(run_id)
@@ -841,7 +850,8 @@ impl AgentRunCoordinator {
                 && current.context_digest.as_deref() == Some(recovery.context_digest.as_str())
                 && current.compilation_receipt_digest.as_deref()
                     == Some(recovery.compilation_receipt_digest.as_str())
-                && current.cancel_reason == recovery.cancel_reason;
+                && current.cancel_reason == recovery.cancel_reason
+                && current.learning_decision == recovery.learning_decision;
             if same {
                 return Ok(receipt(current, /*idempotent*/ true));
             }
@@ -860,7 +870,7 @@ impl AgentRunCoordinator {
             compilation_receipt_digest: Some(recovery.compilation_receipt_digest),
             cancel_reason: recovery.cancel_reason,
             cancel_ack_deadline_ms: None,
-            learning_decision: None,
+            learning_decision: recovery.learning_decision,
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(run_id, record);
@@ -1060,6 +1070,9 @@ fn validate_recovery(value: &RunRecovery) -> Result<(), AgentRunError> {
     if let Some(reason) = value.cancel_reason.as_deref() {
         validate_cancel_reason(reason)?;
     }
+    if let Some(binding) = value.learning_decision.as_ref() {
+        validate_learning_decision_binding(binding)?;
+    }
     Ok(())
 }
 
@@ -1093,6 +1106,16 @@ fn validate_cancel_reason(reason: &str) -> Result<(), AgentRunError> {
         || reason.as_bytes().contains(&0)
     {
         return Err(AgentRunError::InvalidCancelReason);
+    }
+    Ok(())
+}
+
+fn validate_learning_decision_binding(
+    binding: &LearningDecisionBindingV3,
+) -> Result<(), AgentRunError> {
+    validate_identity(binding.episode_id.as_str(), "learning episode")?;
+    if binding.event_digest.is_zero() || binding.chain_digest.is_zero() {
+        return Err(AgentRunError::LearningDecisionBindingMismatch);
     }
     Ok(())
 }
