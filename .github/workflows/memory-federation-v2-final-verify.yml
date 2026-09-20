@@ -6,37 +6,61 @@ on:
       - fix/memory-federation-v2-closure-20260920
     paths:
       - ".github/workflows/memory-federation-v2-final-verify.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
       - "codex-rs/hepta-memory-federation/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/ext/hepta-memory/**"
       - "codex-rs/app-server/**"
       - "docs/modules/memory.federation/**"
+      - "qualification/memory-federation/**"
       - "qualification/module-execution-dossiers/detail/memory.federation.md"
+      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      - "scripts/hepta-implementation-maps.py"
   pull_request:
     branches:
       - main
     paths:
       - ".github/workflows/memory-federation-v2-final-verify.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
       - "codex-rs/hepta-memory-federation/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/ext/hepta-memory/**"
       - "codex-rs/app-server/**"
       - "docs/modules/memory.federation/**"
+      - "qualification/memory-federation/**"
       - "qualification/module-execution-dossiers/detail/memory.federation.md"
+      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      - "scripts/hepta-implementation-maps.py"
 
 permissions:
   contents: read
 
+concurrency:
+  group: memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  focused-contract-and-product:
-    runs-on: ubuntu-latest
+  source-head:
+    name: exact-head contract and product
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Verify exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
 
       - name: Verify implementation maps
         run: python3 scripts/hepta-implementation-maps.py verify
@@ -72,4 +96,81 @@ jobs:
           cargo clippy -p codex-hepta-agentd --lib -- -D warnings
 
       - name: Verify patch hygiene
-        run: git diff --check
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  merge-candidate:
+    name: deterministic merge contract and product
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact source for merge construction
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct deterministic synthetic merge
+        id: synthetic
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Memory Federation CI
+          author-email: hepta-memory-federation-ci@users.noreply.github.com
+          message: Memory federation synthetic merge
+
+      - name: Verify deterministic merge identity
+        env:
+          EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
+          EXPECTED_TREE: ${{ steps.synthetic.outputs.tree }}
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_SHA"
+          test -n "$EXPECTED_TREE"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+
+      - name: Verify implementation maps on merge candidate
+        run: python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Check formatting on merge candidate
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
+
+      - name: Test canonical federation contract on merge candidate
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory-federation --lib
+
+      - name: Test memory product adapter on merge candidate
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+
+      - name: Test legacy federation regression suite on merge candidate
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory --lib cognitive_federation_tests
+
+      - name: Test model-input federation integration on merge candidate
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-memory-extension --lib cognitive::federation
+
+      - name: Check Agentd and App Server composition on merge candidate
+        working-directory: codex-rs
+        run: cargo check -p codex-hepta-agentd -p codex-app-server
+
+      - name: Strict lint canonical and product crates on merge candidate
+        working-directory: codex-rs
+        run: |
+          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
+
+      - name: Verify merge patch hygiene
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
