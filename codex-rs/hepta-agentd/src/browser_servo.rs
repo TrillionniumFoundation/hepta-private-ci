@@ -1352,6 +1352,20 @@ mod tests {
         _state: tempfile::TempDir,
     }
 
+    fn private_authority_tempdir() -> tempfile::TempDir {
+        let state = tempfile::tempdir().expect("authority tempdir");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(
+                state.path(),
+                std::fs::Permissions::from_mode(0o700),
+            )
+            .expect("secure authority tempdir permissions");
+        }
+        state
+    }
+
     fn harness() -> Harness {
         harness_with_timeout(Duration::from_millis(DEFAULT_PARENT_FRAME_TIMEOUT_MS))
     }
@@ -1364,7 +1378,7 @@ mod tests {
         frame_timeout: Duration,
         stall_second_write: bool,
     ) -> Harness {
-        let state = tempfile::tempdir().expect("authority tempdir");
+        let state = private_authority_tempdir();
         let signing = SigningKey::from_bytes(&[7u8; 32]);
         let authority = FinalUseAuthority::open_state_dir(
             state.path(),
