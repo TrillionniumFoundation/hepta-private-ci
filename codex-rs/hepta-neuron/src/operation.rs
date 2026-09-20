@@ -333,6 +333,13 @@ impl FileRuntimeOperationJournal {
         } else if self.records.len() >= self.max_operations {
             return Err(RuntimeOperationError::Capacity);
         }
+        if self.records.values().any(|record| {
+            record.state != RuntimeOperationStateV1::Aborted
+                && record.prepared.sequence == prepared.sequence
+                && record.prepared.operation_id != prepared.operation_id
+        }) {
+            return Err(RuntimeOperationError::Conflict);
+        }
         let payload = encode_prepared(&prepared)?;
         self.append_payload(&payload)?;
         Ok(prepared)
@@ -520,6 +527,13 @@ impl FileRuntimeOperationJournal {
                         return Err(RuntimeOperationError::Conflict);
                     }
                     _ => {}
+                }
+                if self.records.values().any(|record| {
+                    record.state != RuntimeOperationStateV1::Aborted
+                        && record.prepared.sequence == prepared.sequence
+                        && record.prepared.operation_id != prepared.operation_id
+                }) {
+                    return Err(RuntimeOperationError::Conflict);
                 }
                 self.records.insert(
                     prepared.operation_id.clone(),
