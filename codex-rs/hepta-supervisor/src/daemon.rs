@@ -959,6 +959,7 @@ struct HiddenControlState<'a> {
     registry_current_release: &'a Option<ReleaseId>,
     registry_previous_release: &'a Option<ReleaseId>,
     restart_pending: bool,
+    restart_attempt: u32,
     runtime_phase: &'a Option<crate::ControlRuntimePhase>,
     runtime_release: &'a Option<String>,
     runtime_incarnation: &'a Option<String>,
@@ -993,6 +994,7 @@ fn control_state_digest(
             registry_current_release: &record.release_state.current,
             registry_previous_release: &record.release_state.previous,
             restart_pending: snapshot.restart_pending,
+            restart_attempt: snapshot.restart_attempt,
             runtime_phase: &snapshot.runtime_phase,
             runtime_release: &snapshot.runtime_release,
             runtime_incarnation: &snapshot.runtime_incarnation,
@@ -1068,6 +1070,11 @@ fn safe_rejection(
         SupervisorError::ReleaseChangePending(_) => error_payload(
             "release_change_pending",
             "selected Agent already has a lifecycle change in progress",
+            actual,
+        ),
+        SupervisorError::RestartBudgetExhausted(_) => error_payload(
+            "restart_budget_exhausted",
+            "selected Agent exhausted its bounded restart budget",
             actual,
         ),
         SupervisorError::TargetReleaseUnchanged(_) => error_payload(
