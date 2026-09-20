@@ -36,6 +36,7 @@ use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
 use codex_hepta_learning_artifacts::LifecycleActorEvidenceV2;
 use codex_hepta_learning_artifacts::LifecycleActorRoleV2;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
+use codex_hepta_learning_artifacts::read_registry_snapshot;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
@@ -539,18 +540,20 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
             OfflineOperatorCandidateRequestV1 {
                 operation_id: id("product-operator-run"),
                 dataset: &dataset,
-                plan,
+                plan: plan.clone(),
                 register_event_id: id("register-policy"),
                 trained_lifecycle_event_id: id("trained-policy"),
                 evaluated_lifecycle_event_id: id("evaluated-policy"),
-                producer_actor,
-                evaluator_actor,
+                producer_actor: producer_actor.clone(),
+                evaluator_actor: evaluator_actor.clone(),
                 manifest: manifest.clone(),
-                payload_target: CreateOnlyArtifactFile::create(&payload_path).unwrap(),
+                payload_target: OfflineOperatorPayloadTargetV1::Create(
+                    CreateOnlyArtifactFile::create(&payload_path).unwrap(),
+                ),
                 registry_snapshot_target: CreateOnlyArtifactFile::create(&snapshot_path).unwrap(),
                 registry_binding: digest("artifact-owner-binding"),
-                evaluation: eval.bundle,
-                metric_roles: eval.roles,
+                evaluation: eval.bundle.clone(),
+                metric_roles: eval.roles.clone(),
                 evaluation_evidence: &eval.evidence,
                 candidate_evidence: &eval.candidate_evidence,
                 now: 50,
@@ -588,12 +591,11 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
 
     let lifecycle_snapshot = lifecycle.snapshot();
     let mut lifecycle = ArtifactLifecycleJournalV2::from_snapshot(lifecycle_snapshot, 50).unwrap();
-    complete_external_selection(
-        &mut lifecycle,
-        &manifest.producer_id,
-        &manifest.artifact_id,
-        candidate.evaluation.decision.evidence_digest,
-    );
+    let mut registry = read_registry_snapshot(
+        File::open(&snapshot_path).unwrap(),
+        &candidate.selected_spec.registry_receipt,
+    )
+    .unwrap();
     let reopened_journal = OfflineOperatorJournalV1::open(
         OpenOptions::new()
             .read(true)
@@ -604,13 +606,61 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
     .unwrap();
     let mut fresh_host =
         AgentdOfflineOperatorHostV1::new(owner(), 1, reopened_journal).unwrap();
+    let retry_snapshot_path = directory.path().join("snapshot-retry");
+    let retry_candidate = fresh_host
+        .train_evaluate_publish(
+            &mut registry,
+            &mut lifecycle,
+            &eval.verifier,
+            OfflineOperatorCandidateRequestV1 {
+                operation_id: id("product-operator-run"),
+                dataset: &dataset,
+                plan,
+                register_event_id: id("register-policy"),
+                trained_lifecycle_event_id: id("trained-policy"),
+                evaluated_lifecycle_event_id: id("evaluated-policy"),
+                producer_actor,
+                evaluator_actor,
+                manifest: manifest.clone(),
+                payload_target: OfflineOperatorPayloadTargetV1::Existing(
+                    File::open(&payload_path).unwrap(),
+                ),
+                registry_snapshot_target: CreateOnlyArtifactFile::create(&retry_snapshot_path)
+                    .unwrap(),
+                registry_binding: digest("artifact-owner-binding"),
+                evaluation: eval.bundle,
+                metric_roles: eval.roles,
+                evaluation_evidence: &eval.evidence,
+                candidate_evidence: &eval.candidate_evidence,
+                now: 50,
+            },
+        )
+        .unwrap();
+    assert_eq!(retry_candidate.request_digest, candidate.request_digest);
+    assert_eq!(retry_candidate.model, candidate.model);
+    assert_eq!(
+        retry_candidate.coordination_head_digest,
+        candidate.coordination_head_digest
+    );
+    assert_eq!(fresh_host.coordination_records().len(), 4);
+
+    complete_external_selection(
+        &mut lifecycle,
+        &manifest.producer_id,
+        &manifest.artifact_id,
+        retry_candidate.evaluation.decision.evidence_digest,
+    );
+    let retry_view = Arc::new(CurrentView(Mutex::new((
+        retry_snapshot_path.clone(),
+        retry_candidate.selected_spec.registry_receipt,
+    ))));
     let ranker = fresh_host
         .load_selected_ranker(
-            &candidate,
+            &retry_candidate,
             &lifecycle,
-            File::open(&snapshot_path).unwrap(),
+            File::open(&retry_snapshot_path).unwrap(),
             File::open(&payload_path).unwrap(),
-            view,
+            retry_view,
         )
         .unwrap();
     let mut ranked = items.clone();
