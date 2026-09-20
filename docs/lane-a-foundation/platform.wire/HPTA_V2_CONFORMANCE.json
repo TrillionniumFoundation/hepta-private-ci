@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "protocol": "HPTA",
+  "version": 2,
+  "description": "schema=s, producer=p, generation=1, payload=010203",
+  "frameLength": 59,
+  "frameHex": "48505441000200010001000000000000000124c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e000000037370010203",
+  "frameSha256": "5fde1073e0728e98693400a124c6c91332848af5a233562a8ff3ba11460fa43b",
+  "digestDomainHex": "485054412d574952452d563200",
+  "digestCoverage": [
+    "magic",
+    "version",
+    "schemaLength",
+    "producerLength",
+    "generation",
+    "payloadLength",
+    "schema",
+    "producer",
+    "payload"
+  ],
+  "fields": {
+    "schema": "s",
+    "producer": "p",
+    "generation": 1,
+    "payloadHex": "010203",
+    "frameDigestSha256": "24c225cf242fbef3f1428af4827091793d13c051c4f01979a47633f0729f1d5e"
+  },
+  "negativeCases": [
+    "same-length schema mutation rejects with digest mismatch",
+    "same-length producer mutation rejects with digest mismatch",
+    "generation mutation rejects with digest mismatch",
+    "payload mutation rejects with digest mismatch",
+    "unknown version rejects",
+    "truncation and trailing bytes reject"
+  ]
+}

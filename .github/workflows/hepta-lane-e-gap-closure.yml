@@ -17,7 +17,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   rust-closure:
@@ -35,11 +35,16 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
+      - name: Install evaluator coverage tool
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-llvm-cov@0.9.0
+
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
-          components: clippy,rustfmt
+          components: clippy,rustfmt,llvm-tools-preview
 
       - name: Bind exact source
         shell: bash
@@ -83,6 +88,50 @@ jobs:
           --test signed_qualification_e2e
           -- --test-threads=1
 
+      - name: Evaluated-shadow signed runtime admission E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval
+          cargo test --manifest-path codex-rs/Cargo.toml --locked             -p codex-hepta-intelligence             evaluated_shadow             -- --test-threads=1             2>&1 | tee .hepta-evidence/learning-eval/runtime-e2e.log
+
+      - name: Adversarial qualification stress
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval
+          : > .hepta-evidence/learning-eval/stress.log
+          for iteration in $(seq 1 8); do
+            printf 'iteration=%s\n' "$iteration" >> .hepta-evidence/learning-eval/stress.log
+            (
+              cd codex-rs
+              cargo test --locked                 -p codex-hepta-intelligence-eval                 --test signed_qualification_e2e                 -- --test-threads=1
+            ) >> .hepta-evidence/learning-eval/stress.log 2>&1
+          done
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          Path(".hepta-evidence/learning-eval/stress.json").write_text(
+              json.dumps(
+                  {
+                      "schema": "hepta.learning-eval.stress.v1",
+                      "iterations": 8,
+                      "signedQualificationSuitesPassed": 8,
+                  },
+                  indent=2,
+                  sort_keys=True,
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Evaluator line coverage threshold
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked             -p codex-hepta-intelligence-eval             --all-features             --fail-under-lines 85             --json             --output-path .hepta-evidence/learning-eval/coverage.json
+
       - name: Trusted-only compatibility surface remains explicit
         working-directory: codex-rs
         run: >-
@@ -116,6 +165,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets -- -D warnings
 
@@ -129,6 +179,7 @@ jobs:
             --package codex-hepta-learning-artifacts \
             --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
             --package codex-hepta-shadow-qualification \
             -- --check
           git diff --check
@@ -147,6 +198,9 @@ jobs:
             --candidate-sha "${SOURCE_SHA}" \
             --candidate-tree "${CANDIDATE_TREE}" \
             --base-sha "${BASE_SHA:-}" \
+            --coverage .hepta-evidence/learning-eval/coverage.json \
+            --stress .hepta-evidence/learning-eval/stress.json \
+            --runtime-log .hepta-evidence/learning-eval/runtime-e2e.log \
             --output .hepta-evidence/learning-eval/exact-source.json
           python3 scripts/hepta-learning-eval-evidence.py verify \
             .hepta-evidence/learning-eval/exact-source.json
@@ -155,7 +209,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: learning-eval-exact-source-${{ env.SOURCE_SHA }}
-          path: .hepta-evidence/learning-eval/exact-source.json
+          path: .hepta-evidence/learning-eval/
           if-no-files-found: error
           retention-days: 30
 
@@ -184,7 +238,7 @@ jobs:
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
-          components: rustfmt
+          components: clippy,rustfmt
 
       - name: Materialize ordered-parent synthetic merge
         shell: bash
@@ -230,6 +284,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets
 
@@ -248,6 +303,14 @@ jobs:
           cargo test --locked
           -p codex-hepta-intelligence-eval
           --test signed_qualification_e2e
+          -- --test-threads=1
+
+      - name: Test merged evaluated-shadow runtime admission
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence
+          evaluated_shadow
           -- --test-threads=1
 
       - name: Test merged trusted-only compatibility surface
@@ -274,6 +337,18 @@ jobs:
           -p codex-hepta-shadow-qualification
           --test cross_language_wire_fault
           -- --test-threads=1
+
+      - name: Strict merged Lane E lint
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-learning-ledger
+          -p codex-hepta-learning-artifacts
+          -p codex-hepta-bellman-operator
+          -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
+          -p codex-hepta-shadow-qualification
+          --all-targets -- -D warnings
 
       - name: Verify merged formatting and index stability
         shell: bash

@@ -40,6 +40,7 @@ pub use closure::MetricContractV1;
 pub use closure::MetricGateV1;
 pub use closure::MetricRoleContractV2;
 pub use closure::MetricRoleV2;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub(crate) use closure::decide_independently;
 pub(crate) use closure::decide_independently_v2;
 pub use closure::freeze_cross_fold_plan;

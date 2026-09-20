@@ -667,6 +667,14 @@ def verify_workflow(findings: Findings) -> None:
         "actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8",
         "id-token: write",
         "attestations: write",
+        "cargo-llvm-cov@0.9.0",
+        "--fail-under-lines 85",
+        "Adversarial qualification stress",
+        "evaluated_shadow",
+        "Strict merged Lane E lint",
+        "--coverage .hepta-evidence/learning-eval/coverage.json",
+        "--stress .hepta-evidence/learning-eval/stress.json",
+        "--runtime-log .hepta-evidence/learning-eval/runtime-e2e.log",
     ):
         findings.require(
             token in text,

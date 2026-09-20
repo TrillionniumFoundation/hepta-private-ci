@@ -90,6 +90,23 @@ def file_digest(path: str) -> str:
     return sha256_bytes(index_bytes(path))
 
 
+def output_digest(path_value: str) -> dict[str, Any]:
+    path = (ROOT / path_value).resolve()
+    root = ROOT.resolve()
+    if root not in path.parents:
+        raise ValueError("qualification output must remain inside repository workspace")
+    if not path.is_file():
+        raise ValueError(f"missing qualification output: {path_value}")
+    content = path.read_bytes()
+    if not content:
+        raise ValueError(f"empty qualification output: {path_value}")
+    return {
+        "path": str(path.relative_to(root)),
+        "sha256": sha256_bytes(content),
+        "bytes": len(content),
+    }
+
+
 def rust_identity() -> dict[str, str]:
     output = run("rustc", "-Vv").decode("utf-8")
     result: dict[str, str] = {"rawDigest": sha256_bytes(output.encode("utf-8"))}
@@ -145,13 +162,25 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
             "arch": os.environ.get("RUNNER_ARCH", platform.machine()),
         },
         "buildIdentity": rust_identity(),
-        "evidenceClasses": [
-            "closed_world_traceability_coverage",
-            "signed_v2_qualification_e2e",
-            "fenced_holdout_stale_replica_stress",
-            "runtime_mapping_and_public_surface_contract",
-            "exact_candidate_compile_test_lint_format",
-        ],
+        "evidenceClasses": (
+            [
+                "closed_world_traceability_coverage",
+                "signed_v2_qualification_e2e",
+                "fenced_holdout_stale_replica_stress",
+                "signed_runtime_consumer_e2e",
+                "evaluator_line_coverage_threshold",
+                "runtime_mapping_and_public_surface_contract",
+                "exact_candidate_compile_test_lint_format",
+            ]
+            if args.mode == "exact-source"
+            else [
+                "closed_world_traceability_coverage",
+                "signed_v2_qualification_e2e",
+                "signed_runtime_consumer_e2e",
+                "runtime_mapping_and_public_surface_contract",
+                "synthetic_merge_compile_test_lint_format",
+            ]
+        ),
         "traceabilityCases": ["EVAL-01", "EVAL-02", "EVAL-03", "EVAL-04"],
         "authorityDelta": "none",
         "attestation": {
@@ -161,6 +190,21 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
     }
     for key, path in DIGEST_FILES.items():
         receipt[key] = file_digest(path)
+    if args.mode == "exact-source":
+        for label, value in (
+            ("coverage", args.coverage),
+            ("stress", args.stress),
+            ("runtime", args.runtime_log),
+        ):
+            if not value:
+                raise ValueError(f"exact-source evidence requires --{label}")
+        receipt["qualificationOutputs"] = {
+            "coverage": output_digest(args.coverage),
+            "stress": output_digest(args.stress),
+            "runtime": output_digest(args.runtime_log),
+        }
+        receipt["lineCoverageThresholdPct"] = 85
+        receipt["stressIterations"] = 8
     output = ROOT / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -187,15 +231,41 @@ def verify(path: Path) -> dict[str, Any]:
             raise ValueError(f"stale {key}")
     if receipt.get("authorityDelta") != "none":
         raise ValueError("qualification evidence may not grant authority")
-    expected_classes = {
-        "closed_world_traceability_coverage",
-        "signed_v2_qualification_e2e",
-        "fenced_holdout_stale_replica_stress",
-        "runtime_mapping_and_public_surface_contract",
-        "exact_candidate_compile_test_lint_format",
-    }
+    expected_classes = (
+        {
+            "closed_world_traceability_coverage",
+            "signed_v2_qualification_e2e",
+            "fenced_holdout_stale_replica_stress",
+            "signed_runtime_consumer_e2e",
+            "evaluator_line_coverage_threshold",
+            "runtime_mapping_and_public_surface_contract",
+            "exact_candidate_compile_test_lint_format",
+        }
+        if receipt["mode"] == "exact-source"
+        else {
+            "closed_world_traceability_coverage",
+            "signed_v2_qualification_e2e",
+            "signed_runtime_consumer_e2e",
+            "runtime_mapping_and_public_surface_contract",
+            "synthetic_merge_compile_test_lint_format",
+        }
+    )
     if set(receipt.get("evidenceClasses", [])) != expected_classes:
         raise ValueError("evidence class coverage mismatch")
+    if receipt["mode"] == "exact-source":
+        if receipt.get("lineCoverageThresholdPct") != 85:
+            raise ValueError("coverage threshold binding mismatch")
+        if receipt.get("stressIterations") != 8:
+            raise ValueError("stress iteration binding mismatch")
+        outputs = receipt.get("qualificationOutputs")
+        if not isinstance(outputs, dict) or set(outputs) != {"coverage", "stress", "runtime"}:
+            raise ValueError("qualification output bindings missing")
+        for label, item in outputs.items():
+            if not isinstance(item, dict):
+                raise ValueError(f"invalid qualification output: {label}")
+            current_output = output_digest(str(item.get("path", "")))
+            if item != current_output:
+                raise ValueError(f"stale qualification output: {label}")
     if set(receipt.get("traceabilityCases", [])) != {
         "EVAL-01",
         "EVAL-02",
@@ -208,6 +278,8 @@ def verify(path: Path) -> dict[str, Any]:
     current = now_utc()
     if expires <= generated or expires - generated > timedelta(days=MAX_AGE_DAYS, minutes=1):
         raise ValueError("invalid evidence expiry window")
+    if generated > current + timedelta(minutes=5):
+        raise ValueError("evidence generated in the future")
     if current > expires:
         raise ValueError("expired evidence")
     return receipt
@@ -222,6 +294,9 @@ def main() -> int:
     emitter.add_argument("--candidate-sha", required=True)
     emitter.add_argument("--candidate-tree", required=True)
     emitter.add_argument("--base-sha", default="")
+    emitter.add_argument("--coverage")
+    emitter.add_argument("--stress")
+    emitter.add_argument("--runtime-log")
     emitter.add_argument("--output", required=True)
     verifier = sub.add_parser("verify")
     verifier.add_argument("path")

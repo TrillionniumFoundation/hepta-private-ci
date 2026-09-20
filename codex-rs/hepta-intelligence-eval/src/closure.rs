@@ -146,6 +146,7 @@ pub struct IndependentEvaluationDecisionV1 {
 
 /// Legacy contract: every metric must strictly outperform its baseline.
 /// Use [`decide_independently_v2`] for preregistered metric roles.
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub(crate) fn decide_independently(
     bundle: IndependentEvaluationBundleV1,
     now: u64,

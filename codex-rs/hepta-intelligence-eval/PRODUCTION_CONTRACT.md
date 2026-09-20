@@ -1,8 +1,8 @@
 # learning.eval production contract
 
-**Module:** `learning.eval`  
-**Normative scope:** production candidate evaluation / qualification admission  
-**Authority:** evidence only; every decision remains `AuthorityPosture::DENY_ALL`  
+**Module:** `learning.eval`
+**Normative scope:** production candidate evaluation / qualification admission
+**Authority:** evidence only; every decision remains `AuthorityPosture::DENY_ALL`
 **Compatibility:** trusted legacy/in-process entry points are not production admission APIs
 
 This document is the single normative production contract for the
@@ -108,10 +108,16 @@ run:
 - locked all-target compilation;
 - owner package tests, including durable holdout recovery and fencing tests;
 - the signed V2 end-to-end qualification integration fixture;
+- the signed evaluated-shadow runtime consumer E2E against the production V2 ingress;
+- an adversarial stress audit that repeats the signed qualification suite at least
+  eight times and retains its receipt/log;
+- evaluator line coverage of at least 85%, retained as machine-readable coverage
+  output;
 - explicit trusted-feature compatibility tests so the compatibility path cannot
   silently rot into an accidental default surface;
 - cross-crate Lane E and cross-language fault regressions;
-- strict Clippy and rustfmt / clean-tree checks.
+- strict Clippy and rustfmt / clean-tree checks on both exact-source and
+  synthetic-merge candidates.
 
 Each successful candidate emits
 `hepta.learning-eval.ci-evidence.v1`, binding source/candidate SHA and tree,
