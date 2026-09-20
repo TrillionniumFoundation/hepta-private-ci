@@ -17,8 +17,6 @@ from pathlib import Path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
-
-
 def current_source_base() -> dict[str, str]:
     """Return the immutable source identity used by generated maps."""
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
@@ -33,50 +31,6 @@ def git(*args: str) -> str:
         ["git", *args], cwd=ROOT, text=True, capture_output=True, check=True
     )
     return p.stdout.strip()
-
-
-def git_status(*args: str) -> int:
-    """Run a Git query where the exit code is itself the result."""
-    return subprocess.run(
-        ["git", *args], cwd=ROOT, text=True, capture_output=True, check=False
-    ).returncode
-
-
-def verify_source_anchor(
-    module_id: str,
-    source_base: dict[str, str],
-    roots: list[str],
-    failures: list[str],
-) -> None:
-    """Prove that a committed map still describes the current candidate source.
-
-    A tracked map cannot literally contain the SHA of the commit that contains
-    itself.  Instead, sourceBase is a committed source anchor: its recorded tree
-    must belong to that commit, the anchor must be an ancestor of HEAD, and no
-    declared/resolved source root may differ between the anchor and HEAD.
-    Documentation-only commits after the anchor therefore remain valid while any
-    source drift fails closed.
-    """
-    commit = source_base["commit"]
-    tree = source_base["tree"]
-    try:
-        actual_tree = git("rev-parse", f"{commit}^{{tree}}")
-    except subprocess.CalledProcessError:
-        failures.append(f"{module_id}: source base commit unavailable")
-        return
-    if actual_tree != tree:
-        failures.append(f"{module_id}: source base tree does not match commit")
-        return
-    if git_status("merge-base", "--is-ancestor", commit, "HEAD") != 0:
-        failures.append(f"{module_id}: source base is not an ancestor of HEAD")
-        return
-    if not roots:
-        return
-    status = git_status("diff", "--quiet", commit, "HEAD", "--", *roots)
-    if status == 1:
-        failures.append(f"{module_id}: source base is stale versus current source roots")
-    elif status != 0:
-        failures.append(f"{module_id}: unable to compare source base to current roots")
 
 
 def lane_by_module():
@@ -331,7 +285,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -360,7 +313,23 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            source_commit = source_base["commit"]
+            try:
+                actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base commit is unavailable")
+            else:
+                if actual_tree != source_base["tree"]:
+                    failures.append(f"{mid}: source base tree mismatch")
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -372,15 +341,6 @@ def verify():
                 failures.append(f"{mid}: resolved source roots")
         except (ValueError, OSError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
-        if (
-            isinstance(source_base, dict)
-            and source_base.get("commit")
-            and source_base.get("tree")
-        ):
-            anchor_roots = list(
-                dict.fromkeys(roots + list(row.get("resolvedRoots") or []))
-            )
-            verify_source_anchor(mid, source_base, anchor_roots, failures)
         ops = row.get("operations")
         if not isinstance(ops, list) or not ops:
             failures.append(f"{mid}: operations")
@@ -395,11 +355,70 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+        if isinstance(source_base, dict):
+            source_commit = source_base.get("commit")
+            evidence_paths = set(row.get("resolvedRoots") or [])
+            technical_guide = row.get("technicalGuide")
+            if technical_guide:
+                evidence_paths.add(technical_guide)
+            for caller in row.get("productCallers", []):
+                caller_path = caller.get("path") if isinstance(caller, dict) else None
+                if caller_path:
+                    evidence_paths.add(caller_path)
+            for op in ops:
+                source = op.get("sourcePath")
+                if source:
+                    evidence_paths.add(source)
+                for key in ("tests", "delegatedCallees"):
+                    for evidence_path in op.get(key, []):
+                        if evidence_path:
+                            evidence_paths.add(evidence_path)
+            if source_commit and evidence_paths:
+                for evidence_path in sorted(evidence_paths):
+                    if not (ROOT / evidence_path).exists():
+                        failures.append(
+                            f"{mid}: evidence path missing at current candidate: {evidence_path}"
+                        )
+                        continue
+                    anchored = subprocess.run(
+                        ["git", "cat-file", "-e", f"{source_commit}:{evidence_path}"],
+                        cwd=ROOT,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    if anchored.returncode != 0:
+                        failures.append(
+                            f"{mid}: evidence path missing at source base: {evidence_path}"
+                        )
+                drift = subprocess.run(
+                    [
+                        "git",
+                        "diff",
+                        "--quiet",
+                        source_commit,
+                        "HEAD",
+                        "--",
+                        *sorted(evidence_paths),
+                    ],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if drift.returncode == 1:
+                    failures.append(f"{mid}: mapped source/evidence changed after source base")
+                elif drift.returncode != 0:
+                    failures.append(f"{mid}: cannot compare source base to HEAD")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    # Source baselines are module-local provenance. Every map must bind an
+    # exact reviewed commit/tree and all mapped source, test, caller and guide
+    # evidence must remain byte-identical after that anchor. This avoids the
+    # impossible self-reference of requiring a tracked map to name the commit
+    # that contains itself while still making any later source/evidence drift
+    # fail closed.
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
