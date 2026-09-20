@@ -5,6 +5,117 @@ use codex_hepta_types::StableId;
 
 use crate::OperationError;
 
+pub const OPERATION_INTENT_V1_SCHEMA_VERSION: u32 = 1;
+
+/// Canonical authority-free operation intent produced by `kernel.operations`.
+///
+/// This value binds the semantic fields that every cross-owner effect adapter
+/// must agree on before final-use authority is consumed. It grants no authority
+/// by itself and does not claim durable operation-ledger persistence.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OperationIntentV1 {
+    operation_id: StableId,
+    subject_id: StableId,
+    destination_id: StableId,
+    payload_digest: Digest32,
+    scope_digest: Digest32,
+    policy_generation: Generation,
+    expected_predecessor: Option<Digest32>,
+}
+
+impl OperationIntentV1 {
+    pub fn new(
+        operation_id: StableId,
+        subject_id: StableId,
+        destination_id: StableId,
+        payload_digest: Digest32,
+        scope_digest: Digest32,
+        policy_generation: Generation,
+        expected_predecessor: Option<Digest32>,
+    ) -> Result<Self, OperationError> {
+        if payload_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("operation intent payload"));
+        }
+        if scope_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("operation intent scope"));
+        }
+        if expected_predecessor.is_some_and(Digest32::is_zero) {
+            return Err(OperationError::InvalidDigest(
+                "operation intent expected predecessor",
+            ));
+        }
+        Ok(Self {
+            operation_id,
+            subject_id,
+            destination_id,
+            payload_digest,
+            scope_digest,
+            policy_generation,
+            expected_predecessor,
+        })
+    }
+
+    /// Domain-separated canonical semantic identity for cross-owner use.
+    pub fn semantic_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.kernel.operations.operation-intent.v1\0".to_vec();
+        push_stable_id(&mut bytes, &self.operation_id);
+        push_stable_id(&mut bytes, &self.subject_id);
+        push_stable_id(&mut bytes, &self.destination_id);
+        bytes.extend_from_slice(self.payload_digest.as_array());
+        bytes.extend_from_slice(self.scope_digest.as_array());
+        bytes.extend_from_slice(&self.policy_generation.get().to_be_bytes());
+        match self.expected_predecessor {
+            Some(predecessor) => {
+                bytes.push(1);
+                bytes.extend_from_slice(predecessor.as_array());
+            }
+            None => bytes.push(0),
+        }
+        Digest32::of_bytes(&bytes)
+    }
+
+    pub fn operation_key(&self) -> OperationKey {
+        OperationKey {
+            id: self.operation_id.clone(),
+            payload_digest: self.payload_digest,
+        }
+    }
+
+    pub fn operation_id(&self) -> &StableId {
+        &self.operation_id
+    }
+
+    pub fn subject_id(&self) -> &StableId {
+        &self.subject_id
+    }
+
+    pub fn destination_id(&self) -> &StableId {
+        &self.destination_id
+    }
+
+    pub const fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+
+    pub const fn scope_digest(&self) -> Digest32 {
+        self.scope_digest
+    }
+
+    pub const fn policy_generation(&self) -> Generation {
+        self.policy_generation
+    }
+
+    pub const fn expected_predecessor(&self) -> Option<Digest32> {
+        self.expected_predecessor
+    }
+}
+
+fn push_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
+    let raw = value.as_str().as_bytes();
+    bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(raw);
+}
+
 /// Stable operation identity plus the exact final payload digest.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct OperationKey {
@@ -176,4 +287,70 @@ pub struct OperationRecord {
     pub owner_generation: Generation,
     pub revision: Revision,
     pub state: OperationState,
+}
+
+#[cfg(test)]
+mod operation_intent_tests {
+    use super::*;
+
+    fn intent(
+        operation: &str,
+        subject: &str,
+        destination: &str,
+        payload: &[u8],
+        scope: &[u8],
+        generation: u64,
+        predecessor: Option<&[u8]>,
+    ) -> OperationIntentV1 {
+        OperationIntentV1::new(
+            StableId::new(operation).expect("operation"),
+            StableId::new(subject).expect("subject"),
+            StableId::new(destination).expect("destination"),
+            Digest32::of_bytes(payload),
+            Digest32::of_bytes(scope),
+            Generation::new(generation).expect("generation"),
+            predecessor.map(Digest32::of_bytes),
+        )
+        .expect("intent")
+    }
+
+    #[test]
+    fn canonical_intent_digest_binds_every_kernel_semantic_field() {
+        let base = intent(
+            "matrix.send",
+            "agent.one",
+            "provider.matrix",
+            b"payload",
+            b"scope",
+            7,
+            Some(b"predecessor"),
+        );
+        let expected = base.semantic_digest();
+        for changed in [
+            intent("matrix.edit", "agent.one", "provider.matrix", b"payload", b"scope", 7, Some(b"predecessor")),
+            intent("matrix.send", "agent.two", "provider.matrix", b"payload", b"scope", 7, Some(b"predecessor")),
+            intent("matrix.send", "agent.one", "provider.other", b"payload", b"scope", 7, Some(b"predecessor")),
+            intent("matrix.send", "agent.one", "provider.matrix", b"other", b"scope", 7, Some(b"predecessor")),
+            intent("matrix.send", "agent.one", "provider.matrix", b"payload", b"other", 7, Some(b"predecessor")),
+            intent("matrix.send", "agent.one", "provider.matrix", b"payload", b"scope", 8, Some(b"predecessor")),
+            intent("matrix.send", "agent.one", "provider.matrix", b"payload", b"scope", 7, Some(b"other-predecessor")),
+            intent("matrix.send", "agent.one", "provider.matrix", b"payload", b"scope", 7, None),
+        ] {
+            assert_ne!(expected, changed.semantic_digest());
+        }
+    }
+
+    #[test]
+    fn zero_semantic_digests_are_rejected() {
+        let result = OperationIntentV1::new(
+            StableId::new("operation").expect("operation"),
+            StableId::new("subject").expect("subject"),
+            StableId::new("destination").expect("destination"),
+            Digest32::ZERO,
+            Digest32::of_bytes(b"scope"),
+            Generation::new(1).expect("generation"),
+            None,
+        );
+        assert!(matches!(result, Err(OperationError::InvalidDigest(_))));
+    }
 }
