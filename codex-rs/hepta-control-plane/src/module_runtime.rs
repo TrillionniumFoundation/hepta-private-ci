@@ -726,7 +726,8 @@ mod tests {
             generation: Generation::new(generation).expect("generation"),
             implementation_digest: digest(implementation),
             candidate_artifact_digest: digest(implementation),
-            predecessor_generation: predecessor.map(|(g, _)| Generation::new(g).expect("generation")),
+            predecessor_generation: predecessor
+                .map(|(g, _)| Generation::new(g).expect("generation")),
             rollback_predecessor_digest: predecessor.map_or(Digest32::ZERO, |(_, d)| digest(d)),
             state_class: RuntimeModuleStateClassV1::Stateful,
             dependencies: Vec::new(),
@@ -737,7 +738,10 @@ mod tests {
         }
     }
 
-    fn promote(registry: &mut RuntimeModuleRegistryV1, generation: u64) -> RuntimeTopologySnapshotV1 {
+    fn promote(
+        registry: &mut RuntimeModuleRegistryV1,
+        generation: u64,
+    ) -> RuntimeTopologySnapshotV1 {
         let module = id("memory.retrieval");
         let generation = Generation::new(generation).expect("generation");
         registry.enter_shadow(&module, generation).expect("shadow");
