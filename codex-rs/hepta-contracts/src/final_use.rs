@@ -181,6 +181,36 @@ impl FinalUseAuthority {
         Ok(())
     }
 
+    /// Verify that a signed grant is still live against the current trusted
+    /// epoch/revocation head without consuming another nonce. Long-lived owners
+    /// use this to fence already-created generations before each new local
+    /// operation; it does not authorize a new effect by itself.
+    pub fn revalidate(
+        &self,
+        signed: &SignedFinalUseGrant,
+        expected: &FinalUseBinding,
+    ) -> Result<(), FinalUseError> {
+        let input = signed.grant.signing_bytes()?;
+        if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let signature = Signature::from_slice(&signed.signature)
+            .map_err(|_| FinalUseError::InvalidSignature)?;
+        self.0
+            .key
+            .verify_strict(&input, &signature)
+            .map_err(|_| FinalUseError::InvalidSignature)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&signed.grant, &state.head)
+    }
+
     /// Atomically validate and claim one nonce immediately before dispatch.
     /// A failed or uncertain dispatch does not refund the nonce: retry needs a
     /// new owner-signed grant, after the caller has reconciled any unknown effect.
