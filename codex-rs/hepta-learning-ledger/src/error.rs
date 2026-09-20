@@ -18,6 +18,7 @@ pub enum LedgerError {
     MissingAbstainCandidate,
     SelectedCandidateMissing(String),
     ZeroSelectedPropensity,
+    ZeroDeliveryPropensity,
     EmptyDigest(&'static str),
     EpisodeAlreadyExists(String),
     EpisodeNotFound(String),
@@ -53,6 +54,7 @@ impl LedgerError {
             | Self::MissingAbstainCandidate
             | Self::SelectedCandidateMissing(_)
             | Self::ZeroSelectedPropensity
+            | Self::ZeroDeliveryPropensity
             | Self::RetrievalIndexOutOfRange
             | Self::RetrievalSelectionOutsideLegal
             | Self::RetrievalDeliveryOutsideSelection
@@ -106,6 +108,9 @@ impl fmt::Display for LedgerError {
             }
             Self::ZeroSelectedPropensity => {
                 formatter.write_str("selected propensity must be greater than zero")
+            }
+            Self::ZeroDeliveryPropensity => {
+                formatter.write_str("retrieval delivery propensity must be greater than zero")
             }
             Self::RetrievalIndexOutOfRange => {
                 formatter.write_str("retrieval candidate index is outside the enumerated set")
