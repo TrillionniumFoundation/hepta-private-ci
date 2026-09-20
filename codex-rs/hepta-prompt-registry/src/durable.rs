@@ -1404,6 +1404,7 @@ impl std::error::Error for DurableRegistryError {}
 #[cfg(all(test, unix))]
 mod tests {
     use std::collections::BTreeSet;
+    use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::fs::OpenOptionsExt;
     use std::time::Instant;
     use std::time::SystemTime;
