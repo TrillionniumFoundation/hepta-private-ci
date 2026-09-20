@@ -847,7 +847,10 @@ impl MatrixDurableStore {
         if existing.state == MatrixDispatchState::Failed {
             return Err(MatrixDurableError::Conflict);
         }
-        if existing.state == MatrixDispatchState::Redacted {
+        if existing.state == MatrixDispatchState::Redacted
+            || (existing.state == MatrixDispatchState::ObservedUnqualified
+                && existing.redaction_observation_digest.is_some())
+        {
             if existing.terminal_event_id.as_ref() == Some(target_event_id)
                 && existing.redaction_observation_digest.as_deref()
                     == Some(redaction_digest.as_str())
@@ -866,13 +869,26 @@ impl MatrixDurableStore {
             observed_at_ms,
         )
         .await?;
+        let qualified = qualified_authority_claim_exists_tx(
+            transaction,
+            &existing.stable_txn_id,
+            &existing.operation_id,
+            &existing.payload_digest,
+        )
+        .await?;
+        let terminal_state = if qualified {
+            MatrixDispatchState::Redacted
+        } else {
+            MatrixDispatchState::ObservedUnqualified
+        };
         sqlx::query(
             "UPDATE matrix_dispatch_ledger
-             SET state = 'redacted', terminal_event_id = ?,
+             SET state = ?, terminal_event_id = ?,
                  redaction_observation_sha256 = ?, updated_at_ms = ?,
                  terminal_observed_at_ms = ?
              WHERE stable_txn_id = ?",
         )
+        .bind(terminal_state.as_str())
         .bind(target_event_id.as_str())
         .bind(redaction_digest.as_str())
         .bind(to_i64(observed_at_ms)?)
@@ -882,7 +898,7 @@ impl MatrixDurableStore {
         .await
         .map_err(unavailable)?;
         let record = MatrixDispatchRecord {
-            state: MatrixDispatchState::Redacted,
+            state: terminal_state,
             terminal_event_id: Some(target_event_id.clone()),
             redaction_observation_digest: Some(redaction_digest.to_string()),
             updated_at_ms: observed_at_ms,

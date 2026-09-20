@@ -3662,6 +3662,7 @@ async fn verify_store(
             ('matrix_dispatch_authority_claims_no_update', 'trigger'),
             ('matrix_dispatch_authority_claims_no_delete', 'trigger'),
             ('matrix_dispatch_succeeded_requires_authority_claim', 'trigger'),
+            ('matrix_dispatch_redacted_requires_authority_claim', 'trigger'),
             ('matrix_dispatch_ledger_identity_immutable', 'trigger'),
             ('matrix_dispatch_ledger_no_delete', 'trigger'),
             ('matrix_dispatch_observations_no_update', 'trigger'),
@@ -3673,7 +3674,7 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 46 {
+    if required_objects != 47 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
@@ -3745,7 +3746,7 @@ async fn verify_store(
     let invalid_qualified_successes: i64 = sqlx::query_scalar(
         "SELECT COUNT(*)
          FROM matrix_dispatch_ledger AS dispatch
-         WHERE dispatch.state = 'succeeded'
+         WHERE dispatch.state IN ('succeeded', 'redacted')
            AND NOT EXISTS (
                SELECT 1 FROM matrix_dispatch_authority_claims AS claim
                WHERE claim.stable_txn_id = dispatch.stable_txn_id

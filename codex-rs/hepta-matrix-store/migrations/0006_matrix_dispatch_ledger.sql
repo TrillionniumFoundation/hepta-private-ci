@@ -69,10 +69,17 @@ CREATE TABLE matrix_dispatch_ledger (
         OR state != 'accepted'
     ),
     CHECK (
-        (state IN ('succeeded', 'observed_unqualified') AND terminal_event_id IS NOT NULL
+        (state = 'succeeded' AND terminal_event_id IS NOT NULL
             AND send_observation_sha256 IS NOT NULL
             AND terminal_observed_at_ms IS NOT NULL)
-        OR state NOT IN ('succeeded', 'observed_unqualified')
+        OR state != 'succeeded'
+    ),
+    CHECK (
+        (state = 'observed_unqualified' AND terminal_event_id IS NOT NULL
+            AND (send_observation_sha256 IS NOT NULL
+                 OR redaction_observation_sha256 IS NOT NULL)
+            AND terminal_observed_at_ms IS NOT NULL)
+        OR state != 'observed_unqualified'
     ),
     CHECK (
         (state = 'redacted' AND terminal_event_id IS NOT NULL
@@ -224,4 +231,17 @@ WHEN NEW.state = 'succeeded'
      )
 BEGIN
     SELECT RAISE(ABORT, 'qualified Matrix success requires a durable final-use claim');
+END;
+
+CREATE TRIGGER matrix_dispatch_redacted_requires_authority_claim
+BEFORE UPDATE OF state ON matrix_dispatch_ledger
+WHEN NEW.state = 'redacted'
+     AND NOT EXISTS (
+         SELECT 1 FROM matrix_dispatch_authority_claims
+         WHERE stable_txn_id = NEW.stable_txn_id
+           AND operation_id = NEW.operation_id
+           AND payload_sha256 = NEW.payload_sha256
+     )
+BEGIN
+    SELECT RAISE(ABORT, 'qualified Matrix redaction requires a durable final-use claim');
 END;

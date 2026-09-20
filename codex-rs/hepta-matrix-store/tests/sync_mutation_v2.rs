@@ -1158,7 +1158,11 @@ async fn dispatch_observation_survives_reopen_and_redaction_preserves_send_evide
         .dispatch_for_txn(&txn_id)
         .await?
         .ok_or("missing redacted dispatch")?;
-    assert_eq!(redacted.state, MatrixDispatchState::Redacted);
+    assert_eq!(
+        redacted.state,
+        MatrixDispatchState::ObservedUnqualified,
+        "redaction must not upgrade a legacy/unclaimed send into qualified evidence",
+    );
     assert_eq!(
         redacted.send_observation_digest.as_deref(),
         Some(send_digest.as_str())
@@ -1175,7 +1179,7 @@ async fn dispatch_observation_survives_reopen_and_redaction_preserves_send_evide
         .dispatch_for_txn(&txn_id)
         .await?
         .ok_or("redacted dispatch did not survive reopen")?;
-    assert_eq!(durable.state, MatrixDispatchState::Redacted);
+    assert_eq!(durable.state, MatrixDispatchState::ObservedUnqualified);
     assert_eq!(
         durable.send_observation_digest.as_deref(),
         Some(send_digest.as_str())
@@ -1320,7 +1324,7 @@ async fn qualified_success_requires_matching_durable_final_use_claim() -> TestRe
     let sent_event_id = event("$qualified-outbound")?;
     let observed = MatrixSyncMutationV2 {
         source_event_id: sent_event_id.clone(),
-        room_id,
+        room_id: room_id.clone(),
         sender: user(AGENT_USER_ID)?,
         transaction_id: Some(txn_id.clone()),
         binding_revision: 1,
@@ -1342,6 +1346,37 @@ async fn qualified_success_requires_matching_durable_final_use_claim() -> TestRe
             .ok_or("qualified dispatch disappeared")?
             .state,
         MatrixDispatchState::Succeeded,
+    );
+
+    let redaction = MatrixSyncMutationV2 {
+        source_event_id: event("$qualified-redaction")?,
+        room_id,
+        sender: user("@moderator:example.test")?,
+        transaction_id: None,
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 15,
+        received_at_ms: 16,
+        body: MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: sent_event_id,
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(
+            Some("qualified-s1"),
+            "qualified-s2",
+            16,
+            vec![redaction],
+        ))
+        .await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("qualified redacted dispatch disappeared")?
+            .state,
+        MatrixDispatchState::Redacted,
+        "redaction may be qualified only when the original send has durable final-use proof",
     );
     Ok(())
 }
