@@ -96,9 +96,8 @@ pub fn run_if_requested(args: &[OsString]) -> io::Result<bool> {
         return Ok(false);
     }
     if args.len() != 8 {
-        return Err(io::Error::other(
-            "invalid fresh-process checkpoint arguments",
-        ));
+        let message = "invalid fresh-process checkpoint arguments";
+        return Err(io::Error::other(message));
     }
     let root = PathBuf::from(&args[1]);
     let checkpoint = LongHorizonLedgerCheckpointV1 {

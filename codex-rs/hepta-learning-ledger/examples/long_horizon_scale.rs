@@ -165,9 +165,8 @@ fn main() -> io::Result<()> {
         for _ in 0..1000 {
             let receipt = checked(ledger.append(Digest32::ZERO, retry.clone()))?;
             if receipt.disposition != AppendDisposition::IdempotentReplay {
-                return Err(io::Error::other(
-                    "historical retry appended duplicate history",
-                ));
+                let message = "historical retry appended duplicate history";
+                return Err(io::Error::other(message));
             }
             black_box(receipt);
         }
