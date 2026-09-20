@@ -66,8 +66,18 @@ pub struct ParameterPlasticityProductRequestV1 {
     pub generator_attestation: SignedLearningEvidenceV1,
     pub admission: PlasticityAdmissionEvidenceV1,
     pub admission_attestation: SignedLearningEvidenceV1,
+    /// Required only when deterministic generation produces no admissible update.
+    /// The independent Evaluator attests that terminal disposition rather than
+    /// fabricating a candidate evaluation for a nonexistent update.
+    pub no_change_attestation: Option<SignedLearningEvidenceV1>,
     pub evaluations: Vec<CandidateEvaluationAdmissionV1>,
     pub expected_registry_predecessor: Digest32,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ParameterPlasticityDispositionV1 {
+    UpdateCandidates,
+    NoAdmissibleUpdate,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -77,6 +87,7 @@ pub struct ParameterPlasticityProductReceiptV1 {
     pub generator_authentication_digest: Digest32,
     pub admission_authentication_digest: Digest32,
     pub evaluation_digest: Digest32,
+    pub disposition: ParameterPlasticityDispositionV1,
     pub committed_registry_anchor: DurableRegistryAnchorV1,
     pub composition_digest: Digest32,
 }
@@ -94,6 +105,8 @@ pub enum ParameterPlasticityProductErrorV1 {
     UnexpectedEvaluation(String),
     EvaluatorMismatch,
     NoUpdateCandidate,
+    MissingNoChangeAttestation,
+    UnexpectedNoChangeAttestation,
     AnchorPersistenceFailed,
     Proposal(codex_hepta_plasticity::Error),
     Registry(DurableProposalRegistryError),
@@ -291,6 +304,31 @@ pub fn plasticity_admission_signing_payload_v1(
     bytes
 }
 
+/// Canonical terminal payload used only when the deterministic V3 generator
+/// produces the explicit no-change candidate and no admissible update candidate.
+/// Signing this payload is an independent evaluation of the terminal disposition;
+/// it is not selection, activation or authority to mutate the current artifact.
+pub fn no_change_disposition_signing_payload_v1(
+    generated: &GeneratedParameterCandidateSetV3,
+    admission: &PlasticityAdmissionEvidenceV1,
+) -> Result<Vec<u8>, ParameterPlasticityProductErrorV1> {
+    let no_change = generated
+        .candidates
+        .iter()
+        .find(|candidate| candidate.kind == ParameterCandidateKindV2::NoChange)
+        .ok_or(ParameterPlasticityProductErrorV1::NoUpdateCandidate)?;
+    let mut bytes = b"hepta.intelligence.plasticity-no-admissible-update.v1\0".to_vec();
+    bytes.extend_from_slice(generated.generator_digest.as_array());
+    bytes.extend_from_slice(admission.owner_evidence_set_digest.as_array());
+    bytes.extend_from_slice(admission.selected_artifact_digest.as_array());
+    push_id(&mut bytes, &admission.window.window_id);
+    bytes.extend_from_slice(admission.window.window_digest.as_array());
+    bytes.extend_from_slice(&admission.baseline_generation.get().to_be_bytes());
+    bytes.extend_from_slice(&admission.candidate_generation.get().to_be_bytes());
+    push_id(&mut bytes, &no_change.candidate_id);
+    Ok(bytes)
+}
+
 pub fn propose_authenticated_parameter_plasticity_v1(
     request: ParameterPlasticityProductRequestV1,
     verifier: &LearningEvidenceVerifierV1,
@@ -341,9 +379,11 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         .iter()
         .filter(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
         .collect::<Vec<_>>();
-    if update_candidates.is_empty() {
-        return Err(E::NoUpdateCandidate);
-    }
+    let disposition = if update_candidates.is_empty() {
+        ParameterPlasticityDispositionV1::NoAdmissibleUpdate
+    } else {
+        ParameterPlasticityDispositionV1::UpdateCandidates
+    };
 
     let mut evaluations = BTreeMap::new();
     for evaluation in request.evaluations {
@@ -355,6 +395,42 @@ pub fn propose_authenticated_parameter_plasticity_v1(
 
     let mut evaluator_id: Option<StableId> = None;
     let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v1\0".to_vec();
+
+    if disposition == ParameterPlasticityDispositionV1::NoAdmissibleUpdate {
+        if let Some(unexpected) = evaluations.keys().next() {
+            return Err(E::UnexpectedEvaluation(unexpected.to_string()));
+        }
+        let attestation = request
+            .no_change_attestation
+            .as_ref()
+            .ok_or(E::MissingNoChangeAttestation)?;
+        let payload = no_change_disposition_signing_payload_v1(
+            &request.generated,
+            &request.admission,
+        )?;
+        let evaluator = verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                attestation,
+                &payload,
+                now,
+            )
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+        verify_signed_independent_roles_v1(&observer, &evaluator, now)
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+        verify_signed_independent_roles_v1(&generator, &evaluator, now)
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+        if attestation.objective_digest != request.admission.objective_digest {
+            return Err(E::Binding("no-change evaluation trust context"));
+        }
+        evaluator_id = Some(evaluator.principal().principal_id.clone());
+        evaluation_binding.extend_from_slice(&payload);
+        evaluation_binding.extend_from_slice(attestation_digest(attestation).as_array());
+        evaluation_binding.extend_from_slice(verifier.trust_digest().as_array());
+    } else if request.no_change_attestation.is_some() {
+        return Err(E::UnexpectedNoChangeAttestation);
+    }
+
     for candidate in update_candidates {
         let candidate_id = candidate.candidate_id.clone();
         let CandidateEvaluationAdmissionV1 {
@@ -418,6 +494,10 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     let generator_authentication_digest = attestation_digest(&request.generator_attestation);
     let admission_authentication_digest = attestation_digest(&request.admission_attestation);
     let mut governed_evaluation = b"hepta.intelligence.plasticity-governed-admission.v1\0".to_vec();
+    governed_evaluation.push(match disposition {
+        ParameterPlasticityDispositionV1::UpdateCandidates => 0,
+        ParameterPlasticityDispositionV1::NoAdmissibleUpdate => 1,
+    });
     for digest in [
         candidate_evaluation_digest,
         generator_authentication_digest,
@@ -491,6 +571,10 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     writer.state = PlasticityWriterStateV1::Healthy;
 
     let mut composition = b"hepta.intelligence.plasticity-composition.v1\0".to_vec();
+    composition.push(match disposition {
+        ParameterPlasticityDispositionV1::UpdateCandidates => 0,
+        ParameterPlasticityDispositionV1::NoAdmissibleUpdate => 1,
+    });
     for digest in [
         proposal.proposal_digest,
         registry.frame_digest,
@@ -508,6 +592,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         generator_authentication_digest,
         admission_authentication_digest,
         evaluation_digest,
+        disposition,
         committed_registry_anchor,
         composition_digest: Digest32::of_bytes(&composition),
     })
