@@ -129,6 +129,15 @@ impl AgentdRequest {
         }
     }
 
+    pub fn drain(request_id: u64, spawn_generation: u64) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::Drain,
+        }
+    }
+
     pub fn session_ingress(request_id: u64, spawn_generation: u64) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -265,6 +274,7 @@ pub enum AgentdMethod {
     Capabilities,
     Health,
     Lifecycle,
+    Drain,
     SessionIngress,
     AuthBusText {
         request: AuthBusTextIngress,
@@ -327,6 +337,7 @@ pub enum AgentdPayload {
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
+    Drain(DrainSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
@@ -398,6 +409,20 @@ pub struct HealthSnapshot {
 pub struct LifecycleSnapshot {
     pub lifecycle: AgentLifecycle,
     pub app_server_ready: bool,
+    pub fenced: bool,
+}
+
+/// Exact drain acknowledgement from the owning Agentd/App Server composition.
+/// New RPC admission is closed before this can report admission_closed=true.
+/// running_turns is the App Server authoritative running assistant-turn count;
+/// drained=true is emitted only after it reaches zero.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DrainSnapshot {
+    pub admission_closed: bool,
+    pub running_turns: u32,
+    pub drained: bool,
+    pub lifecycle: AgentLifecycle,
     pub fenced: bool,
 }
 
