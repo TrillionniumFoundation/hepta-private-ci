@@ -59,7 +59,7 @@ order, encoding or semantics requires a new version and signing domain.
 | `binding` | The complete operation binding above |
 | `not_before_unix_ms`, `expires_at_unix_ms` | Host clock bounds; positive interval no longer than 300,000 ms |
 | `SignedFinalUseGrant.signature` | Exactly 64 raw Ed25519 signature bytes |
-| `FinalUseRevocations` | Epoch, nonzero monotonically increasing revision and at most 16,384 revoked grant IDs |
+| `FinalUseRevocations` | Epoch, nonzero owner-global monotonically increasing revision and at most 16,384 revoked grant IDs; an epoch increase does **not** reset revision, so the new head must still have a revision greater than the prior head |
 
 For Bao, the request digest binds the HTTPS origin, CA bytes, namespace, mount,
 path, field, exact KV v2 version, expected secret digest, subject and consumer.
@@ -107,7 +107,9 @@ recovery rather than automatic recreation.
 Normal restart loads the persisted nonce set and revocation head automatically.
 An old configuration cannot roll back a stronger stored head. A newer trusted
 startup head can be applied atomically when its revision increases, its epoch
-does not decrease, and same-epoch revocations are a superset. An epoch increase
+does not decrease, and same-epoch revocations are a superset. Revision is one
+owner-global sequence across epoch changes; a new epoch starting again at
+revision 1 is stale and rejects. An epoch increase
 fences every old grant and clears the previous nonce set. There is no silent
 nonce eviction: 16,384 claims fill the epoch and reject further claims until a
 trusted epoch transition.
