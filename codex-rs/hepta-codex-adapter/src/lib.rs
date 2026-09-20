@@ -59,7 +59,11 @@ pub struct CodexOperationIntent {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum TerminalOutcome { Completed, Failed, Interrupted }
+pub enum TerminalOutcome {
+    Completed,
+    Failed,
+    Interrupted,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AdapterStatus {
@@ -75,7 +79,11 @@ pub enum AdapterStatus {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum RetryPosture { Never, SafeBeforeAdmission, ReconcileSameOperation }
+pub enum RetryPosture {
+    Never,
+    SafeBeforeAdmission,
+    ReconcileSameOperation,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexAdapterReceipt {
@@ -106,17 +114,29 @@ pub enum Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "{self:?}") }
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 impl StdError for Error {}
 
-pub fn adapt_request(now_ms: u64, intent: CodexOperationIntent) -> Result<CodexAdapterReceipt, Error> {
+pub fn adapt_request(
+    now_ms: u64,
+    intent: CodexOperationIntent,
+) -> Result<CodexAdapterReceipt, Error> {
     validate_intent_static(&intent)?;
-    if now_ms >= intent.deadline_ms { return Err(Error::DeadlineExpired); }
+    if now_ms >= intent.deadline_ms {
+        return Err(Error::DeadlineExpired);
+    }
     let request_digest = request_digest(&intent);
     Ok(receipt(
-        &intent, request_digest, None, None, AdapterStatus::Indeterminate,
-        RetryPosture::ReconcileSameOperation, None,
+        &intent,
+        request_digest,
+        None,
+        None,
+        AdapterStatus::Indeterminate,
+        RetryPosture::ReconcileSameOperation,
+        None,
     ))
 }
 
@@ -126,7 +146,10 @@ pub fn adapt_observed_event(
     observed: &RemoteAppServerObservedEvent,
 ) -> Result<Option<CodexAdapterReceipt>, Error> {
     validate_product_transport_binding(
-        intent, observed.connection_id(), observed.server_version(), observed.codex_home(),
+        intent,
+        observed.connection_id(),
+        observed.server_version(),
+        observed.codex_home(),
     )?;
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(None);
@@ -142,9 +165,14 @@ pub fn adapt_observed_server_rejection(
     observed: &RemoteAppServerObservedServerError,
 ) -> Result<CodexAdapterReceipt, Error> {
     validate_product_transport_binding(
-        intent, observed.connection_id(), observed.server_version(), observed.codex_home(),
+        intent,
+        observed.connection_id(),
+        observed.server_version(),
+        observed.codex_home(),
     )?;
-    if intent.method_id.as_str() != TURN_START_METHOD_ID || observed.method() != TURN_START_RPC_METHOD {
+    if intent.method_id.as_str() != TURN_START_METHOD_ID
+        || observed.method() != TURN_START_RPC_METHOD
+    {
         return Err(Error::CorrelationMismatch("method"));
     }
     let request_digest = request_digest(intent);
@@ -155,7 +183,13 @@ pub fn adapt_observed_server_rejection(
         (AdapterStatus::Rejected, RetryPosture::Never)
     };
     Ok(receipt(
-        intent, request_digest, None, None, status, retry_posture, Some(response_digest),
+        intent,
+        request_digest,
+        None,
+        None,
+        status,
+        retry_posture,
+        Some(response_digest),
     ))
 }
 
@@ -194,8 +228,12 @@ fn adapt_turn_completed(
         .map_err(|_| Error::InvalidObservationIdentity("thread"))?;
     let turn_id = StableId::new(notification.turn.id.clone())
         .map_err(|_| Error::InvalidObservationIdentity("turn"))?;
-    if thread_id != intent.thread_id { return Err(Error::CorrelationMismatch("thread")); }
-    if &turn_id != expected_turn_id { return Err(Error::CorrelationMismatch("turn")); }
+    if thread_id != intent.thread_id {
+        return Err(Error::CorrelationMismatch("thread"));
+    }
+    if &turn_id != expected_turn_id {
+        return Err(Error::CorrelationMismatch("turn"));
+    }
     let outcome = match &notification.turn.status {
         TurnStatus::Completed => TerminalOutcome::Completed,
         TurnStatus::Failed => TerminalOutcome::Failed,
@@ -204,7 +242,9 @@ fn adapt_turn_completed(
     };
     let encoded = serde_json::to_vec(notification).map_err(|_| Error::ObservationEncodingFailed)?;
     let response_digest = Digest32::of_bytes(&encoded);
-    if response_digest.is_zero() { return Err(Error::EmptyDigest("terminal response")); }
+    if response_digest.is_zero() {
+        return Err(Error::EmptyDigest("terminal response"));
+    }
     let status = match outcome {
         TerminalOutcome::Completed => AdapterStatus::Succeeded,
         TerminalOutcome::Failed => AdapterStatus::Failed,
@@ -215,12 +255,16 @@ fn adapt_turn_completed(
         TerminalOutcome::Completed | TerminalOutcome::Failed => RetryPosture::Never,
     };
     let request_digest = request_digest(intent);
-    let correlation_digest = terminal_correlation_digest(
-        request_digest, &turn_id, outcome, response_digest,
-    );
+    let correlation_digest =
+        terminal_correlation_digest(request_digest, &turn_id, outcome, response_digest);
     Ok(receipt(
-        intent, request_digest, Some(turn_id), Some(correlation_digest), status,
-        retry_posture, Some(response_digest),
+        intent,
+        request_digest,
+        Some(turn_id),
+        Some(correlation_digest),
+        status,
+        retry_posture,
+        Some(response_digest),
     ))
 }
 
@@ -231,15 +275,28 @@ fn validate_intent_static(intent: &CodexOperationIntent) -> Result<(), Error> {
     if intent.payload_digest != intent.lease_payload_digest {
         return Err(Error::PayloadBindingMismatch);
     }
-    if intent.deadline_ms == 0 { return Err(Error::DeadlineExpired); }
+    if intent.deadline_ms == 0 {
+        return Err(Error::DeadlineExpired);
+    }
     if let Some(binding) = &intent.app_server_binding {
-        if binding.source_admission_digest.is_zero() { return Err(Error::EmptyDigest("source admission")); }
-        if binding.codex_home_digest.is_zero() { return Err(Error::EmptyDigest("codex home")); }
-        if binding.connection_id == 0 { return Err(Error::InvalidObservationIdentity("connection")); }
-        if binding.protocol_id.as_str() != APP_SERVER_V2_PROTOCOL_ID { return Err(Error::UnsupportedProtocol); }
+        if binding.source_admission_digest.is_zero() {
+            return Err(Error::EmptyDigest("source admission"));
+        }
+        if binding.codex_home_digest.is_zero() {
+            return Err(Error::EmptyDigest("codex home"));
+        }
+        if binding.connection_id == 0 {
+            return Err(Error::InvalidObservationIdentity("connection"));
+        }
+        if binding.protocol_id.as_str() != APP_SERVER_V2_PROTOCOL_ID {
+            return Err(Error::UnsupportedProtocol);
+        }
         if binding.app_server_version.is_empty()
             || binding.app_server_version.len() > MAX_APP_SERVER_VERSION_BYTES
-            || binding.app_server_version.bytes().any(|b| b.is_ascii_control())
+            || binding
+                .app_server_version
+                .bytes()
+                .any(|b| b.is_ascii_control())
         {
             return Err(Error::InvalidAppServerVersion);
         }
@@ -254,8 +311,13 @@ fn validate_product_transport_binding(
     codex_home: Option<&str>,
 ) -> Result<(), Error> {
     validate_intent_static(intent)?;
-    let binding = intent.app_server_binding.as_ref().ok_or(Error::ProductBindingRequired)?;
-    if connection_id != binding.connection_id { return Err(Error::CorrelationMismatch("connection")); }
+    let binding = intent
+        .app_server_binding
+        .as_ref()
+        .ok_or(Error::ProductBindingRequired)?;
+    if connection_id != binding.connection_id {
+        return Err(Error::CorrelationMismatch("connection"));
+    }
     if server_version != Some(binding.app_server_version.as_str()) {
         return Err(Error::CorrelationMismatch("app server version"));
     }
@@ -321,8 +383,12 @@ fn server_error_digest(error: &JSONRPCErrorError) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn push_id(bytes: &mut Vec<u8>, value: &StableId) { push_bytes(bytes, value.as_str().as_bytes()); }
-fn push_text(bytes: &mut Vec<u8>, value: &str) { push_bytes(bytes, value.as_bytes()); }
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
+    push_bytes(bytes, value.as_str().as_bytes());
+}
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    push_bytes(bytes, value.as_bytes());
+}
 fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) {
     let length = u32::try_from(value.len()).unwrap_or(u32::MAX);
     bytes.extend_from_slice(&length.to_be_bytes());
@@ -330,8 +396,8 @@ fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) {
 }
 
 #[cfg(test)]
-#[path = "lib_tests.rs"]
-mod tests;
-#[cfg(test)]
 #[path = "deadline_digest_tests.rs"]
 mod deadline_digest_tests;
+#[cfg(test)]
+#[path = "lib_tests.rs"]
+mod tests;
