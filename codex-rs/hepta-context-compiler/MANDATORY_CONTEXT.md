@@ -73,7 +73,8 @@ changing the V1 wire meaning:
 - `observe_delivery` accepts only a structurally valid
   `ProviderInvocationReceipt` plus an independent
   `ContextProviderDeliveryVerifierV2` decision, verifies the exact payload
-  binding, pre-dispatch witness, provider/model identity, attempt and terminal
+  binding, verifier-authenticated pre-dispatch preparation linkage,
+  provider/model identity, attempt and terminal
   evidence, and emits a deny-all `ContextDeliveryReceiptV2`;
 - compilation, serialization, attachment, preparation and delivery proof
   artifacts are construction-closed outside the module, so external callers
