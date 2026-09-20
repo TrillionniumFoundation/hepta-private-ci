@@ -79,6 +79,35 @@ test("file journal fails closed on checksum tampering", async () => {
   );
 });
 
+test("file journal recovers a validated prefix after a crash-torn final append", async () => {
+  const { path, journal } = await journalFixture();
+  await journal.recordDispatch(record());
+  await journal.recordObservation(record({
+    status: "succeeded",
+    outcomeDigest: D1,
+    terminalObserved: true,
+    observationReason: "terminal_observed",
+  }));
+
+  const complete = await readFile(path, "utf8");
+  const lines = complete.split("\n").filter(Boolean);
+  assert.equal(lines.length, 2);
+  const tornObservation = lines[1].slice(0, Math.floor(lines[1].length / 2));
+  await writeFile(path, `${lines[0]}\n${tornObservation}`, { mode: 0o600 });
+
+  const reopened = new FileBrowserOperationJournal(path);
+  const stored = await reopened.getOperation("profile.1", 1, "operation.1");
+  assert.equal(stored.status, "indeterminate");
+  assert.equal(stored.terminalObserved, false);
+
+  await writeFile(path, `${lines[0]}\n{"broken":\n`, { mode: 0o600 });
+  const newlineTerminatedCorruption = new FileBrowserOperationJournal(path);
+  await assert.rejects(
+    newlineTerminatedCorruption.getOperation("profile.1", 1, "operation.1"),
+    /malformed JSON/,
+  );
+});
+
 test("journal validates every hydrated record and rejects secret-bearing unknown fields", async () => {
   const { journal } = await journalFixture();
   await assert.rejects(
