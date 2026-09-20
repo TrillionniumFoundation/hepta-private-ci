@@ -196,7 +196,7 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-memory-federation/src/lib_tests.rs](../../../codex-rs/hepta-memory-federation/src/lib_tests.rs).
-- [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), covering response-binding tamper/replay, expiry ceilings, preflight/post-I/O authority drift, true in-flight cancellation/deadline interruption, duplicate identities and bounded partial results.
+- [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), covering response-binding tamper/replay, prefix-sensitive item-order integrity, `Partial + []` preservation, expiry ceilings, preflight/post-I/O authority drift, true in-flight cancellation/deadline interruption, duplicate identities and bounded partial results.
 - [codex-rs/hepta-memory/src/cognitive_runtime_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_runtime_tests.rs), covering product composition, explicit discovery failure coverage and wrong-workspace non-enrollment.
 - [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs), whose focused tests cover physical-send revalidation and coverage-preserving combined model input.
 
