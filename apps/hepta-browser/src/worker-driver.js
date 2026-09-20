@@ -585,6 +585,11 @@ class PrivateWorkerClient {
 
 export class SubprocessBrowserDriver {
   supportsAbort = true;
+  // Dispatch returns at the worker admission boundary so Agentd can release
+  // final-use authority. BrowserProfileHost then calls reconcile outside that
+  // fence to drain the worker's stored terminal response into durable owner
+  // state before returning when terminality is already known.
+  supportsTerminalDrain = true;
   maxActiveProfiles = 1;
   maxOutstandingOperations = 1;
 
