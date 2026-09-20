@@ -139,26 +139,41 @@
       "delegatedCallees": [
         "codex-rs/hepta-codex-adapter/src/lib.rs",
         "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
-        "codex-rs/hepta-learning-ledger/src/ledger.rs"
+        "codex-rs/hepta-learning-ledger/src/ledger.rs",
+        "codex-rs/codex-api/src/encoded_body_observer.rs",
+        "codex-rs/codex-api/src/endpoint/responses.rs",
+        "codex-rs/core/src/client.rs"
       ]
     }
   ],
   "sourceObjects": [
     {
-      "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
-      "object": "9cd1596f204f26f1c0ab44d465be57ac4e6b603b"
+      "path": "codex-rs/codex-api/src/encoded_body_observer.rs",
+      "object": "f59a5e173900fcc5fd7982d0995c5607a0c662b5"
+    },
+    {
+      "path": "codex-rs/codex-api/src/endpoint/responses.rs",
+      "object": "187a64676968e80ed7ff40a9b6d8b8b4ba31f232"
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "object": "04e3c94bdc4cdf70f9b446d14b67058abe759902"
     },
     {
       "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
       "object": "fb3c332ef517d5d8bf8e7609f08ddeab38bb9fd4"
     },
     {
-      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
-      "object": "fc98eabd00e17bd812f9fb3aaf1da6374db13d7b"
+      "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+      "object": "9cd1596f204f26f1c0ab44d465be57ac4e6b603b"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
       "object": "b28a8c9dc571c74549bc080930af8b5306cefb94"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "object": "fc98eabd00e17bd812f9fb3aaf1da6374db13d7b"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation.rs",
@@ -177,24 +192,20 @@
       "object": "7ed0854269d5a1d8cb36a80a27f1ae48841f052a"
     },
     {
-      "path": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
-      "object": "4705fff5bc379dcbf1a811d8f8584339b5fed761"
-    },
-    {
       "path": "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
       "object": "abde47a13c9b36c55815905d6f7c2200f83bd831"
     },
     {
-      "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
-      "object": "15276af27a19a2202bd0fad4de42e8d078c5f171"
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "object": "4705fff5bc379dcbf1a811d8f8584339b5fed761"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs",
       "object": "7a61264c37f9941b8ca0d057b48daef236cece88"
     },
     {
-      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs",
-      "object": "0f75e0589c066df5287465ab38868db63d97e3c7"
+      "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+      "object": "15276af27a19a2202bd0fad4de42e8d078c5f171"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_digest.rs",
@@ -209,13 +220,18 @@
       "object": "52154aca63828c5aec7879cc056beae77914762e"
     },
     {
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs",
+      "object": "0f75e0589c066df5287465ab38868db63d97e3c7"
+    },
+    {
       "path": "codex-rs/hepta-prompt-registry/src/v2.rs",
       "object": "d963b1fbc027a4742c416523e7d1ac20e2e0341f"
     }
   ],
   "repositoryControlledGaps": [
-    "Wire PreparedPromptDeliveryV1 into the named real Codex model/provider dispatch crossing and bind terminal observation to the exact submitted bytes.",
-    "Run prompt.optimizer exact-head and deterministic synthetic-merge qualification plus crash/fault and capacity gates before changing production/activation claims."
+    "Carry an owner-authenticated prompt-delivery binding through the real Agentd/App Server turn admission path and install the existing Core EncodedRequestBodyObserver on the exact ModelClientSession; ordinary client metadata is not authority.",
+    "Cover the named Agentd -> App Server -> Core -> Responses HTTP product callsite with executable exact-byte and terminal Completed/Rejected/Indeterminate/Abandoned tests, including crash/retry reconciliation.",
+    "Run prompt.optimizer exact-head and deterministic synthetic-merge qualification plus fault-injection and target-host capacity gates before changing production/activation claims."
   ],
   "externalEvidenceGates": [
     "independent causal semantic review",
