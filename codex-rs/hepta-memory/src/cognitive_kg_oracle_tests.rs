@@ -121,19 +121,30 @@ async fn assert_persisted_semantics(
     store: &CognitiveStore,
     scope: &CognitiveScope,
     generation: &KnowledgeGenerationV2,
+    expected_output_sha256: &str,
     expected_generation_sha256: &str,
+    expected_publication_sha256: &str,
 ) {
     let row = sqlx::query(
-        "SELECT source_snapshot_sha256, generation_vector_sha256,
-                graph_profile_sha256, generation_sha256, publication_sha256
-         FROM kg_projection_generation_semantics
-         WHERE projection_scope = ? AND generation = ?",
+        "SELECT r.output_sha256, s.source_snapshot_sha256,
+                s.generation_vector_sha256, s.graph_profile_sha256,
+                s.generation_sha256, s.publication_sha256
+         FROM kg_projection_generation_receipts r
+         JOIN kg_projection_generation_semantics s
+           ON s.projection_scope = r.projection_scope
+          AND s.generation = r.generation
+         WHERE r.projection_scope = ? AND r.generation = ?",
     )
     .bind(scope.projection_key())
     .bind(i64::try_from(generation.generation.get()).expect("bounded generation"))
     .fetch_one(&store.pool)
     .await
     .expect("persisted canonical semantics");
+    assert_eq!(
+        row.try_get::<String, _>("output_sha256")
+            .expect("physical output digest"),
+        expected_output_sha256
+    );
     assert_eq!(
         row.try_get::<String, _>("source_snapshot_sha256")
             .expect("source snapshot"),
@@ -160,9 +171,8 @@ async fn assert_persisted_semantics(
     );
     assert_eq!(
         row.try_get::<String, _>("publication_sha256")
-            .expect("publication digest")
-            .len(),
-        64
+            .expect("publication digest"),
+        expected_publication_sha256
     );
 }
 
@@ -231,7 +241,9 @@ async fn canonical_v2_sqlite_restart_query_correction_and_tombstone_are_one_chai
         &store,
         &scope,
         &full_one,
+        first.projection.output_sha256.as_str(),
         first.projection.generation_sha256.as_str(),
+        first.projection.publication_sha256.as_str(),
     )
     .await;
     assert_eq!(full_one.nodes.len(), 2);
@@ -302,7 +314,9 @@ async fn canonical_v2_sqlite_restart_query_correction_and_tombstone_are_one_chai
         &store,
         &scope,
         &full_two,
+        second.projection.output_sha256.as_str(),
         second.projection.generation_sha256.as_str(),
+        second.projection.publication_sha256.as_str(),
     )
     .await;
     let incremental_two = apply_incremental_delta(
@@ -389,7 +403,9 @@ async fn canonical_v2_sqlite_restart_query_correction_and_tombstone_are_one_chai
         &reopened,
         &scope,
         &full_three,
+        forgotten.projection.output_sha256.as_str(),
         forgotten.projection.generation_sha256.as_str(),
+        forgotten.projection.publication_sha256.as_str(),
     )
     .await;
     let incremental_three = apply_incremental_delta(
