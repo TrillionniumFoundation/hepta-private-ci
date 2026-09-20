@@ -45,7 +45,7 @@ pub(super) async fn initialize(pool: &SqlitePool) -> Result<(), OperationError> 
         r#"
         CREATE TABLE IF NOT EXISTS hepta_operation_outbox_v1 (
             intent_id TEXT PRIMARY KEY NOT NULL,
-            operation_id TEXT NOT NULL,
+            operation_id TEXT NOT NULL UNIQUE,
             destination TEXT NOT NULL,
             payload_digest BLOB NOT NULL CHECK(length(payload_digest) = 32),
             payload BLOB NOT NULL CHECK(length(payload) BETWEEN 1 AND 65536),
@@ -134,6 +134,14 @@ impl DurableOperationLedger {
                 return Err(OperationError::Conflict(intent.intent_id));
             }
             existing
+        } else if load_outbox_by_operation_in_transaction(&mut tx, &intent.operation_id)
+            .await?
+            .is_some()
+        {
+            // One immutable operation identity owns exactly one dispatch intent.
+            // Retrying with a fresh intent_id must not create a second physical
+            // dispatch path for the same operation.
+            return Err(OperationError::Conflict(intent.operation_id));
         } else {
             let outbox_count =
                 sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM hepta_operation_outbox_v1")
@@ -255,6 +263,7 @@ impl DurableOperationLedger {
 
         Ok(DurableOutboxRecord {
             intent: current.intent,
+            payload: current.payload,
             state: DurableOutboxState::Claimed {
                 owner_generation,
                 lease_expires_at_ms,
@@ -331,6 +340,7 @@ impl DurableOperationLedger {
 
         Ok(DurableOutboxRecord {
             intent: current.intent,
+            payload: current.payload,
             state: DurableOutboxState::Acknowledged {
                 owner_generation,
                 acknowledgement_digest,
@@ -357,6 +367,25 @@ impl DurableOperationLedger {
         .map_err(|_| OperationError::StorageUnavailable)?;
         row.map(decode_outbox).transpose()
     }
+}
+
+async fn load_outbox_by_operation_in_transaction(
+    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    operation_id: &StableId,
+) -> Result<Option<DurableOutboxRecord>, OperationError> {
+    let row = sqlx::query(
+        r#"
+        SELECT intent_id, operation_id, destination, payload_digest, payload, state,
+               owner_generation, lease_expires_at_ms, attempts, acknowledgement_digest
+        FROM hepta_operation_outbox_v1
+        WHERE operation_id = ?
+        "#,
+    )
+    .bind(operation_id.as_str())
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(|_| OperationError::StorageUnavailable)?;
+    row.map(decode_outbox).transpose()
 }
 
 async fn load_outbox_in_transaction(
