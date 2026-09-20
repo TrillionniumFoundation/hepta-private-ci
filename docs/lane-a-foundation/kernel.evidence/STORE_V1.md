@@ -30,7 +30,8 @@ Transport acceptance is not inferred as terminal application; uncertainty is a
 first-class record.
 
 Migration `0011` adds the canonical append-only `qualification_evidence`
-lineage. Every receipt binds an exact candidate commit/tree, claim class,
+lineage and the singleton immutable `evidence_recovery_identity` used to bind
+an independently enrolled store identity after signed-frontier admission. Every receipt binds an exact candidate commit/tree, claim class,
 authenticated principal/key epoch/signing-key digest, role, canonical payload
 and envelope digests, AuthBus message/sequence/expiry, observation/expiry and
 correction/revocation lineage. Corrections and revocations append facts; they do
@@ -74,5 +75,16 @@ must not claim rollback-resistant production evidence. Backup/restore must:
 - retain correction/revocation lineage and never prune rows so missing evidence
   becomes positive proof.
 
-These are activation prerequisites; repository source implements local
-verification and the frontier contract, not an external checkpoint service.
+Repository source now implements deterministic migration,
+qualification-evidence and AuthBus replay frontier digests plus a signed
+Agentd startup/restore verifier. The verifier requires the frontier and signer
+trust files to live outside the Agent home rollback domain, verifies Ed25519 and
+the immutable store identity, and rejects any non-exact local frontier as
+`recovery_required`. This is deliberately conservative: a database with
+unpublished later writes also requires a newly published external checkpoint
+before restart.
+
+The external service responsible for durable monotonic generation/CAS,
+authenticated latest-frontier reads and backup publication acknowledgement
+remains an activation prerequisite; the repository does not manufacture that
+independent rollback domain.
