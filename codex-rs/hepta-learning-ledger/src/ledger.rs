@@ -284,7 +284,9 @@ impl LearningLedger {
         {
             return Err(LedgerError::RetrievalDeliveryOutsideSelection);
         }
-        if assignment.context_exposed != !assignment.delivered_candidate_indices.is_empty() {
+        if assignment.context_exposed != !assignment.delivered_candidate_indices.is_empty()
+            || assignment.context_exposed != assignment.published_context_digest.is_some()
+        {
             return Err(LedgerError::RetrievalExposureStateMismatch);
         }
         Ok(())
@@ -456,6 +458,14 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
                 if digest.is_zero() {
                     return Err(LedgerError::EmptyDigest(name));
                 }
+            }
+            if value
+                .published_context_digest
+                .is_some_and(Digest32::is_zero)
+            {
+                return Err(LedgerError::EmptyDigest(
+                    "retrieval published context",
+                ));
             }
             if value
                 .downstream_policy_digest
@@ -650,6 +660,13 @@ fn push_retrieval_assignment(bytes: &mut Vec<u8>, value: &RetrievalAssignmentFac
         bytes.extend_from_slice(&index.to_be_bytes());
     }
     bytes.push(u8::from(value.context_exposed));
+    match value.published_context_digest {
+        Some(digest) => {
+            bytes.push(1);
+            push_digest(bytes, digest);
+        }
+        None => bytes.push(0),
+    }
     bytes.extend_from_slice(&value.omitted_by_policy_limits.to_be_bytes());
     bytes.extend_from_slice(&value.assignment_propensity.raw().to_be_bytes());
     match value.downstream_policy_digest {
