@@ -693,10 +693,19 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
         .await
         .expect("dispatch under one final-use revocation fence");
     assert_eq!(driver.calls, 1);
-    assert_eq!(receipt.state, TaskFlowStepState::Reconciled);
+    assert_eq!(receipt.state, TaskFlowStepState::Recorded);
     assert_eq!(
-        receipt.final_outcome,
-        Some(TaskFlowReconcileOutcome::Succeeded)
+        receipt.observation,
+        Some(TaskFlowStepObservation::Succeeded)
+    );
+    assert_eq!(
+        store
+            .taskflow_run(&effect.run_id)
+            .await
+            .expect("read successful run")
+            .expect("run")
+            .state,
+        TaskFlowRunState::Succeeded
     );
 
     driver.join_revoker();
