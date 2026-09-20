@@ -641,6 +641,13 @@ fn restore_v2(
             return Err(DurableRegistryError::Corrupt);
         }
     }
+    lifecycle_events.sort_by(|left, right| {
+        left.revision
+            .get()
+            .cmp(&right.revision.get())
+            .then_with(|| left.factor_id.cmp(&right.factor_id))
+    });
+
     let mut realizations = BTreeMap::new();
     for stored_realization in stored.realizations {
         let realization = decode_realization(stored_realization)?;
@@ -742,8 +749,18 @@ fn migrate_v1(
     let mut lifecycle_events = Vec::new();
     for stored_factor in stored.factors {
         let factor = decode_factor(stored_factor)?;
+        let imported_revision_value = if factor.lifecycle == Lifecycle::Revoked {
+            if stored.revocation_frontier == 0 {
+                return Err(DurableRegistryError::Corrupt);
+            }
+            stored.revocation_frontier
+        } else {
+            stored.revision
+        };
+        let imported_revision =
+            Revision::new(imported_revision_value).map_err(|_| DurableRegistryError::Corrupt)?;
         let mut event = LifecycleEvent {
-            revision,
+            revision: imported_revision,
             factor_id: factor.factor_id.clone(),
             kind: LifecycleEventKind::Imported,
             from: None,
@@ -1543,6 +1560,92 @@ mod tests {
                 .realization(&id("realization:legacy"))
                 .map(|record| record.active),
             Some(false)
+        );
+    }
+
+    #[test]
+    fn schema_v1_migration_preserves_older_revocation_frontier_after_later_mutation() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry-frontier");
+        std::fs::DirBuilder::new()
+            .mode(0o700)
+            .create(&root)
+            .expect("state dir");
+        let stored = StoredV1 {
+            schema: 1,
+            revision: 5,
+            lifecycle_frontier: 5,
+            revocation_frontier: 4,
+            maximum_records: 64,
+            factors: vec![
+                StoredFactor {
+                    factor_id: "factor:later-draft".to_owned(),
+                    proposer_id: "proposer:later".to_owned(),
+                    semantic_version: "v1".to_owned(),
+                    semantic_purpose: String::new(),
+                    authority_class: String::new(),
+                    eligible_objective_dimensions: Vec::new(),
+                    content_digest: digest("factor:later-draft").into_array(),
+                    source: 0,
+                    lifecycle: 0,
+                },
+                StoredFactor {
+                    factor_id: "factor:revoked-earlier".to_owned(),
+                    proposer_id: "proposer:revoked".to_owned(),
+                    semantic_version: "v1".to_owned(),
+                    semantic_purpose: String::new(),
+                    authority_class: String::new(),
+                    eligible_objective_dimensions: Vec::new(),
+                    content_digest: digest("factor:revoked-earlier").into_array(),
+                    source: 0,
+                    lifecycle: 3,
+                },
+            ],
+            realizations: Vec::new(),
+            bindings: Vec::new(),
+        };
+        let bytes = serde_json::to_vec(&stored).expect("serialize legacy state");
+        let path = root.join("registry.json");
+        let mut file = std::fs::OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .mode(0o600)
+            .open(path)
+            .expect("legacy state");
+        file.write_all(&bytes).expect("legacy bytes");
+        file.sync_all().expect("legacy fsync");
+        drop(file);
+
+        let durable = DurablePromptRegistry::open_state_dir(&root, 64).expect("migrate registry");
+        let registry = durable.registry().expect("registry");
+        assert_eq!(registry.revision().get(), 5);
+        assert_eq!(registry.lifecycle_frontier(), 5);
+        assert_eq!(registry.revocation_frontier(), 4);
+        assert_eq!(
+            registry
+                .factor(&id("factor:revoked-earlier"))
+                .map(|factor| factor.lifecycle),
+            Some(Lifecycle::Revoked)
+        );
+        assert_eq!(
+            registry
+                .factor(&id("factor:later-draft"))
+                .map(|factor| factor.lifecycle),
+            Some(Lifecycle::Draft)
+        );
+        let imported_revocation = registry
+            .lifecycle_events()
+            .iter()
+            .find(|event| event.factor_id == id("factor:revoked-earlier"))
+            .expect("imported revocation event");
+        assert_eq!(imported_revocation.revision.get(), 4);
+        drop(durable);
+
+        let reopened =
+            DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen migrated registry");
+        assert_eq!(
+            reopened.registry().expect("registry").revocation_frontier(),
+            4
         );
     }
 
