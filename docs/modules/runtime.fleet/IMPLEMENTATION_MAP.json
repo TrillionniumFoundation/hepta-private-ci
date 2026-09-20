@@ -42,7 +42,7 @@
           "command": "cargo test -p codex-hepta-fleet --lib"
         }
       ],
-      "sourceSemantics": "Admits an exact measured host observation only after final-use authority validation and durable generation publication.",
+      "sourceSemantics": "Admits an exact native host capacity measurement only after measurement-source identity, trusted measurement time/freshness, explicit uncertainty, exact payload and FinalUseAuthority validation, then publishes it as a durable generation.",
       "operation": "admit_host",
       "nativeSymbol": "pub fn admit_host_with_authority(",
       "sourcePath": "codex-rs/hepta-fleet/src/placement.rs",
@@ -168,9 +168,8 @@
     "codex-rs/hepta-fleet"
   ],
   "implementationHead": {
-    "commit": "80341daa330370233245a501cc1f39a40043944c",
-    "tree": "2dd1c208d64716adf11209a25f70086b079ce6df",
-    "meaning": "latest source-only stacked head before qualification/document projection"
+    "commit": "4f1d19c0d425bc211c12da70b24c3e6c9a28e7d8",
+    "meaning": "current-main source-only runtime.fleet closure head; verifier compares owner-root and composed-source Git object identities against current HEAD"
   },
   "sourceComposition": {
     "runtimeConsumer": {
@@ -180,7 +179,10 @@
     },
     "capacityObserver": {
       "path": "codex-rs/hepta-supervisor/src/host_capacity.rs",
-      "symbol": "observe_local_host_capacity_v1"
+      "symbol": "observe_local_host_capacity_v1",
+      "measurementSource": "runtime.supervisor.local-host-capacity.v1",
+      "trustedClock": "SystemTime",
+      "uncertainty": "explicit FleetResourceVectorV1 bound in FinalUse payload"
     },
     "grantRead": {
       "path": "codex-rs/hepta-fleet/src/runtime_use.rs",
