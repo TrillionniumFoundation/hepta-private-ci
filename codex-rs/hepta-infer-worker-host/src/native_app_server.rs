@@ -742,11 +742,7 @@ impl AppServerModelDriver {
             )
             .await;
         if let Err(reason) = result {
-            output.boundary_status = match reason.as_str() {
-                LOCAL_CANCELLED => NativeBoundaryStatus::Cancelled,
-                LOCAL_DEADLINE_ELAPSED => NativeBoundaryStatus::TimedOut,
-                _ => NativeBoundaryStatus::Quarantined,
-            };
+            output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason);
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -896,6 +892,14 @@ fn remaining_before(deadline_ms: u64) -> Result<Duration> {
 
 fn observation_budget_from(now_ms: u64, deadline_ms: u64) -> Duration {
     Duration::from_millis(deadline_ms.saturating_sub(now_ms))
+}
+
+fn classify_observation_failure(reason: &str) -> NativeBoundaryStatus {
+    match reason {
+        LOCAL_CANCELLED => NativeBoundaryStatus::Cancelled,
+        LOCAL_DEADLINE_ELAPSED => NativeBoundaryStatus::TimedOut,
+        _ => NativeBoundaryStatus::Quarantined,
+    }
 }
 
 fn validate_post_authority_fence(
