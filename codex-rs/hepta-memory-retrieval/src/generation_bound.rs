@@ -487,15 +487,14 @@ impl RecallPacketV1 {
                 if !ordered {
                     return Err(RecallErrorV1::NonCanonicalCollection("recall_selections"));
                 }
-            } else if let Some(engram) = &self.engram {
-                if engram
+            } else if let Some(engram) = &self.engram
+                && engram
                     .support_strength(&selection.record_id, selection.record_revision)
                     .is_none()
-                {
-                    return Err(RecallErrorV1::InvalidEngram(
-                        "selected record has no active engram support".to_string(),
-                    ));
-                }
+            {
+                return Err(RecallErrorV1::InvalidEngram(
+                    "selected record has no active engram support".to_string(),
+                ));
             }
             previous = Some(selection);
         }
