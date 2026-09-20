@@ -15,12 +15,12 @@ use std::collections::VecDeque;
 use std::error::Error as StdError;
 use std::fmt;
 use std::io::Error as IoError;
-use std::sync::atomic::AtomicU64;
-use std::sync::atomic::Ordering;
 use std::io::ErrorKind;
 use std::io::Result as IoResult;
 use std::sync::Arc;
 use std::sync::OnceLock;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use crate::AppServerEvent;
@@ -168,10 +168,18 @@ pub struct RemoteAppServerObservedEvent {
 }
 
 impl RemoteAppServerObservedEvent {
-    pub fn event(&self) -> &AppServerEvent { &self.event }
-    pub const fn connection_id(&self) -> u64 { self.connection_id }
-    pub fn server_version(&self) -> Option<&str> { self.server_version.as_deref() }
-    pub fn codex_home(&self) -> Option<&str> { self.codex_home.as_deref() }
+    pub fn event(&self) -> &AppServerEvent {
+        &self.event
+    }
+    pub const fn connection_id(&self) -> u64 {
+        self.connection_id
+    }
+    pub fn server_version(&self) -> Option<&str> {
+        self.server_version.as_deref()
+    }
+    pub fn codex_home(&self) -> Option<&str> {
+        self.codex_home.as_deref()
+    }
 
     #[cfg(feature = "test-support")]
     #[doc(hidden)]
@@ -181,7 +189,12 @@ impl RemoteAppServerObservedEvent {
         server_version: Option<String>,
         codex_home: Option<String>,
     ) -> Self {
-        Self { event, connection_id, server_version, codex_home }
+        Self {
+            event,
+            connection_id,
+            server_version,
+            codex_home,
+        }
     }
 }
 
@@ -261,12 +274,24 @@ pub struct RemoteAppServerObservedServerError {
 }
 
 impl RemoteAppServerObservedServerError {
-    pub fn method(&self) -> &str { &self.method }
-    pub fn request_id(&self) -> &RequestId { &self.request_id }
-    pub fn error(&self) -> &JSONRPCErrorError { &self.error }
-    pub const fn connection_id(&self) -> u64 { self.connection_id }
-    pub fn server_version(&self) -> Option<&str> { self.server_version.as_deref() }
-    pub fn codex_home(&self) -> Option<&str> { self.codex_home.as_deref() }
+    pub fn method(&self) -> &str {
+        &self.method
+    }
+    pub fn request_id(&self) -> &RequestId {
+        &self.request_id
+    }
+    pub fn error(&self) -> &JSONRPCErrorError {
+        &self.error
+    }
+    pub const fn connection_id(&self) -> u64 {
+        self.connection_id
+    }
+    pub fn server_version(&self) -> Option<&str> {
+        self.server_version.as_deref()
+    }
+    pub fn codex_home(&self) -> Option<&str> {
+        self.codex_home.as_deref()
+    }
 
     #[cfg(feature = "test-support")]
     #[doc(hidden)]
@@ -278,15 +303,30 @@ impl RemoteAppServerObservedServerError {
         server_version: Option<String>,
         codex_home: Option<String>,
     ) -> Self {
-        Self { method, request_id, error, connection_id, server_version, codex_home }
+        Self {
+            method,
+            request_id,
+            error,
+            connection_id,
+            server_version,
+            codex_home,
+        }
     }
 }
 
 #[derive(Debug)]
 pub enum RemoteObservedTypedRequestError {
-    Transport { method: String, source: IoError },
-    Server { observed: RemoteAppServerObservedServerError },
-    Deserialize { method: String, source: serde_json::Error },
+    Transport {
+        method: String,
+        source: IoError,
+    },
+    Server {
+        observed: RemoteAppServerObservedServerError,
+    },
+    Deserialize {
+        method: String,
+        source: serde_json::Error,
+    },
 }
 
 impl fmt::Display for RemoteObservedTypedRequestError {
@@ -298,7 +338,9 @@ impl fmt::Display for RemoteObservedTypedRequestError {
                 "{} failed: {} (code {})",
                 observed.method, observed.error.message, observed.error.code
             ),
-            Self::Deserialize { method, source } => write!(f, "{method} response decode error: {source}"),
+            Self::Deserialize { method, source } => {
+                write!(f, "{method} response decode error: {source}")
+            }
         }
     }
 }
@@ -922,11 +964,12 @@ impl RemoteAppServerClient {
                 codex_home: self.codex_home.clone(),
             },
         })?;
-        let response = serde_json::from_value(result)
-            .map_err(|source| RemoteObservedTypedRequestError::Deserialize {
+        let response = serde_json::from_value(result).map_err(|source| {
+            RemoteObservedTypedRequestError::Deserialize {
                 method: method.clone(),
                 source,
-            })?;
+            }
+        })?;
         Ok(RemoteAppServerObservedResponse {
             response,
             method,
