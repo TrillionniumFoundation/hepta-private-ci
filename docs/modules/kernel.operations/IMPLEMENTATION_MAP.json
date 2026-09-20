@@ -68,6 +68,21 @@
       ]
     },
     {
+      "operation": "owner_handoff",
+      "nativeSymbol": "DurableOperationStore::adopt_unsettled_generation",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "higher current owner generation; semantic identity unchanged",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::newer_generation_adopts_unsettled_dispatch_and_fences_predecessor",
+        "codex-rs/hepta-agentd/src/operations_host_tests.rs::newer_generation_reopen_reconciles_applied_destination_without_redispatch"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_handoff",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "observe_terminal",
       "nativeSymbol": "DurableOperationStore::observe_terminal",
       "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
@@ -126,8 +141,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Add executable Agentd configuration/control coverage proving configured AutomationCreate selects the durable operations host and survives reopen/reconciliation.",
-    "Run exact-head and deterministic synthetic-merge qualification for the composed durable candidate."
+    "Run exact-head and deterministic synthetic-merge qualification for the composed durable candidate and retain terminal receipts."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -173,16 +187,21 @@
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
       "symbol": "run",
       "semantics": "only explicit with_automation_operations configuration opens and generation-fences the per-Agent kernel-operations owner; no default authority or grant provider"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "symbol": "configured_runtime_routes_automation_create_through_durable_operations",
+      "semantics": "executable control-path proof that configured AutomationCreate selects the durable kernel.operations host and reaches a terminal source record"
     }
   ],
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/operations_host.rs",
-      "object": "323004a1636196894b2f78cf1bbb46f81978fffd"
+      "object": "19e8c07cb625ed2de70d68aff6ecdb2a1f3bf315"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "48dffa1863285e022802d747bb7a9dfca83d2fbf"
+      "object": "081d19c5425c4327d108b68fc940ca6ac3d0fe68"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
@@ -190,7 +209,7 @@
     },
     {
       "path": "codex-rs/hepta-operations",
-      "object": "9ffac0e0660efc98793fb2e4ae39fd0080b68aa7"
+      "object": "f7e4e664154b38ba5d818575752b86fa1826421a"
     },
     {
       "path": "codex-rs/hepta-operations/src/destination_dedupe.rs",
@@ -198,7 +217,7 @@
     },
     {
       "path": "codex-rs/hepta-operations/src/durable_store.rs",
-      "object": "936f67f6fd98dbe42e131b98a4c5343915ae16fb"
+      "object": "8662e450811a38ee972dcb84c9aaa338a1f825ff"
     },
     {
       "path": "codex-rs/hepta-operations/src/ledger.rs",
@@ -208,5 +227,11 @@
       "path": "codex-rs/hepta-operations/src/outbox.rs",
       "object": "2032888bb832f4f8e6f5085f34677a9fc1688794"
     }
-  ]
+  ],
+  "claimLevels": {
+    "target": "specified",
+    "referenceImplemented": true,
+    "productionImplemented": "durable_source_and_named_agentd_composition_implemented_not_activated",
+    "executionProved": false
+  }
 }
