@@ -3,10 +3,10 @@
   "schemaVersion": 3,
   "source": {
     "repository": "servo/servo",
-    "commit": "5cc5bd32d02619acdec5736055515e38c5840ce1",
-    "predecessorCommit": "84bcc9ac701874fa9819e5cdee06356b961d736c",
-    "qualificationState": "candidate_pending_exact_head",
-    "upstreamDeltaCommits": 239
+    "commit": "b5a1f5e6ec6f8685d40cd389802ced7abe4980f6",
+    "predecessorCommit": "5cc5bd32d02619acdec5736055515e38c5840ce1",
+    "qualificationState": "candidate_lock_generation_pending_exact_head",
+    "upstreamDeltaCommits": 13
   },
   "decision": {
     "embedderStrategy": "out_of_tree_hepta_worker_using_public_servo_embedding_api",
@@ -120,7 +120,9 @@
     "requiresGrantScopedEgressE2E": true,
     "requiresRedirectEscapeDenial": true,
     "requiresCrossProfileCookieIsolation": true,
-    "requiresBoundedResourceSoak": true
+    "requiresBoundedResourceSoak": true,
+    "requiresReviewedCommittedCandidateLock": true,
+    "currentCandidateLockCommitted": false
   },
   "deploymentEvidenceGate": {
     "workflow": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
@@ -163,15 +165,13 @@
     "docs/modules/browser.servo/SERVO_PIN_AUDIT.md"
   ],
   "openEvidence": [
-    "terminal-success exact-SHA selected-pin compile and generated/committed dependency receipt",
-    "review and commit generated Cargo.lock for the selected candidate pin",
-    "terminal-success reproducible worker artifact and SPDX-2.3 SBOM receipt",
-    "trusted target-host Linux namespace listener egress and host-filesystem qualification",
-    "cache and other persistent-storage isolation beyond the proved two-profile cookie oracle",
-    "macOS and Windows isolation equivalents when targeted",
-    "credential upload and download capability implementations if admitted later",
-    "trusted remote-system persisted-effect receipts for real business terminality",
-    "retained trusted-target soak/resource evidence beyond the bounded source oracle",
-    "independent deployment operator promotion and release acceptance"
+    "terminal-success exact-head generation of the b5a1 dependency lock candidate",
+    "review and commit the exact generated b5a1 Cargo.lock, then rerun the exact-head worker gate",
+    "terminal-success reproducible b5a1 worker artifact and SPDX-2.3 SBOM receipt",
+    "trusted target-host Linux namespace/listener/egress/host-filesystem/public-DNS/HTTPS qualification",
+    "retained cookie/localStorage/cache isolation, revocation-race and 32-cycle resource-soak evidence",
+    "trusted current remote-system persisted-effect receipts for real business terminality",
+    "macOS and Windows isolation equivalents only if those platforms enter product scope",
+    "independent deployment operator activation, promotion and release acceptance"
   ]
 }
