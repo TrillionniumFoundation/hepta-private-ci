@@ -14,6 +14,7 @@ use tokio::sync::Semaphore;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
+use crate::AGENTD_CONTROL_OVERLOAD_FRAME;
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
 use crate::AgentdError;
 use crate::AgentdPayload;
@@ -25,6 +26,7 @@ use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
+const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
@@ -61,7 +63,12 @@ impl AgentdControlServer {
                 accepted = self.listener.accept() => accepted?,
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
-                drop(stream);
+                let mut stream = stream;
+                let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
+                    stream.write_all(AGENTD_CONTROL_OVERLOAD_FRAME).await?;
+                    stream.shutdown().await
+                })
+                .await;
                 continue;
             };
             let state = Arc::clone(&self.state);
