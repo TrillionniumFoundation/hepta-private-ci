@@ -47,6 +47,11 @@ test("authenticated persisted receipt terminalizes only the exact durable identi
   const reconciler = new FilePersistedEffectReconciler(root, {
     observerId,
     verifyingKeyHex: keys.verifyingKeyHex,
+    minimumObserverGeneration: 3,
+    minimumObservedAtUnixMs: 1_700_000_000_000,
+    currentFrontierDigest: FRONTIER,
+    now: () => 1_800_000_000_100,
+    maxFutureSkewMs: 1_000,
   });
   const input = {
     profileId: "profile.1",
@@ -109,5 +114,16 @@ test("authenticated persisted receipt terminalizes only the exact durable identi
     reconciler.observe(input),
     /observer is not the configured authority/,
   );
+
+  for (const [mutation, pattern] of [
+    [{ observerGeneration: 2 }, /observer generation is stale/],
+    [{ observedAtUnixMs: 1_699_999_999_999 }, /observation time is stale/],
+    [{ frontierDigest: "5".repeat(64) }, /frontier is stale/],
+    [{ observedAtUnixMs: 1_800_000_001_101 }, /observation time is in the future/],
+  ]) {
+    const stale = signedReceipt({ ...unsigned, ...mutation }, keys.privateKey);
+    await writeFile(path, JSON.stringify(stale), { mode: 0o600 });
+    await assert.rejects(reconciler.observe(input), pattern);
+  }
   await rm(root, { recursive: true, force: true });
 });
