@@ -793,6 +793,52 @@ fn recovery_adopts_one_orphan_and_rejects_another() -> Result<(), SupervisorErro
 }
 
 #[test]
+fn recovery_replays_typed_drain_after_durable_draining_crash_cut() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut first_supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    first_supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(first_supervisor.tick(now), TickReport::default());
+
+    // Model the exact crash cut: the supervisor durably transitions the
+    // lifecycle to Draining, then dies before calling ManagedProcess::request_drain.
+    let running = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .expect("registered agent")
+        .lifecycle
+        .clone();
+    assert_eq!(running.lifecycle, AgentLifecycle::Running);
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        running.generation,
+        AgentLifecycle::Draining,
+    )?;
+    assert_eq!(control.counts(&fleet.first).0, 0);
+    drop(first_supervisor);
+
+    let (recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    assert_eq!(
+        control.counts(&fleet.first).0,
+        1,
+        "recovery must replay the typed Agentd drain instead of waiting to SIGTERM"
+    );
+    let snapshot = recovered.snapshot(&fleet.first).expect("recovered slot");
+    assert!(snapshot.active);
+    assert_eq!(
+        snapshot.runtime_phase,
+        Some(crate::ControlRuntimePhase::Draining)
+    );
+    Ok(())
+}
+
+#[test]
 fn recovery_closes_running_release_state_crash_window() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let release_id = ReleaseId::parse("release-after-crash")?;
