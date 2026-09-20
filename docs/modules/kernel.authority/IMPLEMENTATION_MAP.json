@@ -120,6 +120,20 @@
       "designOperation": "verify_enrolled_node_revocation_convergence",
       "mappingClass": "owner_native_verifier",
       "delegatedCallees": []
+    },
+    {
+      "operation": "verified_use_token_witness_v1",
+      "nativeSymbol": "VerifiedUseTokenWitnessV1",
+      "sourcePath": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
+      "state": "source_implemented_evidence_projection_not_authorization",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-contracts/src/verified_use_witness.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decision_and_audit_projection",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -190,16 +204,20 @@
       "object": "043ffd75a20c42935959a98d37f40e3d7229c407"
     },
     {
-      "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "582c596353f958c9285ce1a8dd2af252aa741b93"
-    },
-    {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "object": "ce3f31cfe3e71288f54aebd8325acd6c6bd35691"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
       "object": "9425c4410e655c76980b96bd504566b53b64d711"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "object": "582c596353f958c9285ce1a8dd2af252aa741b93"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
+      "object": "e1d1840ad3c0ddbb562176791e2d9041fad40705"
     },
     {
       "path": "codex-rs/hepta-fleet/src/authority_port.rs",
