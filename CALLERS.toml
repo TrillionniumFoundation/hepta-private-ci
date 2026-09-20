@@ -68,8 +68,8 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "ProductionDurableWriter::open_with_live_verifier", "CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier", "cognitive_mutation_capability"]
-forbidden = ["codex_hepta_memory::CognitiveStore", "AllowVerifier", "permit_all"]
+required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "ProductionDurableWriter::open_with_live_verifier", "CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier", "cognitive_mutation_capability", "production_mutation"]
+forbidden = ["codex_hepta_memory::CognitiveStore", "AllowVerifier", "permit_all", ".writer.store()"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"

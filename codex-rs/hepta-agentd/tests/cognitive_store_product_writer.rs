@@ -86,7 +86,7 @@ async fn agentd_product_host_commits_through_canonical_cognitive_store()
     assert!(!queued.replayed);
     assert!(!queued.external_effect);
 
-    let after = host.writer().store().recovery_anchor().await?;
+    let after = host.writer().recovery_anchor().await?;
     assert_ne!(after, before);
     host.writer().release().await?;
     drop(host);
@@ -166,7 +166,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         1,
     )
     .await?;
-    let recovered_anchor = host.writer().store().recovery_anchor().await?;
+    let recovered_anchor = host.writer().recovery_anchor().await?;
     assert_eq!(recovered_anchor, expected);
 
     let now = i64::try_from(now_unix_seconds()?)?;
@@ -198,7 +198,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     assert_eq!(written.memory.id.revision, 1);
     assert_eq!(written.source.revision, 1);
 
-    let cut_before_revoked_write = host.writer().store().recovery_anchor().await?;
+    let cut_before_revoked_write = host.writer().recovery_anchor().await?;
     authority_live.store(false, Ordering::SeqCst);
     let revoked_content = "This write must be rejected after live revocation.";
     let revoked_source = SourceDraft {
@@ -231,7 +231,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         .is_err()
     );
     assert_eq!(
-        host.writer().store().recovery_anchor().await?,
+        host.writer().recovery_anchor().await?,
         cut_before_revoked_write,
         "revoked authority must not advance the cognitive owner cut"
     );

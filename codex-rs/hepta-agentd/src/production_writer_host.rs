@@ -145,12 +145,12 @@ impl AgentdProductionWriterHost {
         draft: &MemoryDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, AgentdError> {
-        self.writer.verify_current_authority().await?;
-        Ok(self
-            .writer
-            .store()
-            .remember_with_kg(access, source, draft, facts)
-            .await?)
+        let mutation = self.production_mutation().ok_or_else(|| {
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
+        })?;
+        Ok(mutation.remember_with_kg(access, source, draft, facts).await?)
     }
 
     pub async fn correct_with_kg(
@@ -162,10 +162,12 @@ impl AgentdProductionWriterHost {
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, AgentdError> {
-        self.writer.verify_current_authority().await?;
-        Ok(self
-            .writer
-            .store()
+        let mutation = self.production_mutation().ok_or_else(|| {
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
+        })?;
+        Ok(mutation
             .correct_with_kg(
                 access,
                 memory_id,
@@ -185,10 +187,12 @@ impl AgentdProductionWriterHost {
         source: &SourceDraft,
         draft: &ForgetMemoryDraft,
     ) -> Result<CognitiveWriteReceipt, AgentdError> {
-        self.writer.verify_current_authority().await?;
-        Ok(self
-            .writer
-            .store()
+        let mutation = self.production_mutation().ok_or_else(|| {
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
+        })?;
+        Ok(mutation
             .forget_with_kg(access, memory_id, expected_revision, source, draft)
             .await?)
     }

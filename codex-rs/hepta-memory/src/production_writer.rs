@@ -566,7 +566,28 @@ impl ProductionDurableWriter {
         self.lease.generation()
     }
 
-    pub fn store(&self) -> &CognitiveStore {
+    /// Read-only owner identity exposed to host composition without leaking the
+    /// raw mutable CognitiveStore capability across crate boundaries.
+    pub fn owner_agent_id(&self) -> &AgentId {
+        self.store.owner_agent_id()
+    }
+
+    /// Read-only database path for qualification/evidence tooling. This does
+    /// not expose the mutable owner handle.
+    pub fn database_path(&self) -> &std::path::Path {
+        self.store.path()
+    }
+
+    /// Capture a read-only exact-cut witness for qualification/evidence. The
+    /// returned digest is not write authority and still requires independent
+    /// host authentication before a later writable recovery.
+    pub async fn recovery_anchor(
+        &self,
+    ) -> Result<crate::CognitiveRecoveryAnchor, crate::CognitiveStoreError> {
+        self.store.recovery_anchor().await
+    }
+
+    pub(crate) fn store(&self) -> &CognitiveStore {
         &self.store
     }
 
