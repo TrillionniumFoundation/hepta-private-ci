@@ -178,6 +178,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs): named caller terminal/cancellation/deadline/owner semantics.
 - [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs): reopen/no-replay and explicit pre-start rejection.
 - [codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs): signed exact-binding grant, denial, peer identity, and revocation rollback.
+- [codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs): launches the real Agentd/App Server product process, drives the named runtime.codex caller through a signed final-use grant into a mock Responses transport, and proves one physical provider request plus a durable terminal correlation receipt.
 
 In `codex-rs`, run `just test -p codex-hepta-codex-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md) separately labels target acceptance designs.
 
