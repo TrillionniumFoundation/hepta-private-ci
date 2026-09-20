@@ -7,12 +7,18 @@
 #![forbid(unsafe_code)]
 
 mod evaluated_shadow;
+mod ndu_stochastic_admission;
 
 pub use evaluated_shadow::EvaluatedShadowError;
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+pub use ndu_stochastic_admission::NduStochasticAdmissionError;
+pub use ndu_stochastic_admission::NduStochasticAdmissionReceiptV1;
+pub use ndu_stochastic_admission::NduStochasticAdmissionRequestV1;
+pub use ndu_stochastic_admission::admit_ndu_stochastic_candidate_v1;
+pub use ndu_stochastic_admission::canonical_ndu_stochastic_solver_digest_v1;
 
 mod capability_snapshot;
 
