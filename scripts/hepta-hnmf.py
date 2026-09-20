@@ -132,8 +132,11 @@ CANONICAL_RUST_TOKENS = [
 ]
 
 REFERENCE_RUST_TOKENS = [
-    "pub enum ReferenceModalityKind",
-    "pub enum ReferenceEngramPopulation",
+    "ModalityKindV1 as ReferenceModalityKind",
+    "EngramPopulationV1 as ReferenceEngramPopulation",
+    "PrivacyClassV1 as ReferencePrivacyClass",
+    "SynapseRelationV1 as ReferenceSynapseRelation",
+    "pub fn from_canonical",
     "pub struct ReferenceEventFeatures",
     "pub struct ReferenceEngramState",
     "pub struct ReferenceSynapseState",
@@ -156,6 +159,10 @@ REFERENCE_RUST_TOKENS = [
 ]
 
 FORBIDDEN_REFERENCE_CONTRACT_TOKENS = [
+    "pub enum ReferenceModalityKind",
+    "pub enum ReferenceEngramPopulation",
+    "pub enum ReferenceSynapseRelation",
+    "pub enum ReferencePrivacyClass",
     "pub enum ModalityKind",
     "pub enum EngramPopulation",
     "pub enum SynapseRelation",
