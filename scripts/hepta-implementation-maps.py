@@ -383,23 +383,31 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
             policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
             if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
                 failures.append(f"{mid}: unknown source identity policy")
-            elif policy == "candidate_or_exact_observation_v1":
-                if source_base == candidate_source_base:
-                    candidate_bound_maps += 1
-                elif row.get("observedAtHead") is not None:
-                    # validate_observed_source below proves that the recorded
-                    # owner-source commit/tree is in current history and that
-                    # every declared observed path is byte-unchanged through
-                    # the current candidate. This is the non-self-referential
-                    # exact-source form for tracked implementation maps.
+            elif policy == "legacy_shared_batch":
+                source_bases.add((source_base["commit"], source_base["tree"]))
+            elif source_base == candidate_source_base:
+                candidate_bound_maps += 1
+            else:
+                observed = row.get("observedAtHead")
+                observed_identity = (
+                    {
+                        "commit": observed.get("commit"),
+                        "tree": observed.get("tree"),
+                    }
+                    if isinstance(observed, dict)
+                    else None
+                )
+                if source_base == observed_identity:
+                    # validate_observed_source below proves that this exact
+                    # owner-source commit/tree is in current history and every
+                    # declared observed path is byte-unchanged through HEAD.
                     exact_observed_fallback_maps += 1
                 else:
                     failures.append(
-                        f"{mid}: stale source base without exact observed source"
+                        f"{mid}: source base is neither current candidate nor exact observed source"
                     )
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
