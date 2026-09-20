@@ -14,7 +14,15 @@ use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::time::timeout;
 
+use crate::AGENTD_CONTROL_OVERLOAD_FRAME;
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
+use crate::AGENTD_OVERLOAD_RETRY_AFTER_MS;
+use crate::AgentContextAttachment;
+use crate::AgentRunCancellation;
+use crate::AgentRunPhase;
+use crate::AgentRunReceipt;
+use crate::AgentRunRecovery;
+use crate::AgentRunSnapshot;
 use crate::AgentdCapabilitySet;
 use crate::AgentdError;
 use crate::AgentdPayload;
@@ -187,6 +195,146 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::Events(events) => Ok(events),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_start(
+        &self,
+        snapshot: AgentRunSnapshot,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_start(
+                self.request_id(),
+                self.spawn_generation,
+                snapshot,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_attach_context(
+        &self,
+        expected_revision: u64,
+        attachment: AgentContextAttachment,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_attach_context(
+                self.request_id(),
+                self.spawn_generation,
+                expected_revision,
+                attachment,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_mark_dispatched(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_mark_dispatched(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_cancel(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    ) -> Result<AgentRunCancellation, AgentdError> {
+        match self
+            .send(AgentdRequest::run_cancel(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                reason,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunCancellation(cancellation) => Ok(cancellation),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_observe_terminal(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        phase: AgentRunPhase,
+        terminal_observed: bool,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_observe_terminal(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                phase,
+                terminal_observed,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_status(
+        &self,
+        run_id: String,
+    ) -> Result<Option<AgentRunReceipt>, AgentdError> {
+        match self
+            .send(AgentdRequest::run_status(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunStatus { run } => Ok(run),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_recover_indeterminate(
+        &self,
+        recovery: AgentRunRecovery,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_recover_indeterminate(
+                self.request_id(),
+                self.spawn_generation,
+                recovery,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
             payload => unexpected(payload),
         }
     }
@@ -366,6 +514,11 @@ impl AgentdClient {
             return Err(AgentdError::Protocol(
                 "agentd returned an invalid bounded response frame".to_string(),
             ));
+        }
+        if response_bytes.as_slice() == AGENTD_CONTROL_OVERLOAD_FRAME {
+            return Err(AgentdError::Overloaded {
+                retry_after_ms: AGENTD_OVERLOAD_RETRY_AFTER_MS,
+            });
         }
         let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
         if response.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
