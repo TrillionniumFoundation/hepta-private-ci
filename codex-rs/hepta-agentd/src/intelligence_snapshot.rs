@@ -204,7 +204,9 @@ impl CapabilityTrustFileV3 {
             || snapshot.revocation_frontier_digest() != revocations
             || identity.spawn_generation == 0
         {
-            return Err(invalid("current capability trust frontier does not match snapshot"));
+            return Err(invalid(
+                "current capability trust frontier does not match snapshot",
+            ));
         }
         Ok(())
     }
