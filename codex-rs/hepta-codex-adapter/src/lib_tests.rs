@@ -34,6 +34,7 @@ pub(super) fn product_intent() -> CodexOperationIntent {
         app_server_binding: Some(AppServerRequestBinding {
             source_admission_digest: digest(b"durable-source-admission"),
             agent_generation: Generation::new(7).expect("generation"),
+            session_id: id("session:test"),
             protocol_id: id(APP_SERVER_V2_PROTOCOL_ID),
             app_server_version: SERVER_VERSION.to_string(),
             codex_home_digest: digest(CODEX_HOME.as_bytes()),
@@ -152,6 +153,10 @@ fn request_digest_binds_source_generation_and_transport_connection() {
         .as_mut()
         .unwrap()
         .agent_generation = Generation::new(8).unwrap();
+    assert_ne!(baseline, request_digest(&changed));
+
+    let mut changed = intent.clone();
+    changed.app_server_binding.as_mut().unwrap().session_id = id("session:other");
     assert_ne!(baseline, request_digest(&changed));
 
     let mut changed = intent;
