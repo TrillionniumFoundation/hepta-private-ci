@@ -25,7 +25,7 @@ use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
 use serde::Serialize;
 
-pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 3;
+pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// Version for the transport-only host turn authority witness.  This type is
 /// deliberately not an authority grant and is not consumed by the Agentd
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
@@ -126,6 +126,15 @@ impl AgentdRequest {
             request_id,
             spawn_generation,
             method: AgentdMethod::Lifecycle,
+        }
+    }
+
+    pub fn readiness(request_id: u64, spawn_generation: u64) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::Readiness,
         }
     }
 
@@ -274,6 +283,7 @@ pub enum AgentdMethod {
     Capabilities,
     Health,
     Lifecycle,
+    Readiness,
     Drain,
     SessionIngress,
     AuthBusText {
@@ -337,9 +347,8 @@ pub enum AgentdPayload {
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
-    DrainAccepted {
-        admission_stopped: bool,
-    },
+    Readiness(ReadinessSnapshot),
+    Drain(DrainSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
@@ -412,6 +421,22 @@ pub struct LifecycleSnapshot {
     pub lifecycle: AgentLifecycle,
     pub app_server_ready: bool,
     pub fenced: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ReadinessSnapshot {
+    pub critical_stores_ready: bool,
+    pub revocation_ready: bool,
+    pub required_ports_ready: bool,
+    pub admission_open: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DrainSnapshot {
+    pub admission_stopped: bool,
+    pub drain_accepted: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
