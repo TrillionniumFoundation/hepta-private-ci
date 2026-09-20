@@ -704,6 +704,7 @@ impl AgentRunCoordinator {
         &self,
         run_id: &str,
         episode_id: &StableId,
+        expected_decision_event_digest: Digest32,
         expected_ledger_head: Digest32,
     ) -> Result<(), AgentRunError> {
         let record = self.runs.get(run_id).ok_or(AgentRunError::RunNotFound)?;
@@ -711,7 +712,10 @@ impl AgentRunCoordinator {
             .learning_decision
             .as_ref()
             .ok_or(AgentRunError::LearningDecisionBindingRequired)?;
-        if &binding.episode_id != episode_id || binding.chain_digest != expected_ledger_head {
+        if &binding.episode_id != episode_id
+            || binding.event_digest != expected_decision_event_digest
+            || binding.chain_digest != expected_ledger_head
+        {
             return Err(AgentRunError::LearningDecisionBindingMismatch);
         }
         Ok(())
@@ -960,6 +964,7 @@ impl AgentRunCoordinator {
         self.require_learning_closure_binding(
             run_id,
             &closure.episode_id,
+            closure.expected_decision_event_digest,
             closure.expected_ledger_head,
         )
         .map_err(IntelligenceTerminalClosureErrorV3::Runtime)?;
