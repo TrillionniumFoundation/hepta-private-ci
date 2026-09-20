@@ -22,9 +22,9 @@ use sha2::Digest;
 use sha2::Sha256;
 use thiserror::Error;
 
-pub const RELEASE_TRANSACTION_SCHEMA_VERSION: u32 = 1;
+pub const RELEASE_TRANSACTION_SCHEMA_VERSION: u32 = 2;
 pub const RELEASE_TRANSACTION_FILE: &str = "supervisor-release-transaction.json";
-const TRANSACTION_DOMAIN: &[u8] = b"hepta-supervisor:release-transaction:v1";
+const TRANSACTION_DOMAIN: &[u8] = b"hepta-supervisor:release-transaction:v2";
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -71,6 +71,8 @@ pub struct DurableReleaseTransaction {
     pub grant_sha256: Option<Sha256Digest>,
     pub authority_epoch: Option<u64>,
     pub phase: ReleaseTransactionPhase,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recovery_decision_sha256: Option<Sha256Digest>,
     pub transaction_sha256: Sha256Digest,
 }
 
@@ -136,6 +138,7 @@ impl DurableReleaseTransaction {
             grant_sha256: None,
             authority_epoch: None,
             phase: ReleaseTransactionPhase::Prepared,
+            recovery_decision_sha256: None,
             transaction_sha256: Sha256Digest::for_bytes(b"pending"),
         };
         value.transaction_sha256 = value.compute_digest()?;
@@ -149,6 +152,37 @@ impl DurableReleaseTransaction {
     ) -> Result<Self, ReleaseTransactionError> {
         let mut value = Self {
             phase,
+            recovery_decision_sha256: if matches!(
+                phase,
+                ReleaseTransactionPhase::Committed | ReleaseTransactionPhase::RolledBack
+            ) {
+                self.recovery_decision_sha256.clone()
+            } else {
+                None
+            },
+            ..self.clone()
+        };
+        value.transaction_sha256 = value.compute_digest()?;
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn with_recovery_resolution(
+        &self,
+        phase: ReleaseTransactionPhase,
+        decision_sha256: Sha256Digest,
+    ) -> Result<Self, ReleaseTransactionError> {
+        if !matches!(
+            phase,
+            ReleaseTransactionPhase::Committed | ReleaseTransactionPhase::RolledBack
+        ) {
+            return Err(ReleaseTransactionError::Invalid(
+                "recovery decision may only terminalize a release transaction".to_string(),
+            ));
+        }
+        let mut value = Self {
+            phase,
+            recovery_decision_sha256: Some(decision_sha256),
             ..self.clone()
         };
         value.transaction_sha256 = value.compute_digest()?;
@@ -191,6 +225,21 @@ impl DurableReleaseTransaction {
                 "release transaction fields are outside their bounds".to_string(),
             ));
         }
+        if let Some(digest) = self.recovery_decision_sha256.as_ref() {
+            Sha256Digest::parse(digest.as_str().to_string()).map_err(|_| {
+                ReleaseTransactionError::Invalid(
+                    "release recovery decision digest is malformed".to_string(),
+                )
+            })?;
+            if !matches!(
+                self.phase,
+                ReleaseTransactionPhase::Committed | ReleaseTransactionPhase::RolledBack
+            ) {
+                return Err(ReleaseTransactionError::Invalid(
+                    "non-terminal release transaction cannot bind a recovery decision".to_string(),
+                ));
+            }
+        }
         for binding in [self.source_binding.as_ref(), self.target_binding.as_ref()]
             .into_iter()
             .flatten()
@@ -228,6 +277,7 @@ impl DurableReleaseTransaction {
             &self.grant_sha256,
             self.authority_epoch,
             self.phase,
+            &self.recovery_decision_sha256,
         ))?;
         Ok(Sha256Digest::from_sha256_output(Sha256::digest(
             [TRANSACTION_DOMAIN, encoded.as_slice()].concat(),
