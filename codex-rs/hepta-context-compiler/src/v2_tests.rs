@@ -95,10 +95,24 @@ impl ContextProviderDeliveryVerifierV2 for TestDeliveryVerifier {
 
     fn verify_delivery(
         &self,
-        _receipt: &ProviderInvocationReceipt,
+        receipt: &ProviderInvocationReceipt,
+        preparation: &ContextDeliveryPreparationV2,
     ) -> Result<ContextProviderDeliveryDecisionV2, String> {
         if !self.accept {
             return Err("delivery evidence rejected".to_string());
+        }
+        let Some(witness) = receipt
+            .intent
+            .binding
+            .ephemeral_input_witness_sha256
+            .as_ref()
+        else {
+            return Err("provider input witness missing".to_string());
+        };
+        let expected_witness =
+            Sha256Digest::for_bytes(preparation.preparation_digest().as_array());
+        if witness != &expected_witness {
+            return Err("delivery witness rejected".to_string());
         }
         Ok(ContextProviderDeliveryDecisionV2 {
             evidence_digest: digest("delivery-evidence"),
@@ -211,12 +225,8 @@ fn candidate(
 ) -> (ContextCandidateV2, ContextRealizedItemV2) {
     let content = content_bytes(item_id, token_count);
     let tokenizer = ByteTokenizer;
-    let tokenization = TokenizationReceiptV2::from_exact_bytes(
-        id(item_id),
-        &content,
-        &tokenizer,
-    )
-    .unwrap_or_else(|error| panic!("valid tokenization: {error}"));
+    let tokenization = TokenizationReceiptV2::from_exact_bytes(id(item_id), &content, &tokenizer)
+        .unwrap_or_else(|error| panic!("valid tokenization: {error}"));
     let source_digest = digest(&format!("source:{item_id}"));
     let record = ContextAdmissionRecordV2::new(
         id(&format!("admission:{item_id}")),
@@ -254,10 +264,7 @@ fn candidate(
     )
 }
 
-fn request(
-    candidates: Vec<ContextCandidateV2>,
-    token_budget: u64,
-) -> ContextCompilationRequestV2 {
+fn request(candidates: Vec<ContextCandidateV2>, token_budget: u64) -> ContextCompilationRequestV2 {
     ContextCompilationRequestV2 {
         compilation_id: id("compilation:1"),
         objective_digest: digest("objective"),
@@ -390,7 +397,10 @@ fn mandatory_group_policy_is_bound_even_when_selected_set_is_identical() {
         ungrouped.receipt().mandatory_groups_digest(),
         grouped.receipt().mandatory_groups_digest()
     );
-    assert_ne!(ungrouped.receipt().receipt_digest(), grouped.receipt().receipt_digest());
+    assert_ne!(
+        ungrouped.receipt().receipt_digest(),
+        grouped.receipt().receipt_digest()
+    );
 }
 
 #[test]
@@ -516,8 +526,7 @@ fn attachment_revalidation_rejects_compile_then_revoke_toc_tou() {
         &ByteTokenizer,
     )
     .unwrap_or_else(|error| panic!("valid serialization: {error}"));
-    let revoked_snapshot =
-        verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
+    let revoked_snapshot = verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
 
     assert_eq!(
         build_attachment(
@@ -682,12 +691,18 @@ fn provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_deli
     )
     .unwrap_or_else(|error| panic!("valid delivery evidence: {error}"));
 
-    assert_eq!(delivery.disposition(), ContextDeliveryDispositionV2::Delivered);
+    assert_eq!(
+        delivery.disposition(),
+        ContextDeliveryDispositionV2::Delivered
+    );
     assert_eq!(
         delivery.payload_digest(),
         Digest32::of_bytes(serialization.payload())
     );
-    assert_eq!(delivery.preparation_digest(), preparation.preparation_digest());
+    assert_eq!(
+        delivery.preparation_digest(),
+        preparation.preparation_digest()
+    );
     assert_eq!(
         delivery.admission_snapshot_observed_unix_ms(),
         snapshot.observed_unix_ms()
@@ -825,7 +840,9 @@ fn provider_input_witness_must_bind_current_pre_dispatch_revalidation() {
             &delivery_verifier(),
             25,
         ),
-        Err(ContextCompilerV2Error::DeliveryMismatch)
+        Err(ContextCompilerV2Error::ProviderEvidenceInvalid(
+            "delivery witness rejected".to_string()
+        ))
     );
 }
 
@@ -1034,8 +1051,7 @@ fn delivery_preparation_revalidates_and_rejects_revocation_after_attachment() {
         id("attachment:1"),
     )
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
-    let revoked_snapshot =
-        verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
+    let revoked_snapshot = verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
 
     assert_eq!(
         prepare_delivery_v2(
@@ -1154,7 +1170,9 @@ fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
         1,
         1_000,
     )
-    .unwrap_or_else(|_| panic!("secret test fixture admission record should be structurally valid"));
+    .unwrap_or_else(|_| {
+        panic!("secret test fixture admission record should be structurally valid")
+    });
     assert!(matches!(
         verify_admission_v2(secret_record, &snapshot, &verifier()),
         Err(ContextCompilerV2Error::SecretRejected(_))
