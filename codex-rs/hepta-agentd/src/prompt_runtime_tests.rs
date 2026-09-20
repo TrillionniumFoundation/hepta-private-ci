@@ -1,8 +1,42 @@
 use super::*;
 
+use std::collections::BTreeSet;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+use codex_hepta_context_compiler::ContextModelProfileV2;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_prompt_optimizer::PromptAuthenticationErrorV1;
+use codex_hepta_prompt_optimizer::PromptCandidateEnumerationRequestV1;
+use codex_hepta_prompt_optimizer::PromptCostBreakdownV1;
+use codex_hepta_prompt_optimizer::PromptExerciseBoundaryV1;
+use codex_hepta_prompt_optimizer::PromptExerciseRequestV1;
+use codex_hepta_prompt_optimizer::PromptPortfolioSelectionRequestV1;
+use codex_hepta_prompt_optimizer::PromptPricingEvidenceAuthenticatorV1;
+use codex_hepta_prompt_optimizer::PromptPricingEvidenceV1;
+use codex_hepta_prompt_optimizer::PromptRelationSourceAuthenticatorV1;
+use codex_hepta_prompt_optimizer::PromptRelationSourceV1;
+use codex_hepta_prompt_optimizer::enumerate_factors_v1;
+use codex_hepta_prompt_optimizer::exercise_portfolio_v1;
+use codex_hepta_prompt_optimizer::price_factors_v1;
+use codex_hepta_prompt_optimizer::select_portfolio_v1;
+use codex_hepta_prompt_registry::FactorSource;
+use codex_hepta_prompt_registry::Lifecycle;
+use codex_hepta_prompt_registry::PromptFactor;
+use codex_hepta_prompt_registry::PromptModelTupleV2;
+use codex_hepta_prompt_registry::PromptRealizationBindingV2;
+use codex_hepta_prompt_registry::PromptRoleV2;
+use codex_hepta_prompt_registry::final_use_admission_binding;
+use codex_hepta_prompt_registry::final_use_realization_binding;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
@@ -454,4 +488,333 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
             })
             .is_err()
     );
+}
+
+
+struct AcceptPricingEvidence;
+
+impl PromptPricingEvidenceAuthenticatorV1 for AcceptPricingEvidence {
+    fn authenticate_pricing_evidence(
+        &self,
+        _evidence: &PromptPricingEvidenceV1,
+        _now_unix_ms: u64,
+    ) -> Result<(), PromptAuthenticationErrorV1> {
+        Ok(())
+    }
+}
+
+struct AcceptPromptRelations;
+
+impl PromptRelationSourceAuthenticatorV1 for AcceptPromptRelations {
+    fn authenticate_relation_source(
+        &self,
+        _source: &PromptRelationSourceV1,
+        _objective_digest: Digest32,
+        _now_unix_ms: u64,
+    ) -> Result<(), PromptAuthenticationErrorV1> {
+        Ok(())
+    }
+}
+
+#[test]
+fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
+    let registry_root = temporary.path().join("prompt-registry");
+    let runtime_root = temporary.path().join("prompt-runtime");
+    let authority_root = temporary.path().join("prompt-authority");
+    let pipeline = AgentdPromptPipelineOwner::open_state_dirs(&registry_root, &runtime_root, 64)
+        .unwrap_or_else(|error| panic!("pipeline owner: {error}"));
+    let payload = b"Inspect evidence before mutation.";
+    let factor = PromptFactor {
+        factor_id: id("factor:agentd-product"),
+        proposer_id: id("proposer:agentd-product"),
+        semantic_version: id("v1"),
+        semantic_purpose: "inspect evidence before mutation".to_owned(),
+        authority_class: "registered_prompt_factor".to_owned(),
+        eligible_objective_dimensions: vec![id("dimension:truth")],
+        content_digest: digest("factor:agentd-product"),
+        source: FactorSource::GovernedInternal,
+        lifecycle: Lifecycle::Draft,
+    };
+    let signing_key = SigningKey::from_bytes(&[61; 32]);
+    let authority = FinalUseAuthority::open_state_dir(
+        &authority_root,
+        "review-authority:agentd-prompt".to_owned(),
+        signing_key.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )
+    .unwrap_or_else(|error| panic!("authority: {error}"));
+    let wall_now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_else(|error| panic!("clock: {error}"))
+        .as_millis() as u64;
+    let reviewer = id("reviewer:agentd-prompt");
+    let admission_scope = digest("scope:agentd-prompt-admission");
+    let admission_evidence = digest("evidence:agentd-prompt");
+    let admission_binding =
+        final_use_admission_binding(&factor, &reviewer, admission_scope, admission_evidence)
+            .unwrap_or_else(|error| panic!("admission binding: {error}"));
+    let admission_grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:agentd-prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "grant:agentd-prompt-admission".to_owned(),
+        nonce: [62; 32],
+        binding: admission_binding,
+        not_before_unix_ms: wall_now.saturating_sub(1_000),
+        expires_at_unix_ms: wall_now + 30_000,
+    };
+    let signed_admission = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(
+                &admission_grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("admission signing bytes: {error}")),
+            )
+            .to_bytes()
+            .to_vec(),
+        grant: admission_grant,
+    };
+
+    let tuple = PromptModelTupleV2 {
+        model_id: id("model:agentd-product"),
+        model_version: "2026-09-20".to_owned(),
+        model_digest: digest("model:agentd-product"),
+        tokenizer_digest: digest("tokenizer:agentd-product"),
+        template_digest: digest("template:agentd-product"),
+        tool_schema_digest: digest("tool-schema:agentd-product"),
+        context_profile_digest: digest("context-profile:agentd-product"),
+        locale_id: id("locale:en-US"),
+    };
+    let realization = PromptRealizationBindingV2 {
+        realization_id: id("realization:agentd-product"),
+        factor_id: factor.factor_id.clone(),
+        model_id: tuple.model_id.clone(),
+        model_version: tuple.model_version.clone(),
+        model_digest: tuple.model_digest,
+        tokenizer_digest: tuple.tokenizer_digest,
+        template_digest: tuple.template_digest,
+        tool_schema_digest: tuple.tool_schema_digest,
+        context_profile_digest: tuple.context_profile_digest,
+        locale_id: tuple.locale_id.clone(),
+        role: PromptRoleV2::DeveloperInstruction,
+        payload_digest: Digest32::of_bytes(payload),
+        token_cost: 4,
+        expires_unix_ms: None,
+    };
+    let publisher = id("publisher:agentd-prompt");
+    let realization_scope = digest("scope:agentd-prompt-realization");
+
+    {
+        let mut registry = pipeline
+            .registry
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        registry
+            .register_factor(factor.clone())
+            .unwrap_or_else(|error| panic!("register factor: {error}"));
+        registry
+            .admit_factor_final_use(
+                &authority,
+                &signed_admission,
+                &factor.factor_id,
+                admission_scope,
+                admission_evidence,
+            )
+            .unwrap_or_else(|error| panic!("admit factor: {error}"));
+        let admitted_factor = registry
+            .registry()
+            .unwrap_or_else(|error| panic!("registry read: {error}"))
+            .factor(&factor.factor_id)
+            .cloned()
+            .unwrap_or_else(|| panic!("admitted factor missing"));
+        let realization_binding = final_use_realization_binding(
+            &admitted_factor,
+            &publisher,
+            realization_scope,
+            &realization,
+            None,
+        )
+        .unwrap_or_else(|error| panic!("realization binding: {error}"));
+        let realization_grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "review-authority:agentd-prompt".to_owned(),
+            authority_epoch: 1,
+            grant_id: "grant:agentd-prompt-realization".to_owned(),
+            nonce: [63; 32],
+            binding: realization_binding,
+            not_before_unix_ms: wall_now.saturating_sub(1_000),
+            expires_at_unix_ms: wall_now + 30_000,
+        };
+        let signed_realization = SignedFinalUseGrant {
+            signature: signing_key
+                .sign(
+                    &realization_grant
+                        .signing_bytes()
+                        .unwrap_or_else(|error| panic!("realization signing bytes: {error}")),
+                )
+                .to_bytes()
+                .to_vec(),
+            grant: realization_grant,
+        };
+        registry
+            .register_realization_payload_final_use_v2(
+                &authority,
+                &signed_realization,
+                &publisher,
+                realization_scope,
+                realization,
+                payload.to_vec(),
+                None,
+            )
+            .unwrap_or_else(|error| panic!("register realization: {error}"));
+    }
+
+    let logical_now = 100_u64;
+    let adapter = pipeline
+        .candidate_adapter(
+            digest("generation:agentd-product"),
+            &tuple,
+            logical_now,
+            vec![factor.factor_id.clone()],
+            8,
+        )
+        .unwrap_or_else(|error| panic!("candidate adapter: {error}"));
+    let candidate_set = enumerate_factors_v1(
+        PromptCandidateEnumerationRequestV1 {
+            enumeration_id: id("enumeration:agentd-product"),
+            objective_digest: digest("objective:agentd-product"),
+            state_digest: digest("state:agentd-product"),
+            maximum_candidates: 8,
+            now_unix_ms: logical_now,
+            source: adapter.source().clone(),
+        },
+        &adapter,
+    )
+    .unwrap_or_else(|error| panic!("enumerate: {error}"));
+    let candidate = candidate_set
+        .candidates
+        .first()
+        .unwrap_or_else(|| panic!("candidate missing"));
+    let mut evidence = PromptPricingEvidenceV1 {
+        candidate_id: candidate.candidate_id.clone(),
+        candidate_binding_digest: candidate.binding_digest,
+        objective_digest: candidate_set.objective_digest,
+        state_digest: candidate_set.state_digest,
+        model_profile_digest: candidate_set.model_profile_digest,
+        causal_incremental_utility: FixedQ32::ONE,
+        confidence: FixedQ32::ONE,
+        costs: PromptCostBreakdownV1 {
+            tokens: FixedQ32::ZERO,
+            latency: FixedQ32::ZERO,
+            context_crowding: FixedQ32::ZERO,
+            instruction_interference: FixedQ32::ZERO,
+            privacy: FixedQ32::ZERO,
+            instability: FixedQ32::ZERO,
+            future_context_option_value: FixedQ32::ZERO,
+        },
+        utility_unit_digest: digest("utility-unit:agentd"),
+        cost_profile_digest: digest("cost-profile:agentd"),
+        support_digest: digest("support:agentd"),
+        valid_until_unix_ms: logical_now + 10_000,
+        evidence_digest: Digest32::ZERO,
+    };
+    evidence.evidence_digest = evidence.compute_evidence_digest();
+    let pricing = price_factors_v1(
+        &candidate_set,
+        vec![evidence],
+        logical_now,
+        &AcceptPricingEvidence,
+    )
+    .unwrap_or_else(|error| panic!("price: {error}"));
+
+    let mut relations = PromptRelationSourceV1 {
+        producer_id: id("knowledge.graph"),
+        candidate_set_digest: candidate_set.candidate_set_digest,
+        generation_vector_digest: candidate_set.generation_vector_digest,
+        hard_constraint_completeness_digest: digest("constraints:complete"),
+        interactions: Vec::new(),
+        hard_constraints: Vec::new(),
+        source_digest: Digest32::ZERO,
+    };
+    relations.source_digest = relations.compute_source_digest();
+    let portfolio = select_portfolio_v1(
+        &candidate_set,
+        &pricing,
+        PromptPortfolioSelectionRequestV1 {
+            selection_id: id("selection:agentd-product"),
+            token_budget: 128,
+            maximum_selected_factors: 1,
+            maximum_steps: 8,
+            now_unix_ms: logical_now,
+            relations: relations.clone(),
+        },
+        &AcceptPromptRelations,
+    )
+    .unwrap_or_else(|error| panic!("select: {error}"));
+    let exercise_request = PromptExerciseRequestV1 {
+        exercise_id: id("exercise:agentd-product"),
+        boundary: PromptExerciseBoundaryV1::BeforeModelOrToolDispatch,
+        current_state_digest: candidate_set.state_digest,
+        now_unix_ms: logical_now,
+        current_source: adapter.source().clone(),
+    };
+    let exercise = exercise_portfolio_v1(
+        &candidate_set,
+        &pricing,
+        &relations,
+        &portfolio,
+        exercise_request.clone(),
+        &adapter,
+    )
+    .unwrap_or_else(|error| panic!("exercise: {error}"));
+
+    let disposition = pipeline
+        .compile_and_stage(
+            "thread:product",
+            "turn:product",
+            "gpt-test",
+            wall_now + 60_000,
+            &adapter,
+            &candidate_set,
+            &pricing,
+            &relations,
+            &portfolio,
+            &exercise,
+            &exercise_request,
+            codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
+                compilation_id: id("compilation:agentd-product"),
+                serialization_id: id("serialization:agentd-product"),
+                attachment_id: id("attachment:agentd-product"),
+                registry_model_tuple: tuple.clone(),
+                context_model_profile: ContextModelProfileV2 {
+                    model_digest: tuple.model_digest,
+                    tokenizer_digest: tuple.tokenizer_digest,
+                    template_digest: tuple.template_digest,
+                    tool_schema_digest: tuple.tool_schema_digest,
+                    maximum_context_tokens: 128,
+                },
+                now_unix_ms: logical_now,
+                token_budget: 128,
+                truncation_policy_digest: digest("truncation:agentd-product"),
+            },
+        )
+        .unwrap_or_else(|error| panic!("compile and stage: {error}"));
+    assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);
+
+    let runtime = pipeline.runtime_owner();
+    let staged = runtime
+        .prepare(PromptRuntimePrepareRequest {
+            thread_id: "thread:product".to_owned(),
+            turn_id: "turn:product".to_owned(),
+            model_context_window: Some(128),
+        })
+        .unwrap_or_else(|error| panic!("prepare staged product prompt: {error}"))
+        .unwrap_or_else(|| panic!("staged attachment missing"));
+    assert_eq!(staged.developer_fragments.len(), 1);
+    assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
 }
