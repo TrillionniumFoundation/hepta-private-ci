@@ -7,11 +7,11 @@
 - session-incarnation-fenced native operation identity;
 - durable pending-operation journal and crash/restart reconciliation without effect replay;
 - final-payload digesting inside the Rust shell rather than trusting a caller-supplied digest;
-- Ed25519-signed, short-lived platform grants bound to session, operation, action and final payload, with the trusted-key revocation snapshot reloaded before every effect;
+- kernel-owned `FinalUseAuthority` admission with durable single-use nonce consumption and live epoch/revocation revalidation immediately before OS entry;
 - explicit local platform policy plus narrow open/reveal/clipboard/notification adapters;
 - OS keyring storage for opaque session references and loopback gateway bearer capabilities through `codex-keyring-store`;
 - signed endpoint manifests plus authenticated `keyring_bearer_v1` gateway requests; the product shell refuses the legacy unauthenticated gateway mode;
-- signed stable-channel update verification, package and installed-predecessor digest fencing, staging, predecessor backup, separate updater activation and rollback;
+- signed stable-channel update verification, package and installed-predecessor digest fencing, UI staging, GUI-exit handoff to a separate updater helper, predecessor backup and rollback;
 - eframe/egui native window with runtime, operation, update and accessibility views;
 - AccessKit, native DPI scaling, keyboard focus order and English/Chinese shell strings;
 - a Windows/macOS/Linux merge-candidate matrix plus an exact-head Linux gate that build, lint, test, package, restart packaged binaries in self-test mode and emit **unsigned qualification receipts**.
@@ -51,13 +51,14 @@ The application fails closed unless all security-sensitive paths are explicit an
 cargo run --bin hepta-native -- \
   --endpoint-manifest /absolute/path/endpoint.json \
   --trusted-keys /absolute/path/trusted-keys.json \
+  --final-use-authority /absolute/path/final-use-authority.json \
   --state-dir /absolute/private/hepta-native-state \
   --allow-root /absolute/user-approved/root \
   --allow-clipboard \
   --allow-notifications
 ```
 
-`--allow-root`, clipboard and notification switches are local policy ceilings only. They do **not** authorize an effect. Every effect still requires a valid signed `hepta.platform-grant.v1` for the exact session incarnation, operation and final payload.
+`--allow-root`, clipboard and notification switches are local policy ceilings only. They do **not** authorize an effect. Every effect requires an independently issued kernel `SignedFinalUseGrant`; the shell durably claims its nonce and consumes the resulting non-serializable `VerifiedUseToken` at the final OS boundary. If `--final-use-authority` is omitted, platform mutations are rejected before adapter entry. The current kernel durable final-use store is Unix-qualified only, so Windows builds remain read-only for platform effects until an equivalent Windows kernel store is implemented and qualified.
 
 For a headless packaging smoke check:
 
