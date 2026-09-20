@@ -95,9 +95,7 @@ holdout through `FencedFinalHoldoutOwnerV1`, and only then invokes the
 `FinalHoldoutProviderV1::release_after_consumption` boundary. Candidate and
 baseline metric intervals are derived from sealed `TemporalEvaluationReceipt`
 and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
-`MetricGateV1` intervals. The runner builds the signed qualification bundle
-itself and returns success only after `ProductQualificationEvidenceSinkV1`
-returns a nonzero durable publication digest.
+`MetricGateV1` intervals. The runner builds the signed qualification bundle itself and returns success only after `ProductQualificationEvidenceSinkV1` returns a nonzero durable publication digest. The resulting `ProductQualificationReceiptV1` has a private integrity seal and binds the candidate, evaluator, objective, dataset, snapshot set, claim scope, signed decision and durable publication.
 
 ## Canonical product consumer
 

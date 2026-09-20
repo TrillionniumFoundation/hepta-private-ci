@@ -305,10 +305,43 @@ pub enum ProductTimingEvidenceV1<'a> {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductQualificationReceiptV1 {
     pub temporal_execution_digest: Digest32,
+    pub candidate_id: StableId,
+    pub evaluator: AuthenticatedPrincipalV1,
+    pub objective_digest: Digest32,
+    pub dataset_digest: Digest32,
+    pub snapshot_ids: Vec<StableId>,
+    pub claim_scope: EvaluationClaimScopeV1,
     pub decision: SignedEvaluationDecisionV1,
     pub publication_digest: Digest32,
     pub evidence_digest: Digest32,
     pub authority: AuthorityPosture,
+    receipt_seal: Digest32,
+}
+
+impl ProductQualificationReceiptV1 {
+    pub fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
+        if self.temporal_execution_digest.is_zero()
+            || self.objective_digest.is_zero()
+            || self.dataset_digest.is_zero()
+            || self.publication_digest.is_zero()
+            || self.decision.decision.evidence_digest.is_zero()
+            || self.decision.trust_digest.is_zero()
+            || self.decision.authentication_digest.is_zero()
+            || self.snapshot_ids.is_empty()
+            || self.authority.grants_any()
+            || self.decision.decision.authority.grants_any()
+            || self.decision.decision.candidate_id != self.candidate_id
+        {
+            return Err(ProductEvaluationError::Integrity("qualification receipt"));
+        }
+        let expected = product_qualification_evidence_digest(self);
+        if self.evidence_digest != expected
+            || self.receipt_seal != product_qualification_seal(self)
+        {
+            return Err(ProductEvaluationError::Integrity("qualification receipt seal"));
+        }
+        Ok(())
+    }
 }
 
 pub struct ProductEvaluationRunnerV1<S> {
@@ -456,6 +489,12 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         sink: &mut dyn ProductQualificationEvidenceSinkV1,
     ) -> Result<ProductQualificationReceiptV1, ProductEvaluationError> {
         let bundle = self.qualification_bundle(temporal, context)?;
+        let candidate_id = bundle.candidate_id.clone();
+        let evaluator = bundle.evaluator.clone();
+        let objective_digest = bundle.objective_digest;
+        let dataset_digest = bundle.dataset_digest;
+        let snapshot_ids = bundle.snapshot_ids.clone();
+        let claim_scope = bundle.claim_scope;
         let roles = temporal.product_plan.metric_roles.clone();
         let decision = match timing {
             ProductTimingEvidenceV1::Qualification => {
@@ -486,23 +525,70 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         if publication_digest.is_zero() {
             return Err(ProductEvaluationError::Integrity("publication digest"));
         }
-        let mut bytes = b"hepta.intelligence-eval.product-qualification.v1".to_vec();
-        for digest in [
-            temporal.execution_digest,
-            decision.decision.evidence_digest,
-            decision.trust_digest,
-            decision.authentication_digest,
-            publication_digest,
-        ] {
-            bytes.extend_from_slice(digest.as_array());
-        }
-        Ok(ProductQualificationReceiptV1 {
+        let mut receipt = ProductQualificationReceiptV1 {
             temporal_execution_digest: temporal.execution_digest,
+            candidate_id,
+            evaluator,
+            objective_digest,
+            dataset_digest,
+            snapshot_ids,
+            claim_scope,
             decision,
             publication_digest,
-            evidence_digest: Digest32::of_bytes(&bytes),
+            evidence_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
-        })
+            receipt_seal: Digest32::ZERO,
+        };
+        receipt.evidence_digest = product_qualification_evidence_digest(&receipt);
+        receipt.receipt_seal = product_qualification_seal(&receipt);
+        receipt.validate_integrity()?;
+        Ok(receipt)
+    }
+}
+
+fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v2".to_vec();
+    for digest in [
+        receipt.temporal_execution_digest,
+        receipt.objective_digest,
+        receipt.dataset_digest,
+        receipt.decision.decision.evidence_digest,
+        receipt.decision.trust_digest,
+        receipt.decision.authentication_digest,
+        receipt.publication_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    push_id(&mut bytes, &receipt.candidate_id);
+    push_principal(&mut bytes, &receipt.evaluator);
+    bytes.push(match receipt.claim_scope {
+        EvaluationClaimScopeV1::Qualification => 0,
+        EvaluationClaimScopeV1::SystemLongitudinal => 1,
+    });
+    push_ids(&mut bytes, &receipt.snapshot_ids);
+    bytes.push(u8::from(receipt.authority.grants_any()));
+    bytes.push(u8::from(receipt.decision.decision.authority.grants_any()));
+    Digest32::of_bytes(&bytes)
+}
+
+fn product_qualification_seal(receipt: &ProductQualificationReceiptV1) -> Digest32 {
+    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v1".to_vec();
+    bytes.extend_from_slice(product_qualification_evidence_digest(receipt).as_array());
+    bytes.extend_from_slice(receipt.evidence_digest.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn push_principal(bytes: &mut Vec<u8>, principal: &AuthenticatedPrincipalV1) {
+    push_id(bytes, &principal.principal_id);
+    bytes.extend_from_slice(principal.credential_chain_digest.as_array());
+    bytes.extend_from_slice(principal.signing_key_digest.as_array());
+    bytes.extend_from_slice(principal.scope_digest.as_array());
+    for value in [
+        principal.authority_epoch,
+        principal.authenticated_at,
+        principal.expires_at,
+    ] {
+        bytes.extend_from_slice(&value.to_be_bytes());
     }
 }
 
