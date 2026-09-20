@@ -71,7 +71,7 @@ PRESENTATION_INPUTS = frozenset({
     "README.md", "CONTRIBUTING.md", "docs/modules/SOURCE_BINDINGS.json",
     "docs/modules/MODULE_DOCS.json",
 })
-INCLUDE = re.compile(r"\binclude(?:_str|_bytes)?\s*!\s*[({\[]")
+INCLUDE = re.compile(r"\b(?P<macro>include(?:_str|_bytes)?)\s*!\s*[({\[]")
 INCLUDE_LITERAL = re.compile(
     r'(?:r(?P<hashes>#{0,16})"(?P<raw>.*?)"(?P=hashes)|"(?P<plain>(?:\\.|[^"\\])*)")',
     re.S,
@@ -88,9 +88,10 @@ def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
     """Read exact-tree includes without executing candidate build scripts.
 
     Literal includes give precise edges. Computed paths conservatively select
-    their consumers for presentation changes. Follow included Rust sources too;
-    an unrelated workspace's source must not widen this workspace's test plan.
-    Comments may over-select. Both old and new graphs retain removed edges.
+    their consumers for presentation changes. An include! target is Rust source
+    regardless of its filename suffix and must be traversed recursively. Text
+    and byte payloads are not parsed as Rust. Comments may over-select. Both old
+    and new graphs retain removed edges. Cycles are bounded by (path, owner).
     """
     result = subprocess.run(
         ["git", "--no-replace-objects", "-C", str(root), "grep", "-l", "-z", "-E",
@@ -100,7 +101,7 @@ def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
     if result.returncode not in (0, 1):
         raise subprocess.CalledProcessError(result.returncode, result.args,
                                             result.stdout, result.stderr)
-    sources, pending = set(), []
+    pending = []
     prefix = revision + ":"
     for record in result.stdout.split(b"\0"):
         if not record:
@@ -109,7 +110,6 @@ def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
         if not value.startswith(prefix):
             raise ValueError("unexpected exact-tree grep identity")
         path = value[len(prefix):]
-        sources.add(path)
         folder = posixpath.dirname(path)
         while folder and folder not in owners:
             folder = posixpath.dirname(folder)
@@ -118,8 +118,15 @@ def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
 
     @lru_cache(maxsize=None)
     def references(path: str):
-        text = git(root, "show", f"{revision}:{path}").decode("utf-8")
-        targets, opaque = set(), False
+        try:
+            text = git(root, "show", f"{revision}:{path}").decode("utf-8")
+        except (subprocess.CalledProcessError, UnicodeDecodeError):
+            # A comment can mention a nonexistent fragment. Preserve unknown
+            # input dependence instead of either breaking unrelated prose work
+            # or silently deciding that this consumer has no dependencies.
+            # Real missing/invalid source still fails its selected native build.
+            return set(), set(), True
+        targets, rust_sources, opaque = set(), set(), False
         for include in INCLUDE.finditer(text):
             start = re.compile(r"\s*").match(text, include.end()).end()
             literal = INCLUDE_LITERAL.match(text, start)
@@ -140,7 +147,9 @@ def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
                 opaque = True
             else:
                 targets.add(target)
-        return targets, opaque
+                if include.group("macro") == "include":
+                    rust_sources.add(target)
+        return targets, rust_sources, opaque
 
     inputs, opaque, visited = set(), set(), set()
     while pending:
@@ -148,13 +157,13 @@ def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
         if (path, owner) in visited:
             continue
         visited.add((path, owner))
-        targets, unknown = references(path)
+        targets, rust_sources, unknown = references(path)
         if unknown:
             opaque.add(owner)
-        for target in targets:
-            inputs.add((target, owner))
-            if target in sources:
-                pending.append((target, owner))
+        inputs.update((target, owner) for target in targets)
+        # Rust source fragments need not have a .rs suffix. Traverse include!
+        # sources, never include_str!/include_bytes! payloads masquerading as code.
+        pending.extend((target, owner) for target in rust_sources)
     return frozenset(inputs), frozenset(opaque)
 
 

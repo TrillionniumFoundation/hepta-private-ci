@@ -66,9 +66,7 @@ async fn rejected_quarantine_cannot_be_reclassified_as_normal_shutdown() {
 #[tokio::test]
 async fn shutdown_listener_failure_is_latched_across_reentry() {
     let mut tasks = host();
-    tasks
-        .spawn_required("core", pending())
-        .expect("spawn core");
+    tasks.spawn_required("core", pending()).expect("spawn core");
     assert!(
         tasks
             .run_until(async { Err(AgentdError::Protocol("listener failed".to_string())) })
@@ -82,9 +80,7 @@ async fn shutdown_listener_failure_is_latched_across_reentry() {
 #[tokio::test]
 async fn isolated_optional_failure_does_not_poison_healthy_host() {
     let mut tasks = host();
-    tasks
-        .spawn_required("core", pending())
-        .expect("spawn core");
+    tasks.spawn_required("core", pending()).expect("spawn core");
     tasks
         .spawn_optional(
             "feature.41",
@@ -101,9 +97,7 @@ async fn isolated_optional_failure_does_not_poison_healthy_host() {
 #[tokio::test]
 async fn successful_optional_retirement_preserves_clean_host_outcome() {
     let mut tasks = host();
-    tasks
-        .spawn_required("core", pending())
-        .expect("spawn core");
+    tasks.spawn_required("core", pending()).expect("spawn core");
     tasks
         .spawn_optional_service(
             "feature.41",
