@@ -537,7 +537,8 @@ async fn recover(root: &Path) -> HarnessResult<()> {
     )
     .await?;
     let writer = host.writer();
-    let database_before_terminalization = inspect_database(writer.database_path(), LEASE_ID).await?;
+    let database_before_terminalization =
+        inspect_database(writer.database_path(), LEASE_ID).await?;
     validate_database_evidence(&database_before_terminalization)?;
     let replay = writer
         .admit(
