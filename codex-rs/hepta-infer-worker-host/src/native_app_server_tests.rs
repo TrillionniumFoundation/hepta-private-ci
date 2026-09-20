@@ -19,6 +19,9 @@ fn binding() -> CodexTurnBinding {
             app_server_binding: Some(AppServerRequestBinding {
                 source_admission_digest: Digest32::of_bytes(b"test-durable-admission"),
                 agent_generation: Generation::new(1).unwrap(),
+                session_id: StableId::new("session-a").unwrap(),
+                client_user_message_id: StableId::new("message-a").unwrap(),
+                user_input_digest: Digest32::of_bytes(b"test-user-input"),
                 protocol_id: StableId::new(APP_SERVER_V2_PROTOCOL_ID).unwrap(),
                 app_server_version: "test-app-server".to_string(),
                 codex_home_digest: Digest32::of_bytes(b"/home/agent"),
