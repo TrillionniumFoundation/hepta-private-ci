@@ -7,8 +7,8 @@ Status: durable Browser effect owner, current-pin Servo worker source, bounded s
 
 Roots: `apps/hepta-browser`, `third_party/servo-patches`.
 Package: `BROWSER-WEB-C1`.
-Current Servo pin: `5cc5bd32d02619acdec5736055515e38c5840ce1`.
-Exact mapped source snapshot: `44cdb5e35649efd4c1ac3158fddb10c9270d2947` / tree `2de770e678de936de42dfb9e19730804a5a013e7`; later map/verifier/document-only successors are accepted only when strict source-drift verification remains clean.
+Current Servo pin: `b5a1f5e6ec6f8685d40cd389802ced7abe4980f6` (candidate; generated dependency lock pending review/commit).
+Exact mapped source snapshot: `b5a022dbe7c69e5b2063429cd4dec52ccd9ca7a6` / tree `0a8d46bc0895d4bd581ae5aed5ef2dfa5f5a63d3`; later map/verifier/document-only successors are accepted only when strict source-drift verification remains clean.
 
 Cross-owner Agentd composition is source-present in `codex-rs/hepta-agentd` and remains owned/reviewed by `runtime.agentd`. The long-running Agentd process can retain the private Browser port for its generation; Browser ownership is not widened by the caller.
 
@@ -126,10 +126,13 @@ Current admitted effect kinds are `navigate`, `click`, `type`, `focus`,
 scope for this release and fail before authority admission; a future release
 must separately version and qualify their secret/file broker semantics.
 
-The selected Servo source candidate is `5cc5bd32d02619acdec5736055515e38c5840ce1`, 239 upstream commits after
-the predecessor. Its reviewed candidate lock is now committed; it remains qualification-pending
-until exact-head worker/E2E/reproducibility evidence succeeds and binds that
-lock into the retained receipt. Target-host enforcement, cross-profile persistent-storage
+The selected Servo source candidate is `b5a1f5e6ec6f8685d40cd389802ced7abe4980f6`, 13 upstream commits after
+the immediate 5cc5 predecessor candidate. This advance includes `07777aaa...`,
+which changes `WebView::load()` to avoid Servo/WebView double-borrow hazards.
+That upstream window also changes the Cargo graph, so the 5cc5 lock is predecessor
+evidence only. The first exact-head b5a1 worker run must generate and retain a
+candidate lock; those exact bytes must then be reviewed and committed before a
+fresh exact-head locked worker/E2E/reproducibility run can qualify the artifact. Target-host enforcement, cross-profile persistent-storage
 isolation, resource/soak measurements, real remote-business terminal observers,
 independent acceptance, promotion and release remain external gates.
 
