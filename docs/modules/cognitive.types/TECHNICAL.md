@@ -112,7 +112,7 @@ Critical protocol schemas:
 
 The canonical Rust definitions live only in `codex-rs/hepta-cognitive-types/src/hnmf.rs` and `hnmf_learning.rs`. The canonical V1 wire codec is `src/wire.rs`: strict UTF-8 JSON, lexicographically sorted object keys, integer-only numeric fields, exact schema/version/contract identity, encoded-size limits, and deny-unknown deserialization. The HNMF qualification packages are oracles/algorithms and must import these contracts rather than redefine them.
 
-Exact ModulePort-to-schema sets are machine-bound in `IMPLEMENTATION_MAP.json.portSchemaBindings`. Existing Lane C owner-local records such as `MemoryAdmissionCandidateV1`, `MemoryWriteIntentV1` and `MemoryWriteReceiptV1` remain typed-local contracts until a separately registered wire schema is added; they are not silently reinterpreted as `MemoryEventV1`.
+Exact ModulePort-to-schema sets are machine-bound in `IMPLEMENTATION_MAP.json.portSchemaBindings`. This is registry projection, not proof that each downstream Rust consumer has migrated to the HNMF V1 types. `IMPLEMENTATION_MAP.json` therefore records `nativeConsumerState=registry_bound_shadow_migration`, an explicit legacy-surface inventory, and `canonicalConsumerConvergenceProved=false` until consumer-owned adapters land under their own work packages. Existing Lane C owner-local records such as `MemoryAdmissionCandidateV1`, `MemoryWriteIntentV1` and `MemoryWriteReceiptV1` remain typed-local contracts until a separately registered wire schema is added; they are not silently reinterpreted as `MemoryEventV1`.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -178,7 +178,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs); named case: `generation_vector_digest_binds_every_generation`.
 - [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs); named case: `snapshot_is_canonical_and_authority_free`.
-- [codex-rs/hepta-cognitive-types/src/contract_tests.rs](../../../codex-rs/hepta-cognitive-types/src/contract_tests.rs); CTYPE-01 through CTYPE-04 plus bounds, strict-wire, canonical-order and digest-domain tests.
+- [codex-rs/hepta-cognitive-types/src/contract_tests.rs](../../../codex-rs/hepta-cognitive-types/src/contract_tests.rs); CTYPE-01 through CTYPE-04 plus bounds, strict-wire, canonical-order, digest-domain, abstention/revision, Q16/ppm, contextual-binding and bounded arbitrary-byte decoder-smoke tests.
+- [qualification/cognitive-types-v1/verify_vectors.py](../../../qualification/cognitive-types-v1/verify_vectors.py); independent Python canonical-JSON oracle for all 12 registered V1 protocol digests.
 
 In `codex-rs`, run `just test -p codex-hepta-cognitive-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) separately labels target acceptance designs.
 
