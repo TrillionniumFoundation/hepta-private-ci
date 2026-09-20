@@ -15,8 +15,12 @@ workspace = true
 
 [dependencies]
 anyhow = { workspace = true }
+codex-hepta-contracts = { workspace = true }
+codex-hepta-operations = { path = "../hepta-operations" }
 codex-hepta-paths = { workspace = true }
 codex-hepta-runtime = { workspace = true }
+codex-hepta-types = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = [
     "io-util",
@@ -29,4 +33,6 @@ tokio = { workspace = true, features = [
 
 [dev-dependencies]
 codex-hepta-wire = { path = "../hepta-wire" }
+ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
