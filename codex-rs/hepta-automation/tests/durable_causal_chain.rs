@@ -449,7 +449,6 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
     assert_eq!(second.state, AutomationOccurrenceState::Admitted);
 }
 
-
 #[tokio::test]
 async fn retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurrence() {
     let fixture = Fixture::new();
