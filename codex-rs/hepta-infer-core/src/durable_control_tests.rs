@@ -69,6 +69,105 @@ fn reopens_exact_committed_state() {
 }
 
 #[test]
+fn local_execution_entry_fence_survives_reopen_and_blocks_safe_replay() {
+    let path = path("local-entry-fence");
+    {
+        let mut control = DurableInferenceControl::open(&path, 32).expect("open");
+        control.submit(100, request()).expect("submit");
+        control
+            .reserve(100, "request.1", 1, reservation())
+            .expect("reserve");
+        control
+            .assign("request.1", 2, assignment())
+            .expect("assign");
+        let begun = control
+            .begin_execution("request.1", 3)
+            .expect("begin execution");
+        assert_eq!(begun.state, RequestState::Running);
+        assert_eq!(begun.revision, 4);
+    }
+    let mut reopened = DurableInferenceControl::open(&path, 32).expect("reopen");
+    let record = reopened.get("request.1").expect("record");
+    assert_eq!(record.state, RequestState::Running);
+    assert_eq!(record.revision, 4);
+    assert_eq!(
+        reopened.begin_execution("request.1", 4).unwrap().state,
+        RequestState::Running
+    );
+    let marked = reopened
+        .mark_execution_indeterminate("request.1", 4, "9".repeat(64))
+        .expect("mark indeterminate");
+    assert_eq!(marked.state, RequestState::Indeterminate);
+    assert!(!reopened.get("request.1").unwrap().usage_observed);
+    drop(reopened);
+    std::fs::remove_file(path).expect("cleanup");
+}
+
+#[test]
+fn terminal_worker_observation_waits_for_authoritative_usage_settlement() {
+    let path = path("awaiting-settlement");
+    let mut control = DurableInferenceControl::open(&path, 32).expect("open");
+    control.submit(100, request()).expect("submit");
+    control
+        .reserve(100, "request.1", 1, reservation())
+        .expect("reserve");
+    control
+        .assign("request.1", 2, assignment())
+        .expect("assign");
+    control
+        .begin_execution("request.1", 3)
+        .expect("begin execution");
+
+    let execution = ExecutionObservation {
+        request_id: "request.1".to_string(),
+        reservation_id: "reservation.1".to_string(),
+        worker_id: "worker.1".to_string(),
+        worker_generation: 2,
+        model_digest: "1".repeat(64),
+        payload_digest: "2".repeat(64),
+        terminal_status: RequestState::Completed,
+        output_digest: Some("5".repeat(64)),
+        consumed_tokens: None,
+    };
+    let observed = control
+        .observe_execution("request.1", 4, "7".repeat(64), execution.clone())
+        .expect("observe execution");
+    assert_eq!(observed.state, RequestState::AwaitingSettlement);
+    let record = control.get("request.1").unwrap();
+    assert_eq!(record.execution_observation, Some(execution));
+    assert!(!record.usage_observed);
+    drop(control);
+
+    let mut control = DurableInferenceControl::open(&path, 32).expect("reopen");
+    assert_eq!(
+        control.get("request.1").unwrap().state,
+        RequestState::AwaitingSettlement
+    );
+    let final_observation = TerminalObservation {
+        request_id: "request.1".to_string(),
+        reservation_id: "reservation.1".to_string(),
+        worker_id: "worker.1".to_string(),
+        worker_generation: 2,
+        model_digest: "1".repeat(64),
+        payload_digest: "2".repeat(64),
+        terminal_observed: true,
+        terminal_status: Some(RequestState::Completed),
+        output_digest: Some("5".repeat(64)),
+        consumed_tokens: 12,
+        usage_units: 9,
+    };
+    let settled = control
+        .settle("request.1", 5, "8".repeat(64), final_observation)
+        .expect("authoritative settlement");
+    assert_eq!(settled.state, RequestState::Completed);
+    assert!(control.get("request.1").unwrap().usage_observed);
+    assert_eq!(control.get("request.1").unwrap().consumed_tokens, 12);
+    assert_eq!(control.get("request.1").unwrap().usage_units, 9);
+    drop(control);
+    std::fs::remove_file(path).expect("cleanup");
+}
+
+#[test]
 fn cancellation_after_assignment_waits_for_observation_and_accounts_usage() {
     let path = path("cancel-race");
     let mut control = DurableInferenceControl::open(&path, 32).expect("open");
