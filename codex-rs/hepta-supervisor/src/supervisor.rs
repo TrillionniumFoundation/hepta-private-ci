@@ -534,6 +534,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         target: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.ensure_unsigned_release_transition_allowed()?;
         self.with_slot(agent_id, |supervisor, slot| {
             Self::ensure_signed_intent_resolved(agent_id, slot)?;
             supervisor.upgrade_slot(
@@ -543,6 +544,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
+        self.ensure_unsigned_release_transition_allowed()?;
         self.with_slot(agent_id, |supervisor, slot| {
             Self::ensure_signed_intent_resolved(agent_id, slot)?;
             let previous = slot
@@ -560,6 +562,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             )?;
             supervisor.upgrade_slot(agent_id, slot, target, now, /*explicit_rollback*/ true)
         })
+    }
+
+    fn ensure_unsigned_release_transition_allowed(&self) -> Result<(), SupervisorError> {
+        if self.production_revocation_frontier.is_some() {
+            return Err(SupervisorError::ProductionAuthority(
+                "production mode release changes require an independently signed production grant"
+                    .to_string(),
+            ));
+        }
+        Ok(())
     }
 
     /// Admit one externally signed H7/OPE operation into the real lifecycle
