@@ -114,9 +114,6 @@ where
         let operations =
             FileRuntimeOperationJournal::open(operation_file, context_digest, MAX_OWNER_OPERATIONS)?;
         let witness_anchor = witness.current_anchor()?;
-        if witness_anchor.is_none() && operations.has_committed() {
-            return Err(RuntimeError::UnwitnessedHistory);
-        }
 
         let journal_scope = JournalScope {
             scope_digest: scope.scope_digest,
@@ -130,18 +127,12 @@ where
                 max_records,
                 anchor,
             )?,
-            None => {
-                let journal = SparseJournal::open(
-                    journal_file,
-                    sparse_config.clone(),
-                    journal_scope,
-                    max_records,
-                )?;
-                if journal.current()?.is_some() {
-                    return Err(RuntimeError::UnwitnessedHistory);
-                }
-                journal
-            }
+            None => SparseJournal::open(
+                journal_file,
+                sparse_config.clone(),
+                journal_scope,
+                max_records,
+            )?,
         };
 
         let mut host = Self {
@@ -623,28 +614,47 @@ where
             }
         }
 
-        if let Some(anchor) = self.witness_anchor {
-            if let Some(operation) = self.operations.committed_for_sequence(anchor.sequence) {
-                require_lineage_set(&mut self.lineage, &operation.required_lineage)?;
-                if operation.checkpoint_after != anchor.checkpoint_digest {
-                    return Err(RuntimeError::UntrackedJournalHistory);
+        match self.witness_anchor {
+            Some(anchor) => {
+                if let Some(operation) = self.operations.committed_for_sequence(anchor.sequence) {
+                    require_lineage_set(&mut self.lineage, &operation.required_lineage)?;
+                    if operation.checkpoint_after != anchor.checkpoint_digest {
+                        return Err(RuntimeError::UntrackedJournalHistory);
+                    }
                 }
-            }
-            let mut current = anchor;
-            for next in self.journal.anchors_after(anchor.sequence)? {
-                let operation = self
-                    .operations
-                    .committed_for_sequence(next.sequence)
-                    .ok_or(RuntimeError::UntrackedJournalHistory)?
-                    .clone();
-                if operation.checkpoint_after != next.checkpoint_digest {
-                    return Err(RuntimeError::UntrackedJournalHistory);
+                let mut current = anchor;
+                for next in self.journal.anchors_after(anchor.sequence)? {
+                    let operation = self
+                        .operations
+                        .committed_for_sequence(next.sequence)
+                        .ok_or(RuntimeError::UntrackedJournalHistory)?
+                        .clone();
+                    if operation.checkpoint_after != next.checkpoint_digest {
+                        return Err(RuntimeError::UntrackedJournalHistory);
+                    }
+                    require_lineage_set(&mut self.lineage, &operation.required_lineage)?;
+                    self.witness.compare_and_store(Some(current), next)?;
+                    current = next;
                 }
-                require_lineage_set(&mut self.lineage, &operation.required_lineage)?;
-                self.witness.compare_and_store(Some(current), next)?;
-                current = next;
+                self.witness_anchor = Some(current);
             }
-            self.witness_anchor = Some(current);
+            None => {
+                let mut current = None;
+                for next in self.journal.anchors_after(self.journal.base_sequence())? {
+                    let operation = self
+                        .operations
+                        .committed_for_sequence(next.sequence)
+                        .ok_or(RuntimeError::UntrackedJournalHistory)?
+                        .clone();
+                    if operation.checkpoint_after != next.checkpoint_digest {
+                        return Err(RuntimeError::UntrackedJournalHistory);
+                    }
+                    require_lineage_set(&mut self.lineage, &operation.required_lineage)?;
+                    self.witness.compare_and_store(current, next)?;
+                    current = Some(next);
+                }
+                self.witness_anchor = current;
+            }
         }
         Ok(())
     }
