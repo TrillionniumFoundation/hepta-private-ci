@@ -4,10 +4,10 @@
   "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
   "planVersion": "8.0.0",
   "lane": "LANE-E-LEARNING",
-  "baseCommit": "6303bceab938c25d645e220a32f91701e2c31701",
+  "baseCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
   "candidateBranch": "dynamic_exact_pr_head",
-  "sourceIdentityPolicy": "single_direct_child_exact_ci_head_tree_and_ordered_parent_synthetic_merge_required",
-  "repositoryClosureState": "source_implemented_exact_head_qualification_required",
+  "sourceIdentityPolicy": "pr_base_plus_module_local_source_evidence_anchor_no_mapped_drift_and_current_head_synthetic_merge_required",
+  "repositoryClosureState": "source_implemented_exact_head_and_synthetic_merge_required_per_candidate",
   "capabilityClosureState": "external_evidence_required",
   "authorityDelta": "none",
   "modules": [
@@ -18,7 +18,7 @@
       "stableGuide": "docs/modules/learning.ledger/TECHNICAL.md",
       "dossier": "qualification/module-execution-dossiers/detail/learning.ledger.md",
       "nativeMapping": "codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md",
-      "implementationState": "source_converged_source_head_and_synthetic_merge_passed_live_product_external",
+      "implementationState": "source_converged_source_anchor_qualified_live_product_external",
       "compatibility": "stable_v1_read_compatibility_retained_authenticated_v2_product_writer_additive",
       "operations": [
         {
@@ -131,7 +131,7 @@
         "planning": "lrn_0_and_lrn_1_source_implemented",
         "source": "converged_source_implemented",
         "composition": "decision_and_terminal_closure_source_composed_live_daemon_binding_pending",
-        "qualification": "exact_head_and_synthetic_merge_required_for_current_candidate",
+        "qualification": "source_anchor_qualified_current_candidate_execution_required",
         "liveProduct": "external_not_established"
       },
       "crossLaneRepositoryDependencies": [
@@ -425,5 +425,9 @@
       "state": "open_canary_selection_promotion_and_release_decisions_required",
       "repositoryMaySelfCertify": false
     }
-  ]
+  ],
+  "sourceEvidenceBase": {
+    "commit": "c6a42478328a7c326ac7597da9a62c2e30c09d11",
+    "tree": "f1f3514775276c6f995e4e5fdaf6b1ec292f3ac5"
+  }
 }
