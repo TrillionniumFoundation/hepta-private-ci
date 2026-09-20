@@ -360,6 +360,44 @@ def verify():
             failures.append(f"{mid}: claim boundary")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    else:
+        source_commit, source_tree = next(iter(source_bases))
+        try:
+            observed_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+        except subprocess.CalledProcessError:
+            failures.append("maps: source base commit is not available")
+        else:
+            if observed_tree != source_tree:
+                failures.append("maps: source base tree does not match source commit")
+            ancestor = subprocess.run(
+                ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if ancestor.returncode != 0:
+                failures.append("maps: source base is not an ancestor of current HEAD")
+            else:
+                changed = [
+                    path
+                    for path in git(
+                        "diff", "--name-only", f"{source_commit}..HEAD"
+                    ).splitlines()
+                    if path
+                ]
+                non_projection_changes = [
+                    path
+                    for path in changed
+                    if not (
+                        path.startswith("docs/modules/")
+                        and path.endswith("/IMPLEMENTATION_MAP.json")
+                    )
+                ]
+                if non_projection_changes:
+                    failures.append(
+                        "maps: source base is stale after source changes: "
+                        + ", ".join(non_projection_changes[:8])
+                    )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
