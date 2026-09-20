@@ -218,8 +218,8 @@ pub fn decide_ndu_convergence_v1(
         return Err(NduConvergenceError::InvalidSpectralRadius);
     }
 
-    let producer_payload = producer_payload(&evidence);
-    let evaluator_payload = evaluator_payload(&evidence);
+    let producer_payload = ndu_convergence_producer_signing_payload_v1(&evidence);
+    let evaluator_payload = ndu_convergence_evaluator_signing_payload_v1(&evidence);
     let producer_verified =
         verifier.verify(LearningEvidenceRoleV1::Generator, producer, &producer_payload, now)?;
     let evaluator_verified =
@@ -279,7 +279,8 @@ pub fn decide_ndu_convergence_v1(
     })
 }
 
-fn producer_payload(evidence: &NduConvergenceEvidenceV1) -> Vec<u8> {
+#[must_use]
+pub fn ndu_convergence_producer_signing_payload_v1(evidence: &NduConvergenceEvidenceV1) -> Vec<u8> {
     let mut bytes = b"hepta.learning-eval.ndu-convergence-producer.v1\0".to_vec();
     bytes.extend_from_slice(evidence.objective_class_digest.as_array());
     bytes.extend_from_slice(evidence.solver_digest.as_array());
@@ -287,7 +288,8 @@ fn producer_payload(evidence: &NduConvergenceEvidenceV1) -> Vec<u8> {
     bytes
 }
 
-fn evaluator_payload(evidence: &NduConvergenceEvidenceV1) -> Vec<u8> {
+#[must_use]
+pub fn ndu_convergence_evaluator_signing_payload_v1(evidence: &NduConvergenceEvidenceV1) -> Vec<u8> {
     let mut bytes = b"hepta.learning-eval.ndu-convergence-evaluator.v1\0".to_vec();
     push_id(&mut bytes, &evidence.certificate_id);
     bytes.push(evidence.subject_class.tag());
@@ -324,7 +326,7 @@ fn digest_certificate(
     evaluator_payload_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = b"hepta.learning-eval.ndu-convergence-certificate.v2\0".to_vec();
-    bytes.extend_from_slice(&evaluator_payload(evidence));
+    bytes.extend_from_slice(&ndu_convergence_evaluator_signing_payload_v1(evidence));
     push_id(&mut bytes, producer);
     push_id(&mut bytes, evaluator);
     bytes.extend_from_slice(trust_digest.as_array());
