@@ -265,6 +265,7 @@ pub(crate) struct InheritedQueuedReceipt {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct DurableOperationDispatchBinding {
     pub scope_id: String,
+    pub owner_id: String,
     pub destination_id: String,
     pub operation_semantic_sha256: Sha256Digest,
     pub expected_predecessor_sha256: Option<Sha256Digest>,
@@ -1711,6 +1712,7 @@ impl LocalLeaseOutbox {
             .map_err(|_| corrupt("durable operation predecessor digest is invalid"))?;
         let binding = DurableOperationDispatchBinding {
             scope_id: operation.scope_id,
+            owner_id: operation.owner_id,
             destination_id: operation.destination_id,
             operation_semantic_sha256,
             expected_predecessor_sha256,
