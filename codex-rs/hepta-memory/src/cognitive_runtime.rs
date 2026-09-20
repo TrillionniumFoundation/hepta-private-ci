@@ -700,7 +700,9 @@ async fn revalidate_federated_product_batch(
     }
     if access.agent_id() != consumer_agent_id {
         return Ok(vec![
-            FederatedRevalidationStatus::Stale(FederationRevalidationDrift::Consumer);
+            FederatedRevalidationStatus::Stale(
+                FederationRevalidationDrift::Consumer
+            );
             bindings.len()
         ]);
     }
