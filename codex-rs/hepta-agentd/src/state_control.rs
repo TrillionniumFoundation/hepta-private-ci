@@ -105,16 +105,17 @@ impl AgentdState {
                 app_server_ready,
                 fenced,
             }),
-            crate::AgentdMethod::Readiness => {
-                AgentdPayload::Readiness(crate::ReadinessSnapshot {
-                    critical_stores_ready,
-                    revocation_ready,
-                    required_ports_ready,
-                    admission_open,
-                })
-            }
+            crate::AgentdMethod::Readiness => AgentdPayload::Readiness(crate::ReadinessSnapshot {
+                critical_stores_ready,
+                revocation_ready,
+                required_ports_ready,
+                admission_open,
+            }),
             crate::AgentdMethod::Drain => {
-                if !matches!(lifecycle, AgentLifecycle::Draining | AgentLifecycle::Running) {
+                if !matches!(
+                    lifecycle,
+                    AgentLifecycle::Draining | AgentLifecycle::Running
+                ) {
                     return Err(AgentdError::Invalid(
                         "drain requires running or draining lifecycle".to_string(),
                     ));
