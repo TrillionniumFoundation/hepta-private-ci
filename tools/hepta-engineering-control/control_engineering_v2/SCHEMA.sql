@@ -1,4 +1,4 @@
--- Canonical engineering owner schema, version 7. Applied in one transaction.
+-- Canonical engineering owner schema, version 8. Applied in one transaction.
 
 CREATE TABLE IF NOT EXISTS work_envelopes(
   envelope_id TEXT PRIMARY KEY,
@@ -91,6 +91,42 @@ CREATE INDEX IF NOT EXISTS idx_worker_claims_assignment
   ON worker_claims(generation_id, package_id, state, attempt);
 CREATE INDEX IF NOT EXISTS idx_worker_claims_worker
   ON worker_claims(worker_id, state, heartbeat_deadline_unix_ns);
+
+CREATE TABLE IF NOT EXISTS integration_queue_generations(
+  queue_generation_id TEXT PRIMARY KEY,
+  orchestration_generation_id TEXT NOT NULL
+    REFERENCES orchestration_generations(generation_id),
+  base_commit TEXT NOT NULL,
+  base_tree TEXT NOT NULL,
+  semantic_digest TEXT NOT NULL,
+  state TEXT NOT NULL CHECK(state IN ('active','requires_replan','terminal')),
+  revision INTEGER NOT NULL CHECK(revision >= 1),
+  created_unix_ns INTEGER NOT NULL,
+  updated_unix_ns INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS integration_queue_items(
+  queue_generation_id TEXT NOT NULL
+    REFERENCES integration_queue_generations(queue_generation_id),
+  package_id TEXT NOT NULL,
+  position INTEGER NOT NULL CHECK(position >= 1),
+  candidate_digest TEXT,
+  review_digest TEXT,
+  ci_digest TEXT,
+  state TEXT NOT NULL CHECK(state IN (
+    'awaiting_candidate_evidence','awaiting_review','awaiting_ci',
+    'ready_external_merge','invalidated','terminal_merged','terminal_failed'
+  )),
+  terminal_outcome TEXT,
+  reason TEXT,
+  revision INTEGER NOT NULL CHECK(revision >= 1),
+  updated_unix_ns INTEGER NOT NULL,
+  PRIMARY KEY(queue_generation_id, package_id),
+  UNIQUE(queue_generation_id, position)
+);
+CREATE INDEX IF NOT EXISTS idx_integration_queue_items_state
+  ON integration_queue_items(queue_generation_id, state, position);
+
 CREATE TABLE IF NOT EXISTS distributed_cluster_frontiers(
   cluster_id TEXT PRIMARY KEY,
   leader_id TEXT NOT NULL,
