@@ -113,8 +113,27 @@ pub fn canonical_checkpoint_v1(
     tick: &NeuronTickReceiptV1,
     expires_unix_ms: u64,
 ) -> Result<NeuronCheckpointV1, NeuronProtocolError> {
-    if tick.checkpoint_after != checkpoint.digest() {
-        return Err(NeuronProtocolError::BindingMismatch("checkpoint after"));
+    if tick.checkpoint_after != checkpoint.digest()
+        || tick.activation_digest != checkpoint.activation_digest()
+        || tick.threshold_digest != checkpoint.threshold_digest()
+        || tick.eligibility_digest != checkpoint.eligibility_digest()
+    {
+        return Err(NeuronProtocolError::BindingMismatch("checkpoint summaries"));
+    }
+    let active_indices = committed_active_indices(checkpoint)?;
+    let active_count =
+        u64::try_from(active_indices.len()).map_err(|_| NeuronProtocolError::InvalidField("activation"))?;
+    let width = u64::try_from(checkpoint.activation_q24().len())
+        .map_err(|_| NeuronProtocolError::InvalidField("activation"))?;
+    let sparsity_ppm = u32::try_from(
+        active_count
+            .checked_mul(u64::from(PPM))
+            .ok_or(NeuronProtocolError::InvalidField("activation"))?
+            / width,
+    )
+    .map_err(|_| NeuronProtocolError::InvalidField("activation"))?;
+    if tick.active_indices != active_indices || tick.sparsity_ppm != sparsity_ppm {
+        return Err(NeuronProtocolError::BindingMismatch("activation summary"));
     }
     if checkpoint.sequence() == 0 || expires_unix_ms == 0 {
         return Err(NeuronProtocolError::InvalidField("checkpoint lifetime"));
@@ -140,8 +159,8 @@ pub fn canonical_checkpoint_v1(
         temporal_state_digest: checkpoint.temporal_state_digest(),
         threshold_digest: tick.threshold_digest,
         activation_summary: NeuronActivationSummaryV1 {
-            active_indices: tick.active_indices.clone(),
-            sparsity_ppm: tick.sparsity_ppm,
+            active_indices,
+            sparsity_ppm,
             saturation_count: tick.resource_receipt.saturation_count,
         },
         eligibility_digest: tick.eligibility_digest,
@@ -278,6 +297,20 @@ fn validate_checkpoint(value: &NeuronCheckpointV1) -> Result<(), NeuronProtocolE
         return Err(NeuronProtocolError::InvalidField("checkpoint"));
     }
     Ok(())
+}
+
+fn committed_active_indices(
+    checkpoint: &SparseCheckpoint,
+) -> Result<Vec<u32>, NeuronProtocolError> {
+    checkpoint
+        .activation_q24()
+        .iter()
+        .enumerate()
+        .filter(|(_, value)| **value > 0)
+        .map(|(index, _)| {
+            u32::try_from(index).map_err(|_| NeuronProtocolError::InvalidField("activation"))
+        })
+        .collect()
 }
 
 fn checkpoint_dto(value: &NeuronCheckpointV1) -> CheckpointDto {
