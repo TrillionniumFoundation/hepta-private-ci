@@ -1117,6 +1117,97 @@ mod tests {
     }
 
     #[test]
+    fn terminal_local_result_stops_at_awaiting_settlement_without_usage_authority() {
+        let path = test_path("terminal-pending-usage");
+        let input = "terminal".to_string();
+        let payload_digest = sha256(input.as_bytes());
+        let now = now_ms().unwrap();
+        let mut owner = DurableInferenceControl::open(&path, 16).unwrap();
+        owner
+            .submit(
+                now,
+                ControlInferenceRequest {
+                    request_id: "request.local.terminal".to_string(),
+                    principal_id: "principal.local".to_string(),
+                    model_digest: "1".repeat(64),
+                    payload_digest: payload_digest.clone(),
+                    maximum_tokens: 16,
+                    deadline_ms: now + 9_000,
+                    semantic_digest: "8".repeat(64),
+                },
+            )
+            .unwrap();
+        owner
+            .reserve(
+                now,
+                "request.local.terminal",
+                1,
+                ControlReservation {
+                    reservation_id: "reservation.local.terminal".to_string(),
+                    quota_units: 50,
+                    maximum_tokens: 16,
+                    authority_epoch: 2,
+                    valid_until_ms: now + 8_000,
+                },
+            )
+            .unwrap();
+        owner
+            .assign(
+                "request.local.terminal",
+                2,
+                Assignment {
+                    worker_id: "worker.local.product".to_string(),
+                    worker_generation: 7,
+                    assignment_digest: "9".repeat(64),
+                },
+            )
+            .unwrap();
+        let control = Arc::new(Mutex::new(owner));
+        prepare_run(
+            &control,
+            "request.local.terminal",
+            input,
+            &manifest(),
+            "worker.local.product",
+            7,
+        )
+        .unwrap();
+
+        let response = persist_run_result(
+            &control,
+            "request.local.terminal",
+            Ok(InferenceExecutionObservation {
+                request_id: "request.local.terminal".to_string(),
+                reservation_id: "reservation.local.terminal".to_string(),
+                worker_generation: 7,
+                model_digest: "1".repeat(64),
+                payload_digest,
+                status: ExecutionStatus::Succeeded,
+                output_digest: Some("a".repeat(64)),
+                consumed_tokens: Some(3),
+                observed_memory_bytes: 1024,
+                terminal_observed: true,
+            }),
+        );
+        assert_eq!(response["status"], "succeeded");
+        assert_eq!(response["control_state"], "awaiting_settlement");
+        let owner = control.lock().unwrap();
+        let record = owner.get("request.local.terminal").unwrap();
+        assert_eq!(record.state, RequestState::AwaitingSettlement);
+        assert!(!record.usage_observed);
+        assert_eq!(
+            record
+                .execution_observation
+                .as_ref()
+                .and_then(|value| value.consumed_tokens),
+            Some(3)
+        );
+        drop(owner);
+        drop(control);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
     fn a_second_run_after_entry_is_marked_indeterminate_not_replayed() {
         let path = test_path("no-replay");
         let input = "once".to_string();
