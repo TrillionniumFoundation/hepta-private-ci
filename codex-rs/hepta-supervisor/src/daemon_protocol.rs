@@ -578,6 +578,40 @@ mod tests {
     }
 
     #[test]
+    fn production_status_exposes_recovery_intent_digest() {
+        let intent_digest = Sha256Digest::for_bytes(b"recovery-intent");
+        let receipt = ProductionMutationReceipt {
+            grant_sha256: Sha256Digest::for_bytes(b"grant"),
+            intent_sha256: Some(intent_digest.clone()),
+            agent_id: AGENT_ID.to_string(),
+            transition: H7H89ProductionTransition::Upgrade,
+            source_release: "agentd-v1".to_string(),
+            target_release: "agentd-v2".to_string(),
+            control_revision: 8,
+            status: ProductionMutationStatus::RecoveryRequired,
+            production_authority: true,
+            external_effects: true,
+            operator_acceptance: true,
+            promotion: true,
+        };
+        let response = SupervisordResponse {
+            schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
+            request_id: 46,
+            payload: SupervisordPayload::ProductionMutationStatus {
+                receipt: Some(receipt),
+            },
+        };
+        let encoded = serde_json::to_value(&response).expect("serialize production status");
+        assert_eq!(
+            encoded["payload"]["receipt"]["intent_sha256"],
+            serde_json::Value::String(intent_digest.as_str().to_owned())
+        );
+        let decoded: SupervisordResponse =
+            serde_json::from_value(encoded).expect("deserialize production status");
+        assert_eq!(decoded, response);
+    }
+
+    #[test]
     fn exact_stale_error_has_actual_and_no_internal_details() {
         let response = SupervisordResponse {
             schema_version: 2,
