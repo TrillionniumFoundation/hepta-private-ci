@@ -10,6 +10,7 @@ use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerSpec;
 use codex_hepta_authbus::PolicyEffect;
 use codex_hepta_authbus::PolicySpec;
+use codex_hepta_authbus::QuotaReservation;
 use codex_hepta_authbus::QuotaSpec;
 use codex_hepta_authbus::ReservationState;
 use codex_hepta_authbus::SettlementEvidenceClaims;
@@ -699,24 +700,6 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
     assert_eq!(receipt.secret_sha256, request.expected_secret_sha256);
     let quota = authbus.quota_snapshot(&admission.quota_key).await.unwrap();
     assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 0, 1));
-    let reservation_id = StableId::new(format!(
-        "reservation:{}",
-        Digest32::of_bytes(
-            &{
-                let mut bytes = b"hepta.authbus.quota-reservation.v1\0".to_vec();
-                let effect = client
-                    .authbus_effect_digest(&request, &admission.operation_id)
-                    .unwrap();
-                let binding = client.binding(&request).unwrap();
-                // Reservation identity is intentionally opaque to callers; query
-                // through the operation-bound result is covered by quota state.
-                bytes.extend_from_slice(effect.as_array());
-                bytes.extend_from_slice(&binding.scope_sha256);
-                bytes
-            }
-        )
-    ));
-    let _ = reservation_id; // ID construction is not an API contract.
     task.await.unwrap().unwrap();
 }
 
