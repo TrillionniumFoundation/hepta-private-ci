@@ -317,7 +317,7 @@ impl BaoClient {
                 .await?
                 .ok_or(BaoAuthBusError::Evidence("successful settlement lost its receipt"))
             }
-            Err(error) if ambiguous_after_dispatch(error) => {
+            Err(error) if ambiguous_after_dispatch(&error) => {
                 let time = authbus
                     .observe_trusted_time_attestation(&evidence.trusted_time()?)
                     .await;
@@ -536,7 +536,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     Ok(receipt)
 }
 
-fn ambiguous_after_dispatch(error: BaoClientError) -> bool {
+fn ambiguous_after_dispatch(error: &BaoClientError) -> bool {
     matches!(
         error,
         BaoClientError::TransportUnavailable
