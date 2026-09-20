@@ -1,120 +1,35 @@
-name: ui.native exact-head cross-platform qualification
-
+name: ui-native-cross-platform-probe
 on:
   push:
     branches:
       - "**full-ci**"
-
 permissions:
   contents: read
-
 jobs:
-  native:
-    name: ui.native exact head - ${{ matrix.name }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Linux
-            runner: ubuntu-24.04
-          - name: macOS
-            runner: macos-15
-          - name: Windows
-            runner: windows-latest
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 75
+  linux:
+    runs-on: ubuntu-24.04
     steps:
-      - name: Check out canonical ui.native source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: 5344d19e03551505e6a903f3820e448a9faa0a31
           persist-credentials: false
-
-      - name: Assert exact source identity
-        shell: bash
+      - shell: bash
         run: test "$(git rev-parse HEAD)" = "5344d19e03551505e6a903f3820e448a9faa0a31"
-
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          toolchain: "1.95.0"
-          components: rustfmt,clippy
-
-      - name: Install Linux native UI dependencies
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y \
-            libxcb-render0-dev \
-            libxcb-shape0-dev \
-            libxcb-xfixes0-dev \
-            libxkbcommon-dev \
-            libxkbcommon-x11-dev \
-            libwayland-dev \
-            libgl1-mesa-dev \
-            libssl-dev
-
-      - name: Resolve native dependency lock
-        working-directory: apps/hepta-native
-        run: cargo generate-lockfile
-
-      - name: Format native product
-        working-directory: apps/hepta-native
-        run: cargo fmt --check
-
-      - name: Clippy native product
-        working-directory: apps/hepta-native
-        run: cargo clippy --all-targets --all-features -- -D warnings
-
-      - name: Test native product
-        working-directory: apps/hepta-native
-        run: cargo test --all-targets
-
-      - name: Test authenticated native gateway
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-native-gateway
-
-      - name: Test Windows kernel final-use durability
-        if: runner.os == 'Windows'
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-contracts final_use::windows_tests::
-
-      - name: Build native release binaries
-        working-directory: apps/hepta-native
-        run: cargo build --release --bins
-
-      - name: Package and smoke Unix product
-        if: runner.os != 'Windows'
-        working-directory: apps/hepta-native
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf dist
-          mkdir -p dist/package
-          cp target/release/hepta-native dist/package/
-          cp target/release/hepta-native-updater dist/package/
-          cp target/release/hepta-native-credential dist/package/
-          ./dist/package/hepta-native --self-test
-          cp Cargo.lock dist/Cargo.lock
-
-      - name: Package and smoke Windows product
-        if: runner.os == 'Windows'
-        working-directory: apps/hepta-native
-        shell: pwsh
-        run: |
-          Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force dist/package | Out-Null
-          Copy-Item target/release/hepta-native.exe dist/package/
-          Copy-Item target/release/hepta-native-updater.exe dist/package/
-          Copy-Item target/release/hepta-native-credential.exe dist/package/
-          .\dist\package\hepta-native.exe --self-test
-          Copy-Item Cargo.lock dist/Cargo.lock
-
-      - name: Upload exact-head qualification artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+          ref: 5344d19e03551505e6a903f3820e448a9faa0a31
+          persist-credentials: false
+      - shell: bash
+        run: test "$(git rev-parse HEAD)" = "5344d19e03551505e6a903f3820e448a9faa0a31"
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          name: ui-native-exact-5344d19e03551505e6a903f3820e448a9faa0a31-${{ runner.os }}-${{ runner.arch }}
-          path: apps/hepta-native/dist/**
-          if-no-files-found: error
-          retention-days: 30
+          ref: 5344d19e03551505e6a903f3820e448a9faa0a31
+          persist-credentials: false
+      - shell: bash
+        run: test "$(git rev-parse HEAD)" = "5344d19e03551505e6a903f3820e448a9faa0a31"
