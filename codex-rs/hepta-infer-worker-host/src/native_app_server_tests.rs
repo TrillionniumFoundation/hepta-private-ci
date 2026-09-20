@@ -107,7 +107,11 @@ fn lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread() {
     );
     let recovered = exact_reconciled_turn(
         "thread-a",
-        &observed(started("thread-a", "turn-recovered", TurnStatus::InProgress)),
+        &observed(started(
+            "thread-a",
+            "turn-recovered",
+            TurnStatus::InProgress,
+        )),
     )
     .unwrap()
     .expect("exact turn/started must reconcile");
@@ -389,7 +393,6 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
 }
-
 
 #[test]
 fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
