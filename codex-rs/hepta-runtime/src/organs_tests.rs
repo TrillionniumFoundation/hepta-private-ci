@@ -6,7 +6,7 @@ use crate::RuntimeStateStatus;
 #[cfg(unix)]
 use crate::{
     RuntimeTopologyApplyRequestV1, RuntimeTopologySuccessorV1,
-    runtime_topology_final_use_binding_v1,
+    runtime_topology_final_use_binding_v1, runtime_topology_recovery_final_use_binding_v1,
 };
 
 #[derive(Debug)]
@@ -524,15 +524,16 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
         accepted_subject_id: StableId::new("operator:runtime-canary-rollback")?,
         successor: rollback_successor,
     };
-    let rollback_binding = runtime_topology_final_use_binding_v1(&failed, &rollback_request)
-        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let rollback_binding =
+        runtime_topology_recovery_final_use_binding_v1(&failed, &rollback_request)
+            .map_err(|error| anyhow::anyhow!("{error}"))?;
     let (_rollback_dir, rollback_authority, rollback_grant) = final_use_authority_and_grant(
         rollback_binding,
         "grant:runtime-canary:rollback",
         [0x32; 32],
     );
     let rollback_receipt = organs
-        .apply_governed_topology(&rollback_authority, &rollback_grant, rollback_request)
+        .recover_governed_topology(&rollback_authority, &rollback_grant, rollback_request)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     assert_eq!(rollback_receipt.predecessor_generation, Generation::new(2)?);
     assert_eq!(rollback_receipt.successor_generation, Generation::new(3)?);
