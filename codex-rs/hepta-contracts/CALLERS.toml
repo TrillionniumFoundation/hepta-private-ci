@@ -33,6 +33,21 @@ product_callers = [
   "codex-rs/hepta-evidence/src/lib.rs",
 ]
 
+
+[[surface]]
+crate = "codex-hepta-intelligence"
+role = "authority_free_intelligence_composition_facade"
+public_items = [
+  "build_legal_candidates_v1",
+  "run_composition_v3",
+  "run_composition_v3_with_control",
+  "NativeV3OwnerPorts",
+  "IntelligenceHostEnvelopeV1",
+  "LegalActionCandidateSetV1",
+  "append_outcome_credit_v1",
+]
+product_callers = ["codex-rs/hepta-agentd/src/lane_b_runtime.rs"]
+
 [[excluded]]
 crate = "codex-hepta-proof"
 reason = "Permanently retired from the vNext product: no product caller, no live production rows, and no runtime dependency. The frozen oracle and recovery bundle retain it for archaeology."
