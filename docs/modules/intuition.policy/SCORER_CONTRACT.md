@@ -36,9 +36,9 @@ Every current-generation V3 decision carries one exact scorer-owned commitment c
 - feature snapshot and feature-schema digests;
 - output-schema and score-semantics digests;
 - canonical candidate-identity digest;
-- exact scored/policy-output digest covering utility, calibrated confidence, OOD outputs and randomized assignment probabilities.
+- exact learned-score digest covering utility, calibrated confidence and OOD outputs. Assignment probabilities are intentionally outside the scorer-owned digest.
 
-The random draw is excluded from the scorer commitment. The commitment does bind the exact `risk_class` and an `assignment_distribution_digest` covering Deterministic-vs-CounterBased mode, abstain mass and candidate assignment probabilities. These bindings are tamper commitments, not a transfer of risk or RNG authority to the scorer. The RandomSource separately signs the same randomized distribution context together with its stream/counter/draw so neither a valid draw nor a CounterBased decision can be transplanted or downgraded into a different assignment mode.
+Assignment probabilities and the random draw are excluded from the scorer commitment because they are not learned-model outputs. The RequestAttestor signs the full exact request (including the assignment distribution), while RandomSource separately signs that same distribution context together with its stream/counter/draw so a valid draw cannot be transplanted onto a different distribution.
 
 `decide_calibrated_v3` validates the commitment against both the canonical profile and the exact request before selection. Mutating one candidate score, model identity, feature snapshot, generation or scorer schema after commitment fails closed.
 
@@ -62,19 +62,20 @@ Request-local compatibility fields must match the authenticated profile exactly;
 
 ## Per-decision authenticated ownership
 
-The consumer verifies four signed facts through the existing `LearningEvidenceVerifierV1` trust snapshot:
+The consumer verifies five signed facts through the existing `LearningEvidenceVerifierV1` trust snapshot:
 
 1. `Generator`: legal candidate identity and completeness, including `omitted_count_bound == 0`;
-2. `Scorer`: the exact `ScoringCommitmentV1`;
-3. `Evaluator`: the reusable canonical profile qualification;
-4. `RandomSource`: for CounterBased decisions only, the exact stream, request sequence/counter, draw, abstain mass and already-authenticated assignment distribution context.
+2. `Scorer`: the exact learned-output `ScoringCommitmentV1`;
+3. `RequestAttestor`: the exact calibrated request digest, including decision-time `risk_class` and all request-local compatibility fields;
+4. `Evaluator`: the reusable canonical profile qualification;
+5. `RandomSource`: for CounterBased decisions only, the exact stream, request sequence/counter, draw, abstain mass and already-authenticated assignment distribution context.
 
-The four verified principals/controllers must be independent. Deterministic assignment requires no random-source evidence; supplying one is rejected.
+The five verified principals/controllers must be pairwise independent when RandomSource evidence is present; deterministic decisions verify the first four roles and reject unexpected random-source evidence.
 
 The authenticated consumer then binds the exact calibrated request digest, profile digest, all verified payload/signature digests and the V3 decision receipt into one authentication digest.
 
 ## Compatibility and authority
 
-V1 remains historical replay. V2 remains complete-request-bound compatibility and fails closed on nonzero omission. New current-generation qualification uses V3 plus the scorer/profile/random-source evidence chain.
+V1 remains historical replay. V2 remains complete-request-bound compatibility and fails closed on nonzero omission. New current-generation qualification uses V3 plus Generator/Scorer/RequestAttestor/Evaluator evidence and, for randomized assignment, RandomSource evidence.
 
 None of these contracts grant effect authority. The policy cannot dispatch a tool/model/provider, clear a hard veto, write another owner store, promote an artifact or authorize release.
