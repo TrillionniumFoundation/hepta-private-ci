@@ -251,3 +251,38 @@ fn time_policy_observer_and_future_collection_cannot_be_substituted() {
     fixture.timing.observer.signature[0] ^= 1;
     assert!(fixture.decide(&evidence).is_err());
 }
+
+
+#[test]
+fn evaluator_and_observer_cannot_share_identity_key_credential_or_controller() {
+    let mut fixture = Fixture::new();
+    fixture.principals[2] = fixture.principals[1].clone();
+    fixture.keys[2] = SigningKey::from_bytes(&[22; 32]);
+    fixture.verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: digest("shared-scope"),
+        objective_digest: fixture.bundle.objective_digest,
+        authority_epoch: 4,
+        signers: vec![
+            TrustedLearningSignerV1 {
+                principal: fixture.principals[0].clone(),
+                controller_id: fixture.principals[0].principal_id.clone(),
+                verifying_key: fixture.keys[0].verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Generator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: fixture.principals[1].clone(),
+                controller_id: fixture.principals[1].principal_id.clone(),
+                verifying_key: fixture.keys[1].verifying_key().to_bytes(),
+                roles: vec![
+                    LearningEvidenceRoleV1::Evaluator,
+                    LearningEvidenceRoleV1::Observer,
+                ],
+                revoked_at: None,
+            },
+        ],
+    })
+    .expect("trusted collision fixture");
+    let evidence = fixture.attest();
+    assert!(fixture.decide(&evidence).is_err());
+}

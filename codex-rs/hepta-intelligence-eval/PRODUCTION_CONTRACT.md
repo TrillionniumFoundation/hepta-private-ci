@@ -37,8 +37,7 @@ For ordinary qualification:
 2. durably consume the exact frozen plan through the authoritative holdout owner;
 3. authenticate the generator's signature over the frozen plan digest;
 4. authenticate the evaluator's signature over the exact V2 evaluation payload;
-5. verify current host-owned trust, role/controller separation, scope, objective,
-   authority epoch, lifetime and revocation;
+5. verify current host-owned trust, scope, objective, authority epoch, lifetime and revocation; generator, evaluator and longitudinal observer must be pairwise distinct by principal, credential chain, signing key and controller;
 6. run the bound statistical, support, safety and claim-scope checks;
 7. persist the decision together with trust/authentication digests.
 
@@ -99,9 +98,9 @@ binds at least:
 - `Cargo.lock` digest;
 - this production-contract digest;
 - `NATIVE_MAPPING.md` and Lane E traceability digests;
-- coverage report digest and measured line coverage;
+- coverage report digest and measured line coverage, with `>=85%` line coverage enforced by CI;
 - repeated fenced-holdout stress result;
-- signed cross-crate E2E test identity;
+- signed cross-crate E2E test identity and evaluated-shadow signed runtime-admission E2E;
 - creation time and expiry.
 
 The manifest is provenance-attested by GitHub Actions. These are repository

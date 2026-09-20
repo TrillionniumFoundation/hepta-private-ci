@@ -310,6 +310,14 @@ jobs:
           lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
           -- --test-threads=1
 
+      - name: Evaluated-shadow signed runtime admission E2E
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence
+          evaluated_shadow
+          -- --test-threads=1
+
       - name: Fenced holdout stress
         shell: bash
         run: |
@@ -330,6 +338,7 @@ jobs:
           cargo llvm-cov --locked
           -p codex-hepta-intelligence-eval
           --all-targets
+          --fail-under-lines 85
           --json
           --output-path ../.hepta-evidence/learning-eval/coverage.json
 
