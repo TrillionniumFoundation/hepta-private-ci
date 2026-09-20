@@ -82,8 +82,9 @@ fn bridge_preserves_complete_and_incomplete_assignment_facts() {
         assert_eq!(fact.enumerated_candidate_digests.len(), 3);
         assert_eq!(fact.legal_candidate_indices, vec![0, 1, 2]);
         assert_eq!(fact.selected_candidate_indices, vec![0, 1, 2]);
-        assert_eq!(fact.delivered_candidate_indices, vec![0, 1, 2]);
-        assert!(fact.context_exposed);
+        assert!(fact.delivered_candidate_indices.is_empty());
+        assert!(!fact.context_exposed);
+        assert_eq!(fact.published_context_digest, None);
         assert_eq!(fact.downstream_policy_digest, None);
         assert_eq!(fact.delivery_propensity, ProbabilityQ32::ONE);
 
@@ -108,8 +109,9 @@ fn maximum_retrieval_assignment_fits_existing_bounded_event_frame() {
     assert_eq!(fact.enumerated_candidate_digests.len(), 512);
     assert_eq!(fact.legal_candidate_indices.len(), 512);
     assert_eq!(fact.selected_candidate_indices.len(), 16);
-    assert_eq!(fact.delivered_candidate_indices.len(), 16);
-    assert!(fact.context_exposed);
+    assert!(fact.delivered_candidate_indices.is_empty());
+    assert!(!fact.context_exposed);
+    assert_eq!(fact.published_context_digest, None);
 }
 
 #[test]
@@ -122,6 +124,7 @@ fn delivery_aware_bridge_binds_only_the_final_exposed_subset() {
         &observation,
         &delivered,
         true,
+        Some(digest("published-context")),
     )
     .expect("delivery-aware bridge");
     let LedgerEvent::RetrievalAssignment(fact) = event else {
@@ -137,6 +140,7 @@ fn delivery_aware_bridge_binds_only_the_final_exposed_subset() {
         &observation,
         &[],
         false,
+        None,
     )
     .expect("no exposure");
     let LedgerEvent::RetrievalAssignment(fact) = no_exposure else {
@@ -152,6 +156,7 @@ fn delivery_aware_bridge_binds_only_the_final_exposed_subset() {
             &observation,
             &[observation.legal_candidates[19].clone()],
             true,
+            Some(digest("published-context")),
         ),
         Err(RetrievalAssignmentBridgeError::DeliveredCandidateOutsideSelection)
     );
@@ -168,6 +173,7 @@ fn downstream_policy_and_delivery_propensity_are_bound_separately() {
         &observation,
         &delivered,
         true,
+        Some(digest("published-context")),
         Some(policy_digest),
         ProbabilityQ32::ONE,
     )
@@ -176,6 +182,10 @@ fn downstream_policy_and_delivery_propensity_are_bound_separately() {
         panic!("retrieval assignment");
     };
     assert_eq!(fact.assignment_propensity, ProbabilityQ32::ONE);
+    assert_eq!(
+        fact.published_context_digest,
+        Some(digest("published-context"))
+    );
     assert_eq!(fact.downstream_policy_digest, Some(policy_digest));
     assert_eq!(fact.delivery_propensity, ProbabilityQ32::ONE);
     assert_eq!(fact.delivered_candidate_indices.len(), 1);
@@ -187,6 +197,7 @@ fn downstream_policy_and_delivery_propensity_are_bound_separately() {
             &observation,
             &delivered,
             true,
+            Some(digest("published-context")),
             Some(policy_digest),
             ProbabilityQ32::ZERO,
         ),
