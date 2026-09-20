@@ -419,7 +419,11 @@ impl DurableOperationLedger {
             return Err(OperationError::InvalidDigest("terminal outcome"));
         }
         self.transition(operation_id, |mut record| {
-            if observer_generation.get() < record.operation.owner_generation.get() {
+            if observer_generation.get() < record.operation.owner_generation.get()
+                || record
+                    .terminal_observer_generation
+                    .is_some_and(|generation| observer_generation.get() < generation.get())
+            {
                 return Err(OperationError::StaleGeneration);
             }
             if terminal_matches(&record.operation.state, outcome, outcome_digest) {
