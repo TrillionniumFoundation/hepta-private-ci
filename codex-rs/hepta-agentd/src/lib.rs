@@ -27,6 +27,7 @@ mod operations_host;
 mod production_writer_host;
 mod qualification_writer;
 mod runtime;
+mod runtime_tasks;
 mod state;
 
 pub use authbus_ingress::authbus_text_claims;
@@ -107,6 +108,8 @@ pub use operations_host::AgentdOperationsHost;
 pub use operations_host::AutomationGrantProvider;
 pub use production_writer_host::AgentdProductionWriterHost;
 pub use runtime::run;
+pub use runtime_tasks::RuntimeTaskFailure;
+pub use runtime_tasks::RuntimeTasks;
 
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;

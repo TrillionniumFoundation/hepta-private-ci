@@ -15,6 +15,7 @@ use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FederatedRecallSet;
 use codex_hepta_types::Generation;
 use codex_utils_absolute_path::AbsolutePathBuf;
+#[cfg(test)]
 use tokio::task::JoinHandle;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
@@ -24,6 +25,7 @@ use crate::AgentdControlServer;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
+use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::run_automation_scheduler;
 
@@ -31,14 +33,14 @@ const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const APP_SERVER_PROBE_TIMEOUT: Duration = Duration::from_secs(2);
 
+// Retain the consumed-JoinHandle regression adapter only in test builds.
+#[cfg(test)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum CompletedRuntimeTask {
     Control,
     AppServer,
     Monitor,
     Automation,
-    AuthBus,
-    Objective,
 }
 
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
@@ -137,88 +139,60 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         cancellation.clone(),
     )
     .await?;
-    let mut control_task = tokio::spawn(control.run());
-    let mut app_server_task = tokio::spawn(run_app_server(
+    let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(2))?;
+    tasks.spawn_required("runtime.control", control.run())?;
+    let app_server = run_app_server(
         identity.clone(),
         arg0_paths,
         cognitive_runtime,
         Arc::clone(&state),
-    ));
-    let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
+    );
+    tasks.spawn_required("runtime.codex", async move {
+        app_server.await.map_err(AgentdError::from)
+    })?;
+    tasks.spawn_required("runtime.generation", monitor_runtime(Arc::clone(&state)))?;
+
     let automation_cancellation = cancellation.clone();
     let automation_state = Arc::clone(&state);
-    let mut automation_task = tokio::spawn(async move {
-        match automation_store {
-            Some(store) => {
-                run_automation_scheduler(store, automation_state, identity, automation_cancellation)
+    let quarantine_state = Arc::clone(&state);
+    tasks.spawn_optional(
+        "automation.taskflow",
+        async move {
+            match automation_store {
+                Some(store) => {
+                    run_automation_scheduler(
+                        store,
+                        automation_state,
+                        identity,
+                        automation_cancellation,
+                    )
                     .await
+                }
+                None => {
+                    automation_cancellation.cancelled().await;
+                    Ok(())
+                }
             }
-            None => {
-                // Automation is an optional per-Agent product plane. A corrupt or
-                // unavailable private store must not create a second failure domain
-                // for Codex sessions, tools, or the App Server.
-                automation_cancellation.cancelled().await;
-                Ok(())
-            }
-        }
-    });
-
-    let mut authbus_task = tokio::spawn(crate::authbus_dispatch::run(
-        Arc::clone(&state),
-        cancellation.clone(),
-    ));
-    let mut objective_task = tokio::spawn(crate::objective_dispatch::run(
-        Arc::clone(&state),
-        cancellation.clone(),
-    ));
-
-    let (outcome, completed_task) = tokio::select! {
-        result = &mut objective_task => (
-            joined("Objective durable ingress", result),
-            Some(CompletedRuntimeTask::Objective),
-        ),
-        result = &mut authbus_task => (
-            joined("AuthBus text relay", result),
-            Some(CompletedRuntimeTask::AuthBus),
-        ),
-        result = &mut control_task => (
-            joined("control server", result),
-            Some(CompletedRuntimeTask::Control),
-        ),
-        result = &mut app_server_task => (
-            joined_io("Codex App Server", result),
-            Some(CompletedRuntimeTask::AppServer),
-        ),
-        result = &mut monitor_task => (
-            joined("generation monitor", result),
-            Some(CompletedRuntimeTask::Monitor),
-        ),
-        result = &mut automation_task => (
-            joined("automation scheduler", result),
-            Some(CompletedRuntimeTask::Automation),
-        ),
-        signal = shutdown_signal() => {
-            signal?;
-            state.mark_draining()?;
-            (Ok(()), None)
-        }
-    };
-    cancellation.cancel();
-    if completed_task != Some(CompletedRuntimeTask::AuthBus) {
-        abort_and_join(&mut authbus_task).await;
-    }
-    if completed_task != Some(CompletedRuntimeTask::Objective) {
-        abort_and_join(&mut objective_task).await;
-    }
-    cleanup_runtime_tasks(
-        completed_task,
-        &mut control_task,
-        &mut app_server_task,
-        &mut monitor_task,
-        &mut automation_task,
-    )
-    .await;
-    outcome
+        },
+        move || quarantine_state.mark_automation_unavailable(),
+    )?;
+    // These ingress paths retain required status until dependent admission and
+    // reconciliation routes can be retired together. Optional does not mean
+    // silently weakening a required writer, authorization or generation fence.
+    tasks.spawn_required(
+        "auth.authbus",
+        crate::authbus_dispatch::run(Arc::clone(&state), cancellation.clone()),
+    )?;
+    tasks.spawn_required(
+        "objective.compiler",
+        crate::objective_dispatch::run(Arc::clone(&state), cancellation),
+    )?;
+    tasks
+        .run_until(async {
+            shutdown_signal().await?;
+            state.mark_draining()
+        })
+        .await
 }
 
 #[cfg(feature = "qualification-cognitive-write")]
@@ -394,36 +368,7 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
     Ok(())
 }
 
-fn joined(
-    label: &str,
-    result: Result<Result<(), AgentdError>, tokio::task::JoinError>,
-) -> Result<(), AgentdError> {
-    match result {
-        Ok(Ok(())) => Err(AgentdError::Protocol(format!(
-            "{label} exited before agentd shutdown"
-        ))),
-        Ok(Err(error)) => Err(error),
-        Err(error) => Err(AgentdError::Protocol(format!(
-            "{label} task failed: {error}"
-        ))),
-    }
-}
-
-fn joined_io(
-    label: &str,
-    result: Result<std::io::Result<()>, tokio::task::JoinError>,
-) -> Result<(), AgentdError> {
-    match result {
-        Ok(Ok(())) => Err(AgentdError::Protocol(format!(
-            "{label} exited before agentd shutdown"
-        ))),
-        Ok(Err(error)) => Err(error.into()),
-        Err(error) => Err(AgentdError::Protocol(format!(
-            "{label} task failed: {error}"
-        ))),
-    }
-}
-
+#[cfg(test)]
 async fn abort_and_join<T>(task: &mut JoinHandle<T>) {
     if !task.is_finished() {
         task.abort();
@@ -431,6 +376,7 @@ async fn abort_and_join<T>(task: &mut JoinHandle<T>) {
     let _ = task.await;
 }
 
+#[cfg(test)]
 async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, AutomationOutput>(
     completed_task: Option<CompletedRuntimeTask>,
     control_task: &mut JoinHandle<ControlOutput>,
