@@ -930,6 +930,54 @@ async fn revoked_grant_never_enters_the_physical_matrix_adapter() -> TestResult 
 
 #[cfg(unix)]
 #[tokio::test]
+async fn revocation_after_claim_before_adapter_entry_never_crosses_network() -> TestResult {
+    let authorizer = TestAuthorizer::new()?;
+    let temp = TempDir::new()?;
+    let agent_id = agent(FIRST_AGENT)?;
+    let layout = layout(&temp, &agent_id)?;
+    let store = prepared_store(&layout).await?;
+    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let transport = FakeTransport::new([Ok(event("$must-not-send-revocation-race")?)]);
+
+    let claimed = store.claim_outbox(10, 20, 1).await?;
+    let claimed = claimed.first().ok_or("missing revocation-race claim")?.clone();
+    let prepared = store.prepare_outbox_dispatch(&claimed, 10).await?;
+    let request = build_matrix_final_use_request(
+        agent_id.as_str(),
+        &prepared,
+        &claimed,
+        &fake_outbound_identity(),
+    )?;
+    let signed = authorizer.signed_grant(&request).await?;
+    let token = authorizer.authority().claim(&signed, &request.binding)?;
+
+    let mut revoked = BTreeSet::new();
+    revoked.insert(signed.grant.grant_id.clone());
+    authorizer.authority().update_revocations(FinalUseRevocations {
+        authority_epoch: signed.grant.authority_epoch,
+        revision: 2,
+        revoked_grant_ids: revoked,
+    })?;
+
+    let entered = authorizer.authority().with_verified_use_at_frontier(
+        token,
+        &request.binding,
+        || transport.send(&claimed),
+    );
+    assert!(entered.is_err(), "revocation committed before adapter entry must deny use");
+    assert!(transport.txn_ids()?.is_empty());
+    assert!(
+        store
+            .dispatch_authority_claim(&original.stable_txn_id, claimed.attempts)
+            .await?
+            .is_none(),
+        "a denied adapter entry must not mint Matrix-side authority evidence",
+    );
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
 async fn wrong_signer_grant_never_enters_the_physical_matrix_adapter() -> TestResult {
     let authorizer = TestAuthorizer::wrong_signer()?;
     let temp = TempDir::new()?;
