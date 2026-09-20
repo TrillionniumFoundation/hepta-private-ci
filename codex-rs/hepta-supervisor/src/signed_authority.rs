@@ -481,6 +481,7 @@ pub struct ProductionMutationReceipt {
 pub enum ProductionMutationStatus {
     Queued,
     Committed,
+    RolledBack,
     RecoveryRequired,
 }
 
