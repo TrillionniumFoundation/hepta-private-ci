@@ -21,7 +21,6 @@ use crate::AgentContextAttachment;
 use crate::AgentRunCancellation;
 use crate::AgentRunPhase;
 use crate::AgentRunReceipt;
-use crate::AgentRunRecovery;
 use crate::AgentRunSnapshot;
 use crate::AgentdCapabilitySet;
 use crate::AgentdError;
@@ -314,24 +313,6 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::RunStatus { run } => Ok(run),
-            payload => unexpected(payload),
-        }
-    }
-
-    pub async fn run_recover_indeterminate(
-        &self,
-        recovery: AgentRunRecovery,
-    ) -> Result<AgentRunReceipt, AgentdError> {
-        match self
-            .send(AgentdRequest::run_recover_indeterminate(
-                self.request_id(),
-                self.spawn_generation,
-                recovery,
-            ))
-            .await?
-            .payload
-        {
-            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
             payload => unexpected(payload),
         }
     }
