@@ -341,6 +341,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         target: &AgentRelease,
     ) -> Result<(), SupervisorError> {
+        // Resolve again before consuming the caller's control revision so a
+        // revoked/withdrawn predecessor remains a clean pre-dispatch rejection.
+        let target = self.refresh_release_for_transition(agent_id, target)?;
         let record = self.record(agent_id)?;
         let slot = self
             .slots
