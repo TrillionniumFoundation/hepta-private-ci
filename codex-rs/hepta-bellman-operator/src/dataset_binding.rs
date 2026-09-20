@@ -71,7 +71,7 @@ impl VerifiedOperatorDatasetV2 {
         evidence: impl IntoIterator<Item = Digest32>,
     ) -> Result<(), OperatorDatasetBindingError> {
         let mut provided = evidence.into_iter().collect::<Vec<_>>();
-        if provided.iter().any(Digest32::is_zero) {
+        if provided.iter().any(|digest| digest.is_zero()) {
             return Err(OperatorDatasetBindingError::EvidenceSetMismatch);
         }
         provided.sort_unstable();
