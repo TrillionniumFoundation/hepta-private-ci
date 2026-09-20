@@ -355,6 +355,13 @@ impl RecallPacketV1 {
             contradiction.validate()?;
         }
         self.resource_receipt.validate()?;
+        population_counts_v1(&self.active_nodes)?;
+        if usize::from(self.resource_receipt.candidate_event_count) < self.selected_events.len()
+            || usize::from(self.resource_receipt.active_node_count) != self.active_nodes.len()
+            || self.resource_receipt.active_node_count > self.resource_receipt.node_count
+        {
+            return Err(HnmfContractError::Invalid("recall resource receipt binding"));
+        }
         if self.abstain.is_none() && self.selected_events.is_empty() {
             return Err(HnmfContractError::Invalid("empty non-abstaining recall"));
         }
@@ -418,9 +425,12 @@ pub struct ReplayResourceReceiptV1 {
 
 impl ReplaySelectionReceiptV1 {
     pub fn validate(&self) -> Result<(), HnmfContractError> {
-        if usize::from(self.resource_receipt.candidate_count) > MAX_REPLAY_CANDIDATES
-            || usize::from(self.resource_receipt.selected_count) > MAX_REPLAY_SELECTION
-            || self.selected_event_ids.len() != usize::from(self.resource_receipt.selected_count)
+        let candidate_count = usize::from(self.resource_receipt.candidate_count);
+        let selected_count = usize::from(self.resource_receipt.selected_count);
+        if candidate_count > MAX_REPLAY_CANDIDATES
+            || selected_count > MAX_REPLAY_SELECTION
+            || selected_count > candidate_count
+            || self.selected_event_ids.len() != selected_count
             || self.resource_receipt.maximum_per_source_bucket == 0
             || self.resource_receipt.maximum_per_source_bucket
                 > self.resource_receipt.selected_count.max(1)
@@ -428,13 +438,26 @@ impl ReplaySelectionReceiptV1 {
             return Err(HnmfContractError::Invalid("replay resource receipt"));
         }
         ensure_strict_order(&self.selected_event_ids, "selectedEventIds")?;
-        ensure_strict_order(&self.source_bucket_counts, "sourceBucketCounts")?;
         if self
             .source_bucket_counts
-            .iter()
-            .any(|row| row.selected_count > self.resource_receipt.maximum_per_source_bucket)
+            .windows(2)
+            .any(|rows| rows[0].source_bucket >= rows[1].source_bucket)
         {
-            return Err(HnmfContractError::Invalid("replay source quota"));
+            return Err(HnmfContractError::Invalid("sourceBucketCounts"));
+        }
+        let mut bucket_total = 0usize;
+        for row in &self.source_bucket_counts {
+            if row.selected_count == 0
+                || row.selected_count > self.resource_receipt.maximum_per_source_bucket
+            {
+                return Err(HnmfContractError::Invalid("replay source quota"));
+            }
+            bucket_total = bucket_total
+                .checked_add(usize::from(row.selected_count))
+                .ok_or(HnmfContractError::Invalid("replay source count overflow"))?;
+        }
+        if bucket_total != selected_count {
+            return Err(HnmfContractError::Invalid("replay source count binding"));
         }
         Ok(())
     }
