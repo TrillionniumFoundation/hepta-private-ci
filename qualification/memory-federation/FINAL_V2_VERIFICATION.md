@@ -2,19 +2,68 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `331b81d385a88837e252bd80fda8b8ac35ea4191`
-- candidate implementation head: `1b470b31b266e58bcde1f924f41fd09050225d6d`
-- candidate implementation tree: `872a2bd3f9b2f913958373f8105c39e8ecd701bc`
-- status: `pending_exact_current_head_execution`
-- claim boundary: source/product-composition candidate only; no activation, release, or product-execution proof is asserted here.
+- frozen candidate implementation head: `fc05fb3255f9bc9db37496b1141abec5c2a4db11`
+- frozen candidate implementation tree: `c6cda06865ba50f1c66224c531fe8117a2172191`
+- status: `pending_exact_current_head_and_merge_candidate_execution`
+- claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
 
-## Required checks
+## Candidate boundary
 
-The candidate must pass the repository workflow `.github/workflows/memory-federation-v2-final-verify.yml` plus the normal exact-head and deterministic merge-candidate gates before `productExecutionProved` can change.
+The frozen candidate is the last non-metadata commit. Commits after it may modify only:
 
-Focused checks cover formatting, the canonical federation contract, product adapter and legacy regression, extension federation attachment, Agentd runtime composition, source-composition assertions, strict Clippy, and a clean diff check.
+- `docs/modules/memory.federation/IMPLEMENTATION_MAP.json`
+- `qualification/memory-federation/FINAL_V2_VERIFICATION.md`
+
+Any later change to code, tests, product composition, technical documentation, dossier/profile truth, Cargo state or derived document indexes invalidates this receipt and requires a new candidate head/tree.
+
+The candidate establishes the following source-level properties without promoting them to executed qualification:
+
+- exact query-bound and domain-separated remote response digest verification;
+- prefix-sensitive evidence ordering for bounded selection;
+- `Partial + []` preservation;
+- live capability/revocation/generation observation before dispatch and after I/O;
+- result lifetime bounded by response, lease, query and live-authority horizons;
+- interruptible single-attempt async transport with no engine-owned retry;
+- exact-scope owner data frontier acquired from the same SQLite snapshot as candidates;
+- Agentd composition through `CognitiveRuntime::AvailableFederatedV2`;
+- V2-only product retrieval/revalidation APIs and a regression preventing `with_federation()` from downgrading an already-composed V2 runtime;
+- explicit requested/completed/failed/truncated aggregate coverage;
+- bounded fail-closed final model-input revalidation;
+- one-peer ownership in the canonical checked engine, with <=16-peer discovery/aggregation owned by the product orchestrator;
+- documentation truth that the current V2 structs are in-process Rust contracts, not a registered authenticated cross-host wire protocol.
+
+## Required executable checks
+
+The current PR head must pass `.github/workflows/memory-federation-v2-final-verify.yml` plus the normal exact-current-head and deterministic merge-candidate gates before `productExecutionProved` can change.
+
+Focused execution must cover:
+
+- formatting;
+- `codex-hepta-memory-federation` contract and adversarial/race tests;
+- `codex-hepta-memory` product runtime and legacy-downgrade regression;
+- Memory extension federation attachment and physical-send revalidation;
+- Agentd product composition;
+- implementation-map/source-attestation verification;
+- all-target compilation and strict Clippy;
+- clean tracked-source/diff checks.
+
+A queued workflow, source presence, test source identity, or a PASS on an older commit is not acceptance evidence for this candidate.
+
+## External gates
+
+This receipt does not satisfy or waive:
+
+- independent semantic/security review;
+- authenticated cross-process or multi-host peer transport;
+- remote peer identity, credential/grant binding and coherent remote data-frontier evidence;
+- two-real-host fault E2E;
+- target-host capacity/latency/backpressure qualification;
+- operator acceptance, canary, promotion or release.
+
+The current product composition remains the existing in-process/read-only owner-store path. A response digest proves integrity of the bound response fields; it does not authenticate a remote host identity.
 
 ## Historical note
 
-The earlier `fix/memory-federation-v2-hardening-final` receipt was a failing development receipt, not acceptance evidence. Its actionable federation-local failures (authority-horizon fixture inconsistency, missing extension test import, and strict Clippy enum-size lint) are repaired in this forward-port before new qualification is evaluated.
+The earlier `fix/memory-federation-v2-hardening-final` receipt was a failing development receipt, not acceptance evidence. Its actionable federation-local failures (authority-horizon fixture inconsistency, missing extension test import, and strict Clippy enum-size lint) were repaired before this frozen candidate.
 
-The frozen candidate also binds `observed_frontier` to the exact-scope owner memory frontier acquired from the same SQLite snapshot as candidate retrieval; empty scopes may truthfully use frontier zero. Response integrity is prefix-order-sensitive because `maximum_results` selects a response prefix, and `Partial + []` remains partial rather than being relabeled as valid-empty. Product model-input registration and revalidation are V2-only source APIs; the legacy AvailableFederated variant cannot silently satisfy the canonical product attachment path.
+This candidate additionally closes a compatibility split-brain edge found during security review: the legacy `with_federation()` helper now preserves `AvailableFederatedV2` rather than replacing it with `AvailableFederated`. The canonical V2 product APIs still reject the legacy variant.
