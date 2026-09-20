@@ -207,11 +207,7 @@ async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate(
     let fence = authority
         .fencing_token_digest()
         .expect("recovery fence digest");
-    let root = store
-        .path()
-        .parent()
-        .expect("cognitive root")
-        .to_path_buf();
+    let root = store.path().parent().expect("cognitive root").to_path_buf();
     let candidate = root.join(recovered_database_filename(&anchor, &fence));
     std::fs::copy(store.path(), &candidate).expect("candidate file");
     protect_database_file(&candidate).expect("private candidate");
