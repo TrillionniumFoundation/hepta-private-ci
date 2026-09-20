@@ -450,6 +450,24 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
         ));
     }
     verify_migration_ledger(pool).await?;
+    let dispatch_claim_objects: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_schema
+         WHERE name IN (
+             'cognitive_operation_dispatch_claims',
+             'cognitive_operation_dispatch_claims_no_update',
+             'cognitive_operation_dispatch_claims_no_delete',
+             'cognitive_operation_dispatch_claims_active_lookup',
+             'cognitive_operation_dispatch_claims_expiry_lookup'
+         )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if dispatch_claim_objects != 5 {
+        return Err(CognitiveStoreError::Corrupt(
+            "operation dispatch claim schema is incomplete".to_string(),
+        ));
+    }
     let mut schema_oracle_parts = Vec::with_capacity(REQUIRED_SCHEMA_OBJECTS.len());
     for (name, expected_type) in REQUIRED_SCHEMA_OBJECTS {
         let object = sqlx::query("SELECT type, sql FROM sqlite_schema WHERE name = ?")
@@ -725,10 +743,11 @@ async fn verify_migration_ledger(pool: &SqlitePool) -> Result<(), CognitiveStore
             (9, true),
             (10, true),
             (11, true),
+            (12, true),
         ]
     {
         return Err(CognitiveStoreError::Corrupt(format!(
-            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011 set: {migrations:?}"
+            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011/0012 set: {migrations:?}"
         )));
     }
 
