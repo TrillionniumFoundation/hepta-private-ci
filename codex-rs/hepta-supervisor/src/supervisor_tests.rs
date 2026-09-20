@@ -1765,7 +1765,7 @@ fn recovery_repairs_committed_selection_when_release_state_and_bytes_match()
 }
 
 #[test]
-fn recovery_converges_selection_terminal_intent_queued_crash_cut()
+fn recovery_rejects_terminal_selection_without_matching_durable_release()
 -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let record = fleet
@@ -1827,10 +1827,10 @@ fn recovery_converges_selection_terminal_intent_queued_crash_cut()
     crate::signed_intent::write_intent(record.layout.run_root(), &queued_intent)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    // Model a crash after the selection terminal write but before the matching
-    // intent terminal write. This is the only safe terminalization order:
-    // recovery can recognize the still-unresolved intent and quarantine both
-    // records instead of stranding a terminal intent beside queued selection.
+    // A terminal journal alone is insufficient. Without a matching durable
+    // Fleet release-state current pointer and immutable byte provenance,
+    // recovery must quarantine the transition instead of manufacturing a
+    // committed outcome from the journal.
     let terminal_selection =
         crate::release_selection::ReleaseSelectionRecord::prepared(&grant, 1, 1)?
             .with_status(crate::release_selection::ReleaseSelectionStatus::Committed)?;
@@ -1852,7 +1852,7 @@ fn recovery_converges_selection_terminal_intent_queued_crash_cut()
                     .message
                     .contains("unresolved signed supervisor intent")
         }),
-        "terminal-selection / queued-intent cut must enter explicit recovery"
+        "terminal journal without matching durable release must enter explicit recovery"
     );
     assert_eq!(
         recovered
@@ -2125,13 +2125,13 @@ fn install_release_pair_for_selection(
         parse_digest(source.agentd_sha256)?,
         source
             .matrixd_sha256
-            .map(&parse_digest)
+            .map(|value| parse_digest(value))
             .transpose()?,
         parse_digest(target.manifest_sha256)?,
         parse_digest(target.agentd_sha256)?,
         target
             .matrixd_sha256
-            .map(&parse_digest)
+            .map(|value| parse_digest(value))
             .transpose()?,
         Sha256Digest::for_bytes(format!("{prefix}-compatibility").as_bytes()),
         revocation_frontier,
