@@ -130,7 +130,7 @@ Owned authoritative or rebuildable domains: none.
 
 Read-only dependencies include the learning artifact registry, credit/episode ledgers, unlearning lineage, sensor-core registry and qualification evidence.
 
-Candidate persistence belongs to `learning.artifacts`. The Bellman crate only encodes bounded candidate bytes and validates independently selected pins. Tabular pins bind payload, training-artifact, objective, dataset, sensor-core, training-profile and generation identities. World-model pins bind payload, model, dataset and model identity. Corruption, truncation, trailing bytes, noncanonical order, invalid statistics, invalid probability/count totals or identity drift reject.
+Candidate persistence belongs to `learning.artifacts`. For cross-owner training, `verify_operator_dataset_v1` first verifies a self-describing `DatasetSnapshotReceiptV3`, authenticates its exact dataset digest through the host-owned `LearningEvidenceVerifierV1`, and returns a private `VerifiedOperatorDatasetV1`. Verified tabular/world-model fitters require the exact training evidence-digest set to equal the frozen source-record set. A detached caller-supplied dataset digest is insufficient on this path. The Bellman crate only encodes bounded candidate bytes and validates independently selected pins. Tabular pins bind payload, training-artifact, objective, dataset, sensor-core, training-profile and generation identities. World-model pins bind payload, model, dataset and model identity. Corruption, truncation, trailing bytes, noncanonical order, invalid statistics, invalid probability/count totals or identity drift reject.
 
 Rollback reopens an immutable compatible predecessor through the artifact owner under the current registry/revocation witness. Source tests exercise separate-process baseline/candidate/predecessor loading; this is engineering evidence, not product deployment authority.
 
@@ -149,6 +149,8 @@ Fail-closed conditions include:
 - duplicate sample identity or duplicate evidence/support digest;
 - missing/underfilled grid cells or fewer than two actions;
 - unsupported applicability or expired applicability evidence;
+- unsigned, wrong-role, revoked, controller-colliding or identity-mismatched evaluator evidence;
+- V3 dataset receipt/signature mismatch or training-row set differing from the frozen source-record set;
 - exact sensor work exceeding the source budget;
 - rank/gain/shape/OOD/error-budget breach;
 - candidate payload/pin mismatch or corrupt/noncanonical payload;
@@ -167,7 +169,7 @@ Owned threat entries:
 - `off_policy_residual_blowup`
 - `replay_contamination`
 
-Controls now explicitly include evidence-digest replay admission across target construction, tabular fitting and world-model fitting; deny-all candidate authority; independent payload pins; bounded canonical decoding; exact-work admission; regularity/OOD admission; and frozen statistical-evidence binding.
+Controls now explicitly include evidence-digest replay admission across target construction, tabular fitting and world-model fitting; authenticated V3 dataset/row-set binding; evaluator-signed applicability and regularity admission with generator/evaluator principal, credential-chain, signing-key and controller separation; deny-all candidate authority; independent payload pins; bounded canonical decoding; exact-work admission; regularity/OOD admission; and frozen statistical-evidence binding.
 
 Credentials do not enter learning datasets or general logs. Acceptance trust inputs are externally pinned and qualification-only. A hash computed from received bytes is not independent selection or admission.
 
@@ -207,11 +209,13 @@ Focused source references include:
 - `src/world_model_tests.rs` — action-conditioned deterministic baseline;
 - `src/world_model_loaded.rs` — pinned world-model load/predict/tamper rejection;
 - `src/world_model_qualification.rs` — effective-support/future/drift/confidence admission;
+- `src/dataset_binding.rs` — authenticated V3 dataset identity and exact training-row binding;
+- `src/authenticated_admission.rs` — evaluator-signed applicability/regularity and role-separation admission;
 - `hepta-shadow-qualification/tests/lane_e_api_contract.rs` — cross-crate public-surface linkage;
 - `hepta-shadow-qualification/tests/support/tabular_reload.rs` — artifact-owner reload/revocation integration;
 - `hepta-operator-acceptance` tests — qualification-evidence ceremony/trust behavior.
 
-Lane-E OP-01..OP-04 requirements are mapped to exact test functions in `qualification/lane-e/TEST_TRACEABILITY.json`. Exact-head and synthetic-merge CI, formatting, strict lint and all-target compilation remain required before source qualification is claimed.
+Lane-E OP-01..OP-06 requirements are mapped to exact test functions in `qualification/lane-e/TEST_TRACEABILITY.json`. Exact-head and synthetic-merge CI, formatting, strict lint and all-target compilation remain required before source qualification is claimed.
 
 Repository tests cannot self-create real future-calendar windows, selected-device measurements, live outcomes or independent acceptance.
 
@@ -229,7 +233,7 @@ A neural/tensor candidate is a separately reviewed optional implementation profi
 
 ## 14. Activation, compatibility and retirement
 
-Activation requires a named authenticated product caller through registered ports plus selected artifact, authority/configuration/resource checks and failure behavior. Shadow and qualification callers are not production callers.
+Activation requires a named authenticated product caller through registered ports plus selected artifact, authority/configuration/resource checks and failure behavior. A narrower real consumer already exists: Agentd's explicitly attached `PinnedCognitiveRanker` loads the independently selected pinned tabular artifact, revalidates the current artifact registry/revocation view on each cognitive read, and can only reorder already-admitted records. This establishes an explicit read consumer, not the default training→evaluation→selection→new-process product loop and not production activation.
 
 The `hepta-operator-acceptance` ceremony has scope `qualification_evidence_only`; `automatic_transition=false`; its declaration grants no Enforce, promotion, outbound or retirement authority. Production activation must not reinterpret this receipt.
 
@@ -239,7 +243,7 @@ Retirement of raw compatibility paths requires all callers migrated. Raw predict
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires current code, tests and a freshness-verified source snapshot. Qualification requires exact-candidate CI plus externally valid evidence for the claim being made. Product composition requires a named caller and selected-process loading. Independent operator acceptance, activation, canary, promotion and release are separate states.
 
-Current candidate status is therefore: **repository source closure in progress under PR CI; production implementation remains false; product caller remains not composed; external live/future/device/independent-acceptance gates remain open.**
+Current candidate status is therefore: **repository source closure in progress under PR CI; production implementation remains false; an explicit read consumer is source-composed, while the default training→evaluation→selection→new-process loop remains unwired; external live/future/device/independent-acceptance gates remain open.**
 
 ## 17. Source implementation receipt
 
@@ -256,7 +260,12 @@ This receipt records repository source bindings for the current documentation ca
 | `build_sensor_core` | `build_sensor_core` | `codex-rs/hepta-bellman-operator/src/sensor_bounded.rs` | `src/sensor_bounded.rs`, `src/reference_tests.rs` |
 | `evaluate_bellman_reference` | `evaluate_bellman_reference` | `codex-rs/hepta-bellman-operator/src/reference.rs` | `src/reference_tests.rs` |
 | `admit_operator_regularity` | `admit_operator_regularity` | `codex-rs/hepta-bellman-operator/src/reference.rs` | `src/reference_tests.rs` |
+| `verify_operator_dataset_v1` | `verify_operator_dataset_v1` | `codex-rs/hepta-bellman-operator/src/dataset_binding.rs` | `src/dataset_binding.rs` |
+| `fit_tabular_operator_verified_v1` | `fit_tabular_operator_verified_v1` | `codex-rs/hepta-bellman-operator/src/dataset_binding.rs` | `src/dataset_binding.rs` |
+| `admit_authenticated_applicability_v1` | `admit_authenticated_applicability_v1` | `codex-rs/hepta-bellman-operator/src/authenticated_admission.rs` | `src/authenticated_admission.rs` |
+| `admit_authenticated_regularity_v1` | `admit_authenticated_regularity_v1` | `codex-rs/hepta-bellman-operator/src/authenticated_admission.rs` | `src/authenticated_admission.rs` |
 | `fit_transition_model` | `fit_transition_model` | `codex-rs/hepta-bellman-operator/src/admitted.rs` | `src/admitted.rs`, `src/world_model_tests.rs` |
+| `fit_transition_model_verified_v1` | `fit_transition_model_verified_v1` | `codex-rs/hepta-bellman-operator/src/dataset_binding.rs` | `src/dataset_binding.rs` |
 | `load_pinned_world_model` | `LoadedWorldModelV1::from_pinned_payload` | `codex-rs/hepta-bellman-operator/src/world_model_loaded.rs` | `src/world_model_loaded.rs` |
 | `predict_loaded_world_model` | `LoadedWorldModelV1::predict` | `codex-rs/hepta-bellman-operator/src/world_model_loaded.rs` | `src/world_model_loaded.rs` |
 | `admit_world_model_qualification` | `admit_world_model_qualification` | `codex-rs/hepta-bellman-operator/src/world_model_qualification.rs` | `src/world_model_qualification.rs` |

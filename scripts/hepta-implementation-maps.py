@@ -405,8 +405,19 @@ def verify():
             expected_paths = source_paths_for(module, cargo_packages)
             if tracked_paths != expected_paths:
                 failures.append(f"{mid}: source tracked paths differ from registry bindings")
-            else:
-                verify_source_snapshot(mid, source_base, tracked_paths, failures)
+            consumer_paths = row.get("consumerTrackedPaths", [])
+            if not isinstance(consumer_paths, list) or any(
+                not isinstance(path, str) or not valid_repo_path(path)
+                for path in consumer_paths
+            ):
+                failures.append(f"{mid}: consumer tracked paths")
+            elif tracked_paths == expected_paths:
+                verify_source_snapshot(
+                    mid,
+                    source_base,
+                    sorted(set(tracked_paths) | set(consumer_paths)),
+                    failures,
+                )
         elif valid_source_base and source_scope == LEGACY_SOURCE_SCOPE:
             legacy_source_bases.add((source_base["commit"], source_base["tree"]))
         elif source_scope not in {MODULE_SOURCE_SCOPE, LEGACY_SOURCE_SCOPE}:

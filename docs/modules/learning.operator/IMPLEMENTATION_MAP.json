@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "9c5ef33a0308b85a175eec853f70738ba9bd15be",
-    "tree": "6fb172e9e40590509601dec9c2510f20a67d5738"
+    "commit": "4e9deefc682898bef0bfb3cceb27421c98f0e527",
+    "tree": "9cc9a1fe4170f53b5c4165bda7098e2243eb0f8c"
   },
   "sourceBaseScope": "module_source_snapshot",
   "sourceTrackedPaths": [
@@ -27,7 +27,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "explicit_read_consumer_composed_default_learning_loop_not_wired",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -89,8 +89,10 @@
       "nativeSymbol": "LoadedTabularOperatorV1::from_pinned_payload",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "state": "source_implemented_not_product_composed",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
+      ],
+      "state": "source_implemented_explicit_read_consumer",
       "authority": "none",
       "tests": [
         {
@@ -108,8 +110,10 @@
       "nativeSymbol": "LoadedTabularOperatorV1::predict",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "state": "source_implemented_not_product_composed",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
+      ],
+      "state": "source_implemented_explicit_read_consumer",
       "authority": "none",
       "tests": [
         {
@@ -309,12 +313,100 @@
         }
       ],
       "sourcePathExists": true
+    },
+    {
+      "operation": "verify_operator_dataset_v1",
+      "designOperation": "verify_operator_dataset_v1",
+      "nativeSymbol": "verify_operator_dataset_v1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-learning-ledger/src/dataset_receipt_v3.rs",
+        "codex-rs/hepta-learning-ledger/src/signed_evidence.rs"
+      ],
+      "state": "source_implemented_authenticated_dataset_boundary",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "fit_tabular_operator_verified_v1",
+      "designOperation": "fit_tabular_operator_verified_v1",
+      "nativeSymbol": "fit_tabular_operator_verified_v1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-bellman-operator/src/admitted.rs"
+      ],
+      "state": "source_implemented_authenticated_dataset_boundary",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "fit_transition_model_verified_v1",
+      "designOperation": "fit_transition_model_verified_v1",
+      "nativeSymbol": "fit_transition_model_verified_v1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-bellman-operator/src/admitted.rs"
+      ],
+      "state": "source_implemented_authenticated_dataset_boundary",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "admit_authenticated_applicability_v1",
+      "designOperation": "admit_authenticated_applicability_v1",
+      "nativeSymbol": "admit_authenticated_applicability_v1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/authenticated_admission.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-learning-ledger/src/signed_evidence.rs"
+      ],
+      "state": "source_implemented_authenticated_evaluator_boundary",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/authenticated_admission.rs"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "admit_authenticated_regularity_v1",
+      "designOperation": "admit_authenticated_regularity_v1",
+      "nativeSymbol": "admit_authenticated_regularity_v1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/authenticated_admission.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-learning-ledger/src/signed_evidence.rs"
+      ],
+      "state": "source_implemented_authenticated_evaluator_boundary",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/authenticated_admission.rs"
+        }
+      ],
+      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "No authenticated production caller or production writer is composed; source remains qualification-only.",
-    "Exact-head CI and synthetic-merge evidence must pass before this candidate can advance beyond source closure."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "independent semantic review",
     "selected target-host measurement and live future-window evidence",
@@ -329,9 +421,15 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "partialProductReadConsumerProved": true
   },
   "sourceRoot": [
     "codex-rs/hepta-bellman-operator"
-  ]
+  ],
+  "consumerTrackedPaths": [
+    "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+    "codex-rs/hepta-agentd/src/config.rs"
+  ],
+  "productCompositionLimit": "PinnedCognitiveRanker is a real read-ranking consumer, but there is no automatic training→evaluation→selection→new-process product loop."
 }

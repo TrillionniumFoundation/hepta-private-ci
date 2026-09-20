@@ -30,7 +30,9 @@ interpreted as the Hölder/operator qualification profile.
 | fit strict complete-grid operator | `fit_tabular_operator_strict_v2` | `src/learned_strict.rs` | implemented |
 | load independently pinned tabular payload | `LoadedTabularOperatorV1::from_pinned_payload` | `src/loaded.rs` | implemented |
 | predict from validated tabular payload | `LoadedTabularOperatorV1::predict` | `src/loaded.rs` | implemented |
-| admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
+| admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented structural |
+| authenticate frozen dataset + exact rows | `verify_operator_dataset_v1` / `fit_*_verified_v1` | `src/dataset_binding.rs` | implemented |
+| authenticate independent evaluator | `admit_authenticated_applicability_v1` / `admit_authenticated_regularity_v1` | `src/authenticated_admission.rs` | implemented |
 | fit replay-safe action-conditioned tabular dynamics | `fit_transition_model` | `src/admitted.rs` | implemented |
 | load independently pinned world-model payload | `LoadedWorldModelV1::from_pinned_payload` | `src/world_model_loaded.rs` | implemented |
 | predict from validated world-model payload | `LoadedWorldModelV1::predict` | `src/world_model_loaded.rs` | implemented |
@@ -206,3 +208,32 @@ test functions and CI jobs are registered in
 These are source and engineering qualification tests. They are not a substitute
 for real future-calendar efficacy, selected-host resource measurements,
 independent acceptance or production release evidence.
+
+
+## Authenticated dataset and evaluator boundary
+
+Cross-owner qualification should not trust a detached `dataset_digest` or a
+nonzero evaluator credential digest. `verify_operator_dataset_v1` validates the
+self-describing `DatasetSnapshotReceiptV3`, authenticates that exact dataset
+identity with the host-owned `LearningEvidenceVerifierV1`, and privately
+constructs `VerifiedOperatorDatasetV1`. The verified fitters additionally
+require the training samples' evidence-digest set to equal the frozen source
+record set.
+
+`admit_authenticated_applicability_v1` and
+`admit_authenticated_regularity_v1` first run the deterministic structural
+checks, then require an authenticated Evaluator signature over the exact
+structural digest. Generator/evaluator principal, credential chain, signing key
+and controller separation is enforced by the existing learning-ledger trust
+model. The regularity signature therefore also binds
+`dominant_component_approved`; it is no longer sufficient as a naked caller
+boolean on the authenticated path.
+
+## Explicit read consumer
+
+Agentd's `PinnedCognitiveRanker` is a real, explicitly attached consumer of
+`LoadedTabularOperatorV1`. It binds the selected learning-artifact manifest,
+revalidates the current registry/revocation view on each cognitive read and only
+reorders already-admitted records. This proves a narrow read consumer, not an
+automatic training/evaluation/selection/new-process loop, production activation
+or longitudinal task benefit.
