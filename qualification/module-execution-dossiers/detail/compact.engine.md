@@ -1,52 +1,77 @@
 # compact.engine: implementation design
 
 Parent: `docs/modules/compact.engine/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded checkpoint and deletion-aware compaction qualification kernels implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: canonical V3 planning/candidate construction, signed independent qualification, and a durable CognitiveStore publication/reload owner are source-composed. Agentd contains the named internal product caller. Exact-head/merge-candidate execution, concrete semantic-compactor/evaluator deployment identities, independent acceptance and promotion remain separate evidence gates.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-compact-engine`.
-Packages: `MEM-5-COMPACT`.
+Owner-native root: `codex-rs/hepta-compact-engine`.
+Durable owner integration: `codex-rs/hepta-memory/src/production_compact.rs`.
+Named product caller: `codex-rs/hepta-agentd/src/compact_checkpoint_host.rs`.
+Package: `MEM-5-COMPACT`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+The compact engine owns compaction semantics, not the cognitive database or Agentd lifecycle. The durable writer remains in the existing `cognitive_1.sqlite3` owner; the caller remains Agentd. No second authority/store/execution spine is introduced.
 
-## 2. Public operations and contract details
+## 2. Public operations and canonical contracts
 
-`plan_compaction(read_snapshot, retention_policy, resource_budget) -> CompactionCandidate`; `build_checkpoint(candidate) -> CompactCheckpoint`; `plan_replay(eligible_events, quotas, profile) -> ReplayBatch`; `propose_skill(episodes, precondition/effect schema) -> SkillCandidate`. No operation overwrites source facts or treats synthetic replay as real evidence.
+Owner-native operations are:
 
-## 3. State records and transaction design
+- `plan_compaction(snapshot, generation, predecessor, policy, inputs) -> CompactionPlanV3`.
+- `build_qualified_candidate(plan, semantic_receipt) -> QualifiedCompactionCandidateV3`.
+- `prove_compaction(candidate, trusted_evaluator, signed_qualification) -> CompactionProofV2`.
 
-`compact_checkpoint` binds source range/frontier, support manifest, algorithm/version, compressed payload digest, omitted-information description, tombstone cutoff, compatibility and predecessor. Procedural abstractions and semantic prototypes are proposals with source supports and confidence, not replacements for original events. Replay caches are rebuildable and inherit source deletion.
+The only canonical checkpoint contract exposed by compact.engine is `CompactCheckpointV1` from `hepta-cognitive-types`. The previous record-only `compact()` and crate-local `CompactCheckpoint` path are removed rather than deprecated because they could bypass deletion/non-resurrection qualification.
 
-## 4. Deterministic algorithm and scheduling
+`CompactionPolicyV3` binds algorithm, compatibility, tokenizer, semantic-compactor identity/implementation, record cap, byte cap, token cap and protected references. Each input binds encoded bytes, token count, retention reason and tokenization receipt. A semantic compactor does not receive publication authority: it returns `SemanticCompactionReceiptV1`, binding exact source manifest, tokenizer, implementation, output digest/bytes/tokens.
 
-Select eligible non-revoked events; apply per-source/task/modality quotas; rank by registered retention risk, prediction error, coverage and expected utility; build bounded summaries/checkpoints; verify retained-query and source-reconstruction obligations; publish through owner-approved state. Skills require explicit preconditions, termination, effect model and recovery. A missed consolidation window creates observable degradation, not unlimited catch-up work.
+## 3. Deletion, loss and deterministic selection
 
-## 5. Capacity and performance profile
+All revisions are normalized per record id. Revision chains must begin at revision 1, be contiguous and bind exact predecessor digests. Once a tombstone is observed, a later live revision is rejected. Tombstoned heads cannot be retained.
 
-HNMF replay pilot <=4096 candidates and <=256 selected events; compaction batch and output byte ratio are profile-bound; source retention is not reduced by an unreviewed compression gain. Measure read utility loss, contradiction preservation, storage reduction, CPU and foreground interference.
+Protected ids must exist in the source cut. Protected live heads are selected first and must fit every record/byte/token budget. Optional live heads are ordered deterministically by retention priority and identity and are admitted only while every budget remains satisfied. `CompactionLossReportV3` accounts for live/deleted/retained/omitted records and byte/token partitions.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+The support manifest hashes the semantic input identities, including record digest, priority, retention reason, encoded bytes, token count and tokenization receipt. Candidate construction rejects semantic receipts whose source manifest, tokenizer or compactor implementation differs from the plan.
 
-## 6. Concrete verification cases
+## 4. Independent qualification and proof provenance
 
-- COMPACT-01: source facts and required provenance remain resolvable after checkpoint publication.
-- COMPACT-02: a deleted event is excluded from replay and all derived checkpoint/skill candidates.
-- COMPACT-03: old-task and contradiction holdouts detect information lost by compression.
-- COMPACT-04: crash before publication retains the prior complete checkpoint; restore cannot select a revoked checkpoint.
+`CompactionQualificationV3` binds evaluator identity, evaluator implementation digest, evaluator attestation digest, evaluation artifact digest, retained-query suite, reconstruction obligation, contradiction holdout and deletion non-resurrection outcome.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+A `TrustedCompactionEvaluatorV1` is supplied by the host trust boundary. `prove_compaction` verifies an Ed25519 signature over the exact candidate digest and qualification fields. `CompactionProofV2` then binds the V1 semantic proof plus candidate digest, evaluator identity, implementation, attestation, evaluation artifact, evaluator-key digest and signed-qualification digest. Self-asserted pass booleans without a trusted signature cannot construct a proof.
 
-## 7. Integration, rollback and capability ceiling
+## 5. Durable owner transaction and recovery
 
-Consolidation contributes future artifacts but cannot mutate the current neural snapshot. Prefer the simplest compressor/selector meeting retention and resource constraints. Rollback is a generation selection plus current-lineage revalidation, not restoration of deleted source material.
+The production writer is `CognitiveStore::publish_production_compact_checkpoint` in the existing Agent-local `cognitive_1.sqlite3`. It reuses the append-only `cognitive_compact_events` table but uses an independent production namespace and encoding; local-development lease-bound encodings are rejected if mixed into the production journal.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Publication opens `BEGIN IMMEDIATE`, reloads/verifies the production event chain, enforces stable operation-id replay, exact predecessor digest and successor generation CAS, validates the source authority epoch/generation fence, inserts one complete publication event, then commits. A crash/fault before commit leaves the predecessor selected.
+
+Reload verifies row/event identity, owner/authority epochs, fencing token, sequence, previous/event digests, operation-id uniqueness and contiguous checkpoint lineage. It reconstructs the complete `CognitiveSnapshotKeyV1`, `CompactCheckpointV1` and `CompactionProofV2` and calls their validators before returning the current checkpoint. Corrupt or forged rows fail closed.
+
+## 6. Named product caller
+
+Agentd composes `AgentdCompactCheckpointHost` whenever its CognitiveStore is available. The caller requires a Running/Ready/unfenced Agentd lifecycle, derives owner epoch from the refreshed fleet lifecycle generation and derives the fence from operation id + exact checkpoint digest + owner epoch. Callers cannot supply their own owner epoch or arbitrary raw fence.
+
+Publication is durable before Agentd's post-publication generation recheck. If lifecycle fencing changes concurrently, Agentd fails closed; stable operation-id replay/current-checkpoint query provides deterministic reconciliation without a second publication.
+
+## 7. Verification cases
+
+- COMPACT-01: protected live references survive deterministic selection and record/byte/token budgets.
+- COMPACT-02: `Live -> Tombstone -> Live` is rejected and tombstoned heads never reach a checkpoint.
+- COMPACT-03: reordered source inputs produce the same plan/candidate digests.
+- COMPACT-04: semantic receipt source/tokenizer/implementation mismatch is rejected.
+- COMPACT-05: unsigned/tampered evaluator qualification cannot produce `CompactionProofV2`.
+- COMPACT-06: publish -> process reopen -> reload reconstructs the exact checkpoint/proof.
+- COMPACT-07: crash before commit leaves the predecessor current.
+- COMPACT-08: concurrent successors have one CAS winner.
+- COMPACT-09: forged SQLite event data fails reload verification.
+- COMPACT-10: a 4096-head bounded plan remains deterministic and within byte/token accounting.
+
+These source test identities are not exact-head or target-host pass receipts.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `compact` in [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); `build_qualified_candidate` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs); `prove_compaction` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs). Bounded checkpoint and deletion-aware compaction qualification kernels implemented.
-- **State and recovery:** Native checkpoints retain references and explicit omissions from one snapshot; the qualified path preserves protected live support and requires separate loss/reconstruction observations. It neither rewrites source facts nor persists a selected checkpoint.
-- **Source tests:** [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs), [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/modules/compact.engine/TECHNICAL.md](../../../docs/modules/compact.engine/TECHNICAL.md), [docs/learning/NEURAL_BIOMIMICRY_SPEC.md](../../../docs/learning/NEURAL_BIOMIMICRY_SPEC.md).
-- **Remaining work:** Bind independent holdout/reconstruction evidence and owner publication/reload. Target replay scheduling and skill induction are separate capabilities, not implied by checkpoint construction.
+- **Implemented entrypoints:** `plan_compaction` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs); `build_qualified_candidate` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs); `prove_compaction` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs).
+- **Durable owner:** [codex-rs/hepta-memory/src/production_compact.rs](../../../codex-rs/hepta-memory/src/production_compact.rs), using the existing CognitiveStore database and append-only compact event table.
+- **Named caller:** [codex-rs/hepta-agentd/src/compact_checkpoint_host.rs](../../../codex-rs/hepta-agentd/src/compact_checkpoint_host.rs), composed by Agentd runtime startup.
+- **Source tests:** [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs), [codex-rs/hepta-memory/src/production_compact_tests.rs](../../../codex-rs/hepta-memory/src/production_compact_tests.rs), [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs).
+- **Capability ceiling:** compact.engine does not itself run a model/LLM semantic compressor, mint evaluator trust, mutate source facts, dispatch network effects or grant release/promotion authority.
+- **Remaining repository/evidence work:** run and retain exact-head plus deterministic merge-candidate receipts for this candidate; bind concrete production semantic-compactor and evaluator trust/attestation identities before claiming end-to-end semantic-compaction activation. Replay scheduling and skill induction remain separate target capabilities and are not implied by checkpoint closure.
