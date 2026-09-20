@@ -316,6 +316,7 @@
       "nativeSymbol": "observe_integration_stage",
       "ownerSymbol": "observe_integration_stage → reconcile_integration_item",
       "tests": [
+        "IntegrationControllerTests.test_raw_reconciliation_is_not_a_package_root_product_surface",
         "IntegrationControllerTests.test_authenticated_stage_observations_gate_product_readiness_projection",
         "IntegrationControllerTests.test_evidence_progression_reopen_and_terminal_observation",
         "IntegrationControllerTests.test_base_drift_invalidates_generation_and_requires_replan",
