@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   inputs:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -23,10 +23,6 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 1
-      - name: Install pinned offline test runners
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
       - name: Resolve the exact locked dependency sources
         working-directory: codex-rs
         env:
@@ -42,10 +38,20 @@ jobs:
       - name: Package the pinned host compiler and repository test entry points
         run: |
           set -euo pipefail
+          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
           tar -C "$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz" .
           mkdir -p "$RUNNER_TEMP/hepta-offline-inputs/bin"
-          install -m 0755 "$(command -v just)" "$RUNNER_TEMP/hepta-offline-inputs/bin/just"
-          install -m 0755 "$(command -v cargo-nextest)" "$RUNNER_TEMP/hepta-offline-inputs/bin/cargo-nextest"
+          cd "$RUNNER_TEMP/hepta-offline-inputs"
+          curl --fail --location --retry 3 --max-time 120 --output just.tar.gz \
+            https://github.com/casey/just/releases/download/1.51.0/just-1.51.0-x86_64-unknown-linux-musl.tar.gz
+          curl --fail --location --retry 3 --max-time 120 --output nextest.tar.gz \
+            https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+          printf '%s\n' \
+            'c8f085ca3e885723c341d06243fc291b5abfdc8bbe3b2c076b117de490387b59  just.tar.gz' \
+            'b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036  nextest.tar.gz' | sha256sum --check
+          tar -xOzf just.tar.gz just > bin/just
+          tar -xOzf nextest.tar.gz cargo-nextest > bin/cargo-nextest
+          chmod 0755 bin/just bin/cargo-nextest
           tar -C "$RUNNER_TEMP/hepta-offline-inputs" -czf "$RUNNER_TEMP/hepta-offline-inputs/test-tools.tar.gz" bin
       - name: Export exact reviewed source without Git metadata or credentials
         run: |
