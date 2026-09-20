@@ -311,7 +311,10 @@ fn maximum_scalar_conflict_is_deterministic_at_numeric_extremes() {
 #[test]
 fn persisted_semantic_bytes_recompute_objective_digest() {
     let compiled = must(must(compile(envelope())));
-    assert_eq!(SourceTrust::PrincipalStructured, compiled.objective.source_trust);
+    assert_eq!(
+        SourceTrust::PrincipalStructured,
+        compiled.objective.source_trust
+    );
     assert_eq!(
         compiled.objective.semantic_digest,
         Digest32::of_bytes(&canonical_native_objective_semantic_bytes_v1(
