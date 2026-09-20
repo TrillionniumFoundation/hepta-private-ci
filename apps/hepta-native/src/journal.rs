@@ -34,8 +34,12 @@ pub enum OperationPhase {
 pub struct OperationRecord {
     pub endpoint_id: String,
     pub key: OperationKey,
+    pub subject_id: String,
+    pub displayed_revision: u64,
     pub action: PlatformAction,
     pub payload_digest: String,
+    pub binding_digest: String,
+    pub grant_digest: String,
     pub phase: OperationPhase,
     pub terminal_status: Option<TerminalStatus>,
     pub outcome_digest: Option<String>,
@@ -46,12 +50,15 @@ impl OperationRecord {
         validate_stable_id(&self.endpoint_id, "journal.endpoint_id")?;
         validate_stable_id(&self.key.session_id, "journal.session_id")?;
         validate_stable_id(&self.key.operation_id, "journal.operation_id")?;
-        if self.key.session_generation == 0 {
+        validate_stable_id(&self.subject_id, "journal.subject_id")?;
+        if self.key.session_generation == 0 || self.displayed_revision == 0 {
             return Err(ShellError::State(
-                "journal operation has zero session generation".to_owned(),
+                "journal operation has zero session generation or displayed revision".to_owned(),
             ));
         }
         validate_digest(&self.payload_digest, "journal.payload_digest")?;
+        validate_digest(&self.binding_digest, "journal.binding_digest")?;
+        validate_digest(&self.grant_digest, "journal.grant_digest")?;
         if let Some(outcome_digest) = &self.outcome_digest {
             validate_digest(outcome_digest, "journal.outcome_digest")?;
         }
@@ -181,7 +188,12 @@ impl OperationJournal {
         let mut next = self.operations.clone();
         if let Some(index) = next.iter().position(|existing| existing.key == record.key) {
             let existing = &next[index];
-            if existing.payload_digest != record.payload_digest || existing.action != record.action
+            if existing.subject_id != record.subject_id
+                || existing.displayed_revision != record.displayed_revision
+                || existing.action != record.action
+                || existing.payload_digest != record.payload_digest
+                || existing.binding_digest != record.binding_digest
+                || existing.grant_digest != record.grant_digest
             {
                 return Err(ShellError::State(
                     "operation identity was reused with changed semantics".to_owned(),
