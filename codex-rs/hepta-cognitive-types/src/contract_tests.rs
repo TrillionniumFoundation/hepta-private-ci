@@ -86,6 +86,8 @@ fn engram_node() -> EngramNodeV1 {
         threshold_q16: 12,
         target_activity_ppm: 100_000,
         confidence_ppm: 900_000,
+        valid_from_unix_ms: 1,
+        valid_to_unix_ms: None,
         snapshot_generation: generation(1),
     }
 }
@@ -98,6 +100,7 @@ fn synapse() -> SynapseV1 {
         weight_q16: 100,
         delay_steps: 1,
         plasticity_class: PlasticityClassV1::EligibilityGated,
+        eligibility_ppm: 0,
         support_manifest_sha256: digest('2'),
         snapshot_generation: generation(1),
     }
@@ -181,8 +184,20 @@ fn plasticity() -> PlasticityBatchV1 {
         predecessor_generation: generation(1),
         next_generation: generation(2),
         outcome_signal_digest: digest('c'),
-        weight_proposals: Vec::new(),
-        threshold_proposals: Vec::new(),
+        weight_proposals: vec![WeightProposalV1 {
+            source_node_id: id("node:1"),
+            target_node_id: id("node:2"),
+            relation: SynapseRelationV1::Associative,
+            old_weight_q16: 0,
+            new_weight_q16: 2_048,
+            delta_ppm: 31_250,
+        }],
+        threshold_proposals: vec![ThresholdProposalV1 {
+            node_id: id("node:1"),
+            old_threshold_q16: 0,
+            new_threshold_q16: -2_048,
+            delta_ppm: -31_250,
+        }],
         current_snapshot_immutable: true,
         production_activation_allowed: false,
     }
@@ -437,7 +452,6 @@ fn proposal_contracts_cannot_self_activate() {
     assert!(invalid.validate().is_err());
 }
 
-
 #[test]
 fn recall_receipts_bind_counts_and_population_limits() {
     let mut mismatched = recall_packet();
@@ -457,6 +471,103 @@ fn recall_receipts_bind_counts_and_population_limits() {
     overfull.resource_receipt.active_node_count =
         u16::try_from(overfull.active_nodes.len()).expect("bounded active count");
     assert!(overfull.validate().is_err());
+}
+
+#[test]
+fn recall_abstention_and_selected_revision_are_fail_closed() {
+    let mut contradictory = recall_packet();
+    contradictory.abstain = Some(RecallAbstainReasonV1::LowConfidence);
+    assert_eq!(
+        contradictory.validate(),
+        Err(HnmfContractError::Invalid(
+            "abstaining recall contains selected events"
+        ))
+    );
+
+    let mut zero_revision = recall_packet();
+    zero_revision.selected_events[0].revision = 0;
+    assert_eq!(
+        zero_revision.validate(),
+        Err(HnmfContractError::ZeroValue("selectedEvent.revision"))
+    );
+
+    let mut empty_success = recall_packet();
+    empty_success.selected_events.clear();
+    assert_eq!(
+        empty_success.validate(),
+        Err(HnmfContractError::Invalid("empty non-abstaining recall"))
+    );
+}
+
+#[test]
+fn q16_and_plasticity_delta_bindings_are_exact() {
+    plasticity()
+        .validate()
+        .unwrap_or_else(|error| panic!("valid plasticity fixture: {error}"));
+
+    let mut bad_weight_delta = plasticity();
+    bad_weight_delta.weight_proposals[0].delta_ppm = 0;
+    assert_eq!(
+        bad_weight_delta.validate(),
+        Err(HnmfContractError::Conflict("weight proposal delta"))
+    );
+
+    let mut bad_threshold_delta = plasticity();
+    bad_threshold_delta.threshold_proposals[0].delta_ppm = 0;
+    assert_eq!(
+        bad_threshold_delta.validate(),
+        Err(HnmfContractError::Conflict("threshold proposal delta"))
+    );
+
+    let mut out_of_range = synapse();
+    out_of_range.weight_q16 = Q16_ONE + 1;
+    assert_eq!(
+        out_of_range.validate(),
+        Err(HnmfContractError::Invalid("synapse weight"))
+    );
+
+    let mut bad_eligibility = synapse();
+    bad_eligibility.eligibility_ppm = PPM as i32 + 1;
+    assert_eq!(
+        bad_eligibility.validate(),
+        Err(HnmfContractError::Invalid("synapse eligibility"))
+    );
+}
+
+#[test]
+fn engram_validity_and_contextual_binding_are_exact() {
+    let mut invalid = engram_node();
+    invalid.valid_to_unix_ms = Some(invalid.valid_from_unix_ms);
+    assert_eq!(
+        invalid.validate(),
+        Err(HnmfContractError::Invalid("engram validity interval"))
+    );
+
+    let mut event = event();
+    let mut image = text_span();
+    image.span_id = id("span:2");
+    image.modality = ModalityKindV1::Image;
+    image.range = SpanRangeV1::PixelRect {
+        x: 0,
+        y: 0,
+        width: 1,
+        height: 1,
+    };
+    event.modality_spans.push(image);
+    let binding = cross_binding();
+    event.cross_modal_bindings.push(binding.clone());
+    event
+        .validate()
+        .unwrap_or_else(|error| panic!("valid bound event: {error}"));
+    validate_cross_modal_binding_against_event_v1(&event, &binding)
+        .unwrap_or_else(|error| panic!("valid contextual binding: {error}"));
+
+    let mut drifted = binding;
+    drifted.confidence_ppm = 800_000;
+    assert_eq!(
+        validate_cross_modal_binding_against_event_v1(&event, &drifted),
+        Err(HnmfContractError::Conflict("binding/event payload"))
+    );
 }
 
 #[test]
