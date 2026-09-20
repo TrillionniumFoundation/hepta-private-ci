@@ -371,6 +371,23 @@ def verify():
                         if evidence_path:
                             evidence_paths.add(evidence_path)
             if source_commit and evidence_paths:
+                for evidence_path in sorted(evidence_paths):
+                    if not (ROOT / evidence_path).exists():
+                        failures.append(
+                            f"{mid}: evidence path missing at current candidate: {evidence_path}"
+                        )
+                        continue
+                    anchored = subprocess.run(
+                        ["git", "cat-file", "-e", f"{source_commit}:{evidence_path}"],
+                        cwd=ROOT,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    if anchored.returncode != 0:
+                        failures.append(
+                            f"{mid}: evidence path missing at source base: {evidence_path}"
+                        )
                 drift = subprocess.run(
                     [
                         "git",
