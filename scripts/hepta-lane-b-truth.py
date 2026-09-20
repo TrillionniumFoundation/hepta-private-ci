@@ -307,7 +307,12 @@ def verify_candidate(manifest: dict[str, Any], truth: dict[str, Any]) -> list[st
     pull_request = event.get("pull_request")
     if "pull_request" in event:
         need(isinstance(pull_request, dict), "invalid pull-request event")
-        actual_base = pull_request["base"]["sha"]
+        # GitHub's pull-request payload preserves the base SHA observed for the
+        # event and may lag the current target branch after that branch advances.
+        # The workflow resolves the current remote base ref after checkout and
+        # passes it explicitly. The event SHA remains provenance/fallback only.
+        event_base = pull_request["base"]["sha"]
+        actual_base = os.environ.get("HEPTA_CANDIDATE_BASE_SHA") or event_base
         candidate_subject = pull_request["head"]["sha"]
     else:
         need(not synthetic, "synthetic merge requires pull-request event identity")
