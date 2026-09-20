@@ -35,6 +35,7 @@ use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
 #[tokio::test]
+#[cfg(feature = "qualification-cognitive-write")]
 async fn agentd_product_host_commits_through_canonical_cognitive_store()
 -> Result<(), Box<dyn Error>> {
     let temp = TempDir::new()?;

@@ -117,7 +117,9 @@ impl AgentdProductionWriterHost {
 
     /// Qualification-only compatibility seam around an already-open store.
     /// It does not retain the verifier, so production semantic mutation methods
-    /// below reject this handle with `LiveVerifierRequired`.
+    /// below reject this handle with `LiveVerifierRequired`. The seam does not
+    /// exist in the default/product build.
+    #[cfg(feature = "qualification-cognitive-write")]
     pub async fn open_with_store<V>(
         store: CognitiveStore,
         authority: ProductionAuthorityLease,

@@ -20,6 +20,11 @@ name = "codex-hepta-agentd"
 path = "src/main.rs"
 test = false
 
+[[example]]
+name = "h4_persistent_writer"
+path = "examples/h4_persistent_writer.rs"
+required-features = ["qualification-cognitive-write"]
+
 [lints]
 workspace = true
 
