@@ -51,6 +51,7 @@ pub struct TemporalEvaluationReceipt {
     pub estimate: ClusterOpeEstimate,
     pub evidence_digest: Digest32,
     pub authority: AuthorityPosture,
+    receipt_seal: Digest32,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -64,6 +65,7 @@ pub enum TemporalEvaluationError {
     ActionMismatch,
     OutcomeBeforeDecision,
     DependentClusterSplit,
+    ReceiptIntegrity,
     Fold(TemporalFoldError),
     Confidence(ClusterConfidenceError),
 }
@@ -225,7 +227,7 @@ pub fn evaluate_temporal_holdout(
     bytes.extend_from_slice(fitted.model_digest.as_array());
     bytes.extend_from_slice(fitted.predictions_digest.as_array());
     bytes.extend_from_slice(estimate.evidence_digest.as_array());
-    Ok(TemporalEvaluationReceipt {
+    let mut receipt = TemporalEvaluationReceipt {
         evaluation_id: plan.evaluation_id.clone(),
         plan_digest: plan.plan_digest,
         model_digest: fitted.model_digest,
@@ -233,7 +235,39 @@ pub fn evaluate_temporal_holdout(
         estimate,
         evidence_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
-    })
+        receipt_seal: Digest32::ZERO,
+    };
+    receipt.receipt_seal = temporal_receipt_seal(&receipt)?;
+    Ok(receipt)
+}
+
+impl TemporalEvaluationReceipt {
+    pub(crate) fn validate_integrity(&self) -> Result<(), TemporalEvaluationError> {
+        self.estimate.validate_integrity()?;
+        if self.receipt_seal != temporal_receipt_seal(self)? {
+            return Err(TemporalEvaluationError::ReceiptIntegrity);
+        }
+        Ok(())
+    }
+}
+
+fn temporal_receipt_seal(
+    receipt: &TemporalEvaluationReceipt,
+) -> Result<Digest32, TemporalEvaluationError> {
+    receipt.estimate.validate_integrity()?;
+    let mut bytes = b"hepta.ope.temporal-evaluation-receipt.v1".to_vec();
+    push_id(&mut bytes, &receipt.evaluation_id);
+    for digest in [
+        receipt.plan_digest,
+        receipt.model_digest,
+        receipt.predictions_digest,
+        receipt.estimate.evidence_digest,
+        receipt.evidence_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.push(u8::from(receipt.authority.grants_any()));
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn push_usize(bytes: &mut Vec<u8>, value: usize) -> Result<(), TemporalEvaluationError> {

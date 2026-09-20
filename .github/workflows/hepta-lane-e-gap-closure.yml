@@ -285,6 +285,14 @@ jobs:
           grep -Fq 'decide_with_signed_evidence_v2' codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md
           grep -Fq 'FencedFinalHoldoutOwnerV1' codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md
 
+      - name: Product evaluation runner evidence-chain tests
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          product_runner::tests
+          -- --test-threads=1
+
       - name: Default public API contract
         working-directory: codex-rs
         run: >-

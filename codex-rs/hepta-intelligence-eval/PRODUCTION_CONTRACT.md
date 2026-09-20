@@ -77,14 +77,23 @@ the store namespace, retention, backup/restore anti-rollback and physical
 durability. A backup must not be able to manufacture a newer fence or current
 authoritative state.
 
+## Canonical product evaluation chain
+
+`ProductEvaluationRunnerV1` is the canonical evaluation composition. It freezes
+the metric-to-estimator mapping into the bound estimand, consumes the final
+holdout through `FencedFinalHoldoutOwnerV1`, and only then invokes the
+`FinalHoldoutProviderV1::release_after_consumption` boundary. Candidate and
+baseline metric intervals are derived from sealed `TemporalEvaluationReceipt`
+and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
+`MetricGateV1` intervals. The runner builds the signed qualification bundle
+itself and returns success only after `ProductQualificationEvidenceSinkV1`
+returns a nonzero durable publication digest.
+
 ## Canonical product consumer
 
 The repository's current signed consumer is
 `codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`.
-It calls `decide_with_signed_evidence_v2` before any host port is invoked and
-retains evaluation eligibility as a deny-all input to later logic. This is a
-real signed product composition path, but it does not by itself prove runtime
-activation, target-host qualification or production longitudinal efficacy.
+It currently calls the low-level signed V2 admission boundary before any host port is invoked. New qualification production composition must consume a `ProductQualificationReceiptV1` emitted by `ProductEvaluationRunnerV1`; the existing adapter remains a migration consumer until that handoff is completed. Neither path by itself proves runtime activation, target-host qualification or production longitudinal efficacy.
 
 ## CI closure evidence
 

@@ -68,6 +68,7 @@ pub struct ClusterOpeEstimate {
     pub weight_mean: OpeInterval,
     pub evidence_digest: Digest32,
     pub authority: AuthorityPosture,
+    receipt_seal: Digest32,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -78,6 +79,7 @@ pub enum ClusterConfidenceError {
     InsufficientClusters,
     WeightEnvelope,
     Ope(OpeError),
+    ReceiptIntegrity,
     Arithmetic,
 }
 
@@ -216,7 +218,7 @@ pub fn estimate_cluster_intervals(
         bytes.extend_from_slice(&bounds.lower.raw().to_be_bytes());
         bytes.extend_from_slice(&bounds.upper.raw().to_be_bytes());
     }
-    Ok(ClusterOpeEstimate {
+    let mut receipt = ClusterOpeEstimate {
         point,
         cluster_count: sizes.len(),
         largest_cluster_rows,
@@ -226,7 +228,63 @@ pub fn estimate_cluster_intervals(
         weight_mean,
         evidence_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
-    })
+        receipt_seal: Digest32::ZERO,
+    };
+    receipt.receipt_seal = cluster_estimate_receipt_seal(&receipt)?;
+    Ok(receipt)
+}
+
+impl ClusterOpeEstimate {
+    pub(crate) fn validate_integrity(&self) -> Result<(), ClusterConfidenceError> {
+        if self.receipt_seal != cluster_estimate_receipt_seal(self)? {
+            return Err(ClusterConfidenceError::ReceiptIntegrity);
+        }
+        Ok(())
+    }
+}
+
+fn cluster_estimate_receipt_seal(
+    receipt: &ClusterOpeEstimate,
+) -> Result<Digest32, ClusterConfidenceError> {
+    let mut bytes = b"hepta.ope.cluster-estimate-receipt.v1".to_vec();
+    bytes.extend_from_slice(
+        &u64::try_from(receipt.point.rows)
+            .map_err(|_| ClusterConfidenceError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for value in [
+        receipt.point.ips,
+        receipt.point.snips,
+        receipt.point.doubly_robust,
+        receipt.point.effective_sample_size,
+        receipt.point.maximum_observed_weight,
+    ] {
+        bytes.extend_from_slice(&value.raw().to_be_bytes());
+    }
+    bytes.extend_from_slice(receipt.point.evidence_digest.as_array());
+    bytes.push(u8::from(receipt.point.authority.grants_any()));
+    bytes.extend_from_slice(
+        &u64::try_from(receipt.cluster_count)
+            .map_err(|_| ClusterConfidenceError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    bytes.extend_from_slice(
+        &u64::try_from(receipt.largest_cluster_rows)
+            .map_err(|_| ClusterConfidenceError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for interval in [
+        receipt.ips,
+        receipt.snips,
+        receipt.doubly_robust,
+        receipt.weight_mean,
+    ] {
+        bytes.extend_from_slice(&interval.lower.raw().to_be_bytes());
+        bytes.extend_from_slice(&interval.upper.raw().to_be_bytes());
+    }
+    bytes.extend_from_slice(receipt.evidence_digest.as_array());
+    bytes.push(u8::from(receipt.authority.grants_any()));
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn radius(
