@@ -136,16 +136,18 @@ def relative_path(value: object, findings: Findings, context: str) -> Path | Non
 
 def verify_symbol(source: str, native_symbol: str) -> bool:
     parts = native_symbol.split("::")
-    function = parts[-1]
-    if not re.search(rf"\b(?:pub\s+)?fn\s+{re.escape(function)}\s*\(", source):
-        return False
+    symbol = parts[-1]
     if len(parts) >= 2 and parts[-2][:1].isupper():
         owner = parts[-2]
         return bool(
             re.search(rf"\b(?:struct|enum|type)\s+{re.escape(owner)}\b", source)
             and re.search(rf"\bimpl\s+{re.escape(owner)}\b", source)
+            and re.search(rf"\b(?:pub\s+)?fn\s+{re.escape(symbol)}\s*\(", source)
         )
-    return True
+    return bool(
+        re.search(rf"\b(?:pub\s+)?fn\s+{re.escape(symbol)}\s*\(", source)
+        or re.search(rf"\b(?:pub\s+)?(?:struct|enum|type)\s+{re.escape(symbol)}\b", source)
+    )
 
 
 def verify_matrix(
