@@ -200,9 +200,11 @@
       },
       "sourceStatus": "existing_bound",
       "source_root_present": true,
-      "production_implementation": false,
+      "production_implementation": true,
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-operations"
+        "codex-rs/hepta-operations",
+        "codex-rs/hepta-memory",
+        "codex-rs/hepta-agentd"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7D-FAULT-MATRIX",
