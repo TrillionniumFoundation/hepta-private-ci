@@ -5,7 +5,6 @@
 //! fit functions remain available for compatibility, but cannot establish this
 //! receipt-to-row relationship on their own.
 
-use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
