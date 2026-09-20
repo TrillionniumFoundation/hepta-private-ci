@@ -14,6 +14,7 @@ use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+use crate::restart_budget::clear_restart_budget;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn drain_slot(
@@ -70,7 +71,22 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot
+            .runtime
+            .as_ref()
+            .is_some_and(|runtime| !runtime.lease_persisted)
+        {
+            // An unleased spawned child is quarantined. Stop may strengthen
+            // cleanup but must never downgrade it to graceful termination.
+            return self.kill_slot(agent_id, slot);
+        }
         slot.restart_pending = false;
+        slot.automatic_restart = false;
+        slot.restart_not_before = None;
+        slot.restart_attempts = 0;
+        slot.restart_window_started_at = None;
+        let record = self.record(agent_id)?;
+        clear_restart_budget(record.layout.run_root())?;
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
             return Ok(());
         }
@@ -97,6 +113,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        slot.automatic_restart = false;
+        slot.restart_not_before = None;
+        slot.restart_attempts = 0;
+        slot.restart_window_started_at = None;
+        let record = self.record(agent_id)?;
+        clear_restart_budget(record.layout.run_root())?;
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
@@ -122,6 +144,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
+        let record = self.record(agent_id)?;
+        clear_restart_budget(record.layout.run_root())?;
+        slot.restart_attempts = 0;
+        slot.restart_window_started_at = None;
+        slot.restart_not_before = None;
+        slot.automatic_restart = false;
         let release = slot.active_release.clone().or_else(|| {
             slot.last_command
                 .clone()
@@ -143,6 +171,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         result?;
         slot.restart_pending = true;
+        slot.automatic_restart = false;
+        slot.restart_not_before = Some(now);
         let generation = active_runtime(agent_id, slot)?.generation;
         slot.event(generation, SupervisorEventKind::RestartQueued);
         Ok(())
