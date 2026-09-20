@@ -4036,7 +4036,9 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "codex-hepta-control-plane",
+ "codex-hepta-contracts",
  "codex-hepta-paths",
+ "codex-hepta-plasticity",
  "codex-hepta-types",
  "codex-hepta-wire",
  "hmac 0.12.1",
@@ -4045,6 +4047,7 @@ dependencies = [
  "serde_json",
  "sha2 0.10.9",
  "sqlx",
+ "ed25519-dalek",
  "tempfile",
  "tokio",
  "zeroize",
