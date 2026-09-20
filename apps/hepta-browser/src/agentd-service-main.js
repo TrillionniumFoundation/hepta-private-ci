@@ -46,6 +46,11 @@ function optionalPositiveInteger(name, fallback) {
   return value;
 }
 
+const maxProfiles = optionalPositiveInteger("HEPTA_BROWSER_MAX_PROFILES", 16);
+if (maxProfiles > 64) {
+  throw new TypeError("HEPTA_BROWSER_MAX_PROFILES exceeds the Browser worker-pool ceiling");
+}
+
 if (process.platform !== "linux") {
   throw new TypeError("current Agentd Browser service requires the qualified Linux launcher");
 }
