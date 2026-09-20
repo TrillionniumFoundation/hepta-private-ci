@@ -132,6 +132,23 @@ jobs:
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
 
+      - name: Crash/reopen KG transaction windows
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory --lib \
+            cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor \
+            -- --ignored --exact --nocapture --test-threads=1
+
+      - name: Measure PERF-LIBRARY pilot capacity
+        if: matrix.lane == 'source-head'
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory --lib \
+            cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt \
+            -- --ignored --exact --nocapture --test-threads=1
+
       - name: Test real Agentd qualification-write product path
         working-directory: codex-rs
         run: |
