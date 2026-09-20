@@ -376,6 +376,31 @@
         "codex-rs/hepta-objective/src/objective_admission_tests.rs::measurement_ordinary_admission_compile_v1",
         "codex-rs/hepta-objective/src/feasibility_tests.rs::measurement_conflict_extraction_v1"
       ]
+    },
+    {
+      "id": "LANE-D-OBJ-WIRE-037",
+      "severity": "P0",
+      "title": "Registered ObjectiveFunctionV1 lacked a canonical native projection, validation round-trip and durable protocol identity distinct from the native semantic digest",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-objective/src/objective_function_v1.rs",
+        "docs/contracts/PROTOCOL_SCHEMAS.json::ObjectiveFunctionV1",
+        "codex-rs/hepta-intelligence/src/objective_run.rs",
+        "codex-rs/hepta-learning-ledger/src/run_start.rs",
+        "codex-rs/hepta-intelligence/src/objective_run_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-RECOVERY-038",
+      "severity": "P0",
+      "title": "Durable objective product path lacked source-level crash/replay/final-use fault coverage across partial tails, acknowledgement loss, semantic drift, trust rotation and generation/fence drift",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+        "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/readiness/LANE_D_MATURITY.json"
+      ]
     }
   ],
   "externalGates": [
