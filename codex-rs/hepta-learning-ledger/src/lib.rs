@@ -65,6 +65,7 @@ pub use model::Revocation;
 pub use retrieval_assignment::RetrievalAssignmentBridgeError;
 pub use retrieval_assignment::retrieval_assignment_event;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery;
+pub use retrieval_assignment::retrieval_assignment_event_with_delivery_policy;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;
