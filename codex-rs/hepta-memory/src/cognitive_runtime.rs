@@ -149,16 +149,13 @@ impl CognitiveRuntime {
             return self;
         }
         match self {
-            Self::Available(store) => Self::AvailableFederated {
-                store,
-                federation: Arc::new(federation),
-            },
-            Self::AvailableFederated { store, .. } | Self::AvailableFederatedV2 { store, .. } => {
+            Self::Available(store) | Self::AvailableFederated { store, .. } => {
                 Self::AvailableFederated {
                     store,
                     federation: Arc::new(federation),
                 }
             }
+            runtime @ Self::AvailableFederatedV2 { .. } => runtime,
             Self::Absent | Self::Unavailable(_) => self,
         }
     }
