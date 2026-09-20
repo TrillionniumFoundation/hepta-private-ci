@@ -152,7 +152,7 @@ The reviewed candidate `Cargo.lock` is committed. The exact-head worker workflow
 
 `.github/workflows/hepta-browser-servo-deployment-qualification.yml` remains manual and main-only. It executes only the workflow-dispatch `github.sha` on `refs/heads/main`, verifies the referenced successful worker-build run came from the expected workflow on that exact main SHA, requires `cargoLockCommitted=true`, rehashes Cargo.lock/worker/SPDX/source tree, records kernel/Bubblewrap identity, reruns sandbox/worker checks and emits target execution evidence without self-issuing operator acceptance, promotion or release.
 
-Still separately required where applicable: terminal-success reproducible worker artifact/SBOM receipt bound to the committed exact `Cargo.lock`; retained Linux target-host no-listener/egress/descendant enforcement evidence; retained two-profile cookie/localStorage/HTTP-cache isolation evidence; functional credential/upload/download implementations if admitted later; actual signed remote-business terminal observations from the configured independent observer where business terminality is claimed; retained 32-cycle RSS/FD soak evidence under the selected hard growth ceilings; and independent operator acceptance/promotion/release. macOS/Windows are not current target platforms; they require equivalent isolation implementations before entering qualified scope.
+Still separately required where applicable: terminal-success reproducible worker artifact/SBOM receipt bound to the committed exact `Cargo.lock`; retained Linux target-host no-listener/egress/descendant enforcement evidence including real public DNS and certificate-validating HTTPS; retained two-profile cookie/localStorage/HTTP-cache isolation evidence; actual current signed remote-business terminal observations from the configured independent observer where business terminality is claimed; retained 32-cycle RSS/FD soak evidence under the selected hard growth ceilings; and independent operator acceptance/promotion/release. Credential/upload/download are out of scope for this release and remain fail-closed rather than being counted as missing admitted capabilities. macOS/Windows are not current target platforms; they require equivalent isolation implementations before entering qualified scope.
 
 ## 12. Claim boundary
 
@@ -222,3 +222,14 @@ certificate and TLS validation inside the CONNECT tunnel.
 ## 15. Current target and parent-channel scope
 
 The current product target is Linux only. Non-Linux product startup is rejected rather than silently running without the Bubblewrap/prlimit isolation contract. The profile-affine pool supports 16 resident workers by default (hard max 64), but the Agentd parent Browser port intentionally remains one-in-flight, so this candidate makes no cross-profile RPC concurrency claim. A multiplexed parent protocol is a future capacity change requiring a new version and qualification, not a prerequisite for the current serialized safety model.
+
+
+## 16. Durable currentness and profile-lease closure
+
+The Browser journal's first create is durable only after file fsync **and parent-directory fsync**. A crash-torn final fragment is not merely ignored once: Browser rewrites the validated prefix atomically before any later append, and qualification covers reopen -> append -> reopen.
+
+Persisted terminal evidence uses Ed25519 authenticity plus a host-frozen currentness policy: minimum observer generation, minimum observed timestamp, exact current frontier digest and bounded future-clock skew. A signed but stale/rollback/future receipt remains indeterminate.
+
+`expiresAtMs` is a physical process/network lease. The subprocess driver independently kills the Servo worker and closes the profile egress broker at expiry. The existing `close_profile` RPC is the current early-revocation ceremony for that lease. Real-Servo qualification runs hostile background fetch/timer/navigation across both expiry and explicit close and requires containment.
+
+The seven product RPCs are closed-world: `open_profile`, `admit_effect_grant`, `observe_page`, `navigate_or_act`, `reconcile_operation`, `reconcile_persisted_operation`, and `close_profile`.
