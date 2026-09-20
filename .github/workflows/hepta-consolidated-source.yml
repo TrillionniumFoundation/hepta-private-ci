@@ -114,17 +114,32 @@ jobs:
           if-no-files-found: error
           retention-days: 30
   engineering-sandbox:
-    name: Engineering strong sandbox
+    name: Engineering strong sandbox (${{ matrix.lane }})
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     env:
       HEPTA_REQUIRE_STRONG_SANDBOX: "1"
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
           persist-credentials: false
+      - name: Construct deterministic sandbox merge candidate
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
       - name: Prepare dedicated sandbox runner
         run: |
           sudo apt-get update
@@ -134,12 +149,12 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
       - name: Exercise real namespace isolation and candidate evaluation
-        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/engineering-test.json" -- python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/engineering-${{ matrix.lane }}.json" -- python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
       - name: Retain real command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-engineering
+          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-engineering-${{ matrix.lane }}
           path: ${{ runner.temp }}/hepta-command-records/*.json
           if-no-files-found: error
           retention-days: 30
