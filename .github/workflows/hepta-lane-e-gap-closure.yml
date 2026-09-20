@@ -148,10 +148,7 @@ jobs:
             --package codex-hepta-intelligence-eval \
             --package codex-hepta-shadow-qualification \
             -- --check
-          rustfmt --edition 2024 \
-            codex-rs/hepta-agentd/src/learning_operator_host.rs \
-            codex-rs/hepta-agentd/src/learning_operator_host_tests.rs
-          git diff --exit-code -- \
+          rustfmt --check --edition 2024 \
             codex-rs/hepta-agentd/src/learning_operator_host.rs \
             codex-rs/hepta-agentd/src/learning_operator_host_tests.rs
           git diff --check
@@ -283,10 +280,7 @@ jobs:
             --package codex-hepta-intelligence-eval \
             --package codex-hepta-shadow-qualification \
             -- --check
-          rustfmt --edition 2024 \
-            codex-rs/hepta-agentd/src/learning_operator_host.rs \
-            codex-rs/hepta-agentd/src/learning_operator_host_tests.rs
-          git diff --exit-code -- \
+          rustfmt --check --edition 2024 \
             codex-rs/hepta-agentd/src/learning_operator_host.rs \
             codex-rs/hepta-agentd/src/learning_operator_host_tests.rs
           git diff --cached --check
