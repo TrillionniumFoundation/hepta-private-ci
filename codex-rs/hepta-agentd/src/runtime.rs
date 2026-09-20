@@ -205,13 +205,18 @@ fn require_cognitive_retrieval_context_for_mode(
     mode: CognitiveRetrievalMode,
     configured: bool,
 ) -> Result<(), AgentdError> {
-    if mode.requires_current_context() && !configured {
-        return Err(AgentdError::Invalid(
+    match (mode, configured) {
+        (CognitiveRetrievalMode::Compatibility, false)
+        | (CognitiveRetrievalMode::HnmfRequired, true) => Ok(()),
+        (CognitiveRetrievalMode::Compatibility, true) => Err(AgentdError::Invalid(
+            "compatibility retrieval profile forbids an HNMF current context; select HnmfRequired explicitly"
+                .to_string(),
+        )),
+        (CognitiveRetrievalMode::HnmfRequired, false) => Err(AgentdError::Invalid(
             "HNMF-required retrieval profile requires a current authenticated retrieval context"
                 .to_string(),
-        ));
+        )),
     }
-    Ok(())
 }
 
 #[cfg(feature = "qualification-cognitive-write")]

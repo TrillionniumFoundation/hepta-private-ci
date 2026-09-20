@@ -481,3 +481,73 @@ fn next_permutation(values: &mut [usize]) -> bool {
     values[pivot + 1..].reverse();
     true
 }
+
+
+#[test]
+fn product_generation_construction_is_confined_to_owner_adapter() {
+    use std::path::Path;
+
+    fn scan(
+        root: &Path,
+        retrieval_crate: &Path,
+        allowed: &[&str],
+        violations: &mut Vec<String>,
+    ) {
+        let Ok(entries) = std::fs::read_dir(root) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                if path.file_name().is_some_and(|name| name == "target") {
+                    continue;
+                }
+                scan(&path, retrieval_crate, allowed, violations);
+                continue;
+            }
+            if path.extension().is_none_or(|extension| extension != "rs")
+                || path.starts_with(retrieval_crate)
+            {
+                continue;
+            }
+            let normalized = path.to_string_lossy().replace('\\', "/");
+            if allowed.iter().any(|suffix| normalized.ends_with(suffix)) {
+                continue;
+            }
+            let Ok(source) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            for needle in [
+                "RetrievalGeneratorReceiptV1::new(",
+                "RetrievalGeneratorBatchV1 {",
+                "RetrievalChannelCandidateV1 {",
+                "GeneratedCandidateInputV1::new(",
+                "build_candidate_union_from_generated(",
+                "recall_generated_with_engram(",
+            ] {
+                if source.contains(needle) {
+                    violations.push(format!("{normalized}: direct product generator use {needle}"));
+                }
+            }
+        }
+    }
+
+    let retrieval_crate = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let workspace = retrieval_crate
+        .parent()
+        .expect("memory.retrieval must live inside the codex-rs workspace");
+    let mut violations = Vec::new();
+    scan(
+        workspace,
+        &retrieval_crate,
+        &[
+            "/hepta-memory/src/cognitive_retrieval_adapter.rs",
+            "/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+        ],
+        &mut violations,
+    );
+    assert!(
+        violations.is_empty(),
+        "product retrieval candidates must originate at the canonical SQLite owner adapter: {violations:#?}"
+    );
+}
