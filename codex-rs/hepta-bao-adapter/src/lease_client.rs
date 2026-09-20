@@ -271,7 +271,7 @@ impl BaoClient {
         grant: &SignedFinalUseGrant,
         request: &BaoSecretLeaseRequest,
         receipt_key: &BaoReceiptKey,
-        consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
+        consumer: impl FnOnce(&SecretLeaseMetadataV1, &[u8]) -> Result<(), ()>,
     ) -> Result<SecretLeaseMetadataV1, BaoLeaseError> {
         let binding = self.secret_lease_binding(request)?;
         let started_at_ms = now_millis().map_err(BaoLeaseError::Store)?;
@@ -432,9 +432,9 @@ impl BaoClient {
             }
         };
 
-        deliver_final_use(authority, verified, &binding, || consumer(secret_bytes))
+        deliver_final_use(authority, verified, &binding, || consumer(&stored, secret_bytes))
             .map_err(BaoLeaseError::Authority)?
-            .map_err(|()| BaoLeaseError::ConsumerIndeterminate)?;
+            .map_err(|()| BaoLeaseError::ConsumerIndeterminate(stored.clone()))?;
         Ok(stored)
     }
 
@@ -1118,7 +1118,7 @@ struct LookupPayload<'a> {
     lease_id: &'a str,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BaoLeaseError {
     InvalidConfiguration,
     InvalidRequest,
@@ -1136,7 +1136,7 @@ pub enum BaoLeaseError {
     OperationAlreadyApplied,
     OperationNotApplied,
     OperationIndeterminate,
-    ConsumerIndeterminate,
+    ConsumerIndeterminate(SecretLeaseMetadataV1),
 }
 
 impl fmt::Display for BaoLeaseError {
