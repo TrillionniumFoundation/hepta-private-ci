@@ -128,5 +128,17 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-wire"
-  ]
+  ],
+  "productCallers": [
+    {
+      "id": "hepta-runtime.status-wire-v2",
+      "nativeSymbol": "HeptaRuntime::status_wire_v2",
+      "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
+      "state": "source_composed_read_only_product_caller",
+      "tests": [
+        "codex-rs/hepta-native-gateway/src/lib.rs"
+      ]
+    }
+  ],
+  "exactSourceEvidenceMode": "lane_a_runtime_head_tree_and_registered_callers"
 }
