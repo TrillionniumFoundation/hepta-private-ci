@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b5a022dbe7c69e5b2063429cd4dec52ccd9ca7a6",
-    "tree": "0a8d46bc0895d4bd581ae5aed5ef2dfa5f5a63d3"
+    "commit": "f1c54a5238409d6c078ab0315f77c1ec246baff3",
+    "tree": "161556cc80bbe9ab82aba8baa1b5aad4c785bae4"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
@@ -176,6 +176,11 @@
           "path": "apps/hepta-browser/test/persisted-reconciler.test.js",
           "kind": "node_authenticated_terminal_observer",
           "command": "node --test apps/hepta-browser/test/persisted-reconciler.test.js"
+        },
+        {
+          "path": "apps/hepta-browser/scripts/public-egress-probe.js",
+          "kind": "trusted_target_real_servo_public_https",
+          "command": "node apps/hepta-browser/scripts/public-egress-probe.js <qualified-worker>"
         }
       ],
       "sourceSemantics": "Binds proposal provenance, typed payload, current snapshot, grant and live final-use authority. The persistent Agentd owner synchronously refreshes and continuously watches an owner-private monotonic revocation feed using the same FinalUseAuthority fence, so a valid concurrent revocation cannot pass worker admission. Durable intent precedes dispatch_boundary; crash-torn journal tails recover only their fully validated prefix. Post-process-loss success/failure requires an Ed25519-authenticated observer receipt with exact operation/request/semantic/outcome and frontier binding; otherwise the identity remains indeterminate and is never redispatched.",
@@ -298,7 +303,7 @@
     "terminal-success exact-head b5a1 generated candidate Cargo.lock, review and committed-lock rerun",
     "terminal-success exact-head b5a1 compile/unit tests plus real Browser E2E",
     "terminal-success reproducible worker artifact/SPDX receipt from the committed b5a1 lock",
-    "trusted Linux target-host Bubblewrap/prlimit/parent-death/no-listener plus real public DNS and certificate-validating HTTPS egress qualification",
+    "trusted Linux target-host Bubblewrap/prlimit/parent-death/no-listener plus real sandboxed-Servo public DNS and certificate-validating HTTPS qualification",
     "retained cross-profile cookie/cache/storage isolation, revocation-race and 32-cycle resource-soak evidence",
     "actual current signed remote-business receipts from the configured independent terminal observer where business terminality is claimed",
     "independent operator acceptance, activation, promotion and release"
