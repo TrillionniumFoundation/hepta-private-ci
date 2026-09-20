@@ -490,7 +490,6 @@ impl AgentdPromptRuntimeOwner {
     }
 }
 
-
 #[derive(Debug)]
 pub enum AgentdPromptPipelineError {
     RegistryOpen(String),
@@ -951,7 +950,9 @@ fn stored_state(state: &PromptRuntimeState) -> StoredPromptRuntimeState {
     }
 }
 
-fn restore_state(stored: StoredPromptRuntimeState) -> Result<PromptRuntimeState, AgentdPromptRuntimeError> {
+fn restore_state(
+    stored: StoredPromptRuntimeState,
+) -> Result<PromptRuntimeState, AgentdPromptRuntimeError> {
     if stored.schema != PROMPT_RUNTIME_SCHEMA
         || stored.staged.len() > MAX_STAGED_TURNS
         || stored.dispatches.len() > MAX_DISPATCH_RECORDS
@@ -1014,7 +1015,9 @@ fn stored_attachment(value: &PromptRuntimeAttachmentV1) -> StoredAttachment {
     }
 }
 
-fn restore_attachment(stored: StoredAttachment) -> Result<PromptRuntimeAttachmentV1, AgentdPromptRuntimeError> {
+fn restore_attachment(
+    stored: StoredAttachment,
+) -> Result<PromptRuntimeAttachmentV1, AgentdPromptRuntimeError> {
     let fragments = stored
         .developer_fragments
         .into_iter()
@@ -1053,7 +1056,9 @@ fn stored_dispatch(value: &PromptRuntimeDispatchRecordV1) -> StoredDispatch {
     }
 }
 
-fn restore_dispatch(stored: StoredDispatch) -> Result<PromptRuntimeDispatchRecordV1, AgentdPromptRuntimeError> {
+fn restore_dispatch(
+    stored: StoredDispatch,
+) -> Result<PromptRuntimeDispatchRecordV1, AgentdPromptRuntimeError> {
     let value = PromptRuntimeDispatchRecordV1 {
         compilation_id: parse_id(stored.compilation_id)?,
         context_attachment_digest: Digest32::from_array(stored.context_attachment_digest),
@@ -1086,15 +1091,14 @@ fn stored_terminal(value: &PromptRuntimeTerminalRecordV1) -> StoredTerminal {
         outcome: terminal_outcome_code(value.outcome),
         end_turn: value.end_turn,
         terminal_reason_code: value.terminal_reason_code.clone(),
-        delivery_observation: value
-            .delivery_observation
-            .as_ref()
-            .map(stored_observation),
+        delivery_observation: value.delivery_observation.as_ref().map(stored_observation),
         observed_unix_ms: value.observed_unix_ms,
     }
 }
 
-fn restore_terminal(stored: StoredTerminal) -> Result<PromptRuntimeTerminalRecordV1, AgentdPromptRuntimeError> {
+fn restore_terminal(
+    stored: StoredTerminal,
+) -> Result<PromptRuntimeTerminalRecordV1, AgentdPromptRuntimeError> {
     let value = PromptRuntimeTerminalRecordV1 {
         compilation_id: parse_id(stored.compilation_id)?,
         context_attachment_digest: Digest32::from_array(stored.context_attachment_digest),
@@ -1134,7 +1138,9 @@ fn stored_observation(value: &PromptDeliveryObservationV1) -> StoredObservation 
     }
 }
 
-fn restore_observation(stored: StoredObservation) -> Result<PromptDeliveryObservationV1, AgentdPromptRuntimeError> {
+fn restore_observation(
+    stored: StoredObservation,
+) -> Result<PromptDeliveryObservationV1, AgentdPromptRuntimeError> {
     let rejected_reason = stored
         .rejected_reason
         .map(|reason| {
@@ -1165,7 +1171,9 @@ const fn terminal_outcome_code(value: PromptRuntimeTerminalOutcomeV1) -> u8 {
     }
 }
 
-fn decode_terminal_outcome(value: u8) -> Result<PromptRuntimeTerminalOutcomeV1, AgentdPromptRuntimeError> {
+fn decode_terminal_outcome(
+    value: u8,
+) -> Result<PromptRuntimeTerminalOutcomeV1, AgentdPromptRuntimeError> {
     match value {
         0 => Ok(PromptRuntimeTerminalOutcomeV1::Delivered),
         1 => Ok(PromptRuntimeTerminalOutcomeV1::Rejected),
