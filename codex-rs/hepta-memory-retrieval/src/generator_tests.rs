@@ -342,6 +342,32 @@ fn generated_receipt_rejects_cross_generation_rebinding() {
 }
 
 #[test]
+fn generator_batch_requires_one_exact_rank_per_candidate() {
+    let duplicate_rank = batch(
+        RetrievalGeneratorOwnerV1::CognitiveLexical,
+        vec![
+            candidate(
+                record(1),
+                RetrievalChannelV1::Lexical,
+                1,
+                "rank-one-a",
+            ),
+            candidate(
+                record(2),
+                RetrievalChannelV1::Lexical,
+                1,
+                "rank-one-b",
+            ),
+        ],
+        RetrievalSourceCompletenessV1::Exhausted,
+    );
+    assert_eq!(
+        duplicate_rank.validate(),
+        Err(GeneratorErrorV1::DuplicateChannelRank(1))
+    );
+}
+
+#[test]
 fn active_policy_requires_exact_owner_generator_coverage() {
     let input = GeneratedCandidateInputV1::new(vec![batch(
         RetrievalGeneratorOwnerV1::CognitiveLexical,
