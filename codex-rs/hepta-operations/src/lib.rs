@@ -12,11 +12,14 @@
 
 #![forbid(unsafe_code)]
 
+mod durable;
 mod error;
 mod ledger;
 mod model;
 mod outbox;
 
+pub use durable::DurableOperationLedger;
+pub use durable::DurableOperationRecord;
 pub use error::OperationError;
 pub use ledger::MAX_MODEL_OPERATION_RECORDS;
 pub use ledger::OperationLedger;
