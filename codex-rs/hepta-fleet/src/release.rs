@@ -336,6 +336,37 @@ impl FleetRegistry {
         sync_directory(record.layout.releases_root())
     }
 
+    /// Durably revokes one Agent's permission to select a release.
+    ///
+    /// Existing processes keep their frozen executable bytes. Every future
+    /// start, upgrade, explicit rollback, or automatic rollback re-resolves
+    /// the current allowance and therefore fails closed after this removal.
+    pub fn revoke_release(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+    ) -> Result<(), FleetRegistryError> {
+        let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
+            FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
+        })?;
+        let path = allowance_path(record.layout.releases_root(), release_id);
+        let allowance: ReleaseAllowance =
+            read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
+        if !matches!(
+            allowance.schema_version,
+            1 | RELEASE_METADATA_SCHEMA_VERSION
+        ) || allowance.agent_id != *agent_id
+            || allowance.release_id != *release_id
+            || !is_sha256(&allowance.manifest_sha256)
+        {
+            return Err(FleetRegistryError::Corrupt(format!(
+                "invalid release allowance for agent {agent_id} release {release_id}"
+            )));
+        }
+        std::fs::remove_file(&path)?;
+        sync_directory(record.layout.releases_root())
+    }
+
     pub fn resolve_release(
         &self,
         agent_id: &AgentId,
@@ -1018,6 +1049,43 @@ mod tests {
             fixture.registry.allowed_releases(&fixture.first)?,
             vec![release_id]
         );
+        Ok(())
+    }
+
+    #[test]
+    fn durable_release_revocation_blocks_future_selection() -> Result<(), FleetRegistryError> {
+        let fixture = Fixture::new()?;
+        let release_id = ReleaseId::parse("revocable-v1")?;
+        fixture.registry.install_release(
+            release_id.clone(),
+            &fixture.source,
+            vec!["--revocable".to_string()],
+        )?;
+        fixture
+            .registry
+            .allow_release(&fixture.first, &release_id)?;
+        let before = fixture
+            .registry
+            .release_provenance(&fixture.first, &release_id)?;
+        assert_eq!(before.release_id, release_id);
+
+        fixture
+            .registry
+            .revoke_release(&fixture.first, &release_id)?;
+        assert!(matches!(
+            fixture
+                .registry
+                .resolve_release(&fixture.first, &release_id),
+            Err(FleetRegistryError::ReleaseNotAllowed { .. })
+                | Err(FleetRegistryError::Io(_))
+        ));
+        assert!(matches!(
+            fixture
+                .registry
+                .release_provenance(&fixture.first, &release_id),
+            Err(FleetRegistryError::ReleaseNotAllowed { .. })
+                | Err(FleetRegistryError::Io(_))
+        ));
         Ok(())
     }
 
