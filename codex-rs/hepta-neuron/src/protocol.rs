@@ -37,6 +37,27 @@ pub struct NeuronActivationSummaryV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuronTickReceiptProtocolV1 {
+    pub tick_id: StableId,
+    pub checkpoint_before: Digest32,
+    pub checkpoint_after: Digest32,
+    pub activation_digest: Digest32,
+    pub active_indices: Vec<u32>,
+    pub sparsity_ppm: u32,
+    pub threshold_digest: Digest32,
+    pub eligibility_digest: Digest32,
+    pub prediction_error_q24: i64,
+    pub confidence_ppm: u32,
+    pub ood_ppm: u32,
+    pub abstain: bool,
+    pub execution_micros: u64,
+    pub transient_allocation_bytes: u64,
+    pub checkpoint_bytes: u64,
+    pub saturation_count: u32,
+    pub queue_age_micros: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronCheckpointV1 {
     pub checkpoint_id: StableId,
     pub predecessor_id: Option<StableId>,
@@ -69,6 +90,50 @@ impl fmt::Display for NeuronProtocolError {
 }
 
 impl StdError for NeuronProtocolError {}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct TickInputDto {
+    tick_id: String,
+    subject_id: String,
+    logical_sequence: u64,
+    monotonic_time_micros: u64,
+    checkpoint_digest: String,
+    input_feature_digest: String,
+    feature_vector_q24: Vec<i64>,
+    objective_digest: String,
+    ndu_snapshot_digest: String,
+    body_generation: Option<u64>,
+    modulator_digest: Option<String>,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ResourceReceiptDto {
+    execution_micros: u64,
+    transient_allocation_bytes: u64,
+    checkpoint_bytes: u64,
+    saturation_count: u32,
+    queue_age_micros: u64,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct TickReceiptDto {
+    tick_id: String,
+    checkpoint_before: String,
+    checkpoint_after: String,
+    activation_digest: String,
+    active_indices: Vec<u32>,
+    sparsity_ppm: u32,
+    threshold_digest: String,
+    eligibility_digest: String,
+    prediction_error_q24: i64,
+    confidence_ppm: u32,
+    ood_ppm: u32,
+    abstain: bool,
+    resource_receipt: ResourceReceiptDto,
+}
 
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -172,6 +237,133 @@ pub fn canonical_checkpoint_v1(
     Ok(value)
 }
 
+pub fn encode_neuron_tick_input_v1(
+    value: &crate::NeuronTickInputV1,
+) -> Result<Vec<u8>, NeuronProtocolError> {
+    crate::runtime_types::validate_tick_input(value)
+        .map_err(|_| NeuronProtocolError::InvalidField("tick input"))?;
+    let dto = TickInputDto {
+        tick_id: value.tick_id.to_string(),
+        subject_id: value.subject_id.to_string(),
+        logical_sequence: value.logical_sequence,
+        monotonic_time_micros: value.monotonic_time_micros,
+        checkpoint_digest: value.checkpoint_digest.to_string(),
+        input_feature_digest: value.input_feature_digest.to_string(),
+        feature_vector_q24: value.feature_vector_q24.clone(),
+        objective_digest: value.objective_digest.to_string(),
+        ndu_snapshot_digest: value.ndu_snapshot_digest.to_string(),
+        body_generation: value.body_generation,
+        modulator_digest: value.modulator_digest.map(|digest| digest.to_string()),
+    };
+    encode_bounded(&dto)
+}
+
+pub fn decode_neuron_tick_input_v1(
+    bytes: &[u8],
+) -> Result<crate::NeuronTickInputV1, NeuronProtocolError> {
+    let dto: TickInputDto = decode_bounded(bytes)?;
+    let value = crate::NeuronTickInputV1 {
+        tick_id: parse_id(&dto.tick_id, "tickId")?,
+        subject_id: parse_id(&dto.subject_id, "subjectId")?,
+        logical_sequence: dto.logical_sequence,
+        monotonic_time_micros: dto.monotonic_time_micros,
+        checkpoint_digest: parse_digest_allow_zero(&dto.checkpoint_digest, "checkpointDigest")?,
+        input_feature_digest: parse_digest(&dto.input_feature_digest, "inputFeatureDigest")?,
+        feature_vector_q24: dto.feature_vector_q24,
+        objective_digest: parse_digest(&dto.objective_digest, "objectiveDigest")?,
+        ndu_snapshot_digest: parse_digest(&dto.ndu_snapshot_digest, "nduSnapshotDigest")?,
+        body_generation: dto.body_generation,
+        modulator_digest: dto
+            .modulator_digest
+            .as_deref()
+            .map(|value| parse_digest(value, "modulatorDigest"))
+            .transpose()?,
+    };
+    crate::runtime_types::validate_tick_input(&value)
+        .map_err(|_| NeuronProtocolError::InvalidField("tick input"))?;
+    Ok(value)
+}
+
+pub fn canonical_tick_receipt_v1(
+    value: &NeuronTickReceiptV1,
+) -> Result<NeuronTickReceiptProtocolV1, NeuronProtocolError> {
+    let projected = NeuronTickReceiptProtocolV1 {
+        tick_id: value.tick_id.clone(),
+        checkpoint_before: value.checkpoint_before,
+        checkpoint_after: value.checkpoint_after,
+        activation_digest: value.activation_digest,
+        active_indices: value.active_indices.clone(),
+        sparsity_ppm: value.sparsity_ppm,
+        threshold_digest: value.threshold_digest,
+        eligibility_digest: value.eligibility_digest,
+        prediction_error_q24: value.prediction_error_q24,
+        confidence_ppm: value.confidence_ppm,
+        ood_ppm: value.ood_ppm,
+        abstain: value.abstain,
+        execution_micros: value.resource_receipt.execution_micros,
+        transient_allocation_bytes: value.resource_receipt.transient_allocation_bytes,
+        checkpoint_bytes: value.resource_receipt.checkpoint_bytes,
+        saturation_count: value.resource_receipt.saturation_count,
+        queue_age_micros: value.resource_receipt.queue_age_micros,
+    };
+    validate_tick_receipt(&projected)?;
+    Ok(projected)
+}
+
+pub fn encode_neuron_tick_receipt_v1(
+    value: &NeuronTickReceiptProtocolV1,
+) -> Result<Vec<u8>, NeuronProtocolError> {
+    validate_tick_receipt(value)?;
+    encode_bounded(&TickReceiptDto {
+        tick_id: value.tick_id.to_string(),
+        checkpoint_before: value.checkpoint_before.to_string(),
+        checkpoint_after: value.checkpoint_after.to_string(),
+        activation_digest: value.activation_digest.to_string(),
+        active_indices: value.active_indices.clone(),
+        sparsity_ppm: value.sparsity_ppm,
+        threshold_digest: value.threshold_digest.to_string(),
+        eligibility_digest: value.eligibility_digest.to_string(),
+        prediction_error_q24: value.prediction_error_q24,
+        confidence_ppm: value.confidence_ppm,
+        ood_ppm: value.ood_ppm,
+        abstain: value.abstain,
+        resource_receipt: ResourceReceiptDto {
+            execution_micros: value.execution_micros,
+            transient_allocation_bytes: value.transient_allocation_bytes,
+            checkpoint_bytes: value.checkpoint_bytes,
+            saturation_count: value.saturation_count,
+            queue_age_micros: value.queue_age_micros,
+        },
+    })
+}
+
+pub fn decode_neuron_tick_receipt_v1(
+    bytes: &[u8],
+) -> Result<NeuronTickReceiptProtocolV1, NeuronProtocolError> {
+    let dto: TickReceiptDto = decode_bounded(bytes)?;
+    let value = NeuronTickReceiptProtocolV1 {
+        tick_id: parse_id(&dto.tick_id, "tickId")?,
+        checkpoint_before: parse_digest_allow_zero(&dto.checkpoint_before, "checkpointBefore")?,
+        checkpoint_after: parse_digest(&dto.checkpoint_after, "checkpointAfter")?,
+        activation_digest: parse_digest(&dto.activation_digest, "activationDigest")?,
+        active_indices: dto.active_indices,
+        sparsity_ppm: dto.sparsity_ppm,
+        threshold_digest: parse_digest(&dto.threshold_digest, "thresholdDigest")?,
+        eligibility_digest: parse_digest(&dto.eligibility_digest, "eligibilityDigest")?,
+        prediction_error_q24: dto.prediction_error_q24,
+        confidence_ppm: dto.confidence_ppm,
+        ood_ppm: dto.ood_ppm,
+        abstain: dto.abstain,
+        execution_micros: dto.resource_receipt.execution_micros,
+        transient_allocation_bytes: dto.resource_receipt.transient_allocation_bytes,
+        checkpoint_bytes: dto.resource_receipt.checkpoint_bytes,
+        saturation_count: dto.resource_receipt.saturation_count,
+        queue_age_micros: dto.resource_receipt.queue_age_micros,
+    };
+    validate_tick_receipt(&value)?;
+    Ok(value)
+}
+
 pub fn encode_neuron_signal_receipt_v1(
     value: &NeuronSignalReceiptV1,
 ) -> Result<Vec<u8>, NeuronProtocolError> {
@@ -247,6 +439,30 @@ pub fn decode_neuron_checkpoint_v1(
     };
     validate_checkpoint(&value)?;
     Ok(value)
+}
+
+fn validate_tick_receipt(
+    value: &NeuronTickReceiptProtocolV1,
+) -> Result<(), NeuronProtocolError> {
+    for (field, digest) in [
+        ("checkpointAfter", value.checkpoint_after),
+        ("activationDigest", value.activation_digest),
+        ("thresholdDigest", value.threshold_digest),
+        ("eligibilityDigest", value.eligibility_digest),
+    ] {
+        if digest.is_zero() {
+            return Err(NeuronProtocolError::InvalidDigest(field));
+        }
+    }
+    if value.active_indices.len() > MAX_ACTIVE_INDICES
+        || value.active_indices.windows(2).any(|pair| pair[0] >= pair[1])
+        || value.sparsity_ppm > PPM
+        || value.confidence_ppm > PPM
+        || value.ood_ppm > PPM
+    {
+        return Err(NeuronProtocolError::InvalidField("tick receipt"));
+    }
+    Ok(())
 }
 
 fn validate_signal(value: &NeuronSignalReceiptV1) -> Result<(), NeuronProtocolError> {
@@ -381,12 +597,18 @@ fn parse_id(value: &str, field: &'static str) -> Result<StableId, NeuronProtocol
 }
 
 fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, NeuronProtocolError> {
-    let digest =
-        Digest32::from_str(value).map_err(|_| NeuronProtocolError::InvalidDigest(field))?;
+    let digest = parse_digest_allow_zero(value, field)?;
     if digest.is_zero() {
         return Err(NeuronProtocolError::InvalidDigest(field));
     }
     Ok(digest)
+}
+
+fn parse_digest_allow_zero(
+    value: &str,
+    field: &'static str,
+) -> Result<Digest32, NeuronProtocolError> {
+    Digest32::from_str(value).map_err(|_| NeuronProtocolError::InvalidDigest(field))
 }
 
 fn digest_id(prefix: &str, digest: Digest32) -> Result<StableId, NeuronProtocolError> {
