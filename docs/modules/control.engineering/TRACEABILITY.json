@@ -311,11 +311,12 @@
       "capabilityCeiling": "named SQLite v9 durable product owner composing planning, fenced worker lifecycle and integration reconciliation; CI product execution is fixture-bound and grants no independent acceptance/merge/release/deployment authority"
     },
     {
-      "designOperation": "durable_integration_queue_reconciliation",
+      "designOperation": "authenticated_integration_stage_reconciliation",
       "nativeModule": "control_engineering_v2.integration_controller",
-      "nativeSymbol": "reconcile_integration_item",
-      "ownerSymbol": "publish_integration_queue / reconcile_integration_item",
+      "nativeSymbol": "observe_integration_stage",
+      "ownerSymbol": "observe_integration_stage → reconcile_integration_item",
       "tests": [
+        "IntegrationControllerTests.test_authenticated_stage_observations_gate_product_readiness_projection",
         "IntegrationControllerTests.test_evidence_progression_reopen_and_terminal_observation",
         "IntegrationControllerTests.test_base_drift_invalidates_generation_and_requires_replan",
         "IntegrationControllerTests.test_observation_digest_drift_invalidates_instead_of_replacing",
@@ -325,8 +326,8 @@
         "IntegrationControllerTests.test_review_and_ci_cannot_precede_candidate_binding",
         "IntegrationControllerTests.test_terminal_retry_is_idempotent_but_conflicting_terminal_is_rejected"
       ],
-      "state": "source_implemented",
-      "capabilityCeiling": "durable base-bound ordered candidate→review→CI observation state up to ready_external_merge plus immutable terminal observation; identical retries are revision/audit-stable no-ops and never grant merge authority"
+      "state": "source_implemented_authenticated_stage_boundary",
+      "capabilityCeiling": "signed role-bound candidate→review→CI stage observations may advance durable base-bound state only up to ready_external_merge; GitHub review observation is not independent acceptance, identical retries are revision/audit-stable no-ops, and terminal merge/failure still requires a separately authenticated observer"
     },
     {
       "designOperation": "github_reviewer_identity_observation",
