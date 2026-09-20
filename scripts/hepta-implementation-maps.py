@@ -319,7 +319,7 @@ def verify():
             source_commit = source_base["commit"]
             if mid in STRICT_SOURCE_BASE_MODULES:
                 try:
-                    actual_tree = git("rev-parse", f"{source_commit}^{tree}")
+                    actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
                 except subprocess.CalledProcessError:
                     failures.append(f"{mid}: source base commit is unavailable")
                 else:
