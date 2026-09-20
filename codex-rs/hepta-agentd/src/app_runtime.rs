@@ -91,7 +91,8 @@ pub(crate) fn app_server_runtime_options_for_agent(
     cognitive_runtime: CognitiveRuntime,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let prompt_runtime_host = state
-        .prompt_runtime_owner()
+        .prompt_pipeline_owner()
+        .runtime_owner()
         .host()
         .map_err(std::io::Error::other)?;
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);
