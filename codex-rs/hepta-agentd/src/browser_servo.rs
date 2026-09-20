@@ -1484,6 +1484,7 @@ mod tests {
         stall_second_write: bool,
     ) -> Harness {
         let state = private_authority_tempdir();
+        let state_path = fs::canonicalize(state.path()).expect("canonical authority tempdir");
         let signing = SigningKey::from_bytes(&[7u8; 32]);
         let bootstrap_revocations = FinalUseRevocations {
             authority_epoch: 7,
@@ -1491,13 +1492,13 @@ mod tests {
             revoked_grant_ids: BTreeSet::new(),
         };
         let authority = FinalUseAuthority::open_state_dir(
-            state.path(),
+            &state_path,
             "browser-test-issuer".to_string(),
             signing.verifying_key().to_bytes(),
             bootstrap_revocations.clone(),
         )
         .expect("authority");
-        let revocation_feed_path = state.path().join("browser-revocations.json");
+        let revocation_feed_path = state_path.join("browser-revocations.json");
         write_revocation_feed(&revocation_feed_path, &bootstrap_revocations);
         let revocation_feed = BrowserRevocationFeed::start(
             authority.clone(),
