@@ -313,7 +313,7 @@ impl AutomationStore {
             return Err(AutomationError::Invalid);
         }
         let rows = sqlx::query(
-            "SELECT r.task_id, r.occurrence, r.scheduled_for_ms,
+            "SELECT r.task_id, r.occurrence, r.schedule_revision, r.scheduled_for_ms,
                     r.client_user_message_id, r.lease_generation,
                     r.lease_token, r.lease_expires_at_ms
              FROM automation_runs r
@@ -342,6 +342,11 @@ impl AutomationStore {
             let lease = AutomationLease {
                 task: task.clone(),
                 occurrence: occurrence_number,
+                schedule_revision: to_u64(
+                    row.try_get::<Option<i64>, _>("schedule_revision")
+                        .map_err(unavailable)?
+                        .ok_or(AutomationError::Corrupt)?,
+                )?,
                 scheduled_for_ms: to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?,
                 client_user_message_id: row
                     .try_get("client_user_message_id")
@@ -448,7 +453,8 @@ impl AutomationStore {
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
 
         let reclaim = sqlx::query(
-            "SELECT r.task_id, r.occurrence, r.scheduled_for_ms, r.client_user_message_id
+            "SELECT r.task_id, r.occurrence, r.schedule_revision,
+                    r.scheduled_for_ms, r.client_user_message_id
              FROM automation_runs r
              JOIN automation_tasks t ON t.task_id = r.task_id
              WHERE t.owner_agent_id = ? AND t.state = 'enabled'
@@ -467,20 +473,29 @@ impl AutomationStore {
         .await
         .map_err(unavailable)?;
 
-        let (task_id, occurrence, scheduled_for_ms, client_id) = if let Some(row) = reclaim {
+        let (task_id, occurrence, schedule_revision, scheduled_for_ms, client_id) =
+            if let Some(row) = reclaim {
             let task_id =
                 AutomationTaskId::parse(&row.try_get::<String, _>("task_id").map_err(unavailable)?)
                     .map_err(|_| AutomationError::Corrupt)?;
             (
                 task_id,
                 to_u64(row.try_get("occurrence").map_err(unavailable)?)?,
+                to_u64(
+                    row.try_get::<Option<i64>, _>("schedule_revision")
+                        .map_err(unavailable)?
+                        .ok_or(AutomationError::Corrupt)?,
+                )?,
                 to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?,
                 row.try_get("client_user_message_id").map_err(unavailable)?,
             )
         } else {
             let row = sqlx::query(
-                "SELECT t.task_id, t.next_occurrence, t.next_run_at_ms
+                "SELECT t.task_id, t.next_occurrence, t.next_run_at_ms,
+                        m.revision AS schedule_revision
                  FROM automation_tasks t
+                 JOIN automation_schedule_metadata m
+                   ON m.task_id = t.task_id AND m.owner_agent_id = t.owner_agent_id
                  WHERE t.owner_agent_id = ? AND t.state = 'enabled'
                    AND t.next_run_at_ms IS NOT NULL AND t.next_run_at_ms <= ?
                    AND NOT EXISTS (
@@ -502,15 +517,19 @@ impl AutomationStore {
                 AutomationTaskId::parse(&row.try_get::<String, _>("task_id").map_err(unavailable)?)
                     .map_err(|_| AutomationError::Corrupt)?;
             let occurrence = to_u64(row.try_get("next_occurrence").map_err(unavailable)?)?;
+            let schedule_revision =
+                to_u64(row.try_get("schedule_revision").map_err(unavailable)?)?;
             let scheduled_for_ms = to_u64(row.try_get("next_run_at_ms").map_err(unavailable)?)?;
             let client_id = client_message_id(&self.owner_agent_id, task_id, occurrence);
             sqlx::query(
                 "INSERT INTO automation_runs (
-                    task_id, occurrence, scheduled_for_ms, client_user_message_id, state
-                 ) VALUES (?, ?, ?, ?, 'pending')",
+                    task_id, occurrence, schedule_revision, scheduled_for_ms,
+                    client_user_message_id, state
+                 ) VALUES (?, ?, ?, ?, ?, 'pending')",
             )
             .bind(task_id.to_string())
             .bind(to_i64(occurrence)?)
+            .bind(to_i64(schedule_revision)?)
             .bind(to_i64(scheduled_for_ms)?)
             .bind(&client_id)
             .execute(&mut *transaction)
@@ -528,7 +547,13 @@ impl AutomationStore {
             if advanced.rows_affected() != 1 {
                 return Err(AutomationError::Conflict);
             }
-            (task_id, occurrence, scheduled_for_ms, client_id)
+            (
+                task_id,
+                occurrence,
+                schedule_revision,
+                scheduled_for_ms,
+                client_id,
+            )
         };
 
         let lease_token = uuid::Uuid::now_v7().to_string();
@@ -560,6 +585,7 @@ impl AutomationStore {
         Ok(Some(AutomationLease {
             task,
             occurrence,
+            schedule_revision,
             scheduled_for_ms,
             client_user_message_id: client_id,
             lease_generation: generation,
