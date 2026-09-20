@@ -340,7 +340,8 @@ async fn authenticated_request_is_durable_deduplicated_and_terminal_after_reopen
     fixture.owner.set_terminal(OwnerTerminalObservation {
         outcome: ReconciliationOutcome::Applied,
         outcome_digest: Digest32::of_bytes(b"owner-terminal-applied"),
-        observer_generation: fixture.owner_generation,
+        observer_generation: Generation::new(fixture.owner_generation.get() + 1)
+            .expect("failover observer generation"),
     });
     let restarted = gateway(&fixture, reopened);
 
@@ -361,6 +362,18 @@ async fn authenticated_request_is_durable_deduplicated_and_terminal_after_reopen
     assert_eq!(observation.status, "succeeded");
     assert!(observation.terminal_observed);
     assert!(observation.outcome_digest.is_some());
+
+    let settled = restarted
+        .ledger
+        .get(&StableId::new("operation.ui.1").expect("operation"))
+        .await
+        .expect("query settled")
+        .expect("settled record");
+    assert_eq!(
+        settled.terminal_observer_generation,
+        Some(Generation::new(fixture.owner_generation.get() + 1)
+            .expect("failover observer generation"))
+    );
 }
 
 #[tokio::test]
