@@ -181,9 +181,7 @@ pub fn adapt_wire_v2(
     adapt(now_ms, intent, observation).map_err(WireAdapterError::Adapter)
 }
 
-fn require_codex_operation_intent_producer(
-    producer: &StableId,
-) -> Result<(), WireAdapterError> {
+fn require_codex_operation_intent_producer(producer: &StableId) -> Result<(), WireAdapterError> {
     if producer.as_str() != CODEX_OPERATION_INTENT_WIRE_PRODUCER_V2 {
         return Err(WireAdapterError::UnexpectedProducer(producer.clone()));
     }
