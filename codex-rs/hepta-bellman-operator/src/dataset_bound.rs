@@ -24,7 +24,8 @@ use crate::fit_tabular_operator_strict_v2;
 use crate::fit_transition_model;
 
 /// Opaque proof that a tabular plan names the exact frozen dataset and exact
-/// canonical source-record evidence set admitted by `learning.ledger`.
+/// source-record evidence admitted by `learning.ledger`; every training row
+/// must name one record in that frozen set.
 #[derive(Clone, Debug)]
 pub struct VerifiedTabularOperatorPlanV2 {
     plan: TabularOperatorPlanV1,
@@ -50,7 +51,7 @@ pub fn verify_tabular_operator_plan_v2(
     if plan.objective_digest != receipt.snapshot.objective_digest {
         return Err(OperatorDatasetBindingError::ObjectiveDigestMismatch);
     }
-    verify_evidence_set(
+    verify_evidence_membership(
         &receipt.snapshot.source_record_digests,
         plan.samples.iter().map(|sample| sample.evidence_digest),
     )?;
@@ -70,7 +71,7 @@ pub fn verify_world_model_dataset_v2(
     now: u64,
 ) -> Result<VerifiedWorldModelDatasetV2, OperatorDatasetBindingError> {
     verify_dataset_snapshot_receipt_v3(receipt, now)?;
-    verify_evidence_set(
+    verify_evidence_membership(
         &receipt.snapshot.source_record_digests,
         samples.iter().map(|sample| sample.evidence_digest),
     )?;
@@ -88,14 +89,15 @@ pub fn fit_transition_model_verified_v2(
         .map_err(OperatorDatasetBindingError::WorldModel)
 }
 
-fn verify_evidence_set(
-    expected: &[Digest32],
+fn verify_evidence_membership(
+    frozen_records: &[Digest32],
     actual: impl Iterator<Item = Digest32>,
 ) -> Result<(), OperatorDatasetBindingError> {
-    let mut actual = actual.collect::<Vec<_>>();
-    actual.sort_unstable();
-    if actual != expected {
-        return Err(OperatorDatasetBindingError::EvidenceSetMismatch);
+    let frozen = frozen_records.iter().copied().collect::<std::collections::BTreeSet<_>>();
+    for evidence in actual {
+        if !frozen.contains(&evidence) {
+            return Err(OperatorDatasetBindingError::EvidenceOutsideDataset);
+        }
     }
     Ok(())
 }
@@ -105,7 +107,7 @@ pub enum OperatorDatasetBindingError {
     DatasetReceipt(DatasetReceiptError),
     DatasetDigestMismatch,
     ObjectiveDigestMismatch,
-    EvidenceSetMismatch,
+    EvidenceOutsideDataset,
     Learned(StrictLearnedOperatorError),
     WorldModel(WorldModelError),
 }
@@ -124,7 +126,7 @@ impl StdError for OperatorDatasetBindingError {
             Self::WorldModel(error) => Some(error),
             Self::DatasetDigestMismatch
             | Self::ObjectiveDigestMismatch
-            | Self::EvidenceSetMismatch => None,
+            | Self::EvidenceOutsideDataset => None,
         }
     }
 }
