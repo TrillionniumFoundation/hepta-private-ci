@@ -62,9 +62,11 @@ EXPECTED_OPERATIONS = {
     "learning.eval": {
         "estimate_ope",
         "estimate_sequential",
-        "freeze_cross_fold_plan",
+        "freeze_cross_fold_plan_v2",
         "FinalHoldoutRegistry::consume",
-        "decide_independently",
+        "FencedFinalHoldoutOwnerV1::consume",
+        "decide_with_signed_evidence_v2",
+        "decide_with_signed_longitudinal_evidence_v3",
     },
 }
 EXPECTED_CRATES = {
@@ -546,6 +548,22 @@ def verify_workflow(findings: Findings) -> None:
         "workflow_gate_missing",
         "workflow is missing synthetic-merge job",
     )
+    for token, message in (
+        ("learning-eval-qualification:", "workflow is missing learning-eval qualification job"),
+        ("cargo-llvm-cov@0.9.1", "workflow is missing pinned learning-eval coverage tooling"),
+        ("fenced_holdout::tests", "workflow is missing fenced holdout stress execution"),
+        ("qualification.json", "workflow is missing commit-addressed qualification manifest"),
+        ("actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373", "workflow is missing pinned provenance attestation"),
+        ("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", "workflow is missing retained qualification artifact"),
+        ("trusted-inprocess-eval", "workflow is missing explicit compatibility-surface verification"),
+        ("decide_with_signed_evidence_v2", "workflow is missing signed production-surface verification"),
+        ("FencedFinalHoldoutOwnerV1", "workflow is missing fenced-owner production-surface verification"),
+    ):
+        findings.require(
+            token in text,
+            "workflow_gate_missing",
+            message,
+        )
     findings.require(
         not TEMPORARY_WORKFLOW_PATH.exists(),
         "temporary_workflow_present",
