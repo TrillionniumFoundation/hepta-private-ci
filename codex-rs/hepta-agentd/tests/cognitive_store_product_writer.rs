@@ -110,8 +110,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     fs::create_dir(&workspace)?;
     let owner = AgentId::parse("00000000-0000-4000-8000-00000000c059")?;
     let binding = WorkspaceBinding::new(workspace.clone(), &fleet_root)?;
-    let manifest =
-        AgentManifest::new(owner.clone(), binding, ResourceBudget::local_default())?;
+    let manifest = AgentManifest::new(owner.clone(), binding, ResourceBudget::local_default())?;
     let record = registry.register(manifest)?;
     registry.compare_and_transition(&owner, 0, AgentLifecycle::Starting)?;
 
