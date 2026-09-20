@@ -5,17 +5,80 @@ import { createHash } from "node:crypto";
 import http from "node:http";
 import net from "node:net";
 import tls from "node:tls";
-import { chmod, mkdtemp, rm } from "node:fs/promises";
+import { chmod, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
+import { browserActionDigest } from "../src/action.js";
 import { GrantScopedEgressBroker } from "../src/egress-broker.js";
+import { FileBrowserOperationJournal } from "../src/journal.js";
+import { BrowserProfileHost } from "../src/runtime.js";
+import {
+  LinuxBubblewrapLauncher,
+  SubprocessBrowserDriver,
+} from "../src/worker-driver.js";
 
-const GRANT_DIGEST = createHash("sha256")
-  .update("hepta.browser.public-egress-target.v1")
-  .digest("hex");
+const workerPath = resolve(process.argv[2] ?? "");
+if (!process.argv[2]) {
+  throw new Error("usage: public-egress-probe.js WORKER_BINARY");
+}
+
+const sha = (value) => createHash("sha256").update(value).digest("hex");
+const D1 = "1".repeat(64);
+const D2 = "2".repeat(64);
+const WITNESS = "a".repeat(64);
+const GRANT_DIGEST = sha("hepta.browser.public-egress-target.v2");
 const AUTHORITY = "example.com:443";
 const ORIGIN = "https://example.com";
+
+function authority() {
+  return {
+    async withVerifiedUse(request, consumer) {
+      return consumer({
+        authorized: true,
+        witnessDigest: WITNESS,
+        authorityEpoch: request.authorityEpoch,
+        requestDigest: request.requestDigest,
+      });
+    },
+  };
+}
+
+function grant(action, digest) {
+  return {
+    grantDigest: sha("hepta.browser.public-egress-effect.v1"),
+    action,
+    destinationOrigin: ORIGIN,
+    finalPayloadDigest: digest,
+    authorityEpoch: 7,
+    expiresAtMs: Date.now() + 60_000,
+  };
+}
+
+function operation(action, effectGrant) {
+  return {
+    profileId: "profile.public-egress",
+    principalId: "principal.public-egress",
+    generation: 1,
+    operationId: "operation.public-egress.navigate",
+    pageGeneration: 0,
+    typedAction: action,
+    destinationOrigin: ORIGIN,
+    finalPayloadDigest: browserActionDigest(action),
+    effectGrantDigest: effectGrant.grantDigest,
+    authorityEpoch: effectGrant.authorityEpoch,
+    deadlineMs: Date.now() + 30_000,
+  };
+}
+
+async function settle(host, input, receipt) {
+  let current = receipt;
+  for (let attempt = 0; attempt < 750 && current.terminalObserved !== true; attempt += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    current = await host.reconcileOperation(input);
+  }
+  return current;
+}
 
 function connect(socketPath, authority) {
   return new Promise((resolve, reject) => {
@@ -74,6 +137,11 @@ async function publicTls(socketPath) {
   });
 }
 
+const [workerBytes, bwrapBytes, prlimitBytes] = await Promise.all([
+  readFile(workerPath),
+  readFile("/usr/bin/bwrap"),
+  readFile("/usr/bin/prlimit"),
+]);
 const root = await mkdtemp(join(tmpdir(), "hepta-public-egress-"));
 await chmod(root, 0o700);
 const socketPath = join(root, "egress.sock");
@@ -100,11 +168,98 @@ try {
   );
   denied.socket.destroy();
 
+  // Prove the same public HTTPS path through the actual sandboxed Servo worker,
+  // not only through a host-side broker client. This exercises the worker's
+  // proxy configuration, private Unix relay, pinned broker destination and
+  // Servo/rustls certificate validation as one target-host path.
+  const driver = new SubprocessBrowserDriver({
+    workerPath,
+    workerDigest: sha(workerBytes),
+    profileRoot: join(root, "profiles"),
+    launcher: new LinuxBubblewrapLauncher({
+      bwrapPath: "/usr/bin/bwrap",
+      bwrapDigest: sha(bwrapBytes),
+      prlimitPath: "/usr/bin/prlimit",
+      prlimitDigest: sha(prlimitBytes),
+    }),
+  });
+  const host = new BrowserProfileHost({
+    driver,
+    authority: authority(),
+    journal: new FileBrowserOperationJournal(join(root, "browser-journal.log")),
+    driverCallTimeoutMs: 20_000,
+  });
+  const navigateAction = {
+    kind: "navigate",
+    url: "https://example.com/",
+    policyDigest: D1,
+    expectedRevision: 1,
+  };
+  const navigateGrant = grant("navigate", browserActionDigest(navigateAction));
+  await host.openProfile({
+    profileId: "profile.public-egress",
+    principalId: "principal.public-egress",
+    manifestDigest: D1,
+    grantDigest: D2,
+    generation: 1,
+    expiresAtMs: Date.now() + 60_000,
+    allowedOrigins: [ORIGIN],
+    effectGrants: [navigateGrant],
+  });
+  const navigateInput = operation(navigateAction, navigateGrant);
+  const navigation = await settle(
+    host,
+    navigateInput,
+    await host.navigateOrAct(navigateInput),
+  );
+  assert.equal(
+    navigation.status,
+    "succeeded",
+    "real Servo public HTTPS navigation must succeed",
+  );
+  const page = await host.observePage({
+    profileId: "profile.public-egress",
+    principalId: "principal.public-egress",
+    generation: 1,
+    observationBudget: 65_536,
+  });
+  assert.equal(page.origin, ORIGIN, "real Servo must remain on the granted public origin");
+  assert.equal(page.originAllowed, true);
+  assert.ok(
+    page.semanticObservation && typeof page.semanticObservation === "object",
+    "real Servo public page must produce a bounded semantic observation",
+  );
+
+  const escapeGrant = {
+    ...navigateGrant,
+    grantDigest: sha("hepta.browser.public-egress-escape.v1"),
+    destinationOrigin: "https://example.org",
+  };
+  await assert.rejects(
+    host.admitEffectGrant({
+      profileId: "profile.public-egress",
+      principalId: "principal.public-egress",
+      generation: 1,
+      effectGrant: escapeGrant,
+    }),
+    /outside the profile grant/,
+  );
+  await host.closeProfile({
+    profileId: "profile.public-egress",
+    principalId: "principal.public-egress",
+    generation: 1,
+  });
+
   process.stdout.write(
     JSON.stringify({
-      schema: "hepta.browser.public-egress-target-probe.v1",
+      schema: "hepta.browser.public-egress-target-probe.v2",
       publicDnsResolved: true,
       publicTlsValidated: true,
+      realServoPublicHttps: true,
+      realServoObservedOrigin: page.origin,
+      realServoSemanticDigest: page.semanticDigest,
+      profileScopeEscapeDenied: true,
+      workerSha256: sha(workerBytes),
       grantedOrigin: ORIGIN,
       selectedAddress: observation.address,
       networkBindingDigest: observation.networkBindingDigest,
