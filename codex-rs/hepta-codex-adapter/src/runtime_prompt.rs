@@ -221,9 +221,8 @@ impl std::error::Error for PromptRuntimeHostError {}
 
 pub type PromptRuntimePrepareFuture = Pin<
     Box<
-        dyn Future<
-                Output = Result<Option<PromptRuntimeAttachmentV1>, PromptRuntimeHostError>,
-            > + Send
+        dyn Future<Output = Result<Option<PromptRuntimeAttachmentV1>, PromptRuntimeHostError>>
+            + Send
             + 'static,
     >,
 >;
@@ -420,7 +419,10 @@ impl PromptRuntimeTerminalRecordV1 {
                     .delivery_observation
                     .as_ref()
                     .ok_or(PromptRuntimeError::InvalidTerminalRecord)?;
-                if observation.delivered || self.terminal_reason_code.is_none() || self.end_turn.is_some() {
+                if observation.delivered
+                    || self.terminal_reason_code.is_none()
+                    || self.end_turn.is_some()
+                {
                     return Err(PromptRuntimeError::InvalidTerminalRecord);
                 }
                 validate_observation_binding(self, observation)?;
@@ -626,8 +628,8 @@ impl ModelProviderPolicyContributor for PromptRuntimeExtension {
                     message: "prompt attachment expired before physical provider send".to_owned(),
                 });
             }
-            let provider_request_digest =
-                Digest32::from_str(input.wire_semantic_sha256.as_str()).map_err(|_| {
+            let provider_request_digest = Digest32::from_str(input.wire_semantic_sha256.as_str())
+                .map_err(|_| {
                     ModelProviderPolicyError::new(
                         "prompt_runtime_provider_digest_invalid",
                         "host provider request digest is invalid",
@@ -840,10 +842,7 @@ fn rejection_reason(reason_code: &str) -> Result<PromptDeliveryRejectReasonV1, P
     PromptDeliveryRejectReasonV1::new(id).map_err(|_| PromptRuntimeError::InvalidTerminalRecord)
 }
 
-fn parse_stable_id(
-    value: &str,
-    field: &'static str,
-) -> Result<StableId, ModelProviderPolicyError> {
+fn parse_stable_id(value: &str, field: &'static str) -> Result<StableId, ModelProviderPolicyError> {
     StableId::new(value.to_owned()).map_err(|_| {
         ModelProviderPolicyError::new(
             "prompt_runtime_scope_identity_invalid",
@@ -869,11 +868,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 fn push_text(bytes: &mut Vec<u8>, value: &str) {
-    bytes.extend_from_slice(
-        &u32::try_from(value.len())
-            .unwrap_or(u32::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(value.as_bytes());
 }
 
