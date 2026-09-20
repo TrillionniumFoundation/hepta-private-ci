@@ -13,6 +13,7 @@ use std::fmt;
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
 use codex_hepta_learning_ledger::RunStartAppendReceipt;
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_learning_ledger::RunStartConflictRecordV1;
 use codex_hepta_learning_ledger::RunStartJournal;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
@@ -27,6 +28,7 @@ use codex_hepta_objective::ObjectiveCompileReceipt;
 use codex_hepta_objective::ObjectiveConflictReceipt;
 use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
 use codex_hepta_objective::admit_objective_v1;
+use codex_hepta_objective::canonical_native_objective_conflict_bytes_v1;
 use codex_hepta_objective::canonical_native_objective_semantic_bytes_v1;
 use codex_hepta_objective::compile_admitted_objective_v1;
 use codex_hepta_types::AuthorityPosture;
@@ -61,7 +63,10 @@ pub struct PublishedObjectiveRunV1 {
 #[derive(Debug)]
 pub enum ObjectiveRunError {
     Admission(ObjectiveAdmissionError),
-    Conflict(ObjectiveConflictReceipt),
+    Conflict {
+        conflict: ObjectiveConflictReceipt,
+        publication: RunStartAppendReceipt,
+    },
     DeadlineMissing,
     RunStart(RunStartStoreError),
 }
@@ -98,11 +103,44 @@ pub fn compile_and_publish_objective_run_v1(
 ) -> Result<PublishedObjectiveRunV1, ObjectiveRunError> {
     let admitted = admit_objective_v1(envelope, profile, context)?;
     let outcome = compile_admitted_objective_v1(admitted)?;
-    let objective = outcome.compile_result.map_err(ObjectiveRunError::Conflict)?;
-    let deadline_unix_micros = outcome
-        .receipt
+    let receipt = outcome.receipt;
+    let deadline_unix_micros = receipt
         .deadline_unix_micros
         .ok_or(ObjectiveRunError::DeadlineMissing)?;
+    let admission = RunStartAdmissionBindingV1 {
+        profile_digest: receipt.profile_digest,
+        intent_digest: receipt.intent_digest,
+        admitted_source_digest: receipt.admitted_source_digest,
+        observed_at_unix_micros: receipt.observed_at_unix_micros,
+        deadline_unix_micros,
+    };
+    let objective = match outcome.compile_result {
+        Ok(objective) => objective,
+        Err(conflict) => {
+            let conflict_receipt_bytes =
+                canonical_native_objective_conflict_bytes_v1(&conflict);
+            if Digest32::of_bytes(&conflict_receipt_bytes) != conflict.conflict_digest {
+                return Err(ObjectiveRunError::RunStart(
+                    RunStartStoreError::ObjectiveDigestMismatch,
+                ));
+            }
+            let publication = journal.append_objective_conflict(
+                bindings.expected_run_start_head,
+                RunStartConflictRecordV1 {
+                    authentication: bindings.authentication.clone(),
+                    admission,
+                    run_id: bindings.run_id.clone(),
+                    runtime_body_digest: bindings.runtime_body_digest,
+                    conflict_digest: conflict.conflict_digest,
+                    conflict_receipt_bytes,
+                },
+            )?;
+            return Err(ObjectiveRunError::Conflict {
+                conflict,
+                publication,
+            });
+        }
+    };
     let objective_semantic_bytes =
         canonical_native_objective_semantic_bytes_v1(&objective.objective);
     if Digest32::of_bytes(&objective_semantic_bytes) != objective.objective.semantic_digest {
@@ -130,13 +168,7 @@ pub fn compile_and_publish_objective_run_v1(
         bindings.expected_run_start_head,
         RunStartRecordV1 {
             authentication: bindings.authentication,
-            admission: RunStartAdmissionBindingV1 {
-                profile_digest: outcome.receipt.profile_digest,
-                intent_digest: outcome.receipt.intent_digest,
-                admitted_source_digest: outcome.receipt.admitted_source_digest,
-                observed_at_unix_micros: outcome.receipt.observed_at_unix_micros,
-                deadline_unix_micros,
-            },
+            admission,
             disposition,
             snapshot: run_start.clone(),
             runtime_body_digest: bindings.runtime_body_digest,
@@ -148,7 +180,7 @@ pub fn compile_and_publish_objective_run_v1(
         CompileDisposition::Compiled | CompileDisposition::ExplicitAbstain
     ));
     Ok(PublishedObjectiveRunV1 {
-        admission: outcome.receipt,
+        admission: receipt,
         objective,
         run_start,
         publication,
