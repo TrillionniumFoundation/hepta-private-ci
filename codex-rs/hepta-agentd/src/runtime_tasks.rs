@@ -55,10 +55,7 @@ pub struct RuntimeTasks {
 }
 
 impl RuntimeTasks {
-    pub fn new(
-        cancellation: CancellationToken,
-        shutdown_grace: Duration,
-    ) -> Result<Self, AgentdError> {
+    pub fn new(cancellation: CancellationToken, shutdown_grace: Duration) -> Result<Self, AgentdError> {
         if shutdown_grace.is_zero() || shutdown_grace > Duration::from_secs(30) {
             return Err(AgentdError::Invalid(
                 "runtime shutdown grace must be in (0, 30s]".to_string(),
@@ -145,9 +142,10 @@ impl RuntimeTasks {
     /// Wait for one task, isolate optional failures, and propagate required ones.
     /// JoinSet preserves task identity across panic and select cancellation.
     pub async fn observe_next(&mut self) -> Result<(), AgentdError> {
-        let completion = self.tasks.join_next_with_id().await.ok_or_else(|| {
-            AgentdError::Protocol("runtime has no remaining tasks".to_string())
-        })?;
+        let completion =
+            self.tasks.join_next_with_id().await.ok_or_else(|| {
+                AgentdError::Protocol("runtime has no remaining tasks".to_string())
+            })?;
         self.observe(completion)
     }
 
@@ -166,10 +164,9 @@ impl RuntimeTasks {
             AgentdError::Protocol("runtime completion identity was not registered".to_string())
         })?;
         let error = match result {
-            Ok(()) => AgentdError::Protocol(format!(
-                "{} exited before agentd shutdown",
-                entry.name
-            )),
+            Ok(()) => {
+                AgentdError::Protocol(format!("{} exited before agentd shutdown", entry.name))
+            }
             Err(error) => error,
         };
         // Optional availability never suppresses a shared generation/writer fence.
@@ -194,9 +191,10 @@ impl RuntimeTasks {
         });
         // A panicking quarantine is a failed safety boundary, not an optional
         // task panic. Convert it to a host failure so run_until still drains.
-        std::panic::catch_unwind(std::panic::AssertUnwindSafe(quarantine)).map_err(|_| {
-            AgentdError::Protocol("runtime quarantine callback panicked".to_string())
-        })??;
+        std::panic::catch_unwind(std::panic::AssertUnwindSafe(quarantine))
+            .map_err(|_| {
+                AgentdError::Protocol("runtime quarantine callback panicked".to_string())
+            })??;
         tracing::warn!(module = %entry.name, "optional runtime component quarantined");
         Ok(())
     }

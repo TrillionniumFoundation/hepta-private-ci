@@ -48,7 +48,10 @@ async fn echo(
 
 async fn ask(sender: &mpsc::Sender<Request>, input: &str) -> String {
     let (reply, receive) = oneshot::channel();
-    sender.send((input.to_string(), reply)).await.expect("request");
+    sender
+        .send((input.to_string(), reply))
+        .await
+        .expect("request");
     timeout(Duration::from_secs(2), receive)
         .await
         .expect("service remains responsive")
