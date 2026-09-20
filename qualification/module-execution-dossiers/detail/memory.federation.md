@@ -14,7 +14,7 @@ The canonical contract implementation remains owned by `codex-rs/hepta-memory-fe
 
 Target operations remain `query_peer(peer_enrollment, scoped_query, snapshot_policy, lease) -> RemoteEvidenceResult`; `revalidate_remote(result, grant_epoch) -> RemoteValidity`; `cancel_query(query_id) -> QueryDisposition`.
 
-The implemented V2 source surface is `execute_once(transport, authority, attempt_control, now, query, lease)` plus `observe_cancellation`. `RemoteFederatedResponseV2` binds its exact query, peer, scope, purpose, generation vector, frontier, expiry, canonical evidence items, completeness and terminal observation into a domain-separated response digest. A non-zero opaque digest is not accepted as evidence of those fields.
+The implemented V2 source surface is `execute_once(transport, authority, attempt_control, now, query, lease)` plus `observe_cancellation`. `RemoteFederatedResponseV2` binds its exact query, peer, scope, purpose, generation vector, frontier, expiry, ordered evidence items, completeness and terminal observation into a domain-separated response digest. A non-zero opaque digest is not accepted as evidence of those fields.
 
 Remote results retain source owner, observed frontier, scope/purpose binding, effective expiry, completeness, validity and uncertainty. No remote mutation, host enrollment, authority minting or inherited credentials are implied by a query.
 
@@ -34,6 +34,7 @@ For one V2 attempt:
 4. acquire/verify the exact-scope owner memory frontier from the same read snapshot as the candidate set, then verify the terminal remote response shape and recomputed response digest;
 5. verify peer, exact query binding, scope and purpose;
 6. perform a second fresh post-I/O authority observation before evidence admission and reject observation-time regression;
+6a. preserve `Partial + []` as partial coverage and bind evidence-item order because bounded selection is prefix-sensitive;
 7. reject an observation outside the query, lease or response time horizon;
 8. suppress evidence when post-I/O authority is revoked or generation-stale;
 9. cap result expiry to `min(response_expiry, lease_expiry, query_deadline, live_authority_expiry)`;
@@ -55,7 +56,8 @@ Source tests now include identities for:
 
 - FED-01: peer/scope/query-binding/lease drift and cross-query replay reject;
 - FED-02: non-terminal transport remains explicit indeterminate and bounded truncation remains partial;
-- FED-03: response-field tampering invalidates the recomputed response digest;
+- FED-03: response-field tampering and item-order permutation invalidate the recomputed response digest;
+- FED-03A: `Partial + []` remains partial rather than becoming a valid empty result;
 - FED-04: result expiry cannot exceed response, lease or query horizon;
 - FED-05: a revoked/stale live authority observation fails before transport dispatch;
 - FED-06: post-I/O revoke/generation drift suppresses remote items;
