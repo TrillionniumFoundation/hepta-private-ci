@@ -21,13 +21,15 @@ The canonical upstream pin remains `third_party/servo-patches/MANIFEST.json`. A 
 
 `buildNavigationIntent()` is authority-free. `src/bridge.js` preserves the proposal `navigationId` as the effect operation identity and includes the proposal `policyDigest` and `expectedRevision` in the typed `navigate` payload. The final payload digest and request digest therefore bind the exact proposal provenance rather than only the URL.
 
-The Browser service does not accept a reusable serialized `VerifiedUseToken`. Agentd receives an exact Browser `authority_challenge` containing only the request digest and authority epoch (never a duplicate typed action or `type.text`), enters real `FinalUseAuthority::with_verified_use`, sends `authority_enter`, and keeps the live revocation fence through Browser journal fsync, private-pipe queue wait and Servo-worker admission. The worker revalidates page/document/navigation/action-surface state, reserves the operation and emits `dispatch_boundary` immediately before effect execution. A worker-confirmed stale-state rejection is returned as `dispatch_rejected { localDispatchCrossed:false }`; timeout/transport uncertainty without either proof remains indeterminate. Remote page/business completion after admission is reconciled separately.
+The Browser service does not accept a reusable serialized `VerifiedUseToken`. The persistent Agentd owner keeps an owner-private `hepta.browser.revocation-feed.v1` file under continuous monotonic refresh and performs a synchronous feed refresh before every effect-capable Browser call. Agentd then receives an exact Browser `authority_challenge` containing only the request digest and authority epoch (never a duplicate typed action or `type.text`), enters real `FinalUseAuthority::with_verified_use`, sends `authority_enter`, and keeps the same live revocation fence used by feed updates through Browser journal fsync, private-pipe queue wait and Servo-worker admission. The worker revalidates page/document/navigation/action-surface state, reserves the operation and emits `dispatch_boundary` immediately before effect execution. A worker-confirmed stale-state rejection is returned as `dispatch_rejected { localDispatchCrossed:false }`; timeout/transport uncertainty without either proof remains indeterminate. Remote page/business completion after admission is reconciled separately.
 
 ## Secret and durability boundary
 
 Current effect actions are closed-world: `navigate`, `click`, `type`, `focus`, `scroll`, and `wait`. Credential, upload and download are explicit future capabilities and fail at ingress. `type.text` exists only in the live action payload; the durable operation journal does **not** store `typedAction` or raw text. It stores the final payload digest plus immutable effect semantics.
 
-The file journal validates every hydrated field, rejects unknown fields, checks canonical checksum envelopes, fsyncs dispatch intent before the effect boundary, compacts atomically before the file ceiling and retires a fully terminal profile generation after clean close. A generation with durable operation history cannot be reopened into a fresh worker; unresolved durable effects from another generation block profile advancement. Persisted recovery automatically retires the generation once all recovered operations become terminal. Live-worker reconciliation and post-Browser-process-loss reconciliation are separate driver paths: a replacement Servo worker is never treated as evidence of a prior remote business outcome, and the current subprocess driver stays indeterminate unless a trusted persisted-effect observer is explicitly injected. Persisted recovery is identified only by the checksum-protected non-secret operation identity; it never requires replaying `typedAction` or `type.text`, and an injected observer must echo the exact operation, request and semantic digests before a terminal claim is accepted.
+The file operation journal is `hepta.browser.operation-journal.v2`; v2 adds nullable `terminalEvidenceDigest` instead of silently changing the old v1 record shape. It validates every hydrated field, rejects unknown fields, checks canonical checksum envelopes, fsyncs dispatch intent before the effect boundary, compacts atomically before the file ceiling and retires a fully terminal profile generation after clean close. A crash-torn unterminated final append recovers the fully validated prefix while newline-terminated malformed/tampered data remains fail-closed; qualification tests inject crashes around compaction/retirement fsync and rename boundaries. A generation with durable operation history cannot be reopened into a fresh worker; unresolved durable effects from another generation block profile advancement.
+
+Live-worker reconciliation and post-Browser-process-loss reconciliation are separate driver paths: a replacement Servo worker is never treated as evidence of a prior remote business outcome. Product persisted terminalization is enabled only with reconciliation root + observer identity + Ed25519 verification key, and accepts only signed `hepta.browser.persisted-effect-observation.v2` receipts binding observer generation/time/frontier and exact operation/request/semantic/outcome identity. The signed evidence hash is persisted as `terminalEvidenceDigest`; absence or authentication/binding failure remains indeterminate and never authorizes redispatch.
 
 Each worker generation receives a fresh random private profile directory. Its mode-0600 `hepta.browser.profile-owner.v1` ownership manifest lives in the host-private profile root outside the worker's read/write profile bind and binds profile ID, principal ID, generation, Browser manifest digest and profile grant digest; only the digest crosses the session boundary. Stale profile bytes are not silently reopened for another principal.
 
@@ -89,8 +91,9 @@ ungranted subresource origin.
 
 After worker admission the response remains attached as a terminal-settlement
 future and Browser records any terminal result durably. A process restart may
-consume only an exact trusted persisted-effect receipt; absence remains
-indeterminate.
+terminalize a prior effect only from the configured independent observer's
+valid Ed25519 `hepta.browser.persisted-effect-observation.v2` receipt; absence,
+wrong observer, signature failure or binding drift remains indeterminate.
 
 The selected upstream Servo qualification candidate is
 `servo/servo@5cc5bd32d02619acdec5736055515e38c5840ce1`; promotion requirements are in
@@ -103,3 +106,8 @@ it. The same E2E checks forbidden subresources and redirects, while the broker
 unit suite binds HTTPS CONNECT to the exact granted authority and port. A
 32-cycle real-worker soak records RSS and file-descriptor bounds. Target-host
 execution receipts remain distinct from these source oracles.
+
+
+## Current product platform scope
+
+The current Browser product service is Linux-only and explicitly rejects non-Linux startup. This is deliberate: Bubblewrap + prlimit is the only implemented product isolation launcher in this candidate. macOS/Windows must not be counted as supported or qualified until equivalent process/filesystem/network/resource isolation adapters and exact-host evidence exist. The 16-profile pool is resident worker capacity; the current parent channel remains one-in-flight and therefore does not claim 16-way RPC concurrency.

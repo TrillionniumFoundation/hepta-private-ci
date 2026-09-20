@@ -1,7 +1,7 @@
 # browser.servo: implementation design
 
 Parent: `docs/modules/browser.servo/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: durable Browser effect owner, current-pin Servo worker source, bounded semantic observation, private Browser/Servo protocol, Linux sandbox/probe source and real Agentd final-use handoff are implemented in this candidate; exact artifact/target qualification and independent acceptance remain open. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`.
+Status: durable Browser effect owner, current-pin Servo worker source, bounded semantic observation, private Browser/Servo protocol, persistent Agentd product ownership, live monotonic revocation feed, signed persisted terminal observer, Linux sandbox/probe source and real Agentd final-use handoff are implemented in this candidate; exact artifact/target qualification and independent acceptance remain open. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`.
 
 ## 1. Source and work envelope
 
@@ -42,11 +42,11 @@ A pipe write alone is not a crossed effect. Only a worker admission ACK proves t
 
 ## 4. Durable recovery and secret boundary
 
-`FileBrowserOperationJournal` now validates exact fields on every hydrated record, rejects unknown fields, validates checksum envelopes, fsyncs before dispatch, uses private non-symlink paths, rejects semantic identity conflicts, atomically compacts the live snapshot before capacity exhaustion and retires a clean terminal profile generation after close. The effect owner rejects volatile journals unless an explicit test-only opt-in is supplied. A generation with durable operation history cannot be reopened into a fresh worker, unresolved effects from another generation block profile advancement, and persisted recovery automatically retires the generation once all its operations become terminal.
+`FileBrowserOperationJournal` now writes `hepta.browser.operation-journal.v2`, including nullable `terminalEvidenceDigest`. It validates exact fields on every hydrated record, rejects unknown fields, validates checksum envelopes, fsyncs before dispatch, uses private non-symlink paths, rejects semantic identity conflicts, atomically compacts the live snapshot before capacity exhaustion and retires a clean terminal profile generation after close. A crash-torn unterminated final append restores only the fully validated prefix; newline-terminated corruption still fails closed. Qualification-only crash cuts cover compaction and retirement fsync/rename boundaries plus the high-water-before-journal-rewrite boundary. The effect owner rejects volatile journals unless an explicit test-only opt-in is supplied. A generation with durable operation history cannot be reopened into a fresh worker, unresolved effects from another generation block profile advancement, and persisted recovery automatically retires the generation once all its operations become terminal.
 
 The durable record intentionally omits the complete `typedAction`. `type.text`, credential bytes, upload content/host paths, page HTML and worker stderr do not enter the journal. Durable identity stores the final payload digest and immutable effect semantics required for replay/reconciliation.
 
-Terminal identities may leave the bounded in-memory cache while remaining durable until profile-generation retirement. Persisted indeterminate identities never rerun final-use authority or dispatch. They use a separate trusted persisted-reconciliation driver port; the current subprocess driver intentionally returns indeterminate unless a real terminal observer is injected, because a replacement Servo process cannot infer a crashed worker's remote business outcome. The persisted observer receives no reconstructed `typedAction` or `type.text`; only the non-secret durable operation identity is supplied, and any terminal observation must bind the exact operation ID, request digest and semantic digest.
+Terminal identities may leave the bounded in-memory cache while remaining durable until profile-generation retirement. Persisted indeterminate identities never rerun final-use authority or dispatch. They use a separate authenticated persisted-reconciliation driver port; the current subprocess driver intentionally returns indeterminate unless a real terminal observer is configured, because a replacement Servo process cannot infer a crashed worker's remote business outcome. The observer receives no reconstructed `typedAction` or `type.text`; only the non-secret durable operation identity is supplied. Terminalization requires a signed `hepta.browser.persisted-effect-observation.v2` receipt from the configured Ed25519 observer, binding observer identity/generation, time/frontier, exact operation/request/semantic identity, status and outcome; Browser persists the signed evidence hash.
 
 ## 5. Semantic observe -> reason -> act loop
 
@@ -95,18 +95,21 @@ The current worker is one Servo / one WebView per profile generation. The pilot 
 - **BROWSER-06:** `type.text`/credential bytes are absent from the durable journal.
 - **BROWSER-07:** worker response must echo exact request kind and payload digest; protocol drift fails the channel.
 - **BROWSER-08:** bounded mutation queue rejects overload instead of accumulating unbounded waiters.
-- **BROWSER-09:** journal hydration rejects malformed/unknown records; compaction preserves latest immutable identities and profile retirement removes closed generations.
+- **BROWSER-09:** journal hydration rejects malformed/unknown records; a torn final append recovers only the validated prefix; compaction/retirement crash cuts preserve operation identity and non-resurrection.
+- **BROWSER-10:** the persistent Agentd product owner consumes an owner-private monotonic revocation feed; a real feed update begun during final-use stays behind the same fence until worker admission and becomes current afterwards.
+- **BROWSER-11:** a post-process-loss terminal result is accepted only with the configured observer's valid Ed25519 v2 receipt; observer substitution, outcome/signature drift and semantic substitution reject.
+- **BROWSER-12:** the operation journal stores `terminalEvidenceDigest` for authenticated recovered terminality while ordinary live-worker terminal observations may leave it null.
 
 ## 10. Qualification gates and remaining evidence
 
 Repository/source gates include complete Browser Node tests and JS syntax checks; exact current-pin worker `cargo check --locked` plus worker unit tests; real Bubblewrap sandbox probe; two deterministic release builds with byte equality; dynamic-library closure, worker smoke, worker SHA-256 and deterministic SPDX SBOM; real Agentd `FinalUseAuthority` handoff test, named caller compile and Clippy; and Lane-B exact-source and deterministic synthetic-merge checks.
 
-Still separately open until exact receipts exist: terminal-success exact-SHA reproducible worker artifact/SBOM bound to the committed worker `Cargo.lock`; independent Linux target-host no-listener/no-egress/descendant/profile isolation evidence; macOS/Windows isolation equivalents if targeted; functional credential broker and upload/download terminal observers if enabled; real remote business terminal observations/reconciliation; target resource/soak measurements; trusted long-running authority/revocation feed for default daemon activation; independent operator acceptance, promotion and release.
+Still separately open until exact receipts exist: terminal-success exact-SHA reproducible worker artifact/SBOM bound to the committed worker `Cargo.lock`; independent Linux target-host no-listener/no-egress/descendant/profile isolation evidence; functional credential broker and upload/download terminal observers if enabled; actual signed remote-business terminal receipts where business terminality is claimed; target resource/soak measurements; independent operator acceptance, promotion and release. Linux is the current product target; macOS/Windows remain outside qualified scope until equivalent isolation launchers exist.
 
 These are evidence/activation gates, not permission to weaken source semantics. The repository candidate must remain truthful while they are open.
 
 
-## 9. Product-closure addendum
+## 11. Product-closure addendum
 
 Current source additionally supplies a profile-affine Servo worker pool,
 long-running Agentd-owned Browser port, exact-origin host egress broker, bound
@@ -125,3 +128,8 @@ until exact-head worker/E2E/reproducibility evidence succeeds and binds that
 lock into the retained receipt. Target-host enforcement, cross-profile persistent-storage
 isolation, resource/soak measurements, real remote-business terminal observers,
 independent acceptance, promotion and release remain external gates.
+
+
+## 12. Current platform and concurrency boundary
+
+The active deployment design is Linux-only and fails closed on non-Linux hosts. The worker pool's 16-profile default is resident capacity; Agentd's private Browser parent port remains one-in-flight, so cross-profile parent RPCs may head-of-line block. Multiplexing is deliberately deferred until after correctness and exact-host qualification and would require a separately versioned protocol/evidence set.

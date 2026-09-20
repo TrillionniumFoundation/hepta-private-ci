@@ -19,7 +19,7 @@ Agentd owns the parent-side composition. The Browser service is inherited stdio 
 - `codex-rs/hepta-agentd/src/browser_servo.rs` — Agentd private-child port and real final-use authority handoff;
 - `codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs` — one-shot compatibility/qualification caller.
 
-There is no Browser discovery listener. The product owner is the normal long-running Agentd process: when explicitly started with `--browser-servo-config`, it opens and retains one Browser child/port for its generation and exposes Browser calls only through the existing private Agentd UDS. Without that explicit configuration Browser remains unavailable.
+There is no Browser discovery listener. The product owner is the normal long-running Agentd process: when explicitly started with `--browser-servo-config`, it opens and retains one Browser child/port for its generation and exposes Browser calls only through the existing private Agentd UDS. Product configuration also names an owner-private `hepta.browser.revocation-feed.v1` file; Agentd continuously advances valid monotonic revocation heads from it and performs a synchronous refresh before every effect-capable Browser call. Without the explicit Browser configuration or a valid current feed Browser effects fail closed.
 
 ## 2. Implemented source surfaces
 
@@ -29,12 +29,14 @@ There is no Browser discovery listener. The product owner is the normal long-run
 | proposal -> effect bridge | `src/bridge.js` | implemented with proposal provenance binding |
 | serialized profile/effect host | `src/runtime-host.js` | implemented |
 | bounded mutation queue | `src/runtime-boundary.js` | implemented |
-| durable operation journal | `src/journal.js` | implemented with strict hydration, compaction and retirement |
+| durable operation journal | `src/journal.js` | v2 implemented with strict hydration, torn-tail prefix recovery, crash-cut qualification, compaction and retirement |
 | Browser -> Servo private protocol | `src/worker-protocol.js` | implemented |
 | artifact-bound subprocess driver | `src/worker-driver.js` | implemented |
 | Agentd -> Browser private protocol | `src/agentd-protocol.js` | implemented |
 | Agentd parent service | `src/agentd-service.js` | implemented |
 | real Agentd final-use handoff | `codex-rs/hepta-agentd/src/browser_servo.rs` | implemented in source |
+| live monotonic revocation feed | `codex-rs/hepta-agentd/src/browser_revocation_feed.rs` | implemented and composed into the persistent product owner |
+| authenticated persisted terminal observer | `src/persisted-reconciler.js` | signed v2 Ed25519 receipt verification implemented |
 | named Agentd Browser caller | `hepta-agentd-browser` | implemented in source |
 | Linux Bubblewrap + prlimit source contract | `src/worker-driver.js` | implemented; exact host executables and resource ceilings bound; target evidence required |
 | real Linux sandbox/resource probe | `scripts/linux-sandbox-probe.js` | implemented |
@@ -61,7 +63,7 @@ Agentd verifies that challenge against the independently signed final-use bindin
 
 A successful pipe write is not the final-use boundary. Only the worker-side admission ACK releases the revocation fence as crossed, so queue wait and final worker-side stale-state validation remain inside the live revocation fence. Worker/page/business terminality after admission is a separate observation and reconciliation claim.
 
-A concurrent revocation update cannot become current between final-use validation and worker admission. Agentd never waits forever while holding that fence: the parent private channel has hard bounded frame read/write deadlines derived from the bounded Browser driver timeout. If the Browser child stops consuming `authority_enter` or stops producing an admission/rejection boundary, the production transport signals termination of that child before returning `Indeterminate`; the existing parent-death sandbox contract then contains the worker, and target qualification separately verifies descendant cleanup. A worker-confirmed pre-dispatch rejection is a terminal failed/no-dispatch outcome; timeout, channel loss or other uncertainty without such proof remains indeterminate. A post-boundary timeout/error cannot make the operation identity fresh or authorize redispatch.
+A concurrent revocation update cannot become current between final-use validation and worker admission. The product race oracle updates the real protected feed file while a Browser effect holds `FinalUseAuthority`; the background feed remains at the old revision until the real worker boundary releases the same fence, then advances the revision. Agentd never waits forever while holding that fence: the parent private channel has hard bounded frame read/write deadlines derived from the bounded Browser driver timeout. If the Browser child stops consuming `authority_enter` or stops producing an admission/rejection boundary, the production transport signals termination of that child before returning `Indeterminate`; the existing parent-death sandbox contract then contains the worker, and target qualification separately verifies descendant cleanup. A worker-confirmed pre-dispatch rejection is a terminal failed/no-dispatch outcome; timeout, channel loss or other uncertainty without such proof remains indeterminate. A post-boundary timeout/error cannot make the operation identity fresh or authorize redispatch.
 
 ## 4. Proposal provenance and typed action boundary
 
@@ -92,7 +94,9 @@ implemented and qualified.
 
 The durable operation record deliberately excludes the full `typedAction`. It persists the final payload digest and immutable request/effect identity, so `type.text` is not copied into the journal even when the live action carries sensitive text. Raw credential bytes, upload bytes, page HTML and worker stderr are also excluded from durable records. Browser requires persistent durability by default; the memory journal is a deliberate test-only opt-in.
 
-The file journal performs exact field validation on every hydrated record, rejects unknown fields, validates checksum envelopes and semantic identity, fsyncs before dispatch, uses private non-symlink files and parent directories, compacts atomically before the file ceiling and retires a fully terminal profile generation only after fsyncing a separate private generation high-water, so deleting bulky terminal records cannot resurrect the same profile generation after restart. A profile generation with durable operation history cannot be reopened into a fresh worker; unresolved durable effects from another generation block profile advancement. Persisted recovery observes the old identity without redispatch, and automatically retires the generation once all recovered operations are terminal. Live-worker reconciliation and post-process-loss reconciliation are deliberately separate driver methods. A new Servo worker is never treated as evidence of what an old crashed worker or remote business system did; the current subprocess driver returns `persisted_reconciler_unavailable` until a trusted persisted-effect observer is explicitly injected. Crash reconciliation passes only checksum-protected non-secret durable identity fields; it does not reconstruct or request the original typed action. A terminal observer must echo the exact operation ID, request digest and semantic digest. Tests use an injected deterministic observer only to verify the recovery state machine, not to claim product terminality.
+The file journal uses `hepta.browser.operation-journal.v2`; the v2 shape adds `terminalEvidenceDigest` rather than redefining v1. It performs exact field validation on every hydrated record, rejects unknown fields, validates checksum envelopes and semantic identity, fsyncs before dispatch, uses private non-symlink files and parent directories, compacts atomically before the file ceiling and retires a fully terminal profile generation only after fsyncing a separate private generation high-water. A crash-torn unterminated final append recovers the complete validated prefix; newline-terminated corruption, checksum drift and semantic substitution still fail closed. Qualification fault cuts cover compact-temp-fsync, compact-rename, retired-ledger-temp-fsync, retired-ledger-rename and high-water-before-journal-rewrite boundaries. A profile generation with durable operation history cannot be reopened into a fresh worker; unresolved durable effects from another generation block profile advancement.
+
+Persisted recovery observes the old identity without redispatch and automatically retires the generation once all recovered operations are terminal. A replacement Servo worker is never treated as evidence of what an old crashed worker or remote business system did. Product terminalization requires `hepta.browser.persisted-effect-observation.v2`, an Ed25519 signature from the configured observer identity, and exact bindings for observer generation, observation time/frontier, profile/generation, operation, request/semantic digests, terminal status and outcome. Browser retains a hash of the signed evidence as `terminalEvidenceDigest`. Missing, malformed, misbound, wrong-observer or unauthenticated evidence remains indeterminate.
 
 Every subprocess worker generation receives a fresh random private directory. Browser writes a mode-0600 `hepta.browser.profile-owner.v1` manifest in the host-private profile root, outside the writable sandbox profile bind. The worker never receives a path to that metadata; Browser exposes only the manifest digest at the session boundary. The manifest binds:
 
@@ -148,7 +152,7 @@ The reviewed candidate `Cargo.lock` is committed. The exact-head worker workflow
 
 `.github/workflows/hepta-browser-servo-deployment-qualification.yml` remains manual and main-only. It executes only the workflow-dispatch `github.sha` on `refs/heads/main`, verifies the referenced successful worker-build run came from the expected workflow on that exact main SHA, requires `cargoLockCommitted=true`, rehashes Cargo.lock/worker/SPDX/source tree, records kernel/Bubblewrap identity, reruns sandbox/worker checks and emits target execution evidence without self-issuing operator acceptance, promotion or release.
 
-Still separately required where applicable: terminal-success reproducible worker artifact/SBOM receipt bound to the committed exact `Cargo.lock`; retained Linux target-host no-listener/egress/descendant enforcement evidence; cache/other persistent-storage isolation beyond the real two-profile cookie oracle; macOS/Windows equivalent isolation if targeted; functional credential/upload/download implementations if admitted later; real remote business terminal reconciliation; longer target resource/soak policy beyond the bounded source oracle; a trusted long-running authority/revocation feed; and independent operator acceptance/promotion/release.
+Still separately required where applicable: terminal-success reproducible worker artifact/SBOM receipt bound to the committed exact `Cargo.lock`; retained Linux target-host no-listener/egress/descendant enforcement evidence; cache/other persistent-storage isolation beyond the real two-profile cookie oracle; functional credential/upload/download implementations if admitted later; actual signed remote-business terminal observations from the configured independent observer where business terminality is claimed; longer target resource/soak policy beyond the bounded source oracle; and independent operator acceptance/promotion/release. macOS/Windows are not current target platforms; they require equivalent isolation implementations before entering qualified scope.
 
 ## 12. Claim boundary
 
@@ -212,3 +216,8 @@ production denial of mapped/private address classes, and two-profile cookie
 isolation. The broker does not terminate TLS;
 after the pre-connect SNI admission check, Servo still performs end-to-end
 certificate and TLS validation inside the CONNECT tunnel.
+
+
+## 15. Current target and parent-channel scope
+
+The current product target is Linux only. Non-Linux product startup is rejected rather than silently running without the Bubblewrap/prlimit isolation contract. The profile-affine pool supports 16 resident workers by default (hard max 64), but the Agentd parent Browser port intentionally remains one-in-flight, so this candidate makes no cross-profile RPC concurrency claim. A multiplexed parent protocol is a future capacity change requiring a new version and qualification, not a prerequisite for the current serialized safety model.
