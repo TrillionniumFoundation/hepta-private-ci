@@ -105,14 +105,14 @@ fn config_ablations_remove_only_the_named_mechanism() {
 
 #[test]
 fn eligibility_and_modulator_ablations_are_explicit_and_deterministic() {
-    let history = vec![EligibilityTraceSampleV1 {
-        checkpoint_digest: Digest32::of_bytes(b"checkpoint"),
-        eligibility_q24: vec![Q / 2, -Q / 4],
-    }];
+    let history = vec![EligibilityTraceSampleV1::fixture(
+        Digest32::of_bytes(b"checkpoint"),
+        vec![Q / 2, -Q / 4],
+    )];
     let no_eligibility =
         ablate_eligibility_history(&history, NeuronAblationProfileV1::NoEligibility);
-    assert_eq!(no_eligibility[0].eligibility_q24, vec![0, 0]);
-    assert_eq!(history[0].eligibility_q24, vec![Q / 2, -Q / 4]);
+    assert_eq!(no_eligibility[0].eligibility_q24(), &[0, 0]);
+    assert_eq!(history[0].eligibility_q24(), &[Q / 2, -Q / 4]);
 
     let groups = vec![
         ParameterGroupMapV1 {

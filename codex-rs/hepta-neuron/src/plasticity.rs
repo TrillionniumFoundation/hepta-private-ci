@@ -13,6 +13,8 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::SparseCheckpoint;
+
 const Q: i64 = 1 << 24;
 const ELIGIBILITY_L1: i64 = 4 * Q;
 const MAX_HISTORY: usize = 1024;
@@ -22,14 +24,58 @@ const MAX_GROUPS: usize = 256;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EligibilityTraceSampleV1 {
-    pub checkpoint_digest: Digest32,
-    pub eligibility_q24: Vec<i64>,
+    checkpoint_digest: Digest32,
+    eligibility_q24: Vec<i64>,
+}
+
+impl EligibilityTraceSampleV1 {
+    #[must_use]
+    pub fn from_checkpoint(checkpoint: &SparseCheckpoint) -> Self {
+        Self {
+            checkpoint_digest: checkpoint.digest(),
+            eligibility_q24: checkpoint.eligibility_q24().to_vec(),
+        }
+    }
+
+    #[must_use]
+    pub fn checkpoint_digest(&self) -> Digest32 {
+        self.checkpoint_digest
+    }
+
+    #[must_use]
+    pub fn eligibility_q24(&self) -> &[i64] {
+        &self.eligibility_q24
+    }
+
+    pub(crate) fn clear_for_ablation(&mut self) {
+        self.eligibility_q24.fill(0);
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture(checkpoint_digest: Digest32, eligibility_q24: Vec<i64>) -> Self {
+        Self {
+            checkpoint_digest,
+            eligibility_q24,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct IndependentModulatorV1 {
-    pub observation_receipt_digest: Digest32,
-    pub values_q24: Vec<i64>,
+    observation_receipt_digest: Digest32,
+    values_q24: Vec<i64>,
+}
+
+impl IndependentModulatorV1 {
+    #[must_use]
+    pub fn observation_receipt_digest(&self) -> Digest32 {
+        self.observation_receipt_digest
+    }
+
+    #[must_use]
+    pub fn values_q24(&self) -> &[i64] {
+        &self.values_q24
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

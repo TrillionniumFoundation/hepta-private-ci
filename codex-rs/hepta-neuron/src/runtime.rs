@@ -402,6 +402,15 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             checkpoint_digest: checkpoint.digest(),
         }))
     }
+
+    pub fn current_eligibility_sample(
+        &self,
+    ) -> Result<Option<crate::EligibilityTraceSampleV1>, NeuronRuntimeError> {
+        Ok(self
+            .journal
+            .current()?
+            .map(crate::EligibilityTraceSampleV1::from_checkpoint))
+    }
 }
 
 #[cfg(test)]

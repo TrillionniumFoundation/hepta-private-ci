@@ -200,7 +200,7 @@ pub fn ablate_eligibility_history(
     let mut result = history.to_vec();
     if profile == NeuronAblationProfileV1::NoEligibility {
         for sample in &mut result {
-            sample.eligibility_q24.fill(0);
+            sample.clear_for_ablation();
         }
     }
     result

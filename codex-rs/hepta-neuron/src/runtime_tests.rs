@@ -281,6 +281,9 @@ fn canonical_runtime_commits_model_bound_calibrated_signal_and_recovers() {
     assert_eq!(first.tick.sparsity_ppm, 200_000);
     assert_eq!(first.signal.model_runtime_digest.is_zero(), false);
     assert_eq!(model.calls, 1);
+    let eligibility = checked(runtime.current_eligibility_sample()).expect("committed eligibility");
+    assert_eq!(eligibility.checkpoint_digest(), first.tick.checkpoint_after);
+    assert_eq!(eligibility.eligibility_q24().len(), native.width);
     let first_anchor = checked(runtime.current_anchor()).expect("committed anchor");
     assert_eq!(checked(witness.current()), Some(first_anchor));
     drop(runtime);
