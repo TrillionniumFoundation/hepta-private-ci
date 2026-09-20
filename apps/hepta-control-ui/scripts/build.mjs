@@ -92,6 +92,7 @@ const csp = [
   "style-src 'self'",
   "connect-src 'self'",
   "img-src 'self' data:",
+  "manifest-src 'self'",
   "font-src 'self'",
   "object-src 'none'",
   "base-uri 'none'",
