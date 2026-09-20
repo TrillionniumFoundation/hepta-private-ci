@@ -17,9 +17,9 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::ThreadReadResponse;
-use codex_app_server_protocol::UserInput;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStatus;
+use codex_app_server_protocol::UserInput;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -237,9 +237,7 @@ pub fn adapt_observed_thread_read_reconciliation(
     }
 
     let expected_client_id = StableId::new(expected_client_user_message_id.to_string())
-        .map_err(|_| Error::InvalidObservationIdentity(
-            "reconciliation client user message id",
-        ))?;
+        .map_err(|_| Error::InvalidObservationIdentity("reconciliation client user message id"))?;
     if expected_client_id != binding.client_user_message_id {
         return Err(Error::CorrelationMismatch(
             "reconciliation client user message id",
@@ -275,9 +273,7 @@ pub fn adapt_observed_thread_read_reconciliation(
                 continue;
             }
             if content.as_slice() != expected_input {
-                return Err(Error::CorrelationMismatch(
-                    "reconciliation user input",
-                ));
+                return Err(Error::CorrelationMismatch("reconciliation user input"));
             }
             if saw_exact {
                 return Err(Error::CorrelationMismatch(
@@ -288,9 +284,7 @@ pub fn adapt_observed_thread_read_reconciliation(
         }
         if saw_exact {
             if matched_turn.is_some() {
-                return Err(Error::CorrelationMismatch(
-                    "reconciliation duplicate turn",
-                ));
+                return Err(Error::CorrelationMismatch("reconciliation duplicate turn"));
             }
             matched_turn = Some(turn);
         }
@@ -304,8 +298,8 @@ pub fn adapt_observed_thread_read_reconciliation(
         TurnStatus::Interrupted => TerminalOutcome::Interrupted,
         TurnStatus::InProgress => return Ok(None),
     };
-    let turn_id = StableId::new(turn.id.clone())
-        .map_err(|_| Error::InvalidObservationIdentity("turn"))?;
+    let turn_id =
+        StableId::new(turn.id.clone()).map_err(|_| Error::InvalidObservationIdentity("turn"))?;
     let response_digest = reconciled_turn_response_digest(observed, turn)?;
     let request_digest = request_digest(intent);
     let correlation_digest =
@@ -517,10 +511,9 @@ fn reconciled_turn_response_digest(
     observed: &RemoteAppServerObservedResponse<ThreadReadResponse>,
     turn: &codex_app_server_protocol::Turn,
 ) -> Result<Digest32, Error> {
-    let encoded_turn =
-        serde_json::to_vec(turn).map_err(|_| Error::ObservationEncodingFailed)?;
-    let encoded_request_id = serde_json::to_vec(observed.request_id())
-        .map_err(|_| Error::ObservationEncodingFailed)?;
+    let encoded_turn = serde_json::to_vec(turn).map_err(|_| Error::ObservationEncodingFailed)?;
+    let encoded_request_id =
+        serde_json::to_vec(observed.request_id()).map_err(|_| Error::ObservationEncodingFailed)?;
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.codex.adapter.reconciled-turn.v1");
     push_text(&mut bytes, observed.method());
@@ -528,11 +521,9 @@ fn reconciled_turn_response_digest(
     bytes.extend_from_slice(&observed.connection_id().to_be_bytes());
     push_text(
         &mut bytes,
-        observed
-            .server_version()
-            .ok_or(Error::CorrelationMismatch(
-                "reconciliation app server version",
-            ))?,
+        observed.server_version().ok_or(Error::CorrelationMismatch(
+            "reconciliation app server version",
+        ))?,
     );
     push_text(
         &mut bytes,
