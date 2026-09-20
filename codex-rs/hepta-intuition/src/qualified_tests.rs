@@ -121,7 +121,7 @@ fn current_v2_rejects_any_omitted_candidate_bound() {
     request.completeness.omitted_count_bound = 1;
     assert_eq!(
         decide_calibrated_v2(request),
-        Err(CalibratedError::CandidateSetMismatch)
+        Err(CalibratedError::IncompleteCandidateSet)
     );
 }
 

@@ -171,22 +171,48 @@ impl AgentdIntuitionPolicyHostV1 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+    use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
     use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+    use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+    use codex_hepta_types::StableId;
+    use ed25519_dalek::SigningKey;
 
     fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
+    }
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("stable id")
     }
 
     #[test]
     fn host_identity_and_owner_pins_fail_closed_before_policy_admission() {
         let agent_id =
             AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent id");
+        let key = SigningKey::from_bytes(&[7; 32]);
+        let scope = digest("scope");
+        let principal = AuthenticatedPrincipalV1 {
+            principal_id: id("intuition-generator"),
+            credential_chain_digest: digest("credentials"),
+            signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+            scope_digest: scope,
+            authority_epoch: 1,
+            authenticated_at: 1,
+            expires_at: 100,
+        };
         let verifier = Arc::new(
             LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
-                scope_digest: digest("scope"),
+                scope_digest: scope,
                 objective_digest: digest("objective"),
                 authority_epoch: 1,
-                signers: Vec::new(),
+                signers: vec![TrustedLearningSignerV1 {
+                    principal,
+                    controller_id: id("intuition-generator-controller"),
+                    verifying_key: key.verifying_key().to_bytes(),
+                    roles: vec![LearningEvidenceRoleV1::Generator],
+                    revoked_at: None,
+                }],
             })
             .expect("host trust"),
         );

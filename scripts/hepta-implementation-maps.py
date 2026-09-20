@@ -20,7 +20,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
+    """Return the current Git identity used when generating or migrating a map.
+
+    A tracked implementation map cannot safely attest the commit that contains
+    itself. sourceBase therefore means the immutable integration baseline
+    observed when that map was authored. Exact candidate identity belongs to
+    Git/CI execution receipts and is verified separately at qualification time.
+    """
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
@@ -91,6 +97,11 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
+        "sourceBaseRole": "integration_baseline",
+        "currentCandidateIdentityAuthority": {
+            "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
+            "embeddedCommit": False,
+        },
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
@@ -182,6 +193,14 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
             "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBaseRole": row.get("sourceBaseRole", "integration_baseline"),
+            "currentCandidateIdentityAuthority": row.get(
+                "currentCandidateIdentityAuthority",
+                {
+                    "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
+                    "embeddedCommit": False,
+                },
+            ),
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -287,7 +306,8 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
+    current_identity = current_source_base()
+    current_commit = current_identity["commit"]
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -311,12 +331,44 @@ def verify():
         source_base = row.get("sourceBase")
         if (
             not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
+            or not isinstance(source_base.get("commit"), str)
+            or not isinstance(source_base.get("tree"), str)
+            or not re.fullmatch(r"[0-9a-f]{40}", source_base["commit"])
+            or not re.fullmatch(r"[0-9a-f]{40}", source_base["tree"])
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            base_commit = source_base["commit"]
+            base_tree = source_base["tree"]
+            try:
+                if git("rev-parse", f"{base_commit}^{{tree}}") != base_tree:
+                    failures.append(f"{mid}: source base tree mismatch")
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", base_commit, current_commit],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base not ancestor of candidate")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base unavailable")
+        source_base_role = row.get("sourceBaseRole", "integration_baseline")
+        if source_base_role not in {
+            "integration_baseline",
+            "observed_default_branch_integration_base_for_this_candidate",
+        }:
+            failures.append(f"{mid}: source base role")
+        identity_authority = row.get("currentCandidateIdentityAuthority")
+        if identity_authority is not None:
+            if (
+                not isinstance(identity_authority, dict)
+                or identity_authority.get("embeddedCommit") is not False
+                or identity_authority.get("authority")
+                != "exact-head-and-deterministic-synthetic-merge execution receipts"
+            ):
+                failures.append(f"{mid}: candidate identity authority")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -345,8 +397,6 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -356,6 +406,8 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "sourceBaseSemantics": "integration_baseline_not_candidate_identity",
+                "candidateIdentity": current_identity,
             },
             sort_keys=True,
         )
