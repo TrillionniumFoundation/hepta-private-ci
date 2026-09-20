@@ -52,7 +52,7 @@ if (process.platform !== "linux") {
 
 const channel = new AgentdBrowserChannel({ input: process.stdin, output: process.stdout });
 const authority = new ParentFinalUseAuthority(channel);
-const driver = new SubprocessBrowserDriver({
+const driver = new PooledSubprocessBrowserDriver({
   workerPath: requiredAbsolutePath("HEPTA_BROWSER_WORKER_PATH"),
   workerDigest: requiredDigest("HEPTA_BROWSER_WORKER_SHA256"),
   profileRoot: requiredAbsolutePath("HEPTA_BROWSER_PROFILE_ROOT"),
