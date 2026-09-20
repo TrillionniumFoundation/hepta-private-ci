@@ -14,6 +14,8 @@ import { LinuxBubblewrapLauncher, SubprocessBrowserDriver } from "../src/worker-
 const workerPath = resolve(process.argv[2] ?? "");
 if (!process.argv[2]) throw new Error("usage: real-browser-soak.js WORKER_BINARY");
 const CYCLES = 32;
+const RSS_PEAK_GROWTH_LIMIT_KIB = 512 * 1024;
+const RSS_TERMINAL_GROWTH_LIMIT_KIB = 256 * 1024;
 const sha = (value) => createHash("sha256").update(value).digest("hex");
 const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
@@ -65,7 +67,8 @@ function operation(operationId, pageGeneration, typedAction, effectGrant) {
   };
 }
 async function metrics(processId) {
-  const pid = Number(processId.replace(/^servo\.pid\./, ""));
+  const match = /^servo\.pid\.(\d+)\.[A-Za-z0-9-]+$/.exec(processId);
+  const pid = match ? Number(match[1]) : NaN;
   if (!Number.isSafeInteger(pid) || pid < 1) throw new Error("invalid Servo process id");
   const status = await readFile(`/proc/${pid}/status`, "utf8");
   const match = /^VmRSS:\s+(\d+)\s+kB$/m.exec(status);
@@ -154,8 +157,14 @@ try {
     workerSha256: sha(workerBytes),
     rssKiB: { first: rss[0], last: rss.at(-1), min: Math.min(...rss), max: Math.max(...rss) },
     fdCount: { first: fds[0], last: fds.at(-1), min: Math.min(...fds), max: Math.max(...fds) },
+    rssPeakGrowthLimitKiB: RSS_PEAK_GROWTH_LIMIT_KIB,
+    rssTerminalGrowthLimitKiB: RSS_TERMINAL_GROWTH_LIMIT_KIB,
+    boundedRssGrowth:
+      Math.max(...rss) <= rss[0] + RSS_PEAK_GROWTH_LIMIT_KIB &&
+      rss.at(-1) <= rss[0] + RSS_TERMINAL_GROWTH_LIMIT_KIB,
     boundedFdGrowth: Math.max(...fds) <= fds[0] + 32,
   };
+  assert.equal(result.boundedRssGrowth, true);
   assert.equal(result.boundedFdGrowth, true);
   process.stdout.write(JSON.stringify(result) + "\n");
 } finally {
