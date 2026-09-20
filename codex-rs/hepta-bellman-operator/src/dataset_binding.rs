@@ -1,0 +1,321 @@
+//! Verified frozen-dataset binding for operator training.
+//!
+//! New qualification code consumes a self-verifying DatasetSnapshotReceiptV3,
+//! then binds the exact source-record evidence set to the fitted rows. Legacy
+//! fit functions remain available for compatibility, but cannot establish this
+//! receipt-to-row relationship on their own.
+
+use std::collections::BTreeSet;
+use std::error::Error as StdError;
+use std::fmt;
+
+use codex_hepta_learning_ledger::DatasetReceiptError;
+use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+
+use crate::LearnedOperatorError;
+use crate::TabularOperatorArtifactV1;
+use crate::TabularOperatorPlanV1;
+use crate::WorldModelError;
+use crate::WorldModelSampleV1;
+use crate::TabularWorldModelV1;
+use crate::fit_tabular_operator;
+use crate::fit_transition_model;
+
+/// A verified, immutable dataset identity whose full V3 digest preimage has
+/// already been checked. Fields are private so arbitrary callers cannot mint a
+/// dataset binding from a detached digest.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VerifiedOperatorDatasetV2 {
+    snapshot_id: StableId,
+    objective_digest: Digest32,
+    dataset_digest: Digest32,
+    source_record_digests: Vec<Digest32>,
+}
+
+impl VerifiedOperatorDatasetV2 {
+    /// Verify the complete DatasetSnapshotReceiptV3 before creating a training
+    /// binding. The receipt remains DENY_ALL evidence, not training authority.
+    pub fn from_receipt(
+        receipt: &DatasetSnapshotReceiptV3,
+        now: u64,
+    ) -> Result<Self, OperatorDatasetBindingError> {
+        verify_dataset_snapshot_receipt_v3(receipt, now)?;
+        Ok(Self {
+            snapshot_id: receipt.snapshot.snapshot_id.clone(),
+            objective_digest: receipt.snapshot.objective_digest,
+            dataset_digest: receipt.snapshot.dataset_digest,
+            source_record_digests: receipt.snapshot.source_record_digests.clone(),
+        })
+    }
+
+    #[must_use]
+    pub fn snapshot_id(&self) -> &StableId {
+        &self.snapshot_id
+    }
+
+    #[must_use]
+    pub fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+
+    #[must_use]
+    pub fn dataset_digest(&self) -> Digest32 {
+        self.dataset_digest
+    }
+
+    fn require_exact_evidence(
+        &self,
+        evidence: impl IntoIterator<Item = Digest32>,
+    ) -> Result<(), OperatorDatasetBindingError> {
+        let mut provided = evidence.into_iter().collect::<Vec<_>>();
+        if provided.iter().any(Digest32::is_zero) {
+            return Err(OperatorDatasetBindingError::EvidenceSetMismatch);
+        }
+        provided.sort_unstable();
+        if provided.windows(2).any(|pair| pair[0] == pair[1]) {
+            return Err(OperatorDatasetBindingError::DuplicateEvidence);
+        }
+        if provided != self.source_record_digests {
+            return Err(OperatorDatasetBindingError::EvidenceSetMismatch);
+        }
+        Ok(())
+    }
+}
+
+/// Canonical complete-grid fit from an independently verified frozen dataset.
+/// The plan may still carry its historical digests for encoding compatibility,
+/// but they must match the verified receipt exactly.
+pub fn fit_tabular_operator_bound_v2(
+    dataset: &VerifiedOperatorDatasetV2,
+    plan: TabularOperatorPlanV1,
+) -> Result<TabularOperatorArtifactV1, OperatorDatasetBindingError> {
+    if plan.objective_digest != dataset.objective_digest {
+        return Err(OperatorDatasetBindingError::ObjectiveMismatch);
+    }
+    if plan.dataset_digest != dataset.dataset_digest {
+        return Err(OperatorDatasetBindingError::DatasetMismatch);
+    }
+    dataset.require_exact_evidence(plan.samples.iter().map(|sample| sample.evidence_digest))?;
+    Ok(fit_tabular_operator(plan)?)
+}
+
+/// Canonical world-model fit from an independently verified frozen dataset.
+/// The dataset digest is taken from the verified binding rather than supplied
+/// as a second caller-controlled identity.
+pub fn fit_transition_model_bound_v2(
+    dataset: &VerifiedOperatorDatasetV2,
+    model_id: StableId,
+    samples: Vec<WorldModelSampleV1>,
+) -> Result<TabularWorldModelV1, OperatorDatasetBindingError> {
+    dataset.require_exact_evidence(samples.iter().map(|sample| sample.evidence_digest))?;
+    Ok(fit_transition_model(
+        model_id,
+        dataset.dataset_digest,
+        samples,
+    )?)
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum OperatorDatasetBindingError {
+    DatasetReceipt(DatasetReceiptError),
+    ObjectiveMismatch,
+    DatasetMismatch,
+    DuplicateEvidence,
+    EvidenceSetMismatch,
+    Learned(LearnedOperatorError),
+    WorldModel(WorldModelError),
+}
+
+impl fmt::Display for OperatorDatasetBindingError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl StdError for OperatorDatasetBindingError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::DatasetReceipt(error) => Some(error),
+            Self::Learned(error) => Some(error),
+            Self::WorldModel(error) => Some(error),
+            Self::ObjectiveMismatch
+            | Self::DatasetMismatch
+            | Self::DuplicateEvidence
+            | Self::EvidenceSetMismatch => None,
+        }
+    }
+}
+
+impl From<DatasetReceiptError> for OperatorDatasetBindingError {
+    fn from(value: DatasetReceiptError) -> Self {
+        Self::DatasetReceipt(value)
+    }
+}
+
+impl From<LearnedOperatorError> for OperatorDatasetBindingError {
+    fn from(value: LearnedOperatorError) -> Self {
+        Self::Learned(value)
+    }
+}
+
+impl From<WorldModelError> for OperatorDatasetBindingError {
+    fn from(value: WorldModelError) -> Self {
+        Self::WorldModel(value)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+    use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
+    use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
+    use codex_hepta_types::FixedQ32;
+    use codex_hepta_types::Generation;
+
+    use crate::TabularOperatorSampleV1;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value.to_owned()).expect("valid fixture id")
+    }
+
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+
+    fn receipt() -> DatasetSnapshotReceiptV3 {
+        freeze_dataset_receipt_v3(
+            DatasetFreezeRequestV1 {
+                snapshot_id: id("operator-dataset"),
+                producer: AuthenticatedPrincipalV1 {
+                    principal_id: id("dataset-owner"),
+                    credential_chain_digest: digest("credential"),
+                    signing_key_digest: digest("key"),
+                    scope_digest: digest("scope"),
+                    authority_epoch: 7,
+                    authenticated_at: 10,
+                    expires_at: 100,
+                },
+                ledger_head_digest: digest("ledger-head"),
+                objective_digest: digest("objective"),
+                eligible_frontier: 3,
+                outcome_watermark: 20,
+                correction_cut_digest: digest("correction-cut"),
+                revocation_cut_digest: digest("revocation-cut"),
+                inclusion_policy_digest: digest("inclusion-policy"),
+                source_record_digests: vec![digest("record-b"), digest("record-a")],
+                pending_outcomes: 0,
+                censored_outcomes: 0,
+            },
+            50,
+        )
+        .expect("valid dataset receipt")
+    }
+
+    fn sample(
+        name: &str,
+        action: &str,
+        evidence: Digest32,
+        target: i64,
+    ) -> TabularOperatorSampleV1 {
+        TabularOperatorSampleV1 {
+            sample_id: id(name),
+            sensor_id: id("sensor"),
+            action_id: id(action),
+            target: FixedQ32::from_raw(target),
+            evidence_digest: evidence,
+        }
+    }
+
+    #[test]
+    fn op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows() {
+        let receipt = receipt();
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).expect("verified");
+        let artifact = fit_tabular_operator_bound_v2(
+            &bound,
+            TabularOperatorPlanV1 {
+                artifact_id: id("artifact"),
+                producer_id: id("trainer"),
+                generation: Generation::new(1).expect("generation"),
+                objective_digest: receipt.snapshot.objective_digest,
+                dataset_digest: receipt.snapshot.dataset_digest,
+                sensor_core_digest: digest("sensor-core"),
+                training_profile_digest: digest("profile"),
+                minimum_samples_per_cell: 1,
+                sensor_ids: vec![id("sensor")],
+                action_ids: vec![id("a"), id("b")],
+                samples: vec![
+                    sample("row-a", "a", digest("record-a"), 10),
+                    sample("row-b", "b", digest("record-b"), 20),
+                ],
+            },
+        )
+        .expect("bound fit");
+        assert_eq!(artifact.dataset_digest, receipt.snapshot.dataset_digest);
+    }
+
+    #[test]
+    fn op_07_bound_fit_rejects_detached_digest_or_row_set() {
+        let receipt = receipt();
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).expect("verified");
+        let mut plan = TabularOperatorPlanV1 {
+            artifact_id: id("artifact"),
+            producer_id: id("trainer"),
+            generation: Generation::new(1).expect("generation"),
+            objective_digest: receipt.snapshot.objective_digest,
+            dataset_digest: digest("detached-dataset"),
+            sensor_core_digest: digest("sensor-core"),
+            training_profile_digest: digest("profile"),
+            minimum_samples_per_cell: 1,
+            sensor_ids: vec![id("sensor")],
+            action_ids: vec![id("a"), id("b")],
+            samples: vec![
+                sample("row-a", "a", digest("record-a"), 10),
+                sample("row-b", "b", digest("record-b"), 20),
+            ],
+        };
+        assert_eq!(
+            fit_tabular_operator_bound_v2(&bound, plan.clone()),
+            Err(OperatorDatasetBindingError::DatasetMismatch)
+        );
+        plan.dataset_digest = receipt.snapshot.dataset_digest;
+        plan.samples[1].evidence_digest = digest("foreign-record");
+        assert_eq!(
+            fit_tabular_operator_bound_v2(&bound, plan),
+            Err(OperatorDatasetBindingError::EvidenceSetMismatch)
+        );
+    }
+
+    #[test]
+    fn op_07_bound_world_model_takes_dataset_identity_from_receipt() {
+        let receipt = receipt();
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).expect("verified");
+        let model = fit_transition_model_bound_v2(
+            &bound,
+            id("world-model"),
+            vec![
+                WorldModelSampleV1 {
+                    sample_id: id("row-a"),
+                    state_id: id("state"),
+                    action_id: id("a"),
+                    next_state_id: id("next-a"),
+                    outcome: FixedQ32::from_raw(10),
+                    evidence_digest: digest("record-a"),
+                },
+                WorldModelSampleV1 {
+                    sample_id: id("row-b"),
+                    state_id: id("state"),
+                    action_id: id("b"),
+                    next_state_id: id("next-b"),
+                    outcome: FixedQ32::from_raw(20),
+                    evidence_digest: digest("record-b"),
+                },
+            ],
+        )
+        .expect("bound world model");
+        assert_eq!(model.dataset_digest, receipt.snapshot.dataset_digest);
+    }
+}
