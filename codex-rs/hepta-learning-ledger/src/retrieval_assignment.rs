@@ -28,12 +28,15 @@ pub fn retrieval_assignment_event(
     episode_id: StableId,
     observation: &RetrievalAssignmentObservationV1,
 ) -> Result<LedgerEvent, RetrievalAssignmentBridgeError> {
-    retrieval_assignment_event_with_delivery(
+    retrieval_assignment_event_with_delivery_policy(
         record_id,
         episode_id,
         observation,
-        &observation.selected_candidates,
-        !observation.selected_candidates.is_empty(),
+        &[],
+        false,
+        None,
+        None,
+        ProbabilityQ32::ONE,
     )
 }
 
@@ -43,6 +46,7 @@ pub fn retrieval_assignment_event_with_delivery(
     observation: &RetrievalAssignmentObservationV1,
     delivered_candidates: &[RetrievalCandidateIdentityV1],
     context_exposed: bool,
+    published_context_digest: Option<Digest32>,
 ) -> Result<LedgerEvent, RetrievalAssignmentBridgeError> {
     retrieval_assignment_event_with_delivery_policy(
         record_id,
@@ -50,6 +54,7 @@ pub fn retrieval_assignment_event_with_delivery(
         observation,
         delivered_candidates,
         context_exposed,
+        published_context_digest,
         None,
         ProbabilityQ32::ONE,
     )
@@ -61,6 +66,7 @@ pub fn retrieval_assignment_event_with_delivery_policy(
     observation: &RetrievalAssignmentObservationV1,
     delivered_candidates: &[RetrievalCandidateIdentityV1],
     context_exposed: bool,
+    published_context_digest: Option<Digest32>,
     downstream_policy_digest: Option<Digest32>,
     delivery_propensity: ProbabilityQ32,
 ) -> Result<LedgerEvent, RetrievalAssignmentBridgeError> {
@@ -109,8 +115,13 @@ pub fn retrieval_assignment_event_with_delivery_policy(
     {
         return Err(RetrievalAssignmentBridgeError::DeliveredCandidateOutsideSelection);
     }
-    if context_exposed != !delivered_candidate_indices.is_empty() {
+    if context_exposed != !delivered_candidate_indices.is_empty()
+        || context_exposed != published_context_digest.is_some()
+    {
         return Err(RetrievalAssignmentBridgeError::ExposureStateMismatch);
+    }
+    if published_context_digest.is_some_and(Digest32::is_zero) {
+        return Err(RetrievalAssignmentBridgeError::EmptyPublishedContextDigest);
     }
 
     Ok(LedgerEvent::RetrievalAssignment(RetrievalAssignmentFact {
@@ -126,6 +137,7 @@ pub fn retrieval_assignment_event_with_delivery_policy(
         selected_candidate_indices,
         delivered_candidate_indices,
         context_exposed,
+        published_context_digest,
         omitted_by_policy_limits: observation.omitted_by_policy_limits,
         assignment_propensity: observation.assignment_propensity,
         downstream_policy_digest,
@@ -181,6 +193,7 @@ pub enum RetrievalAssignmentBridgeError {
     DuplicateCandidate,
     DeliveredCandidateOutsideSelection,
     ExposureStateMismatch,
+    EmptyPublishedContextDigest,
     EmptyDownstreamPolicyDigest,
     ZeroDeliveryPropensity,
 }
