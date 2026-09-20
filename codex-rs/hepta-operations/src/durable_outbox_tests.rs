@@ -112,6 +112,7 @@ async fn expired_claim_requires_higher_generation_and_ack_is_fenced() {
         .claim_outbox(&stable_id("outbox:ui:1"), generation(10), 1_000, 500)
         .await
         .expect("first claim");
+    assert_eq!(first.payload, outbox_payload());
     assert!(matches!(
         first.state,
         DurableOutboxState::Claimed {
@@ -165,6 +166,7 @@ async fn expired_claim_requires_higher_generation_and_ack_is_fenced() {
         )
         .await
         .expect("current claim acknowledgement");
+    assert_eq!(acknowledged.payload, outbox_payload());
     assert!(matches!(
         acknowledged.state,
         DurableOutboxState::Acknowledged {
@@ -240,5 +242,40 @@ async fn equal_claim_is_idempotent_but_expired_same_generation_cannot_self_takeo
             .await
             .expect_err("same generation cannot resurrect expired ownership"),
         OperationError::StaleGeneration
+    );
+}
+
+
+#[tokio::test]
+async fn one_operation_cannot_acquire_a_second_dispatch_intent_identity() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let ledger = DurableOperationLedger::open(&path).await.expect("open");
+    let payload = outbox_payload();
+
+    ledger
+        .begin_bound_with_outbox(binding(), generation(7), intent(), payload.clone())
+        .await
+        .expect("seed first operation intent");
+
+    let second = OutboxIntent {
+        intent_id: stable_id("outbox:ui:second"),
+        operation_id: stable_id("operation:ui:outbox:1"),
+        destination: stable_id("runtime.agentd.ui-control"),
+        payload_digest: Digest32::of_bytes(&payload),
+    };
+    assert!(matches!(
+        ledger
+            .begin_bound_with_outbox(binding(), generation(7), second.clone(), payload)
+            .await
+            .expect_err("same operation must not gain a second dispatch intent"),
+        OperationError::Conflict(id) if id == second.operation_id
+    ));
+    assert!(
+        ledger
+            .get_outbox(&second.intent_id)
+            .await
+            .expect("query second intent")
+            .is_none()
     );
 }
