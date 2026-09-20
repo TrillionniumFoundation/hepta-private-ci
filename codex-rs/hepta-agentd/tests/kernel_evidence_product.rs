@@ -140,6 +140,95 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         "real Agentd verifier did not accept exact authenticated source evidence"
     );
 
+    let mut wrong_tree = candidate.clone();
+    wrong_tree.source_tree = "c".repeat(40);
+    ensure!(
+        matches!(
+            control
+                .verify_kernel_evidence(KernelEvidenceVerifyV1 {
+                    candidate: wire_candidate(&wrong_tree),
+                    claim_class: EvidenceClaimClassV1::ExactSource.as_str().to_string(),
+                    required_roles: vec!["architecture".to_string()],
+                })
+                .await?,
+            EvidenceDispositionV1::Missing
+        ),
+        "wrong candidate tree satisfied exact-source evidence through Agentd"
+    );
+
+    let wrong_role = base_evidence(
+        "evidence:product-wrong-role",
+        candidate.clone(),
+        EvidenceClaimClassV1::RegistrySnapshot,
+        EvidenceIssuerRoleV1::Security,
+        observed,
+        None,
+        json!({"must_not_commit": "wrong-role"}),
+    );
+    let wrong_role_rejection = control
+        .append_kernel_evidence(signed_request(
+            ARCHITECTURE_ISSUER,
+            &architecture_key,
+            /*sequence*/ 50,
+            &wrong_role,
+        )?)
+        .await
+        .err()
+        .context("wrong-role evidence writer was accepted")?;
+    ensure!(
+        matches!(&wrong_role_rejection, AgentdError::Protocol(message) if message.contains("agentd rejected request")),
+        "wrong-role writer failed outside the real server path: {wrong_role_rejection}"
+    );
+
+    let replayed = base_evidence(
+        "evidence:product-replay",
+        candidate.clone(),
+        EvidenceClaimClassV1::RegistrySnapshot,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        None,
+        json!({"must_not_commit": "replay"}),
+    );
+    let replay_rejection = control
+        .append_kernel_evidence(signed_request(
+            ARCHITECTURE_ISSUER,
+            &architecture_key,
+            /*sequence*/ 1,
+            &replayed,
+        )?)
+        .await
+        .err()
+        .context("replayed evidence sequence was accepted")?;
+    ensure!(
+        matches!(&replay_rejection, AgentdError::Protocol(message) if message.contains("agentd rejected request")),
+        "replay failed outside the real server path: {replay_rejection}"
+    );
+
+    let expired_ingress = base_evidence(
+        "evidence:product-expired-ingress",
+        candidate.clone(),
+        EvidenceClaimClassV1::RegistrySnapshot,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        None,
+        json!({"must_not_commit": "expired"}),
+    );
+    let expired_rejection = control
+        .append_kernel_evidence(signed_request_with_expiry(
+            ARCHITECTURE_ISSUER,
+            &architecture_key,
+            /*sequence*/ 51,
+            now_ms()?.saturating_sub(1),
+            &expired_ingress,
+        )?)
+        .await
+        .err()
+        .context("expired evidence ingress was accepted")?;
+    ensure!(
+        matches!(&expired_rejection, AgentdError::Protocol(message) if message.contains("agentd rejected request")),
+        "expired ingress failed outside the real server path: {expired_rejection}"
+    );
+
     let registry = base_evidence(
         "evidence:product-registry-snapshot",
         candidate.clone(),
@@ -289,15 +378,79 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         "terminal observer evidence was not persisted through the product path"
     );
 
-    // Revocation is reloaded at the physical append boundary. A previously
-    // trusted key cannot keep writing after the owner changes the registry.
+    // Trust is reloaded both at append and positive-verification boundaries.
+    // Rotating a key invalidates old evidence for positive claims and rejects
+    // stale-key writes; a subsequent explicit revocation rejects the new key.
+    let rotated_architecture_key = SigningKey::from_bytes(&[34; 32]);
     write_trust(
         &trust_file,
         &agent.agent_id.to_string(),
         &[
             TrustEntry {
                 issuer_id: ARCHITECTURE_ISSUER,
-                key: &architecture_key,
+                key: &rotated_architecture_key,
+                revoked: false,
+                roles: &["architecture"],
+            },
+            TrustEntry {
+                issuer_id: SECURITY_ISSUER,
+                key: &security_key,
+                revoked: false,
+                roles: &["security"],
+            },
+            TrustEntry {
+                issuer_id: TERMINAL_ISSUER,
+                key: &terminal_key,
+                revoked: false,
+                roles: &["terminal_observer"],
+            },
+        ],
+    )?;
+    ensure!(
+        matches!(
+            control
+                .verify_kernel_evidence(KernelEvidenceVerifyV1 {
+                    candidate: wire_candidate(&candidate),
+                    claim_class: EvidenceClaimClassV1::ExactSource.as_str().to_string(),
+                    required_roles: vec!["architecture".to_string()],
+                })
+                .await?,
+            EvidenceDispositionV1::Conflicting { .. }
+        ),
+        "key rotation did not invalidate stale positive evidence through Agentd"
+    );
+
+    let stale_key_attempt = base_evidence(
+        "evidence:after-key-rotation",
+        candidate.clone(),
+        EvidenceClaimClassV1::RegistrySnapshot,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        None,
+        json!({"must_not_commit": "stale-key"}),
+    );
+    let stale_key_rejection = control
+        .append_kernel_evidence(signed_request(
+            ARCHITECTURE_ISSUER,
+            &architecture_key,
+            /*sequence*/ 52,
+            &stale_key_attempt,
+        )?)
+        .await
+        .err()
+        .context("stale evidence signing key was accepted")?;
+    ensure!(
+        matches!(&stale_key_rejection, AgentdError::Protocol(message) if message.contains("agentd rejected request")),
+        "stale key failed outside the real server path: {stale_key_rejection}"
+    );
+
+    write_trust(
+        &trust_file,
+        &agent.agent_id.to_string(),
+        &[
+            TrustEntry {
+                issuer_id: ARCHITECTURE_ISSUER,
+                key: &rotated_architecture_key,
                 revoked: true,
                 roles: &["architecture"],
             },
@@ -322,21 +475,21 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         EvidenceIssuerRoleV1::Architecture,
         observed,
         None,
-        json!({"must_not_commit": true}),
+        json!({"must_not_commit": "revoked"}),
     );
-    let rejection = control
+    let revoked_rejection = control
         .append_kernel_evidence(signed_request(
             ARCHITECTURE_ISSUER,
-            &architecture_key,
-            /*sequence*/ 4,
+            &rotated_architecture_key,
+            /*sequence*/ 53,
             &after_revoke,
         )?)
         .await
         .err()
         .context("revoked evidence writer was accepted")?;
     ensure!(
-        matches!(&rejection, AgentdError::Protocol(message) if message.contains("agentd rejected request")),
-        "revoked writer failed outside the real server path: {rejection}"
+        matches!(&revoked_rejection, AgentdError::Protocol(message) if message.contains("agentd rejected request")),
+        "revoked writer failed outside the real server path: {revoked_rejection}"
     );
     Ok(())
 }
@@ -406,7 +559,22 @@ fn signed_request(
     sequence: u64,
     envelope: &QualificationEvidenceEnvelopeV1,
 ) -> Result<KernelEvidenceAppendIngress> {
-    let expires_at_ms = now_ms()?.saturating_add(120_000);
+    signed_request_with_expiry(
+        issuer_id,
+        key,
+        sequence,
+        now_ms()?.saturating_add(120_000),
+        envelope,
+    )
+}
+
+fn signed_request_with_expiry(
+    issuer_id: &str,
+    key: &SigningKey,
+    sequence: u64,
+    expires_at_ms: u64,
+    envelope: &QualificationEvidenceEnvelopeV1,
+) -> Result<KernelEvidenceAppendIngress> {
     let message_id = format!("message:kernel-evidence:{issuer_id}:{sequence}");
     let claims = kernel_evidence_claims(
         issuer_id,
