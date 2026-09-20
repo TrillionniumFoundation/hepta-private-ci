@@ -277,6 +277,76 @@
         "evaluate_prepared_plan_with_ndu"
       ],
       "sourcePathExists": true
+    },
+    {
+      "operation": "PlannerDurableStoreV1",
+      "nativeSymbol": "codex_hepta_control_plane::PlannerDurableStoreV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "inputs": [
+        "owner-local planner journal generations"
+      ],
+      "outputs": [
+        "fsync-bound immutable generation files",
+        "reopened semantic journal"
+      ],
+      "state": "source_implemented_durable_store_candidate",
+      "authority": "none",
+      "nonClaim": "surviving-directory anti-rollback only; whole-directory restore requires an independent witness before production",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "durable_generations_reopen_and_reject_local_rollback"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "corrupt_successor_generation_requires_recovery"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "live_or_stale_writer_lock_fails_closed"
+        }
+      ],
+      "designOperation": "PlannerDurableStoreV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "PlannerJournalV1::reopen"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "execution_grant_binding",
+      "nativeSymbol": "codex_hepta_control_plane::ExecutionGrantBindingV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "subject identity",
+        "destination identity",
+        "scope digest",
+        "effectful candidate payloads"
+      ],
+      "outputs": [
+        "sealed GrantRequestV1"
+      ],
+      "state": "source_implemented_final_use_identity_binding",
+      "authority": "deny_all",
+      "nonClaim": "kernel.authority still independently verifies a signed FinalUseGrant",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "effect_candidate_requires_execution_binding"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "authority_free_candidate_rejects_execution_binding"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "coherent_snapshot_prepares_finalizes_and_emits_authority_free_grant_requests"
+        }
+      ],
+      "designOperation": "execution_grant_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalDomainContracts": [
@@ -294,7 +364,7 @@
   "completion": {
     "specification": "complete",
     "nativePlanningKernel": "candidate_implemented_hardened",
-    "ownerLocalDurabilityReference": "candidate_implemented_semantic_replay",
+    "ownerLocalDurabilityReference": "durable_generation_store_candidate_external_anti_rollback_pending",
     "canonicalExternalProtocolAdmission": "not_established",
     "productionCaller": "partial_request_local_only",
     "productionWriter": "not_established",
@@ -303,7 +373,8 @@
     "activation": "not_established",
     "release": "not_established",
     "requestLocalProductCaller": "established_agentd_cognitive_context",
-    "globalPlannerProductCaller": "not_established"
+    "globalPlannerProductCaller": "not_established",
+    "finalUseRequestBinding": "source_implemented_authority_adapter_pending"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -330,9 +401,9 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Extend execution-grant semantics with authenticated principal, destination and scope binding before kernel.authority composition.",
-    "Establish the durable production planner store, including fsync, migration, restore/non-resurrection and recovery-required handling.",
-    "Compose an authenticated multi-owner global planner caller and production writer; the Agentd cognitive-context caller is request-local only.",
+    "Compose GrantRequestV1 with kernel.authority FinalUseAuthority at a named authenticated global product caller; the sealed request contract now binds subject, destination, scope and payload.",
+    "Compose authenticated multi-owner owner-summary adapters and make the global planner, not only request-local context planning, a named product path.",
+    "Bind PlannerDurableStoreV1 to the product owner and add an independent anti-rollback witness plus backup/restore/recovery ceremony qualification.",
     "Run exact-head and deterministic synthetic-merge qualification for the current candidate."
   ],
   "externalEvidenceGates": [
@@ -341,8 +412,8 @@
     "operator acceptance, canary, promotion and release"
   ],
   "sourceObservation": {
-    "commit": "46efcd4da12db4576fc19455b0d6a677acfa33bd",
-    "tree": "fb4e795157a47b8bb45742510a7247db9e70348f",
-    "scope": "control.runtime source commit before truth-surface refresh"
+    "commit": "79581313e453cf95b58b600b5f3fdf78021224f4",
+    "tree": "62372217b51396f4f5d81cac89401adb672bcef8",
+    "scope": "current control.runtime source closure candidate"
   }
 }

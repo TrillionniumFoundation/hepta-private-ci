@@ -158,12 +158,15 @@ Each `GrantRequestV1` binds:
 
 - operation and candidate IDs;
 - chosen plan digest;
+- subject identity and destination identity;
+- a canonical scope digest;
 - one final payload digest;
 - objective and snapshot digests;
 - current revocation-frontier digest;
-- expiry.
+- expiry;
+- a per-request semantic digest over all fields above.
 
-The resulting `GrantRequestSetV1` is a deterministic request batch with a semantic digest and `AuthorityPosture::DENY_ALL`. A grant request is not an authority token. `kernel.authority` must independently check principal scope, current revocations, final payload, effect boundary, deadlines and any required human confirmation immediately before dispatch.
+The resulting `GrantRequestSetV1` is a deterministic request batch with a semantic digest and `AuthorityPosture::DENY_ALL`. Any effectful candidate missing the Control-owned subject/destination/scope binding is rejected before preparation; authority-free candidates are rejected if they carry such a binding. A grant request is not an authority token. `kernel.authority` must independently verify the matching signed final-use grant, current revocations, final payload, effect boundary, deadlines and any required human confirmation immediately before dispatch.
 
 A candidate with no effect payload, including abstain, produces an empty request set. The planner never fabricates a no-op capability.
 
@@ -184,7 +187,7 @@ Each entry contains sequence, kind, idempotency identity, payload digest, predec
 - semantic replay on reopen, requiring a recorded decision before selection or revocation and rejecting post-revocation reselection;
 - revocation edges that prevent reselection and restart resurrection.
 
-A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention policy and backup/restore qualification.
+A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. `PlannerDurableStoreV1` is the owner-local source candidate for durable publication: it uses a single-writer lock, immutable contiguous generations, file and directory fsync, semantic reopen and monotonic-prefix checks. It deliberately fails closed on a corrupt/gapped successor. Production composition still requires binding that store to the named owner, migration/retention policy, backup/restore qualification and an independent anti-rollback witness able to detect replacement of the entire state directory with an older backup.
 
 ## 9. Failure and degradation semantics
 
@@ -311,10 +314,12 @@ narrow read-only objective, not the global multi-owner control plane. A producti
 global caller still needs authenticated owner adapters, durable decision publication
 and independent final-use admission.
 
-`GrantRequestV1` currently binds operation/candidate/plan/payload, objective,
-snapshot, revocation frontier and expiry, but it does not carry the principal,
-destination or scope identity required by `kernel.authority::FinalUseBinding`.
-Those values must become part of the authenticated Control-owned request contract
-before the global caller can claim a final-use token; supplying them later at the
-effect caller would reopen a substitution boundary. Until then, the request set
-remains `AuthorityPosture::DENY_ALL`.
+`ExecutionGrantBindingV1` now makes subject identity, destination identity and
+scope digest part of the candidate before preparation. Effectful candidates without
+that binding fail closed, and `GrantRequestV1::request_digest` seals it together
+with the exact payload, plan, objective, snapshot, revocation frontier and expiry.
+This closes the caller-substitution hole in the request contract. The next product
+step is a named authenticated global caller that maps those already-sealed fields
+to `kernel.authority::FinalUseBinding` and consumes a signed `VerifiedUseToken`
+immediately before the effect boundary. The request set itself remains
+`AuthorityPosture::DENY_ALL`.

@@ -209,10 +209,11 @@
           ]
         },
         "durability": {
-          "state": "owner_local_reference_semantic_replay_implemented_not_production_writer",
+          "state": "durable_generation_store_candidate_external_anti_rollback_pending",
           "evidence": [
-            "PlannerJournalV1",
-            "reopen_replays_semantic_transitions_not_only_hashes"
+            "PlannerDurableStoreV1",
+            "durable_generations_reopen_and_reject_local_rollback",
+            "corrupt_successor_generation_requires_recovery"
           ]
         },
         "effectAuthority": {
@@ -233,8 +234,10 @@
           ]
         },
         "productionWriter": {
-          "state": "not_established",
-          "evidence": []
+          "state": "durable_store_candidate_not_product_composed",
+          "evidence": [
+            "PlannerDurableStoreV1"
+          ]
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -278,9 +281,11 @@
           ]
         },
         "finalUseAuthorityBinding": {
-          "state": "contract_gap_principal_destination_scope_not_bound",
+          "state": "request_contract_sealed_authority_composition_pending",
           "evidence": [
-            "GrantRequestV1 remains authority-free and lacks FinalUseBinding destination/scope identity"
+            "ExecutionGrantBindingV1",
+            "GrantRequestV1::request_digest",
+            "effect_candidate_requires_execution_binding"
           ]
         }
       }
