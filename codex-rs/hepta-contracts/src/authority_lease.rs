@@ -693,6 +693,59 @@ impl AuthorityLeaseVerifier {
         Ok(consumer())
     }
 
+    /// Revalidate live authority and hold the owner/revocation fence only while
+    /// the caller crosses one already-selected local irreversible boundary.
+    ///
+    /// The callback must be bounded and local: publish durable intent and/or
+    /// enter the concrete owner mutation, then return. It must not wait for
+    /// remote execution, terminal acknowledgement or reconciliation.
+    pub fn with_dispatch_boundary<T>(
+        &self,
+        token: LeaseVerifiedUseToken,
+        expected: &AuthorityLeaseBinding,
+        dispatch_boundary: impl FnOnce() -> T,
+    ) -> Result<T, AuthorityLeaseError> {
+        let (result, _witness) = self.with_dispatch_boundary_witness(
+            token,
+            expected,
+            |_| dispatch_boundary(),
+        )?;
+        Ok(result)
+    }
+
+    fn with_dispatch_boundary_witness<T>(
+        &self,
+        token: LeaseVerifiedUseToken,
+        expected: &AuthorityLeaseBinding,
+        dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
+    ) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
+            return Err(AuthorityLeaseError::BindingMismatch);
+        }
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
+        let state = self.lock_state()?;
+        validate_live(
+            &token.lease,
+            &state,
+            token.lease.revision,
+            expected,
+            now_unix_ms,
+        )?;
+        let witness = VerifiedUseTokenWitnessV1::authority_lease(
+            self.0.owner_id.clone(),
+            token.lease.lease_id.clone(),
+            state.authority_epoch,
+            token.lease.revision,
+            state.store_revision,
+            now_unix_ms,
+            VerifiedUseBoundaryV1::DispatchEntry,
+            authority_lease_binding_witness_sha256(expected)?,
+        );
+        let result = dispatch_boundary(&witness);
+        drop(state);
+        Ok((result, witness))
+    }
+
     fn validate_token_live_witness(
         &self,
         token: &LeaseVerifiedUseToken,
@@ -746,6 +799,19 @@ pub fn deliver_authority_lease_with_witness<T>(
 ) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
     let witness = verifier.validate_token_live_witness(&token, expected)?;
     Ok((consumer(), witness))
+}
+
+/// Consume one live general lease at the short local irreversible dispatch
+/// boundary and emit a serializable audit witness for that exact ordering point.
+/// Revocation uses the same owner mutex, so a revoke that commits first denies
+/// entry and a revoke that starts later is ordered after the local boundary.
+pub fn dispatch_authority_lease_with_witness<T>(
+    verifier: &AuthorityLeaseVerifier,
+    token: LeaseVerifiedUseToken,
+    expected: &AuthorityLeaseBinding,
+    dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
+) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
+    verifier.with_dispatch_boundary_witness(token, expected, dispatch_boundary)
 }
 
 fn authority_lease_binding_witness_sha256(
@@ -1280,6 +1346,40 @@ mod tests {
             rx.recv_timeout(Duration::from_secs(2))
                 .expect("lease consumer remained blocked on the owner mutex"),
             Ok(7)
+        );
+    }
+
+    #[test]
+    fn dispatch_boundary_serializes_revocation_until_local_entry_returns() {
+        let (registry, _directory) = fixture();
+        registry.put_lease(lease(), 0).unwrap();
+        let verifier = registry.verifier();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
+        let (entered_tx, entered_rx) = mpsc::channel();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        std::thread::spawn(move || {
+            entered_rx.recv().unwrap();
+            let result = registry.revoke("lease-one", 1, [8; 32]);
+            let _ = revoked_tx.send(result);
+        });
+
+        let expected = binding();
+        let result = verifier
+            .with_dispatch_boundary(token, &expected, || {
+                entered_tx.send(()).unwrap();
+                assert!(
+                    revoked_rx.recv_timeout(Duration::from_millis(100)).is_err(),
+                    "revocation crossed the local dispatch linearization fence"
+                );
+                11
+            })
+            .unwrap();
+        assert_eq!(result, 11);
+        assert!(
+            revoked_rx
+                .recv_timeout(Duration::from_secs(2))
+                .expect("revocation did not complete after local dispatch boundary")
+                .is_ok()
         );
     }
 
