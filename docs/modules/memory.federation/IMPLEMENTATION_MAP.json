@@ -56,8 +56,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved.",
-    "Keep the legacy AvailableFederated/FederatedRecallSet surface compatibility-only; Agentd product composition must use AvailableFederatedV2 and preserve explicit coverage/failure semantics."
+    "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
@@ -80,9 +79,9 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
     "baseCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "candidateHead": "1e5d32e039adb5be2dbb994a7a528bdb56543be4",
-    "candidateTree": "cffa6cb4ca1176dd4602540e2192c2701ff022c3",
-    "headMeaning": "frozen canonical_v2_integrity_ordered_prefix_selection_partial_empty_live_authority_interruptible_transport_product_composition_exact_scope_owner_data_frontier_adversarial_tests_truth_surface_lockfile_and_projection_sync head immediately before this metadata-only attestation commit",
+    "candidateHead": "97f77787344806cbd89837a4f67bf6d0f876138d",
+    "candidateTree": "8361a52b9b0e019c6670ee47705cf5c7dbadb4c5",
+    "headMeaning": "frozen canonical_v2_integrity_ordered_prefix_selection_partial_empty_live_authority_interruptible_transport_product_composition_v2_only_attachment_api_exact_scope_owner_data_frontier_adversarial_tests_truth_surface_lockfile_and_projection_sync head immediately before qualification metadata",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -98,7 +97,8 @@
       "adversarial_race_integrity_tests",
       "exact_scope_same_snapshot_owner_data_frontier",
       "prefix_sensitive_item_order_binding",
-      "partial_empty_preservation"
+      "partial_empty_preservation",
+      "product_v2_only_attachment_api_guard"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -120,7 +120,7 @@
       "codex-rs/hepta-memory/src/cognitive_federation.rs",
       "codex-rs/hepta-memory/src/cognitive_federation_tests.rs"
     ],
-    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the current-main functional candidate. Only this implementation map and the module-scoped final-verification receipt may change after that candidate without invalidating the attestation. The candidate includes exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, synchronized Cargo.lock and dossier projections. productExecutionProved, activation and release remain false until exact-candidate and merge-candidate evidence pass.",
+    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the current-main functional and truth-surface candidate. Only this implementation map and the module-scoped final-verification receipt may change after that candidate without invalidating the attestation. The candidate includes exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, synchronized Cargo.lock/dossier projections, and a V2-only product attachment API that rejects the legacy compatibility variant. productExecutionProved, activation and release remain false until exact-candidate and merge-candidate evidence pass.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
       "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
