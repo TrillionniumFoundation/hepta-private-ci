@@ -181,7 +181,12 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            # Rebinding is explicit: migration/generation records the exact
+            # source-bearing input commit. The maps written by this command are
+            # allowed to be the only subsequent changes, avoiding impossible
+            # self-referential Git hashes while still failing on any source,
+            # test or semantic-document drift.
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -371,7 +376,7 @@ def verify():
                 path
                 for path in changed
                 if not re.fullmatch(
-                    r"docs/modules/[^/]+/IMPLEMENTATION_MAP\\.json", path
+                    r"docs/modules/[^/]+/IMPLEMENTATION_MAP\.json", path
                 )
             ]
             if non_map_changes:
