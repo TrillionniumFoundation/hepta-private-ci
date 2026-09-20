@@ -32,8 +32,12 @@ control methods and reloads the owner-controlled multi-issuer trust registry
 immediately before physical append.
 
 Append verifies the exact canonical envelope signature, issuer/key epoch,
-candidate/tree/role subject, replay sequence, expiry, role allowlist and
-correction/revocation lineage. Durable replay advancement and the evidence
+candidate/tree/role subject, replay sequence, admission expiry, role allowlist and
+correction/revocation lineage. Corrections and ordinary revocations may only
+reference evidence owned by the same authenticated principal and role; an issuer
+explicitly trusted for the `security` role is the only cross-principal emergency
+revoker. AuthBus message expiry is an admission-freshness bound and does not
+truncate a separately declared evidence/independent-decision expiry. Durable replay advancement and the evidence
 insert share one `BEGIN IMMEDIATE` transaction.
 
 Verification checks exact candidate/tree and claim class, canonical envelope and
