@@ -84,6 +84,8 @@ fn bridge_preserves_complete_and_incomplete_assignment_facts() {
         assert_eq!(fact.selected_candidate_indices, vec![0, 1, 2]);
         assert_eq!(fact.delivered_candidate_indices, vec![0, 1, 2]);
         assert!(fact.context_exposed);
+        assert_eq!(fact.downstream_policy_digest, None);
+        assert_eq!(fact.delivery_propensity, ProbabilityQ32::ONE);
 
         let mut ledger = LearningLedger::new();
         let first = ledger.append(event.clone()).expect("append");
@@ -152,6 +154,43 @@ fn delivery_aware_bridge_binds_only_the_final_exposed_subset() {
             true,
         ),
         Err(RetrievalAssignmentBridgeError::DeliveredCandidateOutsideSelection)
+    );
+}
+
+#[test]
+fn downstream_policy_and_delivery_propensity_are_bound_separately() {
+    let observation = observation(20, true);
+    let delivered = vec![observation.selected_candidates[0].clone()];
+    let policy_digest = digest("learned-ranker-policy");
+    let event = retrieval_assignment_event_with_delivery_policy(
+        id("record:learned-delivery"),
+        id("episode:learned-delivery"),
+        &observation,
+        &delivered,
+        true,
+        Some(policy_digest),
+        ProbabilityQ32::ONE,
+    )
+    .expect("learned delivery bridge");
+    let LedgerEvent::RetrievalAssignment(fact) = event else {
+        panic!("retrieval assignment");
+    };
+    assert_eq!(fact.assignment_propensity, ProbabilityQ32::ONE);
+    assert_eq!(fact.downstream_policy_digest, Some(policy_digest));
+    assert_eq!(fact.delivery_propensity, ProbabilityQ32::ONE);
+    assert_eq!(fact.delivered_candidate_indices.len(), 1);
+
+    assert_eq!(
+        retrieval_assignment_event_with_delivery_policy(
+            id("record:zero-delivery"),
+            id("episode:zero-delivery"),
+            &observation,
+            &delivered,
+            true,
+            Some(policy_digest),
+            ProbabilityQ32::ZERO,
+        ),
+        Err(RetrievalAssignmentBridgeError::ZeroDeliveryPropensity)
     );
 }
 
