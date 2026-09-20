@@ -17,7 +17,7 @@ use crate::model::TerminalStatus;
 use crate::model::validate_digest;
 use crate::model::validate_stable_id;
 
-const JOURNAL_SCHEMA: &str = "hepta.native-operation-journal.v1";
+const JOURNAL_SCHEMA: &str = "hepta.native-operation-journal.v2";
 const MAX_JOURNAL_BYTES: u64 = 8 * 1024 * 1024;
 const MAX_OPERATION_RECORDS: usize = 4096;
 
@@ -31,6 +31,7 @@ pub enum OperationPhase {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct OperationRecord {
     pub endpoint_id: String,
     pub key: OperationKey,
@@ -118,12 +119,14 @@ impl OperationJournal {
             std::fs::create_dir_all(parent)?;
         }
         let lock_path = path.with_extension("lock");
+        let lock_existed = lock_path.exists();
         let lock = OpenOptions::new()
             .read(true)
             .write(true)
             .create(true)
             .truncate(false)
             .open(&lock_path)?;
+        ensure_private_state_file(&lock_path, lock_existed)?;
         lock.try_lock().map_err(|_| {
             ShellError::State(format!(
                 "operation journal is already owned by another native process: {}",
@@ -137,6 +140,7 @@ impl OperationJournal {
                 _lock: lock,
             });
         }
+        ensure_private_state_file(&path, true)?;
         let metadata = std::fs::metadata(&path)?;
         if metadata.len() > MAX_JOURNAL_BYTES {
             return Err(ShellError::State(format!(
@@ -261,6 +265,7 @@ impl OperationJournal {
         file.write_all(&bytes)?;
         file.sync_all()?;
         file.commit()?;
+        ensure_private_state_file(&self.path, false)?;
         sync_parent_directory(&self.path)?;
         Ok(())
     }
@@ -296,5 +301,28 @@ fn sync_parent_directory(path: &Path) -> Result<(), ShellError> {
 
 #[cfg(not(unix))]
 fn sync_parent_directory(_path: &Path) -> Result<(), ShellError> {
+    Ok(())
+}
+
+#[cfg(unix)]
+fn ensure_private_state_file(path: &Path, preexisting: bool) -> Result<(), ShellError> {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let metadata = std::fs::metadata(path)?;
+    let mode = metadata.permissions().mode() & 0o777;
+    if preexisting && mode & 0o077 != 0 {
+        return Err(ShellError::Security(format!(
+            "native operation journal state is group/world accessible: {}",
+            path.display()
+        )));
+    }
+    if mode != 0o600 {
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn ensure_private_state_file(_path: &Path, _preexisting: bool) -> Result<(), ShellError> {
     Ok(())
 }
