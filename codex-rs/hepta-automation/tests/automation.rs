@@ -257,11 +257,7 @@ fn draft(id: &str, schedule: AutomationSchedule, due: u64) -> AutomationTaskDraf
     draft
 }
 
-async fn prepare_direct_dispatch(
-    store: &AutomationStore,
-    lease: &AutomationLease,
-    now_ms: u64,
-) {
+async fn prepare_direct_dispatch(store: &AutomationStore, lease: &AutomationLease, now_ms: u64) {
     let occurrence = store
         .materialize_occurrence(lease, now_ms)
         .await
