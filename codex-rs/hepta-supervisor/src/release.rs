@@ -8,10 +8,10 @@ use crate::ProcessDriver;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::release_selection::read_release_selection;
 use crate::runtime::AgentSlot;
 use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
-use crate::release_selection::read_release_selection;
 use crate::signed_intent::SignedIntentStatus;
 
 impl<D: ProcessDriver> Supervisor<D> {
@@ -265,8 +265,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .registry
                 .release_provenance(agent_id, rollback.release_id())?;
             let binding = &selection.binding;
-            let bytes_match = provenance.manifest_sha256
-                == binding.source_manifest_sha256.as_str()
+            let bytes_match = provenance.manifest_sha256 == binding.source_manifest_sha256.as_str()
                 && provenance.agentd_sha256 == binding.source_agentd_sha256.as_str()
                 && provenance.matrixd_sha256.as_deref()
                     == binding

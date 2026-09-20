@@ -21,6 +21,9 @@ use crate::lease::read_lease;
 use crate::lease::remove_lease;
 use crate::lease::validate_lease;
 use crate::lease::write_lease;
+use crate::restart_budget::clear_restart_budget;
+use crate::restart_budget::read_restart_budget;
+use crate::restart_budget::unix_millis_now;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
@@ -28,9 +31,6 @@ use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 use crate::runtime::is_live_lifecycle;
-use crate::restart_budget::clear_restart_budget;
-use crate::restart_budget::read_restart_budget;
-use crate::restart_budget::unix_millis_now;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn restore_release_state(

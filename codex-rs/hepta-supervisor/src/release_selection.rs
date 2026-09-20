@@ -190,7 +190,10 @@ impl ReleaseSelectionRecord {
         status: ReleaseSelectionStatus,
         recovery_decision_sha256: Sha256Digest,
     ) -> Result<Self, SupervisorError> {
-        if !matches!(status, ReleaseSelectionStatus::Committed | ReleaseSelectionStatus::RolledBack) {
+        if !matches!(
+            status,
+            ReleaseSelectionStatus::Committed | ReleaseSelectionStatus::RolledBack
+        ) {
             return Err(SupervisorError::Invalid(
                 "recovery decision may only terminalize a release selection".to_string(),
             ));
@@ -247,8 +250,9 @@ impl ReleaseSelectionRecord {
                 ));
             }
         }
-        Sha256Digest::parse(self.selection_sha256.as_str().to_string())
-            .map_err(|_| SupervisorError::Invalid("release selection digest is malformed".to_string()))?;
+        Sha256Digest::parse(self.selection_sha256.as_str().to_string()).map_err(|_| {
+            SupervisorError::Invalid("release selection digest is malformed".to_string())
+        })?;
         if self.selection_sha256 != self.compute_digest()? {
             return Err(SupervisorError::Invalid(
                 "release selection digest mismatch".to_string(),
@@ -282,12 +286,14 @@ impl ReleaseSelectionRecord {
         let Some(recovery_decision_sha256) = self.recovery_decision_sha256.as_ref() else {
             return Ok(base);
         };
-        Ok(Sha256Digest::from_sha256_output(Sha256::digest([
-            RECOVERY_SELECTION_DOMAIN,
-            base.as_str().as_bytes(),
-            recovery_decision_sha256.as_str().as_bytes(),
-        ]
-        .concat())))
+        Ok(Sha256Digest::from_sha256_output(Sha256::digest(
+            [
+                RECOVERY_SELECTION_DOMAIN,
+                base.as_str().as_bytes(),
+                recovery_decision_sha256.as_str().as_bytes(),
+            ]
+            .concat(),
+        )))
     }
 }
 
@@ -416,7 +422,11 @@ mod tests {
             ReleaseSelectionRecord::prepared(&grant(b"grant-2", "v3"), 2, 1).expect("record");
         let error = write_release_selection(temp.path(), &second)
             .expect_err("unresolved selection must reject a different grant");
-        assert!(error.to_string().contains("another release selection is unresolved"));
+        assert!(
+            error
+                .to_string()
+                .contains("another release selection is unresolved")
+        );
         assert_eq!(
             read_release_selection(temp.path()).expect("read"),
             Some(first)
@@ -444,19 +454,15 @@ mod tests {
 
     #[test]
     fn recovery_witness_is_digest_bound_and_cleared_when_recovery_reopens() {
-        let base =
-            ReleaseSelectionRecord::prepared(&grant(b"grant-recovery", "v2"), 1, 1)
-                .expect("record")
-                .with_status(ReleaseSelectionStatus::RecoveryRequired)
-                .expect("recovery required");
+        let base = ReleaseSelectionRecord::prepared(&grant(b"grant-recovery", "v2"), 1, 1)
+            .expect("record")
+            .with_status(ReleaseSelectionStatus::RecoveryRequired)
+            .expect("recovery required");
         let decision = digest(b"independent-recovery-decision");
         let terminal = base
             .with_recovery_status(ReleaseSelectionStatus::Committed, decision.clone())
             .expect("terminal recovery");
-        assert_eq!(
-            terminal.recovery_decision_sha256.as_ref(),
-            Some(&decision)
-        );
+        assert_eq!(terminal.recovery_decision_sha256.as_ref(), Some(&decision));
         terminal.snapshot().validate().expect("valid projection");
 
         let mut tampered = terminal.clone();
@@ -486,4 +492,3 @@ mod tests {
         assert!(read_release_selection(temp.path()).is_err());
     }
 }
-

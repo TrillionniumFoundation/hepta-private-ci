@@ -679,7 +679,11 @@ async fn handle_recovery_resolution<D: ProcessDriver>(
         Ok(receipt) => receipt,
         Err(error) => {
             let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-            return safe_rejection(error, post.or(Some(actual)), /*mutation_started*/ false);
+            return safe_rejection(
+                error,
+                post.or(Some(actual)),
+                /*mutation_started*/ false,
+            );
         }
     };
     SupervisordPayload::ProductionMutationStatus {

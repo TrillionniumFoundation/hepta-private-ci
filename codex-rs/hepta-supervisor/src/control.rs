@@ -8,13 +8,13 @@ use crate::ProcessDriver;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::restart_budget::clear_restart_budget;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
-use crate::restart_budget::clear_restart_budget;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn drain_slot(
