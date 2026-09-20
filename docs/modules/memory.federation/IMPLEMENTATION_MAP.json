@@ -79,9 +79,9 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
     "baseCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "candidateHead": "1b470b31b266e58bcde1f924f41fd09050225d6d",
-    "candidateTree": "872a2bd3f9b2f913958373f8105c39e8ecd701bc",
-    "headMeaning": "frozen canonical_v2_integrity_ordered_prefix_selection_partial_empty_live_authority_interruptible_transport_product_composition_v2_only_attachment_api_exact_scope_owner_data_frontier_adversarial_tests_truth_surface_lockfile_and_projection_sync head immediately before qualification metadata",
+    "candidateHead": "fc05fb3255f9bc9db37496b1141abec5c2a4db11",
+    "candidateTree": "c6cda06865ba50f1c66224c531fe8117a2172191",
+    "headMeaning": "frozen canonical_v2 query_bound_ordered_response_integrity live_pre_post_io_authority interruptible_single_attempt_transport agentd_product_composition v2_only_attachment_and_no_legacy_downgrade exact_scope_same_snapshot_frontier explicit_coverage one_peer_engine_multi_peer_product_orchestrator truth_surface_and_derived_index_sync candidate immediately before qualification metadata",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -98,7 +98,11 @@
       "exact_scope_same_snapshot_owner_data_frontier",
       "prefix_sensitive_item_order_binding",
       "partial_empty_preservation",
-      "product_v2_only_attachment_api_guard"
+      "product_v2_only_attachment_api_guard",
+      "legacy_v2_runtime_downgrade_prohibited",
+      "one_peer_engine_multi_peer_product_orchestrator_ownership",
+      "in_process_v2_contract_not_claimed_as_cross_host_wire",
+      "module_doc_and_dossier_projection_sync"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -118,9 +122,12 @@
       "qualification/module-execution-dossiers/detail/memory.federation.md",
       "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
       "codex-rs/hepta-memory/src/cognitive_federation.rs",
-      "codex-rs/hepta-memory/src/cognitive_federation_tests.rs"
+      "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+      "docs/modules/MODULE_DOCS.json",
+      "qualification/module-execution-dossiers/DETAILS.json",
+      "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
     ],
-    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the current-main functional and truth-surface candidate. Only this implementation map and the module-scoped final-verification receipt may change after that candidate without invalidating the attestation. The candidate includes exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, synchronized Cargo.lock/dossier projections, and a V2-only product attachment API that rejects the legacy compatibility variant. productExecutionProved, activation and release remain false until exact-candidate and merge-candidate evidence pass.",
+    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the frozen current-main convergence candidate before metadata-only attestation commits. Only this implementation map and the module-scoped final-verification receipt may change after that candidate without invalidating the attestation. The candidate enforces ordered query-bound response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, exact-scope same-snapshot owner data frontier, V2-only product attachment, and prevention of legacy helper downgrade. The canonical crate is the one-peer checked engine; <=16-peer discovery/aggregation is product-orchestrator policy. Current V2 contracts are in-process Rust contracts, not an authenticated cross-host wire protocol. productExecutionProved, productionImplementation, activation, acceptance, promotion and release remain false until their independent evidence gates pass.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
       "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
