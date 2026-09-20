@@ -398,12 +398,14 @@ fn open_run_start_journal(
     }
     let file = options.open(path)?;
     if file.metadata()?.len() == 0 {
-        DurableRunStartJournal::create(
+        let journal = DurableRunStartJournal::create(
             file,
             run_start_binding(identity, profile_digest),
             MAX_RUN_START_RECORDS,
         )
-        .map_err(store_error)
+        .map_err(store_error)?;
+        sync_run_start_directory(&root)?;
+        Ok(journal)
     } else {
         DurableRunStartJournal::recover(
             file,
@@ -413,6 +415,19 @@ fn open_run_start_journal(
         )
         .map_err(store_error)
     }
+}
+
+#[cfg(unix)]
+fn sync_run_start_directory(path: &Path) -> Result<(), AgentdError> {
+    std::fs::File::open(path)?.sync_all()?;
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn sync_run_start_directory(_path: &Path) -> Result<(), AgentdError> {
+    // The selected non-Unix host profile must independently qualify directory-entry
+    // durability. The journal file itself is synchronized before this boundary.
+    Ok(())
 }
 
 fn prepare_private_directory(path: &Path) -> Result<(), AgentdError> {
