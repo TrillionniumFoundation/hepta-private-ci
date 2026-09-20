@@ -18,14 +18,14 @@ use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_operations::DispatchEffect;
-use codex_hepta_types::Generation;
+use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use std::time::Duration;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use std::time::Duration;
 
 use super::AgentdOperationsError;
 use super::AgentdOperationsHost;
@@ -241,7 +241,9 @@ async fn newer_generation_reopen_reconciles_applied_destination_without_redispat
         })
         .await?;
 
-    automation.create_task_from_operation(&intent, &draft).await?;
+    automation
+        .create_task_from_operation(&intent, &draft)
+        .await?;
     let before = host
         .source_store()
         .operation(&intent.scope_id, &intent.operation_id)
@@ -276,4 +278,3 @@ async fn newer_generation_reopen_reconciles_applied_destination_without_redispat
     assert_eq!(automation.list_tasks(10).await?.len(), 1);
     Ok(())
 }
-
