@@ -1606,6 +1606,119 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
 }
 
 #[test]
+fn recovery_converges_selection_terminal_intent_queued_crash_cut()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+
+    let binding = crate::ReleaseSelectionBinding::new(
+        Sha256Digest::for_bytes(b"source-manifest"),
+        Sha256Digest::for_bytes(b"source-agentd"),
+        None,
+        Sha256Digest::for_bytes(b"target-manifest"),
+        Sha256Digest::for_bytes(b"target-agentd"),
+        None,
+        Sha256Digest::for_bytes(b"compatibility-receipt"),
+        7,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let grant_sha256 = Sha256Digest::for_bytes(b"terminal-crash-grant");
+    let grant = crate::H7H89ProductionGrant {
+        schema_version: crate::SIGNED_AUTHORITY_SCHEMA_VERSION,
+        namespace: crate::SIGNED_AUTHORITY_NAMESPACE.to_string(),
+        agent_id: fleet.first.to_string(),
+        source_release: "source-v1".to_string(),
+        target_release: "target-v2".to_string(),
+        transition: crate::H7H89ProductionTransition::Upgrade,
+        h7_envelope_sha256: Sha256Digest::for_bytes(b"terminal-crash-h7"),
+        artifact_sha256: Sha256Digest::for_bytes(b"terminal-crash-artifact"),
+        release_selection: binding,
+        expected_control_revision: 0,
+        expected_lifecycle_generation: 1,
+        authority_epoch: 19,
+        signer_id: "operator".to_string(),
+        signer_epoch: 4,
+        issued_at_unix_seconds: 100,
+        expires_at_unix_seconds: 200,
+        production_authority: true,
+        external_effects: true,
+        operator_acceptance: true,
+        promotion: true,
+        governance_bypass: false,
+        signature_base64: "AA==".to_string(),
+        grant_sha256: grant_sha256.clone(),
+    };
+    let queued_intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant_sha256,
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        "source-v1",
+        "target-v2",
+        0,
+        1,
+        19,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    crate::signed_intent::write_intent(record.layout.run_root(), &queued_intent)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    // Model a crash after the selection terminal write but before the matching
+    // intent terminal write. This is the only safe terminalization order:
+    // recovery can recognize the still-unresolved intent and quarantine both
+    // records instead of stranding a terminal intent beside queued selection.
+    let terminal_selection =
+        crate::release_selection::ReleaseSelectionRecord::prepared(&grant, 1, 1)?
+            .with_status(crate::release_selection::ReleaseSelectionStatus::Committed)?;
+    crate::release_selection::write_release_selection(
+        record.layout.run_root(),
+        &terminal_selection,
+    )?;
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert!(
+        report.faults.iter().any(|fault| {
+            fault.agent_id == fleet.first
+                && fault
+                    .message
+                    .contains("unresolved signed supervisor intent")
+        }),
+        "terminal-selection / queued-intent cut must enter explicit recovery"
+    );
+    assert_eq!(
+        recovered
+            .production_mutation_receipt(&fleet.first)?
+            .expect("recovery receipt")
+            .status,
+        crate::ProductionMutationStatus::RecoveryRequired
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::RecoveryRequired
+    );
+    assert_eq!(
+        crate::release_selection::read_release_selection(record.layout.run_root())?
+            .expect("selection")
+            .status,
+        crate::release_selection::ReleaseSelectionStatus::RecoveryRequired
+    );
+    Ok(())
+}
+
+#[test]
 fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_bytes()
 -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
