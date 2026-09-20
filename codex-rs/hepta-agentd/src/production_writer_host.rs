@@ -200,9 +200,10 @@ impl AgentdProductionWriterHost {
     /// Return the sealed production mutation capability, if this host was
     /// created through exact-cut recovery with a retained live verifier.
     pub fn production_mutation(&self) -> Option<Arc<dyn ProductionCognitiveMutation>> {
-        self.mutation
-            .as_ref()
-            .map(|capability| Arc::clone(capability) as Arc<dyn ProductionCognitiveMutation>)
+        self.mutation.as_ref().map(|capability| {
+            let capability: Arc<dyn ProductionCognitiveMutation> = Arc::clone(capability);
+            capability
+        })
     }
 
     /// Attach the provider/host target explicitly. Replacing a target is
