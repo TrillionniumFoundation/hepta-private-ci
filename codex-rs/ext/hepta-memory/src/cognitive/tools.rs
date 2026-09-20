@@ -328,7 +328,8 @@ impl CognitiveTool {
             Some(mutation) => mutation
                 .remember_with_kg(&access, &source, &draft, &facts)
                 .await
-                .map_err(mutation_error)?,
+                .map_err(mutation_error)?
+                .write,
             None if self.qualification_write_enabled => store
                 .remember_with_kg(&access, &source, &draft, &facts)
                 .await
@@ -438,7 +439,8 @@ impl CognitiveTool {
                     &facts,
                 )
                 .await
-                .map_err(mutation_error)?,
+                .map_err(mutation_error)?
+                .write,
             None if self.qualification_write_enabled => store
                 .correct_with_kg(
                     &access,
@@ -501,7 +503,8 @@ impl CognitiveTool {
                     &forget,
                 )
                 .await
-                .map_err(mutation_error)?,
+                .map_err(mutation_error)?
+                .write,
             None if self.qualification_write_enabled => store
                 .forget_with_kg(
                     &access,
