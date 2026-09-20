@@ -32,6 +32,7 @@ use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
+use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
@@ -201,6 +202,50 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     assert!(!written.provenance_event_id.is_empty());
     assert!(!written.provenance_outbox_id.is_empty());
     assert!(!written.provenance_commit_event_id.is_empty());
+    let written_occurrence = format!(
+        "cognitive-mutation:{}",
+        written.operation_digest.as_str()
+    );
+    assert_eq!(
+        host.writer().status(&written_occurrence).await?,
+        LocalOutcomeState::Committed
+    );
+
+    let cut_before_invalid = host.writer().recovery_anchor().await?;
+    let invalid_source = SourceDraft {
+        scope: scope.clone(),
+        kind: LedgerSourceKind::ExplicitMemoryDirective,
+        event_key: "product-recovery-semantic-write:invalid".to_string(),
+        content: b"invalid semantic mutation".to_vec(),
+        observed_at_unix_seconds: now,
+    };
+    let invalid_draft = MemoryDraft {
+        stable_key: "product-recovery-invalid-memory".to_string(),
+        revision: MemoryRevisionDraft {
+            scope: scope.clone(),
+            content: "invalid semantic mutation".to_string(),
+            verification: MemoryVerification::Verified,
+            lifecycle: MemoryLifecycleState::Tombstoned,
+            valid_from_unix_seconds: now,
+            valid_to_unix_seconds: None,
+            citations: Vec::new(),
+        },
+    };
+    assert!(
+        host.remember_with_kg(
+            &access,
+            &invalid_source,
+            &invalid_draft,
+            &KgFactSetDraft::default(),
+        )
+        .await
+        .is_err()
+    );
+    assert_eq!(
+        host.writer().recovery_anchor().await?,
+        cut_before_invalid,
+        "failed semantic mutation must roll back its provenance admission/outbox"
+    );
 
     let corrected_content = "Production semantic memory remains current after correction.";
     let correction_source = SourceDraft {
