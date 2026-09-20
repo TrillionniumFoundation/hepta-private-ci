@@ -83,7 +83,8 @@ impl AgentdProductionOperationRuntimeConfig {
     pub(crate) async fn open(
         self,
         store: CognitiveStore,
-    ) -> Result<Arc<AgentdProductionWriterHost>, AgentdError> {
+    ) -> Result<(Arc<AgentdProductionWriterHost>, Duration), AgentdError> {
+        let reconcile_interval = self.reconcile_interval;
         let host = AgentdProductionWriterHost::open_with_store(
             store,
             self.authority,
@@ -93,7 +94,7 @@ impl AgentdProductionOperationRuntimeConfig {
         )
         .await?
         .attach_target(self.final_use, self.target, self.grants);
-        Ok(Arc::new(host))
+        Ok((Arc::new(host), reconcile_interval))
     }
 }
 
