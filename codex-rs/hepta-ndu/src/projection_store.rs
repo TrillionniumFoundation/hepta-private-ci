@@ -16,6 +16,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use codex_hepta_types::Digest32;
 
@@ -66,6 +67,54 @@ impl From<NduProjectionJournalError> for NduProjectionStoreError {
     }
 }
 
+/// Injectable persistence boundary used by the crash matrix. Production uses
+/// the filesystem implementation below; tests inject failures at the exact
+/// write, file-sync, rename and parent-directory-sync cuts while exercising the
+/// same store mutation path.
+trait ProjectionPersistenceV1: Send + Sync {
+    fn write_temp(&self, path: &Path, bytes: &[u8]) -> io::Result<()>;
+    fn sync_temp(&self, path: &Path) -> io::Result<()>;
+    fn rename(&self, from: &Path, to: &Path) -> io::Result<()>;
+    fn sync_parent(&self, root: &Path) -> io::Result<()>;
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+struct FsProjectionPersistenceV1;
+
+impl ProjectionPersistenceV1 for FsProjectionPersistenceV1 {
+    fn write_temp(&self, path: &Path, bytes: &[u8]) -> io::Result<()> {
+        let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
+        file.write_all(bytes)
+    }
+
+    fn sync_temp(&self, path: &Path) -> io::Result<()> {
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(path)?
+            .sync_all()
+    }
+
+    fn rename(&self, from: &Path, to: &Path) -> io::Result<()> {
+        fs::rename(from, to)
+    }
+
+    fn sync_parent(&self, root: &Path) -> io::Result<()> {
+        #[cfg(unix)]
+        {
+            File::open(root)?.sync_all()
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = root;
+            Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "NDU durable writer V1 requires Unix directory durability semantics",
+            ))
+        }
+    }
+}
+
 /// Exclusive writer over one host-authorized projection directory.
 ///
 /// Locks are advisory and therefore assume the directory is private to the
@@ -76,6 +125,7 @@ pub struct NduProjectionStoreV1 {
     root: PathBuf,
     lock: File,
     journal: NduProjectionJournalV1,
+    persistence: Arc<dyn ProjectionPersistenceV1>,
     indeterminate: bool,
 }
 
@@ -85,6 +135,13 @@ impl NduProjectionStoreV1 {
     /// deliberately unavailable on non-Unix targets rather than silently using
     /// weaker replacement or directory-durability semantics.
     pub fn open(root: impl AsRef<Path>) -> Result<Self, NduProjectionStoreError> {
+        Self::open_with_persistence(root, Arc::new(FsProjectionPersistenceV1))
+    }
+
+    fn open_with_persistence(
+        root: impl AsRef<Path>,
+        persistence: Arc<dyn ProjectionPersistenceV1>,
+    ) -> Result<Self, NduProjectionStoreError> {
         if !cfg!(unix) {
             return Err(NduProjectionStoreError::UnsupportedPlatform);
         }
@@ -137,7 +194,7 @@ impl NduProjectionStoreV1 {
             }
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
                 let journal = NduProjectionJournalV1::new();
-                persist_image(&root, &journal)?;
+                persist_image(&root, &journal, persistence.as_ref())?;
                 journal
             }
             Err(error) => return Err(error.into()),
@@ -147,6 +204,7 @@ impl NduProjectionStoreV1 {
             root,
             lock,
             journal,
+            persistence,
             indeterminate: false,
         })
     }
@@ -249,7 +307,7 @@ impl NduProjectionStoreV1 {
         {
             return Err(NduProjectionStoreError::BackupRegression);
         }
-        match persist_image(&self.root, &restored) {
+        match persist_image(&self.root, &restored, self.persistence.as_ref()) {
             Ok(()) => {
                 self.journal = restored;
                 Ok(())
@@ -279,7 +337,7 @@ impl NduProjectionStoreV1 {
         self.ensure_authoritative()?;
         let mut candidate = self.journal.clone();
         let entry = mutation(&mut candidate)?;
-        match persist_image(&self.root, &candidate) {
+        match persist_image(&self.root, &candidate, self.persistence.as_ref()) {
             Ok(()) => {
                 self.journal = candidate;
                 Ok(entry)
@@ -313,6 +371,7 @@ fn reject_existing_symlink(path: &Path) -> Result<(), NduProjectionStoreError> {
 fn persist_image(
     root: &Path,
     journal: &NduProjectionJournalV1,
+    persistence: &dyn ProjectionPersistenceV1,
 ) -> Result<(), NduProjectionStoreError> {
     if !cfg!(unix) {
         return Err(NduProjectionStoreError::UnsupportedPlatform);
@@ -324,46 +383,27 @@ fn persist_image(
         return Err(NduProjectionStoreError::BackupTooLarge);
     }
 
-    let mut temp = match OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temp_path)
-    {
-        Ok(file) => file,
+    match persistence.write_temp(&temp_path, &bytes) {
+        Ok(()) => {}
         Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
             fs::remove_file(&temp_path)?;
-            OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&temp_path)?
+            persistence.write_temp(&temp_path, &bytes)?;
         }
         Err(error) => return Err(error.into()),
-    };
-    if let Err(error) = temp.write_all(&bytes).and_then(|()| temp.sync_all()) {
-        let _ = fs::remove_file(&temp_path);
-        return Err(error.into());
     }
-    drop(temp);
-
-    if let Err(error) = fs::rename(&temp_path, &journal_path) {
+    if let Err(error) = persistence.sync_temp(&temp_path) {
         let _ = fs::remove_file(&temp_path);
         return Err(error.into());
     }
 
-    sync_parent(root).map_err(|_| NduProjectionStoreError::Indeterminate)
-}
+    if let Err(error) = persistence.rename(&temp_path, &journal_path) {
+        let _ = fs::remove_file(&temp_path);
+        return Err(error.into());
+    }
 
-#[cfg(unix)]
-fn sync_parent(root: &Path) -> io::Result<()> {
-    File::open(root)?.sync_all()
-}
-
-#[cfg(not(unix))]
-fn sync_parent(_root: &Path) -> io::Result<()> {
-    Err(io::Error::new(
-        io::ErrorKind::Unsupported,
-        "NDU durable writer V1 requires Unix directory durability semantics",
-    ))
+    persistence
+        .sync_parent(root)
+        .map_err(|_| NduProjectionStoreError::Indeterminate)
 }
 
 #[cfg(test)]
