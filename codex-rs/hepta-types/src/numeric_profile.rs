@@ -141,6 +141,7 @@ pub enum NumericConversionError {
     InvalidRange,
     OutOfRange,
     Overflow,
+    CanonicalEncoding,
 }
 
 impl fmt::Display for NumericConversionError {
