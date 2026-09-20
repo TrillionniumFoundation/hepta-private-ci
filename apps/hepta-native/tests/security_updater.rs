@@ -39,7 +39,6 @@ fn key_fixture(root: &Path) -> (SigningKey, TrustedKeySet, std::path::PathBuf) {
     (signing, keys, path)
 }
 
-#[cfg(unix)]
 fn write_kernel_authority_config(
     root: &Path,
     signing: &SigningKey,
@@ -62,7 +61,6 @@ fn write_kernel_authority_config(
     path
 }
 
-#[cfg(unix)]
 fn signed_final_use_grant(
     signing: &SigningKey,
     grant_id: &str,
@@ -87,7 +85,6 @@ fn signed_final_use_grant(
     SignedFinalUseGrant { grant, signature }
 }
 
-#[cfg(unix)]
 #[test]
 fn kernel_final_use_binding_rejects_session_drift() {
     let temp = TempDir::new().unwrap();
@@ -123,7 +120,6 @@ fn kernel_final_use_binding_rejects_session_drift() {
     assert!(error.to_string().contains("BindingMismatch"));
 }
 
-#[cfg(unix)]
 #[test]
 fn kernel_final_use_reloads_revocation_before_os_entry() {
     let temp = TempDir::new().unwrap();
