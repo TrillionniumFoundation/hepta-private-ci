@@ -1,6 +1,8 @@
 use std::path::PathBuf;
 use std::process::Command;
+use std::time::Duration;
 
+use hepta_native::error::ShellError;
 use hepta_native::security::TrustedKeySet;
 use hepta_native::updater::UpdateManager;
 use hepta_native::updater::activate_staged_update;
@@ -30,7 +32,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .ok_or("pending update record must have a parent directory")?
         .to_path_buf();
     let manager = UpdateManager::new(key_set.clone(), update_root)?;
-    activate_staged_update(&pending, &key_set, &target, protocol)?;
+    activate_with_bounded_retry(&pending, &key_set, &target, protocol)?;
 
     let smoke = Command::new(&target).arg("--self-test").status();
     match smoke {
@@ -63,4 +65,29 @@ fn absolute_arg(
         return Err(format!("{name} must be an absolute path").into());
     }
     Ok(path)
+}
+
+fn activate_with_bounded_retry(
+    pending: &std::path::Path,
+    keys: &TrustedKeySet,
+    target: &std::path::Path,
+    protocol: u32,
+) -> Result<(), ShellError> {
+    const ATTEMPTS: usize = 100;
+    const BACKOFF: Duration = Duration::from_millis(50);
+    for attempt in 0..ATTEMPTS {
+        match activate_staged_update(pending, keys, target, protocol) {
+            Ok(()) => return Ok(()),
+            Err(ShellError::Io(error))
+                if error.kind() == std::io::ErrorKind::PermissionDenied
+                    && attempt + 1 < ATTEMPTS =>
+            {
+                std::thread::sleep(BACKOFF);
+            }
+            Err(error) => return Err(error),
+        }
+    }
+    Err(ShellError::Update(
+        "native updater exhausted bounded activation retries".to_owned(),
+    ))
 }
