@@ -12,7 +12,6 @@ use crate::EventBuffer;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_control_plane::RuntimeModuleRegistryV1;
-use codex_hepta_control_plane::RuntimeModuleStateClassV1;
 use codex_hepta_control_plane::RuntimeTopologySnapshotV1;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
@@ -24,6 +23,9 @@ use codex_hepta_types::StableId;
 
 #[path = "state_control.rs"]
 mod control;
+
+#[path = "runtime_module_state.rs"]
+mod module_state;
 
 const MODULE_AUTHBUS: &str = "auth.authbus";
 const MODULE_OBJECTIVE: &str = "objective.compiler";
@@ -328,11 +330,7 @@ impl AgentdState {
                 StableId::new(*value).map_err(|error| AgentdError::Protocol(error.to_string()))
             })
             .collect::<Result<BTreeSet<_>, _>>()?;
-        let state_class = match row.state.as_str() {
-            "stateful_external" => RuntimeModuleStateClassV1::ExternalStateful,
-            value if value.contains("stateful") => RuntimeModuleStateClassV1::Stateful,
-            _ => RuntimeModuleStateClassV1::Stateless,
-        };
+        let state_class = module_state::parse(&row.state)?;
         // This bootstrap binding intentionally names the reviewed runtime
         // manifest, not executable provenance. Candidate replacement uses the
         // independently evaluated implementation/artifact digests carried by
