@@ -239,7 +239,7 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0010",
+        "durability": "sqlite_migrations_0001_0011",
         "qualification": "source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
@@ -291,12 +291,19 @@
             "CREATE TABLE authbus_outbox",
             "authbus_outbox_active_no_delete"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_authbus_recovery.sql",
+          "mustContain": [
+            "authbus_restore_checkpoint",
+            "authbus_retired_epochs"
+          ]
         }
       ]
     },
     {
       "module": "auth.authbus",
-      "profile": "signed_admission_with_legacy_replay",
+      "profile": "durable_authorization_quota_with_signed_ingress",
       "formalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md",
@@ -304,8 +311,8 @@
       "implementationDetail": "codex-rs/hepta-authbus/SIGNED_ADMISSION.md",
       "states": {
         "source": "implemented",
-        "implementation": "signed_admission_with_legacy_replay",
-        "durability": "sqlite_admission_outbox_and_process_local_legacy",
+        "implementation": "durable_policy_quota_reservation_owner",
+        "durability": "sqlite_dual_checkpointed_authbus_owners",
         "qualification": "source_tests_present",
         "activation": "host_composition_required",
         "acceptance": "not_granted"
@@ -314,30 +321,19 @@
         "bounded SQLite replay admission keyed by issuer epoch subject and scope",
         "strict Ed25519 authentication with trusted issuer expiry revocation scope and payload checks",
         "deny-all admission receipts and legacy preverified in-process replay",
-        "transactional bounded AuthBus message outbox with recoverable fenced delivery"
+        "transactional bounded AuthBus message outbox with recoverable fenced delivery",
+        "durable revision-bound policy issuer and signed trusted-time ownership",
+        "conservation-safe quota reservation cancellation settlement and restart reconciliation",
+        "external rollback checkpoints for replay and authority semantic frontiers",
+        "Bao KV-v2 operation quota final-use and signed settlement composition"
       ],
       "targetOnlyCapabilities": [
-        "host trust provisioning and key lifecycle management",
-        "external replay-store rollback protection",
-        "authorization policy evaluation",
-        "quota registry",
-        "quota reservation and settlement"
+        "production-durable kernel.operations transaction owner",
+        "independently operated issuer key trusted-time and checkpoint services",
+        "distributed multi-host AuthBus ownership",
+        "target-host qualification independent acceptance promotion and release"
       ],
       "sourceAnchors": [
-        {
-          "path": "codex-rs/hepta-authbus/src/lib.rs",
-          "mustContain": [
-            "pub use signed::SignedMessage;",
-            "pub struct PreverifiedAuthEnvelope",
-            "pub struct TrustedReplayContext",
-            "BTreeMap<ReplayKey, u64>",
-            "AuthorityPosture::DENY_ALL"
-          ],
-          "mustNotContain": [
-            "pub fn reserve(",
-            "pub fn settle("
-          ]
-        },
         {
           "path": "codex-rs/hepta-authbus/src/signed.rs",
           "mustContain": [
@@ -349,37 +345,79 @@
           ]
         },
         {
-          "path": "codex-rs/hepta-evidence/src/authbus_store.rs",
+          "path": "codex-rs/hepta-authbus/src/host.rs",
           "mustContain": [
-            "pub async fn admit_authbus_message(",
-            "BEGIN IMMEDIATE",
-            "MAX_AUTHBUS_REPLAY_KEYS",
-            "transaction.commit().await",
-            "message.authenticate("
+            "pub struct AuthBusAuthorityHost",
+            "pub async fn sync_checkpoint",
+            "pub async fn reserve(",
+            "pub async fn settle("
           ]
         },
         {
-          "path": "codex-rs/hepta-evidence/migrations/0009_authbus_replay.sql",
+          "path": "codex-rs/hepta-authbus/src/authority_store.rs",
           "mustContain": [
-            "CREATE TABLE authbus_replay_sequences",
-            "PRIMARY KEY(issuer_id, key_epoch, subject_id, scope_digest)"
+            "pub struct AuthBusAuthorityStore",
+            "pub async fn create_policy(",
+            "pub async fn authorize(",
+            "record_policy_history"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/quota_store.rs",
+          "mustContain": [
+            "pub async fn reserve(",
+            "MAX_ACTIVE_RESERVATIONS",
+            "compact_terminal_reservations",
+            "ensure_recovery_complete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/settlement_store.rs",
+          "mustContain": [
+            "pub async fn mark_dispatch_attempted(",
+            "pub async fn cancel_reservation(",
+            "pub async fn settle("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/recovery.rs",
+          "mustContain": [
+            "pub struct AuthorityCheckpoint",
+            "reconcile_authority_checkpoint",
+            "reconcile_after_restart",
+            "authority_frontier_digest_tx"
           ]
         },
         {
           "path": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
           "mustContain": [
             "pub async fn enqueue_authbus_message(",
-            "advance_replay(&mut tx, &authenticated)",
-            "pub async fn pending_authbus_deliveries("
+            "advance_replay(&mut tx, &authenticated)"
           ]
         },
         {
-          "path": "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
+          "path": "codex-rs/hepta-evidence/src/authbus_recovery.rs",
           "mustContain": [
-            "pub async fn claim_authbus_delivery(",
-            "pub async fn renew_authbus_delivery(",
-            "pub async fn retry_authbus_delivery(",
-            "pub async fn ack_authbus_delivery("
+            "reconcile_authbus_restore_checkpoint",
+            "advance_authbus_restore_checkpoint",
+            "RollbackDetected"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+          "mustContain": [
+            "sync_replay_checkpoint",
+            "enqueue_authbus_message",
+            "ReplayCheckpointFile"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "consume_kv_v2_with_authbus",
+            "mark_dispatch_attempted",
+            "FinalUseAuthority",
+            "settle_observed"
           ]
         }
       ]
@@ -403,13 +441,14 @@
       "currentCapabilities": [
         "pinned-CA HTTPS read of one exact KV-v2 string field",
         "final-use grant binding and single-use dispatch",
-        "metadata-only receipt without raw secret value"
+        "metadata-only receipt without raw secret value",
+        "bounded AuthBus quota final-use and signed settlement composition for KV-v2 read"
       ],
       "targetOnlyCapabilities": [
         "secret mutation",
         "generic lease renewal API",
         "generic revoke API",
-        "durable operation and evidence composition",
+        "production-durable kernel.operations intent composition",
         "automatic production enrollment"
       ],
       "sourceAnchors": [
@@ -427,6 +466,13 @@
           "mustContain": [
             "Authorized HeptaBao HTTPS consumer",
             "Only read operations exist here"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "authbus_product_path_reserves_fences_final_use_and_settles_observed_cost",
+            "authbus_timeout_keeps_quota_held_as_indeterminate"
           ]
         }
       ]
