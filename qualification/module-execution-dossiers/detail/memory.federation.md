@@ -78,7 +78,7 @@ Test source identity is not an execution receipt. Exact-head/merge-candidate out
 
 Agentd product composition uses `CognitiveRuntime::AvailableFederatedV2`. The host passes the consumer Agent identity and bounded owner-layout candidates. The physical in-process owner read is adapted to the canonical V2 transport; preflight/post-I/O authority rediscoveries bind the current durable capability state. The memory extension performs another capability/memory revalidation at physical model-request assembly, bounded by the product read timeout and fail-closed on timeout/unavailability.
 
-The legacy `CognitiveRuntime::AvailableFederated` / `FederatedRecallSet` surface remains for compatibility-focused callers and tests. It is not the intended Agentd product path after this candidate. Rollback may restore the legacy caller only as an explicit compatibility rollback; it must not convert failed/unavailable peer observations into claims that the canonical V2 path executed.
+The legacy `CognitiveRuntime::AvailableFederated` / `FederatedRecallSet` surface remains for compatibility-focused callers and tests. Product model-input registration requires `has_product_federation()` and calls the V2-only `retrieve_product_federated` / `revalidate_product_federated` APIs, which reject the legacy variant. Rollback may restore a legacy caller only as an explicit compatibility rollback; it cannot silently enter the canonical product attachment path or convert failed/unavailable peer observations into claims that V2 executed.
 
 Remote evidence retains provenance and cannot become trusted instructions. No-writer capability and immediate revoke/stop behavior remain mandatory. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
 
