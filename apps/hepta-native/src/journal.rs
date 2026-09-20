@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::fs::OpenOptions;
 use std::io::Write as _;
 
 use atomic_write_file::AtomicWriteFile;
@@ -90,10 +92,11 @@ struct JournalFile {
     operations: Vec<OperationRecord>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct OperationJournal {
     path: PathBuf,
     operations: Vec<OperationRecord>,
+    _lock: File,
 }
 
 impl OperationJournal {
@@ -104,10 +107,27 @@ impl OperationJournal {
                 "operation journal path must be absolute".to_owned(),
             ));
         }
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        let lock_path = path.with_extension("lock");
+        let lock = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(&lock_path)?;
+        lock.try_lock().map_err(|_| {
+            ShellError::State(format!(
+                "operation journal is already owned by another native process: {}",
+                lock_path.display()
+            ))
+        })?;
         if !path.exists() {
             return Ok(Self {
                 path,
                 operations: Vec::new(),
+                _lock: lock,
             });
         }
         let metadata = std::fs::metadata(&path)?;
@@ -134,6 +154,7 @@ impl OperationJournal {
         Ok(Self {
             path,
             operations: state.operations,
+            _lock: lock,
         })
     }
 
@@ -228,6 +249,7 @@ impl OperationJournal {
         file.write_all(&bytes)?;
         file.sync_all()?;
         file.commit()?;
+        sync_parent_directory(&self.path)?;
         Ok(())
     }
 }
@@ -250,4 +272,17 @@ fn phase_transition_allowed(from: OperationPhase, to: OperationPhase) -> bool {
         }
         OperationPhase::Terminal => to == OperationPhase::Terminal,
     }
+}
+
+#[cfg(unix)]
+fn sync_parent_directory(path: &Path) -> Result<(), ShellError> {
+    if let Some(parent) = path.parent() {
+        File::open(parent)?.sync_all()?;
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn sync_parent_directory(_path: &Path) -> Result<(), ShellError> {
+    Ok(())
 }
