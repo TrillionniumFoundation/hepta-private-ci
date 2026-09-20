@@ -17,6 +17,9 @@ use codex_hepta_types::StableId;
 mod https_consumer;
 mod secret_boundary_v1;
 
+pub use https_consumer::BaoAuthBusAdmission;
+pub use https_consumer::BaoAuthBusError;
+pub use https_consumer::BaoAuthBusEvidenceProvider;
 pub use https_consumer::BaoClient;
 pub use https_consumer::BaoClientError;
 pub use https_consumer::BaoReadRequest;
