@@ -11,6 +11,7 @@ use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use sha2::Digest;
 use sha2::Sha256;
+use tokio_util::sync::CancellationToken;
 
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
@@ -274,6 +275,8 @@ pub struct DriverModelHandle {
 pub struct DriverRunObservation {
     pub terminal_observed: bool,
     pub succeeded: bool,
+    /// True only when the runtime acknowledged cancellation as terminal.
+    pub cancelled: bool,
     pub output_digest: Option<String>,
     /// None means usage was not durably observed; it must never be coerced to zero.
     pub consumed_tokens: Option<u32>,
@@ -361,6 +364,7 @@ pub trait ModelDriver {
         &mut self,
         handle: &DriverModelHandle,
         request: &WorkerRequest,
+        cancellation: &CancellationToken,
         response_timeout: Duration,
     ) -> Result<DriverRunObservation, Error>;
     fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
@@ -498,6 +502,21 @@ impl<D: ModelDriver> InferenceWorker<D> {
         model_id: &str,
         request: WorkerRequest,
     ) -> Result<InferenceExecutionObservation, Error> {
+        self.run_cancellable(
+            now_ms,
+            model_id,
+            request,
+            &CancellationToken::new(),
+        )
+    }
+
+    pub fn run_cancellable(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: WorkerRequest,
+        cancellation: &CancellationToken,
+    ) -> Result<InferenceExecutionObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request)?;
@@ -549,7 +568,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 .checked_sub(now_ms)
                 .ok_or(Error::DeadlineExpired)?,
         );
-        let observed = self.driver.run(&loaded.handle, &request, response_timeout);
+        let observed =
+            self.driver
+                .run(&loaded.handle, &request, cancellation, response_timeout);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
@@ -563,6 +584,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
             (ExecutionStatus::Indeterminate, None, false)
+        } else if observed.cancelled {
+            (ExecutionStatus::Cancelled, None, true)
         } else if observed.succeeded {
             let output = observed
                 .output_digest
@@ -592,10 +615,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
 
     pub fn unload_model(
         &mut self,
-        now_ms: u64,
+        _now_ms: u64,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        // Cleanup is always permitted, including after grant expiry/revocation.
+        // Authority loss must fence new load/run admission, never trap resources.
         validate_identity(model_id, "model")?;
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.active_requests != 0 {
@@ -608,6 +632,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
             worker_generation: self.generation,
             terminal_observed: true,
         })
+    }
+
+    pub fn unload_all(&mut self, now_ms: u64) -> Result<Vec<ModelUnloadObservation>, Error> {
+        if !self.active_requests.is_empty() {
+            return Err(Error::ActiveRequests);
+        }
+        let model_ids = self.models.keys().cloned().collect::<Vec<_>>();
+        model_ids
+            .iter()
+            .map(|model_id| self.unload_model(now_ms, model_id))
+            .collect()
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
