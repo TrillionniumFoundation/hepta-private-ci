@@ -316,12 +316,22 @@ fn not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirem
                 11,
             ))
             .unwrap_or_else(|error| panic!("delivered record: {error}"));
-        assert_eq!(owner.staged_count().unwrap_or_else(|error| panic!("staged count: {error}")), 0);
+        assert_eq!(
+            owner
+                .staged_count()
+                .unwrap_or_else(|error| panic!("staged count: {error}")),
+            0
+        );
     }
 
     let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root)
         .unwrap_or_else(|error| panic!("reopen owner: {error}"));
-    assert_eq!(reopened.staged_count().unwrap_or_else(|error| panic!("staged count: {error}")), 0);
+    assert_eq!(
+        reopened
+            .staged_count()
+            .unwrap_or_else(|error| panic!("staged count: {error}")),
+        0
+    );
     assert_eq!(
         reopened
             .terminal_record("attempt:first")
@@ -444,7 +454,12 @@ fn indeterminate_terminal_reopens_blocked_and_reconciles_monotonically() {
             11,
         ))
         .unwrap_or_else(|error| panic!("reconcile delivered: {error}"));
-    assert_eq!(reopened.staged_count().unwrap_or_else(|error| panic!("staged count: {error}")), 0);
+    assert_eq!(
+        reopened
+            .staged_count()
+            .unwrap_or_else(|error| panic!("staged count: {error}")),
+        0
+    );
     assert_eq!(
         reopened
             .terminal_record("attempt:indeterminate")
@@ -497,7 +512,6 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
             .is_err()
     );
 }
-
 
 struct AcceptPricingEvidence;
 
