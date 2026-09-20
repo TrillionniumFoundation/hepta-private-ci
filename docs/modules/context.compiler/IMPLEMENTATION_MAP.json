@@ -164,7 +164,8 @@
   ],
   "repositoryControlledGaps": [
     "Bind the verified V2 operations to an authenticated production consumer, authoritative admission verifier, exact tokenizer/serializer, and runtime provider owner.",
-    "At the real provider boundary consume current final-use authority, bind the exact serialized payload plus ContextDeliveryPreparationV2 witness into canonical ProviderRequestBinding evidence, and qualify the independent provider-evidence resolver.",
+    "At the real provider boundary consume current final-use authority, bind the exact serialized payload into canonical ProviderRequestBinding evidence, retain the provider-owned exact-attempt witness semantics, and qualify an independent provider-evidence resolver that authenticates that witness against ContextDeliveryPreparationV2.",
+    "Migrate context.compiler from the repository's legacy shared sourceBase baseline to strict module-local exact-source provenance after the canonical implementation-map verifier migration; the current sourceBase is not exact-head evidence.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
