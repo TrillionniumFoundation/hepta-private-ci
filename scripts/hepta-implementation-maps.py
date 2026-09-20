@@ -369,10 +369,18 @@ def verify():
                 source = op.get("sourcePath")
                 if source:
                     evidence_paths.add(source)
-                for key in ("tests", "delegatedCallees"):
-                    for evidence_path in op.get(key, []):
-                        if evidence_path:
-                            evidence_paths.add(evidence_path)
+                for evidence_path in op.get("tests", []):
+                    if evidence_path:
+                        evidence_paths.add(evidence_path)
+                for delegated in op.get("delegatedCallees", []):
+                    if isinstance(delegated, dict):
+                        delegated_path = delegated.get("path")
+                        if delegated_path:
+                            evidence_paths.add(delegated_path)
+                    elif isinstance(delegated, str) and "/" in delegated:
+                        # Older maps may keep symbolic callee names here.
+                        # Only path-shaped entries are source/evidence files.
+                        evidence_paths.add(delegated)
             if source_commit and evidence_paths:
                 for evidence_path in sorted(evidence_paths):
                     if not (ROOT / evidence_path).exists():
