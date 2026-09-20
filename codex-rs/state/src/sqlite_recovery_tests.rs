@@ -246,6 +246,36 @@ fn symlink_hardlink_and_mode_inputs_are_indeterminate_and_unchanged() -> anyhow:
     Ok(())
 }
 
+#[test]
+fn wal_byte_drift_after_binding_is_indeterminate_before_materialization() -> anyhow::Result<()> {
+    let fixture = RecoveryFixture::with_complete_file_set()?;
+    let guard = fixture
+        .sqlite
+        .bind_existing_recovery_database(&fixture.database)
+        .expect("retain original database and WAL identities");
+    let wal = sidecar_path(&fixture.database, "-wal");
+    write_private(&wal, b"WAL bytes")?;
+    let attacked = capture_tree(&fixture.home)?;
+    let candidate = fixture.home.join("recovered-candidate.sqlite3");
+
+    assert_eq!(
+        guard.verify_inspection_unchanged(),
+        Err(SqliteRecoveryError::Indeterminate)
+    );
+    assert_eq!(
+        fixture
+            .sqlite
+            .materialize_identity_bound_recovery_copy(&guard, &candidate),
+        Err(SqliteRecoveryError::Indeterminate)
+    );
+    assert!(
+        !candidate.exists(),
+        "WAL identity drift must fail before any recovery candidate is materialized"
+    );
+    assert_eq!(capture_tree(&fixture.home)?, attacked);
+    Ok(())
+}
+
 #[tokio::test]
 async fn sidecar_appearance_after_binding_is_indeterminate_and_unchanged() -> anyhow::Result<()> {
     let fixture = RecoveryFixture::with_complete_file_set()?;
