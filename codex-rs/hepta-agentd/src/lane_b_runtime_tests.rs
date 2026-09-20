@@ -97,12 +97,7 @@ fn cancellation_preserves_the_dispatch_boundary_and_reason() {
         .cancel_run(200, "run.1", 1, "operator_request")
         .expect("cancel");
     assert_eq!(early.0, CancellationDisposition::CancelledBeforeDispatch);
-    assert_receipt(
-        &early.1,
-        2,
-        RunPhase::Cancelled,
-        Some("operator_request"),
-    );
+    assert_receipt(&early.1, 2, RunPhase::Cancelled, Some("operator_request"));
     assert!(early.1.terminal_observed);
 
     let mut after = AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
@@ -115,12 +110,7 @@ fn cancellation_preserves_the_dispatch_boundary_and_reason() {
         .cancel_run(400, "run.1", 3, "operator_request")
         .expect("cancel");
     assert_eq!(late.0, CancellationDisposition::CancellingAfterDispatch);
-    assert_receipt(
-        &late.1,
-        4,
-        RunPhase::Cancelling,
-        Some("operator_request"),
-    );
+    assert_receipt(&late.1, 4, RunPhase::Cancelling, Some("operator_request"));
 
     let repeated = after
         .cancel_run(450, "run.1", 4, "operator_request")
@@ -177,10 +167,14 @@ fn lifecycle_deadline_is_enforced_after_admission() {
     pre_snapshot.deadline_ms = 200;
     pre.start_run(100, pre_snapshot).expect("start");
     assert_eq!(
-        pre.attach_context(200, 1, ContextAttachment {
-            deadline_ms: 200,
-            ..attachment()
-        }),
+        pre.attach_context(
+            200,
+            1,
+            ContextAttachment {
+                deadline_ms: 200,
+                ..attachment()
+            }
+        ),
         Err(AgentRunError::DeadlineElapsed)
     );
     assert_eq!(pre.expire_deadlines(200).expect("expire"), 1);
@@ -229,10 +223,7 @@ fn drain_closes_admission_and_preserves_dispatch_uncertainty() {
     assert!(!coordinator.admissions_open());
     let draining = coordinator.run("run.1").expect("run");
     assert_eq!(draining.phase, RunPhase::Cancelling);
-    assert_eq!(
-        draining.cancel_reason.as_deref(),
-        Some("agentd_draining")
-    );
+    assert_eq!(draining.cancel_reason.as_deref(), Some("agentd_draining"));
 
     assert_eq!(
         coordinator
@@ -277,12 +268,7 @@ fn recovery_rehydrates_only_an_indeterminate_non_redispatchable_run() {
     let observed = coordinator
         .observe_terminal("run.1", 9, RunPhase::Succeeded, true)
         .expect("terminal reconciliation");
-    assert_receipt(
-        &observed,
-        10,
-        RunPhase::Succeeded,
-        Some("process_restart"),
-    );
+    assert_receipt(&observed, 10, RunPhase::Succeeded, Some("process_restart"));
     assert!(observed.terminal_observed);
 }
 
@@ -320,7 +306,11 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
             .start_run(/*now_ms*/ 100, snapshot())
             .expect("admit");
         coordinator
-            .attach_context(/*now_ms*/ 200, /*expected_revision*/ 1, attachment())
+            .attach_context(
+                /*now_ms*/ 200,
+                /*expected_revision*/ 1,
+                attachment(),
+            )
             .expect("attach");
         coordinator
             .mark_dispatched(/*now_ms*/ 300, "run.1", /*expected_revision*/ 2)
@@ -334,12 +324,7 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
             )
             .expect("unknown outcome");
         assert_eq!(
-            coordinator.cancel_run(
-                400,
-                "run.1",
-                unknown.revision,
-                "operator_request"
-            ),
+            coordinator.cancel_run(400, "run.1", unknown.revision, "operator_request"),
             Err(AgentRunError::TerminalObservationRequired)
         );
         assert_eq!(
