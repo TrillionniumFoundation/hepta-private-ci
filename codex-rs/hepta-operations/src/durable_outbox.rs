@@ -123,6 +123,7 @@ impl DurableOperationLedger {
                 dispatch_digest: None,
                 indeterminate_reason_digest: None,
                 terminal_evidence_digest: None,
+            terminal_observer_generation: None,
             };
             insert_record(&mut tx, &record).await?;
             record
