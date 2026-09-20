@@ -44,11 +44,29 @@
       "designOperation": "durablecognitivesnapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "adapt_authoritative_read_to_canonical_shadow_v1",
+      "nativeSymbol": "adapt_authoritative_read_to_canonical_shadow_v1",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "state": "source_implemented_shadow_only_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_authoritative_read_shadow",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "AuthoritativeReadResultV1::validate"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Qualify adapt_authoritative_read_to_canonical_shadow_v1 on exact source-head and deterministic synthetic merge.",
+    "Supply authoritative source-revision bindings before claiming full canonical provenance equivalence; legacy MemoryRecord citations do not carry source revisions.",
+    "Migrate named downstream callers from legacy ReadResultV2 only after exact record-to-event bridge ownership is established.",
+    "Revalidate the canonical shadow against the current final-use snapshot before physical model-request attachment; a historical read receipt grants no future-use authority."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -66,5 +84,19 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-read"
-  ]
+  ],
+  "canonicalMemoryEventReadMigration": {
+    "state": "authoritative_shadow_adapter_source_candidate",
+    "predecessorSurface": "AuthoritativeReadResultV1 / ReadResultV2",
+    "targetSurface": "cognitive.types::hnmf::MemoryEventV1",
+    "exactRecordIdentityBridgeRequired": true,
+    "bindsSnapshotReceipt": true,
+    "bindsGenerationVector": true,
+    "bindsReadReceipt": true,
+    "verifiesCitationProvenanceIdDigest": true,
+    "verifiesSourceRevisionEquivalence": false,
+    "verifiesLifecycleAgainstRecordState": true,
+    "replacesLegacyRead": false,
+    "productComposed": false
+  }
 }
