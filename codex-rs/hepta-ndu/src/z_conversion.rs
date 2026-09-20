@@ -178,7 +178,7 @@ pub fn convert_z_to_original_q24(
         for value in row {
             let scaled = *value * Q24_SCALE;
             if !scaled.is_finite()
-                || scaled < -(1_u64 << 53) as f64
+                || scaled < -((1_u64 << 53) as f64)
                 || scaled > (1_u64 << 53) as f64
             {
                 return Err(ZConversionError::Q24Overflow);
@@ -225,9 +225,7 @@ fn solve_row_against_lower(row: &[f64], lower: &[Vec<f64>]) -> Result<Vec<f64>, 
     let dimension = row.len();
     let mut original = vec![0.0; dimension];
     for j in (0..dimension).rev() {
-        let tail: f64 = (j + 1..dimension)
-            .map(|i| original[i] * lower[i][j])
-            .sum();
+        let tail: f64 = (j + 1..dimension).map(|i| original[i] * lower[i][j]).sum();
         let diagonal = lower[j][j];
         if !diagonal.is_finite() || diagonal <= 0.0 {
             return Err(ZConversionError::SingularTransform);
