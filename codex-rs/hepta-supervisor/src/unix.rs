@@ -138,9 +138,11 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
-        let Some(identity) = self.drain_request.as_ref() else {
-            return send_signal(self.handle.process_id(), libc::SIGTERM);
-        };
+        let identity = self.drain_request.as_ref().ok_or_else(|| {
+            ProcessDriverError::new(
+                "managed process has no typed Agentd drain boundary; refusing SIGTERM fallback",
+            )
+        })?;
         request_agent_drain(identity)
     }
 

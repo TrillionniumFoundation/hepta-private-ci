@@ -268,6 +268,49 @@ fn health_probe_requires_exact_agent_generation_pid_and_roots() {
 }
 
 #[test]
+fn drain_without_typed_agentd_boundary_fails_closed_instead_of_signaling() {
+    let temp = tempfile::tempdir().expect("temporary directory");
+    let command = AgentCommand::new(
+        "/bin/sh",
+        vec![OsString::from("-c"), OsString::from("sleep 30")],
+    )
+    .expect("valid command");
+    let spec = SpawnSpec {
+        agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("valid agent id"),
+        generation: 1,
+        fleet_root: temp.path().join("fleet"),
+        workspace: temp.path().to_path_buf(),
+        home_root: temp.path().join("home"),
+        run_root: temp.path().join("run"),
+        control_socket: temp.path().join("run/agentd-control.sock"),
+        logs_root: temp.path().join("logs"),
+        command,
+    };
+    let mut process = UnixProcessDriver::new(1)
+        .expect("valid driver")
+        .spawn(&spec)
+        .expect("spawn child")
+        .process;
+    process.drain_request = None;
+
+    let error = process
+        .request_drain()
+        .expect_err("untyped drain must fail closed");
+    assert!(
+        error
+            .to_string()
+            .contains("no typed Agentd drain boundary"),
+        "unexpected drain error: {error}"
+    );
+
+    // The refused drain must leave the process alive; cleanup is an explicit
+    // hard-kill path rather than an implicit drain-as-SIGTERM fallback.
+    let observation = process.poll(1).expect("poll child");
+    assert!(matches!(observation.state, ProcessState::Running { .. }));
+    process.kill().expect("cleanup child");
+}
+
+#[test]
 fn agent_drain_requires_exact_draining_generation_ack() {
     let temp = tempfile::tempdir().expect("temporary directory");
     let socket = temp.path().join("agentd-drain.sock");
