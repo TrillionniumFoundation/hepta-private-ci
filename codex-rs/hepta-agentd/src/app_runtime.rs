@@ -89,8 +89,11 @@ pub(crate) fn app_server_runtime_options_for_agent(
     state: Arc<AgentdState>,
     cognitive_runtime: CognitiveRuntime,
 ) -> std::io::Result<AppServerRuntimeOptions> {
+    let drain_cancellation = state.drain_token();
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);
-    app_server_runtime_options_with_writer(identity, cognitive_runtime, writer)
+    let mut options = app_server_runtime_options_with_writer(identity, cognitive_runtime, writer)?;
+    options.external_shutdown_token = Some(drain_cancellation);
+    Ok(options)
 }
 
 fn app_server_runtime_options_with_writer(
