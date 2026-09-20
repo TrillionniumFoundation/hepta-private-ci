@@ -59,8 +59,8 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume;
     let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
-    let _ = codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
-    let _ = codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3;
+    let _ = codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+    let _ = codex_hepta_intelligence_eval::longitudinal_evaluation_signing_payload_v3;
     let _ = codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<NoCasStore>::initialize;
     let _ = codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::<NoCasStore>::new;
     let _ = codex_hepta_intelligence_eval::freeze_product_evaluation_plan_v1;

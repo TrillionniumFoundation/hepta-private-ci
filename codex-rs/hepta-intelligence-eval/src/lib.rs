@@ -141,8 +141,9 @@ pub use sequential::estimate_sequential;
 pub use signed_evaluation::SignedEvaluationDecisionV1;
 pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
-pub use signed_evaluation::decide_with_signed_evidence_v1;
-pub use signed_evaluation::decide_with_signed_evidence_v2;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
@@ -333,6 +334,6 @@ mod tests;
 mod longitudinal_time;
 pub use longitudinal_time::LongitudinalTimeEvidenceV1;
 pub use longitudinal_time::ObservedFutureWindowV1;
-pub use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;
+pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;
 pub use longitudinal_time::future_window_signing_payload_v1;
 pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
