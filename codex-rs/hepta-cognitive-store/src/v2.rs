@@ -987,7 +987,13 @@ impl CognitiveStoreImageV2 {
             return Err(CognitiveStoreV2Error::ImageFrontierMismatch("tombstone"));
         }
 
+        let records_by_digest = self
+            .records
+            .iter()
+            .map(|record| (record.record_digest(), record))
+            .collect::<BTreeMap<_, _>>();
         let mut intent_ids = BTreeSet::new();
+        let mut inserted_receipts = Vec::new();
         for entry in &self.journal {
             ensure_digest("intent_semantic", entry.semantic_digest)?;
             entry
@@ -1035,6 +1041,80 @@ impl CognitiveStoreImageV2 {
                 return Err(CognitiveStoreV2Error::JournalRecordMismatch(
                     entry.intent_id.to_string(),
                 ));
+            }
+            if entry.receipt.disposition == MemoryWriteDisposition::Inserted {
+                inserted_receipts.push(entry);
+            }
+        }
+
+        // Every retained revision is created by exactly one Inserted receipt.
+        // Since journal entries are never evicted, those receipts provide a
+        // complete mutation ordering and let us derive the final frontiers
+        // instead of merely checking lower bounds.
+        if inserted_receipts.len() != self.records.len() {
+            return Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch);
+        }
+        inserted_receipts.sort_by_key(|entry| entry.receipt.committed_frontier);
+        let mut covered_records = BTreeSet::new();
+        if let Some(first) = inserted_receipts.first() {
+            let first_record = records_by_digest
+                .get(&first.receipt.record_digest)
+                .ok_or(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)?;
+            let mut expected_memory = first
+                .receipt
+                .committed_frontier
+                .checked_sub(1)
+                .filter(|value| *value > 0)
+                .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch("memory"))?;
+            let mut expected_facts = first
+                .receipt
+                .snapshot_key
+                .vector
+                .knowledge_fact_frontier
+                .checked_sub(u64::from(first_record.kind == MemoryKind::Fact))
+                .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch(
+                    "knowledge_fact",
+                ))?;
+            let mut expected_tombstones = first
+                .receipt
+                .snapshot_key
+                .vector
+                .tombstone_frontier
+                .checked_sub(u64::from(first_record.state == RecordState::Tombstone))
+                .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch("tombstone"))?;
+
+            for entry in &inserted_receipts {
+                let record = records_by_digest
+                    .get(&entry.receipt.record_digest)
+                    .ok_or(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)?;
+                if !covered_records.insert(entry.receipt.record_digest) {
+                    return Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch);
+                }
+                expected_memory = expected_memory
+                    .checked_add(1)
+                    .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
+                expected_facts = expected_facts
+                    .checked_add(u64::from(record.kind == MemoryKind::Fact))
+                    .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
+                expected_tombstones = expected_tombstones
+                    .checked_add(u64::from(record.state == RecordState::Tombstone))
+                    .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
+                let vector = &entry.receipt.snapshot_key.vector;
+                if entry.receipt.committed_frontier != expected_memory
+                    || vector.memory_ledger_frontier != expected_memory
+                    || vector.knowledge_fact_frontier != expected_facts
+                    || vector.tombstone_frontier != expected_tombstones
+                {
+                    return Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch);
+                }
+            }
+
+            if covered_records.len() != records_by_digest.len()
+                || expected_memory != self.snapshot_key.vector.memory_ledger_frontier
+                || expected_facts != self.snapshot_key.vector.knowledge_fact_frontier
+                || expected_tombstones != self.snapshot_key.vector.tombstone_frontier
+            {
+                return Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch);
             }
         }
         if self.authority.grants_any() {
@@ -1195,6 +1275,7 @@ pub enum CognitiveStoreV2Error {
     JournalReceiptMismatch(String),
     JournalRecordMismatch(String),
     JournalSnapshotMismatch(String),
+    ImageReceiptCoverageMismatch,
     ImageSequenceMismatch,
     ImageFrontierMismatch(&'static str),
     InvalidRecord(String),
