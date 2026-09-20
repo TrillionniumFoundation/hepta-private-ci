@@ -51,6 +51,7 @@ use super::AgentdState;
 use super::CompletedRuntimeTask;
 use super::EVENT_CAPACITY;
 use super::cleanup_runtime_tasks;
+use super::drain_runtime;
 use super::monitor_runtime;
 use super::open_automation_store_after_generation_fence;
 use super::open_cognitive_runtime_after_generation_fence;
@@ -142,6 +143,124 @@ fn runtime_fixture() -> RuntimeFixture {
         registry,
         identity,
     }
+}
+
+#[tokio::test]
+async fn drain_runtime_keeps_control_reconciliation_live_until_terminal_observation() {
+    let fixture = runtime_fixture();
+    fixture
+        .registry
+        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+        .expect("running generation");
+    fixture.state.refresh_generation().expect("refresh running");
+    fixture
+        .state
+        .mark_app_server_ready()
+        .expect("mark App Server ready");
+
+    let snapshot = crate::AgentRunSnapshot {
+        run_id: "run.drain.1".to_string(),
+        request_digest: "1".repeat(64),
+        objective_digest: "2".repeat(64),
+        body_digest: "3".repeat(64),
+        artifact_set_digest: "4".repeat(64),
+        authority_epoch: 7,
+        deadline_ms: u64::MAX - 1,
+    };
+    let started = fixture
+        .state
+        .response(
+            20,
+            1,
+            crate::AgentdMethod::RunStart {
+                snapshot: snapshot.clone(),
+            },
+        )
+        .await
+        .expect("start");
+    let crate::AgentdPayload::RunReceipt(started) = started.payload else {
+        panic!("expected start receipt");
+    };
+    let attached = fixture
+        .state
+        .response(
+            21,
+            1,
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision: started.revision,
+                attachment: crate::AgentContextAttachment {
+                    run_id: snapshot.run_id.clone(),
+                    request_digest: snapshot.request_digest.clone(),
+                    objective_digest: snapshot.objective_digest.clone(),
+                    body_digest: snapshot.body_digest.clone(),
+                    artifact_set_digest: snapshot.artifact_set_digest.clone(),
+                    authority_epoch: snapshot.authority_epoch,
+                    deadline_ms: snapshot.deadline_ms,
+                    context_digest: "5".repeat(64),
+                    compilation_receipt_digest: "6".repeat(64),
+                },
+            },
+        )
+        .await
+        .expect("attach");
+    let crate::AgentdPayload::RunReceipt(attached) = attached.payload else {
+        panic!("expected attachment receipt");
+    };
+    let dispatched = fixture
+        .state
+        .response(
+            22,
+            1,
+            crate::AgentdMethod::RunMarkDispatched {
+                run_id: snapshot.run_id.clone(),
+                expected_revision: attached.revision,
+            },
+        )
+        .await
+        .expect("dispatch");
+    let crate::AgentdPayload::RunReceipt(dispatched) = dispatched.payload else {
+        panic!("expected dispatch receipt");
+    };
+
+    let reconciliation_state = Arc::clone(&fixture.state);
+    let run_id = snapshot.run_id;
+    let reconciler = tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_millis(100)).await;
+        let status = reconciliation_state
+            .response(
+                23,
+                1,
+                crate::AgentdMethod::RunStatus {
+                    run_id: run_id.clone(),
+                },
+            )
+            .await
+            .expect("query during drain");
+        let crate::AgentdPayload::RunStatus { run: Some(run) } = status.payload else {
+            panic!("expected run status");
+        };
+        assert_eq!(run.phase, crate::AgentRunPhase::Cancelling);
+        reconciliation_state
+            .response(
+                24,
+                1,
+                crate::AgentdMethod::RunObserveTerminal {
+                    run_id,
+                    expected_revision: run.revision,
+                    phase: crate::AgentRunPhase::Succeeded,
+                    terminal_observed: true,
+                },
+            )
+            .await
+            .expect("terminal observation")
+    });
+
+    drain_runtime(Arc::clone(&fixture.state))
+        .await
+        .expect("drain should finish after terminal observation");
+    reconciler.await.expect("reconciler task");
+    assert_eq!(fixture.state.active_run_count().expect("active runs"), 0);
+    assert_eq!(dispatched.phase, crate::AgentRunPhase::Dispatched);
 }
 
 #[tokio::test]
