@@ -17,6 +17,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod authenticated;
 mod dataset_bound;
 mod learned;
 mod loaded;
@@ -28,6 +29,12 @@ mod learned_strict;
 mod reference;
 mod world_model;
 
+pub use authenticated::AuthenticatedApplicabilityAdmissionV2;
+pub use authenticated::AuthenticatedOperatorError;
+pub use authenticated::AuthenticatedOperatorRegularityAdmissionV2;
+pub use authenticated::SignedOperatorEvidenceV2;
+pub use authenticated::admit_operator_regularity_with_signed_evidence_v2;
+pub use authenticated::validate_applicability_with_signed_evidence_v2;
 pub use dataset_bound::OperatorDatasetBindingError;
 pub use dataset_bound::VerifiedTabularOperatorPlanV2;
 pub use dataset_bound::VerifiedWorldModelDatasetV2;
