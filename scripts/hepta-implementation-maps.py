@@ -434,8 +434,26 @@ def verify():
             callers = row.get("productCallers")
             if not isinstance(callers, list) or not callers:
                 failures.append(f"{mid}: composed map requires product callers")
+            else:
+                for caller in callers:
+                    if not isinstance(caller, dict):
+                        failures.append(f"{mid}: invalid product caller")
+                        continue
+                    source = caller.get("sourcePath")
+                    symbol = caller.get("nativeSymbol")
+                    if not isinstance(source, str) or not (ROOT / source).is_file():
+                        failures.append(f"{mid}: missing product caller source {source}")
+                        continue
+                    if isinstance(symbol, str) and symbol:
+                        leaf = symbol.rsplit("::", 1)[-1]
+                        if leaf not in (ROOT / source).read_text(encoding="utf-8"):
+                            failures.append(f"{mid}: missing product caller symbol {symbol}")
             if source_objects is None:
-                failures.append(f"{mid}: composed map requires exact source objects")
+                mode = row.get("exactSourceEvidenceMode")
+                if mode != "lane_a_runtime_head_tree_and_registered_callers":
+                    failures.append(f"{mid}: composed map requires exact source objects")
+                elif row.get("laneId") != "LANE-A-FOUNDATION":
+                    failures.append(f"{mid}: Lane A runtime source evidence mode used outside Lane A")
 
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
