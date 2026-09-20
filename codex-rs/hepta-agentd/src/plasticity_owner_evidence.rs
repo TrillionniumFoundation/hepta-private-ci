@@ -9,15 +9,12 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_learning_artifacts::{ArtifactKind, ArtifactManifest, ArtifactRegistry};
-use codex_hepta_learning_ledger::{
-    DatasetSnapshotReceiptV3, verify_dataset_snapshot_receipt_v3,
-};
+use codex_hepta_learning_ledger::{DatasetSnapshotReceiptV3, verify_dataset_snapshot_receipt_v3};
 use codex_hepta_types::{Digest32, StableId};
 
 use crate::{
-    PlasticityOwnerEvidenceErrorV1, PlasticityOwnerEvidenceKindV1,
-    PlasticityOwnerEvidenceQueryV1, PlasticityOwnerEvidenceResolverV1,
-    VerifiedPlasticityOwnerEvidenceV1,
+    PlasticityOwnerEvidenceErrorV1, PlasticityOwnerEvidenceKindV1, PlasticityOwnerEvidenceQueryV1,
+    PlasticityOwnerEvidenceResolverV1, VerifiedPlasticityOwnerEvidenceV1,
 };
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -231,7 +228,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
-
 
 #[cfg(test)]
 mod tests {
