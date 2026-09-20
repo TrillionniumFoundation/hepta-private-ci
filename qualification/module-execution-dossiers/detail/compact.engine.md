@@ -1,7 +1,7 @@
 # compact.engine: implementation design
 
 Parent: `docs/modules/compact.engine/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded checkpoint and deletion-aware compaction qualification kernels implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded checkpoint and deletion-aware compaction qualification kernels are implemented; this candidate also source-implements a shadow-only binding from canonical replay/outcome contracts to an unchanged qualified candidate. Product replay scheduling, causal priority use, exact execution evidence and independent acceptance remain separate gates in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `compact` in [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); `build_qualified_candidate` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs); `prove_compaction` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs). Bounded checkpoint and deletion-aware compaction qualification kernels implemented.
+- **Implemented entrypoints:** `compact` in [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); `build_qualified_candidate`, `prove_compaction`, and shadow-only `bind_canonical_replay_outcome_shadow_v1` in [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs). The adapter requires every selected canonical replay event to map one-to-one to a retained legacy record and keeps OutcomeSignalV1 as co-observed evidence without altering retention.
 - **State and recovery:** Native checkpoints retain references and explicit omissions from one snapshot; the qualified path preserves protected live support and requires separate loss/reconstruction observations. It neither rewrites source facts nor persists a selected checkpoint.
 - **Source tests:** [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs), [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/modules/compact.engine/TECHNICAL.md](../../../docs/modules/compact.engine/TECHNICAL.md), [docs/learning/NEURAL_BIOMIMICRY_SPEC.md](../../../docs/learning/NEURAL_BIOMIMICRY_SPEC.md).
-- **Remaining work:** Bind independent holdout/reconstruction evidence and owner publication/reload. Target replay scheduling and skill induction are separate capabilities, not implied by checkpoint construction.
+- **Remaining work:** Bind independent holdout/reconstruction evidence and owner publication/reload. The canonical replay adapter still needs authoritative candidate-set/source-bucket ownership and an independently observed outcome/credit chain before replay or outcome evidence may change scheduling/priority. Target replay scheduling and skill induction are separate capabilities, not implied by checkpoint construction or by the shadow binding.
