@@ -7,15 +7,28 @@ pub enum NduError {
     ContributionLimitExceeded,
     CandidateLimitExceeded,
     DimensionLimitExceeded,
+    PreferenceDimensionLimitExceeded,
     RequiredOrganLimitExceeded,
     EmptyObjectiveDigest,
     EmptyProtocolDigest(&'static str),
-    EmptySupportDigest { candidate: String, organ: String },
+    EmptySupportDigest {
+        candidate: String,
+        organ: String,
+    },
     MixedObjective,
     MixedGeneration,
-    DuplicateOrganContribution { candidate: String, organ: String },
-    MissingRequiredOrgan { candidate: String, organ: String },
-    MissingAxis { candidate: String, axis: String },
+    DuplicateOrganContribution {
+        candidate: String,
+        organ: String,
+    },
+    MissingRequiredOrgan {
+        candidate: String,
+        organ: String,
+    },
+    MissingAxis {
+        candidate: String,
+        axis: String,
+    },
     UnknownAxis(String),
     DuplicateAxis(String),
     NegativeCeiling(String),
@@ -30,6 +43,7 @@ pub enum NduError {
     InvalidWeight(String),
     InvalidEta,
     DimensionMismatch,
+    PreferenceValueOutOfRange(String),
     StateDigestMismatch,
     IterationExhausted {
         iterations: u32,
@@ -58,6 +72,7 @@ impl NduError {
             | Self::ContributionLimitExceeded
             | Self::CandidateLimitExceeded
             | Self::DimensionLimitExceeded
+            | Self::PreferenceDimensionLimitExceeded
             | Self::RequiredOrganLimitExceeded => "NDU-E001",
             Self::EmptyObjectiveDigest
             | Self::EmptyProtocolDigest(_)
@@ -82,6 +97,7 @@ impl NduError {
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
             Self::InvalidEta
             | Self::DimensionMismatch
+            | Self::PreferenceValueOutOfRange(_)
             | Self::StateDigestMismatch
             | Self::IterationExhausted { .. }
             | Self::InvalidSolverReceipt(_) => "NDU-E008",
@@ -102,6 +118,9 @@ impl fmt::Display for NduError {
             }
             Self::CandidateLimitExceeded => formatter.write_str("candidate limit exceeds 128"),
             Self::DimensionLimitExceeded => formatter.write_str("dimension limit exceeded"),
+            Self::PreferenceDimensionLimitExceeded => {
+                formatter.write_str("preference dimension must be in the closed interval [1, 64]")
+            }
             Self::RequiredOrganLimitExceeded => {
                 formatter.write_str("required organ set exceeds 32 entries")
             }
@@ -169,6 +188,9 @@ impl fmt::Display for NduError {
                 formatter.write_str("eta must be in the closed interval [1/16, 1/4]")
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
+            Self::PreferenceValueOutOfRange(axis) => {
+                write!(formatter, "preference value must be in [-1,1]: {axis}")
+            }
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
             Self::IterationExhausted {
                 iterations,
