@@ -2,12 +2,12 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "66a95f3f5af8ac46f36e57654a4b337096fc025f",
+    "tree": "a8253c5c8b912acc3f58427d5a2b10db1e3caef5"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
-  "sourceMaturity": "durable_native_app_server_profile_and_local_driver_component",
+  "sourceMaturity": "durable_hosted_reconciliation_and_digest_pinned_local_process_driver",
   "declaredRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
@@ -15,7 +15,7 @@
     "codex-rs/hepta-infer-worker-host"
   ],
   "stateOwnerDisposition": "Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.",
+  "terminalObserverDisposition": "The hosted native-app-server profile observes and reconciles the exact persisted provider turn without replacement dispatch. The local process driver observes the exact digest-pinned runtime protocol; physical CPU/GPU and OS/device isolation remain target-host qualification evidence.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -34,7 +34,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Validates supplied manifest and resource-grant bindings before invoking the injected driver; physical artifact/device loading remains that driver owner's responsibility.",
+      "sourceSemantics": "Consumes a fresh single-use VerifiedResourceGrant at the exact admitted time, validates the model manifest and resource bounds, then loads through the concrete digest-pinned LocalProcessDriver under the caller deadline and local operation cap.",
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -77,7 +77,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again.",
+      "sourceSemantics": "Reserves through durable inference.control, persists exact provider/thread/client-message/payload identity before dispatch, invokes the owning Agent/App Server once, and on reopen reconciles only the original persisted turn; local driver exchange timeout is indeterminate after execution may have begun.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -100,7 +100,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Drains and unloads only the exact admitted generation and releases acquired resources.",
+      "sourceSemantics": "Consumes fresh current grant evidence, drains the exact admitted generation, performs bounded exact-handle unload through the local process driver, and kills/waits the child when protocol cleanup becomes uncertain.",
       "operation": "unload",
       "nativeSymbol": "pub fn unload_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -108,13 +108,13 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.",
-    "Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss."
+    "Compose and exercise the named production caller that supplies current authoritative resource/final-use verification and drives the worker through the deployed Agentd/runtime path; the current NativeWorkerPort and local driver are source seams, not deployed product composition."
   ],
   "externalEvidenceGates": [
-    "identified real weights/tokenizer/runtime/device",
-    "isolated deployed worker process and authenticated control channel",
-    "OOM/device-reset/load-kill target qualification"
+    "identified real weights/tokenizer/runtime/device on the selected target CPU/GPU",
+    "isolated deployed worker process with required cgroup/namespace/seccomp/LSM/device enforcement and authenticated control channel",
+    "target-host OOM/device-reset/hang/leak/cancellation qualification and exact-candidate receipts",
+    "independent activation, acceptance, canary, promotion and release evidence"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,

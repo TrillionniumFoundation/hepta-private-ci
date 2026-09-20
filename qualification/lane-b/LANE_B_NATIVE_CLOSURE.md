@@ -118,7 +118,7 @@ External evidence gates:
 
 Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.
 
-The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.
+The hosted native-app-server profile observes and reconciles the exact persisted provider turn without replacement dispatch. The local process driver observes the exact digest-pinned runtime protocol; physical CPU/GPU and OS/device isolation remain target-host qualification evidence.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -128,14 +128,14 @@ The hosted native-app-server profile observes real matching turn events; the loc
 
 Remaining repository implementation gaps:
 
-- Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.
-- Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss.
+- Compose and exercise the named production caller that supplies current authoritative resource/final-use verification and drives the worker through the deployed Agentd/runtime path; the current NativeWorkerPort and local driver are source seams, not deployed product composition.
 
 External evidence gates:
 
-- identified real weights/tokenizer/runtime/device
-- isolated deployed worker process and authenticated control channel
-- OOM/device-reset/load-kill target qualification
+- identified real weights/tokenizer/runtime/device on the selected target CPU/GPU
+- isolated deployed worker process with required cgroup/namespace/seccomp/LSM/device enforcement and authenticated control channel
+- target-host OOM/device-reset/hang/leak/cancellation qualification and exact-candidate receipts
+- independent activation, acceptance, canary, promotion and release evidence
 
 ## 8. `automation.taskflow`
 
