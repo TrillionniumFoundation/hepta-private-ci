@@ -154,7 +154,7 @@ async fn dynamic_issue_persists_metadata_and_only_delivers_secret_to_callback() 
             &signed,
             &request,
             &receipt_key,
-            |bytes| {
+            |_lease, bytes| {
                 let text = std::str::from_utf8(bytes).unwrap();
                 assert!(text.contains(DYNAMIC_SECRET));
                 assert!(text.contains("dynamic-user"));
@@ -208,7 +208,7 @@ async fn issue_timeout_is_durable_indeterminate_and_never_blind_retries() {
                 &signed,
                 &request,
                 &receipt_key,
-                |_| panic!("timed-out issuance must not deliver"),
+                |_, _| panic!("timed-out issuance must not deliver"),
             )
             .await,
         Err(BaoLeaseError::TimedOut)
@@ -231,7 +231,7 @@ async fn issue_timeout_is_durable_indeterminate_and_never_blind_retries() {
                 &signed,
                 &request,
                 &receipt_key,
-                |_| Ok(()),
+                |_, _| Ok(()),
             )
             .await,
         Err(BaoLeaseError::OperationIndeterminate)
