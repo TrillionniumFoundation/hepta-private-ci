@@ -1878,6 +1878,26 @@ fn recovery_rejects_terminal_selection_without_matching_durable_release()
 }
 
 #[test]
+fn production_revocation_frontier_is_monotone() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let (mut supervisor, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    supervisor.set_production_revocation_frontier(7)?;
+    supervisor.set_production_revocation_frontier(8)?;
+    assert!(matches!(
+        supervisor.set_production_revocation_frontier(7),
+        Err(SupervisorError::ProductionAuthority(message))
+            if message.contains("cannot move backwards")
+    ));
+    Ok(())
+}
+
+#[test]
 fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_bytes()
 -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
