@@ -1385,11 +1385,44 @@ mod tests {
     struct Harness {
         port: Arc<BrowserServoPort<ChannelTransport>>,
         authority: FinalUseAuthority,
+        revocation_feed: BrowserRevocationFeed,
+        revocation_feed_path: PathBuf,
         outbound: mpsc::Receiver<Vec<u8>>,
         inbound: mpsc::Sender<Vec<u8>>,
         invocation: BrowserFinalUseInvocation,
         request_digest: [u8; 32],
         _state: tempfile::TempDir,
+    }
+
+    fn write_revocation_feed(path: &Path, head: &FinalUseRevocations) {
+        let temporary = path.with_extension("next");
+        let bytes = serde_json::to_vec(&json!({
+            "schema": "hepta.browser.revocation-feed.v1",
+            "version": 1,
+            "authority_epoch": head.authority_epoch,
+            "revision": head.revision,
+            "revoked_grant_ids": head.revoked_grant_ids,
+        }))
+        .expect("revocation feed JSON");
+        fs::write(&temporary, bytes).expect("write revocation feed");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&temporary, fs::Permissions::from_mode(0o600))
+                .expect("secure revocation feed");
+        }
+        fs::rename(temporary, path).expect("publish revocation feed");
+    }
+
+    fn wait_for_feed_revision(feed: &BrowserRevocationFeed, revision: u64) {
+        let deadline = std::time::Instant::now() + Duration::from_secs(2);
+        while std::time::Instant::now() < deadline {
+            if feed.applied_revision().expect("feed revision") == revision {
+                return;
+            }
+            thread::sleep(Duration::from_millis(10));
+        }
+        panic!("Browser revocation feed did not reach revision {revision}");
     }
 
     fn private_authority_tempdir() -> tempfile::TempDir {
@@ -1420,17 +1453,26 @@ mod tests {
     ) -> Harness {
         let state = private_authority_tempdir();
         let signing = SigningKey::from_bytes(&[7u8; 32]);
+        let bootstrap_revocations = FinalUseRevocations {
+            authority_epoch: 7,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        };
         let authority = FinalUseAuthority::open_state_dir(
             state.path(),
             "browser-test-issuer".to_string(),
             signing.verifying_key().to_bytes(),
-            FinalUseRevocations {
-                authority_epoch: 7,
-                revision: 1,
-                revoked_grant_ids: BTreeSet::new(),
-            },
+            bootstrap_revocations.clone(),
         )
         .expect("authority");
+        let revocation_feed_path = state.path().join("browser-revocations.json");
+        write_revocation_feed(&revocation_feed_path, &bootstrap_revocations);
+        let revocation_feed = BrowserRevocationFeed::start(
+            authority.clone(),
+            revocation_feed_path.clone(),
+            bootstrap_revocations,
+        )
+        .expect("live revocation feed");
         let request_digest = [0x11; 32];
         let binding = FinalUseBinding {
             subject_id: "principal.1".to_string(),
@@ -1479,6 +1521,8 @@ mod tests {
         Harness {
             port,
             authority,
+            revocation_feed,
+            revocation_feed_path,
             outbound,
             inbound,
             invocation,
@@ -1556,20 +1600,23 @@ mod tests {
             .expect("witness")
             .to_string();
 
-        let authority = harness.authority.clone();
-        let (revoked_tx, revoked_rx) = mpsc::channel();
-        let revoke = thread::spawn(move || {
-            let result = authority.update_revocations(FinalUseRevocations {
+        write_revocation_feed(
+            &harness.revocation_feed_path,
+            &FinalUseRevocations {
                 authority_epoch: 7,
                 revision: 2,
                 revoked_grant_ids: BTreeSet::from(["browser-grant.1".to_string()]),
-            });
-            revoked_tx.send(result).expect("revocation result");
-        });
-        assert!(matches!(
-            revoked_rx.recv_timeout(Duration::from_millis(50)),
-            Err(mpsc::RecvTimeoutError::Timeout)
-        ));
+            },
+        );
+        thread::sleep(Duration::from_millis(75));
+        assert_eq!(
+            harness
+                .revocation_feed
+                .applied_revision()
+                .expect("feed revision while fenced"),
+            1,
+            "live revocation feed must block behind the final-use fence",
+        );
 
         harness
             .inbound
@@ -1599,11 +1646,7 @@ mod tests {
 
         let result = call.join().expect("call thread").expect("Browser result");
         assert_eq!(result["status"], "indeterminate");
-        revoked_rx
-            .recv_timeout(Duration::from_secs(1))
-            .expect("revocation unblocked")
-            .expect("revocation succeeded");
-        revoke.join().expect("revocation thread");
+        wait_for_feed_revision(&harness.revocation_feed, 2);
     }
 
     #[test]
