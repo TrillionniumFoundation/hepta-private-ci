@@ -928,6 +928,24 @@
           "maxBytes": 32768
         },
         {
+          "name": "evidenceRequirements",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "allowedActionClasses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "forbiddenActionClasses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
           "name": "softUtilityDimensions",
           "type": "bounded_array",
           "required": true,
@@ -954,7 +972,10 @@
         "bounded_lengths",
         "canonical_field_order",
         "digest_before_authority_use",
-        "unknown_critical_fields_rejected"
+        "unknown_critical_fields_rejected",
+        "native_semantic_digest_distinct_from_protocol_wire_digest",
+        "protocol_wire_roundtrip_is_canonical",
+        "durable_run_start_binds_native_and_protocol_identities"
       ]
     },
     {

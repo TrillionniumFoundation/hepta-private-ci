@@ -47,11 +47,12 @@
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "workflow_enforced_per_candidate_current_receipt_required",
+          "state": "pending_final_canonical_checkout_workflow_success",
           "evidence": [
             ".github/workflows/hepta-objective-admission.yml",
             ".github/workflows/hepta-lane-d-semantic-conformance.yml",
-            "scripts/hepta-implementation-maps.py verify --expected-sha <candidate>"
+            "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json::exactSourceCandidate",
+            "scripts/hepta-implementation-maps.py verify --expected-sha <checkout> --expected-tree <checkout-tree>"
           ]
         },
         "productCaller": {
@@ -109,6 +110,24 @@
             "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
             "measurement_ordinary_admission_compile_v1",
             "measurement_conflict_extraction_v1"
+          ]
+        },
+        "canonicalObjectiveFunctionV1Projection": {
+          "state": "source_implemented_durable_bound_not_activated",
+          "evidence": [
+            "codex-rs/hepta-objective/src/objective_function_v1.rs::encode_objective_function_v1",
+            "codex-rs/hepta-intelligence/src/objective_run.rs::compile_and_publish_objective_run_v1",
+            "codex-rs/hepta-learning-ledger/src/run_start.rs::RunStartRecordV1"
+          ]
+        },
+        "durableFaultMatrix": {
+          "state": "source_implemented_requires_target_host_qualification",
+          "evidence": [
+            "incomplete_unacknowledged_tail_recovers_to_last_synced_frame",
+            "committed_record_reopens_and_ack_loss_retry_is_idempotent",
+            "semantic_or_protocol_drift_after_reopen_conflicts",
+            "generation_and_fence_drift_fail_closed_before_runtime_admission",
+            "durable_authentication_frontier_allows_only_exact_replay"
           ]
         }
       }

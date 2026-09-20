@@ -20,8 +20,27 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
+    """Return the exact checked-out repository identity.
+
+    This is a qualification identity. A tracked map cannot contain the SHA of
+    the same commit that contains it without a Git hash self-reference.
+    """
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+
+
+def exact_source_candidate(roots: list[str]) -> dict[str, object]:
+    """Return the newest commit/tree that changed the declared source roots."""
+    if not roots:
+        raise ValueError("exact source candidate requires at least one source root")
+    commit = git("log", "-1", "--format=%H", "--", *roots)
+    if not commit:
+        raise ValueError(f"no Git history for declared roots: {roots!r}")
+    return {
+        "commit": commit,
+        "tree": git("rev-parse", f"{commit}^{{tree}}"),
+        "roots": roots,
+        "role": "module_source_identity",
+    }
 
 
 def load(rel: str):
@@ -92,6 +111,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schemaVersion": 3,
         "sourceBase": source_base,
         "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+        "exactSourceCandidate": exact_source_candidate(roots),
         "exactHeadQualificationPolicy": {
             "state": "external_exact_candidate_receipt_required",
             "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <candidate>",
@@ -352,6 +372,17 @@ def verify(expected_sha: str | None = None, expected_tree: str | None = None):
             declared = [declared]
         if declared != roots:
             failures.append(f"{mid}: declared roots")
+        exact_source = row.get("exactSourceCandidate")
+        if exact_source is not None:
+            try:
+                expected_exact_source = exact_source_candidate(roots)
+                if exact_source != expected_exact_source:
+                    failures.append(
+                        f"{mid}: stale exact source candidate {exact_source!r}; "
+                        f"expected {expected_exact_source!r}"
+                    )
+            except (ValueError, subprocess.CalledProcessError) as exc:
+                failures.append(f"{mid}: exact source candidate: {exc}")
         try:
             if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
                 failures.append(f"{mid}: resolved source roots")
@@ -374,6 +405,10 @@ def verify(expected_sha: str | None = None, expected_tree: str | None = None):
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        elif boundary.get("productSourceComposition") and exact_source is None:
+            failures.append(
+                f"{mid}: composed product source requires exactSourceCandidate"
+            )
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
@@ -387,8 +422,9 @@ def verify(expected_sha: str | None = None, expected_tree: str | None = None):
                 "productionImplementationProved": False,
                 "mappingSourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
                 "mappingBaselines": sorted(source_bases),
-                "currentSourceBase": current,
+                "currentCheckoutIdentity": current,
                 "exactCandidateVerified": expected_sha is not None,
+                "moduleExactSourceCandidatesVerified": True,
             },
             sort_keys=True,
         )

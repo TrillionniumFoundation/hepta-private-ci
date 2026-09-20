@@ -184,6 +184,40 @@
       "sourcePathExists": true,
       "publicCompatibilityEntrypoint": "compile_prevalidated_legacy_objective_v1",
       "publicCompatibilityFeature": "qualification-legacy-compile"
+    },
+    {
+      "operation": "encode_objective_function_v1",
+      "nativeSymbol": "codex_hepta_objective::encode_objective_function_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "inputs": [
+        "ObjectiveCompileReceipt",
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveAdmissionProfileV1",
+        "ObjectiveAdmissionReceiptV1"
+      ],
+      "outputs": [
+        "canonical ObjectiveFunctionV1 bytes",
+        "ObjectiveFunctionV1 protocol digest",
+        "native semantic digest binding"
+      ],
+      "state": "source_implemented_product_publication_bound",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+          "symbol": "authenticated_objective_is_durable_before_product_receipt_returns"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+          "symbol": "objective_protocol_digest_mismatch_rejects_before_io"
+        }
+      ],
+      "designOperation": "encode_objective_function_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "decode_objective_function_v1"
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -225,7 +259,7 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for the canonical candidate.",
+    "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
     "Run the named target-host objective measurement harness and qualify Agentd crash/restart/backpressure behavior on the selected deployment host."
   ],
   "externalEvidenceGates": [
@@ -236,7 +270,8 @@
   "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
   "exactHeadQualificationPolicy": {
     "state": "external_exact_candidate_receipt_required",
-    "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <candidate>",
+    "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <checkout> --expected-tree <checkout-tree>",
+    "moduleSourceRule": "exactSourceCandidate equals the newest Git commit/tree touching every declared source root",
     "workflows": [
       ".github/workflows/hepta-objective-admission.yml",
       ".github/workflows/hepta-lane-d-semantic-conformance.yml"
@@ -246,17 +281,29 @@
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
       "symbol": "ObjectiveRuntimeHost::submit",
-      "semantics": "signed AuthBus message -> current trust authentication -> owner-local admission context -> durable publication -> current-trust revalidation -> generation/fence-bound runtime admission"
+      "semantics": "signed AuthBus -> current trust authentication -> admission -> durable publication -> current-trust revalidation -> generation/fence-bound runtime admission"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
       "symbol": "compile_and_publish_objective_run_v1",
-      "semantics": "opaque objective admission -> compile -> destination-owned atomic run-start journal append before runtime consumption"
+      "semantics": "opaque admission -> compile -> canonical ObjectiveFunctionV1 projection -> destination-owned run-start append before runtime consumption"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
       "symbol": "DurableRunStartJournal",
-      "semantics": "locked bounded append-only objective/run-start publication with exact replay, semantic conflict and recovery semantics"
+      "semantics": "v2 record binds native semantic bytes/digest plus canonical ObjectiveFunctionV1 bytes/digest; legacy v1 is read-compatible but rejected at Agentd final use"
     }
+  ],
+  "exactSourceCandidate": {
+    "commit": "80cad3fab745de9cadcf8accb7e898beb55aff07",
+    "tree": "d2205617851eae03223ee0d53df8dc3ad3cdf130",
+    "roots": [
+      "codex-rs/hepta-objective"
+    ],
+    "role": "module_source_identity"
+  },
+  "canonicalProtocolContracts": [
+    "ObjectiveFunctionV1",
+    "RunStartSnapshotV1"
   ]
 }
