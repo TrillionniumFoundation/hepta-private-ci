@@ -24,12 +24,15 @@ from .path_policy import (
     path_is_within as path_is_within,
 )
 
-STORE_SCHEMA_VERSION = 6
+STORE_SCHEMA_VERSION = 7
 STORE_TABLES = frozenset(
     {
         "work_envelopes",
         "path_leases",
         "assignment_generations",
+        "orchestration_generations",
+        "worker_registrations",
+        "worker_claims",
         "distributed_cluster_frontiers",
         "distributed_fence_frontiers",
         "integration_decisions",

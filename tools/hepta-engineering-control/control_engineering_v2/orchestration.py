@@ -606,36 +606,35 @@ def plan_engineering_work(
         from .hardening import bind_assignment_frontier
 
         bind_assignment_frontier(store, persisted, generation_id, now)
-        generation_digest = semantic_digest(
-            {
-                "profile": "resource-aware-engineering-v1",
-                "envelopeId": envelope.envelope_id,
-                "packages": sorted(
-                    normalized_package_rows,
-                    key=lambda row: row["package_id"],
-                ),
-                "workers": sorted(
-                    normalized_worker_rows,
-                    key=lambda row: row["worker_id"],
-                ),
-                "capacity": {
-                    "ciUnits": capacity.ci_units,
-                    "review": [
-                        asdict(row)
-                        for row in sorted(
-                            capacity.review,
-                            key=lambda row: row.role,
-                        )
-                    ],
-                },
-                "completionFrontierDigest": completion_frontier_digest,
-                "assigned": assigned,
-                "blocked": blocked_rows,
-                "assignments": [asdict(row) for row in assignments],
-                "integrationOrder": integration_order,
-                "mergeQueue": [asdict(row) for row in merge_queue],
-            }
-        )
+        plan_record = {
+            "profile": "resource-aware-engineering-v1",
+            "envelopeId": envelope.envelope_id,
+            "packages": sorted(
+                normalized_package_rows,
+                key=lambda row: row["package_id"],
+            ),
+            "workers": sorted(
+                normalized_worker_rows,
+                key=lambda row: row["worker_id"],
+            ),
+            "capacity": {
+                "ciUnits": capacity.ci_units,
+                "review": [
+                    asdict(row)
+                    for row in sorted(
+                        capacity.review,
+                        key=lambda row: row.role,
+                    )
+                ],
+            },
+            "completionFrontierDigest": completion_frontier_digest,
+            "assigned": assigned,
+            "blocked": blocked_rows,
+            "assignments": [asdict(row) for row in assignments],
+            "integrationOrder": integration_order,
+            "mergeQueue": [asdict(row) for row in merge_queue],
+        }
+        generation_digest = semantic_digest(plan_record)
         existing = store.connection.execute(
             "SELECT semantic_digest,assigned_json,blocked_json,created_unix_ns "
             "FROM assignment_generations WHERE generation_id=?",
@@ -677,6 +676,35 @@ def plan_engineering_work(
                     "envelopeId": envelope.envelope_id,
                     "semanticDigest": generation_digest,
                     "profile": "resource-aware-engineering-v1",
+                },
+                now,
+            )
+        existing_plan = store.connection.execute(
+            "SELECT semantic_digest,plan_json FROM orchestration_generations "
+            "WHERE generation_id=?",
+            (generation_id,),
+        ).fetchone()
+        if existing_plan is not None:
+            if (
+                str(existing_plan["semantic_digest"]) != generation_digest
+                or bytes(existing_plan["plan_json"]) != canonical_json(plan_record)
+            ):
+                raise EngineeringError("orchestration_generation_conflict")
+        else:
+            store.connection.execute(
+                "INSERT INTO orchestration_generations VALUES(?,?,?,?)",
+                (
+                    generation_id,
+                    generation_digest,
+                    canonical_json(plan_record),
+                    now,
+                ),
+            )
+            store._append_audit(
+                "orchestration_generation_published",
+                {
+                    "generationId": generation_id,
+                    "semanticDigest": generation_digest,
                 },
                 now,
             )

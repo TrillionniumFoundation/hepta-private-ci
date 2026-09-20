@@ -1,4 +1,4 @@
--- Canonical engineering owner schema, version 6. Applied in one transaction.
+-- Canonical engineering owner schema, version 7. Applied in one transaction.
 
 CREATE TABLE IF NOT EXISTS work_envelopes(
   envelope_id TEXT PRIMARY KEY,
@@ -38,6 +38,59 @@ CREATE TABLE IF NOT EXISTS assignment_generations(
   blocked_json BLOB NOT NULL,
   created_unix_ns INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS orchestration_generations(
+  generation_id TEXT PRIMARY KEY,
+  semantic_digest TEXT NOT NULL,
+  plan_json BLOB NOT NULL,
+  created_unix_ns INTEGER NOT NULL,
+  FOREIGN KEY(generation_id)
+    REFERENCES assignment_generations(generation_id)
+    DEFERRABLE INITIALLY DEFERRED
+);
+
+CREATE TABLE IF NOT EXISTS worker_registrations(
+  worker_id TEXT PRIMARY KEY,
+  profile_digest TEXT NOT NULL,
+  worker_signing_identity TEXT NOT NULL,
+  skills_json BLOB NOT NULL,
+  allowed_paths_json BLOB NOT NULL,
+  capacity_units INTEGER NOT NULL CHECK(capacity_units BETWEEN 1 AND 1000000),
+  issuer TEXT NOT NULL,
+  authority_signing_identity TEXT NOT NULL,
+  observed_unix_ns INTEGER NOT NULL,
+  expires_unix_ns INTEGER NOT NULL,
+  state TEXT NOT NULL CHECK(state IN ('active','revoked')),
+  revision INTEGER NOT NULL CHECK(revision >= 1),
+  last_heartbeat_unix_ns INTEGER,
+  recorded_unix_ns INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS worker_claims(
+  claim_id TEXT PRIMARY KEY,
+  generation_id TEXT NOT NULL REFERENCES orchestration_generations(generation_id),
+  package_id TEXT NOT NULL,
+  worker_id TEXT NOT NULL REFERENCES worker_registrations(worker_id),
+  lease_id TEXT NOT NULL REFERENCES path_leases(lease_id),
+  attempt INTEGER NOT NULL CHECK(attempt BETWEEN 1 AND 3),
+  state TEXT NOT NULL CHECK(state IN (
+    'claimed','running','result_submitted','retryable','failed','completed_observed'
+  )),
+  claim_fence INTEGER NOT NULL UNIQUE CHECK(claim_fence >= 1),
+  revision INTEGER NOT NULL CHECK(revision >= 1),
+  claimed_unix_ns INTEGER NOT NULL,
+  last_heartbeat_unix_ns INTEGER NOT NULL,
+  heartbeat_deadline_unix_ns INTEGER NOT NULL,
+  result_digest TEXT,
+  failure_class TEXT,
+  semantic_digest TEXT NOT NULL,
+  updated_unix_ns INTEGER NOT NULL,
+  UNIQUE(generation_id, package_id, attempt)
+);
+CREATE INDEX IF NOT EXISTS idx_worker_claims_assignment
+  ON worker_claims(generation_id, package_id, state, attempt);
+CREATE INDEX IF NOT EXISTS idx_worker_claims_worker
+  ON worker_claims(worker_id, state, heartbeat_deadline_unix_ns);
 CREATE TABLE IF NOT EXISTS distributed_cluster_frontiers(
   cluster_id TEXT PRIMARY KEY,
   leader_id TEXT NOT NULL,
