@@ -288,13 +288,11 @@ impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
                     "final-use-capability-snapshot",
                 )
             })?;
-            self.frozen_snapshot.revalidate_current(&current).map_err(|_| {
-                agentd_handoff_failure(
-                    input,
-                    envelope,
-                    "stale-final-use-capability-snapshot",
-                )
-            })?;
+            self.frozen_snapshot
+                .revalidate_current(&current)
+                .map_err(|_| {
+                    agentd_handoff_failure(input, envelope, "stale-final-use-capability-snapshot")
+                })?;
         }
 
         let proposal = self.inner.accept_host_envelope(input, envelope)?;
@@ -359,12 +357,7 @@ fn agentd_handoff_failure(
     envelope: &IntelligenceHostEnvelopeV1,
     reason: &str,
 ) -> PortFailureV3 {
-    agentd_handoff_failure_with_class(
-        input,
-        envelope,
-        PortFailureClassV3::Rejected,
-        reason,
-    )
+    agentd_handoff_failure_with_class(input, envelope, PortFailureClassV3::Rejected, reason)
 }
 
 fn agentd_handoff_failure_with_class(
@@ -431,9 +424,7 @@ impl AgentRunCoordinator {
         if !self.accepting_runs {
             return Err(AgentRunError::AdmissionClosed);
         }
-        if self.active_run_count() >= self.max_active_runs
-            || self.runs.len() >= MAX_RETAINED_RUNS
-        {
+        if self.active_run_count() >= self.max_active_runs || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
         }
         let record = RunRecord {
