@@ -8,7 +8,7 @@ Status: durable Browser effect owner, current-pin Servo worker source, bounded s
 Roots: `apps/hepta-browser`, `third_party/servo-patches`.
 Package: `BROWSER-WEB-C1`.
 Current Servo pin: `b5a1f5e6ec6f8685d40cd389802ced7abe4980f6` (candidate; generated dependency lock pending review/commit).
-Exact mapped source snapshot: `b5a022dbe7c69e5b2063429cd4dec52ccd9ca7a6` / tree `0a8d46bc0895d4bd581ae5aed5ef2dfa5f5a63d3`; later map/verifier/document-only successors are accepted only when strict source-drift verification remains clean.
+Exact mapped source snapshot: `f1c54a5238409d6c078ab0315f77c1ec246baff3` / tree `161556cc80bbe9ab82aba8baa1b5aad4c785bae4`; later map/verifier/document-only successors are accepted only when strict source-drift verification remains clean.
 
 Cross-owner Agentd composition is source-present in `codex-rs/hepta-agentd` and remains owned/reviewed by `runtime.agentd`. The long-running Agentd process can retain the private Browser port for its generation; Browser ownership is not widened by the caller.
 
@@ -101,7 +101,7 @@ The current worker is one Servo / one WebView per profile generation. The pilot 
 - **BROWSER-11:** a post-process-loss terminal result is accepted only with the configured observer's valid Ed25519 v2 receipt and current generation/time/frontier policy; observer substitution, rollback/stale frontier, excessive future time, outcome/signature drift and semantic substitution reject.
 - **BROWSER-12:** the operation journal stores `terminalEvidenceDigest` for authenticated recovered terminality while ordinary live-worker terminal observations may leave it null.
 - **BROWSER-15:** `expiresAtMs` is a process/network lease; real Servo background fetch and delayed navigation stop after expiry. The existing owner `close_profile` RPC is the early profile-lease revocation ceremony and must provide the same containment.
-- **BROWSER-16:** trusted Linux target qualification establishes real public DNS resolution plus certificate-validating HTTPS through the production egress broker and denies an ungranted public CONNECT target.
+- **BROWSER-16:** trusted Linux target qualification establishes real public DNS resolution plus certificate-validating HTTPS through the actual Bubblewrap-isolated Servo worker, private relay and production egress broker; the observed page must remain on the granted public origin, and both an ungranted public CONNECT target and profile-scope escape must fail closed.
 
 ## 10. Qualification gates and remaining evidence
 
