@@ -166,7 +166,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#8-current-native-implementation) identifies the actual state owner, persistent surfaces and lock/transaction boundary. Product composition uses `LedgerWriter`; it consumes either `DurableLedger` or `SegmentedLedger`, one `ActivatedLearningTrustV1`, a separately durable `LedgerWitnessStore`, and host-authorized handles for the actual containing directories. Construction synchronizes the ledger/witness directory entries before the writer can acknowledge facts. The writer owns the backend handle while composed, so the same caller cannot bypass authenticated V2 admission through a raw append surface.
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#10-current-native-implementation) identifies the actual state owner, persistent surfaces and lock/transaction boundary. Product composition uses `LedgerWriter`; it consumes either `DurableLedger` or `SegmentedLedger`, one `ActivatedLearningTrustV1`, a separately durable `LedgerWitnessStore`, and host-authorized handles for the actual containing directories. Construction synchronizes the ledger/witness directory entries before the writer can acknowledge facts. The writer owns the backend handle while composed, so the same caller cannot bypass authenticated V2 admission through a raw append surface.
 
 One append transaction prepares and validates the full semantic event, compares the exact predecessor, writes one canonical frame, syncs the ledger, publishes the in-memory state, then advances and syncs the independent witness before returning success. Atomic conserved credit is one `CreditBatchV2` event. Outcome correction accepts only the current same-episode predecessor head, so a fork, stale branch or cycle cannot commit. Segment rotation runs through `LedgerWriter::rotate_segment`, synchronizes the host-supplied successor directory handle, and only then witnesses the new topology before reporting success.
 
@@ -176,7 +176,7 @@ Legacy `LearningLedger`, `DurableLedger`, `SegmentedLedger` and `DurableLearning
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md).
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#10-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md).
 
 Semantic rejection writes no bytes. Ledger I/O uncertainty poisons the backend. If the ledger frame is durable but independent witness persistence is uncertain, `LedgerWriter` returns `IndeterminateAfterLedgerCommit`; reconciliation reuses the original identity, predecessor and digest. A failed anchored recovery never falls back to an unanchored open. A verified rebuildable index may accelerate lookup, but mismatch discards the index and falls back to canonical replay.
 
