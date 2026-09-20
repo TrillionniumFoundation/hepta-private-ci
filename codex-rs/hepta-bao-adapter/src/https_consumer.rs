@@ -239,7 +239,7 @@ impl BaoClient {
         request: &BaoReadRequest,
         evidence: &mut E,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
-    ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
+    ) -> Result<Option<BaoSecretReceipt>, BaoAuthBusError> {
         if admission.policy_revision == 0
             || admission.expected_quota_revision == 0
             || admission.amount == 0
@@ -314,7 +314,8 @@ impl BaoClient {
                     terminal,
                     Some(receipt),
                 )
-                .await
+                .await?
+                .ok_or(BaoAuthBusError::Evidence("successful settlement lost its receipt"))
             }
             Err(error) if ambiguous_after_dispatch(error) => {
                 let time = authbus
@@ -344,7 +345,7 @@ impl BaoClient {
                 let terminal = Digest32::of_bytes(
                     format!("hepta.bao.terminal.v3:{error:?}").as_bytes(),
                 );
-                let settled = settle_observed(
+                match settle_observed(
                     authbus,
                     evidence,
                     &dispatched,
@@ -353,9 +354,12 @@ impl BaoClient {
                     terminal,
                     None,
                 )
-                .await;
-                match settled {
-                    Ok(_) => Err(BaoAuthBusError::Provider(error)),
+                .await
+                {
+                    Ok(None) => Err(BaoAuthBusError::Provider(error)),
+                    Ok(Some(_)) => Err(BaoAuthBusError::Evidence(
+                        "terminal provider failure unexpectedly produced a receipt",
+                    )),
                     Err(pending) => Err(pending),
                 }
             }
@@ -529,9 +533,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
             control_error: error.to_string(),
         });
     }
-    receipt.ok_or(BaoAuthBusError::Evidence(
-        "terminal provider failure has no success receipt",
-    ))
+    Ok(receipt)
 }
 
 fn ambiguous_after_dispatch(error: BaoClientError) -> bool {
