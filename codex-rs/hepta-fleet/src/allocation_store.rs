@@ -69,9 +69,18 @@ impl FleetAllocationSnapshot {
     }
 }
 
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum PublicationFaultPoint {
+    AfterStagingSync,
+    AfterPublishBeforeDirectorySync,
+}
+
 #[derive(Clone, Debug)]
 pub struct FleetAllocationStore {
     root: PathBuf,
+    #[cfg(test)]
+    publication_fault: Option<PublicationFaultPoint>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -93,7 +102,11 @@ impl FleetAllocationStore {
             }
             Err(error) => return Err(error.into()),
         }
-        let store = Self { root };
+        let store = Self {
+            root,
+            #[cfg(test)]
+            publication_fault: None,
+        };
         if store.snapshot_generations()?.is_empty() {
             store.publish_initial()?;
         }
@@ -248,6 +261,13 @@ impl FleetAllocationStore {
             STAGING_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
         write_new_file(&temp_path, &bytes)?;
+        #[cfg(test)]
+        if self.publication_fault == Some(PublicationFaultPoint::AfterStagingSync) {
+            return Err(FleetAllocationStoreError::Io(std::io::Error::new(
+                ErrorKind::Interrupted,
+                "injected crash after staging sync",
+            )));
+        }
         match std::fs::hard_link(&temp_path, &final_path) {
             Ok(()) => {}
             Err(error) if error.kind() == ErrorKind::AlreadyExists => {
@@ -263,6 +283,18 @@ impl FleetAllocationStore {
             }
         }
         let _ = std::fs::remove_file(temp_path);
+        #[cfg(test)]
+        if self.publication_fault
+            == Some(PublicationFaultPoint::AfterPublishBeforeDirectorySync)
+        {
+            return Err(FleetAllocationStoreError::PublicationIndeterminate {
+                generation,
+                source: std::io::Error::new(
+                    ErrorKind::Interrupted,
+                    "injected crash after publish before directory sync",
+                ),
+            });
+        }
         if let Err(source) = sync_directory_io(&self.root) {
             return Err(FleetAllocationStoreError::PublicationIndeterminate {
                 generation,
@@ -270,6 +302,12 @@ impl FleetAllocationStore {
             });
         }
         Ok(())
+    }
+
+    #[cfg(test)]
+    fn with_publication_fault(mut self, fault: PublicationFaultPoint) -> Self {
+        self.publication_fault = Some(fault);
+        self
     }
 
     fn snapshot_generations(&self) -> Result<Vec<u64>, FleetAllocationStoreError> {
