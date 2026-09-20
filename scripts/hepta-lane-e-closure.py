@@ -29,7 +29,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 5)),
-    *(f"OP-{index:02d}" for index in range(1, 6)),
+    *(f"OP-{index:02d}" for index in range(1, 8)),
     *(f"EVAL-{index:02d}" for index in range(1, 5)),
     *(f"ART-{index:02d}" for index in range(1, 5)),
 }
@@ -58,6 +58,11 @@ EXPECTED_OPERATIONS = {
         "admit_operator_regularity",
         "fit_tabular_operator",
         "fit_tabular_operator_strict_v2",
+        "verify_operator_dataset_v2",
+        "fit_tabular_operator_bound_v2",
+        "fit_transition_model_bound_v2",
+        "admit_signed_operator_applicability_v2",
+        "admit_signed_operator_regularity_v2",
         "encode_tabular_payload_v1",
         "load_pinned_tabular_operator",
         "fit_transition_model",
