@@ -28,6 +28,42 @@ const MAX_SIGNAL_VALUES: usize = 4_096;
 const MAX_ACTIVE_INDICES: usize = 512;
 const PPM: u32 = 1_000_000;
 const Q24_LIMIT: i64 = 8 * (1 << 24);
+const Q24_ONE: i64 = 1 << 24;
+const ELIGIBILITY_L1_Q24: i64 = 4 * Q24_ONE;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuronRuntimeConfigProtocolV1 {
+    pub config_id: StableId,
+    pub generation: Generation,
+    pub encoder_digest: Digest32,
+    pub head_digest: Digest32,
+    pub temporal_state_dimension: u32,
+    pub activation_dimension: u32,
+    pub modulator_dimension: u32,
+    pub inhibition_edges: u32,
+    pub state_minimum_q24: i64,
+    pub state_maximum_q24: i64,
+    pub checked_wide_intermediates: bool,
+    pub top_k_minimum_ratio_ppm: u32,
+    pub top_k_maximum_ratio_ppm: u32,
+    pub per_population_first: bool,
+    pub inhibition_digest: Digest32,
+    pub moving_average_alpha_q24: i64,
+    pub threshold_step_q24: i64,
+    pub threshold_minimum_q24: i64,
+    pub threshold_maximum_q24: i64,
+    pub saturation_limit: u32,
+    pub eligibility_trace_dimension: u32,
+    pub eligibility_maximum_norm_q24: i64,
+    pub eligibility_decay_q24: i64,
+    pub eligibility_rule_digest: Digest32,
+    pub p95_latency_micros: u64,
+    pub p99_latency_micros: u64,
+    pub transient_allocation_bytes: u64,
+    pub checkpoint_bytes: u64,
+    pub write_amplification_ppm: u32,
+    pub expiry_utc: String,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronActivationSummaryV1 {
@@ -90,6 +126,80 @@ impl fmt::Display for NeuronProtocolError {
 }
 
 impl StdError for NeuronProtocolError {}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct StateDimensionsDto {
+    temporal_state: u32,
+    activation: u32,
+    modulators: u32,
+    inhibition_edges: u32,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct FixedPointProfileDto {
+    state_scale: String,
+    rounding: String,
+    state_minimum_q24: i64,
+    state_maximum_q24: i64,
+    checked_wide_intermediates: bool,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct TopKPolicyDto {
+    minimum_ratio_ppm: u32,
+    maximum_ratio_ppm: u32,
+    tie_break: String,
+    per_population_first: bool,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct HomeostasisProfileDto {
+    moving_average_alpha_q24: i64,
+    threshold_step_q24: i64,
+    threshold_minimum_q24: i64,
+    threshold_maximum_q24: i64,
+    saturation_limit: u32,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct EligibilityProfileDto {
+    trace_dimension: u32,
+    maximum_norm_q24: i64,
+    decay_q24: i64,
+    local_rule_digest: String,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ResourceEnvelopeDto {
+    p95_latency_micros: u64,
+    p99_latency_micros: u64,
+    transient_allocation_bytes: u64,
+    checkpoint_bytes: u64,
+    write_amplification_ppm: u32,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct RuntimeConfigDto {
+    config_id: String,
+    generation: u64,
+    encoder_digest: String,
+    head_digest: String,
+    state_dimensions: StateDimensionsDto,
+    fixed_point_profile: FixedPointProfileDto,
+    top_k_policy: TopKPolicyDto,
+    inhibition_digest: String,
+    homeostasis_profile: HomeostasisProfileDto,
+    eligibility_profile: EligibilityProfileDto,
+    resource_envelope: ResourceEnvelopeDto,
+    expiry: String,
+}
 
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -170,6 +280,173 @@ struct CheckpointDto {
     logical_sequence: u64,
     normalization_digest: String,
     expires_unix_ms: u64,
+}
+
+pub fn canonical_runtime_config_v1(
+    config: &NeuronRuntimeConfigV1,
+    native: &crate::SparseConfig,
+    expiry_utc: impl Into<String>,
+) -> Result<NeuronRuntimeConfigProtocolV1, NeuronProtocolError> {
+    config
+        .validate_native(native)
+        .map_err(|_| NeuronProtocolError::InvalidField("runtime config"))?;
+    let width = u32::try_from(native.width)
+        .map_err(|_| NeuronProtocolError::InvalidField("state dimensions"))?;
+    let modulators = u32::try_from(config.modulator_dimension)
+        .map_err(|_| NeuronProtocolError::InvalidField("state dimensions"))?;
+    let inhibition_edges = u32::try_from(native.inhibition.len())
+        .map_err(|_| NeuronProtocolError::InvalidField("state dimensions"))?;
+    let top_k = u64::try_from(native.top_k)
+        .map_err(|_| NeuronProtocolError::InvalidField("topKPolicy"))?;
+    let native_width = u64::try_from(native.width)
+        .map_err(|_| NeuronProtocolError::InvalidField("topKPolicy"))?;
+    let ratio = top_k
+        .checked_mul(u64::from(PPM))
+        .ok_or(NeuronProtocolError::InvalidField("topKPolicy"))?
+        / native_width;
+    let ratio = u32::try_from(ratio)
+        .map_err(|_| NeuronProtocolError::InvalidField("topKPolicy"))?;
+    let value = NeuronRuntimeConfigProtocolV1 {
+        config_id: config.config_id.clone(),
+        generation: config.generation,
+        encoder_digest: config.encoder_digest,
+        head_digest: config.head_digest,
+        temporal_state_dimension: width,
+        activation_dimension: width,
+        modulator_dimension: modulators,
+        inhibition_edges,
+        state_minimum_q24: -Q24_LIMIT,
+        state_maximum_q24: Q24_LIMIT,
+        checked_wide_intermediates: true,
+        top_k_minimum_ratio_ppm: ratio,
+        top_k_maximum_ratio_ppm: ratio,
+        per_population_first: true,
+        inhibition_digest: inhibition_digest_v1(native)?,
+        moving_average_alpha_q24: Q24_ONE
+            .checked_sub(native.activity_decay_q24)
+            .ok_or(NeuronProtocolError::InvalidField("homeostasisProfile"))?,
+        threshold_step_q24: native.threshold_rate_q24,
+        threshold_minimum_q24: native.threshold_min_q24,
+        threshold_maximum_q24: native.threshold_max_q24,
+        saturation_limit: config.calibration.maximum_projection_count,
+        eligibility_trace_dimension: width,
+        eligibility_maximum_norm_q24: ELIGIBILITY_L1_Q24,
+        eligibility_decay_q24: native.eligibility_decay_q24,
+        eligibility_rule_digest: Digest32::of_bytes(
+            b"hepta.neuron.eligibility.diagonal-local-head.v1",
+        ),
+        p95_latency_micros: config.resource_envelope.p95_latency_micros,
+        p99_latency_micros: config.resource_envelope.p99_latency_micros,
+        transient_allocation_bytes: config.resource_envelope.transient_allocation_bytes,
+        checkpoint_bytes: config.resource_envelope.checkpoint_bytes,
+        write_amplification_ppm: config.resource_envelope.write_amplification_ppm,
+        expiry_utc: expiry_utc.into(),
+    };
+    validate_runtime_config(&value)?;
+    Ok(value)
+}
+
+pub fn encode_neuron_runtime_config_v1(
+    value: &NeuronRuntimeConfigProtocolV1,
+) -> Result<Vec<u8>, NeuronProtocolError> {
+    validate_runtime_config(value)?;
+    encode_bounded(&RuntimeConfigDto {
+        config_id: value.config_id.to_string(),
+        generation: value.generation.get(),
+        encoder_digest: value.encoder_digest.to_string(),
+        head_digest: value.head_digest.to_string(),
+        state_dimensions: StateDimensionsDto {
+            temporal_state: value.temporal_state_dimension,
+            activation: value.activation_dimension,
+            modulators: value.modulator_dimension,
+            inhibition_edges: value.inhibition_edges,
+        },
+        fixed_point_profile: FixedPointProfileDto {
+            state_scale: "Q24".to_owned(),
+            rounding: "nearest_ties_even".to_owned(),
+            state_minimum_q24: value.state_minimum_q24,
+            state_maximum_q24: value.state_maximum_q24,
+            checked_wide_intermediates: value.checked_wide_intermediates,
+        },
+        top_k_policy: TopKPolicyDto {
+            minimum_ratio_ppm: value.top_k_minimum_ratio_ppm,
+            maximum_ratio_ppm: value.top_k_maximum_ratio_ppm,
+            tie_break: "canonical_unit_id".to_owned(),
+            per_population_first: value.per_population_first,
+        },
+        inhibition_digest: value.inhibition_digest.to_string(),
+        homeostasis_profile: HomeostasisProfileDto {
+            moving_average_alpha_q24: value.moving_average_alpha_q24,
+            threshold_step_q24: value.threshold_step_q24,
+            threshold_minimum_q24: value.threshold_minimum_q24,
+            threshold_maximum_q24: value.threshold_maximum_q24,
+            saturation_limit: value.saturation_limit,
+        },
+        eligibility_profile: EligibilityProfileDto {
+            trace_dimension: value.eligibility_trace_dimension,
+            maximum_norm_q24: value.eligibility_maximum_norm_q24,
+            decay_q24: value.eligibility_decay_q24,
+            local_rule_digest: value.eligibility_rule_digest.to_string(),
+        },
+        resource_envelope: ResourceEnvelopeDto {
+            p95_latency_micros: value.p95_latency_micros,
+            p99_latency_micros: value.p99_latency_micros,
+            transient_allocation_bytes: value.transient_allocation_bytes,
+            checkpoint_bytes: value.checkpoint_bytes,
+            write_amplification_ppm: value.write_amplification_ppm,
+        },
+        expiry: value.expiry_utc.clone(),
+    })
+}
+
+pub fn decode_neuron_runtime_config_v1(
+    bytes: &[u8],
+) -> Result<NeuronRuntimeConfigProtocolV1, NeuronProtocolError> {
+    let dto: RuntimeConfigDto = decode_bounded(bytes)?;
+    if dto.fixed_point_profile.state_scale != "Q24"
+        || dto.fixed_point_profile.rounding != "nearest_ties_even"
+        || dto.top_k_policy.tie_break != "canonical_unit_id"
+    {
+        return Err(NeuronProtocolError::InvalidField("runtime config profile"));
+    }
+    let value = NeuronRuntimeConfigProtocolV1 {
+        config_id: parse_id(&dto.config_id, "configId")?,
+        generation: Generation::new(dto.generation)
+            .map_err(|_| NeuronProtocolError::InvalidField("generation"))?,
+        encoder_digest: parse_digest(&dto.encoder_digest, "encoderDigest")?,
+        head_digest: parse_digest(&dto.head_digest, "headDigest")?,
+        temporal_state_dimension: dto.state_dimensions.temporal_state,
+        activation_dimension: dto.state_dimensions.activation,
+        modulator_dimension: dto.state_dimensions.modulators,
+        inhibition_edges: dto.state_dimensions.inhibition_edges,
+        state_minimum_q24: dto.fixed_point_profile.state_minimum_q24,
+        state_maximum_q24: dto.fixed_point_profile.state_maximum_q24,
+        checked_wide_intermediates: dto.fixed_point_profile.checked_wide_intermediates,
+        top_k_minimum_ratio_ppm: dto.top_k_policy.minimum_ratio_ppm,
+        top_k_maximum_ratio_ppm: dto.top_k_policy.maximum_ratio_ppm,
+        per_population_first: dto.top_k_policy.per_population_first,
+        inhibition_digest: parse_digest(&dto.inhibition_digest, "inhibitionDigest")?,
+        moving_average_alpha_q24: dto.homeostasis_profile.moving_average_alpha_q24,
+        threshold_step_q24: dto.homeostasis_profile.threshold_step_q24,
+        threshold_minimum_q24: dto.homeostasis_profile.threshold_minimum_q24,
+        threshold_maximum_q24: dto.homeostasis_profile.threshold_maximum_q24,
+        saturation_limit: dto.homeostasis_profile.saturation_limit,
+        eligibility_trace_dimension: dto.eligibility_profile.trace_dimension,
+        eligibility_maximum_norm_q24: dto.eligibility_profile.maximum_norm_q24,
+        eligibility_decay_q24: dto.eligibility_profile.decay_q24,
+        eligibility_rule_digest: parse_digest(
+            &dto.eligibility_profile.local_rule_digest,
+            "localRuleDigest",
+        )?,
+        p95_latency_micros: dto.resource_envelope.p95_latency_micros,
+        p99_latency_micros: dto.resource_envelope.p99_latency_micros,
+        transient_allocation_bytes: dto.resource_envelope.transient_allocation_bytes,
+        checkpoint_bytes: dto.resource_envelope.checkpoint_bytes,
+        write_amplification_ppm: dto.resource_envelope.write_amplification_ppm,
+        expiry_utc: dto.expiry,
+    };
+    validate_runtime_config(&value)?;
+    Ok(value)
 }
 
 pub fn canonical_checkpoint_v1(
@@ -439,6 +716,87 @@ pub fn decode_neuron_checkpoint_v1(
     };
     validate_checkpoint(&value)?;
     Ok(value)
+}
+
+fn validate_runtime_config(
+    value: &NeuronRuntimeConfigProtocolV1,
+) -> Result<(), NeuronProtocolError> {
+    if value.config_id.as_str().as_bytes().len() > 128 {
+        return Err(NeuronProtocolError::InvalidIdentity("configId"));
+    }
+    for (field, digest) in [
+        ("encoderDigest", value.encoder_digest),
+        ("headDigest", value.head_digest),
+        ("inhibitionDigest", value.inhibition_digest),
+        ("localRuleDigest", value.eligibility_rule_digest),
+    ] {
+        if digest.is_zero() {
+            return Err(NeuronProtocolError::InvalidDigest(field));
+        }
+    }
+    if value.temporal_state_dimension == 0
+        || value.temporal_state_dimension > 256
+        || value.activation_dimension == 0
+        || value.activation_dimension > 512
+        || value.modulator_dimension == 0
+        || value.modulator_dimension > 8
+        || value.state_minimum_q24 != -Q24_LIMIT
+        || value.state_maximum_q24 != Q24_LIMIT
+        || !value.checked_wide_intermediates
+        || value.top_k_minimum_ratio_ppm == 0
+        || value.top_k_minimum_ratio_ppm > value.top_k_maximum_ratio_ppm
+        || value.top_k_maximum_ratio_ppm > 200_000
+        || !value.per_population_first
+        || value.moving_average_alpha_q24 < 0
+        || value.moving_average_alpha_q24 > Q24_ONE
+        || value.threshold_step_q24 < 0
+        || value.threshold_step_q24 > Q24_ONE
+        || value.threshold_minimum_q24 < -Q24_LIMIT
+        || value.threshold_maximum_q24 > Q24_LIMIT
+        || value.threshold_minimum_q24 > value.threshold_maximum_q24
+        || value.saturation_limit == 0
+        || value.eligibility_trace_dimension == 0
+        || value.eligibility_trace_dimension > 512
+        || value.eligibility_maximum_norm_q24 <= 0
+        || value.eligibility_decay_q24 < 0
+        || value.eligibility_decay_q24 > Q24_ONE
+        || value.p95_latency_micros == 0
+        || value.p99_latency_micros < value.p95_latency_micros
+        || value.transient_allocation_bytes == 0
+        || value.checkpoint_bytes == 0
+        || !(1_000_000..=4_000_000).contains(&value.write_amplification_ppm)
+        || value.expiry_utc.is_empty()
+        || value.expiry_utc.as_bytes().len() > 64
+        || !value.expiry_utc.contains('T')
+        || !value.expiry_utc.ends_with('Z')
+    {
+        return Err(NeuronProtocolError::InvalidField("runtime config"));
+    }
+    Ok(())
+}
+
+fn inhibition_digest_v1(
+    native: &crate::SparseConfig,
+) -> Result<Digest32, NeuronProtocolError> {
+    let mut bytes = b"hepta.neuron.inhibition.q24.v1".to_vec();
+    let width = u64::try_from(native.width)
+        .map_err(|_| NeuronProtocolError::InvalidField("inhibition"))?;
+    bytes.extend_from_slice(&width.to_be_bytes());
+    let mut edges = native.inhibition.clone();
+    edges.sort();
+    let count = u64::try_from(edges.len())
+        .map_err(|_| NeuronProtocolError::InvalidField("inhibition"))?;
+    bytes.extend_from_slice(&count.to_be_bytes());
+    for edge in edges {
+        let source = u64::try_from(edge.source)
+            .map_err(|_| NeuronProtocolError::InvalidField("inhibition"))?;
+        let target = u64::try_from(edge.target)
+            .map_err(|_| NeuronProtocolError::InvalidField("inhibition"))?;
+        bytes.extend_from_slice(&source.to_be_bytes());
+        bytes.extend_from_slice(&target.to_be_bytes());
+        bytes.extend_from_slice(&edge.weight_q24.to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn validate_tick_receipt(
