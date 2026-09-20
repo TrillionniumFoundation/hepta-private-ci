@@ -113,7 +113,7 @@ None.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The current durable owner contract is an in-process Rust surface with explicit semantic digests and SQLite schema constraints. Canonical JSON/wire parity remains a target requirement unless a separately registered serializer is present; this module does not claim such a serializer from the native Rust types alone. When a wire representation is introduced, its tests must cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -140,7 +140,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md). Higher-generation owner replacement must use the durable handoff path: it changes execution ownership and advances the fence without changing semantic identity; unresolved dispatch is made indeterminate before the successor reconciles it. A source library or fixture cannot stand in for target-host recovery or an external terminal observer.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -157,13 +157,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) specifies this module's algorithm, implemented source ceilings and target-host measurement obligations. Current durable limits are defined by [codex-rs/hepta-operations/src/durable_model.rs](../../../codex-rs/hepta-operations/src/durable_model.rs) and enforced by [codex-rs/hepta-operations/src/durable_store.rs](../../../codex-rs/hepta-operations/src/durable_store.rs); the 16,384-entry limits in the retained reference ledger/outbox remain oracle-only bounds. Source ceilings are not target-host performance measurements.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-`OperationLedger` remains the deterministic reference oracle; `DurableOperationStore` is the crash-durable owner. The configured Agentd Automation path binds source intent/outbox, independent final-use grant consumption, the destination-owned Automation dedupe transaction and reopen reconciliation. Queue acknowledgement is still not terminal success, and a host that does not explicitly configure the operations authority follows the legacy direct Automation owner path rather than silently manufacturing authority.
+`OperationLedger` remains the deterministic reference oracle; `DurableOperationStore` is the crash-durable owner. The configured Agentd Automation path binds source intent/outbox, independent final-use grant consumption, the destination-owned Automation dedupe transaction, higher-generation durable owner handoff and reopen reconciliation. Queue acknowledgement is still not terminal success, and a host that does not explicitly configure the operations authority follows the legacy direct Automation owner path rather than silently manufacturing authority.
 
 Current operating and state-format references:
 
@@ -176,12 +176,14 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-operations/src/durable_store_tests.rs](../../../codex-rs/hepta-operations/src/durable_store_tests.rs); atomic prepare/reopen, multi-writer identity, stale fencing, acknowledgement loss and tombstone anti-resurrection.
+- [codex-rs/hepta-operations/src/durable_store_tests.rs](../../../codex-rs/hepta-operations/src/durable_store_tests.rs); atomic prepare/reopen, multi-writer identity, safe lease takeover, higher-generation unresolved handoff, acknowledgement loss and tombstone anti-resurrection.
 - [codex-rs/hepta-automation/tests/kernel_operations_destination.rs](../../../codex-rs/hepta-automation/tests/kernel_operations_destination.rs); destination mutation+dedupe atomicity and reopen replay.
+- [codex-rs/hepta-agentd/src/operations_host_tests.rs](../../../codex-rs/hepta-agentd/src/operations_host_tests.rs); generation-two reopen reconciliation without redispatch.
+- [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs); configured runtime/control `AutomationCreate` selects the durable operations host.
 - [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs); named case: `dispatch_ack_is_not_terminal_success`.
 - [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs); named case: `claim_and_ack_are_generation_fenced`.
 
-The remaining repository-controlled test gap is an end-to-end Agentd configuration/control test that proves the explicitly configured `AutomationCreate` callsite selects `AgentdOperationsHost` and survives reopen/reconciliation.
+The repository-controlled execution gap is now current exact-head and prospective-merge qualification of these source tests; target-host power-loss/storage-exhaustion measurements remain external evidence.
 
 In `codex-rs`, run `just test -p codex-hepta-operations`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) separately labels target acceptance designs.
 
@@ -310,11 +312,20 @@ The following additional work packages are source-planning envelopes introduced 
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
 
-| Operation | Native symbol | Source path | Tests |
-|---|---|---|---|
-| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `pending` |
-| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `pending` |
+| Claim level | Operation | Native symbol | Source path | Test identity |
+|---|---|---|---|---|
+| `production-implemented/source` | `prepare_intent` | `DurableOperationStore::prepare_intent` | `codex-rs/hepta-operations/src/durable_store.rs` | `prepare_is_atomic_and_survives_reopen` |
+| `production-implemented/source` | `claim_outbox` | `DurableOperationStore::claim_next` / `claim_operation` | `codex-rs/hepta-operations/src/durable_store.rs`, `src/exact_claim.rs` | `expired_safe_lease_can_be_taken_over_by_higher_generation` |
+| `production-implemented/source` | `owner_handoff` | `DurableOperationStore::adopt_unsettled_generation` | `codex-rs/hepta-operations/src/durable_store.rs` | `newer_generation_adopts_unsettled_dispatch_and_fences_predecessor` |
+| `production-implemented/source` | `authorized_dispatch` | `DurableOperationStore::authorize_dispatch` | `codex-rs/hepta-operations/src/durable_store.rs` | `crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable` |
+| `production-implemented/source` | `destination_dedupe` | `DestinationDedupeStore::begin_apply` | `codex-rs/hepta-operations/src/destination_dedupe.rs` | destination atomic commit/rollback tests |
+| `production-implemented/source` | `agentd_automation_composition` | `AgentdOperationsHost` + runtime/control attachment | `codex-rs/hepta-agentd/src/operations_host.rs`, `runtime.rs`, `state_control.rs` | generation-two reopen + configured runtime/control tests |
+| `reference-implemented` | `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `ledger_tests.rs` |
+| `reference-implemented` | `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `outbox_tests.rs` |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- `target`: full multi-destination activation and selected-host operational qualification.
+- `reference-implemented`: deterministic in-memory oracle only.
+- `production-implemented/source`: production-oriented durable source and named composition exist, but activation is not implied.
+- `execution-proved`: remains false until current exact-head and prospective-merge receipts pass.
+- Exact tracked source objects and caller bindings are recorded in `IMPLEMENTATION_MAP.json`; its shared `sourceBase` is a compatibility baseline, not a substitute for those exact object bindings.
+- Independent acceptance, activation, promotion and release remain false until their separate evidence gates pass.
