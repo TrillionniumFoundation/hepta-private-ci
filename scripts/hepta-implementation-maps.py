@@ -17,6 +17,7 @@ from pathlib import Path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
+HEX40 = re.compile(r"[0-9a-f]{40}")
 
 
 def current_source_base() -> dict[str, str]:
@@ -33,6 +34,59 @@ def git(*args: str) -> str:
         ["git", *args], cwd=ROOT, text=True, capture_output=True, check=True
     )
     return p.stdout.strip()
+
+
+def verify_source_base(value: object, label: str) -> tuple[str, str]:
+    """Validate one module map's immutable source snapshot.
+
+    A static file cannot contain the hash of the commit that contains itself.
+    Therefore a map binds the last source snapshot for that module. Any later
+    change beneath the module's resolved source roots invalidates the map.
+    """
+    if not isinstance(value, dict) or set(value) not in (
+        {"commit"},
+        {"commit", "tree"},
+    ):
+        raise ValueError(f"{label}: sourceBase must contain commit and optional tree")
+    commit = value.get("commit")
+    if not isinstance(commit, str) or not HEX40.fullmatch(commit):
+        raise ValueError(f"{label}: invalid source commit")
+    actual_commit = git("rev-parse", "--verify", f"{commit}^{{commit}}")
+    if actual_commit != commit:
+        raise ValueError(f"{label}: source commit does not resolve exactly")
+    tree = git("rev-parse", f"{commit}^{{tree}}")
+    recorded_tree = value.get("tree")
+    if recorded_tree is not None:
+        if not isinstance(recorded_tree, str) or not HEX40.fullmatch(recorded_tree):
+            raise ValueError(f"{label}: invalid source tree")
+        if recorded_tree != tree:
+            raise ValueError(f"{label}: source tree mismatch")
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+    )
+    if ancestor.returncode != 0:
+        raise ValueError(f"{label}: source commit is not an ancestor of HEAD")
+    return commit, tree
+
+
+def source_root_drift(commit: str, roots: list[str]) -> list[str]:
+    """Return source-root paths changed after the map's bound snapshot."""
+    unique = sorted(set(roots))
+    if not unique:
+        return []
+    output = git(
+        "diff",
+        "--name-only",
+        "-z",
+        "--no-renames",
+        commit,
+        "HEAD",
+        "--",
+        *unique,
+    )
+    return [path for path in output.split("\0") if path]
 
 
 def lane_by_module():
@@ -181,7 +235,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -287,7 +341,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -309,14 +362,11 @@ def verify():
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
-        if (
-            not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
-        ):
-            failures.append(f"{mid}: source base")
-        else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+        try:
+            source_commit, _source_tree = verify_source_base(source_base, mid)
+        except (ValueError, subprocess.SubprocessError) as exc:
+            failures.append(str(exc))
+            source_commit = None
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -324,9 +374,17 @@ def verify():
         if declared != roots:
             failures.append(f"{mid}: declared roots")
         try:
-            if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
+            resolved = resolve_source_roots(ROOT, module)
+            if row.get("resolvedRoots") != resolved:
                 failures.append(f"{mid}: resolved source roots")
-        except (ValueError, OSError) as exc:
+            if source_commit is not None:
+                drift = source_root_drift(source_commit, roots + resolved)
+                if drift:
+                    failures.append(
+                        f"{mid}: mapped source changed after sourceBase "
+                        f"{source_commit}: {', '.join(drift[:8])}"
+                    )
+        except (ValueError, OSError, subprocess.SubprocessError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")
         if not isinstance(ops, list) or not ops:
@@ -345,8 +403,6 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
