@@ -37,6 +37,10 @@ use crate::AgentdError;
 #[derive(Clone)]
 pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
+    // Private read-side clone of the exact recovered generation. Runtime
+    // composition can reuse the same fenced owner without reopening by path or
+    // exposing ProductionDurableWriter's crate-private raw-store handle.
+    cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
     mutation: Option<Arc<ProductionCognitiveMutationCapability>>,
     dispatcher: Option<ProductionOutboxDispatcher>,
 }
@@ -46,6 +50,7 @@ impl fmt::Debug for AgentdProductionWriterHost {
         formatter
             .debug_struct("AgentdProductionWriterHost")
             .field("writer", &self.writer)
+            .field("cognitive_runtime_available", &self.cognitive_runtime.available_store().is_some())
             .field("production_mutation_attached", &self.mutation.is_some())
             .field("dispatcher_attached", &self.dispatcher.is_some())
             .finish()
@@ -97,6 +102,7 @@ impl AgentdProductionWriterHost {
         .map_err(|error| {
             AgentdError::Protocol(format!("recover production cognitive store: {error}"))
         })?;
+        let runtime_store = store.clone();
         let writer = Arc::new(
             ProductionDurableWriter::open_with_live_verifier(
                 store,
@@ -110,6 +116,7 @@ impl AgentdProductionWriterHost {
         let mutation = Arc::new(writer.cognitive_mutation_capability()?);
         Ok(Self {
             writer,
+            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(runtime_store)),
             mutation: Some(mutation),
             dispatcher: None,
         })
@@ -130,11 +137,13 @@ impl AgentdProductionWriterHost {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
+        let runtime_store = store.clone();
         let writer =
             ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
                 .await?;
         Ok(Self {
             writer: Arc::new(writer),
+            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(runtime_store)),
             mutation: None,
             dispatcher: None,
         })
@@ -201,6 +210,13 @@ impl AgentdProductionWriterHost {
 
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {
         Arc::clone(&self.writer)
+    }
+
+    /// Reuse the exact recovered generation for Agentd's read side without
+    /// reopening by path and without widening the durable writer's raw-store
+    /// visibility beyond the owner crate.
+    pub(crate) fn cognitive_runtime(&self) -> codex_hepta_memory::CognitiveRuntime {
+        self.cognitive_runtime.clone()
     }
 
     /// Return the sealed production mutation capability, if this host was
