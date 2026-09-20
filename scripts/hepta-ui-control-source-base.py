@@ -21,16 +21,9 @@ OID = re.compile(r"^[0-9a-f]{40}$")
 
 
 def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
-    env = os.environ.copy()
-    for key in (
-        "GIT_DIR",
-        "GIT_WORK_TREE",
-        "GIT_COMMON_DIR",
-        "GIT_INDEX_FILE",
-        "GIT_OBJECT_DIRECTORY",
-        "GIT_ALTERNATE_OBJECT_DIRECTORIES",
-    ):
-        env.pop(key, None)
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env["GIT_CONFIG_NOSYSTEM"] = "1"
+    env["GIT_CONFIG_GLOBAL"] = os.devnull
     return subprocess.run(
         ["git", "-c", "core.hooksPath=/dev/null", "-C", str(ROOT), *args],
         text=True,
