@@ -76,10 +76,8 @@ pub trait ContextSerializerV2 {
 
     fn tool_schema_digest(&self) -> Digest32;
 
-    fn serialize(
-        &self,
-        items: &[ContextRealizedItemV2],
-    ) -> Result<Vec<u8>, ContextCompilerV2Error>;
+    fn serialize(&self, items: &[ContextRealizedItemV2])
+    -> Result<Vec<u8>, ContextCompilerV2Error>;
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -94,6 +92,7 @@ pub trait ContextProviderDeliveryVerifierV2 {
     fn verify_delivery(
         &self,
         receipt: &ProviderInvocationReceipt,
+        preparation: &ContextDeliveryPreparationV2,
     ) -> Result<ContextProviderDeliveryDecisionV2, String>;
 }
 
@@ -234,10 +233,7 @@ impl ContextAdmissionRecordV2 {
     pub fn validate_shape(&self) -> Result<(), ContextCompilerV2Error> {
         ensure_digest("admission_content", self.content_digest)?;
         ensure_digest("admission_source", self.source_digest)?;
-        ensure_digest(
-            "admission_generation_vector",
-            self.generation_vector_digest,
-        )?;
+        ensure_digest("admission_generation_vector", self.generation_vector_digest)?;
         ensure_digest("admission_scope", self.scope_digest)?;
         if self.issued_unix_ms == 0 || self.expires_unix_ms <= self.issued_unix_ms {
             return Err(ContextCompilerV2Error::InvalidAdmissionTime(
@@ -314,9 +310,7 @@ impl ContextAdmissionSnapshotV2 {
             }
         }
         if self.snapshot_digest != self.compute_digest() {
-            return Err(ContextCompilerV2Error::DigestMismatch(
-                "admission_snapshot",
-            ));
+            return Err(ContextCompilerV2Error::DigestMismatch("admission_snapshot"));
         }
         Ok(())
     }
@@ -459,9 +453,7 @@ impl VerifiedAdmissionV2 {
             ));
         }
         if self.verification_digest != self.compute_verification_digest() {
-            return Err(ContextCompilerV2Error::DigestMismatch(
-                "verified_admission",
-            ));
+            return Err(ContextCompilerV2Error::DigestMismatch("verified_admission"));
         }
         Ok(())
     }
@@ -507,10 +499,7 @@ impl VerifiedAdmissionV2 {
         push_u64(&mut bytes, self.expires_unix_ms);
         push_digest(&mut bytes, self.verifier_digest);
         push_digest(&mut bytes, self.verified_snapshot_digest);
-        push_digest(
-            &mut bytes,
-            self.verified_snapshot_verification_digest,
-        );
+        push_digest(&mut bytes, self.verified_snapshot_verification_digest);
         push_u64(&mut bytes, self.verified_revocation_epoch);
         push_u64(&mut bytes, self.verified_at_unix_ms);
         push_digest(&mut bytes, self.record_digest);
@@ -603,9 +592,7 @@ impl ContextModelProfileV2 {
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.maximum_context_tokens == 0
-            || self.maximum_context_tokens > MAX_CONTEXT_TOKENS_V2
-        {
+        if self.maximum_context_tokens == 0 || self.maximum_context_tokens > MAX_CONTEXT_TOKENS_V2 {
             return Err(ContextCompilerV2Error::InvalidModelContextLimit);
         }
         Ok(())
@@ -653,10 +640,7 @@ impl ContextCandidateV2 {
     ) -> Result<(), ContextCompilerV2Error> {
         ensure_digest("candidate_content", self.content_digest)?;
         ensure_digest("candidate_source", self.source_digest)?;
-        ensure_digest(
-            "candidate_generation_vector",
-            self.generation_vector_digest,
-        )?;
+        ensure_digest("candidate_generation_vector", self.generation_vector_digest)?;
         if self.generation_vector_digest != expected_generation_vector_digest {
             return Err(ContextCompilerV2Error::GenerationVectorMismatch(
                 self.item_id.to_string(),
@@ -971,8 +955,7 @@ pub fn compile_v2(
     }
 
     let candidate_set_digest = compute_candidate_set_digest(by_id.values());
-    let mandatory_groups_digest =
-        compute_mandatory_groups_digest(&request.mandatory_groups);
+    let mandatory_groups_digest = compute_mandatory_groups_digest(&request.mandatory_groups);
     let mut mandatory_ids = by_id
         .values()
         .filter(|candidate| {
@@ -1412,10 +1395,7 @@ impl ContextAttachmentV2 {
         push_digest(&mut bytes, self.generation_vector_digest);
         push_digest(&mut bytes, self.admission_verifier_digest);
         push_digest(&mut bytes, self.admission_snapshot_digest);
-        push_digest(
-            &mut bytes,
-            self.admission_snapshot_verification_digest,
-        );
+        push_digest(&mut bytes, self.admission_snapshot_verification_digest);
         push_u64(&mut bytes, self.admission_snapshot_observed_unix_ms);
         push_u64(&mut bytes, self.revocation_epoch);
         push_digest(&mut bytes, self.model_profile_digest);
@@ -1587,8 +1567,7 @@ pub fn prepare_delivery_v2(
 ) -> Result<ContextDeliveryPreparationV2, ContextCompilerV2Error> {
     attachment.validate_for(compiled, serialization, profile)?;
     if current_snapshot.revocation_epoch() < attachment.revocation_epoch
-        || current_snapshot.observed_unix_ms()
-            < attachment.admission_snapshot_observed_unix_ms
+        || current_snapshot.observed_unix_ms() < attachment.admission_snapshot_observed_unix_ms
     {
         return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
     }
@@ -1713,7 +1692,10 @@ impl ContextDeliveryReceiptV2 {
             ("model_profile", self.model_profile_digest),
             ("provider_id", self.provider_id_digest),
             ("provider_model", self.provider_model_digest),
-            ("provider_request_binding", self.provider_request_binding_digest),
+            (
+                "provider_request_binding",
+                self.provider_request_binding_digest,
+            ),
             ("provider_attempt", self.provider_attempt_digest),
             ("provider_receipt", self.provider_receipt_digest),
             ("provider_terminal", self.provider_terminal_digest),
@@ -1764,8 +1746,7 @@ impl ContextDeliveryReceiptV2 {
                 }
             }
         }
-        if self.provider_recorded_at_unix_ms
-                < preparation.admission_snapshot_observed_unix_ms
+        if self.provider_recorded_at_unix_ms < preparation.admission_snapshot_observed_unix_ms
             || self.observed_unix_ms < self.provider_recorded_at_unix_ms
         {
             return Err(ContextCompilerV2Error::InvalidObservationTime);
@@ -1828,21 +1809,15 @@ pub fn observe_delivery(
         .validate()
         .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?;
 
-    let provider_evidence_verifier_digest = delivery_verifier.verifier_digest();
-    ensure_digest(
-        "provider_evidence_verifier",
-        provider_evidence_verifier_digest,
-    )?;
-    let delivery_evidence = delivery_verifier
-        .verify_delivery(provider_receipt)
-        .map_err(ContextCompilerV2Error::ProviderEvidenceInvalid)?;
-    ensure_digest("provider_evidence", delivery_evidence.evidence_digest)?;
-
-    let Some(provider_input) = provider_receipt.intent.binding.ephemeral_input_sha256.as_ref()
+    let Some(provider_input) = provider_receipt
+        .intent
+        .binding
+        .ephemeral_input_sha256
+        .as_ref()
     else {
         return Err(ContextCompilerV2Error::MissingProviderInputBinding);
     };
-    let Some(provider_input_witness) = provider_receipt
+    let Some(_provider_input_witness) = provider_receipt
         .intent
         .binding
         .ephemeral_input_witness_sha256
@@ -1851,11 +1826,7 @@ pub fn observe_delivery(
         return Err(ContextCompilerV2Error::MissingProviderInputWitness);
     };
     let expected_provider_input = Sha256Digest::for_bytes(serialization.payload());
-    let expected_provider_witness =
-        Sha256Digest::for_bytes(preparation.preparation_digest.as_array());
-    if provider_input != &expected_provider_input
-        || provider_input_witness != &expected_provider_witness
-    {
+    if provider_input != &expected_provider_input {
         return Err(ContextCompilerV2Error::DeliveryMismatch);
     }
 
@@ -1869,8 +1840,17 @@ pub fn observe_delivery(
         return Err(ContextCompilerV2Error::ProviderModelProfileMismatch);
     }
 
-    if delivery_evidence.recorded_at_unix_ms
-            < preparation.admission_snapshot_observed_unix_ms
+    let provider_evidence_verifier_digest = delivery_verifier.verifier_digest();
+    ensure_digest(
+        "provider_evidence_verifier",
+        provider_evidence_verifier_digest,
+    )?;
+    let delivery_evidence = delivery_verifier
+        .verify_delivery(provider_receipt, preparation)
+        .map_err(ContextCompilerV2Error::ProviderEvidenceInvalid)?;
+    ensure_digest("provider_evidence", delivery_evidence.evidence_digest)?;
+
+    if delivery_evidence.recorded_at_unix_ms < preparation.admission_snapshot_observed_unix_ms
         || observed_unix_ms < delivery_evidence.recorded_at_unix_ms
     {
         return Err(ContextCompilerV2Error::InvalidObservationTime);
@@ -1895,9 +1875,7 @@ pub fn observe_delivery(
         ProviderTerminal::Completed { .. } | ProviderTerminal::CompletedUnary { .. } => {
             (true, ContextDeliveryDispositionV2::Delivered)
         }
-        ProviderTerminal::Rejected { .. } => {
-            (true, ContextDeliveryDispositionV2::Rejected)
-        }
+        ProviderTerminal::Rejected { .. } => (true, ContextDeliveryDispositionV2::Rejected),
         ProviderTerminal::NotDispatched { .. } => {
             (true, ContextDeliveryDispositionV2::NotDispatched)
         }
@@ -1923,10 +1901,8 @@ pub fn observe_delivery(
         provider_evidence_digest: delivery_evidence.evidence_digest,
         provider_recorded_at_unix_ms: delivery_evidence.recorded_at_unix_ms,
         admission_snapshot_digest: preparation.admission_snapshot_digest,
-        admission_snapshot_verification_digest:
-            preparation.admission_snapshot_verification_digest,
-        admission_snapshot_observed_unix_ms:
-            preparation.admission_snapshot_observed_unix_ms,
+        admission_snapshot_verification_digest: preparation.admission_snapshot_verification_digest,
+        admission_snapshot_observed_unix_ms: preparation.admission_snapshot_observed_unix_ms,
         revocation_epoch: preparation.revocation_epoch,
         terminal_observed,
         disposition,
