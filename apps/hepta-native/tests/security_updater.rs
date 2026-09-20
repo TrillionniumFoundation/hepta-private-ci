@@ -11,10 +11,10 @@ use hepta_native::model::PlatformPayload;
 use hepta_native::model::SessionIncarnation;
 use hepta_native::model::sha256_hex;
 use hepta_native::security::KernelFinalUseGate;
-use hepta_native::security::platform_final_use_binding;
 use hepta_native::security::SignedEndpointManifestV1;
 use hepta_native::security::TrustedKeySet;
 use hepta_native::security::now_unix_ms;
+use hepta_native::security::platform_final_use_binding;
 use hepta_native::updater::SignedUpdateManifestV1;
 use hepta_native::updater::UpdateManager;
 use hepta_native::updater::activate_staged_update;
@@ -37,7 +37,6 @@ fn key_fixture(root: &Path) -> (SigningKey, TrustedKeySet, std::path::PathBuf) {
     let keys = TrustedKeySet::from_path(&path).unwrap();
     (signing, keys, path)
 }
-
 
 #[cfg(unix)]
 fn write_kernel_authority_config(
@@ -80,7 +79,10 @@ fn signed_final_use_grant(
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 60_000,
     };
-    let signature = signing.sign(&grant.signing_bytes().unwrap()).to_bytes().to_vec();
+    let signature = signing
+        .sign(&grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
     SignedFinalUseGrant { grant, signature }
 }
 
@@ -143,12 +145,7 @@ fn kernel_final_use_reloads_revocation_before_os_entry() {
     let binding =
         platform_final_use_binding("principal.1", &session, "operation.revoked", 11, &payload)
             .unwrap();
-    let signed = signed_final_use_grant(
-        &signing,
-        "grant.revoked",
-        [2_u8; 32],
-        binding.clone(),
-    );
+    let signed = signed_final_use_grant(&signing, "grant.revoked", [2_u8; 32], binding.clone());
     let permit = gate.claim_platform(&signed, binding).unwrap();
 
     let mut revoked = std::collections::BTreeSet::new();
