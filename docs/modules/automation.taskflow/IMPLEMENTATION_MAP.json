@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1b0d2c69341a78f27431c78bb7e6d740eeb52508",
-    "tree": "33866769fd5ee9079f5ed742bb5df9666aec30b1"
+    "commit": "ee543f47ca1f15729fdac04ecf33f4bf9b452bd6",
+    "tree": "3e47c6b3df7ce38ee1a88f2c101615431dea2080"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -194,9 +194,9 @@
     "codex-rs/Cargo.lock"
   ],
   "observedAtHead": {
-    "commit": "1b0d2c69341a78f27431c78bb7e6d740eeb52508",
-    "tree": "33866769fd5ee9079f5ed742bb5df9666aec30b1",
-    "interpretation": "exact automation/Agentd/lockfile source observation after durable effect composition, recovery fail-stop, dispatch-unknown semantics, FK-preserving process fault injection, and final-use nonce hardening; later documentation/projection/verifier commits do not change the observed source paths, and qualification results remain separate"
+    "commit": "ee543f47ca1f15729fdac04ecf33f4bf9b452bd6",
+    "tree": "3e47c6b3df7ce38ee1a88f2c101615431dea2080",
+    "interpretation": "exact automation/Agentd/lockfile source observation after durable effect composition, recovery fail-stop, dispatch-unknown semantics, FK-preserving process fault injection, final-use nonce hardening, and explicit revocation-race/compensation-crash qualification; later documentation/projection/verifier commits do not change the observed source paths, and qualification results remain separate"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
