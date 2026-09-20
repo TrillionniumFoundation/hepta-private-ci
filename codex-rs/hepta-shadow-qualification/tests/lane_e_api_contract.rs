@@ -3,6 +3,26 @@
 //! authority-bearing action; it proves that mapped symbols are public and
 //! available to a real cross-crate consumer.
 
+struct NoCasStore;
+
+impl codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1 for NoCasStore {
+    fn load(
+        &mut self,
+        _binding: codex_hepta_types::Digest32,
+    ) -> Result<Option<codex_hepta_intelligence_eval::FinalHoldoutCasRecordV1>, codex_hepta_intelligence_eval::FinalHoldoutCasStoreError> {
+        Ok(None)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        _binding: codex_hepta_types::Digest32,
+        _expected: Option<codex_hepta_types::Digest32>,
+        _next: &codex_hepta_intelligence_eval::FinalHoldoutCasRecordV1,
+    ) -> Result<(), codex_hepta_intelligence_eval::FinalHoldoutCasStoreError> {
+        Ok(())
+    }
+}
+
 #[test]
 fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_ledger::verify_independent_roles;
@@ -33,7 +53,10 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_intelligence_eval::evaluate_temporal_holdout;
     let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume;
-    let _ = codex_hepta_intelligence_eval::decide_independently;
+    let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
+    let _ = codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+    let _ = codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3;
+    let _ = codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<NoCasStore>::initialize;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::consume;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::from_snapshot;
 
