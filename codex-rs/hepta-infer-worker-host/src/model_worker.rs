@@ -61,11 +61,7 @@ pub enum GrantVerification {
 }
 
 trait ResourceGrantVerifier {
-    fn verify(
-        &self,
-        now_ms: u64,
-        grant: &ResourceGrant,
-    ) -> Result<GrantVerification, Error>;
+    fn verify(&self, now_ms: u64, grant: &ResourceGrant) -> Result<GrantVerification, Error>;
 }
 
 /// Concrete production-capable verifier for creating one local worker
@@ -99,11 +95,7 @@ impl<'a> FinalUseResourceGrantVerifier<'a> {
 }
 
 impl ResourceGrantVerifier for FinalUseResourceGrantVerifier<'_> {
-    fn verify(
-        &self,
-        _now_ms: u64,
-        grant: &ResourceGrant,
-    ) -> Result<GrantVerification, Error> {
+    fn verify(&self, _now_ms: u64, grant: &ResourceGrant) -> Result<GrantVerification, Error> {
         if self.signed.grant.authority_epoch != grant.authority_epoch {
             return Err(Error::InvalidGrant);
         }
@@ -557,9 +549,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 .checked_sub(now_ms)
                 .ok_or(Error::DeadlineExpired)?,
         );
-        let observed = self
-            .driver
-            .run(&loaded.handle, &request, response_timeout);
+        let observed = self.driver.run(&loaded.handle, &request, response_timeout);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
