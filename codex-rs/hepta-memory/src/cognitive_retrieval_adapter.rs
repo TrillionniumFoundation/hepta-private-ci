@@ -113,7 +113,7 @@ impl RetrievalExecutionContextV1 {
     }
 }
 
-pub fn recall_owner_observation(
+pub(crate) fn recall_owner_observation(
     observation: &RetrievalObservation,
     cut: &DurableCognitiveSnapshot,
     context: &RetrievalExecutionContextV1,
@@ -186,7 +186,7 @@ pub fn execute_owner_observation(
     Ok(OwnerRetrievalExecutionV1 { recall, assignment })
 }
 
-pub fn generated_input_from_owner_observation(
+pub(crate) fn generated_input_from_owner_observation(
     observation: &RetrievalObservation,
     snapshot_key: &CognitiveSnapshotKeyV1,
     snapshot: &CognitiveSnapshot,
