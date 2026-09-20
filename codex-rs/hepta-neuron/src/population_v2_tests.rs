@@ -143,5 +143,8 @@ fn every_activation_requires_a_registered_temporal_projection() {
     invalid
         .projection
         .retain(|edge| edge.target_activation != 5);
-    assert_eq!(invalid.digest().err(), Some(PopulationSparseError::InvalidConfig));
+    assert_eq!(
+        invalid.digest().err(),
+        Some(PopulationSparseError::InvalidConfig)
+    );
 }
