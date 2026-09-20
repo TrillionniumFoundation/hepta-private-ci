@@ -5,8 +5,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use serde::{Deserialize, Serialize};
 
 use crate::hnmf::{
-    ContractDigestV1, ContractGenerationV1, ContractIdV1, HnmfContractError, ModalityKindV1,
-    PPM, ppm, validate_keys, validate_text,
+    ContractDigestV1, ContractGenerationV1, ContractIdV1, HnmfContractError, ModalityKindV1, PPM,
+    ppm, validate_keys, validate_text,
 };
 
 pub const MAX_CUE_SEEDS: usize = 64;
@@ -360,7 +360,9 @@ impl RecallPacketV1 {
             || usize::from(self.resource_receipt.active_node_count) != self.active_nodes.len()
             || self.resource_receipt.active_node_count > self.resource_receipt.node_count
         {
-            return Err(HnmfContractError::Invalid("recall resource receipt binding"));
+            return Err(HnmfContractError::Invalid(
+                "recall resource receipt binding",
+            ));
         }
         if self.abstain.is_none() && self.selected_events.is_empty() {
             return Err(HnmfContractError::Invalid("empty non-abstaining recall"));
@@ -675,10 +677,7 @@ impl ForgetPropagationReceiptV1 {
     }
 }
 
-fn ensure_strict_order<T: Ord>(
-    values: &[T],
-    field: &'static str,
-) -> Result<(), HnmfContractError> {
+fn ensure_strict_order<T: Ord>(values: &[T], field: &'static str) -> Result<(), HnmfContractError> {
     if values.windows(2).any(|pair| pair[0] >= pair[1]) {
         return Err(HnmfContractError::Invalid(field));
     }
