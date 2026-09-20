@@ -414,6 +414,35 @@ fn active_policy_requires_exact_owner_generator_coverage() {
 }
 
 #[test]
+fn enabled_generator_unavailability_fails_closed() {
+    let input = GeneratedCandidateInputV1::new(vec![
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveLexical,
+            vec![candidate(
+                record(1),
+                RetrievalChannelV1::Lexical,
+                1,
+                "lexical",
+            )],
+            RetrievalSourceCompletenessV1::Exhausted,
+        ),
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveEntity,
+            Vec::new(),
+            RetrievalSourceCompletenessV1::Unavailable,
+        ),
+    ])
+    .expect("bounded unavailable batch");
+
+    assert_eq!(
+        build_candidate_union_from_generated(&cue(), &policy(), &input),
+        Err(GeneratorErrorV1::RequiredGeneratorUnavailable(
+            RetrievalChannelV1::Entity
+        ))
+    );
+}
+
+#[test]
 fn property_all_generator_batch_permutations_have_one_recall() {
     let first = record(1);
     let second = record(2);

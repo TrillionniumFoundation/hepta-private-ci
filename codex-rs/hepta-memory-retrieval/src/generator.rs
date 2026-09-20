@@ -539,6 +539,17 @@ fn ensure_policy_generators(
     if let Some(channel) = supplied.difference(&enabled).next().copied() {
         return Err(GeneratorErrorV1::UnexpectedGeneratorForChannel(channel));
     }
+    if let Some(batch) = input.batches.iter().find(|batch| {
+        enabled.contains(&batch.receipt.generator.channel())
+            && matches!(
+                batch.receipt.completeness,
+                RetrievalSourceCompletenessV1::Unavailable
+            )
+    }) {
+        return Err(GeneratorErrorV1::RequiredGeneratorUnavailable(
+            batch.receipt.generator.channel(),
+        ));
+    }
     Ok(())
 }
 
@@ -658,6 +669,7 @@ pub enum GeneratorErrorV1 {
     GeneratorChannelMismatch,
     MissingGeneratorForChannel(RetrievalChannelV1),
     UnexpectedGeneratorForChannel(RetrievalChannelV1),
+    RequiredGeneratorUnavailable(RetrievalChannelV1),
     GenerationVectorMismatch,
     UnavailableWithCandidates,
     DuplicateCandidate(String),
