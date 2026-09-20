@@ -581,12 +581,15 @@
       "symbols": [
         "IntegrationQueueGeneration",
         "IntegrationQueueItem",
+        "IntegrationStageReceipt",
+        "IntegrationTerminalReceipt",
         "publish_integration_queue",
+        "observe_integration_stage",
         "reconcile_integration_item",
         "integration_queue_generation",
         "integration_queue_item"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_authenticated_stage_boundary",
       "physicalState": "SQLite v9 integration_queue_generations and integration_queue_items",
       "failureModel": [
         "integration_generation_unknown",
@@ -598,13 +601,15 @@
         "integration_terminal_before_ready",
         "integration_review_before_candidate",
         "integration_ci_before_review",
-        "integration_generation_terminal"
+        "integration_generation_terminal",
+        "integration_stage_receipt_required",
+        "integration_stage_receipt_binding"
       ],
       "resourceBounds": {
         "mergeAuthority": 0,
         "releaseAuthority": 0
       },
-      "rollback": "identical observation/base-drift/terminal retries are stable no-ops; drifted evidence invalidates the generation and requires a fresh queue from a fresh orchestration generation; prior terminal observations are immutable"
+      "rollback": "signed role-bound stage observations are replay-stable; drift invalidates the generation and requires a fresh queue from a fresh orchestration generation; review observation never becomes independent acceptance and terminal observations remain separately authenticated/immutable"
     },
     {
       "id": "github-review-identity-observer",
