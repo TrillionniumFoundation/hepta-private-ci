@@ -179,6 +179,12 @@ impl AgentdState {
             }
             crate::AgentdMethod::RunStart { snapshot } => {
                 require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
+                require_current_run_identity(
+                    &self.identity,
+                    current_generation,
+                    snapshot.generation,
+                    &snapshot.fence_digest,
+                )?;
                 let receipt = self
                     .runs
                     .lock()
@@ -192,6 +198,12 @@ impl AgentdState {
                 attachment,
             } => {
                 require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
+                require_current_run_identity(
+                    &self.identity,
+                    current_generation,
+                    attachment.generation,
+                    &attachment.fence_digest,
+                )?;
                 let receipt = self
                     .runs
                     .lock()
@@ -725,6 +737,30 @@ fn require_run_reconciliation_ready(
     }
 }
 
+fn require_current_run_identity(
+    identity: &crate::AgentdIdentity,
+    current_generation: u64,
+    run_generation: u64,
+    fence_digest: &str,
+) -> Result<(), AgentdError> {
+    if run_generation != current_generation {
+        return Err(AgentdError::GenerationFenced(format!(
+            "run generation {run_generation} does not match current Agent generation {current_generation}"
+        )));
+    }
+    let mut material = b"hepta:agentd:objective-fence:v1\0".to_vec();
+    material.extend_from_slice(identity.agent_id.as_str().as_bytes());
+    material.extend_from_slice(&identity.spawn_generation.to_be_bytes());
+    material.extend_from_slice(&current_generation.to_be_bytes());
+    let expected = codex_hepta_contracts::Sha256Digest::for_bytes(&material);
+    if fence_digest != expected.as_str() {
+        return Err(AgentdError::GenerationFenced(
+            "run fence digest does not match the current Agent generation".to_string(),
+        ));
+    }
+    Ok(())
+}
+
 fn internal_run_snapshot(value: crate::AgentRunSnapshot) -> crate::RunSnapshot {
     crate::RunSnapshot {
         run_id: value.run_id,
@@ -733,6 +769,8 @@ fn internal_run_snapshot(value: crate::AgentRunSnapshot) -> crate::RunSnapshot {
         body_digest: value.body_digest,
         artifact_set_digest: value.artifact_set_digest,
         authority_epoch: value.authority_epoch,
+        generation: value.generation,
+        fence_digest: value.fence_digest,
         deadline_ms: value.deadline_ms,
     }
 }
@@ -745,6 +783,8 @@ fn internal_context_attachment(value: crate::AgentContextAttachment) -> crate::C
         body_digest: value.body_digest,
         artifact_set_digest: value.artifact_set_digest,
         authority_epoch: value.authority_epoch,
+        generation: value.generation,
+        fence_digest: value.fence_digest,
         deadline_ms: value.deadline_ms,
         context_digest: value.context_digest,
         compilation_receipt_digest: value.compilation_receipt_digest,
@@ -784,6 +824,8 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         phase: wire_run_phase(value.phase),
         context_digest: value.context_digest,
         authority_epoch: value.authority_epoch,
+        generation: value.generation,
+        fence_digest: value.fence_digest,
         deadline_ms: value.deadline_ms,
         cancel_reason: value.cancel_reason,
         cancel_ack_deadline_ms: value.cancel_ack_deadline_ms,
