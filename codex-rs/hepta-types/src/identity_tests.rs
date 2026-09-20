@@ -71,17 +71,28 @@ fn stable_id_boundaries_and_alphabet_are_exhaustive() {
 }
 
 #[test]
-fn monotonic_values_reject_overflow() {
+fn monotonic_values_reject_zero_and_overflow_for_every_public_type() {
+    assert_eq!(Generation::new(0), Err(IdentityError::Zero));
+    assert_eq!(Revision::new(0), Err(IdentityError::Zero));
+    assert_eq!(LogicalSequence::new(0), Err(IdentityError::Zero));
+
     let generation = Generation::new(u64::MAX);
     let Ok(generation) = generation else {
         panic!("maximum nonzero generation rejected");
     };
     assert_eq!(generation.next(), Err(IdentityError::Overflow));
-    let revision = Revision::new(1);
+
+    let revision = Revision::new(u64::MAX);
     let Ok(revision) = revision else {
-        panic!("valid revision rejected");
+        panic!("maximum nonzero revision rejected");
     };
-    assert_eq!(revision.next().map(Revision::get), Ok(2));
+    assert_eq!(revision.next(), Err(IdentityError::Overflow));
+
+    let sequence = LogicalSequence::new(u64::MAX);
+    let Ok(sequence) = sequence else {
+        panic!("maximum nonzero logical sequence rejected");
+    };
+    assert_eq!(sequence.next(), Err(IdentityError::Overflow));
 }
 
 #[test]

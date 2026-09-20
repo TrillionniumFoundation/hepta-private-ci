@@ -31,6 +31,14 @@ fn probability_clamp_and_division_fail_closed() {
         FixedQ32::from_raw(i64::MIN).checked_sub(FixedQ32::ONE),
         Err(FixedQ32Error::Overflow)
     );
+    assert_eq!(
+        FixedQ32::from_raw(i64::MAX).checked_mul(FixedQ32::from_raw(i64::MAX)),
+        Err(FixedQ32Error::Overflow)
+    );
+    assert_eq!(
+        FixedQ32::from_raw(i64::MAX).checked_div(FixedQ32::from_raw(1)),
+        Err(FixedQ32Error::Overflow)
+    );
 }
 
 #[test]
