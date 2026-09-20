@@ -2,8 +2,8 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `331b81d385a88837e252bd80fda8b8ac35ea4191`
-- candidate implementation head: `97f77787344806cbd89837a4f67bf6d0f876138d`
-- candidate implementation tree: `8361a52b9b0e019c6670ee47705cf5c7dbadb4c5`
+- candidate implementation head: `1b470b31b266e58bcde1f924f41fd09050225d6d`
+- candidate implementation tree: `872a2bd3f9b2f913958373f8105c39e8ecd701bc`
 - status: `pending_exact_current_head_execution`
 - claim boundary: source/product-composition candidate only; no activation, release, or product-execution proof is asserted here.
 
