@@ -1,6 +1,7 @@
 use std::fmt;
 use std::path::PathBuf;
 
+use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest as _;
@@ -41,8 +42,12 @@ pub fn validate_digest(value: &str, name: &'static str) -> Result<(), ShellError
     Ok(())
 }
 
+pub fn sha256_bytes(bytes: impl AsRef<[u8]>) -> [u8; 32] {
+    Sha256::digest(bytes.as_ref()).into()
+}
+
 pub fn sha256_hex(bytes: impl AsRef<[u8]>) -> String {
-    let digest = Sha256::digest(bytes.as_ref());
+    let digest = sha256_bytes(bytes);
     let mut out = String::with_capacity(64);
     for byte in digest {
         use std::fmt::Write as _;
@@ -215,37 +220,11 @@ impl PlatformPayload {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PlatformRequest {
+    pub subject_id: String,
     pub operation_id: String,
     pub displayed_revision: u64,
     pub payload: PlatformPayload,
-    pub grant: SignedPlatformGrantV1,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct SignedPlatformGrantV1 {
-    pub key_id: String,
-    pub session_id: String,
-    pub session_generation: u64,
-    pub operation_id: String,
-    pub action: PlatformAction,
-    pub payload_digest: String,
-    pub expires_unix_ms: u64,
-    pub signature_base64: String,
-}
-
-impl SignedPlatformGrantV1 {
-    pub fn signing_message(&self) -> String {
-        format!(
-            "hepta.platform-grant.v1\nkey_id={}\nsession_id={}\nsession_generation={}\noperation_id={}\naction={}\npayload_digest={}\nexpires_unix_ms={}\n",
-            self.key_id,
-            self.session_id,
-            self.session_generation,
-            self.operation_id,
-            self.action,
-            self.payload_digest,
-            self.expires_unix_ms
-        )
-    }
+    pub grant: SignedFinalUseGrant,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
