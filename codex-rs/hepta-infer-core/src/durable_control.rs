@@ -145,6 +145,7 @@ pub enum Error {
     StaleRevision,
     ReservationMismatch,
     AssignmentMismatch,
+    AuthorityDenied,
     UsageExceeded,
     TerminalObservationMissing,
     CorruptJournal(&'static str),
