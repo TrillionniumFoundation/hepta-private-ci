@@ -18,6 +18,7 @@ mod ledger;
 mod model;
 mod outbox;
 
+pub use durable::DurableOperationBinding;
 pub use durable::DurableOperationLedger;
 pub use durable::DurableOperationRecord;
 pub use error::OperationError;
