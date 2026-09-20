@@ -49,11 +49,7 @@ fn compiler_composes_into_admitted_v2_transport_without_serializing_authority()
     assert_eq!(decoded.context_digest, receipt.context_digest.to_string());
     assert!(!String::from_utf8_lossy(envelope.payload()).contains("authority"));
     assert!(matches!(
-        encode_compilation_receipt_wire_v2(
-            &receipt,
-            id("runtime.agentd"),
-            Generation::new(2)?,
-        ),
+        encode_compilation_receipt_wire_v2(&receipt, id("runtime.agentd"), Generation::new(2)?,),
         Err(ContextWireError::UnexpectedProducer(_))
     ));
     Ok(())
