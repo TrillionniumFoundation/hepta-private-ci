@@ -113,6 +113,23 @@
       "delegatedCallees": []
     },
     {
+      "operation": "durable_storage_lifecycle",
+      "nativeSymbol": "DurableOperationStore::open / prune_terminal",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "durability-kernel local owner store",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::migration_checksum_tamper_fails_reopen",
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::future_migration_lineage_blocks_old_binary_reopen",
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::corrupt_database_fails_closed",
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::terminal_gc_writes_tombstone_and_prevents_resurrection"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "durable_storage_lifecycle",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "reference_operationledger",
       "nativeSymbol": "OperationLedger",
       "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
@@ -210,7 +227,7 @@
     },
     {
       "path": "codex-rs/hepta-operations",
-      "object": "575a844af4372f421527f9eebdd61d10a103e9ec"
+      "object": "44517fcb7b5f6e53bd52549982f9946517be7688"
     },
     {
       "path": "codex-rs/hepta-operations/src/destination_dedupe.rs",
