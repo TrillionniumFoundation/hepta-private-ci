@@ -164,6 +164,7 @@
         "ModulePort::kernel.authority::runtime.fleet",
         "ModulePort::kernel.authority::runtime.supervisor",
         "ModulePort::kernel.authority::secrets.heptabao",
+        "ModulePort::kernel.authority::ui.native",
         "VerifiedUseTokenWitnessV1"
       ],
       "consumedContracts": [
@@ -2624,7 +2625,9 @@
       "producedContracts": [],
       "consumedContracts": [
         "DomainRead::runtime_health_observationV1",
-        "ModulePort::runtime.agentd::ui.native"
+        "ModulePort::kernel.authority::ui.native",
+        "ModulePort::runtime.agentd::ui.native",
+        "VerifiedUseTokenWitnessV1"
       ],
       "protocols": [],
       "ownedDomains": [],
