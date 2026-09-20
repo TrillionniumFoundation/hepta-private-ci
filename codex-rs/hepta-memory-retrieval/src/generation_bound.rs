@@ -13,6 +13,16 @@ use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::HnmfContractError;
+use codex_hepta_cognitive_types::hnmf_learning::ActivationPathV1 as CanonicalActivationPathV1;
+use codex_hepta_cognitive_types::hnmf_learning::ActiveNodeV1 as CanonicalActiveNodeV1;
+use codex_hepta_cognitive_types::hnmf_learning::ContradictionV1 as CanonicalContradictionV1;
+use codex_hepta_cognitive_types::hnmf_learning::RecallAbstainReasonV1 as CanonicalRecallAbstainReasonV1;
+use codex_hepta_cognitive_types::hnmf_learning::RecallPacketV1 as CanonicalRecallPacketV1;
+use codex_hepta_cognitive_types::hnmf_learning::RecallResourceReceiptV1 as CanonicalRecallResourceReceiptV1;
+use codex_hepta_cognitive_types::hnmf_learning::SelectedEventRefV1 as CanonicalSelectedEventRefV1;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCContractError;
 use codex_hepta_types::AuthorityPosture;
@@ -388,6 +398,106 @@ impl RecallPacketV1 {
     }
 }
 
+/// Extra HNMF evidence needed to project the legacy generation-bound packet
+/// into the canonical cognitive.types RecallPacketV1 during shadow migration.
+///
+/// The adapter deliberately does not fabricate graph/runtime evidence from the
+/// legacy score packet. The HNMF owner supplies those exact bounded values.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalRecallShadowContextV1 {
+    pub event_snapshot_digest: ContractDigestV1,
+    pub engram_snapshot_digest: ContractDigestV1,
+    pub active_nodes: Vec<CanonicalActiveNodeV1>,
+    pub activation_paths: Vec<CanonicalActivationPathV1>,
+    pub contradictions: Vec<CanonicalContradictionV1>,
+    pub coverage_ppm: u32,
+    pub confidence_ppm: u32,
+    pub ood_ppm: u32,
+    pub resource_receipt: CanonicalRecallResourceReceiptV1,
+}
+
+/// Side-by-side migration adapter from the existing retrieval receipt to the
+/// canonical HNMF V1 contract.
+///
+/// This is a shadow projection only. It grants no attachment, model-call,
+/// writer, selection, promotion, or release authority and does not replace the
+/// legacy packet in place.
+pub fn adapt_generation_bound_recall_to_canonical_shadow_v1(
+    legacy: &RecallPacketV1,
+    context: CanonicalRecallShadowContextV1,
+) -> Result<CanonicalRecallPacketV1, RecallErrorV1> {
+    legacy.validate()?;
+
+    let cue_digest =
+        ContractDigestV1::from_digest(legacy.cue_digest).map_err(RecallErrorV1::CanonicalContract)?;
+
+    let (mut selected_events, abstain) = match legacy.disposition {
+        RecallDispositionV1::Recalled => {
+            let mut selected = Vec::with_capacity(legacy.selections.len());
+            for selection in &legacy.selections {
+                selected.push(CanonicalSelectedEventRefV1 {
+                    event_id: ContractIdV1::new(selection.record_id.to_string())
+                        .map_err(RecallErrorV1::CanonicalContract)?,
+                    revision: selection.record_revision.get(),
+                    event_digest: ContractDigestV1::from_digest(selection.record_digest)
+                        .map_err(RecallErrorV1::CanonicalContract)?,
+                });
+            }
+            (selected, None)
+        }
+        RecallDispositionV1::Abstained(reason) => (
+            Vec::new(),
+            Some(match reason {
+                RecallAbstentionReasonV1::NoCandidate => {
+                    CanonicalRecallAbstainReasonV1::NoCandidate
+                }
+                RecallAbstentionReasonV1::InsufficientChannelCoverage => {
+                    CanonicalRecallAbstainReasonV1::InsufficientCoverage
+                }
+                RecallAbstentionReasonV1::ScoreBelowFloor => {
+                    CanonicalRecallAbstainReasonV1::LowConfidence
+                }
+                RecallAbstentionReasonV1::OutOfDistribution => {
+                    CanonicalRecallAbstainReasonV1::OutOfDistribution
+                }
+                RecallAbstentionReasonV1::ContradictoryEvidence => {
+                    CanonicalRecallAbstainReasonV1::UnresolvedContradiction
+                }
+            }),
+        ),
+    };
+    selected_events.sort();
+
+    let minimum_candidates = selected_events
+        .len()
+        .checked_add(usize::try_from(legacy.omitted_count).unwrap_or(usize::MAX))
+        .ok_or(RecallErrorV1::Arithmetic)?;
+    if usize::from(context.resource_receipt.candidate_event_count) < minimum_candidates {
+        return Err(RecallErrorV1::CanonicalAdapter(
+            "candidate receipt undercounts legacy selected plus omitted events",
+        ));
+    }
+
+    let canonical = CanonicalRecallPacketV1 {
+        cue_digest,
+        event_snapshot_digest: context.event_snapshot_digest,
+        engram_snapshot_digest: context.engram_snapshot_digest,
+        selected_events,
+        active_nodes: context.active_nodes,
+        activation_paths: context.activation_paths,
+        contradictions: context.contradictions,
+        coverage_ppm: context.coverage_ppm,
+        confidence_ppm: context.confidence_ppm,
+        ood_ppm: context.ood_ppm,
+        abstain,
+        resource_receipt: context.resource_receipt,
+    };
+    canonical
+        .validate()
+        .map_err(RecallErrorV1::CanonicalContract)?;
+    Ok(canonical)
+}
+
 pub fn build_candidate_union(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
@@ -609,6 +719,8 @@ fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RecallErrorV1 {
     Contract(LaneCContractError),
+    CanonicalContract(HnmfContractError),
+    CanonicalAdapter(&'static str),
     EmptyDigest(&'static str),
     EmptyChannelPolicy,
     DuplicateChannelPolicy(RetrievalChannelV1),
