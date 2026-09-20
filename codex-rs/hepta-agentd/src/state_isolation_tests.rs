@@ -278,11 +278,10 @@ struct OtherRuntimeAttachment;
 #[test]
 fn generic_runtime_attachment_registry_is_typed_and_quarantines_route() -> anyhow::Result<()> {
     let (_temp, _registry, state) = fixture()?;
-    state
-        .attach_runtime_module(
-            "auth.authbus",
-            std::sync::Arc::new(DummyRuntimeAttachment(7)),
-        )?;
+    state.attach_runtime_module(
+        "auth.authbus",
+        std::sync::Arc::new(DummyRuntimeAttachment(7)),
+    )?;
 
     let attached = state
         .runtime_attachment::<DummyRuntimeAttachment>("auth.authbus")?
