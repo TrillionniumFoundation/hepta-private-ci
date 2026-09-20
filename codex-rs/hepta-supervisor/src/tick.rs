@@ -36,19 +36,24 @@ impl<D: ProcessDriver> Supervisor<D> {
             };
             if keep {
                 slot.runtime = Some(runtime);
-            } else if !self.continue_release_change_after_exit(agent_id, slot, now)?
-                && slot.restart_pending
-            {
-                slot.restart_pending = false;
-                let release = slot.active_release.clone().or_else(|| {
-                    slot.last_command
-                        .clone()
-                        .and_then(|command| crate::AgentRelease::unversioned(command).ok())
-                });
-                let release =
-                    release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
-                self.start_release_slot(agent_id, slot, release, now)?;
+            } else {
+                let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
             }
+        }
+        if slot.runtime.is_none()
+            && slot.release_change.is_none()
+            && slot.restart_pending
+            && slot.restart_not_before.is_none_or(|eligible| now >= eligible)
+        {
+            let release = slot.active_release.clone().or_else(|| {
+                slot.last_command
+                    .clone()
+                    .and_then(|command| crate::AgentRelease::unversioned(command).ok())
+            });
+            let release =
+                release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
+            self.start_release_slot(agent_id, slot, release, now)?;
+            slot.restart_pending = false;
         }
         self.tick_matrix_companion(agent_id, slot, now)
     }
@@ -108,6 +113,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 );
                 slot.event(next.generation, SupervisorEventKind::Healthy);
                 self.release_became_healthy(agent_id, slot, next.generation)?;
+                let record = self.record(agent_id)?;
+                crate::restart_budget::complete_restart(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.restart_not_before = None;
             }
             RuntimePhase::AwaitingHealth { deadline: limit } if now >= limit => {
                 let next = self.registry.compare_and_transition(
