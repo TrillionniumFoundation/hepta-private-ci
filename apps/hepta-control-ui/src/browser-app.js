@@ -90,6 +90,42 @@ export function buildControlViewModel(view) {
   });
 }
 
+function bindClientMethod(client, method, { required = true } = {}) {
+  let owner = client;
+  while (owner !== null) {
+    const descriptor = Object.getOwnPropertyDescriptor(owner, method);
+    if (descriptor) {
+      if (
+        !Object.hasOwn(descriptor, "value") ||
+        descriptor.get !== undefined ||
+        descriptor.set !== undefined ||
+        typeof descriptor.value !== "function"
+      ) {
+        fail(ERROR_CODES.INVALID_INPUT, `client.${method} must be a data method`);
+      }
+      return descriptor.value.bind(client);
+    }
+    owner = Object.getPrototypeOf(owner);
+  }
+  if (required) {
+    fail(ERROR_CODES.INVALID_INPUT, `client.${method} must be a function`);
+  }
+  return null;
+}
+
+function bindClientFacade(client) {
+  if (client === null || (typeof client !== "object" && typeof client !== "function")) {
+    fail(ERROR_CODES.INVALID_INPUT, "client must be an object");
+  }
+  const facade = Object.create(null);
+  for (const method of ["readView", "submitRequest", "requestStop"]) {
+    facade[method] = bindClientMethod(client, method);
+  }
+  const reconcilePending = bindClientMethod(client, "reconcilePending", { required: false });
+  if (reconcilePending) facade.reconcilePending = reconcilePending;
+  return Object.freeze(facade);
+}
+
 export class ControlPlaneApp {
   #root;
   #document;
@@ -111,14 +147,7 @@ export class ControlPlaneApp {
   }) {
     this.#root = requireRoot(root);
     this.#document = root.ownerDocument;
-    if (client === null || (typeof client !== "object" && typeof client !== "function")) {
-      fail(ERROR_CODES.INVALID_INPUT, "client must be an object");
-    }
-    for (const method of ["readView", "submitRequest", "requestStop"]) {
-      if (typeof client[method] !== "function") {
-        fail(ERROR_CODES.INVALID_INPUT, `client.${method} must be a function`);
-      }
-    }
+    const clientFacade = bindClientFacade(client);
     if (typeof confirmAction !== "function") {
       fail(ERROR_CODES.INVALID_INPUT, "confirmAction must be a function");
     }
@@ -128,7 +157,7 @@ export class ControlPlaneApp {
     if (typeof stopScopeFactory !== "function") {
       fail(ERROR_CODES.INVALID_INPUT, "stopScopeFactory must be a function");
     }
-    this.#client = client;
+    this.#client = clientFacade;
     this.#confirmAction = confirmAction;
     this.#operationIdFactory = operationIdFactory;
     this.#stopScopeFactory = stopScopeFactory;
