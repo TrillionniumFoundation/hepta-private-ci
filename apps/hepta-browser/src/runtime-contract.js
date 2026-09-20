@@ -114,6 +114,7 @@ export function indeterminateReceipt(profileId, operationId, semanticDigest, rea
     semanticDigest,
     status: "indeterminate",
     outcomeDigest: null,
+    terminalEvidenceDigest: null,
     terminalObserved: false,
     observationReason: reason,
   });
