@@ -68,10 +68,17 @@ pub struct RetrievalAssignmentFact {
     pub enumerated_candidate_digests: Vec<Digest32>,
     pub legal_candidate_indices: Vec<u32>,
     pub selected_candidate_indices: Vec<u32>,
-    /// Actual subset that survived downstream learned reranking, response
-    /// budget, NDU planning and final owner/currentness fences.
+    /// Exact subset published by the owner to the named product consumer after
+    /// downstream learned reranking, response budget, NDU planning and final
+    /// owner/currentness fences. Provider/model attachment is proved separately
+    /// by the inference journal; this field alone does not claim model delivery.
     pub delivered_candidate_indices: Vec<u32>,
+    /// Whether a non-empty retrieval context was published to that consumer.
     pub context_exposed: bool,
+    /// Digest of the exact serialized CognitiveContextSnapshot returned by the
+    /// owner. The inference journal carries the same digest so a later
+    /// native_started receipt can prove actual turn/start attachment.
+    pub published_context_digest: Option<Digest32>,
     pub omitted_by_policy_limits: u32,
     pub assignment_propensity: ProbabilityQ32,
     /// Exact learned policy payload that affected final delivery, when a
