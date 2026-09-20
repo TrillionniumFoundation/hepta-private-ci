@@ -23,6 +23,7 @@ use std::process::ChildStdin;
 use std::process::ChildStdout;
 use std::process::Command;
 use std::process::Stdio;
+use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 use std::time::Instant;
@@ -44,6 +45,8 @@ pub const LOCAL_RUNTIME_PROTOCOL: &str = "hepta.local-model-driver.v1";
 const DEFAULT_MAX_PROTOCOL_LINE_BYTES: usize = 2 * 1024 * 1024;
 const HARD_MAX_PROTOCOL_LINE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
+const DEFAULT_OPERATION_TIMEOUT: Duration = Duration::from_secs(120);
+const HARD_MAX_OPERATION_TIMEOUT: Duration = Duration::from_secs(3600);
 const DEFAULT_SHUTDOWN_TIMEOUT: Duration = Duration::from_secs(2);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -63,6 +66,7 @@ pub struct LocalProcessDriverConfig {
     pub runtime_executable: PathBuf,
     pub models: BTreeMap<String, LocalModelArtifacts>,
     pub maximum_protocol_line_bytes: usize,
+    pub maximum_operation_timeout: Duration,
     pub shutdown_timeout: Duration,
 }
 
@@ -72,6 +76,7 @@ impl LocalProcessDriverConfig {
             runtime_executable,
             models,
             maximum_protocol_line_bytes: DEFAULT_MAX_PROTOCOL_LINE_BYTES,
+            maximum_operation_timeout: DEFAULT_OPERATION_TIMEOUT,
             shutdown_timeout: DEFAULT_SHUTDOWN_TIMEOUT,
         }
     }
@@ -116,6 +121,8 @@ impl LocalProcessDriver {
     pub fn new(config: LocalProcessDriverConfig) -> Result<Self, Error> {
         if config.maximum_protocol_line_bytes == 0
             || config.maximum_protocol_line_bytes > HARD_MAX_PROTOCOL_LINE_BYTES
+            || config.maximum_operation_timeout.is_zero()
+            || config.maximum_operation_timeout > HARD_MAX_OPERATION_TIMEOUT
             || config.shutdown_timeout.is_zero()
             || config.shutdown_timeout > Duration::from_secs(30)
         {
@@ -265,8 +272,20 @@ impl LocalProcessDriver {
         Ok(())
     }
 
-    fn shutdown_after_ack(&self, process: &mut RuntimeProcess) -> Result<(), Error> {
-        let deadline = Instant::now() + self.config.shutdown_timeout;
+    fn bounded_deadline(&self, caller_wait: Duration) -> Result<Instant, Error> {
+        let wait = caller_wait.min(self.config.maximum_operation_timeout);
+        if wait.is_zero() {
+            return Err(driver_error("local runtime operation deadline expired"));
+        }
+        Ok(Instant::now() + wait)
+    }
+
+    fn shutdown_after_ack(
+        &self,
+        process: &mut RuntimeProcess,
+        operation_deadline: Instant,
+    ) -> Result<(), Error> {
+        let deadline = (Instant::now() + self.config.shutdown_timeout).min(operation_deadline);
         loop {
             match process.child.try_wait().map_err(io_error)? {
                 Some(status) if status.success() => return Ok(()),
@@ -292,8 +311,11 @@ impl ModelDriver for LocalProcessDriver {
         &mut self,
         manifest: &ModelManifest,
         grant: &ResourceGrant,
+        maximum_wait: Duration,
     ) -> Result<DriverModelHandle, Error> {
+        let deadline = self.bounded_deadline(maximum_wait)?;
         let artifacts = self.verify_manifest_artifacts(manifest)?;
+        ensure_time_remaining(deadline)?;
         let mut process = self.spawn_runtime()?;
         let request = json!({
             "protocol": LOCAL_RUNTIME_PROTOCOL,
@@ -325,18 +347,18 @@ impl ModelDriver for LocalProcessDriver {
                 "semantic_digest": grant.semantic_digest,
             }
         });
-        if let Err(error) = write_message(&mut process.stdin, &request) {
-            process.terminate();
-            return Err(error);
-        }
-        let response =
-            match read_message(&mut process.stdout, self.config.maximum_protocol_line_bytes) {
-                Ok(response) => response,
-                Err(error) => {
-                    process.terminate();
-                    return Err(error);
-                }
-            };
+        let response = match exchange_message_bounded(
+            &mut process,
+            &request,
+            self.config.maximum_protocol_line_bytes,
+            remaining_time(deadline)?,
+        ) {
+            Ok(response) => response,
+            Err(error) => {
+                process.terminate();
+                return Err(error);
+            }
+        };
         require_string(&response, "protocol", LOCAL_RUNTIME_PROTOCOL)?;
         require_string(&response, "op", "loaded")?;
         require_string(&response, "model_id", &manifest.model_id)?;
@@ -368,6 +390,10 @@ impl ModelDriver for LocalProcessDriver {
             process.terminate();
             return Err(error);
         }
+        if let Err(error) = ensure_time_remaining(deadline) {
+            process.terminate();
+            return Err(error);
+        }
         process.reserved_memory_bytes = reserved_memory_bytes;
         process.observed_memory_bytes = observed_memory_bytes;
         self.processes.insert(handle_id.clone(), process);
@@ -382,7 +408,9 @@ impl ModelDriver for LocalProcessDriver {
         &mut self,
         handle: &DriverModelHandle,
         request: &WorkerRequest,
+        maximum_wait: Duration,
     ) -> Result<DriverRunObservation, Error> {
+        let deadline = self.bounded_deadline(maximum_wait)?;
         let process = self
             .processes
             .get_mut(&handle.opaque_id)
@@ -402,20 +430,20 @@ impl ModelDriver for LocalProcessDriver {
             "maximum_tokens": request.maximum_tokens,
             "deadline_ms": request.deadline_ms,
         });
-        // Once a request write begins, an I/O failure is conservatively treated
-        // as an unknown execution, never as permission to replay.
-        if write_message(&mut process.stdin, &message).is_err() {
-            process.terminate();
-            return Ok(indeterminate(process.observed_memory_bytes));
-        }
-        let response =
-            match read_message(&mut process.stdout, self.config.maximum_protocol_line_bytes) {
-                Ok(response) => response,
-                Err(_) => {
-                    process.terminate();
-                    return Ok(indeterminate(process.observed_memory_bytes));
-                }
-            };
+        // Once request exchange begins, timeout or I/O loss is conservatively
+        // treated as unknown execution, never as permission to replay.
+        let response = match exchange_message_bounded(
+            process,
+            &message,
+            self.config.maximum_protocol_line_bytes,
+            remaining_time(deadline)?,
+        ) {
+            Ok(response) => response,
+            Err(_) => {
+                process.terminate();
+                return Ok(indeterminate(process.observed_memory_bytes));
+            }
+        };
         if require_string(&response, "protocol", LOCAL_RUNTIME_PROTOCOL).is_err()
             || require_string(&response, "op", "run_result").is_err()
             || require_string(&response, "handle_id", &handle.opaque_id).is_err()
@@ -484,7 +512,12 @@ impl ModelDriver for LocalProcessDriver {
         })
     }
 
-    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+    fn unload(
+        &mut self,
+        handle: DriverModelHandle,
+        maximum_wait: Duration,
+    ) -> Result<(), Error> {
+        let deadline = self.bounded_deadline(maximum_wait)?;
         let mut process = self
             .processes
             .remove(&handle.opaque_id)
@@ -494,18 +527,18 @@ impl ModelDriver for LocalProcessDriver {
             "op": "unload",
             "handle_id": handle.opaque_id,
         });
-        if let Err(error) = write_message(&mut process.stdin, &request) {
-            process.terminate();
-            return Err(error);
-        }
-        let response =
-            match read_message(&mut process.stdout, self.config.maximum_protocol_line_bytes) {
-                Ok(response) => response,
-                Err(error) => {
-                    process.terminate();
-                    return Err(error);
-                }
-            };
+        let response = match exchange_message_bounded(
+            &mut process,
+            &request,
+            self.config.maximum_protocol_line_bytes,
+            remaining_time(deadline)?,
+        ) {
+            Ok(response) => response,
+            Err(error) => {
+                process.terminate();
+                return Err(error);
+            }
+        };
         if require_string(&response, "protocol", LOCAL_RUNTIME_PROTOCOL).is_err()
             || require_string(&response, "op", "unloaded").is_err()
             || require_string(&response, "handle_id", &handle.opaque_id).is_err()
@@ -515,7 +548,7 @@ impl ModelDriver for LocalProcessDriver {
                 "local runtime unload acknowledgement mismatch",
             ));
         }
-        self.shutdown_after_ack(&mut process)
+        self.shutdown_after_ack(&mut process, deadline)
     }
 }
 
@@ -535,6 +568,49 @@ fn write_message(stdin: &mut ChildStdin, value: &Value) -> Result<(), Error> {
     bytes.push(b'\n');
     stdin.write_all(&bytes).map_err(io_error)?;
     stdin.flush().map_err(io_error)
+}
+
+fn ensure_time_remaining(deadline: Instant) -> Result<(), Error> {
+    remaining_time(deadline).map(|_| ())
+}
+
+fn remaining_time(deadline: Instant) -> Result<Duration, Error> {
+    let remaining = deadline.saturating_duration_since(Instant::now());
+    if remaining.is_zero() {
+        return Err(driver_error("local runtime operation deadline expired"));
+    }
+    Ok(remaining)
+}
+
+fn exchange_message_bounded(
+    process: &mut RuntimeProcess,
+    request: &Value,
+    maximum_bytes: usize,
+    maximum_wait: Duration,
+) -> Result<Value, Error> {
+    let child = &mut process.child;
+    let stdin = &mut process.stdin;
+    let stdout = &mut process.stdout;
+    thread::scope(|scope| {
+        let (done_tx, done_rx) = mpsc::sync_channel::<()>(1);
+        let watchdog = scope.spawn(move || match done_rx.recv_timeout(maximum_wait) {
+            Ok(()) | Err(mpsc::RecvTimeoutError::Disconnected) => false,
+            Err(mpsc::RecvTimeoutError::Timeout) => {
+                let _ = child.kill();
+                let _ = child.wait();
+                true
+            }
+        });
+        let result =
+            write_message(stdin, request).and_then(|()| read_message(stdout, maximum_bytes));
+        let _ = done_tx.send(());
+        let timed_out = watchdog.join().unwrap_or(true);
+        if timed_out {
+            Err(driver_error("local runtime response deadline exceeded"))
+        } else {
+            result
+        }
+    })
 }
 
 fn read_message(stdout: &mut BufReader<ChildStdout>, maximum_bytes: usize) -> Result<Value, Error> {

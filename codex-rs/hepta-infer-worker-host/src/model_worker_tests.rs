@@ -12,6 +12,7 @@ impl ModelDriver for Driver {
         &mut self,
         manifest: &ModelManifest,
         _grant: &ResourceGrant,
+        _maximum_wait: Duration,
     ) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
         Ok(DriverModelHandle {
@@ -25,6 +26,7 @@ impl ModelDriver for Driver {
         &mut self,
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
+        _maximum_wait: Duration,
     ) -> Result<DriverRunObservation, Error> {
         if self.indeterminate {
             return Ok(DriverRunObservation {
@@ -44,7 +46,11 @@ impl ModelDriver for Driver {
         })
     }
 
-    fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+    fn unload(
+        &mut self,
+        _handle: DriverModelHandle,
+        _maximum_wait: Duration,
+    ) -> Result<(), Error> {
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -62,6 +68,10 @@ fn grant() -> ResourceGrant {
         maximum_memory_bytes: 4_096,
         semantic_digest: "1".repeat(64),
     }
+}
+
+fn verified_grant(now_ms: u64) -> VerifiedResourceGrant {
+    VerifiedResourceGrant::trusted_in_process(now_ms, grant()).unwrap()
 }
 
 fn manifest() -> ModelManifest {
@@ -102,13 +112,13 @@ fn loads_runs_and_unloads_exact_model_tuple() {
         100,
         "worker.1".to_string(),
         3,
-        VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+        verified_grant(100),
         Driver::default(),
     )
     .expect("worker");
-    let loaded = worker.load_model(100, manifest()).expect("load");
+    let loaded = worker.load_model(100, verified_grant(100), manifest()).expect("load");
     assert!(loaded.terminal_observed);
-    let observed = worker.run(100, "model.1", request()).expect("run");
+    let observed = worker.run(100, verified_grant(100), "model.1", request()).expect("run");
     assert_eq!(observed.status, ExecutionStatus::Succeeded);
     assert!(observed.terminal_observed);
     assert!(
@@ -125,21 +135,21 @@ fn rejects_changed_tokenizer_model_or_payload_tuple() {
         100,
         "worker.1".to_string(),
         3,
-        VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+        verified_grant(100),
         Driver::default(),
     )
     .expect("worker");
-    worker.load_model(100, manifest()).expect("load");
+    worker.load_model(100, verified_grant(100), manifest()).expect("load");
     let mut changed = request();
     changed.lease_payload_digest = "4".repeat(64);
     assert_eq!(
-        worker.run(100, "model.1", changed),
+        worker.run(100, verified_grant(100), "model.1", changed),
         Err(Error::PayloadMismatch)
     );
     let mut changed = request();
     changed.reservation_model_digest = "5".repeat(64);
     assert_eq!(
-        worker.run(100, "model.1", changed),
+        worker.run(100, verified_grant(100), "model.1", changed),
         Err(Error::ModelMismatch)
     );
 }
@@ -154,15 +164,31 @@ fn lost_driver_terminality_is_indeterminate() {
         100,
         "worker.1".to_string(),
         3,
-        VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+        verified_grant(100),
         driver,
     )
     .expect("worker");
-    worker.load_model(100, manifest()).expect("load");
-    let observed = worker.run(100, "model.1", request()).expect("run");
+    worker.load_model(100, verified_grant(100), manifest()).expect("load");
+    let observed = worker.run(100, verified_grant(100), "model.1", request()).expect("run");
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
     assert!(!observed.terminal_observed);
     assert_eq!(observed.output_digest, None);
+}
+
+#[test]
+fn stale_verified_grant_cannot_authorize_a_later_operation() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        verified_grant(100),
+        Driver::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        worker.load_model(101, verified_grant(100), manifest()),
+        Err(Error::InvalidGrant)
+    );
 }
 
 #[derive(Debug)]
@@ -193,15 +219,15 @@ fn local_input_is_bound_to_the_lease_payload_digest() {
         100,
         "worker.1".to_string(),
         3,
-        VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+        verified_grant(100),
         Driver::default(),
     )
     .unwrap();
-    worker.load_model(100, manifest()).unwrap();
+    worker.load_model(100, verified_grant(100), manifest()).unwrap();
     let mut changed = request();
     changed.input.push('!');
     assert_eq!(
-        worker.run(100, "model.1", changed),
+        worker.run(100, verified_grant(100), "model.1", changed),
         Err(Error::PayloadMismatch)
     );
 }

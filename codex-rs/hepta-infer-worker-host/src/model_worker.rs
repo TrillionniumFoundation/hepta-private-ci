@@ -3,6 +3,7 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+use std::time::Duration;
 
 use sha2::Digest;
 use sha2::Sha256;
@@ -56,10 +57,15 @@ pub trait ResourceGrantVerifier {
     fn verify(&self, now_ms: u64, grant: &ResourceGrant) -> Result<GrantVerification, Error>;
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+/// Single-use admission evidence for one trusted current-time observation.
+///
+/// This type is intentionally not Clone. Every fresh model operation consumes a
+/// token verified at the exact `now_ms` supplied to that operation.
+#[derive(Debug, Eq, PartialEq)]
 pub struct VerifiedResourceGrant {
     grant: ResourceGrant,
     verification: GrantVerification,
+    verified_at_ms: u64,
 }
 
 impl VerifiedResourceGrant {
@@ -68,6 +74,7 @@ impl VerifiedResourceGrant {
         Ok(Self {
             grant,
             verification: GrantVerification::TrustedInProcess,
+            verified_at_ms: now_ms,
         })
     }
 
@@ -93,6 +100,7 @@ impl VerifiedResourceGrant {
         Ok(Self {
             grant,
             verification,
+            verified_at_ms: now_ms,
         })
     }
 
@@ -102,6 +110,10 @@ impl VerifiedResourceGrant {
 
     pub fn verification(&self) -> &GrantVerification {
         &self.verification
+    }
+
+    pub fn verified_at_ms(&self) -> u64 {
+        self.verified_at_ms
     }
 }
 
@@ -215,13 +227,19 @@ pub trait ModelDriver {
         &mut self,
         manifest: &ModelManifest,
         grant: &ResourceGrant,
+        maximum_wait: Duration,
     ) -> Result<DriverModelHandle, Error>;
     fn run(
         &mut self,
         handle: &DriverModelHandle,
         request: &WorkerRequest,
+        maximum_wait: Duration,
     ) -> Result<DriverRunObservation, Error>;
-    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
+    fn unload(
+        &mut self,
+        handle: DriverModelHandle,
+        maximum_wait: Duration,
+    ) -> Result<(), Error>;
 }
 
 #[derive(Debug)]
@@ -255,9 +273,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if generation == 0 || generation != grant.grant().generation {
             return Err(Error::InvalidGrant);
         }
+        if grant.verified_at_ms != now_ms {
+            return Err(Error::InvalidGrant);
+        }
         let VerifiedResourceGrant {
             grant,
             verification: grant_verification,
+            verified_at_ms: _,
         } = grant;
         Ok(Self {
             worker_id,
@@ -281,9 +303,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
     pub fn load_model(
         &mut self,
         now_ms: u64,
+        current_grant: VerifiedResourceGrant,
         manifest: ModelManifest,
     ) -> Result<ModelLoadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        self.admit_current_grant(now_ms, current_grant)?;
         validate_manifest(&manifest)?;
         if self.models.contains_key(&manifest.model_id) {
             return Err(Error::ModelAlreadyLoaded);
@@ -292,13 +315,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest, &self.grant)?;
+        let maximum_wait = remaining_duration(now_ms, self.grant.expires_at_ms)?;
+        let handle = self.driver.load(&manifest, &self.grant, maximum_wait)?;
         validate_identity(&handle.opaque_id, "model handle")?;
         if handle.reserved_memory_bytes == 0
             || handle.reserved_memory_bytes > self.grant.maximum_memory_bytes
             || handle.observed_memory_bytes > handle.reserved_memory_bytes
         {
-            self.driver.unload(handle)?;
+            let maximum_wait = remaining_duration(now_ms, self.grant.expires_at_ms)?;
+            self.driver.unload(handle, maximum_wait)?;
             return Err(Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
@@ -322,10 +347,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
     pub fn run(
         &mut self,
         now_ms: u64,
+        current_grant: VerifiedResourceGrant,
         model_id: &str,
         request: WorkerRequest,
     ) -> Result<InferenceExecutionObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        self.admit_current_grant(now_ms, current_grant)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request)?;
         if self.active_requests.contains_key(&request.request_id) {
@@ -370,7 +396,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
-        let observed = self.driver.run(&loaded.handle, &request);
+        let maximum_wait = remaining_duration(
+            now_ms,
+            self.grant.expires_at_ms.min(request.deadline_ms),
+        )?;
+        let observed = self.driver.run(&loaded.handle, &request, maximum_wait);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
@@ -414,16 +444,18 @@ impl<D: ModelDriver> InferenceWorker<D> {
     pub fn unload_model(
         &mut self,
         now_ms: u64,
+        current_grant: VerifiedResourceGrant,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        self.admit_current_grant(now_ms, current_grant)?;
         validate_identity(model_id, "model")?;
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
         let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        let maximum_wait = remaining_duration(now_ms, self.grant.expires_at_ms)?;
+        self.driver.unload(loaded.handle, maximum_wait)?;
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -431,9 +463,40 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 
-    fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
-        validate_grant(now_ms, &self.grant)
+    fn admit_current_grant(
+        &mut self,
+        now_ms: u64,
+        current: VerifiedResourceGrant,
+    ) -> Result<(), Error> {
+        if current.verified_at_ms != now_ms || current.grant != self.grant {
+            return Err(Error::InvalidGrant);
+        }
+        validate_grant(now_ms, &current.grant)?;
+        match (&self.grant_verification, &current.verification) {
+            (GrantVerification::TrustedInProcess, GrantVerification::TrustedInProcess) => {}
+            (
+                GrantVerification::Authenticated {
+                    authority_id: established,
+                    ..
+                },
+                GrantVerification::Authenticated {
+                    authority_id: current,
+                    ..
+                },
+            ) if established == current => {}
+            _ => return Err(Error::InvalidGrant),
+        }
+        self.grant_verification = current.verification;
+        Ok(())
     }
+}
+
+fn remaining_duration(now_ms: u64, deadline_ms: u64) -> Result<Duration, Error> {
+    let remaining_ms = deadline_ms
+        .checked_sub(now_ms)
+        .filter(|remaining| *remaining != 0)
+        .ok_or(Error::DeadlineExpired)?;
+    Ok(Duration::from_millis(remaining_ms))
 }
 
 fn validate_manifest(value: &ModelManifest) -> Result<(), Error> {

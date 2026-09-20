@@ -9,6 +9,8 @@ use crate::model_worker::VerifiedResourceGrant;
 use crate::model_worker::WorkerRequest;
 use std::collections::BTreeMap;
 use std::os::unix::fs::PermissionsExt;
+use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -37,6 +39,7 @@ impl Fixture {
             r#"#!/usr/bin/env python3
 import json
 import sys
+import time
 
 PROTOCOL = "hepta.local-model-driver.v1"
 handle = "local.handle.1"
@@ -60,6 +63,8 @@ for line in sys.stdin:
         }
         print(json.dumps(response), flush=True)
     elif op == "run":
+        if request.get("input") == "hang":
+            time.sleep(10)
         response = {
             "protocol": PROTOCOL,
             "op": "run_result",
@@ -137,6 +142,10 @@ for line in sys.stdin:
             .unwrap()
     }
 
+    fn verified_grant(&self, now_ms: u64) -> VerifiedResourceGrant {
+        VerifiedResourceGrant::trusted_in_process(now_ms, self.grant()).unwrap()
+    }
+
     fn grant(&self) -> ResourceGrant {
         ResourceGrant {
             grant_id: "grant.local.1".to_string(),
@@ -161,18 +170,16 @@ impl Drop for Fixture {
 #[test]
 fn real_local_process_driver_loads_runs_and_unloads_digest_pinned_runtime() {
     let fixture = Fixture::new();
-    let grant = fixture.grant();
-    let verified = VerifiedResourceGrant::trusted_in_process(100, grant).unwrap();
     let mut worker = InferenceWorker::new(
         100,
         "worker.local.1".to_string(),
         9,
-        verified,
+        fixture.verified_grant(100),
         fixture.driver(),
     )
     .unwrap();
 
-    let loaded = worker.load_model(100, fixture.manifest.clone()).unwrap();
+    let loaded = worker.load_model(100, fixture.verified_grant(100), fixture.manifest.clone()).unwrap();
     assert_eq!(loaded.observed_memory_bytes, 1024);
 
     let input = "hello".to_string();
@@ -180,6 +187,7 @@ fn real_local_process_driver_loads_runs_and_unloads_digest_pinned_runtime() {
     let observed = worker
         .run(
             100,
+            fixture.verified_grant(100),
             &fixture.manifest.model_id,
             WorkerRequest {
                 request_id: "request.local.1".to_string(),
@@ -213,18 +221,69 @@ fn real_local_process_driver_loads_runs_and_unloads_digest_pinned_runtime() {
 fn local_process_driver_rejects_artifact_mutation_before_spawn() {
     let fixture = Fixture::new();
     fs::write(&fixture.artifacts.weights_path, b"mutated-after-selection").unwrap();
-    let grant = fixture.grant();
-    let verified = VerifiedResourceGrant::trusted_in_process(100, grant).unwrap();
     let mut worker = InferenceWorker::new(
         100,
         "worker.local.1".to_string(),
         9,
-        verified,
+        fixture.verified_grant(100),
         fixture.driver(),
     )
     .unwrap();
     assert!(matches!(
-        worker.load_model(100, fixture.manifest.clone()),
+        worker.load_model(100, fixture.verified_grant(100), fixture.manifest.clone()),
         Err(Error::DriverFailure(message)) if message.contains("weights digest mismatch")
     ));
+}
+
+#[test]
+fn hung_local_runtime_is_killed_and_reported_indeterminate() {
+    let fixture = Fixture::new();
+    let mut models = BTreeMap::new();
+    models.insert(fixture.manifest.model_id.clone(), fixture.artifacts.clone());
+    let mut config = LocalProcessDriverConfig::new(fixture.runtime.clone(), models);
+    config.maximum_operation_timeout = Duration::from_millis(50);
+    let driver = LocalProcessDriver::new(config).unwrap();
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.local.1".to_string(),
+        9,
+        fixture.verified_grant(100),
+        driver,
+    )
+    .unwrap();
+    worker
+        .load_model(
+            100,
+            fixture.verified_grant(100),
+            fixture.manifest.clone(),
+        )
+        .unwrap();
+
+    let input = "hang".to_string();
+    let payload_digest = sha256(input.as_bytes());
+    let started = Instant::now();
+    let observed = worker
+        .run(
+            100,
+            fixture.verified_grant(100),
+            &fixture.manifest.model_id,
+            WorkerRequest {
+                request_id: "request.local.hang".to_string(),
+                reservation_id: "reservation.local.hang".to_string(),
+                model_digest: fixture.manifest.model_digest.clone(),
+                input,
+                payload_digest: payload_digest.clone(),
+                maximum_tokens: 16,
+                deadline_ms: 9_000,
+                lease_payload_digest: payload_digest,
+                reservation_model_digest: fixture.manifest.model_digest.clone(),
+                reservation_maximum_tokens: 16,
+                cancelled: false,
+            },
+        )
+        .unwrap();
+
+    assert_eq!(observed.status, ExecutionStatus::Indeterminate);
+    assert!(!observed.terminal_observed);
+    assert!(started.elapsed() < Duration::from_secs(2));
 }
