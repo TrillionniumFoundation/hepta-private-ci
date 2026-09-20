@@ -416,6 +416,31 @@ impl FinalUseAuthority {
         })
     }
 
+    /// Revalidate a previously admitted grant identity for use of a resource
+    /// that the grant caused to be issued, such as a provider-native secret
+    /// lease. This does not claim a nonce or mint a new permission. It only
+    /// projects the current epoch/revocation frontier and fails closed if the
+    /// authority owner is fenced or unavailable.
+    pub fn grant_is_current(
+        &self,
+        authority_epoch: u64,
+        grant_id: &str,
+    ) -> Result<bool, FinalUseError> {
+        if authority_epoch == 0 || !identifier(grant_id) {
+            return Err(FinalUseError::InvalidGrant);
+        }
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(state.head.authority_epoch == authority_epoch
+            && !state.head.revoked_grant_ids.contains(grant_id))
+    }
+
     /// Called only by the trusted host, not from a provider response or grant.
     /// Revocations are monotonic within an epoch and are never silently dropped.
     pub fn update_revocations(&self, head: FinalUseRevocations) -> Result<(), FinalUseError> {
