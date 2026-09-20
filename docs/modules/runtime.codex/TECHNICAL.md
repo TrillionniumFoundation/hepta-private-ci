@@ -161,6 +161,10 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 The deployed execution spine is the existing codex-app-server package under codex-rs/app-server. codex-rs/codex-app-server is a source alias, not another binary. Use its registered thread/turn APIs and observe exact admission; hepta-codex-adapter alone neither starts a model nor proves a tool effect.
 
+The named Hepta native inference caller is deliberately **model-only**: the App Server tool planner returns an empty router for the `hepta-infer-worker` client identity before MCP, connector, extension, dynamic-tool or core-tool planning. That deny-only identity can remove capability but never grant it. Any future external tool effect must enter a separately authorized effect-owner path with its own final-use grant, durable operation identity and terminal observer; the `dispatch_tool` source mapping to codex-core is navigation/delegation evidence only and is not proof of an authorized tool effect.
+
+`IMPLEMENTATION_MAP.sourceBase` is historical provenance only. Exact candidate identity is derived from the checked-out Git candidate by `scripts/hepta-lane-b-truth.py verify`, which emits `exactHead` and `exactTree`; the map records this verifier-derived provenance contract instead of attempting to hard-code its own self-referential commit/tree.
+
 Current operating and state-format references:
 
 - [codex-rs/app-server/README.md](../../../codex-rs/app-server/README.md).
