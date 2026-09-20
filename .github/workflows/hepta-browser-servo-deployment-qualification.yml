@@ -184,6 +184,10 @@ jobs:
           assert result["profileAllowedCrossOriginRedirectDeniedByEffectGrant"] is True
           assert result["crossProfileCookieIsolation"] is True
           assert result["persistedCrashReconciliation"] is True
+          assert result["authenticatedPersistedCrashReconciliation"] is True
+          assert result["crossProfileStorageIsolation"] is True
+          assert result["crossProfileCacheIsolation"] is True
+          assert result["noExternallyReachableWorkerListener"] is True
           PY
 
       - name: Re-run bounded Browser resource soak on trusted target
@@ -196,6 +200,9 @@ jobs:
           result = json.loads(pathlib.Path("deployment-evidence/real-browser-soak.json").read_text())
           assert result["cycles"] == 32
           assert result["boundedFdGrowth"] is True
+          assert result["boundedRssGrowth"] is True
+          assert result["rssPeakGrowthLimitKiB"] == 524288
+          assert result["rssTerminalGrowthLimitKiB"] == 262144
           PY
 
       - name: Record target qualification receipt
@@ -217,6 +224,12 @@ jobs:
               'realWorkerSmokeSha256': digest(root / 'real-worker-smoke.json'),
               'realBrowserE2ESha256': digest(root / 'real-browser-e2e.json'),
               'realBrowserSoakSha256': digest(root / 'real-browser-soak.json'),
+              'noExternallyReachableWorkerListener': True,
+              'crossProfileCookieIsolation': True,
+              'crossProfileStorageIsolation': True,
+              'crossProfileCacheIsolation': True,
+              'boundedRssGrowth': True,
+              'boundedFdGrowth': True,
               'operatorAcceptance': False,
               'promotion': False,
               'releaseQualified': False,
