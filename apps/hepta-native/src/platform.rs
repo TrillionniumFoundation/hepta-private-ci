@@ -116,7 +116,7 @@ impl PlatformAdapter for SystemPlatformAdapter {
             PlatformPayload::Notify { .. } => (
                 self.policy.allow_notifications && notification_supported(),
                 "notification_policy",
-            )
+            ),
         };
         Ok(PermissionDecision {
             allowed,
@@ -170,7 +170,9 @@ impl PlatformAdapter for SystemPlatformAdapter {
             }
             PlatformPayload::RevealPath { path } => {
                 let canonical = std::fs::canonicalize(path).map_err(|error| {
-                    ShellError::Platform(format!("canonicalize reveal path before OS entry: {error}"))
+                    ShellError::Platform(format!(
+                        "canonicalize reveal path before OS entry: {error}"
+                    ))
                 })?;
                 if !self.policy.path_allowed(&canonical) {
                     return Err(ShellError::Security(
