@@ -18,9 +18,23 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "stacked_followup_not_composed",
+  "productionWriterState": "durable_operation_ledger_source_present_not_host_composed",
   "operations": [
+    {
+      "operation": "durable_operation_ledger",
+      "nativeSymbol": "DurableOperationLedger",
+      "sourcePath": "codex-rs/hepta-operations/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none_records_external_final_use_evidence_only",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "operationledger",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
     {
       "operation": "operationledger",
       "nativeSymbol": "OperationLedger",
@@ -47,8 +61,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose the durable operation owner into the authenticated ui.control product gateway and real owner adapters.",
+    "Implement the durable cross-owner outbox/claim lease with crash takeover; the current Outbox remains a reference model.",
+    "Run exact-head and deterministic synthetic-merge tests before changing production or activation claims."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
