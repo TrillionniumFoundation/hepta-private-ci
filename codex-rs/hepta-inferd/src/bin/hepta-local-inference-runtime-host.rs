@@ -36,6 +36,7 @@ use codex_hepta_infer_core::durable_control::InferenceRequest as ControlInferenc
 use codex_hepta_infer_core::durable_control::RequestState;
 use codex_hepta_infer_core::durable_control::Reservation as ControlReservation;
 use codex_hepta_infer_core::durable_control::TerminalObservation;
+use codex_hepta_infer_core::durable_control::UsageSettlement;
 use codex_hepta_infer_worker_host::local_process_driver::LocalModelArtifacts;
 use codex_hepta_infer_worker_host::local_process_driver::LocalProcessDriverConfig;
 use codex_hepta_infer_worker_host::model_worker::ExecutionStatus;
@@ -67,6 +68,10 @@ struct HostConfig {
     signer_id: String,
     verifying_key: [u8; 32],
     initial_revocations: FinalUseRevocations,
+    usage_authority_state_dir: PathBuf,
+    usage_signer_id: String,
+    usage_verifying_key: [u8; 32],
+    usage_initial_revocations: FinalUseRevocations,
     resource_grant: ResourceGrantConfig,
     runtime_executable: PathBuf,
     sandbox_launcher: PathBuf,
@@ -150,6 +155,18 @@ enum ControlCommand {
         revision: u64,
         revoked_grant_ids: BTreeSet<String>,
     },
+    UsageSettle {
+        request_id: String,
+        consumed_tokens: u32,
+        usage_units: u64,
+        evidence_digest: String,
+        signed_grant: SignedFinalUseGrant,
+    },
+    UsageRevocations {
+        authority_epoch: u64,
+        revision: u64,
+        revoked_grant_ids: BTreeSet<String>,
+    },
     Shutdown,
 }
 
@@ -185,6 +202,12 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         config.initial_revocations.clone(),
     )?;
     let authority_updates = authority.clone();
+    let usage_authority = FinalUseAuthority::open_state_dir(
+        &config.usage_authority_state_dir,
+        config.usage_signer_id.clone(),
+        config.usage_verifying_key,
+        config.usage_initial_revocations.clone(),
+    )?;
 
     let resource_grant = ResourceGrant {
         grant_id: config.resource_grant.grant_id.clone(),
@@ -506,6 +529,48 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                         Ok(()) => json!({"op":"revocations","status":"ok"}),
                         Err(error) => {
                             json!({"op":"revocations","status":"error","error":error.to_string()})
+                        }
+                    }
+                );
+            }
+            ControlCommand::UsageSettle {
+                request_id,
+                consumed_tokens,
+                usage_units,
+                evidence_digest,
+                signed_grant,
+            } => {
+                let result = control
+                    .lock()
+                    .map_err(|_| "inference control lock poisoned")?
+                    .settle_usage_authorized(
+                        &usage_authority,
+                        &signed_grant,
+                        UsageSettlement {
+                            request_id,
+                            consumed_tokens,
+                            usage_units,
+                            evidence_digest,
+                        },
+                    );
+                println!("{}", receipt_or_error("usage_settle", result));
+            }
+            ControlCommand::UsageRevocations {
+                authority_epoch,
+                revision,
+                revoked_grant_ids,
+            } => {
+                let result = usage_authority.update_revocations(FinalUseRevocations {
+                    authority_epoch,
+                    revision,
+                    revoked_grant_ids,
+                });
+                println!(
+                    "{}",
+                    match result {
+                        Ok(()) => json!({"op":"usage_revocations","status":"ok"}),
+                        Err(error) => {
+                            json!({"op":"usage_revocations","status":"error","error":error.to_string()})
                         }
                     }
                 );
@@ -899,6 +964,7 @@ fn validate_config(config: &HostConfig) -> Result<(), Box<dyn std::error::Error 
     for path in [
         &config.control_journal,
         &config.authority_state_dir,
+        &config.usage_authority_state_dir,
         &config.runtime_executable,
         &config.sandbox_launcher,
         &config.immutable_artifact_root,
