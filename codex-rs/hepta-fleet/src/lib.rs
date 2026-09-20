@@ -47,10 +47,10 @@ pub use release::AgentReleaseState;
 pub use release::RELEASE_METADATA_SCHEMA_VERSION;
 pub use release::RegisteredProgram;
 pub use release::RegisteredRelease;
-pub use release::ReleaseProvenance;
 pub use release::ReleaseId;
 pub use release::ReleaseMetadata;
 pub use release::ReleaseProgramMetadata;
+pub use release::ReleaseProvenance;
 
 #[cfg(test)]
 #[path = "allocation_tests.rs"]
