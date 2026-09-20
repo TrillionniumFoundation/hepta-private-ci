@@ -326,6 +326,12 @@ fn ctype_04_canonical_wire_vector_is_exact() {
             .to_string(),
         "1e1c8f2232a1f6ddfea98400f3c2ae9d29ecd39ae2a2ff0e0bac70f91f0ad273"
     );
+    assert_eq!(
+        canonical_contract_digest_v1(&event())
+            .expect("canonical event digest")
+            .to_string(),
+        "22d5a29e55ad08c3541eb8eb9afe577eb5efd1a75e0d37ea1c64eae436db0540"
+    );
 }
 
 #[test]
