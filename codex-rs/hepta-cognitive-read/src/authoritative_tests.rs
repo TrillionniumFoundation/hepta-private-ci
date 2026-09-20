@@ -343,4 +343,25 @@ fn canonical_shadow_read_tamper_fails_closed() {
         shadow.validate(),
         Err(CanonicalReadShadowError::BindingDigestMismatch)
     );
+
+    let mut event_tampered = adapt_authoritative_read_to_canonical_shadow_v1(
+        &read,
+        vec![CanonicalReadRecordBindingV1 {
+            legacy_record_id: record.record_id.clone(),
+            legacy_record_revision: record.revision,
+            legacy_record_digest: record.record_digest(),
+            event: canonical_event(),
+        }],
+    )
+    .unwrap_or_else(|error| panic!("canonical shadow read: {error}"));
+    event_tampered.rows[0]
+        .event
+        .semantic_keys
+        .insert("window".to_string());
+    assert_eq!(
+        event_tampered.validate(),
+        Err(CanonicalReadShadowError::EventDigestMismatch(
+            "memory:one".to_string()
+        ))
+    );
 }
