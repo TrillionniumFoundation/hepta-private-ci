@@ -413,6 +413,41 @@ impl SparseJournal {
         self.base_sequence
     }
 
+    /// Resolve the exact durable checkpoint for one sequence in this segment.
+    /// The segment genesis is exposed through the first successor's predecessor
+    /// (or the current genesis when the segment is still empty).
+    pub(crate) fn checkpoint_digest_at(
+        &self,
+        sequence: u64,
+    ) -> Result<Option<Digest32>, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        if sequence < self.base_sequence {
+            return Ok(None);
+        }
+        if sequence == self.base_sequence {
+            if sequence == 0 {
+                return Ok(None);
+            }
+            if let Some((_, receipt)) = self.entries.first() {
+                return Ok(Some(receipt.checkpoint_before));
+            }
+            return Ok(self
+                .current
+                .as_ref()
+                .filter(|checkpoint| checkpoint.sequence() == sequence)
+                .map(SparseCheckpoint::digest));
+        }
+        let index = sequence
+            .checked_sub(self.base_sequence)
+            .and_then(|value| value.checked_sub(1))
+            .and_then(|value| usize::try_from(value).ok());
+        Ok(index
+            .and_then(|index| self.entries.get(index))
+            .map(|(_, receipt)| receipt.checkpoint_after))
+    }
+
     /// Return every complete committed anchor after the supplied sequence in canonical order.
     /// Hosts use this bounded view to reconcile a journal suffix whose durable
     /// witness update was interrupted after the journal commit.
