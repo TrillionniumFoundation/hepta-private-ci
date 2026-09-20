@@ -131,8 +131,8 @@ jobs:
     timeout-minutes: 120
     outputs:
       base: ${{ steps.merge.outputs.base }}
-      merge-commit: ${{ steps.merge.outputs.commit }}
-      merge-tree: ${{ steps.merge.outputs.tree }}
+      merge_commit: ${{ steps.merge.outputs.commit }}
+      merge_tree: ${{ steps.merge.outputs.tree }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -336,9 +336,9 @@ jobs:
       - name: Build qualification manifest
         shell: bash
         env:
-          MERGE_BASE: ${{ needs.synthetic-merge.outputs.base }}
-          MERGE_COMMIT: ${{ needs.synthetic-merge.outputs.merge-commit }}
-          MERGE_TREE: ${{ needs.synthetic-merge.outputs.merge-tree }}
+          MERGE_BASE: ${{ needs['synthetic-merge'].outputs.base }}
+          MERGE_COMMIT: ${{ needs['synthetic-merge'].outputs.merge_commit }}
+          MERGE_TREE: ${{ needs['synthetic-merge'].outputs.merge_tree }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
