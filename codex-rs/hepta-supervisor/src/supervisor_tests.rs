@@ -1749,10 +1749,12 @@ fn recovery_repairs_committed_selection_when_release_state_and_bytes_match()
     assert_eq!(receipt.status, crate::ProductionMutationStatus::Committed);
     assert_eq!(
         receipt.intent_sha256,
-        crate::signed_intent::read_intent(record.layout.run_root())
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-            .expect("repaired intent")
-            .intent_sha256
+        Some(
+            crate::signed_intent::read_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                .expect("repaired intent")
+                .intent_sha256
+        )
     );
     assert_eq!(
         crate::signed_intent::read_intent(record.layout.run_root())
