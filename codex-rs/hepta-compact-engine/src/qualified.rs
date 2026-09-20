@@ -14,6 +14,10 @@ use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf_learning::OutcomeSignalV1;
+use codex_hepta_cognitive_types::hnmf_learning::ReplaySelectionReceiptV1;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::CompactCheckpointV1;
 use codex_hepta_cognitive_types::lane_c::CompactionProofV1;
@@ -21,6 +25,7 @@ use codex_hepta_cognitive_types::lane_c::LaneCContractError;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 pub const MAX_QUALIFIED_COMPACTION_INPUTS: usize = 65_536;
@@ -31,6 +36,8 @@ const SUPPORT_MANIFEST_DOMAIN: &[u8] = b"hepta.compaction-support-manifest.v2";
 const PAYLOAD_DOMAIN: &[u8] = b"hepta.compaction-payload.v2";
 const OMITTED_DOMAIN: &[u8] = b"hepta.compaction-omitted.v2";
 const LOSS_REPORT_DOMAIN: &[u8] = b"hepta.compaction-loss-report.v2";
+const CANONICAL_REPLAY_SHADOW_DOMAIN: &[u8] =
+    b"hepta.compaction.canonical-replay-shadow.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompactionPolicyV2 {
@@ -206,6 +213,146 @@ impl QualifiedCompactionCandidateV2 {
         }
         Digest32::of_bytes(&bytes)
     }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalReplayRecordBindingV1 {
+    pub event_id: ContractIdV1,
+    pub legacy_record_id: StableId,
+    pub legacy_record_revision: Revision,
+    pub legacy_record_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalReplayCompactionShadowV1 {
+    pub candidate: QualifiedCompactionCandidateV2,
+    pub replay_receipt: ReplaySelectionReceiptV1,
+    pub replay_receipt_digest: Digest32,
+    pub outcome_signal: OutcomeSignalV1,
+    pub outcome_signal_digest: Digest32,
+    pub selected_bindings: Vec<CanonicalReplayRecordBindingV1>,
+    pub binding_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl CanonicalReplayCompactionShadowV1 {
+    #[must_use]
+    pub fn compute_binding_digest(&self) -> Digest32 {
+        let mut bytes = CANONICAL_REPLAY_SHADOW_DOMAIN.to_vec();
+        push_digest(&mut bytes, self.candidate.source_snapshot.vector_digest);
+        push_digest(&mut bytes, self.candidate.candidate_digest);
+        push_digest(&mut bytes, self.replay_receipt_digest);
+        push_digest(&mut bytes, self.outcome_signal_digest);
+        push_len(&mut bytes, self.selected_bindings.len());
+        for binding in &self.selected_bindings {
+            push_raw_id(&mut bytes, binding.event_id.as_str());
+            push_id(&mut bytes, &binding.legacy_record_id);
+            push_u64(&mut bytes, binding.legacy_record_revision.get());
+            push_digest(&mut bytes, binding.legacy_record_digest);
+        }
+        Digest32::of_bytes(&bytes)
+    }
+
+    pub fn validate(&self) -> Result<(), QualifiedCompactionError> {
+        self.candidate.validate()?;
+        self.replay_receipt
+            .validate()
+            .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+        self.outcome_signal
+            .validate()
+            .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+        let replay_digest = canonical_contract_digest_v1(&self.replay_receipt)
+            .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+        let outcome_digest = canonical_contract_digest_v1(&self.outcome_signal)
+            .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+        if replay_digest != self.replay_receipt_digest || outcome_digest != self.outcome_signal_digest
+        {
+            return Err(QualifiedCompactionError::CanonicalShadowDigestMismatch);
+        }
+        validate_canonical_replay_bindings(
+            &self.candidate,
+            &self.replay_receipt,
+            &self.selected_bindings,
+        )?;
+        if self.authority.grants_any() {
+            return Err(QualifiedCompactionError::AuthorityGranted);
+        }
+        if self.binding_digest != self.compute_binding_digest() {
+            return Err(QualifiedCompactionError::CanonicalShadowDigestMismatch);
+        }
+        Ok(())
+    }
+}
+
+/// Bind canonical replay/outcome evidence to an existing qualified compaction
+/// candidate without changing the candidate's retention decision.
+///
+/// OutcomeSignalV1 is co-observed evidence only here; this adapter does not
+/// claim that the outcome caused the replay selection or compaction priority.
+pub fn bind_canonical_replay_outcome_shadow_v1(
+    candidate: &QualifiedCompactionCandidateV2,
+    replay_receipt: ReplaySelectionReceiptV1,
+    outcome_signal: OutcomeSignalV1,
+    bindings: Vec<CanonicalReplayRecordBindingV1>,
+) -> Result<CanonicalReplayCompactionShadowV1, QualifiedCompactionError> {
+    candidate.validate()?;
+    replay_receipt
+        .validate()
+        .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+    outcome_signal
+        .validate()
+        .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+    validate_canonical_replay_bindings(candidate, &replay_receipt, &bindings)?;
+    let replay_receipt_digest = canonical_contract_digest_v1(&replay_receipt)
+        .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+    let outcome_signal_digest = canonical_contract_digest_v1(&outcome_signal)
+        .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+
+    let mut shadow = CanonicalReplayCompactionShadowV1 {
+        candidate: candidate.clone(),
+        replay_receipt,
+        replay_receipt_digest,
+        outcome_signal,
+        outcome_signal_digest,
+        selected_bindings: bindings,
+        binding_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    shadow.binding_digest = shadow.compute_binding_digest();
+    Ok(shadow)
+}
+
+fn validate_canonical_replay_bindings(
+    candidate: &QualifiedCompactionCandidateV2,
+    replay_receipt: &ReplaySelectionReceiptV1,
+    bindings: &[CanonicalReplayRecordBindingV1],
+) -> Result<(), QualifiedCompactionError> {
+    if bindings.len() != replay_receipt.selected_event_ids.len() {
+        return Err(QualifiedCompactionError::CanonicalReplayBindingMismatch);
+    }
+    let mut used = vec![false; bindings.len()];
+    for event_id in &replay_receipt.selected_event_ids {
+        let Some((index, binding)) = bindings
+            .iter()
+            .enumerate()
+            .find(|(index, binding)| !used[*index] && &binding.event_id == event_id)
+        else {
+            return Err(QualifiedCompactionError::CanonicalReplayBindingMismatch);
+        };
+        used[index] = true;
+        let retained = candidate.retained_records.iter().any(|record| {
+            record.record_id == binding.legacy_record_id
+                && record.revision == binding.legacy_record_revision
+                && record.record_digest() == binding.legacy_record_digest
+        });
+        if !retained {
+            return Err(QualifiedCompactionError::CanonicalReplayBindingMismatch);
+        }
+    }
+    if used.iter().any(|used| !*used) {
+        return Err(QualifiedCompactionError::CanonicalReplayBindingMismatch);
+    }
+    Ok(())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -504,6 +651,9 @@ fn ensure_unique_ids(values: &[StableId]) -> Result<(), QualifiedCompactionError
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum QualifiedCompactionError {
     Contract(LaneCContractError),
+    CanonicalContract(String),
+    CanonicalReplayBindingMismatch,
+    CanonicalShadowDigestMismatch,
     EmptyDigest(&'static str),
     DigestMismatch(&'static str),
     InvalidRetentionLimit,
@@ -548,6 +698,11 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     push_len(bytes, raw.len());
     bytes.extend_from_slice(raw);
+}
+
+fn push_raw_id(bytes: &mut Vec<u8>, value: &str) {
+    push_len(bytes, value.len());
+    bytes.extend_from_slice(value.as_bytes());
 }
 
 fn push_digest(bytes: &mut Vec<u8>, value: Digest32) {
