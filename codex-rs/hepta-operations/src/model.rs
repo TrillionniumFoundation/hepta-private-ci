@@ -112,7 +112,11 @@ impl OperationIntentV1 {
 
 fn push_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
-    bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(
+        &u32::try_from(raw.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
     bytes.extend_from_slice(raw);
 }
 
@@ -327,14 +331,78 @@ mod operation_intent_tests {
         );
         let expected = base.semantic_digest();
         for changed in [
-            intent("matrix.edit", "agent.one", "provider.matrix", b"payload", b"scope", 7, Some(b"predecessor")),
-            intent("matrix.send", "agent.two", "provider.matrix", b"payload", b"scope", 7, Some(b"predecessor")),
-            intent("matrix.send", "agent.one", "provider.other", b"payload", b"scope", 7, Some(b"predecessor")),
-            intent("matrix.send", "agent.one", "provider.matrix", b"other", b"scope", 7, Some(b"predecessor")),
-            intent("matrix.send", "agent.one", "provider.matrix", b"payload", b"other", 7, Some(b"predecessor")),
-            intent("matrix.send", "agent.one", "provider.matrix", b"payload", b"scope", 8, Some(b"predecessor")),
-            intent("matrix.send", "agent.one", "provider.matrix", b"payload", b"scope", 7, Some(b"other-predecessor")),
-            intent("matrix.send", "agent.one", "provider.matrix", b"payload", b"scope", 7, None),
+            intent(
+                "matrix.edit",
+                "agent.one",
+                "provider.matrix",
+                b"payload",
+                b"scope",
+                7,
+                Some(b"predecessor"),
+            ),
+            intent(
+                "matrix.send",
+                "agent.two",
+                "provider.matrix",
+                b"payload",
+                b"scope",
+                7,
+                Some(b"predecessor"),
+            ),
+            intent(
+                "matrix.send",
+                "agent.one",
+                "provider.other",
+                b"payload",
+                b"scope",
+                7,
+                Some(b"predecessor"),
+            ),
+            intent(
+                "matrix.send",
+                "agent.one",
+                "provider.matrix",
+                b"other",
+                b"scope",
+                7,
+                Some(b"predecessor"),
+            ),
+            intent(
+                "matrix.send",
+                "agent.one",
+                "provider.matrix",
+                b"payload",
+                b"other",
+                7,
+                Some(b"predecessor"),
+            ),
+            intent(
+                "matrix.send",
+                "agent.one",
+                "provider.matrix",
+                b"payload",
+                b"scope",
+                8,
+                Some(b"predecessor"),
+            ),
+            intent(
+                "matrix.send",
+                "agent.one",
+                "provider.matrix",
+                b"payload",
+                b"scope",
+                7,
+                Some(b"other-predecessor"),
+            ),
+            intent(
+                "matrix.send",
+                "agent.one",
+                "provider.matrix",
+                b"payload",
+                b"scope",
+                7,
+                None,
+            ),
         ] {
             assert_ne!(expected, changed.semantic_digest());
         }
