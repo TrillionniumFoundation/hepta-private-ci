@@ -60,6 +60,10 @@ pub fn retrieval_assignment_event_with_delivery(
     )
 }
 
+// The bridge keeps every delivery-bound causal field explicit at the public
+// boundary. Grouping them into an opaque bag would weaken call-site review and
+// change the existing API without improving correctness.
+#[allow(clippy::too_many_arguments)]
 pub fn retrieval_assignment_event_with_delivery_policy(
     record_id: StableId,
     episode_id: StableId,
@@ -115,7 +119,7 @@ pub fn retrieval_assignment_event_with_delivery_policy(
     {
         return Err(RetrievalAssignmentBridgeError::DeliveredCandidateOutsideSelection);
     }
-    if context_exposed != !delivered_candidate_indices.is_empty()
+    if context_exposed == delivered_candidate_indices.is_empty()
         || context_exposed != published_context_digest.is_some()
     {
         return Err(RetrievalAssignmentBridgeError::ExposureStateMismatch);

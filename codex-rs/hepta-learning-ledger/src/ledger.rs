@@ -284,7 +284,7 @@ impl LearningLedger {
         {
             return Err(LedgerError::RetrievalDeliveryOutsideSelection);
         }
-        if assignment.context_exposed != !assignment.delivered_candidate_indices.is_empty()
+        if assignment.context_exposed == assignment.delivered_candidate_indices.is_empty()
             || assignment.context_exposed != assignment.published_context_digest.is_some()
         {
             return Err(LedgerError::RetrievalExposureStateMismatch);

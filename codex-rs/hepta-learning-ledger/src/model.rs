@@ -124,6 +124,11 @@ pub struct Revocation {
     pub reason_digest: Digest32,
 }
 
+// Retrieval assignment facts intentionally carry a bounded 512-candidate
+// causal surface. Keep the durable event representation inline so the private
+// journal encoding and public event API do not change merely to optimize enum
+// stack size.
+#[allow(clippy::large_enum_variant)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LedgerEvent {
     Decision(EpisodeDecision),
