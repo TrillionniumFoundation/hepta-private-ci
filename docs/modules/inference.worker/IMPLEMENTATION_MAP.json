@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
-  "sourceMaturity": "kernel_authenticated_local_resource_grant_digest_pinned_local_driver_aggregate_memory_deadlines_core_reconciliation_and_hosted_product_root",
+  "sourceMaturity": "kernel_authenticated_resource_grant_digest_pinned_local_driver_live_revocation_fencing_cancel_ack_escalation_core_reconciliation_trusted_usage_settlement_and_named_hosted_local_product_roots",
   "declaredRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
@@ -15,7 +15,7 @@
     "codex-rs/hepta-infer-worker-host"
   ],
   "stateOwnerDisposition": "Owns live local-runtime/provider client handles and bounded in-process execution state. Persistent reservation/dispatch/observation facts remain in the canonical inference.control journal; App Server/Core own provider thread/queue truth; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "Hosted execution observes exact provider turn/output/optional-token facts and reconciles a journaled client-message identity through Core without replay. Local execution observes a resident runtime protocol with explicit reserved/observed memory. Missing authoritative usage remains unknown.",
+  "terminalObserverDisposition": "Hosted execution observes exact provider turn/output/optional-token facts and reconciles a journaled client-message identity through Core without replay. Local execution observes a resident runtime protocol with explicit reserved/observed memory; cancellation requires a matching terminal cancel acknowledgement before it is classified terminal, otherwise the child is killed/waited and the outcome remains indeterminate. An independently authenticated exact-turn usage settlement may refine missing usage without inventing zero.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -102,6 +102,27 @@
           "symbol": "pub async fn execute(",
           "buildTarget": "codex-hepta-inferd::worker_port",
           "ownerModule": "inference.control"
+        },
+        {
+          "role": "local_product_owner",
+          "path": "codex-rs/hepta-inferd/src/local_worker_host.rs",
+          "symbol": "pub struct LocalWorkerHost",
+          "buildTarget": "codex-hepta-inferd::local_worker_host",
+          "ownerModule": "inference.control"
+        },
+        {
+          "role": "local_product_root",
+          "path": "codex-rs/hepta-inferd/src/bin/hepta-local-inference-runtime-host.rs",
+          "symbol": "fn main()",
+          "buildTarget": "codex-hepta-inferd::hepta-local-inference-runtime-host",
+          "ownerModule": "inference.control"
+        },
+        {
+          "role": "trusted_usage_reconciliation",
+          "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+          "symbol": "pub fn reconcile_native_usage(",
+          "buildTarget": "codex-hepta-infer-core::durable_control::native",
+          "ownerModule": "inference.control"
         }
       ],
       "tests": [
@@ -119,9 +140,19 @@
           "path": "codex-rs/hepta-inferd/src/worker_port.rs",
           "kind": "final_use_binding_and_composition_seam",
           "command": "just test -p codex-hepta-inferd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/local_process_driver_tests.rs",
+          "kind": "terminal_cancel_ack_deadline_and_kill_wait_indeterminate",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "kind": "authoritative_usage_reconciliation_exact_idempotent_durable",
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, claims independently signed final-use authority only for a fresh request, records exact Core client-message/payload dispatch identity, invokes the private Agent/App Server, and settles matching observations. Reopen uses Core ReconcileOnly to recover the original turn or prove no durable admission; recovered terminal turns await exact-turn persisted usage replay under the RPC bound and never submit a replacement turn.",
+      "sourceSemantics": "Reserves through durable inference.control, claims independently signed final-use authority only for a fresh request, records exact Core client-message/payload dispatch identity, invokes the private Agent/App Server, and settles matching observations. Reopen uses Core ReconcileOnly to recover the original turn or prove no durable admission; recovered terminal turns await exact-turn persisted usage replay under the RPC bound and never submit a replacement turn. The named long-lived local product owner revalidates the shared FinalUseAuthority before admission and during a run, applies live revocation updates concurrently, cancels and fences the generation on authority loss, and unloads resident models. Local cancellation sends an exact runtime cancel request, requires a matching terminal cancel acknowledgement by a bounded deadline, then kill/waits and returns indeterminate if terminality is not proven. Trusted exact-turn usage evidence can durably refine missing usage without replay or synthetic zero.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -159,11 +190,7 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Compose the local-model product caller around InferenceWorker<LocalProcessDriver> with protected runtime/artifact/device configuration and FinalUseResourceGrantVerifier. The kernel-backed verifier and hosted provider source root exist; the local product caller is still absent.",
-    "Wire local worker-generation fencing to the deployed resource-authority/revocation owner. FinalUseResourceGrantVerifier authenticates and single-use-claims creation of one exact worker generation, while VerifiedResourceGrant remains a bounded snapshot and does not itself stream later revocations.",
-    "Add trusted provider/billing usage reconciliation for recovered terminal turns when persisted App Server token-usage replay has no authoritative usage for that exact turn; missing usage must remain unknown."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "identified real weights/tokenizer/preprocessor/quantization/runtime/device tuple",
     "real CPU/GPU load, placement, OOM, cancellation, concurrency, device-reset and leak qualification",
@@ -175,7 +202,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -188,7 +215,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "hosted_source_product_host_composed_local_model_product_caller_not_established_deployment_unproved",
+  "productCallerState": "hosted_and_local_source_product_hosts_composed_deployment_unproved",
   "productionWriterState": "canonical_durable_inference_control_reused",
   "owner": "inference-platform",
   "deputy": "security-authority",
