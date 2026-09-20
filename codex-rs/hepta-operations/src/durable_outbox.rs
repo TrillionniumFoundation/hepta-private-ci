@@ -16,6 +16,7 @@ use super::load_in_transaction;
 
 const MAX_CLAIM_ATTEMPTS: u32 = 64;
 const MAX_LEASE_MS: u64 = 60_000;
+pub const MAX_DURABLE_OUTBOX_PAYLOAD_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DurableOutboxState {
@@ -35,6 +36,7 @@ pub enum DurableOutboxState {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DurableOutboxRecord {
     pub intent: OutboxIntent,
+    pub payload: Vec<u8>,
     pub state: DurableOutboxState,
 }
 
@@ -46,6 +48,7 @@ pub(super) async fn initialize(pool: &SqlitePool) -> Result<(), OperationError> 
             operation_id TEXT NOT NULL,
             destination TEXT NOT NULL,
             payload_digest BLOB NOT NULL CHECK(length(payload_digest) = 32),
+            payload BLOB NOT NULL CHECK(length(payload) BETWEEN 1 AND 65536),
             state TEXT NOT NULL CHECK(state IN ('pending', 'claimed', 'acknowledged')),
             owner_generation TEXT,
             lease_expires_at_ms TEXT,
@@ -68,9 +71,10 @@ impl DurableOperationLedger {
         binding: DurableOperationBinding,
         owner_generation: Generation,
         intent: OutboxIntent,
+        payload: Vec<u8>,
     ) -> Result<(DurableOperationRecord, DurableOutboxRecord), OperationError> {
         binding.validate()?;
-        validate_intent(&intent)?;
+        validate_intent(&intent, &payload)?;
         if intent.operation_id != binding.key.id || intent.destination != binding.destination_id {
             return Err(OperationError::Conflict(intent.intent_id));
         }
@@ -126,7 +130,7 @@ impl DurableOperationLedger {
 
         let existing_outbox = load_outbox_in_transaction(&mut tx, &intent.intent_id).await?;
         let outbox = if let Some(existing) = existing_outbox {
-            if existing.intent != intent {
+            if existing.intent != intent || existing.payload != payload {
                 return Err(OperationError::Conflict(intent.intent_id));
             }
             existing
@@ -145,20 +149,22 @@ impl DurableOperationLedger {
             sqlx::query(
                 r#"
                 INSERT INTO hepta_operation_outbox_v1(
-                    intent_id, operation_id, destination, payload_digest, state,
+                    intent_id, operation_id, destination, payload_digest, payload, state,
                     owner_generation, lease_expires_at_ms, attempts, acknowledgement_digest
-                ) VALUES (?, ?, ?, ?, 'pending', NULL, NULL, 0, NULL)
+                ) VALUES (?, ?, ?, ?, ?, 'pending', NULL, NULL, 0, NULL)
                 "#,
             )
             .bind(intent.intent_id.as_str())
             .bind(intent.operation_id.as_str())
             .bind(intent.destination.as_str())
             .bind(intent.payload_digest.as_array().to_vec())
+            .bind(&payload)
             .execute(&mut *tx)
             .await
             .map_err(|_| OperationError::StorageUnavailable)?;
             DurableOutboxRecord {
                 intent,
+                payload,
                 state: DurableOutboxState::Pending,
             }
         };
@@ -339,7 +345,7 @@ impl DurableOperationLedger {
     ) -> Result<Option<DurableOutboxRecord>, OperationError> {
         let row = sqlx::query(
             r#"
-            SELECT intent_id, operation_id, destination, payload_digest, state,
+            SELECT intent_id, operation_id, destination, payload_digest, payload, state,
                    owner_generation, lease_expires_at_ms, attempts, acknowledgement_digest
             FROM hepta_operation_outbox_v1
             WHERE intent_id = ?
@@ -359,7 +365,7 @@ async fn load_outbox_in_transaction(
 ) -> Result<Option<DurableOutboxRecord>, OperationError> {
     let row = sqlx::query(
         r#"
-        SELECT intent_id, operation_id, destination, payload_digest, state,
+        SELECT intent_id, operation_id, destination, payload_digest, payload, state,
                owner_generation, lease_expires_at_ms, attempts, acknowledgement_digest
         FROM hepta_operation_outbox_v1
         WHERE intent_id = ?
@@ -393,6 +399,15 @@ fn decode_outbox(row: sqlx::sqlite::SqliteRow) -> Result<DurableOutboxRecord, Op
             .map_err(|_| OperationError::StorageUnavailable)?,
         "outbox payload digest",
     )?;
+    let payload: Vec<u8> = row
+        .try_get("payload")
+        .map_err(|_| OperationError::StorageUnavailable)?;
+    if payload.is_empty()
+        || payload.len() > MAX_DURABLE_OUTBOX_PAYLOAD_BYTES
+        || Digest32::of_bytes(&payload) != payload_digest
+    {
+        return Err(OperationError::CorruptStore("outbox payload"));
+    }
     let state: String = row
         .try_get("state")
         .map_err(|_| OperationError::StorageUnavailable)?;
@@ -452,12 +467,17 @@ fn decode_outbox(row: sqlx::sqlite::SqliteRow) -> Result<DurableOutboxRecord, Op
             destination,
             payload_digest,
         },
+        payload,
         state,
     })
 }
 
-fn validate_intent(intent: &OutboxIntent) -> Result<(), OperationError> {
-    if intent.payload_digest.is_zero() {
+fn validate_intent(intent: &OutboxIntent, payload: &[u8]) -> Result<(), OperationError> {
+    if intent.payload_digest.is_zero()
+        || payload.is_empty()
+        || payload.len() > MAX_DURABLE_OUTBOX_PAYLOAD_BYTES
+        || Digest32::of_bytes(payload) != intent.payload_digest
+    {
         return Err(OperationError::InvalidDigest("outbox payload"));
     }
     Ok(())
