@@ -82,7 +82,7 @@ fn tabular_plan(dataset_digest: Digest32, evidence: [Digest32; 2]) -> TabularOpe
 #[test]
 fn op_06_tabular_fit_requires_exact_frozen_dataset_evidence() {
     let records = [digest("record-a"), digest("record-b")];
-    let receipt = receipt(records.to_vec());
+    let receipt = receipt(vec![records[0], records[1], digest("support-record")]);
     let verified = verify_tabular_operator_plan_v2(
         tabular_plan(receipt.snapshot.dataset_digest, records),
         &receipt,
@@ -98,14 +98,14 @@ fn op_06_tabular_fit_requires_exact_frozen_dataset_evidence() {
     );
     assert!(matches!(
         verify_tabular_operator_plan_v2(mismatch, &receipt, 50),
-        Err(OperatorDatasetBindingError::EvidenceSetMismatch)
+        Err(OperatorDatasetBindingError::EvidenceOutsideDataset)
     ));
 }
 
 #[test]
 fn op_06_world_model_requires_exact_frozen_dataset_evidence() {
     let records = [digest("record-a"), digest("record-b")];
-    let receipt = receipt(records.to_vec());
+    let receipt = receipt(vec![records[0], records[1], digest("support-record")]);
     let rows = vec![
         WorldModelSampleV1 {
             sample_id: id("sample-a"),
