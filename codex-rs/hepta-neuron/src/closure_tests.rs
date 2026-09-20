@@ -1059,6 +1059,27 @@ impl FrozenModelExecutor for CountingExecutor {
 }
 
 #[derive(Clone)]
+struct RevokingExecutor {
+    execution: BoundModelExecutionV1,
+    denied: Arc<Mutex<Option<Digest32>>>,
+    revoke: Digest32,
+}
+
+impl FrozenModelExecutor for RevokingExecutor {
+    fn execute(
+        &mut self,
+        _request: &FrozenModelRequestV1,
+    ) -> Result<BoundModelExecutionV1, String> {
+        let mut denied = self
+            .denied
+            .lock()
+            .map_err(|_| "lineage lock poisoned".to_string())?;
+        *denied = Some(self.revoke);
+        Ok(self.execution.clone())
+    }
+}
+
+#[derive(Clone)]
 struct SharedLineage {
     denied: Arc<Mutex<Option<Digest32>>>,
 }
@@ -1500,4 +1521,55 @@ fn canonical_recovery_rechecks_revocation_before_advancing_witness() {
         &scope(),
     ));
     assert_eq!(checked(witness.current_anchor()), None);
+}
+
+
+#[test]
+fn canonical_post_model_io_revocation_rejects_before_prepare_or_state_commit() {
+    let fixture = Fixture::new();
+    let denied = Arc::new(Mutex::new(None));
+    let calibration = canonical_calibration_artifact();
+    let witness = checked(open_file_witness(
+        fixture.file("witness-post-io-revocation"),
+        canonical_config_digest(),
+        &scope(),
+    ));
+    let mut runtime = checked(NeuronRuntimeHost::open(
+        fixture.file("journal-post-io-revocation"),
+        fixture.file("operations-post-io-revocation"),
+        config(),
+        native(),
+        selected_model_manifest(),
+        scope(),
+        16,
+        RevokingExecutor {
+            execution: model_execution(),
+            denied: Arc::clone(&denied),
+            revoke: calibration.support_digest,
+        },
+        witness,
+        SharedLineage { denied },
+        calibration_policy(),
+        Some(calibration),
+        1,
+    ));
+    assert_eq!(
+        runtime.tick(
+            input(1, Digest32::ZERO),
+            RuntimeTickObservationV1 {
+                now_unix_micros: 2,
+                queue_age_micros: 0,
+            },
+        ),
+        Err(RuntimeError::RevokedLineage)
+    );
+    assert!(checked(runtime.current_checkpoint()).is_none());
+
+    let context = witness_context_digest(canonical_config_digest(), &scope());
+    let operations = checked(crate::operation::FileRuntimeOperationJournal::open(
+        fixture.file("operations-post-io-revocation"),
+        context,
+        16,
+    ));
+    assert!(operations.record("tick.1").is_none());
 }
