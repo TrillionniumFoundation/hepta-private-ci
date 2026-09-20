@@ -1474,6 +1474,23 @@ async fn outbound_terminal_observation_rolls_back_with_failed_sync_batch() -> Te
         store.sync_checkpoint(1, 1).await?.is_none(),
         "failed sync batch advanced the cursor",
     );
+    store.close().await;
+
+    let reopened = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    assert_eq!(
+        reopened
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("rollback dispatch disappeared after reopen")?
+            .state,
+        MatrixDispatchState::Accepted,
+        "a rolled-back homeserver terminal observation must not resurrect after reopen",
+    );
+    assert!(
+        reopened.sync_checkpoint(1, 1).await?.is_none(),
+        "a rolled-back sync cursor must not resurrect after reopen",
+    );
+    reopened.close().await;
     Ok(())
 }
 
