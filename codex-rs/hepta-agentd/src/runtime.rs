@@ -37,9 +37,11 @@ enum CompletedRuntimeTask {
     Monitor,
     Automation,
     AuthBus,
+    Plasticity,
 }
 
-pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+    let plasticity_runtime = config.take_plasticity_runtime();
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
@@ -138,6 +140,22 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         cancellation.clone(),
     ));
 
+    let plasticity_cancellation = cancellation.clone();
+    let plasticity_state = Arc::clone(&state);
+    let mut plasticity_task = tokio::spawn(async move {
+        match plasticity_runtime {
+            Some(owner) => owner
+                .run(plasticity_state, plasticity_cancellation)
+                .await,
+            None => {
+                // Plasticity remains opt-in. Absence means no proposal authority
+                // or writer is composed into this Agentd generation.
+                plasticity_cancellation.cancelled().await;
+                Ok(())
+            }
+        }
+    });
+
     let (outcome, completed_task) = tokio::select! {
         result = &mut authbus_task => (
             joined("AuthBus text relay", result),
@@ -159,6 +177,10 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             joined("automation scheduler", result),
             Some(CompletedRuntimeTask::Automation),
         ),
+        result = &mut plasticity_task => (
+            joined("plasticity owner", result),
+            Some(CompletedRuntimeTask::Plasticity),
+        ),
         signal = shutdown_signal() => {
             signal?;
             state.mark_draining()?;
@@ -175,6 +197,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         &mut app_server_task,
         &mut monitor_task,
         &mut automation_task,
+        &mut plasticity_task,
     )
     .await;
     outcome
@@ -350,12 +373,19 @@ async fn abort_and_join<T>(task: &mut JoinHandle<T>) {
     let _ = task.await;
 }
 
-async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, AutomationOutput>(
+async fn cleanup_runtime_tasks<
+    ControlOutput,
+    AppServerOutput,
+    MonitorOutput,
+    AutomationOutput,
+    PlasticityOutput,
+>(
     completed_task: Option<CompletedRuntimeTask>,
     control_task: &mut JoinHandle<ControlOutput>,
     app_server_task: &mut JoinHandle<AppServerOutput>,
     monitor_task: &mut JoinHandle<MonitorOutput>,
     automation_task: &mut JoinHandle<AutomationOutput>,
+    plasticity_task: &mut JoinHandle<PlasticityOutput>,
 ) {
     if completed_task != Some(CompletedRuntimeTask::Control) {
         abort_and_join(control_task).await;
@@ -368,6 +398,9 @@ async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, Au
     }
     if completed_task != Some(CompletedRuntimeTask::Automation) {
         abort_and_join(automation_task).await;
+    }
+    if completed_task != Some(CompletedRuntimeTask::Plasticity) {
+        abort_and_join(plasticity_task).await;
     }
 }
 
