@@ -9,8 +9,8 @@ use crate::AgentdError;
 
 fn host() -> (RuntimeTasks, CancellationToken) {
     let cancellation = CancellationToken::new();
-    let tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_millis(20))
-        .expect("bounded host");
+    let tasks =
+        RuntimeTasks::new(cancellation.clone(), Duration::from_millis(20)).expect("bounded host");
     (tasks, cancellation)
 }
 
@@ -49,11 +49,9 @@ async fn retirement_writer_fence_cancels_siblings_and_blocks_fresh_names() {
     ));
     assert!(cancellation.is_cancelled());
     assert!(sibling.is_cancelled());
-    assert!(
-        tasks
-            .spawn_required("unrelated-new-service", pending())
-            .is_err()
-    );
+    assert!(tasks
+        .spawn_required("unrelated-new-service", pending())
+        .is_err());
     tasks.shutdown().await;
 }
 
@@ -77,11 +75,9 @@ async fn rejected_or_panicking_retirement_callback_latches_host_failure() {
             .expect("service");
         assert!(tasks.retire_optional("retiring").await.is_err());
         assert!(cancellation.is_cancelled());
-        assert!(
-            tasks
-                .spawn_required("unrelated-new-service", pending())
-                .is_err()
-        );
+        assert!(tasks
+            .spawn_required("unrelated-new-service", pending())
+            .is_err());
         assert!(tasks.retire_optional("retiring").await.is_err());
         tasks.shutdown().await;
     }
