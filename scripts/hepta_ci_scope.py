@@ -190,6 +190,52 @@ def changed_paths(base: str, head: str) -> list[str]:
     return [value.decode("utf-8", "strict") for value in result.stdout.split(b"\0") if value]
 
 
+def include_input_scope(
+    scope: dict[str, bool], paths: list[str], base: str, head: str,
+) -> dict[str, bool]:
+    """Join embedded-input impact using exact Cargo OWNERS, never name guesses.
+
+    Inspect all otherwise-static inputs, including JSON/YAML, not just prose.
+    Only embedded inputs (or consumers with computed includes) widen native
+    scope. Unrelated navigation documents remain lightweight. Native file-level
+    scope is retained; this pass does not re-expand unrelated source changes.
+    """
+    if scope["full_repo"]:
+        return scope
+    static_paths = [path for path in paths if not select([path])["native"]]
+    if not static_paths:
+        return scope
+    from hepta_ci_dependencies import graph, select_packages
+    import tomllib
+
+    # An invalid candidate graph is a failure, never an empty test plan.
+    after = graph(Path.cwd(), head)
+    try:
+        before = graph(Path.cwd(), base)
+    except (subprocess.CalledProcessError, ValueError, KeyError, tomllib.TOMLDecodeError):
+        return select([], force_full=True)
+    embedded = {path for path, _ in before.external_inputs | after.external_inputs}
+    affected = [path for path in static_paths if path in embedded]
+    opaque = before.opaque_input_consumers | after.opaque_input_consumers
+    # A computed include can consume any otherwise-static input. Seed its exact
+    # old/new owner paths and retain the dependency planner's reverse/dev edges.
+    affected.extend(
+        f"{root}/Cargo.toml"
+        for root, package in sorted(set(before.owners.items()) | set(after.owners.items()))
+        if package in opaque
+    )
+    if not affected:
+        return scope
+    impact = select_packages(affected, before, after)
+    if impact["full_workspace"]:
+        return select([], force_full=True)
+    packages = set(impact["packages"])
+    roots = [f"{root}/Cargo.toml" for root, package in after.owners.items()
+             if package in packages]
+    extra = select(roots)
+    return {key: value or extra[key] for key, value in scope.items()}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base")
@@ -204,19 +250,7 @@ def main() -> None:
     paths = [] if args.full else changed_paths(args.base, args.head)
     scope = select(paths, force_full=args.full)
     if not args.full:
-        from hepta_ci_dependencies import plan, presentation_input
-
-        if any(presentation_input(path) for path in paths):
-            # A .md file can be a real include_str! input. Do not let the outer
-            # job skip consumers that the native dependency planner selects.
-            impact = plan(Path.cwd(), args.base, args.head)
-            if impact["full_workspace"]:
-                scope = select([], force_full=True)
-            else:
-                for package in impact["packages"]:
-                    root = package.removeprefix("codex-")
-                    extra = select([f"codex-rs/{root}/src/lib.rs"])
-                    scope = {key: value or extra[key] for key, value in scope.items()}
+        scope = include_input_scope(scope, paths, args.base, args.head)
     print(json.dumps({"source_head": args.head, "base": args.base, "paths": paths, "scope": scope}, sort_keys=True))
     if args.github_output:
         with open(args.github_output, "a", encoding="utf-8") as stream:
