@@ -317,6 +317,18 @@ impl CanonicalAuthoritativeReadShadowV1 {
         if self.authority.grants_any() {
             return Err(CanonicalReadShadowError::AuthorityGranted);
         }
+        for row in &self.rows {
+            row.event
+                .validate()
+                .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
+            let digest = canonical_contract_digest_v1(&row.event)
+                .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
+            if row.event_id != row.event.event_id || row.event_digest != digest {
+                return Err(CanonicalReadShadowError::EventDigestMismatch(
+                    row.legacy_record_id.to_string(),
+                ));
+            }
+        }
         if self.binding_digest != self.compute_binding_digest() {
             return Err(CanonicalReadShadowError::BindingDigestMismatch);
         }
@@ -333,6 +345,7 @@ pub enum CanonicalReadShadowError {
     DuplicateRecordBinding(String),
     CitationProvenanceMismatch(String),
     LifecycleMismatch(String),
+    EventDigestMismatch(String),
     EmptyDigest,
     BindingDigestMismatch,
     AuthorityGranted,
