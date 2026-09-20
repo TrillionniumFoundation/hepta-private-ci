@@ -133,7 +133,8 @@ pub fn run_if_requested(args: &[OsString]) -> io::Result<bool> {
     ))?;
     let recover_ns = start.elapsed().as_nanos();
     if checked(ledger.checkpoint())? != checkpoint {
-        return Err(io::Error::other("fresh process changed the checkpoint"));
+        let message = "fresh process changed the checkpoint";
+        return Err(io::Error::other(message));
     }
     let expected = decision(0)?;
     let first = id("record-0")?;
