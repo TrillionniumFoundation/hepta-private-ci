@@ -192,6 +192,22 @@ EXPECTED_LOCAL_PORT_TYPES = {
     ],
 }
 
+EXPECTED_REGISTERED_CONSUMER_TARGETS = [
+    "cognitive.read",
+    "cognitive.store",
+    "memory.retrieval",
+    "compact.engine",
+    "intelligence.control",
+]
+
+EXPECTED_LEGACY_CONSUMER_SURFACES = [
+    "cognitive.read: MemoryRecord/CognitiveSnapshot compatibility surface",
+    "cognitive.store: MemoryRecord and Lane C local write contracts",
+    "memory.retrieval: generation_bound::RecallPacketV1 compatibility contract",
+    "compact.engine: MemoryRecord and Lane C compaction surface",
+    "intelligence.control: CognitiveSnapshot compatibility surface",
+]
+
 RUST_TESTS = [
     "cross_modal_pattern_completion_recalls_episode",
     "sparse_competition_is_bounded",
@@ -294,6 +310,28 @@ def verify() -> int:
         and implementation_map.get("exactCandidateIdentitySource")
         == "exact_head_and_synthetic_merge_ci_receipts",
         "implementation-map source identity semantics",
+    )
+    need(
+        implementation_map.get("nativeConsumerState")
+        == "registry_bound_shadow_migration",
+        "consumer state must not overclaim native convergence",
+    )
+    need(
+        implementation_map.get("registeredConsumerTargets")
+        == EXPECTED_REGISTERED_CONSUMER_TARGETS,
+        "registered consumer target closure",
+    )
+    need(
+        implementation_map.get("legacyConsumerSurfacesPresent")
+        == EXPECTED_LEGACY_CONSUMER_SURFACES,
+        "legacy consumer surface inventory",
+    )
+    need(
+        implementation_map.get("canonicalConsumerConvergenceProved") is False
+        and implementation_map.get("authenticatedProductCompositionState")
+        == "not_composed"
+        and implementation_map.get("productionImplementation") is False,
+        "consumer/product claim boundary",
     )
     port_bindings = implementation_map.get("portSchemaBindings")
     need(
