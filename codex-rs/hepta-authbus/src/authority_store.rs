@@ -55,6 +55,12 @@ impl AuthBusAuthorityStore {
             pool.close().await;
             return Err(storage(error));
         }
+        sqlx::query(
+            "UPDATE authbus_recovery_state SET recovery_required = 1 WHERE singleton = 1",
+        )
+        .execute(&pool)
+        .await
+        .map_err(storage)?;
         Ok(Self { pool })
     }
 
@@ -89,6 +95,16 @@ impl AuthBusAuthorityStore {
         self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
+        let archived: bool = sqlx::query_scalar(
+            "SELECT EXISTS(SELECT 1 FROM authbus_policy_archive WHERE policy_id = ?)",
+        )
+        .bind(spec.policy_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        if archived {
+            return Err(AuthBusAuthorityError::AlreadyExists);
+        }
         let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_policy")
             .fetch_one(&mut *tx)
             .await
@@ -118,8 +134,7 @@ impl AuthBusAuthorityStore {
             }
             return Err(storage(error));
         }
-        tx.commit().await.map_err(storage)?;
-        Ok(AuthPolicy {
+        let policy = AuthPolicy {
             policy_id: spec.policy_id,
             principal: spec.principal,
             action: spec.action,
@@ -129,7 +144,10 @@ impl AuthBusAuthorityStore {
             not_before_ms: spec.not_before_ms,
             expires_at_ms: spec.expires_at_ms,
             revoked: false,
-        })
+        };
+        record_policy_history(&mut tx, &policy).await?;
+        tx.commit().await.map_err(storage)?;
+        Ok(policy)
     }
 
     pub async fn replace_policy(
@@ -169,6 +187,7 @@ impl AuthBusAuthorityStore {
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
+        record_policy_history(&mut tx, &current).await?;
         tx.commit().await.map_err(storage)?;
         Ok(current)
     }
@@ -197,9 +216,63 @@ impl AuthBusAuthorityStore {
             .execute(&mut *tx)
             .await
             .map_err(storage)?;
+            record_policy_history(&mut tx, &current).await?;
         }
         tx.commit().await.map_err(storage)?;
         Ok(current)
+    }
+
+    pub async fn retire_policy(
+        &self,
+        policy_id: &StableId,
+        expected_revision: u64,
+        retired_at_ms: u64,
+    ) -> Result<(), AuthBusAuthorityError> {
+        if expected_revision == 0 || retired_at_ms == 0 {
+            return Err(AuthBusAuthorityError::InvalidInput(
+                "policy retirement requires revision and time",
+            ));
+        }
+        let mut tx = begin(&self.pool).await?;
+        let current = load_policy_by_id(&mut tx, policy_id).await?;
+        if current.revision != expected_revision || !current.revoked {
+            return Err(AuthBusAuthorityError::InvalidTransition);
+        }
+        let references: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_quota_reservation
+             WHERE policy_id = ? AND state IN ('held','dispatch_attempted','indeterminate')",
+        )
+        .bind(policy_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        if references != 0 {
+            return Err(AuthBusAuthorityError::PolicyInUse);
+        }
+        sqlx::query(
+            "INSERT INTO authbus_policy_archive
+             (policy_id, principal, action, scope_digest, effect, revision,
+              not_before_ms, expires_at_ms, revoked, retired_at_ms)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)",
+        )
+        .bind(current.policy_id.as_str())
+        .bind(current.principal.as_str())
+        .bind(current.action.as_str())
+        .bind(current.scope_digest.as_array().as_slice())
+        .bind(effect_text(current.effect))
+        .bind(u64_bytes(current.revision))
+        .bind(u64_bytes(current.not_before_ms))
+        .bind(u64_bytes(current.expires_at_ms))
+        .bind(u64_bytes(retired_at_ms))
+        .execute(&mut *tx)
+        .await
+        .map_err(storage)?;
+        sqlx::query("DELETE FROM authbus_policy WHERE policy_id = ?")
+            .bind(policy_id.as_str())
+            .execute(&mut *tx)
+            .await
+            .map_err(storage)?;
+        tx.commit().await.map_err(storage)
     }
 
     pub async fn authorize(
@@ -288,6 +361,31 @@ pub(crate) async fn advance_time(
     .bind(u64_bytes(sample.wall_time_ms))
     .bind(u64_bytes(sample.source_revision))
     .bind(sample.source_digest.as_array().as_slice())
+    .execute(&mut **tx)
+    .await
+    .map_err(storage)?;
+    Ok(())
+}
+
+async fn record_policy_history(
+    tx: &mut Transaction<'_, Sqlite>,
+    policy: &AuthPolicy,
+) -> Result<(), AuthBusAuthorityError> {
+    sqlx::query(
+        "INSERT INTO authbus_policy_history
+         (policy_id, principal, action, scope_digest, effect, revision,
+          not_before_ms, expires_at_ms, revoked)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(policy.policy_id.as_str())
+    .bind(policy.principal.as_str())
+    .bind(policy.action.as_str())
+    .bind(policy.scope_digest.as_array().as_slice())
+    .bind(effect_text(policy.effect))
+    .bind(u64_bytes(policy.revision))
+    .bind(u64_bytes(policy.not_before_ms))
+    .bind(u64_bytes(policy.expires_at_ms))
+    .bind(if policy.revoked { 1_i64 } else { 0_i64 })
     .execute(&mut **tx)
     .await
     .map_err(storage)?;
