@@ -33,12 +33,17 @@ fn binding() -> DurableOperationBinding {
     }
 }
 
+fn outbox_payload() -> Vec<u8> {
+    br#"{"action":"request_retry","operationId":"operation:ui:outbox:1"}"#.to_vec()
+}
+
 fn intent() -> OutboxIntent {
+    let payload = outbox_payload();
     OutboxIntent {
         intent_id: stable_id("outbox:ui:1"),
         operation_id: stable_id("operation:ui:outbox:1"),
         destination: stable_id("runtime.agentd.ui-control"),
-        payload_digest: digest(b"owner-dispatch-intent"),
+        payload_digest: Digest32::of_bytes(&payload),
     }
 }
 
@@ -50,24 +55,26 @@ async fn operation_and_outbox_are_one_reopenable_local_transaction() {
     let ledger = DurableOperationLedger::open(&path).await.expect("open");
 
     let (operation, outbox) = ledger
-        .begin_bound_with_outbox(binding(), owner_generation, intent())
+        .begin_bound_with_outbox(binding(), owner_generation, intent(), outbox_payload())
         .await
         .expect("atomic operation + outbox");
     assert!(matches!(operation.operation.state, OperationState::Pending));
+    assert_eq!(outbox.payload, outbox_payload());
     assert!(matches!(outbox.state, DurableOutboxState::Pending));
 
     let repeated = ledger
-        .begin_bound_with_outbox(binding(), owner_generation, intent())
+        .begin_bound_with_outbox(binding(), owner_generation, intent(), outbox_payload())
         .await
         .expect("same semantics are idempotent");
     assert_eq!(repeated.0.operation.revision.get(), 1);
     assert!(matches!(repeated.1.state, DurableOutboxState::Pending));
 
     let mut changed = intent();
-    changed.payload_digest = digest(b"changed-dispatch");
+    let changed_payload = b"changed-dispatch".to_vec();
+    changed.payload_digest = Digest32::of_bytes(&changed_payload);
     assert!(matches!(
         ledger
-            .begin_bound_with_outbox(binding(), owner_generation, changed)
+            .begin_bound_with_outbox(binding(), owner_generation, changed, changed_payload)
             .await
             .expect_err("changed outbox semantics conflict"),
         OperationError::Conflict(_)
@@ -87,6 +94,7 @@ async fn operation_and_outbox_are_one_reopenable_local_transaction() {
         .expect("query outbox")
         .expect("outbox");
     assert!(matches!(operation.operation.state, OperationState::Pending));
+    assert_eq!(outbox.payload, outbox_payload());
     assert!(matches!(outbox.state, DurableOutboxState::Pending));
 }
 
@@ -96,7 +104,7 @@ async fn expired_claim_requires_higher_generation_and_ack_is_fenced() {
     let path = directory.path().join("operations.sqlite3");
     let ledger = DurableOperationLedger::open(&path).await.expect("open");
     ledger
-        .begin_bound_with_outbox(binding(), generation(4), intent())
+        .begin_bound_with_outbox(binding(), generation(4), intent(), outbox_payload())
         .await
         .expect("seed");
 
@@ -200,7 +208,7 @@ async fn equal_claim_is_idempotent_but_expired_same_generation_cannot_self_takeo
     let path = directory.path().join("operations.sqlite3");
     let ledger = DurableOperationLedger::open(&path).await.expect("open");
     ledger
-        .begin_bound_with_outbox(binding(), generation(6), intent())
+        .begin_bound_with_outbox(binding(), generation(6), intent(), outbox_payload())
         .await
         .expect("seed");
 
