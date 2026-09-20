@@ -167,7 +167,7 @@ impl EngramSnapshotV1 {
         mut synapses: Vec<SynapseV1>,
     ) -> Result<Self, EngramErrorV1> {
         nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
-        synapses.sort_by_key(|synapse| synapse_key(synapse));
+        synapses.sort_by_key(synapse_key);
         let mut value = Self {
             generation_vector_digest,
             engram_generation_digest,
