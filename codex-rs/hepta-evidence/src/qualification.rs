@@ -497,7 +497,7 @@ impl QualificationEvidenceStore<'_> {
             now,
         )?;
 
-        validate_lineage_references(&mut transaction, envelope).await?;
+        validate_lineage_references(&mut transaction, envelope, issuer).await?;
         advance_replay(&mut transaction, &authenticated)
             .await
             .map_err(|error| {
@@ -771,6 +771,7 @@ pub(crate) async fn verify_qualification_evidence_rows(
 async fn validate_lineage_references(
     transaction: &mut Transaction<'_, Sqlite>,
     envelope: &QualificationEvidenceEnvelopeV1,
+    issuer: &IssuerRegistration,
 ) -> Result<(), EvidenceError> {
     for (label, reference) in [
         ("predecessor", envelope.predecessor_evidence_id.as_ref()),
@@ -791,6 +792,22 @@ async fn validate_lineage_references(
         {
             return Err(EvidenceError::InvalidRecord(format!(
                 "qualification {label} evidence belongs to another candidate or claim class"
+            )));
+        }
+
+        // Corrections are owner-scoped: another authenticated principal or
+        // role cannot rewrite someone else's evidence. Revocation is also
+        // owner-scoped unless the caller is explicitly trusted for the
+        // security role, which is the emergency cross-principal revoker.
+        let owner_scoped = envelope.receipt_kind == EvidenceReceiptKindV1::Correction
+            || (envelope.receipt_kind == EvidenceReceiptKindV1::Revocation
+                && envelope.issuer_role != EvidenceIssuerRoleV1::Security);
+        if owner_scoped
+            && (row.issuer_principal_id != issuer.issuer_id.as_str()
+                || row.envelope.issuer_role != envelope.issuer_role)
+        {
+            return Err(EvidenceError::InvalidRecord(format!(
+                "qualification {label} evidence cannot be corrected or revoked by another principal or role"
             )));
         }
     }
@@ -1101,6 +1118,17 @@ fn verify_rows_integrity(rows: &[StoredQualificationEvidence]) -> Result<(), Evi
             {
                 return Err(EvidenceError::Corrupt(format!(
                     "qualification {label} reference violates lineage"
+                )));
+            }
+            let owner_scoped = row.envelope.receipt_kind == EvidenceReceiptKindV1::Correction
+                || (row.envelope.receipt_kind == EvidenceReceiptKindV1::Revocation
+                    && row.envelope.issuer_role != EvidenceIssuerRoleV1::Security);
+            if owner_scoped
+                && (referenced.issuer_principal_id != row.issuer_principal_id
+                    || referenced.envelope.issuer_role != row.envelope.issuer_role)
+            {
+                return Err(EvidenceError::Corrupt(format!(
+                    "qualification {label} reference crosses principal or role authority"
                 )));
             }
         }
