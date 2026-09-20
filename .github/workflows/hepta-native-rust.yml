@@ -6,6 +6,8 @@ on:
       - "apps/hepta-native/**"
       - "codex-rs/hepta-native-gateway/**"
       - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-private-state/**"
+      - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-native-rust.yml"
       - "docs/modules/ui.native/**"
@@ -16,6 +18,8 @@ on:
       - "apps/hepta-native/**"
       - "codex-rs/hepta-native-gateway/**"
       - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-private-state/**"
+      - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-native-rust.yml"
       - "docs/modules/ui.native/**"
@@ -77,6 +81,16 @@ jobs:
       - name: Test authenticated native gateway
         working-directory: codex-rs
         run: cargo test -p codex-hepta-native-gateway
+
+      - name: Qualify Windows kernel final-use durability
+        if: runner.os == 'Windows'
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-contracts final_use::windows_tests::
+
+      - name: Clippy Windows kernel final-use durability
+        if: runner.os == 'Windows'
+        working-directory: codex-rs
+        run: cargo clippy -p codex-hepta-contracts --tests -- -D warnings
 
       - name: Headless product smoke contract
         run: cargo run --bin hepta-native -- --self-test
