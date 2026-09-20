@@ -90,6 +90,7 @@ pub use production::dataset_freeze_signing_payload_v2;
 pub use production::decision_signing_payload_v2;
 pub use production::freeze_dataset_from_ledger;
 pub use production::outcome_signing_payload_v2;
+pub use production::sync_directory_handle;
 pub use production::unlearning_signing_payload_v1;
 pub use protocol::CreditAllocationV1 as CreditAllocationProtocolV1;
 pub use protocol::CreditAssignmentReceiptV1;
