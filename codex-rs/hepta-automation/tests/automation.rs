@@ -935,6 +935,8 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     for statement in [
         "DROP VIEW IF EXISTS automation_occurrence",
         "DROP VIEW IF EXISTS automation_schedule",
+        "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_required_insert",
+        "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_no_update",
         "DROP TRIGGER IF EXISTS automation_task_default_policy",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_observations",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_attempts",
@@ -976,6 +978,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow definitions");
+    sqlx::query("ALTER TABLE automation_runs DROP COLUMN schedule_revision")
+        .execute(&mut *rewind)
+        .await
+        .expect("remove v14 run revision from v1 fixture");
     sqlx::query("DELETE FROM _sqlx_migrations WHERE version >= 2")
         .execute(&mut *rewind)
         .await
