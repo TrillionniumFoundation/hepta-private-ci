@@ -110,7 +110,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-- `AgentRunSnapshot` / `AgentContextAttachment` / `AgentRunReceipt` on the local `run.lifecycle/1.0` capability. These are Agentd-local transport types and do not replace canonical cross-module contracts such as `RunStartSnapshotV1`.
+- `AgentRunSnapshot` / `AgentContextAttachment` / `AgentRunReceipt` on the local `run.lifecycle/1.1` capability. These are Agentd-local transport types and do not replace canonical cross-module contracts such as `RunStartSnapshotV1`.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
