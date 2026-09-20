@@ -135,7 +135,11 @@ pub fn summarize_resource_samples(
     canonical.sort_by(|left, right| {
         left.observed_at_micros
             .cmp(&right.observed_at_micros)
-            .then_with(|| left.receipt.execution_micros.cmp(&right.receipt.execution_micros))
+            .then_with(|| {
+                left.receipt
+                    .execution_micros
+                    .cmp(&right.receipt.execution_micros)
+            })
     });
     let mut bytes = b"hepta.neuron.resource-samples.v1".to_vec();
     bytes.extend_from_slice(host.as_array());

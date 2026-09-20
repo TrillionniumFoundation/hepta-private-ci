@@ -89,19 +89,16 @@ fn resource_summary_rejects_mixed_host_profiles() {
 #[test]
 fn config_ablations_remove_only_the_named_mechanism() {
     let full = config();
-    let no_inhibition =
-        ablate_sparse_config(&full, NeuronAblationProfileV1::NoInhibition);
+    let no_inhibition = ablate_sparse_config(&full, NeuronAblationProfileV1::NoInhibition);
     assert!(no_inhibition.inhibition.is_empty());
     assert_eq!(no_inhibition.inhibition_gain_q24, 0);
     assert_eq!(no_inhibition.temporal_decay_q24, full.temporal_decay_q24);
 
-    let no_homeostasis =
-        ablate_sparse_config(&full, NeuronAblationProfileV1::NoHomeostasis);
+    let no_homeostasis = ablate_sparse_config(&full, NeuronAblationProfileV1::NoHomeostasis);
     assert_eq!(no_homeostasis.threshold_rate_q24, 0);
     assert_eq!(no_homeostasis.inhibition, full.inhibition);
 
-    let stateless =
-        ablate_sparse_config(&full, NeuronAblationProfileV1::StatelessTemporal);
+    let stateless = ablate_sparse_config(&full, NeuronAblationProfileV1::StatelessTemporal);
     assert_eq!(stateless.temporal_decay_q24, 0);
     assert_eq!(stateless.inhibition, full.inhibition);
 }

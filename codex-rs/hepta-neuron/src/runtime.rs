@@ -9,13 +9,13 @@ use codex_hepta_types::Digest32;
 use crate::JournalAnchor;
 use crate::JournalError;
 use crate::JournalScope;
-use crate::validate_deletion_rebuild;
-use crate::NeuronDeletionRebuildReceiptV1;
 use crate::NeuronDeletionRebuildPlanV1;
+use crate::NeuronDeletionRebuildReceiptV1;
 use crate::SparseConfig;
 use crate::SparseJournal;
 use crate::SparseTick;
 use crate::runtime_types::*;
+use crate::validate_deletion_rebuild;
 
 #[derive(Clone)]
 struct PendingWitness {
@@ -60,8 +60,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
     /// Start a fresh generation after authenticated deletion/withdrawal
     /// processing. The predecessor checkpoint is bound for lineage only and is
     /// never loaded into the successor runtime.
-    pub fn bootstrap_after_deletion(
-        file: File,
+    // The bootstrap tuple is atomic across generation, store, config, witness and lineage;\n    // splitting it into independently reusable partial objects would permit mixed-generation use.\n    #[allow(clippy::too_many_arguments)]\n    pub fn bootstrap_after_deletion(\n        file: File,
         native: SparseConfig,
         scope: JournalScope,
         max_records: usize,
@@ -83,14 +82,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
                 crate::DeletionRebuildError::SuccessorMismatch,
             ));
         }
-        let runtime = Self::bootstrap(
-            file,
-            native,
-            scope,
-            max_records,
-            config,
-            witness,
-        )?;
+        let runtime = Self::bootstrap(file, native, scope, max_records, config, witness)?;
         Ok((runtime, receipt))
     }
 
@@ -167,15 +159,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .current()?
             .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
         if latest.sequence <= max_records as u64 {
-            return Self::recover(
-                file,
-                native,
-                scope,
-                max_records,
-                config,
-                latest,
-                witness,
-            );
+            return Self::recover(file, native, scope, max_records, config, latest, witness);
         }
         let journal = SparseJournal::open(file, native, scope, max_records)?;
         let current = journal
@@ -196,11 +180,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
 
     /// Rotate to a fresh successor segment while preserving the exact current
     /// checkpoint as the new segment's immutable seed.
-    pub fn rollover(
-        &mut self,
-        file: File,
-        max_records: usize,
-    ) -> Result<(), NeuronRuntimeError> {
+    pub fn rollover(&mut self, file: File, max_records: usize) -> Result<(), NeuronRuntimeError> {
         if self.pending.is_some() {
             return Err(NeuronRuntimeError::PendingReconciliation);
         }
@@ -230,8 +210,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let segment_end = seed.sequence().saturating_add(max_records as u64);
         let length = file.metadata().map_err(JournalError::from)?.len();
         let next = if latest.sequence <= segment_end {
-            self.journal
-                .recover_successor(file, max_records, latest)?
+            self.journal.recover_successor(file, max_records, latest)?
         } else {
             if length == 0 {
                 return Err(NeuronRuntimeError::Journal(
@@ -264,7 +243,10 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             if pending.input_digest != input_digest {
                 return Err(NeuronRuntimeError::PendingReconciliation);
             }
-            match self.witness.compare_and_swap(pending.expected, pending.next) {
+            match self
+                .witness
+                .compare_and_swap(pending.expected, pending.next)
+            {
                 Ok(()) => {
                     self.pending = None;
                     return Ok(pending.output);
@@ -279,7 +261,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         }
 
         let current = self.journal.current()?;
-        let expected_checkpoint = current.map_or(Digest32::ZERO, |checkpoint| checkpoint.digest());
+        let expected_checkpoint = current.map_or(Digest32::ZERO, crate::SparseCheckpoint::digest);
         if input.checkpoint_digest != expected_checkpoint {
             return Err(NeuronRuntimeError::CheckpointMismatch);
         }
@@ -309,8 +291,11 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .journal
             .current()?
             .ok_or(NeuronRuntimeError::CheckpointMismatch)?;
-        let (confidence_ppm, ood_ppm, mut abstain) =
-            calibrate(&self.config.calibration, &sparse_receipt, input.logical_sequence)?;
+        let (confidence_ppm, ood_ppm, mut abstain) = calibrate(
+            &self.config.calibration,
+            &sparse_receipt,
+            input.logical_sequence,
+        )?;
         let execution_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         let checkpoint_bytes = checkpoint.bounded_encoded_bytes() as u64;
         let journal_bytes_written = u64::try_from(304_usize + 16 * self.config.state_width)
@@ -330,8 +315,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             || model_output.transient_allocation_bytes
                 > self.config.resource_envelope.transient_allocation_bytes
             || checkpoint_bytes > self.config.resource_envelope.checkpoint_bytes
-            || write_amplification_ppm
-                > self.config.resource_envelope.write_amplification_ppm
+            || write_amplification_ppm > self.config.resource_envelope.write_amplification_ppm
         {
             abstain = true;
         }
@@ -339,17 +323,17 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .activation_q24
             .iter()
             .enumerate()
-            .filter_map(|(index, value)| {
-                (*value > 0)
-                    .then(|| u32::try_from(index).map_err(|_| NeuronRuntimeError::Arithmetic))
-            })
+            .filter(|(_, value)| **value > 0)
+            .map(|(index, _)| u32::try_from(index).map_err(|_| NeuronRuntimeError::Arithmetic))
             .collect::<Result<Vec<_>, _>>()?;
         let activation_digest = digest_q24_vector(
             b"hepta.neuron.activation.q24.v1",
             &sparse_receipt.activation_q24,
         );
-        let threshold_digest =
-            digest_q24_vector(b"hepta.neuron.threshold.q24.v1", checkpoint.thresholds_q24());
+        let threshold_digest = digest_q24_vector(
+            b"hepta.neuron.threshold.q24.v1",
+            checkpoint.thresholds_q24(),
+        );
         let eligibility_digest = digest_q24_vector(
             b"hepta.neuron.eligibility.q24.v1",
             checkpoint.eligibility_q24(),

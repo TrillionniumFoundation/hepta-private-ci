@@ -188,8 +188,7 @@ impl NeuronRuntimeConfigV1 {
             || self.resource_envelope.p99_latency_micros < self.resource_envelope.p95_latency_micros
             || self.resource_envelope.transient_allocation_bytes == 0
             || self.resource_envelope.checkpoint_bytes == 0
-            || !(1_000_000..=4_000_000)
-                .contains(&self.resource_envelope.write_amplification_ppm)
+            || !(1_000_000..=4_000_000).contains(&self.resource_envelope.write_amplification_ppm)
         {
             return Err(NeuronRuntimeError::InvalidConfig);
         }
@@ -541,8 +540,8 @@ pub(crate) fn calibrate(
     if sequence < profile.valid_from_sequence || sequence > profile.expires_after_sequence {
         return Ok((0, PPM as u32, true));
     }
-    let error = u64::try_from(receipt.prediction_error_q24)
-        .map_err(|_| NeuronRuntimeError::Arithmetic)?;
+    let error =
+        u64::try_from(receipt.prediction_error_q24).map_err(|_| NeuronRuntimeError::Arithmetic)?;
     let zero_confidence = profile.zero_confidence_error_q24 as u64;
     let in_domain = profile.maximum_in_domain_error_q24 as u64;
     let confidence = PPM

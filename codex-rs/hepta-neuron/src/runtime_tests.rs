@@ -292,13 +292,10 @@ fn canonical_runtime_commits_model_bound_calibrated_signal_and_recovers() {
         /*max_records*/ 16,
         config,
         first_anchor,
-        witness.clone(),
+        witness,
     ));
     assert_eq!(checked(recovered.current_anchor()), Some(first_anchor));
-    let second = checked(recovered.tick(
-        &mut model,
-        input(2, first_anchor.checkpoint_digest),
-    ));
+    let second = checked(recovered.tick(&mut model, input(2, first_anchor.checkpoint_digest)));
     assert_eq!(
         second.tick.checkpoint_before,
         first_anchor.checkpoint_digest
@@ -381,7 +378,6 @@ fn collapse_or_ood_forces_abstention_without_granting_authority() {
     assert!(!output.signal.authority.grants_any());
 }
 
-
 #[test]
 fn expired_calibration_advances_state_but_forces_fail_closed_abstention() {
     let fixture = Fixture::new();
@@ -401,15 +397,14 @@ fn expired_calibration_advances_state_but_forces_fail_closed_abstention() {
     let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
     let first_anchor = checked(runtime.current_anchor()).expect("first anchor");
     assert!(!first.tick.abstain);
-    let second = checked(runtime.tick(
-        &mut model,
-        input(2, first_anchor.checkpoint_digest),
-    ));
+    let second = checked(runtime.tick(&mut model, input(2, first_anchor.checkpoint_digest)));
     assert!(second.tick.abstain);
     assert_eq!(second.tick.confidence_ppm, 0);
     assert_eq!(second.tick.ood_ppm, 1_000_000);
     assert_eq!(
-        checked(runtime.current_anchor()).expect("second anchor").sequence,
+        checked(runtime.current_anchor())
+            .expect("second anchor")
+            .sequence,
         2
     );
 }
@@ -431,22 +426,10 @@ fn runtime_rollover_and_chain_recovery_preserve_latest_witness() {
         ));
         let mut model = FakeModel::new();
         let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
-        let second = checked(runtime.tick(
-            &mut model,
-            input(2, first.tick.checkpoint_after),
-        ));
-        checked(runtime.rollover(
-            fixture.named_file("successor"),
-            /*max_records*/ 2,
-        ));
-        let third = checked(runtime.tick(
-            &mut model,
-            input(3, second.tick.checkpoint_after),
-        ));
-        let fourth = checked(runtime.tick(
-            &mut model,
-            input(4, third.tick.checkpoint_after),
-        ));
+        let second = checked(runtime.tick(&mut model, input(2, first.tick.checkpoint_after)));
+        checked(runtime.rollover(fixture.named_file("successor"), /*max_records*/ 2));
+        let third = checked(runtime.tick(&mut model, input(3, second.tick.checkpoint_after)));
+        let fourth = checked(runtime.tick(&mut model, input(4, third.tick.checkpoint_after)));
         JournalAnchor {
             sequence: 4,
             checkpoint_digest: fourth.tick.checkpoint_after,
@@ -463,17 +446,15 @@ fn runtime_rollover_and_chain_recovery_preserve_latest_witness() {
         witness.clone(),
     ));
     assert_eq!(
-        checked(recovered.current_anchor()).expect("root end").sequence,
+        checked(recovered.current_anchor())
+            .expect("root end")
+            .sequence,
         2
     );
-    checked(recovered.recover_next_segment(
-        fixture.named_file("successor"),
-        /*max_records*/ 2,
-    ));
+    checked(recovered.recover_next_segment(fixture.named_file("successor"), /*max_records*/ 2));
     assert_eq!(checked(recovered.current_anchor()), Some(final_anchor));
     assert_eq!(checked(witness.current()), Some(final_anchor));
 }
-
 
 #[test]
 fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
