@@ -40,6 +40,7 @@ from .worker_lifecycle import (
     register_worker,
     submit_worker_result,
     worker_claim,
+    worker_completion_observation_digest,
 )
 
 
@@ -208,6 +209,9 @@ class EngineeringControlProduct:
 
     def claim_state(self, claim_id: str) -> WorkerClaim:
         return worker_claim(self.store, claim_id)
+
+    def completion_observation_digest(self, claim_id: str) -> str:
+        return worker_completion_observation_digest(self.store, claim_id)
 
     def publish_integration_queue(
         self,
