@@ -1,4 +1,9 @@
 //! Persistent nonce/revocation owner. OS locks are released on process death.
+//!
+//! Revocation/trust state is a small atomic snapshot. Replay claims use a
+//! fixed-width append-only journal so the dispatch hot path does not rewrite an
+//! ever-growing JSON set.
+
 use super::FinalUseError;
 use super::FinalUseRevocations;
 use super::MAX_CLAIMS;
@@ -6,18 +11,39 @@ use super::State;
 use super::valid_head;
 use serde::Deserialize;
 use serde::Serialize;
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 
+const STATE_SCHEMA_V1: u32 = 1;
+const STATE_SCHEMA_V2: u32 = 2;
+const CLAIM_FRAME_BYTES: usize = 8 + 32;
+
+#[derive(Deserialize)]
+struct StoredHeader {
+    schema: u32,
+}
+
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Stored {
+struct StoredV1 {
     schema: u32,
     signer_id: String,
     verifying_key: [u8; 32],
     state: State,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredV2 {
+    schema: u32,
+    signer_id: String,
+    verifying_key: [u8; 32],
+    head: FinalUseRevocations,
 }
 
 pub(super) struct Store {
@@ -45,49 +71,49 @@ impl Store {
             _lock: lock,
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
-        let state = if has_state {
-            let mut bytes = Vec::new();
-            open_private(&store.root, "authority.json", Access::Read)?
-                .take(8 * 1024 * 1024 + 1)
-                .read_to_end(&mut bytes)
-                .map_err(|_| FinalUseError::Unavailable)?;
-            if bytes.len() > 8 * 1024 * 1024 {
-                return Err(FinalUseError::InvalidTrust);
-            }
-            let stored: Stored =
+        let mut state = if has_state {
+            let bytes = read_bounded(&store.root, "authority.json", 8 * 1024 * 1024)?;
+            let header: StoredHeader =
                 serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
-            if stored.schema != 1
-                || stored.signer_id != signer_id
-                || stored.verifying_key != verifying_key
-                || !valid_head(&stored.state.head)
-                || stored.state.used_nonces.len() > MAX_CLAIMS
-            {
-                return Err(FinalUseError::InvalidTrust);
-            }
-            let mut state = stored.state;
-            if initial.authority_epoch >= state.head.authority_epoch
-                && initial.revision > state.head.revision
-                && (initial.authority_epoch > state.head.authority_epoch
-                    || initial
-                        .revoked_grant_ids
-                        .is_superset(&state.head.revoked_grant_ids))
-            {
-                if initial.authority_epoch > state.head.authority_epoch {
-                    state.used_nonces.clear();
+            match header.schema {
+                STATE_SCHEMA_V1 => {
+                    let stored: StoredV1 =
+                        serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
+                    if stored.signer_id != signer_id
+                        || stored.verifying_key != verifying_key
+                        || !valid_head(&stored.state.head)
+                        || stored.state.used_nonces.len() > MAX_CLAIMS
+                    {
+                        return Err(FinalUseError::InvalidTrust);
+                    }
+                    let mut migrated = stored.state;
+                    migrated.failed = false;
+                    // Rewrite the complete legacy set before publishing schema 2.
+                    // Repeating this migration after a crash is idempotent.
+                    store.replace_claims(
+                        migrated.head.authority_epoch,
+                        &migrated.used_nonces,
+                    )?;
+                    store.persist_snapshot(&migrated.head)?;
+                    migrated
                 }
-                state.head = initial;
-                store.persist(&state)?;
-            } else if state.head.authority_epoch < initial.authority_epoch
-                || state.head.revision < initial.revision
-                || (state.head.authority_epoch == initial.authority_epoch
-                    && !state
-                        .head
-                        .revoked_grant_ids
-                        .is_superset(&initial.revoked_grant_ids))
-            {
-                return Err(FinalUseError::InvalidTrust);
+                STATE_SCHEMA_V2 => {
+                    let stored: StoredV2 =
+                        serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
+                    if stored.signer_id != signer_id
+                        || stored.verifying_key != verifying_key
+                        || !valid_head(&stored.head)
+                    {
+                        return Err(FinalUseError::InvalidTrust);
+                    }
+                    State {
+                        used_nonces: store.read_claims(stored.head.authority_epoch)?,
+                        head: stored.head,
+                        failed: false,
+                    }
+                }
+                _ => return Err(FinalUseError::InvalidTrust),
             }
-            state
         } else {
             // Once initialized, absence is data loss, never permission to
             // reset the replay registry. An interrupted first start also
@@ -96,22 +122,73 @@ impl Store {
                 return Err(FinalUseError::InvalidTrust);
             }
             let state = State {
-                head: initial,
+                head: initial.clone(),
                 used_nonces: Default::default(),
                 failed: false,
             };
-            store.persist(&state)?;
+            store.replace_claims(initial.authority_epoch, &state.used_nonces)?;
+            store.persist_snapshot(&initial)?;
             state
         };
+
+        if initial.authority_epoch >= state.head.authority_epoch
+            && initial.revision > state.head.revision
+            && (initial.authority_epoch > state.head.authority_epoch
+                || initial
+                    .revoked_grant_ids
+                    .is_superset(&state.head.revoked_grant_ids))
+        {
+            if initial.authority_epoch > state.head.authority_epoch {
+                state.used_nonces.clear();
+            }
+            state.head = initial;
+            store.persist(&state)?;
+        } else if state.head.authority_epoch < initial.authority_epoch
+            || state.head.revision < initial.revision
+            || (state.head.authority_epoch == initial.authority_epoch
+                && !state
+                    .head
+                    .revoked_grant_ids
+                    .is_superset(&initial.revoked_grant_ids))
+        {
+            return Err(FinalUseError::InvalidTrust);
+        }
+
         Ok((store, state))
     }
 
+    /// Persist a revocation/epoch transition. This path is not the per-claim
+    /// hot path, so it may compact the claim journal to the current epoch.
     pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
-        let stored = Stored {
-            schema: 1,
+        self.persist_snapshot(&state.head)?;
+        self.replace_claims(state.head.authority_epoch, &state.used_nonces)
+    }
+
+    /// Durably burn one nonce. The fixed frame makes claim persistence O(1)
+    /// in the number of prior claims.
+    pub(super) fn append_claim(
+        &self,
+        authority_epoch: u64,
+        nonce: [u8; 32],
+    ) -> Result<(), FinalUseError> {
+        if authority_epoch == 0 || nonce == [0; 32] {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let mut file = open_private(&self.root, "authority.claims", Access::Create)?;
+        file.seek(SeekFrom::End(0))
+            .map_err(|_| FinalUseError::Unavailable)?;
+        file.write_all(&authority_epoch.to_be_bytes())
+            .and_then(|()| file.write_all(&nonce))
+            .and_then(|()| file.sync_all())
+            .map_err(|_| FinalUseError::Unavailable)
+    }
+
+    fn persist_snapshot(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
+        let stored = StoredV2 {
+            schema: STATE_SCHEMA_V2,
             signer_id: self.signer_id.clone(),
             verifying_key: self.verifying_key,
-            state: state.clone(),
+            head: head.clone(),
         };
         let bytes = serde_json::to_vec(&stored).map_err(|_| FinalUseError::Unavailable)?;
         let mut file = open_private(&self.root, "authority.next", Access::Create)?;
@@ -122,6 +199,72 @@ impl Store {
         replace_state(&self.root)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
+
+    fn read_claims(&self, authority_epoch: u64) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
+        if !entry_exists(&self.root, "authority.claims")? {
+            return Ok(BTreeSet::new());
+        }
+        let maximum = MAX_CLAIMS
+            .checked_mul(CLAIM_FRAME_BYTES)
+            .and_then(|value| value.checked_add(CLAIM_FRAME_BYTES))
+            .ok_or(FinalUseError::InvalidTrust)?;
+        let bytes = read_bounded(&self.root, "authority.claims", maximum)?;
+        if bytes.len() % CLAIM_FRAME_BYTES != 0 {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let mut claims = BTreeSet::new();
+        for frame in bytes.chunks_exact(CLAIM_FRAME_BYTES) {
+            let mut epoch_bytes = [0u8; 8];
+            epoch_bytes.copy_from_slice(&frame[..8]);
+            let epoch = u64::from_be_bytes(epoch_bytes);
+            if epoch == authority_epoch {
+                let mut nonce = [0u8; 32];
+                nonce.copy_from_slice(&frame[8..]);
+                if nonce == [0; 32] || !claims.insert(nonce) {
+                    return Err(FinalUseError::InvalidTrust);
+                }
+            }
+        }
+        if claims.len() > MAX_CLAIMS {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        Ok(claims)
+    }
+
+    fn replace_claims(
+        &self,
+        authority_epoch: u64,
+        claims: &BTreeSet<[u8; 32]>,
+    ) -> Result<(), FinalUseError> {
+        if authority_epoch == 0 || claims.len() > MAX_CLAIMS {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let mut file = open_private(&self.root, "authority.claims.next", Access::Create)?;
+        file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
+        for nonce in claims {
+            if *nonce == [0; 32] {
+                return Err(FinalUseError::InvalidTrust);
+            }
+            file.write_all(&authority_epoch.to_be_bytes())
+                .and_then(|()| file.write_all(nonce))
+                .map_err(|_| FinalUseError::Unavailable)?;
+        }
+        file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        replace_claims(&self.root)?;
+        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
+    }
+}
+
+fn read_bounded(directory: &File, name: &str, maximum: usize) -> Result<Vec<u8>, FinalUseError> {
+    let mut bytes = Vec::new();
+    open_private(directory, name, Access::Read)?
+        .take(u64::try_from(maximum).map_err(|_| FinalUseError::InvalidTrust)? + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|_| FinalUseError::Unavailable)?;
+    if bytes.len() > maximum {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    Ok(bytes)
 }
 
 enum Access {
@@ -208,11 +351,26 @@ fn replace_state(directory: &File) -> Result<(), FinalUseError> {
         .map_err(|_| FinalUseError::Unavailable)
 }
 
+#[cfg(unix)]
+fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
+    rustix::fs::renameat(
+        directory,
+        "authority.claims.next",
+        directory,
+        "authority.claims",
+    )
+    .map_err(|_| FinalUseError::Unavailable)
+}
+
 #[cfg(not(unix))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 #[cfg(not(unix))]
 fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
+    Err(FinalUseError::UnsafeStateDirectory)
+}
+#[cfg(not(unix))]
+fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
