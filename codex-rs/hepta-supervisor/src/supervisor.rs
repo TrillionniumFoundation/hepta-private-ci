@@ -107,6 +107,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "production revocation frontier must be non-zero".to_string(),
             ));
         }
+        if self
+            .production_revocation_frontier
+            .is_some_and(|current| revocation_frontier < current)
+        {
+            return Err(SupervisorError::ProductionAuthority(
+                "production revocation frontier cannot move backwards".to_string(),
+            ));
+        }
         self.production_revocation_frontier = Some(revocation_frontier);
         Ok(())
     }
