@@ -81,6 +81,24 @@
           "nativeSymbol": "codex_hepta_learning_ledger::validate_candidate_set_completeness",
           "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
           "status": "implemented_compatibility"
+        },
+        {
+          "operation": "LedgerWriter::revalidate_dataset_snapshot",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::revalidate_dataset_snapshot",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_current_state_revalidation"
+        },
+        {
+          "operation": "LedgerWriter::rotate_segment",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::rotate_segment",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_directory_sync_before_witness"
+        },
+        {
+          "operation": "sync_directory_handle",
+          "nativeSymbol": "codex_hepta_learning_ledger::sync_directory_handle",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_host_authorized_directory_fsync"
         }
       ],
       "tests": [
@@ -93,11 +111,16 @@
         "trust_distribution_rotation_is_monotonic_and_content_addressed",
         "registered_protocols_reject_unknown_fields",
         "checkpoint_is_content_addressed_and_supports_binary_lookup",
-        "existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery"
+        "existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+        "lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness",
+        "corrupt_or_missing_witness_history_never_falls_back_to_reinitialization",
+        "process_death_between_ledger_and_witness_reconciles_without_redispatch",
+        "directory_durability_requires_an_actual_directory_handle",
+        "product_path_records_outcome_correction_then_conserved_credit",
+        "credit_failure_preserves_outcome_for_exact_reconciliation",
+        "run_episode_mismatch_rejects_before_any_outcome_append"
       ],
-      "remainingRepositoryGaps": [
-        "current_exact_head_and_synthetic_merge_ci_must_pass_for_this_candidate"
-      ],
+      "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
         "named_live_product_caller_and_exclusive_physical_writer",
         "production_root_provisioning_rotation_trust_distribution_transport_key_custody_and_witness_placement",
@@ -107,10 +130,26 @@
       "statusDimensions": {
         "planning": "work_packages_declared_planned",
         "source": "converged_source_implemented",
-        "composition": "evaluated_shadow_qualification_consumer_composed",
+        "composition": "decision_and_terminal_closure_source_composed_live_daemon_binding_pending",
         "qualification": "current_exact_head_ci_pending",
         "liveProduct": "external_not_established"
-      }
+      },
+      "crossLaneRepositoryDependencies": [
+        "runtime.agentd daemon-owned terminal observation must consume the authenticated LedgerWriter closure after its lifecycle owner line converges",
+        "intelligence.control canonical V3 must migrate any legacy Outcome/Credit compatibility caller to append_outcome_credit_v2 before product activation"
+      ],
+      "productCallsites": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+          "symbol": "run_evaluated_shadow_v1",
+          "state": "source_composed_authenticated_decision_qualification_caller"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+          "symbol": "append_outcome_credit_v2",
+          "state": "source_composed_authenticated_terminal_closure_live_daemon_binding_pending"
+        }
+      ]
     },
     {
       "module": "learning.artifacts",
