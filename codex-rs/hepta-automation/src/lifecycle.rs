@@ -218,9 +218,9 @@ impl AutomationStore {
         Ok(policy)
     }
 
-    /// Revision-bump recurrence policy. A materialized occurrence owns its
-    /// schedule revision; policy mutation therefore conflicts while any
-    /// occurrence for the task is non-terminal.
+    /// Revision-bump recurrence policy. The claim transaction freezes the
+    /// revision that produced a due instant, so policy mutation conflicts from
+    /// the first pending/leased run through terminal occurrence settlement.
     pub async fn set_schedule_policy(
         &self,
         task_id: AutomationTaskId,
@@ -239,12 +239,21 @@ impl AutomationStore {
         let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
         ensure_schedule_metadata(&mut transaction, self, task_id).await?;
         let active: i64 = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM automation_occurrence_lifecycle
-             WHERE task_id = ? AND owner_agent_id = ?
-               AND state IN ('claimed', 'admitted', 'running', 'indeterminate')",
+            "SELECT (
+                 EXISTS(
+                     SELECT 1 FROM automation_occurrence_lifecycle
+                     WHERE task_id = ? AND owner_agent_id = ?
+                       AND state IN ('claimed', 'admitted', 'running', 'indeterminate')
+                 )
+                 OR EXISTS(
+                     SELECT 1 FROM automation_runs
+                     WHERE task_id = ? AND state IN ('pending', 'leased')
+                 )
+             )",
         )
         .bind(task_id.to_string())
         .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(task_id.to_string())
         .fetch_one(&mut *transaction)
         .await
         .map_err(unavailable)?;
@@ -306,7 +315,8 @@ impl AutomationStore {
             load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
                 .await?
         {
-            if current.scheduled_for_ms != lease.scheduled_for_ms
+            if current.schedule_revision != lease.schedule_revision
+                || current.scheduled_for_ms != lease.scheduled_for_ms
                 || current.client_user_message_id != lease.client_user_message_id
             {
                 return Err(AutomationError::Conflict);
@@ -386,10 +396,13 @@ impl AutomationStore {
         }
 
         let policy = load_schedule_policy(&mut transaction, self, lease.task.task_id).await?;
+        if policy.revision != lease.schedule_revision {
+            return Err(AutomationError::Conflict);
+        }
         let occurrence_id = deterministic_occurrence_id(
             self.taskflow_owner_agent_id().as_str(),
             lease.task.task_id,
-            policy.revision,
+            lease.schedule_revision,
             lease.scheduled_for_ms,
         );
         let taskflow_run_id = format!("automation-run:{}", digest_suffix(&occurrence_id));
@@ -405,7 +418,7 @@ impl AutomationStore {
         .bind(to_i64(lease.occurrence)?)
         .bind(&occurrence_id)
         .bind(self.taskflow_owner_agent_id().as_str())
-        .bind(to_i64(policy.revision)?)
+        .bind(to_i64(lease.schedule_revision)?)
         .bind(to_i64(lease.scheduled_for_ms)?)
         .bind(&lease.client_user_message_id)
         .bind(policy.overlap.as_str())
