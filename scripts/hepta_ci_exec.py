@@ -10,17 +10,21 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
+import queue
 from pathlib import Path
 import re
 import signal
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import uuid
 
 MAX_OUTPUT_BYTES = 64 * 1024 * 1024
+DEFAULT_TIMEOUT_SECONDS = 3600.0
 LIBTEST_SUMMARY = re.compile(
     rb"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;.*"
 )
@@ -97,38 +101,88 @@ def _kill_command(process: subprocess.Popen) -> None:
             process.kill()
     except ProcessLookupError:
         pass
-    process.wait()
+    process.wait(timeout=10)
 
 
-def execute_logged(command: list[str], log: Path, maximum_bytes: int = MAX_OUTPUT_BYTES) -> dict:
-    """Keep bounded merged stdout/stderr, including failures before test startup.
+def execute_logged(
+    command: list[str], log: Path, maximum_bytes: int = MAX_OUTPUT_BYTES,
+    *, timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+) -> dict:
+    """Bound command wall time and retained output, including inherited pipes.
 
-    Test counts recognize completed test summaries, not compilation or process success.
-    This parser is not an independent evaluator of adversarial candidate code.
+    A bounded reader queue lets the owner enforce its deadline even when a
+    child is silent or an exited parent leaves its output pipe open in a child.
+    POSIX cancellation kills the command process group, not only its leader.
+    This is cooperative CI lifecycle control, not a hostile-code sandbox.
     """
-    if maximum_bytes <= 0:
-        raise ValueError("output bound must be positive")
+    if type(maximum_bytes) is not int or maximum_bytes <= 0:
+        raise ValueError("output bound must be a positive integer")
+    if (type(timeout_seconds) not in (int, float)
+            or not math.isfinite(timeout_seconds) or timeout_seconds <= 0):
+        raise ValueError("timeout_seconds must be positive and finite")
     digest = hashlib.sha256()
     count = 0
     tests = TestSummaryCounter()
     pending = b""
     exceeded = False
+    timed_out = False
     # Never overwrite an earlier invocation's diagnostic output.
     with log.open("xb") as stream:
+        deadline = time.monotonic() + timeout_seconds
         process = subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             start_new_session=os.name == "posix",
         )
+        assert process.stdout is not None
+        output_fd = process.stdout.fileno()
+        chunks: queue.Queue[bytes | OSError | None] = queue.Queue(maxsize=4)
+        stopping = threading.Event()
+
+        def deliver(value: bytes | OSError | None) -> None:
+            while not stopping.is_set():
+                try:
+                    chunks.put(value, timeout=0.1)
+                    return
+                except queue.Full:
+                    continue
+
+        def read_output() -> None:
+            try:
+                while not stopping.is_set():
+                    # os.read avoids BufferedReader's lock: closing the stream
+                    # during cancellation must not wait for another read to end.
+                    chunk = os.read(output_fd, 16384)
+                    if not chunk:
+                        break
+                    deliver(chunk)
+            except OSError as error:
+                deliver(error)
+            finally:
+                deliver(None)
+
+        reader = threading.Thread(target=read_output, daemon=True)
+        reader.start()
         try:
-            assert process.stdout is not None
-            while chunk := process.stdout.read(16384):
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    timed_out = True
+                    break
+                try:
+                    chunk = chunks.get(timeout=remaining)
+                except queue.Empty:
+                    timed_out = True
+                    break
+                if chunk is None:
+                    break
+                if isinstance(chunk, OSError):
+                    raise chunk
                 available = maximum_bytes - count
                 kept = chunk[:available]
                 stream.write(kept)
                 digest.update(kept)
                 count += len(kept)
-                # Buffer only a bounded partial line; the retained file has the
-                # original bytes even when a command emits a very long line.
+                # Keep the line parser bounded as well as the diagnostic file.
                 lines = (pending + kept).split(b"\n")
                 pending = lines.pop()[-4096:]
                 for line in lines:
@@ -141,31 +195,48 @@ def execute_logged(command: list[str], log: Path, maximum_bytes: int = MAX_OUTPU
                     sys.stdout.flush()
                 if len(chunk) > len(kept):
                     exceeded = True
-                    _kill_command(process)
                     break
+            if exceeded or timed_out:
+                _kill_command(process)
+            else:
+                try:
+                    process.wait(timeout=max(0.0, deadline - time.monotonic()))
+                except subprocess.TimeoutExpired:
+                    # EOF is not process completion: a child can close both
+                    # output descriptors and continue running indefinitely.
+                    timed_out = True
+                    _kill_command(process)
             tests.observe(pending)
-            returncode = process.wait()
+            returncode = process.returncode
         except BaseException:
             _kill_command(process)
             raise
         finally:
-            if process.stdout is not None:
-                process.stdout.close()
+            stopping.set()
+            process.stdout.close()
+            reader.join(timeout=1)
             stream.flush()
             os.fsync(stream.fileno())
     return {
         "returncode": returncode, "log_file": log.name,
         "log_bytes": count, "log_sha256": digest.hexdigest(),
         "output_limit_exceeded": exceeded,
+        "timed_out": timed_out, "timeout_seconds": timeout_seconds,
         "observed_passed_tests": tests.passed, "observed_failed_tests": tests.failed,
     }
 
 
-def run(output: Path, command: list[str], minimum_tests: int = 0) -> int:
+def run(
+    output: Path, command: list[str], minimum_tests: int = 0,
+    *, timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+) -> int:
     if not command:
         raise ValueError("a command is required")
     if minimum_tests < 0:
         raise ValueError("minimum_tests must not be negative")
+    if (type(timeout_seconds) not in (int, float)
+            or not math.isfinite(timeout_seconds) or timeout_seconds <= 0):
+        raise ValueError("timeout_seconds must be positive and finite")
     root = Path(git("rev-parse", "--show-toplevel")).resolve()
     if not output.is_absolute() or output.resolve().is_relative_to(root):
         raise ValueError("execution records must be outside the source checkout")
@@ -188,6 +259,7 @@ def run(output: Path, command: list[str], minimum_tests: int = 0) -> int:
             "status": "running",
             "command_exit_code": None,
             "minimum_tests": minimum_tests,
+            "timeout_seconds": timeout_seconds,
         }
         json.dump(record, stream, sort_keys=True)
         stream.write("\n")
@@ -218,7 +290,7 @@ def run(output: Path, command: list[str], minimum_tests: int = 0) -> int:
         else:
             raise ValueError("an explicit source-head or base-merge lane is required")
         log = output.with_name(f"{output.name}.{uuid.uuid4().hex}.log")
-        observed = execute_logged(command, log)
+        observed = execute_logged(command, log, timeout_seconds=timeout_seconds)
         returncode = observed.pop("returncode")
         record.update(observed)
         record["command_exit_code"] = returncode
@@ -231,6 +303,9 @@ def run(output: Path, command: list[str], minimum_tests: int = 0) -> int:
         if record["output_limit_exceeded"]:
             record["error"] = "command output exceeded the retained-output bound"
             exit_code = exit_code or 1
+        if record["timed_out"]:
+            record["error"] = "command exceeded its wall-time bound"
+            exit_code = 124
         if minimum_tests and (
             record["observed_passed_tests"] < minimum_tests
             or record["observed_failed_tests"] != 0
@@ -266,11 +341,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--minimum-tests", type=int, default=0)
+    parser.add_argument("--timeout-seconds", type=float, default=DEFAULT_TIMEOUT_SECONDS)
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
     try:
-        return run(args.output, command, args.minimum_tests)
+        return run(args.output, command, args.minimum_tests,
+                   timeout_seconds=args.timeout_seconds)
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         print(f"CI command not dispatched: {error}", file=sys.stderr)
         return 2
