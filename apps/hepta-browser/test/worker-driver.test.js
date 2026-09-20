@@ -523,6 +523,70 @@ test("subprocess driver persisted recovery fails closed without a trusted observ
   });
 });
 
+test("subprocess driver recovers a worker-persisted terminal receipt after Browser loss", async () => {
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-terminal-recovery-"));
+  const profileRoot = join(root, "profiles");
+  await mkdir(profileRoot, { recursive: true, mode: 0o700 });
+  const receipt = {
+    schema: "hepta.browser.worker-terminal.v1",
+    version: 1,
+    profileId: "profile.1",
+    generation: 1,
+    operationId: "operation.persisted",
+    pageGeneration: 1,
+    documentDigest: D1,
+    action: "navigate",
+    finalPayloadDigest: D1,
+    effectGrantDigest: D1,
+    authorityEpoch: 7,
+    status: "succeeded",
+    outcomeDigest: D1,
+  };
+  receipt.bindingDigest = digest(Buffer.from([
+    receipt.schema,
+    receipt.profileId,
+    String(receipt.generation),
+    receipt.operationId,
+    String(receipt.pageGeneration),
+    receipt.documentDigest,
+    receipt.action,
+    receipt.finalPayloadDigest,
+    receipt.effectGrantDigest,
+    String(receipt.authorityEpoch),
+    receipt.status,
+    receipt.outcomeDigest,
+  ].join("\u0000"), "utf8"));
+  await writeFile(
+    join(profileRoot, ".hepta-worker-terminal.profile.1.1.jsonl"),
+    `${JSON.stringify(receipt)}\n`,
+    { mode: 0o600 },
+  );
+
+  const driver = new SubprocessBrowserDriver({
+    workerPath: "/worker",
+    workerDigest: D1,
+    profileRoot,
+    launcher: fakeLauncher(),
+  });
+  const observed = await driver.reconcilePersisted({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    profileGeneration: 1,
+    pageGeneration: 1,
+    documentDigest: D1,
+    operationId: "operation.persisted",
+    action: "navigate",
+    finalPayloadDigest: D1,
+    effectGrantDigest: D1,
+    authorityEpoch: 7,
+    requestDigest: D1,
+    semanticDigest: D1,
+  });
+  assert.equal(observed.terminalObserved, true);
+  assert.equal(observed.status, "succeeded");
+  assert.equal(observed.observationReason, "worker_persisted_terminal_receipt");
+});
+
 test("subprocess driver delegates persisted recovery only to an explicit trusted observer", async () => {
   let received;
   const driver = new SubprocessBrowserDriver({
