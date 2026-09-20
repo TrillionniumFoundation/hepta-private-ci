@@ -11,7 +11,7 @@ This page describes executable behavior in the source, including gaps that requi
 | Local model driver contract | Host still required | `codex_hepta_infer_worker_host::model_worker` exposes the manifest/grant state machine |
 | Inference reservation and settlement | The native worker calls `DurableInferenceControl` | One journal and lock own local slot admission, dispatch identity and real observed settlement; economic quota remains external |
 | Automation | Agentd's existing `AutomationScheduler` and `AutomationStore` | `effect_executor` is an in-memory component; durable TaskFlow effect wiring remains work |
-| Fleet lifecycle | Existing supervisor-owned `FleetRegistry` | `lease_ledger` remains an in-memory component pending durable grants and physical observations |
+| Fleet lifecycle | Existing supervisor-owned `FleetRegistry` | `FleetAllocationStore` now persists grants/fences/holder observations; placement and supervisor consumption are source-composed. `observe_local_host_capacity_v1` provides Linux/macOS host measurements; target qualification remains external. |
 | Matrix transport | Existing `hepta-matrixd`, `MatrixDurableStore` and SDK sender | `send_observer` is a reusable state machine; no duplicate sender is started |
 
 The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-control`, and `hepta-matrix-send-observer` entry points exit 64 with the real owner or missing integration named. Their former empty mains returned success without doing work. Existing component tests now run as library tests, with sibling test sources.
@@ -62,7 +62,7 @@ The journal has a 64 MiB total byte budget, an 8 MiB encoded-line budget and at 
 
 - Connect economic quota and device-capacity authorities, and implement authenticated provider reconciliation after process loss. Native local-slot reservations and observed usage settlement are wired; hosted execution does not prove local model artifacts, memory/device grants or process isolation.
 - Connect TaskFlow's existing durable step outbox to a real final-use-authorized effect provider and crash reconciliation. Queue acceptance must remain distinct from effect completion.
-- Persist resource leases under the existing Fleet owner and use real capacity/pressure observations; caller-provided capacity is not hardware discovery.
+- Run the native Fleet capacity observer and holder reconciliation on enrolled target hosts and retain the resulting measurements; source implementation does not self-certify target hardware, partitions or deployment acceptance.
 - Keep Matrix send state in the existing durable outbox with its stable transaction identity. Do not introduce a second writer around the in-memory observer.
 - Supply the actual Servo/browser host, UI service integration, physical embodiment drivers and measured hardware qualification where absent.
 - Wire F pipeline stages only when each stage calls its actual owner. Hashes of fabricated port receipts would not constitute learning, calibration or dispatch.
