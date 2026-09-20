@@ -161,7 +161,10 @@
         "gitCommandTimeoutSeconds": 30,
         "maximumGitOutputBytes": 1048576
       },
-      "rollback": "invalidate the evidence set and recompute from exact Git objects"
+      "rollback": "invalidate the evidence set and recompute from exact Git objects",
+      "authorityBoundary": "pre_review_eligibility_only",
+      "canonicalIndependentDecisionOwner": "kernel.evidence::IndependentDecisionReceiptV1",
+      "compatibilityNote": "EvaluatorIndependenceReceipt is a local projection/adapter and cannot mint independent acceptance."
     },
     {
       "id": "candidate-generator",
