@@ -100,10 +100,11 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
     let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
         .with_federation_sources(consumer_id.clone(), vec![owner_layout.clone()]);
     assert!(runtime.has_federation());
+    assert!(runtime.has_product_federation());
     assert_eq!(runtime.federation_consumer_agent_id(), Some(&consumer_id));
     let access = FederationConsumerAccess::new(consumer_id.clone(), consumer_workspace.clone());
     let (batch, coverage) = runtime
-        .retrieve_federated(&access, &RetrievalRequest::new("Canonical federation", 150))
+        .retrieve_product_federated(&access, &RetrievalRequest::new("Canonical federation", 150))
         .await
         .expect("canonical product retrieval");
     assert_eq!(coverage.requested_peers, 1);
@@ -118,7 +119,7 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
     );
     let binding = batch.candidates[0].revalidation.clone();
     assert!(matches!(
-        runtime.revalidate_federated(&access, &binding, 150).await,
+        runtime.revalidate_product_federated(&access, &binding, 150).await,
         Ok(FederatedRevalidationStatus::Current(_))
     ));
 
@@ -127,7 +128,7 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
         .await
         .expect("revoke");
     let status = runtime
-        .revalidate_federated(&access, &binding, 152)
+        .revalidate_product_federated(&access, &binding, 152)
         .await
         .expect("post-revoke physical-send revalidation");
     assert!(matches!(
@@ -137,7 +138,7 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
         )
     ));
     let (revoked_batch, revoked_coverage) = runtime
-        .retrieve_federated(&access, &RetrievalRequest::new("Canonical federation", 152))
+        .retrieve_product_federated(&access, &RetrievalRequest::new("Canonical federation", 152))
         .await
         .expect("revoked federation remains a bounded read result");
     assert!(revoked_batch.candidates.is_empty());
@@ -165,7 +166,7 @@ async fn product_v2_unobservable_owner_is_explicit_failed_discovery_coverage() {
     let access =
         FederationConsumerAccess::new(consumer_id, workspace("runtime-v2-discovery-unavailable"));
     let (batch, coverage) = runtime
-        .retrieve_federated(&access, &RetrievalRequest::new("anything", 150))
+        .retrieve_product_federated(&access, &RetrievalRequest::new("anything", 150))
         .await
         .expect("discovery failure must remain bounded coverage");
     assert!(batch.candidates.is_empty());
@@ -205,7 +206,7 @@ async fn product_v2_scope_mismatch_is_not_enrolled_or_dispatched() {
         .with_federation_sources(consumer_id.clone(), vec![owner_layout]);
     let wrong_access = FederationConsumerAccess::new(consumer_id, workspace("runtime-v2-wrong"));
     let (batch, coverage) = runtime
-        .retrieve_federated(&wrong_access, &RetrievalRequest::new("anything", 150))
+        .retrieve_product_federated(&wrong_access, &RetrievalRequest::new("anything", 150))
         .await
         .expect("scope mismatch must not form a queried peer");
     assert!(batch.candidates.is_empty());
