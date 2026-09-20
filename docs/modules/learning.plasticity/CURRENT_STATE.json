@@ -223,7 +223,7 @@
     },
     {
       "operation": "runtime_topology_execution",
-      "state": "source_implemented_final_use_authorized_live_cns_generation_replacement_not_target_host_qualified",
+      "state": "source_implemented_distinct_final_use_authorized_live_cns_replacement_and_stopped_quarantined_recovery_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
       "tests": [
         "codex-rs/hepta-runtime/src/organs_tests.rs::governed_topology_requires_final_use_and_replaces_the_live_cns_generation",
@@ -232,7 +232,7 @@
     },
     {
       "operation": "runtime_structural_canary_fault_rollback",
-      "state": "qualification_composed_live_apply_forced_host_fault_authorized_rollforward_rollback_and_authenticated_observer_receipt_not_target_host_qualified",
+      "state": "qualification_composed_live_apply_forced_stopped_host_fault_distinct_recovery_final_use_rollforward_and_authenticated_observer_receipt_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
       "tests": [
         "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics"
