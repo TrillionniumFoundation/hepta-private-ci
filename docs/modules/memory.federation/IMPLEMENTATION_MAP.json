@@ -80,9 +80,9 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
     "baseCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "candidateHead": "1935de8b536423c85f98eece7b4dd7dbf83a62ff",
-    "candidateTree": "ec6dccce6102a73ffa72391bc4254cdfdbd291e4",
-    "headMeaning": "frozen canonical_v2_integrity_live_authority_interruptible_transport_product_composition_exact_scope_owner_data_frontier_adversarial_tests_and_truth_surface head immediately before this metadata-only attestation commit",
+    "candidateHead": "a0ed2abe79cbd27bf7c9e1e69231485d3a24f846",
+    "candidateTree": "b2f9b26daead8353ccd96bc8195d4f9a7d6d0c27",
+    "headMeaning": "frozen canonical_v2_integrity_live_authority_interruptible_transport_product_composition_exact_scope_owner_data_frontier_adversarial_tests_truth_surface_and_lockfile head immediately before this metadata-only attestation commit",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -118,6 +118,9 @@
       "codex-rs/hepta-memory/src/cognitive_federation.rs",
       "codex-rs/hepta-memory/src/cognitive_federation_tests.rs"
     ],
-    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the current-main forward-ported implementation immediately before this metadata-only map commit, including the exact-scope same-snapshot owner data frontier. productExecutionProved, activation and release remain false until exact-candidate and merge-candidate evidence pass."
+    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the current-main forward-ported implementation immediately before this metadata-only map commit, including the exact-scope same-snapshot owner data frontier and synchronized Cargo.lock. productExecutionProved, activation and release remain false until exact-candidate and merge-candidate evidence pass.",
+    "metadataOnlyPaths": [
+      "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
+    ]
   }
 }
