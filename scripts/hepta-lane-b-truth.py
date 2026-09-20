@@ -247,7 +247,7 @@ def native_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> str:
     lines += [
         "## 13. Cross-module acceptance boundary",
         "",
-        f"All {sum(len(row[\"operations\"]) for row in maps)} operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.",
+        f"All {sum(len(row['operations']) for row in maps)} operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.",
         "",
         "Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.",
         "",
