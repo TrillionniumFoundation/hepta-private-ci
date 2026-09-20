@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a5b077d88037b9eb8b9cbe9ac4277c40220e136f",
-    "tree": "017f3832e46cccfc00b4419ed34b0cfc05776b72"
+    "commit": "701cc8c78b8802861546683a2e2d442965b74433",
+    "tree": "1317f8fdc8015d59ad6de030ef6f5015f3bb8835"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
@@ -146,9 +146,14 @@
           "path": "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
           "kind": "qualified_success_requires_final_use_claim",
           "command": "cargo test -p codex-hepta-matrix-store --test sync_mutation_v2"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
+          "kind": "current_attempt_final_use_binding",
+          "command": "cargo test -p codex-hepta-matrix-store --test sync_mutation_v2"
         }
       ],
-      "sourceSemantics": "Carries homeserver unsigned.transaction_id through the atomic sync commit; matching durable final-use evidence is required for qualified Succeeded or Redacted, while legacy/unclaimed remote observations remain terminal ObservedUnqualified even after redaction and cannot satisfy qualification.",
+      "sourceSemantics": "Carries homeserver unsigned.transaction_id through the atomic sync commit; matching durable final-use evidence for the current dispatch attempt is required for qualified Succeeded or Redacted, while legacy/unclaimed or stale-attempt-only remote observations remain terminal ObservedUnqualified and cannot satisfy qualification.",
       "operation": "observe_send",
       "nativeSymbol": "pub async fn commit_response(",
       "sourcePath": "codex-rs/hepta-matrix-sdk/src/sync.rs",
