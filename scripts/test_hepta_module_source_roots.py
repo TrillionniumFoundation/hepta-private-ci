@@ -57,7 +57,7 @@ class SourceRootTests(unittest.TestCase):
         }
         self.assertEqual(resolve_source_roots(self.root, module), ["adapter"])
 
-    def test_migration_uses_aliases_without_changing_evidence_or_claims(self):
+    def test_migration_refreshes_source_attestation_without_changing_evidence_or_claims(self):
         spec = importlib.util.spec_from_file_location(
             "implementation_maps",
             Path(__file__).with_name("hepta-implementation-maps.py"),
@@ -67,10 +67,12 @@ class SourceRootTests(unittest.TestCase):
         self.module.update(
             {"owner": "owner", "deputy": "deputy", "technicalDocument": "guide"}
         )
-        source_base = {"commit": "a" * 40, "tree": "b" * 40}
+        stale_source_base = {"commit": "0" * 40, "tree": "1" * 40}
+        refreshed_source_base = {"commit": "a" * 40, "tree": "b" * 40}
+        cargo_packages = {self.module["id"]: ["implementation"]}
         row = {
             "module": self.module["id"],
-            "sourceBase": source_base,
+            "sourceBase": stale_source_base,
             "operations": [
                 {
                     "operation": "run",
@@ -85,10 +87,18 @@ class SourceRootTests(unittest.TestCase):
         before = copy.deepcopy(row)
         with mock.patch.object(maps, "ROOT", self.root):
             result = maps.migrate_map(
-                row, self.module, {self.module["id"]: "lane"}, source_base
+                row,
+                self.module,
+                {self.module["id"]: "lane"},
+                refreshed_source_base,
+                cargo_packages,
             )
             repeated = maps.migrate_map(
-                result, self.module, {self.module["id"]: "lane"}, source_base
+                result,
+                self.module,
+                {self.module["id"]: "lane"},
+                refreshed_source_base,
+                cargo_packages,
             )
         self.assertEqual(row, before)
         self.assertEqual(result, repeated)
@@ -102,7 +112,14 @@ class SourceRootTests(unittest.TestCase):
         self.assertEqual(
             result["operations"][0]["tests"], row["operations"][0]["tests"]
         )
-        self.assertEqual(result["sourceBase"], source_base)
+        self.assertEqual(result["sourceBase"], refreshed_source_base)
+        self.assertEqual(result["sourceBaseScope"], maps.MODULE_SOURCE_SCOPE)
+        self.assertEqual(result["cargoBoundPackages"], ["implementation"])
+        self.assertEqual(
+            result["sourceTrackedPaths"],
+            ["adapter", "implementation", "legacy/callee.rs"],
+        )
+        self.assertTrue(result["claimBoundary"]["sourceFreshnessVerified"])
         self.assertFalse(result["claimBoundary"]["activation"])
 
     def test_identity_version_and_authority_mismatches_reject(self):

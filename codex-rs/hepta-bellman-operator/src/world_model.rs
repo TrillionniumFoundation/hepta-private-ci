@@ -197,6 +197,7 @@ pub fn fit_transition_model(
     })
 }
 
+#[cfg(test)]
 pub fn predict_transition(
     model: &TabularWorldModelV1,
     state_id: &StableId,
