@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e85ccd1d4e7094b6cff8f8b17783c5a04ef36eca",
-    "tree": "f591ca00ba73ec3618677afaadb3777326eabac9"
+    "commit": "02eb5f5c99cb6bdfe178bfaeff40f325f1b064c3",
+    "tree": "fac56c271f4edf02054ed0a351f5a06ce172b0ae"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -132,9 +132,49 @@
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "agentd_neuron_owner",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+        "symbol": "pub struct AgentdNeuronOwner",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-neuron/src/runtime.rs",
+          "symbol": "pub struct NeuronRuntime",
+          "buildTarget": "codex-hepta-neuron",
+          "ownerModule": "neuron.runtime"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+          "symbol": "pub trait NeuronInferenceControlPort",
+          "buildTarget": "codex-hepta-neuron",
+          "ownerModule": "neuron.runtime"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
+          "kind": "compiled_owner_boundary",
+          "command": "just test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "Owns one long-lived NeuronRuntime plus its inference-control port; construction remains explicit and does not self-activate the daemon lifecycle.",
+      "operation": "agentd_neuron_owner",
+      "nativeSymbol": "pub struct AgentdNeuronOwner",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton."
+  ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
     "non-test caller through the full Codex turn path",
@@ -144,7 +184,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -157,7 +197,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "neuron_owner_source_compiled_daemon_lifecycle_integration_pending",
   "productionWriterState": "not_established",
   "owner": "agent-runtime",
   "deputy": "runtime-control",
