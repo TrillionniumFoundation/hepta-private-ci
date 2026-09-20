@@ -5,8 +5,8 @@ fn current_offer_matches_frozen_negotiation_bytes() -> Result<(), Box<dyn Error>
     let offer = NegotiationOffer::current();
     let encoded = offer.encode();
     let golden: [u8; 20] = [
-        0x48, 0x50, 0x54, 0x4e, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x01, 0x00, 0x02,
+        0x48, 0x50, 0x54, 0x4e, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x07, 0x00, 0x01, 0x00, 0x02,
     ];
     assert_eq!(encoded, golden);
     assert_eq!(NegotiationOffer::decode(&golden)?, offer);
@@ -25,13 +25,14 @@ fn negotiation_selects_highest_explicit_common_version() -> Result<(), Box<dyn E
     let negotiated = negotiate(
         &local,
         &remote,
-        WireCapabilities::METADATA_BOUND_DIGEST
-            .union(WireCapabilities::SCHEMA_ADMISSION),
+        WireCapabilities::METADATA_BOUND_DIGEST.union(WireCapabilities::SCHEMA_ADMISSION),
     )?;
     assert_eq!(negotiated.version, WireVersion::V2);
-    assert!(negotiated
-        .capabilities
-        .contains(WireCapabilities::METADATA_BOUND_DIGEST));
+    assert!(
+        negotiated
+            .capabilities
+            .contains(WireCapabilities::METADATA_BOUND_DIGEST)
+    );
     Ok(())
 }
 
@@ -45,11 +46,7 @@ fn required_metadata_binding_prevents_v1_downgrade() -> Result<(), Box<dyn Error
             .union(WireCapabilities::STREAM_DECODING),
     )?;
     assert!(matches!(
-        negotiate(
-            &local,
-            &remote,
-            WireCapabilities::METADATA_BOUND_DIGEST
-        ),
+        negotiate(&local, &remote, WireCapabilities::METADATA_BOUND_DIGEST),
         Err(NegotiationError::MissingRequiredCapabilities { .. })
     ));
     assert_eq!(
