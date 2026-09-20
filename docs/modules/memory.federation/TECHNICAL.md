@@ -52,10 +52,12 @@ The named product composition is [`CognitiveRuntime::AvailableFederatedV2`](../.
 
 ## 3. Boundary, responsibilities and non-goals
 
-Direct dependencies:
+Architectural consumed ports:
 
 - `cognitive.read`
 - `kernel.authority`
+
+The canonical crate itself depends only on `codex-hepta-types`; product composition is caller-side in `codex-hepta-memory`, `codex-hepta-agentd` and `codex-hepta-memory-extension`. Those product paths do not become alternate owners of the federation contract.
 
 Authoritative write domains:
 
@@ -66,7 +68,7 @@ Explicitly denied capabilities:
 - `write_authority`
 - `blind_retry`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The module accepts only bounded, typed V2 inputs and fails closed on missing/current-authority failure, stale generations, scope mismatch and digest mismatch. It never directly writes another owner's store and performs no cross-owner mutation. Any future mutation protocol remains outside this module and must use the owning system's durable intent/outbox/reconciliation boundary rather than being added to the federation read adapter.
 
 Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
 
@@ -87,24 +89,31 @@ No component in this module enrolls peers, mutates a remote store, owns credenti
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+Registry-produced contracts:
 
 None.
 
-Consumed contracts:
+Consumed registered contracts:
 
 - `DomainRead::authority_leaseV1`
 - `DomainRead::capability_revocationV1`
 - `ModulePort::cognitive.read::memory.federation`
 - `ModulePort::kernel.authority::memory.federation`
 
-Critical protocol schemas:
+Native in-process V2 contract surface:
+
+- `FederatedQueryV2`, `FederatedLeaseV2`;
+- `FederationAuthorityV2`, `FederationTransportV2`, `FederationAttemptControlV2`;
+- `RemoteFederatedResponseV2`, `FederatedResultV2`;
+- `FederationCancellationRequestV2`, `FederationCancellationReceiptV2`.
+
+Registered cross-host wire protocol schemas:
 
 None.
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+The V2 Rust structs are an in-process checked-adapter contract, not a registered remote wire format. A future cross-process or multi-host transport must register an authenticated versioned schema and peer-identity/credential binding before these semantics may be carried across a host boundary. It may not serialize the Rust structs by convention and treat transport integrity as remote identity authentication.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Native tests cover bounds, exact query/response digest binding, prefix-sensitive item ordering, duplicate identities, stale/revoked authority, cancellation/deadline races and result-digest stability. Product tests separately cover bounded aggregation, discovery failures, legacy-path exclusion and physical-send revalidation.
 
 ## 6. Data authority, persistence and migrations
 
@@ -230,7 +239,7 @@ For `memory.federation`, this document grants no runtime, production, model, pro
 
 #### `MEM-3-FEDERATION`
 
-- State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
+- Canonical work-package registry state: `planned`; priority: `3`; parallel class: `contract_coordinated`. The current branch contains a source/product-composition candidate, but this line is not promoted until exact-current-head and merge-candidate qualification update the owning registry.
 - Owner/deputy: `cognitive-platform` / `security-authority`.
 - Allowed write paths:
 - `codex-rs/hepta-memory-federation/**`
