@@ -110,25 +110,6 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
-        let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
-            None => None,
-        };
-        let additional_context = context
-            .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_MODEL_CONTEXT_BYTES {
-                    return Err("verified context exceeds the model attachment byte limit".into());
-                }
-                Ok(HashMap::from([(
-                    "hepta-cognitive-owner".to_string(),
-                    AdditionalContextEntry {
-                        value,
-                        kind: AdditionalContextKind::Untrusted,
-                    },
-                )]))
-            })
-            .transpose()?;
         let ingress = owner.session_ingress().await?;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
         let mut client = timeout(
@@ -171,8 +152,32 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
         }
-        // Recheck the actual generation after acquiring context and connecting.
+        // Recheck the actual generation after connecting and creating the
+        // ephemeral thread. Only now acquire the retrieval result that will be
+        // attached to turn/start. Agentd performs exact owner-cut, candidate
+        // and retrieval-context revalidation before returning this value, so
+        // preparatory provider I/O cannot leave an older context parked across
+        // the final model-request attachment boundary.
         owner.session_ingress().await?;
+        let context = match context_query {
+            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
+            None => None,
+        };
+        let additional_context = context
+            .map(|snapshot| -> Result<_> {
+                let value = serde_json::to_string(&snapshot)?;
+                if value.len() > MAX_MODEL_CONTEXT_BYTES {
+                    return Err("verified context exceeds the model attachment byte limit".into());
+                }
+                Ok(HashMap::from([(
+                    "hepta-cognitive-owner".to_string(),
+                    AdditionalContextEntry {
+                        value,
+                        kind: AdditionalContextKind::Untrusted,
+                    },
+                )]))
+            })
+            .transpose()?;
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
