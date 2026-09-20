@@ -19,6 +19,26 @@ const MAX_DOMAINS: usize = 64;
 const MAX_ID_BYTES: usize = 128;
 const MAX_CATALOG_BYTES: usize = 4 * 1024 * 1024;
 
+// These are the source-registry spellings admitted by this implementation, not
+// prefix matches. A new state kind needs an explicit lifecycle interpretation;
+// a typo must never silently acquire the Stateless bootstrap path in Agentd.
+const ADMITTED_STATES: &[&str] = &[
+    "stateless",
+    "stateless_runtime",
+    "ephemeral",
+    "ephemeral_isolated",
+    "read_only",
+    "read_only_remote",
+    "stateful",
+    "stateful_external",
+    "stateful_projection",
+    "stateful_rebuildable",
+    "stateful_append_only",
+    "stateful_shadow",
+    "stateful_create_only",
+    "isolated_stateful",
+];
+
 #[derive(Clone, Debug, Deserialize)]
 struct SourceCatalogV1 {
     modules: Vec<SourceModuleV1>,
@@ -58,10 +78,19 @@ pub enum RuntimeModuleCatalogErrorV1 {
     Decode,
     Bounds,
     InvalidId,
+    InvalidState(String),
     DuplicateModule(String),
     DuplicateDependency(String),
     DuplicateDomain(String),
-    UnknownDependency { module: String, dependency: String },
+    DuplicateDomainOwner {
+        domain: String,
+        first: String,
+        second: String,
+    },
+    UnknownDependency {
+        module: String,
+        dependency: String,
+    },
     DependencyCycle,
 }
 
@@ -95,6 +124,9 @@ impl RuntimeModuleCatalogV1 {
         for row in source.modules {
             validate_id(&row.id)?;
             validate_id(&row.owner)?;
+            if !ADMITTED_STATES.contains(&row.state.as_str()) {
+                return Err(RuntimeModuleCatalogErrorV1::InvalidState(row.id));
+            }
             if row.uses.len() > MAX_DEPENDENCIES || row.writes.len() > MAX_DOMAINS {
                 return Err(RuntimeModuleCatalogErrorV1::Bounds);
             }
@@ -115,7 +147,20 @@ impl RuntimeModuleCatalogV1 {
             }
         }
 
+        let mut domain_owners = BTreeMap::new();
         for module in modules.values() {
+            // Validate the entire reviewed graph, not only the modules a host
+            // happens to attach today. One team owning two modules does not
+            // permit two authoritative writers for the same durable domain.
+            for domain in &module.authoritative_domains {
+                if let Some(first) = domain_owners.insert(domain.clone(), module.id.clone()) {
+                    return Err(RuntimeModuleCatalogErrorV1::DuplicateDomainOwner {
+                        domain: domain.clone(),
+                        first,
+                        second: module.id.clone(),
+                    });
+                }
+            }
             for dependency in &module.dependencies {
                 if !modules.contains_key(dependency) {
                     return Err(RuntimeModuleCatalogErrorV1::UnknownDependency {
@@ -321,5 +366,44 @@ mod tests {
             RuntimeModuleCatalogV1::from_reviewed_json(&" ".repeat(MAX_CATALOG_BYTES + 1)),
             Err(RuntimeModuleCatalogErrorV1::Bounds)
         ));
+    }
+
+    #[test]
+    fn unknown_state_never_falls_back_to_stateless_bootstrap() {
+        for state in ["", "stateles", "Stateful", "stateful_unknown", "unknown", "stateless "] {
+            let mut value = fixture(1);
+            value["modules"][0]["state"] = serde_json::json!(state);
+            assert!(matches!(
+                RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string()),
+                Err(RuntimeModuleCatalogErrorV1::InvalidState(_))
+            ));
+        }
+    }
+
+    #[test]
+    fn every_explicit_state_spelling_remains_readable() {
+        for state in ADMITTED_STATES {
+            let mut value = fixture(1);
+            value["modules"][0]["state"] = serde_json::json!(state);
+            let catalog = RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
+                .expect("explicit supported state");
+            assert_eq!(catalog.module("module-0").expect("module").state, *state);
+        }
+    }
+
+    #[test]
+    fn two_modules_cannot_claim_one_domain_even_with_the_same_team_owner() {
+        let mut value = fixture(2);
+        for row in value["modules"].as_array_mut().expect("modules") {
+            row["state"] = serde_json::json!("stateful");
+            row["writes"] = serde_json::json!(["owned-ledger"]);
+        }
+        assert!(matches!(
+            RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string()),
+            Err(RuntimeModuleCatalogErrorV1::DuplicateDomainOwner { .. })
+        ));
+        value["modules"][1]["writes"] = serde_json::json!(["another-ledger"]);
+        RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
+            .expect("different domains retain independent owners");
     }
 }
