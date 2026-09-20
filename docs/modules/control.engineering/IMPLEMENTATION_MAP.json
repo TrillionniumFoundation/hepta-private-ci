@@ -221,6 +221,9 @@
       "tests": [
         {
           "path": "tools/hepta-engineering-control/test_worker_lifecycle.py"
+        },
+        {
+          "path": "tools/hepta-engineering-control/test_worker_lifecycle.py"
         }
       ],
       "sourcePathExists": true,
@@ -229,7 +232,8 @@
         "orchestration_generations",
         "path_leases",
         "worker_registrations",
-        "worker_claims"
+        "worker_claims",
+        "worker_completion_observations"
       ]
     },
     {
@@ -259,7 +263,8 @@
         "heartbeat_claim",
         "submit_worker_result",
         "publish_integration_queue",
-        "reconcile_integration_item"
+        "reconcile_integration_item",
+        "worker_completion_observations"
       ]
     },
     {
