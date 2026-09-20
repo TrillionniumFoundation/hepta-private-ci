@@ -25,6 +25,7 @@ use crate::AuthBusTextBody;
 use crate::AuthBusTextIngress;
 use crate::AuthBusTextState;
 use crate::AuthBusTextStatus;
+use crate::authbus_checkpoint::ReplayCheckpointFile;
 use crate::authbus_trust::TextTrust;
 use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
@@ -32,20 +33,50 @@ use crate::authbus_trust::invalid;
 pub(crate) struct TextIngress {
     pub evidence: HeptaEvidenceStore,
     pub trust_file: PathBuf,
+    pub checkpoint: ReplayCheckpointFile,
     pub subject: StableId,
     pub scope: Digest32,
 }
 
 impl TextIngress {
-    pub async fn open(identity: &AgentdIdentity, trust_file: PathBuf) -> Result<Self, AgentdError> {
+    pub async fn open(
+        identity: &AgentdIdentity,
+        trust_file: PathBuf,
+        checkpoint_file: PathBuf,
+    ) -> Result<Self, AgentdError> {
         TextTrust::load(&trust_file, identity)?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
             .await
             .map_err(|error| invalid(&error.to_string()))?;
+        let (checkpoint, external) = ReplayCheckpointFile::open(checkpoint_file, identity)?;
+        match evidence
+            .authbus_restore_checkpoint()
+            .await
+            .map_err(|error| invalid(&error.to_string()))?
+        {
+            None => evidence
+                .initialize_authbus_restore_checkpoint(external)
+                .await
+                .map_err(|error| invalid(&error.to_string()))?,
+            Some(_) => {
+                if let Some(pending) = evidence
+                    .reconcile_authbus_restore_checkpoint(external)
+                    .await
+                    .map_err(|error| invalid(&error.to_string()))?
+                {
+                    checkpoint.replace(external, pending)?;
+                    evidence
+                        .advance_authbus_restore_checkpoint(external.generation, pending)
+                        .await
+                        .map_err(|error| invalid(&error.to_string()))?;
+                }
+            }
+        }
         Ok(Self {
             evidence,
             trust_file,
+            checkpoint,
             subject: subject(&identity.agent_id)?,
             scope: scope(&identity.agent_id),
         })
@@ -53,6 +84,23 @@ impl TextIngress {
 
     pub fn trust(&self, state: &AgentdState) -> Result<TextTrust, AgentdError> {
         TextTrust::load(&self.trust_file, state.identity())
+    }
+
+    pub async fn sync_replay_checkpoint(&self) -> Result<(), AgentdError> {
+        let external = self.checkpoint.read()?;
+        if let Some(pending) = self
+            .evidence
+            .reconcile_authbus_restore_checkpoint(external)
+            .await
+            .map_err(|error| invalid(&error.to_string()))?
+        {
+            self.checkpoint.replace(external, pending)?;
+            self.evidence
+                .advance_authbus_restore_checkpoint(external.generation, pending)
+                .await
+                .map_err(|error| invalid(&error.to_string()))?;
+        }
+        Ok(())
     }
 }
 
@@ -106,6 +154,10 @@ pub(crate) async fn submit(
         .enqueue_authbus_message(&trust.issuer()?, &message, &host.subject, host.scope, &body)
         .await
         .map_err(|error| invalid(&error.to_string()))?;
+    // Replay advancement and message insertion commit together. Before returning
+    // success, durably publish the exact new replay frontier to the independently
+    // retained witness and then promote the local pending checkpoint.
+    host.sync_replay_checkpoint().await?;
     // If authority changed during admission, preserve the committed message but
     // refuse to report readiness. The worker independently refreshes all gates.
     require_ready(state)?;
