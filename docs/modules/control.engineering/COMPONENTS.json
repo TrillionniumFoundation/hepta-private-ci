@@ -496,7 +496,7 @@
         "authorityMinted": 0
       },
       "rollback": "production admission remains blocked until fresh externally authenticated, role-separated custody and control receipts exist",
-      "physicalState": "SQLite v8 distributed_fence_frontiers high-water mark plus externally signed revocation/fence receipts, owner-state audit snapshot binding and subject-bound HSM/KMS custody receipts"
+      "physicalState": "SQLite v9 distributed_fence_frontiers high-water mark plus externally signed revocation/fence receipts, owner-state audit snapshot binding and subject-bound HSM/KMS custody receipts"
     },
     {
       "id": "repository-product-caller",
@@ -525,7 +525,7 @@
         "releaseAuthority": 0
       },
       "rollback": "discard the lane receipts/pair receipt; no product transition is authorized",
-      "physicalState": "Repository CI executes SQLite v8 planning, fenced worker lifecycle, integration reconciliation and reopen recovery using explicit reference fixture identities; external independent observations remain separate."
+      "physicalState": "Repository CI executes SQLite v9 planning, fenced worker lifecycle, integration reconciliation and reopen recovery using explicit reference fixture identities; external independent observations remain separate."
     },
     {
       "id": "durable-worker-lifecycle",
@@ -540,19 +540,22 @@
         "expire_stale_claims"
       ],
       "state": "source_implemented",
-      "physicalState": "SQLite v8 orchestration_generations, worker_registrations and worker_claims",
+      "physicalState": "SQLite v9 orchestration_generations, worker_registrations, worker_claims and worker_completion_observations",
       "failureModel": [
         "worker_profile_drift",
         "claim_lease_invalid",
         "worker_heartbeat_stale",
         "worker_result_signature",
-        "claim_attempts_exhausted"
+        "claim_attempts_exhausted",
+        "worker_result_replay_conflict",
+        "completion_replay_conflict",
+        "completion_observation_state_mismatch"
       ],
       "resourceBounds": {
         "maximumClaimAttempts": 3,
         "maximumHeartbeatSeconds": 300
       },
-      "rollback": "timeout or infrastructure failure may enter bounded retryable state; semantic failure is terminal and worker-reported success requires independent CI completion observation"
+      "rollback": "claim/heartbeat/result/completion acknowledgement-loss replays return the already committed state without duplicate audit; timeout or infrastructure failure alone may enter bounded retry, semantic failure is terminal, and accepted CI completion digests survive reopen"
     },
     {
       "id": "named-product-owner",
@@ -561,7 +564,7 @@
         "EngineeringControlProduct"
       ],
       "state": "source_implemented_fixture_execution_pending",
-      "physicalState": "One named owner composes repository identity, SQLite v8 EngineeringStore, trust verifier, planner, fenced worker lifecycle and durable integration reconciliation",
+      "physicalState": "One named owner composes repository identity, SQLite v9 EngineeringStore, trust verifier, planner, fenced worker lifecycle and durable integration reconciliation",
       "failureModel": [
         "source_identity_mismatch",
         "repository_mismatch",
@@ -584,7 +587,7 @@
         "integration_queue_item"
       ],
       "state": "source_implemented",
-      "physicalState": "SQLite v8 integration_queue_generations and integration_queue_items",
+      "physicalState": "SQLite v9 integration_queue_generations and integration_queue_items",
       "failureModel": [
         "integration_generation_unknown",
         "integration_item_unknown",
