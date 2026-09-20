@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs); observed identifiers include `rescale_signal`, `NumericSignalV1`, `NumericErrorBoundV1`, `NumericConversionReceiptV1`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md) for the implemented subset and remaining product work.
+The registered source root is `codex-rs/hepta-types`. Current native entrypoints include `validate_id`, `canonical_digest_v1`, `ContractRegistryV1`, `rescale_signal`, and `rescale_signal_registered`; the canonical encoding and cross-language vectors are frozen in `CANONICAL_DIGEST_V1.md` and `CANONICAL_V1_CONFORMANCE.json`. This is source navigation evidence, not proof of product execution or external acceptance. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -62,24 +62,24 @@ Explicitly denied capabilities:
 
 - `runtime_authority`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The module accepts bounded semantic values and immutable caller-supplied registry generations. It owns no mutation/effect path. Identifier/profile mismatch, malformed HPTC bytes, oversize/depth overflow, unresolved normalization/profile definitions and nonzero raw authority bits fail closed before publication.
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+Non-goals include becoming a state store, authority issuer, mutable registry service, transport, secret container, provider adapter or execution spine. Generated bindings describe only the frozen foundational binding spec; they do not turn arbitrary Rust domain structs into external schemas.
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The native components are:
 
-- `domain type model`
-- `canonical validation layer`
-- `compatibility gate`
-- `fixture and property-test kit`
+- bounded values and profiled identifiers;
+- monotonic identities and raw `Digest32`;
+- HPTC V1 encode/digest/raw-byte validation;
+- sealed non-authorizing posture and one-byte raw authority rejection;
+- checked FixedQ32/ProbabilityQ32 with explicit arithmetic semantics;
+- immutable schema/normalization and numeric-profile definitions/registry;
+- checked numeric-signal conversion;
+- canonical conformance vectors and deterministic generated bindings.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
-
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+All components are pure or caller-owned immutable values. There is no local transaction, queue, filesystem, network, process-global mutable state or external terminal outcome. Changes to frozen HPTC framing, profile semantics or generated-binding source require a new version rather than reinterpretation in place.
 
 ## 5. Contracts, ports and compatibility
 
@@ -109,9 +109,9 @@ Critical protocol schemas:
 
 None.
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+Current executable compatibility is narrower than the registry inventory. Rust owns the semantic primitives; HPTC V1 owns structured canonical commitment bytes; `PLATFORM_TYPES_BINDINGS_V1.json` owns the generated Python/JavaScript/TypeScript foundational binding surface. No claim is made that arbitrary Rust structs and arbitrary JSON are identical external schemas.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+HPTC V1 field/map order, type tags, integer widths, lengths, bounds and no-Unicode-normalization rule are frozen. Unknown/invalid tags, invalid bool bytes, noncanonical ordering, duplicate keys/fields, truncation and trailing bytes reject in `canonical_validate_v1`. Contract/profile meanings cannot change in place.
 
 ## 6. Data authority, persistence and migrations
 
@@ -123,23 +123,17 @@ Read-only data dependencies:
 
 None.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+This module owns no authoritative mutable domain and therefore has no writer, store, migration, projection, retention or restore protocol. `ContractRegistryV1` is an immutable caller-owned value; authenticating/provisioning a registry generation belongs to the product owner.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+The three canonically owned target protocols `RandomStreamManifestV1`, `ExternalSystemManifestV1` and `SensorCalibrationManifestV1` remain source-pending and are not implied by the existing primitive library.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md).
-
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+The current native implementation is stateless. There are no locks, owner transactions, retry loops or background workers. Every operation completes synchronously over supplied values and bounded allocations. Product owners may cache immutable registry generations, but that cache is outside `platform.types` and must bind the exact generation/digest it serves.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
-
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+Failure is input rejection: invalid bounds/IDs, malformed canonical bytes, arithmetic overflow, unresolved definition/profile or attempted authority widening. There is no partial durable commit and no recovery/reconciler. Rollback restores code plus the compatible frozen contract version; V1 bytes/profile identities must never be silently reinterpreted.
 
 ## 9. Security, privacy and threat controls
 
@@ -147,34 +141,39 @@ Owned threat entries:
 
 None.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is zero authority, bounded input and deterministic commitments. Generic bounded values are not secret containers. Raw authority V1 input is untrusted; exactly one zero byte admits deny-all and every nonzero grant bit rejects before a trusted posture exists.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Negative tests cover profile substitution, malformed IDs, oversize/depth exhaustion, duplicate/noncanonical HPTC collections, invalid bool/tag bytes, arithmetic overflow, missing registry definitions/profiles and raw authority widening. Any future persistence/network/effect surface is outside this module and requires a separate owner boundary.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs) and the linked implementation components.
+Current source-enforced ceilings are: StableId 128 encoded bytes; HPTC V1 256 KiB; canonical container 4096 items and depth 16; registry 256 total ordinary/profile definitions; ordinary definition 4096 UTF-8 bytes and 256 KiB aggregate ordinary-definition bytes; numeric signals 4096 elements. Checked arithmetic rejects overflow rather than saturating.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+These are semantic capacity limits, not target-host latency claims. Named product composition must measure host-level latency/allocation separately.
 
 ## 11. Observability and operations
 
-Pure value library; callers construct checked IDs, digests and numeric signals. It has no daemon, database, migration or shutdown sequence. Pin numeric/unit profiles at each consumer; invalid conversion is a rejected input, never permission to round authority fields.
+Pure value library; no daemon, database, migration, log sink or shutdown sequence. Consumers pin exact ID/numeric profiles and an immutable registry generation. Invalid conversion or unresolved profile is rejection, never fallback to a looser arithmetic path.
 
-Current operating and state-format references:
+Current format references:
 
-- [codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md](../../../codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md).
-
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+- [codex-rs/hepta-types/CANONICAL_DIGEST_V1.md](../../../codex-rs/hepta-types/CANONICAL_DIGEST_V1.md)
+- [codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md](../../../codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md)
+- [docs/lane-a-foundation/platform.types/PRIMITIVES_V1.md](../../lane-a-foundation/platform.types/PRIMITIVES_V1.md)
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Current focused evidence sources (references, not pass receipts):
 
-- [codex-rs/hepta-types/src/bounded_tests.rs](../../../codex-rs/hepta-types/src/bounded_tests.rs); named case: `text_and_bytes_enforce_exact_bound`.
-- [codex-rs/hepta-types/src/digest_tests.rs](../../../codex-rs/hepta-types/src/digest_tests.rs); named case: `sha256_round_trip_is_canonical`.
+- `bounded_tests.rs`: byte/allocation bounds;
+- `identity_tests.rs`: exhaustive/profiled IDs, monotonic overflow, raw authority-bit rejection and sealed non-authorizing posture;
+- `canonical_digest_tests.rs`: frozen bytes/digest, ordering, HPTC raw validation, invalid bool/tag, truncation/trailing bytes and NFC/NFD separation;
+- `registry_tests.rs` + `numeric_profile_tests.rs`: registry bounds/namespace invariants and profile identity/version/scale/rounding binding;
+- `numeric_conversion_tests.rs`: rounding/overflow and registry-admitted source/target profile + normalization;
+- `CANONICAL_V1_CONFORMANCE.json`: five accepted + seven rejected vectors with Python/Node oracles;
+- `bindings/generate_bindings.py --check` plus generated Python/JavaScript consumer gates.
 
-In `codex-rs`, run `just test -p codex-hepta-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md) separately labels target acceptance designs.
+Lane A CI executes all of the above plus native tests/strict lint on exact HEAD and deterministic synthetic merge. Workflow artifacts are the candidate receipts.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -203,9 +202,9 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, current-truth/evidence maps and closed-world validation. `implementedOperationMappingComplete` covers only operations actually claimed by the candidate. `ownedTargetProtocolSourceComplete` covers every protocol canonically owned by the module and remains false while the three manifest protocols are source-pending. The legacy broad `nativeSourceMappingComplete` must not be used to collapse these meanings.
 
-For `platform.types`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+Composition requires a named authenticated product caller; qualification requires exact-head and synthetic-merge receipts. Acceptance, selection, promotion and release are separate externally governed states. This document grants no runtime/effect/deployment authority.
 
 ### Work-package execution envelopes
 
@@ -550,13 +549,32 @@ The following additional work packages are source-planning envelopes introduced 
 
 ## 17. Source implementation receipt
 
-This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+This receipt records repository source bindings for the current documentation
+candidate. It is navigation evidence only; it does not claim product
+composition, deployment or external effect authority.
 
-| Operation | Native symbol | Source path | Tests |
+| Operation | Native symbol / artifact | Source path | Primary verification |
 |---|---|---|---|
-| `rescale_signal` | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `pending` |
-| `stableid` | `StableId` | `codex-rs/hepta-types/src/identity.rs` | `pending` |
+| bounded values | `BoundedText` / `BoundedBytes` | `codex-rs/hepta-types/src/bounded.rs` | `bounded_tests.rs` |
+| profiled identity | `validate_id` | `codex-rs/hepta-types/src/identity.rs` | `identity_tests.rs` |
+| raw authority rejection | `AuthorityPosture::try_from_wire_bytes` | `codex-rs/hepta-types/src/identity.rs` | all eight grant bits reject |
+| canonical commitment | `canonical_digest_v1` | `codex-rs/hepta-types/src/canonical_digest.rs` | accepted cross-language vectors |
+| canonical raw validation | `canonical_validate_v1` | `codex-rs/hepta-types/src/canonical_digest.rs` | invalid bool/tag/order/truncation cases |
+| FixedQ32 compatibility arithmetic | `FixedQ32` | `codex-rs/hepta-types/src/fixed.rs` | explicit toward-zero profile tests |
+| immutable registry | `ContractRegistryV1` | `codex-rs/hepta-types/src/registry.rs` | namespace/profile/capacity tests |
+| numeric profile admission | `NumericProfileDefinitionV1` | `codex-rs/hepta-types/src/numeric_profile.rs` | identity/version/scale/rounding tests |
+| numeric conversion | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | rounding/overflow/digest tests |
+| registry-admitted conversion | `rescale_signal_registered` | `codex-rs/hepta-types/src/numeric_conversion.rs` | normalization + both-profile admission |
+| generated bindings | `generate_bindings.py` | `codex-rs/hepta-types/bindings/` | generator drift + Python/JavaScript consumer gates |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- Exact source binding is recorded in `IMPLEMENTATION_MAP.json` using
+  `latest_declared_root_commit_v1`.
+- `implementedOperationMappingComplete=true` means the rows above have native
+  source and verification anchors.
+- `ownedTargetProtocolSourceComplete=false` while
+  `RandomStreamManifestV1`, `ExternalSystemManifestV1` and
+  `SensorCalibrationManifestV1` remain source-pending.
+- `productCallerState=not_composed`; generated bindings and qualification
+  callers are not production callers.
+- Production implementation, independent acceptance, activation and release
+  remain false until their separate evidence gates pass.

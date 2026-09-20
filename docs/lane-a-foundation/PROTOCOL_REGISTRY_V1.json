@@ -7,19 +7,29 @@
     {
       "protocolId": "hepta.platform.types.primitives.v1",
       "module": "platform.types",
-      "kind": "in_process_semantic_types",
+      "kind": "in_process_semantic_canonical_and_generated_foundation",
       "source": [
         "codex-rs/hepta-types/src/bounded.rs",
-        "codex-rs/hepta-types/src/digest.rs",
         "codex-rs/hepta-types/src/identity.rs",
-        "codex-rs/hepta-types/src/fixed.rs"
+        "codex-rs/hepta-types/src/digest.rs",
+        "codex-rs/hepta-types/src/canonical_digest.rs",
+        "codex-rs/hepta-types/src/registry.rs",
+        "codex-rs/hepta-types/src/fixed.rs",
+        "codex-rs/hepta-types/src/numeric_profile.rs",
+        "codex-rs/hepta-types/src/numeric_conversion.rs",
+        "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
+        "codex-rs/hepta-types/bindings/PLATFORM_TYPES_BINDINGS_V1.json"
       ],
       "invariants": [
-        "bounded values reject empty and oversized content",
-        "stable identifiers preserve exact accepted bytes",
-        "generation revision and logical sequence are nonzero u64 values",
-        "Digest32 is exactly 32 bytes",
-        "types grant no runtime or effect authority"
+        "bounded values and identifiers enforce encoded-byte and profile bounds before owned construction",
+        "all nonzero raw authority V1 grant bits reject before trusted posture construction",
+        "AuthorityPosture and NonAuthorizingPosture cannot represent runtime or effect authority",
+        "HPTC V1 canonical bytes are domain-separated typed length-framed bounded and raw-byte validated fail closed",
+        "V1 performs no Unicode normalization and NFC/NFD remain distinct commitments",
+        "schema/normalization definitions bind kind-specific ID namespaces in an immutable caller-owned registry generation",
+        "numeric profile definitions bind profile identity version scale and rounding and cannot drift in place",
+        "FixedQ32 toward-zero arithmetic is distinct from the signed-q32-nearest-ties-even conversion profile",
+        "generated Python JavaScript and TypeScript bindings are deterministic outputs of one checked source spec"
       ]
     },
     {

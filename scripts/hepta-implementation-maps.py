@@ -24,6 +24,38 @@ def current_source_base() -> dict[str, str]:
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
+SOURCE_BASE_POLICY_LATEST_ROOT = "latest_declared_root_commit_v1"
+
+
+def latest_module_source_base(module: dict) -> dict[str, str]:
+    """Bind to the newest commit that actually changed this module's source roots."""
+    roots = resolve_source_roots(ROOT, module)
+    if not roots:
+        raise RuntimeError(f"{module['id']}: no resolved source roots")
+    commit = git("log", "-1", "--format=%H", "HEAD", "--", *roots)
+    if not commit:
+        raise RuntimeError(f"{module['id']}: no source-bearing commit")
+    return {"commit": commit, "tree": git("rev-parse", f"{commit}^{{tree}}")}
+
+
+def source_roots_match_head(module: dict, source_commit: str) -> bool:
+    """Prove that no declared source-root bytes changed after source_commit."""
+    roots = resolve_source_roots(ROOT, module)
+    process = subprocess.run(
+        ["git", "diff", "--quiet", source_commit, "HEAD", "--", *roots],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if process.returncode not in (0, 1):
+        raise RuntimeError(
+            f"{module['id']}: git diff failed for source base {source_commit}: "
+            f"{process.stderr.strip()}"
+        )
+    return process.returncode == 0
+
+
 def load(rel: str):
     return json.loads((ROOT / rel).read_text(encoding="utf-8"))
 
@@ -315,6 +347,18 @@ def verify():
             or not source_base.get("tree")
         ):
             failures.append(f"{mid}: source base")
+        elif row.get("sourceBasePolicy") == SOURCE_BASE_POLICY_LATEST_ROOT:
+            try:
+                expected_source_base = latest_module_source_base(module)
+                if source_base != expected_source_base:
+                    failures.append(
+                        f"{mid}: source base drift "
+                        f"(map={source_base.get('commit')} expected={expected_source_base['commit']})"
+                    )
+                elif not source_roots_match_head(module, source_base["commit"]):
+                    failures.append(f"{mid}: declared source roots drift after source base")
+            except (RuntimeError, subprocess.SubprocessError, ValueError, OSError) as exc:
+                failures.append(f"{mid}: source base verification failed: {exc}")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
         roots = [x["path"] for x in module["rootBindings"]]
@@ -345,8 +389,8 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    if source_bases and len(source_bases) != 1:
+        failures.append(f"legacy maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(

@@ -1,52 +1,142 @@
 # platform.types: implementation design
 
-Parent: `docs/modules/platform.types/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: bounded identity, digest and numeric-conversion source implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Parent: `docs/modules/platform.types/TECHNICAL.md`. Lane:
+`LANE-A-FOUNDATION`.
+
+Status: bounded/profiled primitives, sealed non-authorizing posture, canonical
+HPTC V1 encoding/validation, immutable schema/normalization and numeric-profile
+registry, deterministic numeric conversion, conformance suite and generated
+Python/JavaScript/TypeScript bindings are source implemented. Three
+registry-owned target protocols remain source-pending. Named product composition,
+candidate qualification and independent acceptance are separate gates.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-types`.
-Packages: `PLATFORM-0-TYPE-BOUNDARY`.
+Root: `codex-rs/hepta-types`. Bootstrap package:
+`PLATFORM-0-TYPE-BOUNDARY`. The module is stateless and authority-free.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+`productCallerState = not_composed`. Source-level interoperability or generated
+bindings do not count as production execution.
 
 ## 2. Public operations and contract details
 
-`validate_id(raw, id_profile) -> StableId | InvalidId` checks byte count, alphabet and normalized representation without allocating a second unrestricted copy. `rescale(value, source_profile, target_profile) -> ConversionReceipt | NumericError` uses checked wide arithmetic and the target rounding rule. `canonical_digest(type_id, schema_version, fields) -> Digest32` applies domain separation and length-delimits variable fields; map ordering is canonical and arrays retain semantic order. Schema version and numeric profile are part of the digest input, not ambient globals.
+- `validate_id(raw, profile)` validates bounded V1 ID grammar before owned
+  construction. Schema, normalization, execution, receipt and artifact profiles
+  bind explicit namespaces.
+- `AuthorityPosture::try_from_wire_bytes(raw)` is a one-byte negative ingress:
+  zero produces deny-all; every nonzero grant bit rejects. `AuthorityPosture`
+  and `NonAuthorizingPosture` cannot encode authority.
+- `canonical_encode_v1` / `canonical_digest_v1` produce the frozen HPTC V1
+  representation. `canonical_validate_v1` independently validates supplied V1
+  bytes and rejects invalid tags/bools, ordering, depth, size, truncation and
+  trailing data.
+- `ContractRegistryV1` holds one immutable bounded caller-owned definition
+  generation. Definition kind is bound to ID namespace.
+- `NumericProfileDefinitionV1` binds profile identity, definition version,
+  scale and rounding to a canonical digest.
+- `rescale_signal_registered` requires source profile, target profile and
+  normalization definition in the same registry generation before checked
+  numeric conversion.
+- generated Python/JavaScript runtime bindings and TypeScript declarations are
+  deterministically emitted from `PLATFORM_TYPES_BINDINGS_V1.json`.
 
-## 3. State records and transaction design
+## 3. State, authority and transaction design
 
-No authoritative state, clocks, credentials, filesystem handles or process-global mutable registries. Numeric-profile definitions are immutable inputs. A `ConversionReceipt` contains source/target profile IDs, input/output digests and a rational absolute-error bound. Authority/fence identifiers are exact integers or opaque IDs and must never pass through approximate rescaling.
+There is no authoritative state, clock, credential, filesystem handle, global
+registry, migration or transaction. All values are immutable or caller-owned.
 
-## 4. Deterministic algorithm and scheduling
+The only authority-related operation is rejection: untrusted raw authority bits
+cannot become a trusted shared type. Real authority belongs to
+`kernel.authority`.
 
-Validate shape and limits; decode into exact primitive types; validate units and scale; compute with checked intermediates; apply only the named rounding/projection; encode and hash. Do not implicitly normalize invalid user IDs into valid identities. Compile-time ownership keeps authority-bearing types opaque to consumers.
+Authentication and distribution of a registry generation are product-owner
+responsibilities. `platform.types` proves semantic identity of definitions, not
+who approved them.
 
-## 5. Capacity and performance profile
+## 4. Deterministic algorithms
 
-Pilot scalar conversion batch <= 4096 values; string identifier <= the existing StableId bound; serialized primitive collection <= 256 KiB; no network/SQL dependencies. Record allocations per decode and numeric conversion separately.
+ID validation performs no case folding or normalization. Canonical V1 binds
+domain, namespaced type ID, schema version, type tags, integer widths, lengths
+and canonical ordering. Arrays preserve semantic order. V1 deliberately does no
+Unicode normalization.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+Numeric conversion uses checked i128 intermediates and target profile rounding;
+there is no saturation. Numeric profile admission refuses scale/rounding drift
+under an existing V1 identity.
 
-## 6. Concrete verification cases
+`FixedQ32` compatibility multiply/divide is
+`fixed-q32-toward-zero-v1`. `signed-q32-nearest-ties-even-v1` shares the raw
+2^32 scale but is explicitly not arithmetic-compatible.
 
-- TYPES-01: positive and negative half ties reproduce ties-to-even (+2.5 -> 2, -3.5 -> -4).
-- TYPES-02: same number in ppm and Q24 has distinct source bytes/profile digests and a valid conversion receipt.
-- TYPES-03: overflow, unknown profile and unit mismatch reject; authority IDs are not accepted by approximate conversion.
-- TYPES-04: Rust/Python/TypeScript golden encodings agree byte-for-byte for the declared wire representation.
+## 5. Enforced bounds
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+- stable identifier: <= 128 encoded bytes;
+- canonical HPTC V1: <= 256 KiB;
+- canonical array/map/field collection: <= 4096 entries;
+- canonical nesting: <= 16;
+- immutable registry: <= 256 total ordinary/profile definitions;
+- ordinary registry definition: <= 4096 UTF-8 bytes;
+- aggregate ordinary registry definition bytes: <= 256 KiB;
+- numeric signal elements: <= 4096.
 
-## 7. Integration, rollback and capability ceiling
+These are source-enforced limits, not target-host latency measurements.
 
-Shared type changes land through the contract integrator before consumer PRs. Freeze generated type hashes for all affected lanes; rollback restores compatible readers and profile versions, never silently reinterprets stored numeric bytes.
+## 6. Concrete verification
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+- TYPES-01: positive and negative half ties follow target profile rounding.
+- TYPES-02: conversion digests bind source/output profile, normalization,
+  shape/range/unit and exact rational error bound.
+- TYPES-03: overflow, unit/shape/range/normalization mismatch and unregistered
+  profile fail closed.
+- TYPES-04: all eight raw authority grant bits reject before trusted posture
+  construction.
+- TYPES-05: five canonical accepted vectors agree across Rust/Python/Node,
+  including integer boundaries and NFC/NFD non-normalization.
+- TYPES-06: seven rejection vectors cover duplicate field/key, zero schema,
+  oversize, depth overflow, invalid bool and invalid tag.
+- TYPES-07: generated bindings regenerate without drift and Python/JavaScript
+  consumers agree on ID, authority, profile and Q32 semantics.
+- TYPES-08: registry definition kind/namespace, duplicate identity/profile and
+  aggregate byte bounds reject.
+
+Exact-head and deterministic synthetic-merge workflow success are required
+candidate receipts. Static test identities are not pass receipts.
+
+## 7. Completion vocabulary
+
+`implementedOperationMappingComplete` means every operation claimed as
+implemented in this candidate maps to public source and tests.
+
+`ownedTargetProtocolSourceComplete` means every protocol canonically owned by
+`platform.types` has native source. It remains false while
+`RandomStreamManifestV1`, `ExternalSystemManifestV1` and
+`SensorCalibrationManifestV1` are source-pending.
+
+The legacy broad `nativeSourceMappingComplete` must not be interpreted as full
+module source completion and is false for this candidate.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `rescale_signal` in [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs); `StableId` in [codex-rs/hepta-types/src/identity.rs](../../../codex-rs/hepta-types/src/identity.rs). Bounded identity, digest and numeric-conversion source implemented.
-- **State and recovery:** Stateless native values. NumericSignalV1 digests bind profile, unit, shape, normalization and raw values; conversion checks i128 intermediates and returns an exact rational error bound, with no saturation.
-- **Source tests:** [codex-rs/hepta-types/src/numeric_conversion_tests.rs](../../../codex-rs/hepta-types/src/numeric_conversion_tests.rs), [codex-rs/hepta-types/src/identity_tests.rs](../../../codex-rs/hepta-types/src/identity_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md](../../../codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md).
-- **Remaining work:** Admit production numeric profiles and verify actual consumer/wire compatibility; numerical equivalence alone does not establish byte compatibility.
+Implemented source surfaces:
+
+- `src/bounded.rs`: bounded text/bytes;
+- `src/identity.rs`: IDs, monotonic values, raw authority rejection and sealed
+  postures;
+- `src/digest.rs`: Digest32;
+- `src/canonical_digest.rs`: HPTC V1 encode/digest/validate;
+- `src/fixed.rs`: FixedQ32/ProbabilityQ32 and explicit arithmetic profile;
+- `src/registry.rs`: immutable contract/profile registry;
+- `src/numeric_profile.rs`: native profile semantics and
+  `NumericProfileDefinitionV1`;
+- `src/numeric_conversion.rs`: native and registry-admitted conversion;
+- `bindings/**`, `generated/**`, `conformance/**`: generated language
+  surfaces and independent compatibility oracles.
+
+Remaining repository-controlled source work for full target ownership:
+`RandomStreamManifestV1`, `ExternalSystemManifestV1`,
+`SensorCalibrationManifestV1`.
+
+Remaining integration/evidence work: named product composition, authenticated
+registry-generation provisioning, full consumer compile matrix, independent
+semantic review, target-host/product qualification, then activation/operator
+acceptance/promotion/release.

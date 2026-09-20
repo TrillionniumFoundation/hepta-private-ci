@@ -32,40 +32,57 @@
       "currentSpecificationRole": "current_executable_contract",
       "implementationDetail": "docs/lane-a-foundation/platform.types/PRIMITIVES_V1.md",
       "states": {
-        "source": "implemented",
-        "implementation": "native_primitives",
+        "source": "implemented_subset_target_protocols_pending",
+        "implementation": "native_protocol_primitives_generated_bindings",
         "durability": "none",
-        "qualification": "source_tests_present",
+        "qualification": "candidate_workflow_required",
         "activation": "library_only",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded identity and byte/text values",
-        "digest and monotonic revision/generation primitives",
-        "fixed-point probability and numeric-signal conversion"
+        "bounded values, profiled identifiers and monotonic identities",
+        "sealed non-authorizing posture with raw one-byte grant-bit rejection",
+        "canonical HPTC V1 encode/digest/raw-byte validation with accepted/rejected cross-language conformance",
+        "immutable schema/normalization and numeric-profile admission registry",
+        "checked numeric conversion with registered profiles and explicit Q32 arithmetic split",
+        "deterministically generated Python/JavaScript runtime bindings and TypeScript declarations"
       ],
       "targetOnlyCapabilities": [
-        "cross-language generated bindings",
-        "runtime schema registry"
+        "RandomStreamManifestV1 native source",
+        "ExternalSystemManifestV1 native source",
+        "SensorCalibrationManifestV1 native source",
+        "named authenticated product composition and registry-generation provisioning",
+        "full consumer compile matrix, independent semantic review and target-host qualification"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-types/src/lib.rs",
           "mustContain": [
             "#![forbid(unsafe_code)]",
-            "pub use identity::StableId;",
-            "pub use identity::IdentityError;",
-            "pub use numeric_conversion::rescale_signal;"
+            "pub use identity::NonAuthorizingPosture;",
+            "pub use canonical_digest::canonical_validate_v1;",
+            "pub use numeric_profile::NumericProfileDefinitionV1;",
+            "pub use numeric_conversion::rescale_signal_registered;"
           ]
         },
         {
-          "path": "codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md",
+          "path": "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
           "mustContain": [
-            "Native numeric signal conversion V1",
-            "Unknown profile IDs reject"
+            "unicode-nfc-is-not-normalized-v1",
+            "invalid-bool-byte-v1",
+            "invalid-value-tag-v1"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/bindings/PLATFORM_TYPES_BINDINGS_V1.json",
+          "mustContain": [
+            "fixed-q32-toward-zero-v1",
+            "signed-q32-nearest-ties-even-v1",
+            "authorityWireV1"
           ]
         }
-      ]
+      ],
+      "productCallerState": "not_composed"
     },
     {
       "module": "platform.wire",
