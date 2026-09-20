@@ -297,9 +297,7 @@ fn drain_without_typed_agentd_boundary_fails_closed_instead_of_signaling() {
         .request_drain()
         .expect_err("untyped drain must fail closed");
     assert!(
-        error
-            .to_string()
-            .contains("no typed Agentd drain boundary"),
+        error.to_string().contains("no typed Agentd drain boundary"),
         "unexpected drain error: {error}"
     );
 
