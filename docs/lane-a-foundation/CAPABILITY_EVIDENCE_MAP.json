@@ -86,7 +86,7 @@
           "path": "codex-rs/hepta-types/src/identity_tests.rs",
           "mustContain": [
             "id_profiles_bind_namespace_without_normalization",
-            "monotonic_values_reject_overflow"
+            "monotonic_values_reject_zero_and_overflow_for_every_public_type"
           ]
         },
         {
