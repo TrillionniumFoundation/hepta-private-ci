@@ -108,6 +108,7 @@ from .worker_lifecycle import (
     revoke_worker,
     submit_worker_result,
     worker_claim,
+    worker_completion_observation_digest,
 )
 from .sandbox_control import (
     SandboxCoordinator,
@@ -249,6 +250,7 @@ __all__ = [
     "revoke_worker",
     "submit_worker_result",
     "worker_claim",
+    "worker_completion_observation_digest",
     "path_is_within",
     "path_sets_overlap",
     "paths_overlap",
