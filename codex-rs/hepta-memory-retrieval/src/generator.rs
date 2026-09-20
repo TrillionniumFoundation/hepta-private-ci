@@ -169,6 +169,7 @@ impl RetrievalGeneratorBatchV1 {
             return Err(GeneratorErrorV1::CandidateCountMismatch);
         }
         let mut identities = BTreeSet::new();
+        let mut ranks = BTreeSet::new();
         for candidate in &self.candidates {
             candidate
                 .record
@@ -190,6 +191,11 @@ impl RetrievalGeneratorBatchV1 {
             }
             if candidate.channel_rank > self.receipt.candidate_count {
                 return Err(GeneratorErrorV1::ChannelRankOutOfRange);
+            }
+            if !ranks.insert(candidate.channel_rank) {
+                return Err(GeneratorErrorV1::DuplicateChannelRank(
+                    candidate.channel_rank,
+                ));
             }
             if candidate.normalized_score < FixedQ32::ZERO
                 || candidate.normalized_score > FixedQ32::ONE
@@ -661,6 +667,7 @@ pub enum GeneratorErrorV1 {
     TombstoneCandidate(String),
     ZeroChannelRank,
     ChannelRankOutOfRange,
+    DuplicateChannelRank(u32),
     ScoreOutOfRange,
     AuthorityGranted,
     DigestMismatch(&'static str),
