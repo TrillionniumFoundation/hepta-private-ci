@@ -388,6 +388,10 @@ jobs:
                   "nativeMappingSha256": sha256("codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md"),
                   "traceabilitySha256": sha256("qualification/lane-e/TEST_TRACEABILITY.json"),
               },
+              "tooling": {
+                  "cargoLlvmCov": "0.9.1",
+                  "rust": "1.95.0",
+              },
               "coverage": {
                   "report": ".hepta-evidence/learning-eval/coverage.json",
                   "sha256": hashlib.sha256(coverage_path.read_bytes()).hexdigest(),
@@ -410,6 +414,22 @@ jobs:
               "expiresAt": (now + dt.timedelta(days=30)).isoformat().replace("+00:00", "Z"),
               "authority": "DENY_ALL",
               "externalEvidenceSatisfied": False,
+          }
+          input_rows = [
+              f"{name}={value}"
+              for name, value in sorted(manifest["inputs"].items())
+          ]
+          manifest["qualificationInputSetSha256"] = hashlib.sha256(
+              ("\n".join(input_rows) + "\n").encode()
+          ).hexdigest()
+          manifest["provenance"] = {
+              "issuer": "github-actions",
+              "workflowIdentity": (
+                  f"{os.environ['GITHUB_REPOSITORY']}/"
+                  f".github/workflows/hepta-lane-e-gap-closure.yml"
+              ),
+              "sourceRef": os.environ["GITHUB_REF"],
+              "sourceSha": os.environ["SOURCE_SHA"],
           }
           if manifest["source"]["commit"] != os.environ["SOURCE_SHA"]:
               raise SystemExit("source SHA drift")
