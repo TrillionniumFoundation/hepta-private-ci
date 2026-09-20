@@ -705,9 +705,7 @@ async fn revalidate_federated_product_batch(
         ]);
     }
     let revalidation = async {
-        let mut statuses = std::iter::repeat_with(|| None)
-            .take(bindings.len())
-            .collect::<Vec<Option<FederatedRevalidationStatus>>>();
+        let mut statuses = vec![None; bindings.len()];
 
         for owner_layout in owner_layouts {
             let owner_indices = bindings
@@ -726,20 +724,18 @@ async fn revalidate_federated_product_batch(
                     .await?;
             let capability_ids = owner_indices
                 .iter()
-                .map(|index| bindings[*index].capability.id().as_str().to_string())
+                .map(|index| bindings[*index].capability.id().as_str())
                 .collect::<BTreeSet<_>>();
 
             for capability_id in capability_ids {
                 let group_indices = owner_indices
                     .iter()
                     .copied()
-                    .filter(|index| {
-                        bindings[*index].capability.id().as_str() == capability_id.as_str()
-                    })
+                    .filter(|index| bindings[*index].capability.id().as_str() == capability_id)
                     .collect::<Vec<_>>();
                 let Some(reader) = readers
                     .iter()
-                    .find(|reader| reader.capability().id().as_str() == capability_id.as_str())
+                    .find(|reader| reader.capability().id().as_str() == capability_id)
                 else {
                     for index in group_indices {
                         statuses[index] = Some(FederatedRevalidationStatus::Stale(
