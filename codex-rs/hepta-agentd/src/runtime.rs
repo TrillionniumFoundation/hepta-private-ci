@@ -44,6 +44,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let intuition_policy_host = config.intuition_policy_host();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -58,6 +59,12 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(host) = intuition_policy_host {
+        state
+            .intuition_policy
+            .set(host)
+            .map_err(|_| AgentdError::Invalid("intuition policy host already attached".to_string()))?;
+    }
     if let Some(ranker) = ranker {
         state
             .cognitive_ranker

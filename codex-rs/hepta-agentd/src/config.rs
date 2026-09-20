@@ -38,6 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
 }
 
 impl AgentdConfig {
@@ -143,6 +144,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            intuition_policy_host: None,
         })
     }
 
@@ -178,6 +180,28 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Attach the authenticated current intuition-policy product caller.
+    /// The caller is pinned to this exact Agentd identity/generation and owns
+    /// no model, scorer, RNG or learning facts itself.
+    pub fn with_intuition_policy_host(
+        mut self,
+        host: std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>,
+    ) -> Result<Self, AgentdError> {
+        host.require_identity(&self.identity.agent_id, self.identity.spawn_generation)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        if self.intuition_policy_host.is_some() {
+            return Err(AgentdError::Invalid("intuition policy host already configured".to_string()));
+        }
+        self.intuition_policy_host = Some(host);
+        Ok(self)
+    }
+
+    pub(crate) fn intuition_policy_host(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>> {
+        self.intuition_policy_host.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {
