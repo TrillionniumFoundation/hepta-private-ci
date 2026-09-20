@@ -2,6 +2,7 @@ use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::ReleaseId;
 
 use crate::ManagedProcess;
 use crate::ProcessDriver;
@@ -18,6 +19,10 @@ use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+use crate::restart_budget::RestartDecision;
+use crate::restart_budget::clear_pending;
+use crate::restart_budget::restore_pending;
+use crate::restart_budget::schedule;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn tick_slot(
@@ -48,6 +53,37 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let release =
                     release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
                 self.start_release_slot(agent_id, slot, release, now)?;
+            }
+        }
+        if slot.runtime.is_none()
+            && slot.auto_restart_pending
+            && slot.restart_retry_at.is_some_and(|retry_at| now >= retry_at)
+        {
+            slot.auto_restart_pending = false;
+            slot.restart_retry_at = None;
+            let record = self.record(agent_id)?;
+            clear_pending(record.layout.run_root(), &agent_id.to_string())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            let release = match slot.active_release.as_ref() {
+                Some(active) if active.identity() != "unversioned" => {
+                    let release_id = ReleaseId::parse(active.identity().to_string())?;
+                    crate::AgentRelease::try_from(
+                        self.registry.resolve_release(agent_id, &release_id)?,
+                    )?
+                }
+                Some(active) => active.clone(),
+                None => {
+                    let command = slot
+                        .last_command
+                        .clone()
+                        .ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
+                    crate::AgentRelease::unversioned(command)?
+                }
+            };
+            if let Err(error) = self.start_release_slot(agent_id, slot, release, now) {
+                let generation = self.record(agent_id)?.lifecycle.generation;
+                self.schedule_auto_restart(agent_id, slot, generation, now)?;
+                return Err(error);
             }
         }
         self.tick_matrix_companion(agent_id, slot, now)
@@ -83,7 +119,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| driver_error(agent_id, error))?;
         self.push_logs(slot, observation.logs);
         if let ProcessState::Exited(exit) = observation.state {
-            self.finalize_exit(agent_id, slot, runtime, exit)?;
+            self.finalize_exit(agent_id, slot, runtime, exit, now)?;
             return Ok(false);
         }
         if runtime.fenced {
@@ -128,6 +164,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     SupervisorEventKind::Lifecycle(AgentLifecycle::Failed),
                 );
                 slot.event(next.generation, SupervisorEventKind::StopRequested);
+                if slot.release_change.is_none() && !slot.restart_pending {
+                    self.schedule_auto_restart(agent_id, slot, next.generation, now)?;
+                }
             }
             RuntimePhase::Draining { deadline: limit } if drained || now >= limit => {
                 runtime.phase = RuntimePhase::Stopping {
@@ -162,8 +201,20 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         runtime: &AgentRuntime<D::Process>,
         exit: crate::ProcessExit,
+        now: Instant,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
+        let unexpected_exit = !runtime.fenced
+            && !slot.restart_pending
+            && slot.release_change.is_none()
+            && matches!(
+                record.lifecycle.lifecycle,
+                AgentLifecycle::Starting | AgentLifecycle::Running
+            )
+            && matches!(
+                runtime.phase,
+                RuntimePhase::AwaitingHealth { .. } | RuntimePhase::Running
+            );
         let fenced = runtime.fenced || record.lifecycle.generation != runtime.generation;
         let lease = ProcessLease {
             schema_version: PROCESS_LEASE_SCHEMA_VERSION,
@@ -204,6 +255,71 @@ impl<D: ProcessDriver> Supervisor<D> {
             );
         }
         slot.event(generation, SupervisorEventKind::Exited(exit));
+        if unexpected_exit {
+            self.schedule_auto_restart(agent_id, slot, generation, now)?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn schedule_auto_restart(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        generation: u64,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        let record = self.record(agent_id)?;
+        match schedule(
+            record.layout.run_root(),
+            &agent_id.to_string(),
+            self.config.restart_window,
+            self.config.restart_backoff_base,
+            self.config.max_restart_attempts,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            RestartDecision::Exhausted => {
+                slot.auto_restart_pending = false;
+                slot.restart_retry_at = None;
+                slot.event(generation, SupervisorEventKind::RestartBudgetExhausted);
+            }
+            RestartDecision::Scheduled { attempt, delay } => {
+                slot.restart_retry_at = Some(deadline(now, delay)?);
+                slot.auto_restart_pending = true;
+                let delay_ms = u64::try_from(delay.as_millis()).unwrap_or(u64::MAX);
+                slot.event(
+                    generation,
+                    SupervisorEventKind::AutoRestartQueued { attempt, delay_ms },
+                );
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn restore_restart_budget(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        let record = self.record(agent_id)?;
+        if slot.runtime.is_some() || record.lifecycle.lifecycle != AgentLifecycle::Failed {
+            clear_pending(record.layout.run_root(), &agent_id.to_string())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.auto_restart_pending = false;
+            slot.restart_retry_at = None;
+            return Ok(());
+        }
+        if let Some(remaining) = restore_pending(
+            record.layout.run_root(),
+            &agent_id.to_string(),
+            self.config.restart_window,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            slot.auto_restart_pending = true;
+            slot.restart_retry_at = Some(deadline(now, remaining)?);
+        }
         Ok(())
     }
 
