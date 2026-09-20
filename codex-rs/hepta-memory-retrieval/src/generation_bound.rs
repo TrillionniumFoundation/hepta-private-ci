@@ -822,6 +822,7 @@ pub enum RecallErrorV1 {
     DuplicateUnionIdentity(String),
     InvalidUnionEntry(String),
     InvalidUnionChannelCount,
+    InvalidRecallChannelCount,
     InvalidRecallDisposition,
     InvalidRecallSelection(String),
     DuplicateRecallSelection(String),
