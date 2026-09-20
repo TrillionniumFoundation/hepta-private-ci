@@ -225,7 +225,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 const NOW: u64 = 1_000_000;
 
-fn activated_trust() -> Result<codex_hepta_learning_ledger::ActivatedLearningTrustV1, Box<dyn Error>> {
+fn activated_trust() -> Result<codex_hepta_learning_ledger::ActivatedLearningTrustV1, Box<dyn Error>>
+{
     let generator_key = SigningKey::from_bytes(&[1_u8; 32]);
     let root_key = SigningKey::from_bytes(&[99_u8; 32]);
     let scope = digest("target-host-scope");
