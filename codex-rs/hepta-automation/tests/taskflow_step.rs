@@ -1,4 +1,3 @@
-#![cfg(feature = "taskflow-structural-qualification")]
 #![allow(
     clippy::expect_used,
     reason = "qualification fixtures should fail loudly"

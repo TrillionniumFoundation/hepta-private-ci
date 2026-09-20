@@ -13,8 +13,9 @@ doctest = false
 
 [features]
 default = []
-# Opt-in structural TaskFlow replay/frontier qualification. This profile
-# remains excluded from default builds and grants no scheduler/effect authority.
+# Opt-in structural TaskFlow replay/frontier qualification for the separate
+# taskflow_kernel helpers. The durable production step outbox is default code
+# and remains authority-free by itself.
 taskflow-structural-qualification = []
 
 [lints]
