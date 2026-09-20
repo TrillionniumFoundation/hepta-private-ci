@@ -16,6 +16,7 @@ use codex_hepta_types::StableId;
 mod candidate_bound;
 mod requirements;
 mod v2;
+mod wire;
 
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
@@ -43,6 +44,14 @@ pub use v2::build_attachment;
 pub use v2::compile_v2;
 pub use v2::observe_delivery;
 pub use v2::record_serialization;
+pub use wire::CONTEXT_COMPILATION_WIRE_SCHEMA_V2;
+pub use wire::CompileWireError;
+pub use wire::ContextCompilationWireV2;
+pub use wire::ContextWireError;
+pub use wire::compile_to_wire_v2;
+pub use wire::context_compilation_wire_schema_v2;
+pub use wire::decode_compilation_receipt_wire_v2;
+pub use wire::encode_compilation_receipt_wire_v2;
 
 const MAX_ITEMS: usize = 4_096;
 const MAX_TOKENS: u64 = 1_000_000;

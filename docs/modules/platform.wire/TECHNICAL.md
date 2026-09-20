@@ -16,6 +16,31 @@
 
 This stable document is the implementation guide for `platform.wire`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+### Current implementation status
+
+The table below is the current executable/source truth. Sections that describe a
+broader architecture are target requirements unless this table and
+[CURRENT_IMPLEMENTATION.md](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md)
+bind them to native source.
+
+| Capability | Current state | Native source/evidence |
+|---|---|---|
+| Frozen HPTA V1 envelope | implemented, immutable | `src/envelope.rs`, `WIRE_V1.md` |
+| HPTA V2 metadata-bound frame digest | implemented | `src/envelope_v2.rs`, `WIRE_V2.md` |
+| HPTN version/capability negotiation | implemented | `src/version.rs`, `NEGOTIATION_V1.md` |
+| Multi-version frame dispatch | implemented | `src/frame.rs` |
+| Schema admission + typed payload codec boundary | implemented framework | `src/schema.rs` |
+| Bounded incremental stream decoder | implemented | `src/stream.rs` |
+| Property tests + fuzz target | implemented source evidence | `src/property_tests.rs`, `fuzz/fuzz_targets/decode_frames.rs` |
+| Rust↔Python raw binary session | implemented qualification source | `hepta-shadow-qualification/tests/cross_runtime_wire_session.rs` |
+| Read-only runtime/gateway caller | source-composed | explicit V2 `Accept` on existing runtime status route |
+| Exact-head/merge qualification, deployment and external acceptance | not granted by this guide | separate evidence gates remain mandatory |
+
+V1 continues to use a payload-only digest. V2 binds schema, producer,
+generation, lengths and payload in a domain-separated unkeyed SHA-256 digest.
+Neither is an authentication primitive. An untrusted transport must
+authenticate the HPTN transcript and encoded frame.
+
 ## 1. Identity, mission and ownership
 
 Provide bounded, versioned wire representations while remaining transport and domain-runtime neutral.
@@ -46,7 +71,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs); observed identifiers include `WireEnvelope`, `WireError`, `MAX_WIRE_PAYLOAD_BYTES`, `encode`, `decode`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) for the implemented subset and remaining product work.
+The frozen V1 source remains [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). Current versioned source additionally includes `envelope_v2.rs`, `version.rs`, `frame.rs`, `schema.rs` and `stream.rs`; public exports are collected in `src/lib.rs`. A named read-only caller is source-composed through `hepta-runtime` and `hepta-native-gateway`, while production activation and acceptance remain separate gates. Read [CURRENT_IMPLEMENTATION.md](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md) and the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the target requirements in this guide.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -160,8 +185,14 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs); named case: `every_truncation_rejects_without_reconstructing_an_envelope`.
-- [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs); named case: `envelope_round_trip_is_exact`.
+- [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs): frozen V1, truncation and bounds.
+- `codex-rs/hepta-wire/src/envelope_v2_tests.rs`: frozen V2 and metadata-tamper rejection.
+- `codex-rs/hepta-wire/src/version_tests.rs`: negotiation, capability pinning and downgrade rejection.
+- `codex-rs/hepta-wire/src/schema_tests.rs`: registration, missing/unknown critical field rejection.
+- `codex-rs/hepta-wire/src/stream_tests.rs`: incremental completion and pre-body allocation bounds.
+- `codex-rs/hepta-wire/src/property_tests.rs` and `codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs`: property/fuzz surfaces.
+- `codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs`: raw-binary Rust↔Python negotiation and typed V2 load.
+- `codex-rs/hepta-native-gateway/src/lib.rs`: explicit content-negotiated read-only product callsite tests.
 
 In `codex-rs`, run `just test -p codex-hepta-wire`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
 
@@ -262,8 +293,12 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `wireenvelope` | `WireEnvelope` | `codex-rs/hepta-wire/src/envelope.rs` | `pending` |
+| `wire_v1` | `WireEnvelope` | `codex-rs/hepta-wire/src/envelope.rs` | V1 unit/boundary/frozen-vector tests |
+| `wire_v2` | `WireEnvelopeV2` | `codex-rs/hepta-wire/src/envelope_v2.rs` | V2 digest/mutation/frozen-vector tests |
+| `negotiate` | `negotiate` | `codex-rs/hepta-wire/src/version.rs` | capability/downgrade tests |
+| `schema_admit` | `SchemaRegistry` / `PayloadCodec` | `codex-rs/hepta-wire/src/schema.rs` | strict typed-codec tests |
+| `stream_decode` | `StreamingDecoder` | `codex-rs/hepta-wire/src/stream.rs` | incremental/buffer-bound tests |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- The read-only runtime status path is now a named source-composed caller; this source fact is not deployment or operator acceptance.
+- Exact-head and synthetic-merge execution, authenticated transport/session binding, target-host qualification, independent acceptance, activation, promotion and release remain separate evidence gates.
