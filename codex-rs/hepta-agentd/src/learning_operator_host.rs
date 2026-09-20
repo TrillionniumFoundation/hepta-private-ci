@@ -531,7 +531,9 @@ fn digest_record(
 ) -> Digest32 {
     let mut bytes = JOURNAL_DOMAIN.to_vec();
     bytes.extend_from_slice(&sequence.to_be_bytes());
-    push_id(&mut bytes, operation_id);
+    let raw = operation_id.as_str().as_bytes();
+    bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(raw);
     bytes.push(phase.tag());
     bytes.extend_from_slice(request_digest.as_array());
     bytes.extend_from_slice(stage_digest.as_array());
@@ -874,11 +876,41 @@ fn digest_product_request(
     }
     push_id(&mut bytes, &request.register_event_id)?;
     push_id(&mut bytes, &request.manifest.artifact_id)?;
-    bytes.extend_from_slice(request.manifest.content_digest.as_array());
-    bytes.extend_from_slice(request.manifest.compatibility_digest.as_array());
+    bytes.push(match request.manifest.kind {
+        ArtifactKind::Prompt => 0,
+        ArtifactKind::Policy => 1,
+        ArtifactKind::Model => 2,
+        ArtifactKind::Workflow => 3,
+        ArtifactKind::Skill => 4,
+        ArtifactKind::Parameters => 5,
+        ArtifactKind::Topology => 6,
+        ArtifactKind::Code => 7,
+        ArtifactKind::ExternalAdapter => 8,
+    });
+    bytes.extend_from_slice(&request.manifest.generation.get().to_be_bytes());
+    match &request.manifest.predecessor_id {
+        Some(predecessor) => {
+            bytes.push(1);
+            push_id(&mut bytes, predecessor)?;
+        }
+        None => bytes.push(0),
+    }
+    for digest in [
+        request.manifest.content_digest,
+        request.manifest.objective_digest,
+        request.manifest.support_digest,
+        request.manifest.compatibility_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    push_id(&mut bytes, &request.manifest.producer_id)?;
+    bytes.extend_from_slice(&request.manifest.encoded_size_bytes.to_be_bytes());
     bytes.extend_from_slice(request.registry_binding.as_array());
-    let evaluation_payload =
-        evaluation_signing_payload_v2(&request.evaluation, &request.metric_roles)?;
+    let evaluation_payload = evaluation_signing_payload_v2(
+        &request.evaluation,
+        &request.metric_roles,
+    )
+    .map_err(|_| LearningOperatorHostError::Binding("evaluation payload is invalid"))?;
     bytes.extend_from_slice(Digest32::of_bytes(&evaluation_payload).as_array());
     bytes.extend_from_slice(
         Digest32::of_bytes(&request.candidate_evidence.signing_bytes()).as_array(),
