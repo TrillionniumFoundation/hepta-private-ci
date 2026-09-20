@@ -17,6 +17,7 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
+    plasticity_runtime: std::sync::OnceLock<crate::PlasticityRuntimeHandleV1>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -47,6 +48,7 @@ impl AgentdState {
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            plasticity_runtime: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -59,6 +61,21 @@ impl AgentdState {
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
         })
+    }
+
+    pub(crate) fn attach_plasticity_runtime(
+        &self,
+        handle: crate::PlasticityRuntimeHandleV1,
+    ) -> Result<(), AgentdError> {
+        self.plasticity_runtime
+            .set(handle)
+            .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
+    }
+
+    pub(crate) fn plasticity_runtime(
+        &self,
+    ) -> Option<crate::PlasticityRuntimeHandleV1> {
+        self.plasticity_runtime.get().cloned()
     }
 
     pub(crate) fn attach_cognitive_store(
