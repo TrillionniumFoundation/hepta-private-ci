@@ -274,6 +274,19 @@ impl AgentdState {
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
+            crate::AgentdMethod::RunReleaseClosed {
+                run_id,
+                expected_revision,
+            } => {
+                require_run_reconciliation_ready(lifecycle, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .remove_closed_run(&run_id, expected_revision)
+                    .map_err(run_error)?;
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
             crate::AgentdMethod::AutomationCreate { draft } => {
                 require_automation_ready(lifecycle, app_server_ready, fenced)?;
                 match automation {
@@ -793,6 +806,7 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         authority_epoch: value.authority_epoch,
         deadline_ms: value.deadline_ms,
         cancel_reason: value.cancel_reason,
+        cancel_ack_deadline_ms: value.cancel_ack_deadline_ms,
         terminal_observed: value.terminal_observed,
         idempotent: value.idempotent,
     }
