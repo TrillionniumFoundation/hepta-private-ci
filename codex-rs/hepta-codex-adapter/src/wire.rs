@@ -25,6 +25,7 @@ use crate::Error;
 use crate::adapt;
 
 pub const CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2: &str = "hepta.codex-operation-intent.v2";
+pub const CODEX_OPERATION_INTENT_WIRE_PRODUCER_V2: &str = "runtime.agentd";
 const CODEX_OPERATION_INTENT_WIRE_MAX_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -109,6 +110,7 @@ pub fn encode_codex_operation_intent_wire_v2(
     producer: StableId,
     generation: Generation,
 ) -> Result<WireEnvelopeV2, WireAdapterError> {
+    require_codex_operation_intent_producer(&producer)?;
     let codec = CodexOperationIntentWireCodec::new().map_err(WireAdapterError::Schema)?;
     let mut registry = SchemaRegistry::new();
     registry
@@ -136,6 +138,7 @@ pub fn encode_codex_operation_intent_wire_v2(
 pub fn decode_codex_operation_intent_wire_v2(
     envelope: &WireEnvelopeV2,
 ) -> Result<CodexOperationIntent, WireAdapterError> {
+    require_codex_operation_intent_producer(envelope.producer())?;
     let codec = CodexOperationIntentWireCodec::new().map_err(WireAdapterError::Schema)?;
     let mut registry = SchemaRegistry::new();
     registry
@@ -178,8 +181,18 @@ pub fn adapt_wire_v2(
     adapt(now_ms, intent, observation).map_err(WireAdapterError::Adapter)
 }
 
+fn require_codex_operation_intent_producer(
+    producer: &StableId,
+) -> Result<(), WireAdapterError> {
+    if producer.as_str() != CODEX_OPERATION_INTENT_WIRE_PRODUCER_V2 {
+        return Err(WireAdapterError::UnexpectedProducer(producer.clone()));
+    }
+    Ok(())
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum WireAdapterError {
+    UnexpectedProducer(StableId),
     Schema(SchemaAdmissionError),
     Payload(SchemaCodecError),
     Envelope(WireV2Error),
@@ -201,7 +214,7 @@ impl StdError for WireAdapterError {
             Self::Payload(error) => Some(error),
             Self::Envelope(error) => Some(error),
             Self::Adapter(error) => Some(error),
-            Self::Identity(_) | Self::Digest(_) => None,
+            Self::UnexpectedProducer(_) | Self::Identity(_) | Self::Digest(_) => None,
         }
     }
 }
