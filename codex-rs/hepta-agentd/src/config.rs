@@ -38,6 +38,8 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
+    evidence_recovery_frontier_file: Option<PathBuf>,
+    evidence_recovery_frontier_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
 }
 
@@ -144,6 +146,8 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             evidence_trust_file: None,
+            evidence_recovery_frontier_file: None,
+            evidence_recovery_frontier_trust_file: None,
             cognitive_ranker: None,
         })
     }
@@ -168,6 +172,29 @@ impl AgentdConfig {
 
     pub(crate) fn evidence_trust_file(&self) -> Option<&Path> {
         self.evidence_trust_file.as_deref()
+    }
+
+    /// Optional restore/startup gate backed by a signed frontier and a signer
+    /// trust file from outside the Agent home rollback domain. Both files are
+    /// required together.
+    pub fn with_evidence_recovery_frontier_files(
+        mut self,
+        frontier_file: PathBuf,
+        signer_trust_file: PathBuf,
+    ) -> Self {
+        self.evidence_recovery_frontier_file = Some(frontier_file);
+        self.evidence_recovery_frontier_trust_file = Some(signer_trust_file);
+        self
+    }
+
+    pub(crate) fn evidence_recovery_frontier_files(&self) -> Option<(&Path, &Path)> {
+        match (
+            self.evidence_recovery_frontier_file.as_deref(),
+            self.evidence_recovery_frontier_trust_file.as_deref(),
+        ) {
+            (Some(frontier), Some(trust)) => Some((frontier, trust)),
+            _ => None,
+        }
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must
