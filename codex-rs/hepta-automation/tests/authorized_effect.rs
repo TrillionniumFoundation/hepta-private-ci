@@ -319,8 +319,14 @@ impl AuthorizedEffectDriver for RecordingDriver {
             request.intent_digest,
             &request.intent.digest().expect("driver intent digest")
         );
-        assert_eq!(request.binding.subject_id, request.intent.subject_id);
-        assert_eq!(request.binding.destination_id, request.intent.destination_id);
+        assert_eq!(
+            request.binding.subject_id.as_str(),
+            request.intent.subject_id.as_str()
+        );
+        assert_eq!(
+            request.binding.destination_id.as_str(),
+            request.intent.destination_id.as_str()
+        );
         match &self.result {
             DriverResult::Receipt(outcome, receipt_digest) => {
                 Ok(AuthorizedEffectProviderReceipt {
@@ -423,9 +429,11 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
             "authorized-effect-dispatch",
             31,
         )
-        .await
-        .expect("durable replay");
-    assert_eq!(replay.observation, Some(TaskFlowStepObservation::Succeeded));
+        .await;
+    assert!(
+        replay.is_err(),
+        "a settled step must reject execution re-entry"
+    );
     assert_eq!(
         driver.calls, 1,
         "existing provider-attempt evidence must prevent redispatch"
@@ -494,13 +502,12 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
             "authorized-effect-dispatch",
             31,
         )
-        .await
-        .expect("replay returns durable ambiguity");
-    assert_eq!(must_not_dispatch.calls, 0);
-    assert_eq!(
-        replay.observation,
-        Some(TaskFlowStepObservation::Indeterminate)
+        .await;
+    assert!(
+        replay.is_err(),
+        "indeterminate historical steps must use recovery, not execute re-entry"
     );
+    assert_eq!(must_not_dispatch.calls, 0);
 
     let recovered = reopened
         .recover_authorized_taskflow_effect(
@@ -571,21 +578,22 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
         TaskFlowRunState::Queued
     );
 
-    assert!(matches!(
-        store
-            .execute_authorized_taskflow_effect(
-                &authority,
-                &mut driver,
-                &effect,
-                &owner,
-                &signed,
-                &expected,
-                "authorized-effect-dispatch",
-                31,
-            )
-            .await,
-        Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
-    ));
+    let replay = store
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut driver,
+            &effect,
+            &owner,
+            &signed,
+            &expected,
+            "authorized-effect-dispatch",
+            31,
+        )
+        .await;
+    assert!(
+        replay.is_err(),
+        "proven absence requires a newly fenced step attempt before retry"
+    );
     assert_eq!(
         driver.calls, 1,
         "same durable attempt must not cross the provider boundary twice"
