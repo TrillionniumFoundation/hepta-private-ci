@@ -13,8 +13,8 @@ This block is generated only from `IMPLEMENTATION_MAP.json`. Run
 changing the map. Hand-written sections below explain semantics but do not
 override these machine status facts.
 
-- Product caller: `agentd_long_lived_plasticity_owner_source_composed_not_target_host_executed_or_qualified`
-- Production writer: `agentd_append_only_parameter_and_topology_anchor_fence_journal_source_implemented_independent_domain_target_host_unproved`
+- Product caller: `agentd_named_runtime_bootstrap_creates_owner_handle_pair_and_agentd_state_holds_producer_source_composed_not_target_host_executed_or_qualified`
+- Production writer: `agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved`
 - Production implementation: `false`
 - Product execution proved: `false`
 - Independent acceptance: `false`
@@ -33,10 +33,10 @@ override these machine status facts.
 | `authenticated_product_composition` | `adapter_implemented_called_by_long_lived_agentd_owner_pairwise_roles_and_durable_no_change_terminal_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 6 |
 | `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
 | `parameter_mutation_policy` | `source_implemented_typed_parameter_projection_bound_to_control_engineering_mutation_grammar` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 2 |
-| `agentd_plasticity_runtime_owner` | `long_lived_agentd_daemon_owner_source_composed_generation_fenced_bounded_queue_not_target_host_executed` | `codex-rs/hepta-agentd/src/plasticity_runtime.rs` | 1 |
+| `agentd_plasticity_runtime_owner` | `named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_runtime.rs` | 2 |
 | `agentd_parameter_host` | `host_entrypoint_called_by_long_lived_agentd_owner_source_composed_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 3 |
-| `agentd_owner_evidence_resolution` | `host_enforced_live_frontier_exact_signal_value_and_owner_allowlist_dynamic_owner_adapters_still_required` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 5 |
-| `concrete_owner_evidence_adapters` | `dataset_and_policy_owner_adapters_bind_live_ledger_and_artifact_frontiers_dynamic_signal_owners_fail_closed` | `codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs` | 2 |
+| `agentd_owner_evidence_resolution` | `host_enforced_live_frontier_exact_signal_value_owner_allowlist_and_dynamic_ndu_neuron_broadcast_resolution` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 5 |
+| `concrete_owner_evidence_adapters` | `dataset_policy_ndu_neuron_broadcast_and_parameter_signal_adapters_bind_live_frontiers_and_exact_values_fail_closed` | `codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs` | 5 |
 | `topology_governed_admission` | `source_implemented_typed_writer_handoff_validated` | `codex-rs/hepta-plasticity/src/topology_governance.rs` | 2 |
 | `durable_topology_registry` | `source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 2 |
 | `authenticated_topology_product_composition` | `adapter_implemented_called_by_agentd_host_entrypoint_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 2 |
@@ -44,18 +44,19 @@ override these machine status facts.
 | `agentd_anchor_fence_journal` | `source_implemented_append_only_checksum_journal_crash_tail_repair_monotonic_generation_fences_and_safe_bootstrap_resume` | `codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs` | 3 |
 | `structural_canary_controller` | `source_implemented_durable_candidate_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 6 |
 | `authenticated_structural_canary_observation` | `source_implemented_observer_signature_binds_exact_plan_and_observation_no_topology_apply_authority` | `codex-rs/hepta-intelligence/src/topology_canary_product.rs` | 1 |
+| `runtime_topology_execution` | `source_implemented_final_use_authorized_live_cns_generation_replacement_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 2 |
+| `runtime_structural_canary_fault_rollback` | `qualification_composed_live_apply_forced_host_fault_authorized_rollforward_rollback_and_authenticated_observer_receipt_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
 
 ### Repository-controlled gaps
 
-- Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification and Lane F qualification for this final source/document head.
-- Bind the remaining dynamic Modulator, ModulatorBroadcast, Eligibility and ParameterSignal evidence classes to their concrete authoritative owner stores in the selected deployment; the Dataset and immutable Policy paths are concrete and fail closed when dynamic owners are unavailable.
+- Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head.
 
 ### External evidence gates
 
 - independent semantic and security review
 - target-host execution with the anchor/fence journal placed in a rollback domain physically independent from each proposal registry, plus crash/recovery telemetry
 - operator acceptance and incident-recovery exercise
-- real topology application/migration owner execution with authenticated canary telemetry, forced fault, actual rollback and reconciliation
+- target-host topology application with production telemetry and a forced-fault rollback/reconciliation canary; the repository now contains a live-runtime source qualification but not deployment evidence
 - promotion, activation and release
 
 <!-- END GENERATED IMPLEMENTATION STATUS -->
@@ -75,7 +76,7 @@ override these machine status facts.
 | Append-only host anchor/fence journal | **Implemented source composition** | shared Agentd `AdaptiveAnchorJournalV1`; checksum frames, crash-tail repair, monotonic generation fences |
 | Signed generator authentication | **Implemented adapter** | `propose_authenticated_parameter_plasticity_v1` |
 | Signed current artifact/evidence-frontier witness | **Implemented adapter** | `PlasticityAdmissionEvidenceV1` |
-| Typed owner-evidence resolution boundary | **Implemented with live-frontier/value binding; Dataset + immutable Policy owners concrete, dynamic signal owners fail closed until bound** | `PlasticityOwnerEvidenceResolverV1`, `ConcretePlasticityOwnerEvidenceResolverV1` and `PlasticityOwnerEvidencePolicyV1` in Agentd |
+| Typed owner-evidence resolution boundary | **Implemented with live-frontier/value binding across Dataset, Policy, NDU modulator, broadcast policy, neuron eligibility and exact parameter signals** | `ConcretePlasticityOwnerEvidenceResolverV1`, `PlasticityDynamicOwnerEvidenceResolverV1` and `PlasticityOwnerEvidencePolicyV1` in Agentd |
 | Cryptographically independent evaluator admission | **Implemented adapter** | existing `LearningEvidenceVerifierV1` + signed evaluation path |
 | Evaluation coverage for every generated update | **Implemented adapter** | product adapter rejects missing/duplicate/unexpected evaluations |
 | Product-workspace proposal adapter | **Implemented; update and independently-attested no-admissible-update terminal paths are durable** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
@@ -88,9 +89,10 @@ override these machine status facts.
 | Long-lived Agentd plasticity owner | **Implemented source composition; bounded queue, generation/readiness fenced, no ambient writer fallback** | `PlasticityRuntimeOwnerV1` in `hepta-agentd/src/plasticity_runtime.rs` |
 | Bounded structural canary controller | **Implemented durable-candidate/plan/history-bound observation state machine; explicit finish required; no executed canary evidence** | `StructuralCanaryControllerV1` |
 | Authenticated structural-canary observation | **Implemented source boundary; every safety/lineage/rollback/health assertion is Observer-signed before state transition** | `observe_authenticated_structural_canary_v1` in `hepta-intelligence` |
-| Topology application / writer handoff execution | **Target / not implemented** | intentionally no apply API |
+| Topology application / writer handoff execution | **Implemented in the external runtime owner; plasticity itself remains proposal-only** | `codex-hepta-runtime::HeptaRuntime::apply_governed_topology` requires exact governed handoff + single-use `FinalUseAuthority` |
 | Weight training / installation | **Target outside this proposal engine** | no authority granted |
 | Selection / activation / promotion / release | **External gate / not implemented** | explicitly denied |
+| Live-runtime forced-fault rollback canary | **Repository source qualification implemented; target-host evidence still external** | actual CNS cutover → forced stopped-host fault → separately authorized rollback generation → Observer-signed canary receipt |
 | Host deployment qualification and canary | **External evidence required** | no source-only claim |
 
 ## Dependency placement
@@ -120,10 +122,7 @@ durable learning-ledger heads. Every owner-evidence query binds those heads, the
 artifact/window/dataset context and, for `ParameterSignal`, the actual eligibility,
 modulator, learning-rate and bound values consumed by the generator. The concrete
 resolver verifies `DatasetSnapshotReceiptV3` against the live DurableLedger head and
-eligible `Policy` artifacts against the live ArtifactRegistry head. Dynamic
-modulator/modulator-broadcast/eligibility/parameter-signal facts still require their
-real authoritative adapters and fail closed when unavailable; they are not reclassified
-as artifacts. A correctly signed/context-bound receipt from the wrong owner is rejected.
+eligible `Policy` artifacts against the live ArtifactRegistry head. Dynamic modulator/modulator-broadcast/eligibility/parameter-signal facts now resolve through NDU, immutable broadcast-policy artifacts and the neuron journal with exact numeric-value binding. They fail closed on stale, unavailable, rolled-back or wrong-owner state and are not reclassified as generic artifacts. A correctly signed/context-bound receipt from the wrong owner is rejected.
 This source composition is not proof that a deployed target host executed or accepted
 the path, so `productionImplementation` and `productExecutionProved` remain false until
 exact target-host evidence exists.
@@ -256,9 +255,7 @@ real rollback.
 
 The repository now contains a long-lived Agentd plasticity owner that calls the
 parameter/topology host entrypoints, supplies current owner frontiers and retains
-independent anchor/fence seams. Dataset and immutable Policy owner adapters are concrete;
-the selected deployment must still bind dynamic modulator/eligibility/signal facts to
-their authoritative owners. The registry/anchor fault fixtures prove that a retained
+independent anchor/fence seams. Dataset and immutable Policy owner adapters are concrete; NDU owns current modulator projections, neuron.runtime owns eligibility checkpoints, broadcast policy binds the low-dimensional mapping, and exact ParameterSignal evidence recomputes the consumed numeric values. These source adapters still require the selected target host to open the corresponding authoritative owner stores. The registry/anchor fault fixtures prove that a retained
 external acknowledgement rejects a rolled-back proposal file, but only a target host
 can prove that the journal and registry are physically placed in independent rollback
 domains. Remaining gates are deployment/execution evidence rather than permission to
