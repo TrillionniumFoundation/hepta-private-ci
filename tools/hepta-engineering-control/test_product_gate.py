@@ -32,6 +32,7 @@ CANONICAL_REGISTRY = """{
 """
 CANONICAL_PATH = product_gate.CANONICAL_WORK_PACKAGE_PATH.as_posix()
 CANONICAL_BLOB = "9" * 40
+SOURCE = "a" * 40
 
 
 class ProductGateTests(unittest.TestCase):
