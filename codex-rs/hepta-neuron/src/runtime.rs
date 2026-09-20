@@ -391,6 +391,19 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(output)
     }
 
+    pub fn canonical_checkpoint(
+        &self,
+        tick: &NeuronTickReceiptV1,
+        expires_unix_ms: u64,
+    ) -> Result<crate::NeuronCheckpointV1, crate::NeuronProtocolError> {
+        let checkpoint = self
+            .journal
+            .current()
+            .map_err(|_| crate::NeuronProtocolError::BindingMismatch("journal"))?
+            .ok_or(crate::NeuronProtocolError::BindingMismatch("checkpoint"))?;
+        crate::canonical_checkpoint_v1(&self.config, checkpoint, tick, expires_unix_ms)
+    }
+
     pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, NeuronRuntimeError> {
         Ok(self.journal.current()?.map(|checkpoint| JournalAnchor {
             sequence: checkpoint.sequence(),
