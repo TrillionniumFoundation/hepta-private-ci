@@ -174,14 +174,9 @@ fn signed_grant(
     payload: &PlatformPayload,
     nonce_byte: u8,
 ) -> SignedFinalUseGrant {
-    let binding = platform_final_use_binding(
-        SUBJECT,
-        session,
-        operation_id,
-        displayed_revision,
-        payload,
-    )
-    .unwrap();
+    let binding =
+        platform_final_use_binding(SUBJECT, session, operation_id, displayed_revision, payload)
+            .unwrap();
     let now = now_unix_ms().unwrap();
     let grant = FinalUseGrant {
         schema_version: 1,
@@ -193,7 +188,10 @@ fn signed_grant(
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 60_000,
     };
-    let signature = signing.sign(&grant.signing_bytes().unwrap()).to_bytes().to_vec();
+    let signature = signing
+        .sign(&grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
     SignedFinalUseGrant { grant, signature }
 }
 
@@ -325,22 +323,14 @@ fn indeterminate_retry_reconciles_instead_of_replaying_or_reclaiming() {
         session_id: "session.1".to_owned(),
         generation: 1,
     };
-    let mut runtime =
-        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    let mut runtime = runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let session = runtime.session().unwrap().clone();
     let payload = PlatformPayload::CopyText {
         text: "payload".to_owned(),
     };
-    let original = request(
-        &signing,
-        &session,
-        "operation.2",
-        1,
-        payload,
-        3,
-    );
+    let original = request(&signing, &session, "operation.2", 1, payload, 3);
     let first = runtime
         .request_platform_capability(original.clone())
         .unwrap();
