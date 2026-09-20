@@ -17,9 +17,9 @@ use codex_hepta_types::StableId;
 use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
+use crate::TabularWorldModelV1;
 use crate::WorldModelError;
 use crate::WorldModelSampleV1;
-use crate::TabularWorldModelV1;
 use crate::fit_tabular_operator;
 use crate::fit_transition_model;
 
