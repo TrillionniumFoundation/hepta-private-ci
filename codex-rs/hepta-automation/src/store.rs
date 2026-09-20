@@ -337,32 +337,25 @@ impl AutomationStore {
         let mut recovered = 0_u64;
         for row in rows {
             let task_id = parse_task_id(&row, "task_id")?;
-            let occurrence_number =
-                to_u64(row.try_get("occurrence").map_err(unavailable)?)?;
-            let task = self
-                .task(task_id)
-                .await?
-                .ok_or(AutomationError::Corrupt)?;
+            let occurrence_number = to_u64(row.try_get("occurrence").map_err(unavailable)?)?;
+            let task = self.task(task_id).await?.ok_or(AutomationError::Corrupt)?;
             let lease = AutomationLease {
                 task: task.clone(),
                 occurrence: occurrence_number,
-                scheduled_for_ms: to_u64(
-                    row.try_get("scheduled_for_ms").map_err(unavailable)?,
-                )?,
+                scheduled_for_ms: to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?,
                 client_user_message_id: row
                     .try_get("client_user_message_id")
                     .map_err(unavailable)?,
-                lease_generation: to_u64(
-                    row.try_get("lease_generation").map_err(unavailable)?,
-                )?,
+                lease_generation: to_u64(row.try_get("lease_generation").map_err(unavailable)?)?,
                 lease_token: row.try_get("lease_token").map_err(unavailable)?,
                 lease_expires_at_ms: to_u64(
                     row.try_get("lease_expires_at_ms").map_err(unavailable)?,
                 )?,
             };
 
-            if let Some(occurrence) =
-                self.automation_occurrence(task_id, occurrence_number).await?
+            if let Some(occurrence) = self
+                .automation_occurrence(task_id, occurrence_number)
+                .await?
             {
                 if occurrence.state == crate::AutomationOccurrenceState::Claimed {
                     if occurrence.claim_generation != lease.lease_generation
@@ -371,8 +364,7 @@ impl AutomationStore {
                     {
                         return Err(AutomationError::Conflict);
                     }
-                    let mut proof_bytes =
-                        b"hepta.automation.stale-before-provider.v1\0".to_vec();
+                    let mut proof_bytes = b"hepta.automation.stale-before-provider.v1\0".to_vec();
                     proof_bytes.extend_from_slice(occurrence.occurrence_id.as_bytes());
                     proof_bytes.push(0);
                     proof_bytes.extend_from_slice(&lease.lease_generation.to_be_bytes());
@@ -395,14 +387,9 @@ impl AutomationStore {
                             && value.generation.is_none()
                             && value.fencing_token.is_none()
                     }) {
-                        self.prepare_occurrence_taskflow(
-                            &occurrence,
-                            &lease,
-                            now_ms,
-                            1,
-                        )
-                        .await
-                        .map_err(map_taskflow_mutation_error)?;
+                        self.prepare_occurrence_taskflow(&occurrence, &lease, now_ms, 1)
+                            .await
+                            .map_err(map_taskflow_mutation_error)?;
                         run = self
                             .taskflow_run(&occurrence.taskflow_run_id)
                             .await
@@ -441,9 +428,7 @@ impl AutomationStore {
                 }
             }
             self.release_for_retry(&lease).await?;
-            recovered = recovered
-                .checked_add(1)
-                .ok_or(AutomationError::Corrupt)?;
+            recovered = recovered.checked_add(1).ok_or(AutomationError::Corrupt)?;
         }
         Ok(recovered)
     }
@@ -727,12 +712,7 @@ impl AutomationStore {
         submitted_at_ms: u64,
     ) -> Result<AutomationTask, AutomationError> {
         match self
-            .reconcile_uncertain_occurrence_admitted(
-                task_id,
-                occurrence,
-                receipt,
-                submitted_at_ms,
-            )
+            .reconcile_uncertain_occurrence_admitted(task_id, occurrence, receipt, submitted_at_ms)
             .await
         {
             Ok(_) => self.task(task_id).await?.ok_or(AutomationError::Corrupt),
@@ -802,9 +782,7 @@ impl AutomationStore {
         .map_err(unavailable)?
         .ok_or(AutomationError::Conflict)?;
         let run_state: String = row.try_get("state").map_err(unavailable)?;
-        let run_client_id: String = row
-            .try_get("client_user_message_id")
-            .map_err(unavailable)?;
+        let run_client_id: String = row.try_get("client_user_message_id").map_err(unavailable)?;
         let task_state: String = row.try_get("task_state").map_err(unavailable)?;
         let dispatch_outcome: Option<String> =
             row.try_get("dispatch_outcome").map_err(unavailable)?;
