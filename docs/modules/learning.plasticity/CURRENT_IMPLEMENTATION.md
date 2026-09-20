@@ -93,7 +93,7 @@ override these machine status facts.
 | Topology application / writer handoff execution | **Implemented in the external runtime owner; plasticity itself remains proposal-only** | `codex-hepta-runtime::HeptaRuntime::apply_governed_topology` requires exact governed handoff + single-use `FinalUseAuthority` |
 | Weight training / installation | **Target outside this proposal engine** | no authority granted |
 | Selection / activation / promotion / release | **External gate / not implemented** | explicitly denied |
-| Live-runtime forced-fault rollback canary | **Repository source qualification implemented; target-host evidence still external** | actual CNS cutover → forced stopped-host fault → separately authorized rollback generation → Observer-signed canary receipt |
+| Live-runtime forced-fault rollback canary | **Repository source qualification implemented; target-host evidence still external** | actual CNS cutover → forced stopped-host fault → separately authorized recovery generation → Observer-signed canary receipt |
 | Host deployment qualification and canary | **External evidence required** | no source-only claim |
 
 ## Dependency placement
@@ -262,6 +262,6 @@ can prove that the journal and registry are physically placed in independent rol
 domains. Remaining gates are deployment/execution evidence rather than permission to
 weaken those boundaries:
 independent semantic/security review, target-host qualification, operator recovery
-exercise, real structural-canary execution, activation, promotion and release. Those
+exercise, target-host structural-canary execution with production telemetry and operator evidence, activation, promotion and release. Those
 states must stay false until their own evidence exists. CI receipts must refer to the
 exact source/merge candidate; source test names are not pass receipts.
