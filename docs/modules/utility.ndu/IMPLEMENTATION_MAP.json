@@ -13,8 +13,8 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "request_local_read_only_established",
-  "productionWriterState": "durable_writer_source_candidate_not_activated",
+  "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
+  "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
   "operations": [
     {
       "operation": "evaluate_candidates",
@@ -133,6 +133,14 @@
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
           "symbol": "damped_preference_update_emits_local_solver_receipts"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "already_converged_solve_is_revision_stable_no_op"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "preference_dimension_and_value_bounds_fail_at_boundary"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
@@ -311,7 +319,7 @@
       ],
       "state": "source_implemented_durable_writer_candidate",
       "authority": "none",
-      "nonClaim": "not production-activated; target-host filesystem, retention, backup transport and non-Unix durability remain qualification boundaries",
+      "nonClaim": "durable writer source candidate with injectable write/file-sync/rename/directory-sync crash cuts; not selected or production-activated",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
@@ -335,12 +343,111 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
-          "symbol": "indeterminate_handle_fails_closed_until_reopen"
+          "symbol": "persistence_failpoints_reconcile_at_real_durability_boundaries"
         }
       ],
       "designOperation": "NduProjectionStoreV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "admit_ndu_coefficient_profile",
+      "nativeSymbol": "codex_hepta_ndu::admit_ndu_coefficient_profile",
+      "sourcePath": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
+      "inputs": [
+        "NduCoefficientProfileV1",
+        "AdmittedCovarianceProfileV1",
+        "AdmittedZConversionProfileV1"
+      ],
+      "outputs": [
+        "AdmittedNduCoefficientProfileV1"
+      ],
+      "state": "source_implemented_stochastic_provenance_profile",
+      "authority": "deny_all",
+      "nonClaim": "artifact manifest binding and numeric compatibility are source admission, not artifact selection, currentness, efficacy or activation",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
+          "symbol": "coefficient_profile_binds_covariance_conversion_units_and_dimensions"
+        }
+      ],
+      "designOperation": "admit_ndu_coefficient_profile",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "project_z_estimate_to_coefficient_q24",
+      "nativeSymbol": "codex_hepta_ndu::project_z_estimate_to_coefficient_q24",
+      "sourcePath": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
+      "inputs": [
+        "ZEstimateV1",
+        "AdmittedNduCoefficientProfileV1",
+        "AdmittedZConversionProfileV1",
+        "now_unix_ms"
+      ],
+      "outputs": [
+        "NduCoefficientProjectionV1"
+      ],
+      "state": "source_implemented_stochastic_projection_chain",
+      "authority": "deny_all",
+      "nonClaim": "requires exact covariance provenance and admitted conversion profile; does not establish current artifact eligibility or independent convergence",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
+          "symbol": "q24_projection_requires_exact_covariance_provenance"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
+          "symbol": "expired_coefficient_profile_rejects_projection"
+        }
+      ],
+      "designOperation": "project_z_estimate_to_coefficient_q24",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "convert_z_to_original_q24"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "NduAuthenticatedOwnerV1",
+      "nativeSymbol": "codex_hepta_ndu::NduAuthenticatedOwnerV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/owner.rs",
+      "inputs": [
+        "FinalUseAuthority",
+        "NduOwnerContextV1 principal/owner/host generation/fence/revocation frontier",
+        "frozen NduProductionPolicyV1",
+        "NduProjectionStoreV1"
+      ],
+      "outputs": [
+        "authenticated owner-local evaluation",
+        "final-use-bound durable projection mutations"
+      ],
+      "state": "source_implemented_authenticated_owner_candidate_not_product_activated",
+      "authority": "consumes_external_final_use_only",
+      "nonClaim": "utility.ndu never mints authority; named product bootstrap, selected writer enrollment and target-host activation remain external",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "owner_freezes_policy_and_evaluates_without_caller_supplied_relaxations"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "exact_signed_binding_is_required_for_durable_mutation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "live_revocation_frontier_blocks_previously_signed_write"
+        }
+      ],
+      "designOperation": "NduAuthenticatedOwnerV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "FinalUseAuthority::claim",
+        "FinalUseAuthority::with_verified_use",
+        "NduProjectionStoreV1"
+      ],
       "sourcePathExists": true
     }
   ],
@@ -356,17 +463,25 @@
   "completion": {
     "specification": "complete",
     "deterministicKernel": "candidate_implemented",
+    "preferenceStateInvariants": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
+    "durableProjectionStore": "candidate_implemented_not_activated",
+    "authenticatedOwnerBoundary": "candidate_implemented_not_product_composed",
+    "productionPolicySemanticBinding": "candidate_implemented",
+    "legacyEvaluatorCallerPolicy": "candidate_implemented",
     "stochasticCoordinateQ24Conversion": "candidate_implemented",
-    "canonicalExternalV2Admission": "not_established",
+    "stochasticCoefficientProvenanceProfile": "candidate_implemented",
+    "currentArtifactStochasticAdmission": "implemented_in_intelligence_control_source_not_activated",
+    "independentConvergenceDecision": "implemented_in_learning.eval_source_pending_real_independent_evidence",
+    "independentWellPosednessDecision": "implemented_in_learning.eval_source_pending_real_independent_evidence",
+    "canonicalExternalV2Admission": "not_established_as_external_wire_protocol",
     "productionWriter": "not_established",
-    "exactHeadQualification": "required",
-    "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
+    "exactHeadQualification": "pending_current_candidate_workflows",
+    "namedHostQualification": "pending_current_candidate_receipts",
     "activation": "not_established",
     "release": "not_established",
     "requestLocalReadOnlyCaller": "established",
-    "authenticatedProductionCaller": "not_established",
-    "durableProjectionStore": "candidate_implemented_not_activated"
+    "authenticatedProductionCaller": "not_established"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -386,23 +501,30 @@
     "activation": false,
     "release": false,
     "requestLocalReadOnlyProductExecutionProved": true,
+    "authenticatedOwnerSourceImplemented": true,
     "authenticatedProductionProductExecutionProved": false,
-    "productionWriterActivated": false
+    "productionWriterSourceImplemented": true,
+    "productionWriterActivated": false,
+    "stochasticAdmissionSourceImplemented": true,
+    "independentDecisionSourceImplemented": true,
+    "independentDecisionEvidenceProved": false,
+    "namedHostQualificationReceiptProved": false
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Compose the established request-local read-only caller into an authenticated production NDU owner/caller before changing the production composition claim.",
-    "Select and target-host qualify NduProjectionStoreV1; source implements locking, temp write+fsync, atomic rename, directory fsync, indeterminate fencing and monotonic restore, while production enrollment, monitoring, retention/off-host backup policy and any future schema migration remain governed.",
-    "Register and compose production stochastic coefficient provenance/profile admission and a consumer using the source-implemented coordinate/Q24 conversion boundary.",
-    "Establish conditional identification, well-posedness and independent FBSDE/convergence evidence before any learned-stochastic production claim.",
-    "Run exact-head and deterministic synthetic-merge qualification for this exact candidate; workflow definition alone is not a receipt."
+    "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
+    "Compose NduAuthenticatedOwnerV1 in a named authenticated product bootstrap with a selected NduProjectionStoreV1 and host-managed current fence/revocation feed before changing authenticated production product execution or writer activation claims.",
+    "Execute the learning.eval signed convergence and well-posedness paths with real independently controlled producer/evaluator trust and retained evidence; source tests do not establish real independent acceptance.",
+    "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation.",
+    "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic/security review",
+    "named product composition and selected writer enrollment",
+    "real independent convergence/well-posedness evidence",
     "conditional identification and longitudinal efficacy",
     "operator acceptance, canary, promotion and release"
   ],
@@ -419,17 +541,25 @@
       "authority": "deny_all",
       "nonClaim": "request-local read-only/planning composition is not the authenticated production NDU owner/caller"
     },
-    "authenticatedProductionOwner": {
-      "state": "not_established",
-      "required": "current principal/owner authentication, selected durable writer, current revocation/fence binding and target-host qualification"
+    "authenticatedOwnerSource": {
+      "state": "candidate_implemented_not_product_composed",
+      "callSurface": "codex_hepta_ndu::NduAuthenticatedOwnerV1",
+      "authorityModel": "consumes host-owned FinalUseAuthority; binds principal, owner, host generation, fence, revocation frontier, frozen production policy and exact mutation",
+      "nonClaim": "source candidate is not a named product bootstrap, selected writer, target-host activation or release"
+    },
+    "stochasticConsumerSource": {
+      "state": "candidate_implemented_in_intelligence_control_not_product_activated",
+      "callSurface": "codex_hepta_intelligence::admit_ndu_stochastic_candidate_v1",
+      "nonClaim": "current artifact and independent certificate composition grants DENY_ALL and does not select or activate a learned coefficient"
     }
   },
   "selectedProductionWriterState": "not_established",
   "currentSourceEvidence": {
     "baselineMainCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "implementationCommit": "3b2ca4d2a92829e52cfa63da2d62ead07ca1c94b",
+    "implementationCommit": "de5f600d5f644d6ce9030d04b350fc27239063ec",
     "branch": "fix/ndu-current-main-convergence-20260920",
-    "scope": "current-main NDU correctness hardening, semantic/scoped journal recovery, durable store candidate, Z coordinate/Q24 conversion, and Control caller qualification wiring",
-    "exactHeadQualification": "pending_current_candidate_workflows"
+    "scope": "current-main NDU correctness, bounded preference invariants, real persistence fault cuts, authenticated owner/frozen policy, stochastic provenance/current-artifact chain, signed independent learning.eval decisions and named-host qualification runner",
+    "exactHeadQualification": "pending_current_candidate_workflows",
+    "namedHostQualification": "pending_current_candidate_receipts"
   }
 }
