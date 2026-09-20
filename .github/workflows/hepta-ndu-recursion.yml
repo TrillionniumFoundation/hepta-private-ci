@@ -97,11 +97,24 @@ jobs:
 
       - name: Locked all-target compilation
         working-directory: codex-rs
-        run: cargo check --locked -p codex-hepta-ndu --all-targets
+        run: |
+          cargo check --locked --all-targets \
+            -p codex-hepta-ndu \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-shadow-qualification
 
       - name: Regression tests
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-ndu
+        run: |
+          just test --locked -p codex-hepta-ndu
+          cargo test --locked -p codex-hepta-intelligence-eval --lib
+          cargo test --locked -p codex-hepta-intelligence --lib ndu_stochastic_admission
+          cargo test --locked -p codex-hepta-learning-artifacts --lib pinned
+          cargo test --locked -p codex-hepta-learning-ledger --lib signed_evidence
+          cargo test --locked -p codex-hepta-shadow-qualification value_learning
 
       - name: Control NDU caller regressions
         working-directory: codex-rs
@@ -111,12 +124,54 @@ jobs:
 
       - name: Strict lint
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-ndu --all-targets -- -D warnings
+        run: |
+          cargo clippy --locked --all-targets \
+            -p codex-hepta-ndu \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-shadow-qualification \
+            -- -D warnings
+
+      - name: Named-host NDU qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          RECEIPT="${RUNNER_TEMP}/ndu-named-host-${{ matrix.lane }}.json"
+          export HEPTA_NDU_HOST_ID="github-hosted-ubuntu-24.04-x86_64"
+          export HEPTA_NDU_FS_PROFILE="$(stat -f -c %T "${RUNNER_TEMP}")"
+          export HEPTA_NDU_RUSTC="$(rustc --version)"
+          export HEPTA_NDU_CLK_TCK="$(getconf CLK_TCK)"
+          export HEPTA_NDU_RECEIPT_PATH="${RECEIPT}"
+          export HEPTA_NDU_SOURCE_SHA="$(git rev-parse HEAD)"
+          export HEPTA_NDU_SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          export HEPTA_NDU_QUALIFICATION_LANE="${{ matrix.lane }}"
+          cargo run --locked --release -p codex-hepta-ndu --bin ndu-named-host-qualification
+          python3 -m json.tool "${RECEIPT}" >/dev/null
+          cat "${RECEIPT}"
+
+      - name: Retain named-host NDU receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-named-host-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/ndu-named-host-${{ matrix.lane }}.json
+          if-no-files-found: ignore
 
       - name: Formatting check without source mutation
         if: always()
         working-directory: codex-rs
-        run: cargo fmt --package codex-hepta-ndu -- --check
+        run: |
+          cargo fmt \
+            --package codex-hepta-ndu \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-learning-artifacts \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-shadow-qualification \
+            -- --check
 
       - name: Preserve exact source state
         if: always()
