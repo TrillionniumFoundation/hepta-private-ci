@@ -9,6 +9,7 @@ runtime, effect, acceptance, promotion, or release authority.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -34,6 +35,64 @@ def git(*args: str) -> str:
     )
     return p.stdout.strip()
 
+
+
+def exact_source_evidence_digest(entries: list[dict[str, str]]) -> str:
+    """Digest an explicit path/blob manifest without self-referencing HEAD."""
+    digest = hashlib.sha256()
+    digest.update(b"hepta.module-exact-source-evidence.v1\0")
+    for entry in sorted(entries, key=lambda value: value["path"]):
+        path = entry["path"]
+        blob_sha = entry["blobSha"]
+        digest.update(path.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(blob_sha.encode("ascii"))
+        digest.update(b"\n")
+    return "sha256:" + digest.hexdigest()
+
+
+def verify_exact_source_evidence(mid: str, row: dict, failures: list[str]) -> bool:
+    evidence = row.get("exactSourceEvidence")
+    if evidence is None:
+        if row.get("productionImplementation"):
+            failures.append(f"{mid}: production implementation lacks exact source evidence")
+        return False
+    if not isinstance(evidence, dict) or evidence.get("kind") != "path_blob_manifest_v1":
+        failures.append(f"{mid}: exact source evidence kind")
+        return False
+    entries = evidence.get("entries")
+    if not isinstance(entries, list) or not entries:
+        failures.append(f"{mid}: exact source evidence entries")
+        return False
+    seen = set()
+    valid_entries = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            failures.append(f"{mid}: malformed exact source evidence entry")
+            continue
+        source = entry.get("path")
+        recorded = entry.get("blobSha")
+        if not isinstance(source, str) or not source or source in seen:
+            failures.append(f"{mid}: exact source evidence path")
+            continue
+        if not isinstance(recorded, str) or not re.fullmatch(r"[0-9a-f]{40}", recorded):
+            failures.append(f"{mid}: exact source evidence blob for {source}")
+            continue
+        seen.add(source)
+        try:
+            observed = git("rev-parse", f"HEAD:{source}")
+        except subprocess.CalledProcessError:
+            failures.append(f"{mid}: exact source evidence path missing {source}")
+            continue
+        if observed != recorded:
+            failures.append(
+                f"{mid}: exact source evidence drift {source} ({recorded} != {observed})"
+            )
+        valid_entries.append({"path": source, "blobSha": recorded})
+    expected_digest = exact_source_evidence_digest(valid_entries)
+    if evidence.get("digest") != expected_digest:
+        failures.append(f"{mid}: exact source evidence digest")
+    return True
 
 def lane_by_module():
     return {
@@ -288,6 +347,7 @@ def verify():
     lanes = lane_by_module()
     failures = []
     source_bases = set()
+    exact_evidence_verified = 0
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -334,6 +394,14 @@ def verify():
             continue
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
+        if row.get("sourceBaseSemantics") == "lineage_anchor_only":
+            if verify_exact_source_evidence(mid, row, failures):
+                exact_evidence_verified += 1
+        elif row.get("productionImplementation"):
+            failures.append(
+                f"{mid}: production implementation must mark sourceBase as lineage_anchor_only "
+                "and bind exactSourceEvidence"
+            )
         for op in ops:
             if not op.get("operation"):
                 failures.append(f"{mid}: operation id")
@@ -356,6 +424,7 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "exactSourceEvidenceVerified": exact_evidence_verified,
             },
             sort_keys=True,
         )
