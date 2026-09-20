@@ -8,16 +8,17 @@ Status: durable Browser effect owner, current-pin Servo worker source, bounded s
 Roots: `apps/hepta-browser`, `third_party/servo-patches`.
 Package: `BROWSER-WEB-C1`.
 Current Servo pin: `5cc5bd32d02619acdec5736055515e38c5840ce1`.
+Exact mapped source snapshot: `44cdb5e35649efd4c1ac3158fddb10c9270d2947` / tree `87dce666e364741193b12f68dcb5ebdf93278d0d`; later map/verifier/document-only successors are accepted only when strict source-drift verification remains clean.
 
 Cross-owner Agentd composition is source-present in `codex-rs/hepta-agentd` and remains owned/reviewed by `runtime.agentd`. The long-running Agentd process can retain the private Browser port for its generation; Browser ownership is not widened by the caller.
 
 ## 2. Public operations and contract details
 
-The canonical Browser design operations remain:
+The closed Browser product operation set is exactly seven RPCs:
 
-`open_profile(profile_id, grant, browser_manifest) -> BrowserSession`; `observe_page(session, page_generation, observation_budget) -> PageObservation`; `navigate_or_act(session, typed_action, final_payload, grant) -> BrowserEffectObservation`.
+`open_profile`; `admit_effect_grant`; `observe_page`; `navigate_or_act`; `reconcile_operation`; `reconcile_persisted_operation`; `close_profile`.
 
-Stable owner entrypoints remain `openProfile`, `observePage` and `navigateOrAct` in `apps/hepta-browser/src/runtime.js`. Additional owner/recovery methods are `admitEffectGrant`, `reconcileOperation`, `reconcilePersistedOperation` and `closeProfile`.
+Their stable owner entrypoints are `openProfile`, `admitEffectGrant`, `observePage`, `navigateOrAct`, `reconcileOperation`, `reconcilePersistedOperation` and `closeProfile` in `apps/hepta-browser/src/runtime.js`. The implementation-map verifier treats this as a closed-world set.
 
 Navigation proposal provenance is part of the final effect semantics: `navigationId` becomes operation identity; `policyDigest` and `expectedRevision` are fields of the typed navigate action and therefore participate in the payload/request digest. The bridge never mints authority.
 
@@ -42,11 +43,11 @@ A pipe write alone is not a crossed effect. Only a worker admission ACK proves t
 
 ## 4. Durable recovery and secret boundary
 
-`FileBrowserOperationJournal` now writes `hepta.browser.operation-journal.v2`, including nullable `terminalEvidenceDigest`. It validates exact fields on every hydrated record, rejects unknown fields, validates checksum envelopes, fsyncs before dispatch, uses private non-symlink paths, rejects semantic identity conflicts, atomically compacts the live snapshot before capacity exhaustion and retires a clean terminal profile generation after close. A crash-torn unterminated final append restores only the fully validated prefix; newline-terminated corruption still fails closed. Qualification-only crash cuts cover compaction and retirement fsync/rename boundaries plus the high-water-before-journal-rewrite boundary. The effect owner rejects volatile journals unless an explicit test-only opt-in is supplied. A generation with durable operation history cannot be reopened into a fresh worker, unresolved effects from another generation block profile advancement, and persisted recovery automatically retires the generation once all its operations become terminal.
+`FileBrowserOperationJournal` writes `hepta.browser.operation-journal.v2`, including nullable `terminalEvidenceDigest`. It validates exact fields on every hydrated record, rejects unknown fields, validates checksum envelopes, uses private non-symlink paths and rejects semantic identity conflicts. The first `O_CREAT` dispatch append must fsync both the file and parent directory before dispatch can continue. A crash-torn unterminated final append restores the validated prefix and atomically rewrites that prefix before later appends; newline-terminated corruption still fails closed. Qualification fault cuts cover first-create durability, torn-prefix repair, compaction/retirement fsync+rename and high-water-before-journal-rewrite. The effect owner rejects volatile journals unless an explicit test-only opt-in is supplied. A generation with durable operation history cannot be reopened into a fresh worker, unresolved effects from another generation block profile advancement, and persisted recovery automatically retires the generation once all its operations become terminal.
 
 The durable record intentionally omits the complete `typedAction`. `type.text`, credential bytes, upload content/host paths, page HTML and worker stderr do not enter the journal. Durable identity stores the final payload digest and immutable effect semantics required for replay/reconciliation.
 
-Terminal identities may leave the bounded in-memory cache while remaining durable until profile-generation retirement. Persisted indeterminate identities never rerun final-use authority or dispatch. They use a separate authenticated persisted-reconciliation driver port; the current subprocess driver intentionally returns indeterminate unless a real terminal observer is configured, because a replacement Servo process cannot infer a crashed worker's remote business outcome. The observer receives no reconstructed `typedAction` or `type.text`; only the non-secret durable operation identity is supplied. Terminalization requires a signed `hepta.browser.persisted-effect-observation.v2` receipt from the configured Ed25519 observer, binding observer identity/generation, time/frontier, exact operation/request/semantic identity, status and outcome; Browser persists the signed evidence hash.
+Terminal identities may leave the bounded in-memory cache while remaining durable until profile-generation retirement. Persisted indeterminate identities never rerun final-use authority or dispatch. They use a separate authenticated persisted-reconciliation driver port; the current subprocess driver intentionally returns indeterminate unless a real terminal observer is configured, because a replacement Servo process cannot infer a crashed worker's remote business outcome. The observer receives no reconstructed `typedAction` or `type.text`; only the non-secret durable operation identity is supplied. Terminalization requires a signed `hepta.browser.persisted-effect-observation.v2` receipt from the configured Ed25519 observer, binding observer identity/generation, time/frontier, exact operation/request/semantic identity, status and outcome. The configured currentness policy additionally requires minimum observer generation, minimum observation timestamp, exact current frontier digest and bounded future skew; rollback/stale/future receipts remain indeterminate. Browser persists the signed evidence hash.
 
 ## 5. Semantic observe -> reason -> act loop
 
@@ -95,10 +96,12 @@ The current worker is one Servo / one WebView per profile generation. The pilot 
 - **BROWSER-06:** `type.text`/credential bytes are absent from the durable journal.
 - **BROWSER-07:** worker response must echo exact request kind and payload digest; protocol drift fails the channel.
 - **BROWSER-08:** bounded mutation queue rejects overload instead of accumulating unbounded waiters.
-- **BROWSER-09:** journal hydration rejects malformed/unknown records; a torn final append recovers only the validated prefix; compaction/retirement crash cuts preserve operation identity and non-resurrection.
+- **BROWSER-09:** journal hydration rejects malformed/unknown records; first file creation reaches the parent-directory fsync boundary; a torn final append is physically repaired before a later append; reopen -> append -> reopen remains valid; compaction/retirement crash cuts preserve operation identity and non-resurrection.
 - **BROWSER-10:** the persistent Agentd product owner consumes an owner-UID/single-link protected monotonic revocation feed; the Agentd boundary test proves a real feed update stays behind the same final-use fence, while the separate real-Servo E2E proves a revocation race stays blocked until an actual worker reaches dispatch admission.
-- **BROWSER-11:** a post-process-loss terminal result is accepted only with the configured observer's valid Ed25519 v2 receipt; observer substitution, outcome/signature drift and semantic substitution reject.
+- **BROWSER-11:** a post-process-loss terminal result is accepted only with the configured observer's valid Ed25519 v2 receipt and current generation/time/frontier policy; observer substitution, rollback/stale frontier, excessive future time, outcome/signature drift and semantic substitution reject.
 - **BROWSER-12:** the operation journal stores `terminalEvidenceDigest` for authenticated recovered terminality while ordinary live-worker terminal observations may leave it null.
+- **BROWSER-15:** `expiresAtMs` is a process/network lease; real Servo background fetch and delayed navigation stop after expiry. The existing owner `close_profile` RPC is the early profile-lease revocation ceremony and must provide the same containment.
+- **BROWSER-16:** trusted Linux target qualification establishes real public DNS resolution plus certificate-validating HTTPS through the production egress broker and denies an ungranted public CONNECT target.
 
 ## 10. Qualification gates and remaining evidence
 
@@ -119,8 +122,9 @@ observation/type/click lifecycle and verifies a deliberately ungranted
 subresource origin is not reached.
 
 Current admitted effect kinds are `navigate`, `click`, `type`, `focus`,
-`scroll`, and `wait`. Credential, upload and download remain future
-capabilities and fail before authority admission.
+`scroll`, and `wait`. Credential, upload and download are explicitly out of
+scope for this release and fail before authority admission; a future release
+must separately version and qualify their secret/file broker semantics.
 
 The selected Servo source candidate is `5cc5bd32d02619acdec5736055515e38c5840ce1`, 239 upstream commits after
 the predecessor. Its reviewed candidate lock is now committed; it remains qualification-pending
