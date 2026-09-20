@@ -541,7 +541,7 @@ impl FinalUseAuthority {
         dispatch_boundary: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
         let (result, _witness) =
-            self.with_dispatch_boundary_witness(token, expected, dispatch_boundary)?;
+            self.with_dispatch_boundary_witness(token, expected, |_| dispatch_boundary())?;
         Ok(result)
     }
 
@@ -579,7 +579,7 @@ impl FinalUseAuthority {
         &self,
         token: VerifiedUseToken,
         expected: &FinalUseBinding,
-        dispatch_boundary: impl FnOnce() -> T,
+        dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
     ) -> Result<(T, VerifiedUseTokenWitnessV1), FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
@@ -603,7 +603,7 @@ impl FinalUseAuthority {
             VerifiedUseBoundaryV1::DispatchEntry,
             final_use_binding_witness_sha256(expected)?,
         );
-        let result = dispatch_boundary();
+        let result = dispatch_boundary(&witness);
         drop(state);
         Ok((result, witness))
     }
@@ -693,7 +693,7 @@ pub fn dispatch_final_use_with_witness<T>(
     authority: &FinalUseAuthority,
     token: VerifiedUseToken,
     expected: &FinalUseBinding,
-    dispatch_boundary: impl FnOnce() -> T,
+    dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
 ) -> Result<(T, VerifiedUseTokenWitnessV1), FinalUseError> {
     let _boundary = HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH_WITNESS;
     authority.with_dispatch_boundary_witness(token, expected, dispatch_boundary)
