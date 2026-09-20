@@ -1081,6 +1081,45 @@ mod tests {
     }
 
     #[test]
+    fn retained_external_anchor_blocks_rolled_back_registry_reopen() {
+        let registry_file = tempfile().expect("registry file");
+        let anchor_file = tempfile().expect("anchor file");
+        let scope = digest(b"rollback-domain-scope");
+        let (writer, mut anchor_store) = bootstrap_agentd_plasticity_writer_v1(
+            registry_file.try_clone().expect("registry clone"),
+            anchor_file.try_clone().expect("anchor clone"),
+            scope,
+            8,
+        )
+        .expect("bootstrap");
+        drop(writer);
+
+        // Simulate the independently retained acknowledgement surviving while
+        // the proposal registry has been rolled back to its header-only prefix.
+        let acknowledged = DurableRegistryAnchorV1 {
+            sequence: 1,
+            frame_digest: digest(b"acknowledged-frame"),
+        };
+        assert!(anchor_store.persist_anchor(scope, 1, acknowledged));
+        drop(anchor_store);
+
+        let result = reopen_agentd_plasticity_writer_v1(
+            registry_file,
+            anchor_file,
+            scope,
+            8,
+        );
+        assert!(matches!(
+            result,
+            Err(AgentdPlasticityHostErrorV1::Writer(
+                AnchoredPlasticityWriterErrorV1::Registry(
+                    codex_hepta_plasticity::DurableProposalRegistryError::AcknowledgedHistoryMissing
+                )
+            ))
+        ));
+    }
+
+    #[test]
     fn anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state() {
         let anchor_file = tempfile().expect("anchor file");
         let scope = digest(b"scope");
