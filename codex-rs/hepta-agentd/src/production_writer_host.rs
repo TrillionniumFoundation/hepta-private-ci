@@ -21,7 +21,7 @@ use codex_hepta_cognitive_store::StableMemoryId;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
 use codex_hepta_cognitive_store::ProductionCognitiveMutation;
-use codex_hepta_cognitive_store::ProductionCognitiveMutationFuture;
+use codex_hepta_cognitive_store::ProductionCognitiveMutationCapability;
 use codex_hepta_cognitive_store::ProductionDispatchReceipt;
 use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::ProductionOutboxDispatcher;
@@ -37,6 +37,7 @@ use crate::AgentdError;
 #[derive(Clone)]
 pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
+    mutation: Option<Arc<ProductionCognitiveMutationCapability>>,
     dispatcher: Option<ProductionOutboxDispatcher>,
 }
 
@@ -45,6 +46,7 @@ impl fmt::Debug for AgentdProductionWriterHost {
         formatter
             .debug_struct("AgentdProductionWriterHost")
             .field("writer", &self.writer)
+            .field("production_mutation_attached", &self.mutation.is_some())
             .field("dispatcher_attached", &self.dispatcher.is_some())
             .finish()
     }
@@ -95,16 +97,20 @@ impl AgentdProductionWriterHost {
         .map_err(|error| {
             AgentdError::Protocol(format!("recover production cognitive store: {error}"))
         })?;
-        let writer = ProductionDurableWriter::open_with_live_verifier(
-            store,
-            authority,
-            verifier,
-            lease_id,
-            lease_generation,
-        )
-        .await?;
+        let writer = Arc::new(
+            ProductionDurableWriter::open_with_live_verifier(
+                store,
+                authority,
+                verifier,
+                lease_id,
+                lease_generation,
+            )
+            .await?,
+        );
+        let mutation = Arc::new(writer.cognitive_mutation_capability()?);
         Ok(Self {
-            writer: Arc::new(writer),
+            writer,
+            mutation: Some(mutation),
             dispatcher: None,
         })
     }
@@ -127,6 +133,7 @@ impl AgentdProductionWriterHost {
                 .await?;
         Ok(Self {
             writer: Arc::new(writer),
+            mutation: None,
             dispatcher: None,
         })
     }
@@ -190,6 +197,14 @@ impl AgentdProductionWriterHost {
         Arc::clone(&self.writer)
     }
 
+    /// Return the sealed production mutation capability, if this host was
+    /// created through exact-cut recovery with a retained live verifier.
+    pub fn production_mutation(&self) -> Option<Arc<dyn ProductionCognitiveMutation>> {
+        self.mutation
+            .as_ref()
+            .map(|capability| Arc::clone(capability) as Arc<dyn ProductionCognitiveMutation>)
+    }
+
     /// Attach the provider/host target explicitly. Replacing a target is
     /// allowed only through a new host handle, avoiding an in-flight target
     /// swap behind the writer's back.
@@ -215,54 +230,3 @@ impl AgentdProductionWriterHost {
     }
 }
 
-impl ProductionCognitiveMutation for AgentdProductionWriterHost {
-    fn owner_agent_id(&self) -> &codex_hepta_contracts::AgentId {
-        self.writer.store().owner_agent_id()
-    }
-
-    fn remember_with_kg<'a>(
-        &'a self,
-        access: &'a CognitiveAccess,
-        source: &'a SourceDraft,
-        draft: &'a MemoryDraft,
-        facts: &'a KgFactSetDraft,
-    ) -> ProductionCognitiveMutationFuture<'a> {
-        Box::pin(async move {
-            self.writer.verify_current_authority().await?;
-            Ok(self.writer.store().remember_with_kg(access, source, draft, facts).await?)
-        })
-    }
-
-    fn correct_with_kg<'a>(
-        &'a self,
-        access: &'a CognitiveAccess,
-        memory_id: &'a StableMemoryId,
-        expected_revision: u64,
-        source: &'a SourceDraft,
-        draft: &'a MemoryRevisionDraft,
-        facts: &'a KgFactSetDraft,
-    ) -> ProductionCognitiveMutationFuture<'a> {
-        Box::pin(async move {
-            self.writer.verify_current_authority().await?;
-            Ok(self.writer.store().correct_with_kg(
-                access, memory_id, expected_revision, source, draft, facts,
-            ).await?)
-        })
-    }
-
-    fn forget_with_kg<'a>(
-        &'a self,
-        access: &'a CognitiveAccess,
-        memory_id: &'a StableMemoryId,
-        expected_revision: u64,
-        source: &'a SourceDraft,
-        draft: &'a ForgetMemoryDraft,
-    ) -> ProductionCognitiveMutationFuture<'a> {
-        Box::pin(async move {
-            self.writer.verify_current_authority().await?;
-            Ok(self.writer.store().forget_with_kg(
-                access, memory_id, expected_revision, source, draft,
-            ).await?)
-        })
-    }
-}
