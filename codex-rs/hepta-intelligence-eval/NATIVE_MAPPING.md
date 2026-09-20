@@ -35,8 +35,8 @@ The normative API classification is in
 | multi-writer fenced holdout owner | `FencedFinalHoldoutOwnerV1` / `FinalHoldoutCasStoreV1` | `src/fenced_holdout.rs` | implemented canonical owner |
 | concrete locked-file CAS + anti-rollback recovery | `LockedFileFinalHoldoutCasStoreV1` / `FinalHoldoutCasAnchorV1` / `HoldoutFenceIssuerV1` | `src/fenced_holdout_file.rs`, `src/fenced_holdout.rs` | implemented cross-process backend |
 | product preregistration/evaluation/qualification | `freeze_product_evaluation_plan_v1` / `ProductEvaluationRunnerV1` | `src/product_runner.rs` | implemented source product composition |
-| signed independent qualification | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | production-required ordinary qualification |
-| signed observed-time longitudinal qualification | `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | production-required for `SystemLongitudinal` |
+| signed independent verification primitive | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | crate-internal; invoked by product runner |
+| signed observed-time longitudinal verification primitive | crate-internal `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | crate-internal V3; invoked by product runner for `SystemLongitudinal` |
 | trusted direct compatibility | `trusted_inprocess::decide_independently{,_v2}` | `src/lib.rs` | feature-gated; not production ingress |
 | legacy threshold comparator | `trusted_inprocess::evaluate_legacy_inprocess_v1` | `src/lib.rs` | deprecated trusted-only compatibility |
 
@@ -61,7 +61,7 @@ journal history; a stale owner then conflicts on its next write. An
 accepted-or-unknown store commit returns `Indeterminate`, poisons the handle
 and requires reload/reconciliation.
 
-`decide_with_signed_evidence_v2` authenticates the generator's frozen-plan
+`ProductEvaluationRunnerV1::qualify_and_persist` invokes crate-internal `decide_with_signed_evidence_v2`, which authenticates the generator's frozen-plan
 attestation and the evaluator's exact V2 request bytes against host-owned trust,
 then verifies principal/key/credential/controller separation before invoking the
 bound V2 statistical decision. `decide_with_signed_longitudinal_evidence_v3`

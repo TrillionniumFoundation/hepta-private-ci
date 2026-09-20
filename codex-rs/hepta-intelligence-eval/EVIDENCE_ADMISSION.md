@@ -16,10 +16,7 @@ external caller or prove that an estimate was produced by an independent actor.
 They are available only through the explicit `trusted-inprocess-eval`
 compatibility feature. Default builds do not expose direct evaluator entrypoints.
 
-Qualification-scoped external evaluation uses `decide_with_signed_evidence_v1`
-or, for current V2 metric contracts, `decide_with_signed_evidence_v2`. A `SystemLongitudinal` request now requires
-`decide_with_signed_longitudinal_evidence_v3`: signed window names alone are
-insufficient. V1/V2 authenticate the submitted bytes, then reject that stronger
+Qualification-scoped product evaluation enters through `ProductEvaluationRunnerV1::qualify_and_persist`. The runner derives the exact bundle from sealed estimator receipts and invokes signed V2 verification internally. A `SystemLongitudinal` request uses the same runner with V3 observed-time evidence. The low-level `decide_with_signed_evidence_v2` and `decide_with_signed_longitudinal_evidence_v3` functions are crate-internal verification primitives, not default cross-crate ingress; signed window names alone are insufficient. V1/V2 authenticate the submitted bytes, then reject that stronger
 claim with `MissingLongitudinalTiming`. The host constructs `LearningEvidenceVerifierV1`
 from its authority store and distributes the resulting trust digest to signers.
 Never construct that verifier from the same remote request being evaluated.

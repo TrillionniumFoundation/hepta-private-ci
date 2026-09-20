@@ -12,7 +12,7 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-intelligence-e
 
 ## 2. Public operations and contract details
 
-`estimate_ope`; `estimate_cluster_intervals`; `estimate_sequential`; `fit_temporal_fold`; `evaluate_temporal_holdout`; `freeze_cross_fold_plan_v2`; `freeze_product_evaluation_plan_v1`; `ProductEvaluationRunnerV1::evaluate_temporal_comparison`; `ProductEvaluationRunnerV1::qualify_and_persist`; `FencedFinalHoldoutOwnerV1::consume`; `LockedFileFinalHoldoutCasStoreV1::{create,recover}`; `decide_with_signed_evidence_v2`; and `decide_with_signed_longitudinal_evidence_v3`. Direct evaluators are trusted-only compatibility surfaces behind `trusted-inprocess-eval`.
+`estimate_ope`; `estimate_cluster_intervals`; `estimate_sequential`; `fit_temporal_fold`; `evaluate_temporal_holdout`; `freeze_cross_fold_plan_v2`; `freeze_product_evaluation_plan_v1`; `ProductEvaluationRunnerV1::evaluate_temporal_comparison`; `ProductEvaluationRunnerV1::qualify_and_persist`; `FencedFinalHoldoutOwnerV1::consume`; and `LockedFileFinalHoldoutCasStoreV1::{create,recover}`. Signed V2/V3 decision functions are crate-internal verification primitives used by the product runner; direct unsigned evaluators are trusted-only compatibility surfaces behind `trusted-inprocess-eval`.
 
 The estimand class is mandatory. A single-decision estimate cannot certify a long-horizon policy. Estimator receipts and the independent eligibility decision are separate outputs; neither selects or releases an artifact.
 
