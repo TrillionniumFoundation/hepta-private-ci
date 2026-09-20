@@ -78,7 +78,10 @@ fn conflicting_identity_does_not_overwrite_the_position() {
         panic!("decision fixture");
     };
     value.support_digest = Digest32::of_bytes(b"different");
-    assert!(matches!(ledger.append(event), Err(LedgerError::IdentityConflict(_))));
+    assert!(matches!(
+        ledger.append(event),
+        Err(LedgerError::IdentityConflict(_))
+    ));
     assert_eq!(ledger.record(&id("record-0")), ledger.records().first());
     assert_eq!(ledger.records().len(), 8);
 }
@@ -125,10 +128,27 @@ fn bounded_pages_are_borrowed_and_cover_history_once() {
 fn zero_and_extreme_cursors_do_not_panic_or_allocate_history() {
     let ledger = populated(3);
     assert!(ledger.records_after(None, 0).is_empty());
-    assert!(ledger.records_after(Some(must(LogicalSequence::new(3))), 100).is_empty());
-    assert!(ledger.records_after(Some(must(LogicalSequence::new(u64::MAX))), usize::MAX).is_empty());
-    assert_eq!(ledger.records_after(Some(must(LogicalSequence::new(1))), usize::MAX).len(), 2);
-    assert!(LearningLedger::new().records_after(None, usize::MAX).is_empty());
+    assert!(
+        ledger
+            .records_after(Some(must(LogicalSequence::new(3))), 100)
+            .is_empty()
+    );
+    assert!(
+        ledger
+            .records_after(Some(must(LogicalSequence::new(u64::MAX))), usize::MAX)
+            .is_empty()
+    );
+    assert_eq!(
+        ledger
+            .records_after(Some(must(LogicalSequence::new(1))), usize::MAX)
+            .len(),
+        2
+    );
+    assert!(
+        LearningLedger::new()
+            .records_after(None, usize::MAX)
+            .is_empty()
+    );
 }
 
 #[test]

@@ -57,7 +57,9 @@ fn linux_memory_kib(field: &str) -> String {
 fn main() -> io::Result<()> {
     let sizes: Vec<_> = std::env::args().skip(1).collect();
     if sizes.len() != 1 {
-        return Err(io::Error::other("usage: ledger_scale <records: 1..=900000>"));
+        return Err(io::Error::other(
+            "usage: ledger_scale <records: 1..=900000>",
+        ));
     }
     let count: usize = checked(sizes[0].parse())?;
     if !(1..=900_000).contains(&count) {

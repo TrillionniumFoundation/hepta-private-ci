@@ -47,7 +47,9 @@ fn pages_after_compaction_use_global_sequences_not_hot_vector_offsets() {
     assert_eq!(ledger.head_sequence(), sequence(32));
     assert_eq!(ledger.head_digest(), archived_head);
     for index in 32..36 {
-        ledger.append(decision(index)).expect("append retained tail");
+        ledger
+            .append(decision(index))
+            .expect("append retained tail");
     }
     for cursor in [None, sequence(1), sequence(31), sequence(32)] {
         let page = ledger.records_after(cursor, 2);
@@ -60,7 +62,11 @@ fn pages_after_compaction_use_global_sequences_not_hot_vector_offsets() {
     assert_eq!(page.len(), 2);
     assert_eq!(page[0].sequence.get(), 35);
     assert!(ledger.records_after(sequence(36), 2).is_empty());
-    assert!(ledger.records_after(sequence(u64::MAX), usize::MAX).is_empty());
+    assert!(
+        ledger
+            .records_after(sequence(u64::MAX), usize::MAX)
+            .is_empty()
+    );
     assert!(ledger.record(&id("record-0")).is_none());
     assert_eq!(ledger.record(&id("record-32")), ledger.records().first());
 }
@@ -77,7 +83,9 @@ fn archived_identity_retry_never_repopulates_or_reindexes_the_retained_tail() {
     let before = ledger.records().to_vec();
     let indexed = ledger.record_index.len();
     let head = ledger.head_digest();
-    let retry = ledger.append(decision(0)).expect("archived identity replay");
+    let retry = ledger
+        .append(decision(0))
+        .expect("archived identity replay");
     assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(retry.sequence, original.sequence);
     assert_eq!(retry.chain_digest, original.chain_digest);
@@ -104,7 +112,9 @@ fn compaction_and_old_retries_do_not_remove_revocation_state() {
     ledger.compact_retained_payloads();
     assert!(ledger.revoked.contains(&id("record-0")));
     let head = ledger.head_digest();
-    let retry = ledger.append(decision(0)).expect("replay is not resurrection");
+    let retry = ledger
+        .append(decision(0))
+        .expect("replay is not resurrection");
     assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
     assert!(ledger.revoked.contains(&id("record-0")));
     assert!(ledger.records().is_empty());

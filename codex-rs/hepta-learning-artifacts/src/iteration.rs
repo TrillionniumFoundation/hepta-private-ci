@@ -353,7 +353,10 @@ mod tests {
             let before = value.clone();
             assert!(
                 value
-                    .transition(&valid_envelope, IterationCandidateStateV1::StaticallyValidated)
+                    .transition(
+                        &valid_envelope,
+                        IterationCandidateStateV1::StaticallyValidated
+                    )
                     .is_err()
             );
             assert_eq!(value, before);
