@@ -14,6 +14,7 @@ use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_automation::AutomationTaskState;
 use codex_hepta_automation::AutomationTick;
 use codex_hepta_automation::AutomationTurnQueue;
+use codex_hepta_automation::AUTOMATION_SCHEMA_VERSION;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;
@@ -1025,6 +1026,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .await
         .expect("claim migrated task")
         .expect("migrated task due");
+    assert_eq!(
+        lease.schedule_revision, 1,
+        "the first post-migration claim must freeze the authoritative schedule revision"
+    );
     prepare_direct_dispatch(&migrated, &lease, 101).await;
     migrated
         .record_occurrence_admitted(
@@ -1050,7 +1055,29 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
             .fetch_one(&pool)
             .await
             .expect("read migrated schema version");
-    assert_eq!(schema, 11);
+    assert_eq!(schema, i64::from(AUTOMATION_SCHEMA_VERSION));
+    let frozen_revision: Option<i64> = sqlx::query_scalar(
+        "SELECT schedule_revision FROM automation_runs
+         WHERE task_id = ? AND occurrence = ?",
+    )
+    .bind(task.task_id.to_string())
+    .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+    .fetch_one(&pool)
+    .await
+    .expect("read frozen schedule revision");
+    assert_eq!(frozen_revision, Some(1));
+    assert!(
+        sqlx::query(
+            "UPDATE automation_runs SET schedule_revision = 2
+             WHERE task_id = ? AND occurrence = ?",
+        )
+        .bind(task.task_id.to_string())
+        .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+        .execute(&pool)
+        .await
+        .is_err(),
+        "migrated schedule revision must be immutable"
+    );
     let outcomes: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE task_id = ?")
             .bind(task.task_id.to_string())
