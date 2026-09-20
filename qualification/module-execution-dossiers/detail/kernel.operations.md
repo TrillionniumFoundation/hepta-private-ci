@@ -50,6 +50,7 @@ These ceilings are enforcement values for the source implementation, not target-
 - OPS-08: terminal GC writes a permanent semantic tombstone before deleting source rows, preventing identity resurrection.
 - OPS-09: a higher product generation adopts unresolved `dispatching`/`dispatched` work without changing semantic identity, advances the fence, rejects the predecessor observer and settles only from current-generation evidence.
 - OPS-10: configured Agentd runtime/control `AutomationCreate` selects the durable operations host; a generation-two reopen adopts and reconciles an already-applied destination receipt without redispatch.
+- OPS-11: a real child process is terminated after atomic prepare, from inside the verified-use effect callback, and after durable transport acknowledgement; reopen preserves atomic rows, treats a possibly crossed effect as indeterminate and never creates a blind retry.
 
 Source test identities are `src/durable_store_tests.rs` and `src/destination_dedupe_tests.rs`. These paths are not an exact-candidate pass receipt until the applicable CI reaches terminal success. Disk-exhaustion and target-host power-loss qualification remain required external/source qualification work where the CI host can provide the fault.
 
