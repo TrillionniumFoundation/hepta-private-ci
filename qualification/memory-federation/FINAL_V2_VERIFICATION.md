@@ -2,8 +2,8 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `331b81d385a88837e252bd80fda8b8ac35ea4191`
-- frozen candidate implementation head: `fc05fb3255f9bc9db37496b1141abec5c2a4db11`
-- frozen candidate implementation tree: `c6cda06865ba50f1c66224c531fe8117a2172191`
+- frozen candidate implementation head: `b5e48612218fcf675384eb6c2294a9e47278b162`
+- frozen candidate implementation tree: `91709d316cf53643896ae181251a93d0b0d11c76`
 - status: `pending_exact_current_head_and_merge_candidate_execution`
 - claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
 
@@ -16,7 +16,7 @@ The frozen candidate is the last non-metadata commit. Commits after it may modif
 
 Any later change to code, tests, product composition, technical documentation, dossier/profile truth, Cargo state or derived document indexes invalidates this receipt and requires a new candidate head/tree.
 
-The candidate establishes the following source-level properties without promoting them to executed qualification:
+The candidate establishes the following source-level properties without promoting them to executed qualification. The canonical implementation profile intentionally remains `specified_not_product_evidence`, as required by the closed-world profile validator:
 
 - exact query-bound and domain-separated remote response digest verification;
 - prefix-sensitive evidence ordering for bounded selection;
