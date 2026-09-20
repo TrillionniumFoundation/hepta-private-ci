@@ -492,7 +492,6 @@ async fn cancelled_begin_closes_every_acquired_lease() {
     .expect("cancelled begin should close acquired leases");
 }
 
-
 struct DispatchRecordingContributor {
     name: &'static str,
     events: Arc<Mutex<Vec<String>>>,

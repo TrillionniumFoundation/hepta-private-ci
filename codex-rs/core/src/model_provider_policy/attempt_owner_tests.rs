@@ -91,7 +91,6 @@ async fn explicit_terminal_is_acknowledged_exactly_once() {
     );
 }
 
-
 struct DispatchAuthorizingLease {
     authorized: Option<oneshot::Sender<()>>,
     terminal: oneshot::Sender<ModelProviderTerminal>,
@@ -188,7 +187,9 @@ async fn failed_dispatch_authorization_still_closes_as_not_dispatched_on_drop() 
     drop(owner);
 
     assert_eq!(
-        terminal_rx.await.expect("dropped owner should finish lease"),
+        terminal_rx
+            .await
+            .expect("dropped owner should finish lease"),
         ModelProviderTerminal::NotDispatched {
             reason_code: "model_provider_policy_owner_dropped_before_dispatch".to_string(),
         }

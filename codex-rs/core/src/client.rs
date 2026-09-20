@@ -444,9 +444,7 @@ impl AdmittedProviderAttempt {
         self.dispatch.clone()
     }
 
-    async fn authorize_dispatch(
-        &self,
-    ) -> std::result::Result<(), ModelProviderPolicyError> {
+    async fn authorize_dispatch(&self) -> std::result::Result<(), ModelProviderPolicyError> {
         self.owner.authorize_dispatch().await
     }
 
