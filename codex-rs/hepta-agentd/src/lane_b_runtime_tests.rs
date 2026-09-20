@@ -634,7 +634,6 @@ fn v3_request() -> LaneFRunRequestV3 {
     }
 }
 
-
 struct StaticCurrentSnapshotProvider {
     snapshot: CapabilitySnapshotV2,
     calls: usize,
@@ -729,7 +728,6 @@ impl LaneFV3Ports for RuntimeV3Ports {
         self.receipt(input, "learning.ledger")
     }
 }
-
 
 #[test]
 fn final_use_capability_snapshot_is_revalidated_before_agentd_handoff() {
