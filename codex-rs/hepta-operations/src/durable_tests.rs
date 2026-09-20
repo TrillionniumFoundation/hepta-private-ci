@@ -212,3 +212,49 @@ async fn dispatch_acknowledgement_never_becomes_terminal_by_itself() {
     ));
     assert!(!record.operation.state.is_terminal());
 }
+
+#[tokio::test]
+async fn authorized_dispatch_intent_is_one_durable_transition_before_effect() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let ledger = DurableOperationLedger::open(&path).await.expect("open");
+    let operation_id = stable_id("operation:ui:1");
+    let authority = digest(b"final-use-admission");
+    let dispatch = digest(b"dispatch-intent");
+
+    ledger
+        .begin(key(b"payload-v1"), generation(9))
+        .await
+        .expect("begin");
+    let dispatched = ledger
+        .record_authorized_dispatch(&operation_id, authority, generation(12), dispatch)
+        .await
+        .expect("authorized dispatch");
+    assert_eq!(dispatched.operation.revision.get(), 3);
+    assert!(matches!(
+        dispatched.operation.state,
+        OperationState::Dispatched { .. }
+    ));
+    assert_eq!(dispatched.authority_evidence_digest, Some(authority));
+    assert_eq!(dispatched.dispatch_digest, Some(dispatch));
+
+    ledger.close().await;
+    let reopened = DurableOperationLedger::open(&path).await.expect("reopen");
+    let recovered = reopened
+        .get(&operation_id)
+        .await
+        .expect("query")
+        .expect("record");
+    assert!(matches!(
+        recovered.operation.state,
+        OperationState::Dispatched { .. }
+    ));
+    assert_eq!(recovered.authority_evidence_digest, Some(authority));
+    assert_eq!(recovered.dispatch_digest, Some(dispatch));
+
+    let repeated = reopened
+        .record_authorized_dispatch(&operation_id, authority, generation(12), dispatch)
+        .await
+        .expect("same authorized dispatch is idempotent");
+    assert_eq!(repeated.operation.revision.get(), 3);
+}
