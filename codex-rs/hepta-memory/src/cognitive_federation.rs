@@ -702,9 +702,7 @@ impl FederatedMemoryReader {
         if bindings.is_empty() {
             return Ok(Vec::new());
         }
-        let stale_all = |drift| {
-            vec![FederatedRevalidationStatus::Stale(drift); bindings.len()]
-        };
+        let stale_all = |drift| vec![FederatedRevalidationStatus::Stale(drift); bindings.len()];
         if bindings.iter().any(|binding| {
             binding.source_agent_id != self.capability.owner_agent_id
                 || binding.capability != self.capability
