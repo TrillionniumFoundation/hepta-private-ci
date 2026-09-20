@@ -150,3 +150,63 @@ fn request_field_drift_is_rejected_before_authority_claim() {
         codex_hepta_contracts::FinalUseError::BindingMismatch
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn signed_final_use_claim_consumes_sealed_control_request() {
+    use std::collections::BTreeSet;
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
+
+    use codex_hepta_contracts::FinalUseAuthority;
+    use codex_hepta_contracts::FinalUseGrant;
+    use codex_hepta_contracts::FinalUseRevocations;
+    use codex_hepta_contracts::SignedFinalUseGrant;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+
+    let request = grant_request();
+    let binding = AgentdControlRuntimeAuthorityHost::binding(&request).expect("binding");
+    let signer = SigningKey::from_bytes(&[7_u8; 32]);
+    let now_ms = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("system clock")
+            .as_millis(),
+    )
+    .expect("millisecond clock");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "control-runtime-issuer".to_string(),
+        authority_epoch: 9,
+        grant_id: "control-runtime-grant-1".to_string(),
+        nonce: [3_u8; 32],
+        binding,
+        not_before_unix_ms: now_ms.saturating_sub(1_000),
+        expires_at_unix_ms: now_ms.checked_add(60_000).expect("expiry"),
+    };
+    let signature = signer
+        .sign(&grant.signing_bytes().expect("signing bytes"))
+        .to_bytes()
+        .to_vec();
+    let signed = SignedFinalUseGrant { grant, signature };
+    let state = tempfile::tempdir().expect("authority state");
+    let authority = FinalUseAuthority::open_state_dir(
+        state.path(),
+        "control-runtime-issuer".to_string(),
+        signer.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )
+    .expect("authority");
+    let host = AgentdControlRuntimeAuthorityHost::new(authority);
+    let token = host.claim(&request, &signed).expect("claim");
+    assert_eq!(
+        host.with_verified_use(token, &request, || "dispatch-admitted")
+            .expect("revalidation"),
+        "dispatch-admitted"
+    );
+}
