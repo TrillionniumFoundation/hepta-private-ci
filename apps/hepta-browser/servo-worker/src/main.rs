@@ -142,18 +142,21 @@ impl TerminalReceiptWriter {
             return Err("terminal receipt effect digest is invalid".to_string());
         }
         let document_binding = document_digest.as_deref().unwrap_or("<none>");
+        let generation_text = frame.generation.to_string();
+        let page_generation_text = page_generation.to_string();
+        let authority_epoch_text = authority_epoch.to_string();
         let binding_digest = sha256_hex(
             [
                 WORKER_TERMINAL_SCHEMA,
                 frame.session_id.as_str(),
-                frame.generation.to_string().as_str(),
+                generation_text.as_str(),
                 operation_id,
-                page_generation.to_string().as_str(),
+                page_generation_text.as_str(),
                 document_binding,
                 action,
                 final_payload_digest,
                 effect_grant_digest,
-                authority_epoch.to_string().as_str(),
+                authority_epoch_text.as_str(),
                 status,
                 outcome_digest,
             ]
