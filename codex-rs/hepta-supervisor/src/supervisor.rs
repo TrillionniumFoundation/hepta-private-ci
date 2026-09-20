@@ -300,6 +300,15 @@ impl<D: ProcessDriver> Supervisor<D> {
     #[cfg(unix)]
     pub(crate) fn preflight_restart(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
+        let available = crate::restart_budget::restart_available(
+            record.layout.run_root(),
+            self.config.restart_max_attempts,
+            self.config.restart_window,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        if !available {
+            return Err(SupervisorError::RestartBudgetExhausted(agent_id.clone()));
+        }
         let slot = self
             .slots
             .get(agent_id)
