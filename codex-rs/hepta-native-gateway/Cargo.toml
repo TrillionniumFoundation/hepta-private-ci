@@ -28,4 +28,5 @@ tokio = { workspace = true, features = [
 ] }
 
 [dev-dependencies]
+codex-hepta-wire = { path = "../hepta-wire" }
 pretty_assertions = { workspace = true }

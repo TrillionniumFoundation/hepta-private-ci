@@ -79,6 +79,12 @@ product_callers = [
 ]
 
 [[surface]]
+crate = "codex-hepta-wire"
+role = "transport_neutral_versioned_wire_contract"
+public_items = ["WireEnvelopeV2"]
+product_callers = ["codex-rs/hepta-runtime/src/lib.rs"]
+
+[[surface]]
 crate = "codex-hepta-runtime"
 role = "read_only_product_runtime"
 public_items = ["HeptaRuntime", "RuntimeStatus"]

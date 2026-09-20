@@ -2,10 +2,14 @@
 
 The existing `hepta --serve-ui` startup opens and verifies the existing schema-v5
 stores, constructs a compiled-in body graph, and starts its handlers in dependency
-order. `GET /api/hepta/runtime` calls `HeptaRuntime::status_json`, which dispatches
-one generation-fenced message from `runtime.status.ingress` to
-`runtime.status.adapter`. The adapter serializes the existing `RuntimeStatus`.
-The JSON schema, route inventory and all eight closed-effect flags are unchanged.
+order. `GET /api/hepta/runtime` keeps the existing JSON representation as the
+default: `HeptaRuntime::status_json` dispatches one generation-fenced message from
+`runtime.status.ingress` to `runtime.status.adapter`, and the adapter serializes
+the existing `RuntimeStatus`. A caller that explicitly sends
+`Accept: application/x-hepta-wire; version=2` receives the same read-only status
+payload inside the metadata-bound HPTA V2 envelope produced by
+`HeptaRuntime::status_wire_v2`. Unknown wire media versions fail with 406. The
+route inventory, default JSON schema and all eight closed-effect flags are unchanged.
 
 This is a real native-gateway caller of the control-plane host, not a qualification
 binary or a declaration that all 24 planned organs are running. Both handlers

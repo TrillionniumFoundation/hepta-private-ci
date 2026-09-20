@@ -12,6 +12,16 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+mod wire;
+
+pub use wire::CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2;
+pub use wire::CodexOperationIntentWireV2;
+pub use wire::WireAdapterError;
+pub use wire::adapt_wire_v2;
+pub use wire::codex_operation_intent_wire_schema_v2;
+pub use wire::decode_codex_operation_intent_wire_v2;
+pub use wire::encode_codex_operation_intent_wire_v2;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {
     pub operation_id: StableId,
