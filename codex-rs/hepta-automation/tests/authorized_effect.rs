@@ -397,6 +397,21 @@ impl RevocationRaceDriver {
     }
 }
 
+struct CrashAfterProviderContactDriver;
+
+impl AuthorizedEffectDriver for CrashAfterProviderContactDriver {
+    fn dispatch(
+        &mut self,
+        request: &AuthorizedEffectRequest<'_>,
+    ) -> Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError> {
+        assert_eq!(
+            request.intent_digest,
+            &request.intent.digest().expect("driver intent digest")
+        );
+        panic!("simulated crash after provider contact before observation append");
+    }
+}
+
 impl AuthorizedEffectDriver for RevocationRaceDriver {
     fn dispatch(
         &mut self,
@@ -532,6 +547,85 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
         driver.calls, 1,
         "existing provider-attempt evidence must prevent redispatch"
     );
+}
+
+#[tokio::test]
+async fn crash_after_provider_contact_before_observation_requires_recovery_without_redispatch() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) =
+        final_use(expected.clone(), "after-send-before-record");
+
+    let crash_store = store.clone();
+    let crash_authority = authority.clone();
+    let crash_effect = effect.clone();
+    let crash_owner = owner.clone();
+    let crash_signed = signed.clone();
+    let crash_expected = expected.clone();
+    let crashed = tokio::spawn(async move {
+        let mut driver = CrashAfterProviderContactDriver;
+        crash_store
+            .execute_authorized_taskflow_effect(
+                &crash_authority,
+                &mut driver,
+                &crash_effect,
+                &crash_owner,
+                &crash_signed,
+                &crash_expected,
+                "authorized-effect-dispatch",
+                30,
+            )
+            .await
+    })
+    .await
+    .expect_err("provider-contact crash must abort the execution task");
+    assert!(crashed.is_panic());
+
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen after provider-contact crash");
+    let pending = reopened
+        .pending_authorized_taskflow_effects(8)
+        .await
+        .expect("pending recovery scan");
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].run_id, effect.run_id);
+    assert_eq!(pending[0].step_id, effect.step_id);
+    assert_eq!(pending[0].attempt, effect.attempt);
+
+    let mut must_not_dispatch =
+        RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"duplicate");
+    let replay = reopened
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut must_not_dispatch,
+            &effect,
+            &owner,
+            &signed,
+            &expected,
+            "authorized-effect-dispatch",
+            31,
+        )
+        .await;
+    assert!(matches!(replay, Err(AuthorizedEffectError::RecoveryRequired)));
+    assert_eq!(must_not_dispatch.calls, 0);
+
+    let recovered = reopened
+        .recover_authorized_taskflow_effect(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+            &owner,
+            AuthorizedEffectRecovery::Observed(AuthorizedEffectProviderReceipt {
+                outcome: AuthorizedEffectOutcome::Succeeded,
+                receipt_digest: Sha256Digest::for_bytes(b"recovered-after-crash"),
+            }),
+            32,
+        )
+        .await
+        .expect("provider-owned recovery");
+    assert!(matches!(recovered, AuthorizedEffectRecoveryResult::Observed(_)));
 }
 
 #[tokio::test]
