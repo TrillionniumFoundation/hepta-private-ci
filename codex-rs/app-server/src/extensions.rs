@@ -68,8 +68,7 @@ pub(crate) struct ThreadExtensionDependencies {
         Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
     /// Optional host-owned source-bound prompt attachment capability. Plain
     /// Codex keeps this absent; no registry/runtime authority is inferred.
-    pub(crate) hepta_prompt_runtime_host:
-        Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
+    pub(crate) hepta_prompt_runtime_host: Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
 }
 
 /// Apply the complete qualification writer gate at the app-server boundary.
