@@ -17,6 +17,10 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
         .unwrap()
 }
 
+fn directory(root: &std::path::Path) -> std::fs::File {
+    std::fs::File::open(root).unwrap()
+}
+
 fn writer(
     root: &std::path::Path,
     fixture: &Fixture,
@@ -31,7 +35,16 @@ fn writer(
     )
     .unwrap();
     let witness = LedgerWitnessStore::create(open(root, "witness", true), binding).unwrap();
-    LedgerWriter::from_segmented(journal, witness, fixture.trust_activation()).unwrap()
+    let segment_directory = directory(root);
+    let witness_directory = directory(root);
+    LedgerWriter::from_segmented(
+        journal,
+        witness,
+        fixture.trust_activation(),
+        &segment_directory,
+        &witness_directory,
+    )
+    .unwrap()
 }
 
 #[test]
@@ -55,8 +68,9 @@ fn existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
     )
     .unwrap();
     let anchor = journal.witness_frontier().unwrap().anchor;
+    let segment_directory = directory(root);
     let rotated = journal
-        .rotate_segment(open(root, "1", true), anchor)
+        .rotate_segment(open(root, "1", true), anchor, &segment_directory)
         .unwrap();
     assert_eq!(rotated.segment, 1);
     assert!(!rotated.sealed);
@@ -97,8 +111,16 @@ fn existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
     )
     .unwrap();
     let witness = LedgerWitnessStore::recover(open(root, "witness", false), binding).unwrap();
-    let mut recovered =
-        LedgerWriter::from_segmented(recovered, witness, first_fixture.trust_activation()).unwrap();
+    let segment_directory = directory(root);
+    let witness_directory = directory(root);
+    let mut recovered = LedgerWriter::from_segmented(
+        recovered,
+        witness,
+        first_fixture.trust_activation(),
+        &segment_directory,
+        &witness_directory,
+    )
+    .unwrap();
     let replay = run_evaluated_shadow_v1(
         first_fixture.request(),
         &mut recovered,
