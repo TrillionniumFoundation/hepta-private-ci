@@ -71,6 +71,9 @@ jobs:
       - name: Test canonical cognitive.types
         run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types
 
+      - name: Check canonical cognitive.types fuzz harness
+        run: cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets
+
       - name: Check multimodal contract reference formatting
         run: cargo fmt --manifest-path qualification/hnmf-contract-reference/Cargo.toml -- --check
 
