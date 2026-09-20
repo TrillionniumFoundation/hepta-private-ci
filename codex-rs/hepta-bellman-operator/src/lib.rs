@@ -39,6 +39,7 @@ pub use authenticated::operator_applicability_signing_payload_v2;
 pub use authenticated::operator_regularity_signing_payload_v2;
 pub use dataset_binding::OperatorDatasetBindingError;
 pub use dataset_binding::VerifiedOperatorDatasetV2;
+pub use dataset_binding::build_targets_bound_v2;
 pub use dataset_binding::fit_tabular_operator_bound_v2;
 pub use dataset_binding::fit_transition_model_bound_v2;
 mod learned_strict;
@@ -150,6 +151,7 @@ pub enum Error {
     EmptyDataset,
     SampleLimitExceeded,
     DuplicateSample(String),
+    DuplicateEvidence,
     EmptyDigest(&'static str),
     InvalidGamma,
     Arithmetic,
@@ -184,13 +186,17 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
         .dataset
         .transitions
         .sort_by_key(|transition| transition.sample_id.clone());
-    let mut seen = BTreeSet::new();
+    let mut seen_samples = BTreeSet::new();
+    let mut seen_evidence = BTreeSet::new();
     for sample in &request.dataset.transitions {
-        if !seen.insert(sample.sample_id.clone()) {
+        if !seen_samples.insert(sample.sample_id.clone()) {
             return Err(Error::DuplicateSample(sample.sample_id.to_string()));
         }
         if sample.support_digest.is_zero() {
             return Err(Error::EmptyDigest("sample support"));
+        }
+        if !seen_evidence.insert(sample.support_digest) {
+            return Err(Error::DuplicateEvidence);
         }
     }
 
