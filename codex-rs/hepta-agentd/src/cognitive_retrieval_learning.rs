@@ -9,10 +9,11 @@ use std::sync::Mutex;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_learning_ledger::AppendReceipt;
 use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::retrieval_assignment_event_with_delivery;
+use codex_hepta_learning_ledger::retrieval_assignment_event_with_delivery_policy;
 use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
 use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 pub struct CognitiveRetrievalLearningSink {
@@ -53,6 +54,30 @@ impl CognitiveRetrievalLearningSink {
         delivered_candidates: &[RetrievalCandidateIdentityV1],
         context_exposed: bool,
     ) -> Result<AppendReceipt, String> {
+        self.append_with_delivery_policy(
+            owner,
+            body_generation,
+            request_id,
+            observation,
+            delivered_candidates,
+            context_exposed,
+            None,
+            ProbabilityQ32::ONE,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn append_with_delivery_policy(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        request_id: u64,
+        observation: &RetrievalAssignmentObservationV1,
+        delivered_candidates: &[RetrievalCandidateIdentityV1],
+        context_exposed: bool,
+        downstream_policy_digest: Option<Digest32>,
+        delivery_propensity: ProbabilityQ32,
+    ) -> Result<AppendReceipt, String> {
         let episode_id = StableId::new(format!(
             "retrieval-episode:{}:{body_generation}:{request_id}",
             owner.as_str()
@@ -75,12 +100,14 @@ impl CognitiveRetrievalLearningSink {
         ))
         .map_err(|error| error.to_string())?;
 
-        let event = retrieval_assignment_event_with_delivery(
+        let event = retrieval_assignment_event_with_delivery_policy(
             record_id.clone(),
             episode_id,
             observation,
             delivered_candidates,
             context_exposed,
+            downstream_policy_digest,
+            delivery_propensity,
         )
         .map_err(|error| error.to_string())?;
         let mut ledger = self
