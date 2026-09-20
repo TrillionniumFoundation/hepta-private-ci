@@ -318,6 +318,112 @@ async fn acknowledgement_loss_stays_indeterminate_until_terminal_observer() {
 
 #[cfg(unix)]
 #[tokio::test]
+async fn newer_generation_adopts_unsettled_dispatch_and_fences_predecessor() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let operation = intent(b"owner-handoff-payload");
+    let store = DurableOperationStore::open(&path).await.expect("open");
+    store.prepare_intent(&operation).await.expect("prepare");
+    let stale_claim = store
+        .claim_next(
+            &operation.destination,
+            &stable_id("worker:old-generation"),
+            generation(1),
+            Duration::from_secs(30),
+        )
+        .await
+        .expect("claim")
+        .expect("row");
+    let (authority, signed, _authority_dir) = authority_fixture(&stale_claim.intent, 17);
+    let authorized = store
+        .authorize_dispatch(&authority, &signed, &stale_claim)
+        .await
+        .expect("authorize");
+    store
+        .execute_authorized(authorized, |_| DispatchEffect::Dispatched {
+            value: (),
+            dispatch_digest: Digest32::of_bytes(b"transport-dispatched"),
+            acknowledgement_digest: Some(Digest32::of_bytes(b"transport-acknowledged")),
+        })
+        .await
+        .expect("dispatch");
+
+    let before = store
+        .operation(&operation.scope_id, &operation.operation_id)
+        .await
+        .expect("lookup")
+        .expect("operation");
+    assert_eq!(before.state, DurableOperationState::Dispatched);
+    assert_eq!(before.intent.owner_generation, generation(1));
+
+    let adopted = store
+        .adopt_unsettled_generation(
+            &operation.scope_id,
+            &operation.operation_id,
+            generation(2),
+        )
+        .await
+        .expect("adopt newer generation");
+    assert_eq!(adopted.intent.owner_generation, generation(2));
+    assert_eq!(adopted.state, DurableOperationState::Indeterminate);
+    assert!(adopted.writer_fence > stale_claim.fence);
+    let outbox = store
+        .outbox_status(
+            &operation.destination,
+            &operation.scope_id,
+            &operation.operation_id,
+        )
+        .await
+        .expect("outbox")
+        .expect("row");
+    assert_eq!(outbox.intent.owner_generation, generation(2));
+    assert_eq!(outbox.state, DurableOutboxState::Acknowledged);
+    assert_eq!(outbox.fence, adopted.writer_fence);
+
+    assert!(matches!(
+        store
+            .observe_terminal(
+                &operation.scope_id,
+                &operation.operation_id,
+                &ReconciliationReceiptV1 {
+                    outcome: ReconciliationOutcome::Applied,
+                    evidence_digest: Digest32::of_bytes(b"stale-terminal-evidence"),
+                    observer_id: stable_id("observer:old-generation"),
+                    observer_generation: generation(1),
+                },
+            )
+            .await,
+        Err(DurableOperationError::StaleGeneration)
+    ));
+
+    let replay = store
+        .adopt_unsettled_generation(
+            &operation.scope_id,
+            &operation.operation_id,
+            generation(2),
+        )
+        .await
+        .expect("same generation replay");
+    assert_eq!(replay, adopted);
+
+    let terminal = store
+        .observe_terminal(
+            &operation.scope_id,
+            &operation.operation_id,
+            &ReconciliationReceiptV1 {
+                outcome: ReconciliationOutcome::Applied,
+                evidence_digest: Digest32::of_bytes(b"destination-terminal-evidence"),
+                observer_id: stable_id("observer:new-generation"),
+                observer_generation: generation(2),
+            },
+        )
+        .await
+        .expect("current generation terminal observation");
+    assert_eq!(terminal.state, DurableOperationState::Applied);
+}
+
+#[cfg(unix)]
+#[tokio::test]
 async fn proven_not_dispatched_requeues_with_a_new_fence() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");
