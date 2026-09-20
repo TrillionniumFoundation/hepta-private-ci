@@ -59,9 +59,9 @@ pub use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejectionStatus;
-use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -235,7 +235,9 @@ impl AppServerModelDriver {
             || client.server_version() != Some(app_server_version)
         {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("reconciliation App Server identity does not match durable dispatch".into());
+            return Err(
+                "reconciliation App Server identity does not match durable dispatch".into(),
+            );
         }
 
         let expected_input = vec![UserInput::Text {
@@ -333,7 +335,9 @@ impl AppServerModelDriver {
             }
         }
         let (status, boundary_status) = match receipt.status {
-            AdapterStatus::Succeeded => (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded),
+            AdapterStatus::Succeeded => {
+                (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
+            }
             AdapterStatus::Failed => (NativeRunStatus::Failed, NativeBoundaryStatus::Failed),
             AdapterStatus::Interrupted => (
                 NativeRunStatus::Interrupted,
@@ -538,8 +542,7 @@ impl AppServerModelDriver {
         let verified_use = timeout(claim_budget, authorizer.claim(authority_binding.clone()))
             .await
             .map_err(|_| "final-use authority request exceeded runtime.codex deadline")??;
-        let authority_witness =
-            Digest32::from_array(verified_use.witness_sha256()).to_string();
+        let authority_witness = Digest32::from_array(verified_use.witness_sha256()).to_string();
 
         let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
             request_id,
