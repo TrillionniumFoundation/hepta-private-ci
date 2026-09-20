@@ -23,6 +23,8 @@ pub use capability_snapshot::CapabilityRequirementV2;
 pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
+pub use capability_snapshot::CurrentCapabilitySnapshotErrorV3;
+pub use capability_snapshot::CurrentCapabilitySnapshotProviderV3;
 pub use contracts_v1::IntelligenceContractErrorV1;
 pub use contracts_v1::IntelligenceHostEnvelopeV1;
 pub use contracts_v1::LegalActionCandidateSetV1;
