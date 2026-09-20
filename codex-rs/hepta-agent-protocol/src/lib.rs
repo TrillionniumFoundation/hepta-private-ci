@@ -25,7 +25,7 @@ use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
 use serde::Serialize;
 
-pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
+pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 3;
 /// Version for the transport-only host turn authority witness.  This type is
 /// deliberately not an authority grant and is not consumed by the Agentd
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
@@ -126,6 +126,15 @@ impl AgentdRequest {
             request_id,
             spawn_generation,
             method: AgentdMethod::Lifecycle,
+        }
+    }
+
+    pub fn drain(request_id: u64, spawn_generation: u64) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::Drain,
         }
     }
 
@@ -265,6 +274,7 @@ pub enum AgentdMethod {
     Capabilities,
     Health,
     Lifecycle,
+    Drain,
     SessionIngress,
     AuthBusText {
         request: AuthBusTextIngress,
@@ -327,6 +337,9 @@ pub enum AgentdPayload {
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
+    DrainAccepted {
+        admission_stopped: bool,
+    },
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
