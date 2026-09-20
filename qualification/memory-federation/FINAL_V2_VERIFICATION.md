@@ -2,8 +2,8 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `331b81d385a88837e252bd80fda8b8ac35ea4191`
-- frozen candidate implementation head: `e1e5acd2747833673bbb069f6e3623217ed224f6`
-- frozen candidate implementation tree: `041a916005c9d61cc559d6adccf7427aea850125`
+- frozen candidate implementation head: `304c89bf9130dd34afd60ba8e2d76807522b7df0`
+- frozen candidate implementation tree: `67325969f5a0bdcde70db4b6d9a8f31016e4f790`
 - status: `pending_exact_current_head_and_merge_candidate_execution`
 - claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
 
@@ -28,9 +28,10 @@ The candidate establishes the following source-level properties without promotin
 - Agentd composition through `CognitiveRuntime::AvailableFederatedV2`;
 - V2-only product retrieval/revalidation APIs and a regression preventing `with_federation()` from downgrading an already-composed V2 runtime;
 - explicit requested/completed/failed/truncated aggregate coverage;
-- bounded fail-closed final model-input revalidation;
+- bounded fail-closed final model-input revalidation, with same-owner/capability bindings sharing one SQLite read snapshot under one total final-use deadline;
 - one-peer ownership in the canonical checked engine, with <=16-peer discovery/aggregation owned by the product orchestrator;
 - documentation truth that the current V2 structs are in-process Rust contracts, not a registered authenticated cross-host wire protocol.
+- local `observed_frontier` is an exact-scope append-only memory-revision count from the same retrieval snapshot, not an authenticated cut digest or rollback witness.
 
 ## Required executable checks
 
