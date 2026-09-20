@@ -319,27 +319,13 @@ fn evaluation_fixture(
     }
 }
 
-fn selected_lifecycle(
+fn complete_external_selection(
+    journal: &mut ArtifactLifecycleJournalV2,
     producer_id: &StableId,
     artifact_id: &StableId,
     evaluation_digest: Digest32,
-) -> ArtifactLifecycleJournalV2 {
-    let mut journal = ArtifactLifecycleJournalV2::new();
+) {
     let transitions = [
-        (
-            "producer",
-            LifecycleActorRoleV2::Producer,
-            ArtifactLifecycleStateV1::Proposed,
-            ArtifactLifecycleStateV1::Trained,
-            digest("trained"),
-        ),
-        (
-            "evaluator",
-            LifecycleActorRoleV2::Evaluator,
-            ArtifactLifecycleStateV1::Trained,
-            ArtifactLifecycleStateV1::Evaluated,
-            evaluation_digest,
-        ),
         (
             "shadow-operator",
             LifecycleActorRoleV2::ShadowOperator,
@@ -373,25 +359,21 @@ fn selected_lifecycle(
         transitions.into_iter().enumerate()
     {
         let actor = LifecycleActorEvidenceV2 {
-            actor_id: if role == LifecycleActorRoleV2::Producer {
-                producer_id.clone()
-            } else {
-                id(actor_name)
-            },
+            actor_id: id(actor_name),
             credential_digest: digest(&format!("credential-{actor_name}")),
             role,
             authority_epoch: 1,
             verified_at: 10,
             expires_at: 100,
         };
-        let occurred_at = 30 + u64::try_from(index).unwrap();
+        let occurred_at = 60 + u64::try_from(index).unwrap();
         journal
             .append(
                 journal.head_digest(),
                 producer_id,
                 actor.clone(),
                 ArtifactLifecycleEventV1 {
-                    event_id: id(&format!("lifecycle-{index}")),
+                    event_id: id(&format!("external-lifecycle-{index}")),
                     artifact_id: artifact_id.clone(),
                     prior_state: prior,
                     next_state: next,
@@ -405,7 +387,6 @@ fn selected_lifecycle(
             )
             .unwrap();
     }
-    journal
 }
 
 #[test]
@@ -533,15 +514,37 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
     .unwrap();
     let mut host = AgentdOfflineOperatorHostV1::new(owner(), 1, journal).unwrap();
     let mut registry = ArtifactRegistry::new();
+    let mut lifecycle = ArtifactLifecycleJournalV2::new();
+    let producer_actor = LifecycleActorEvidenceV2 {
+        actor_id: manifest.producer_id.clone(),
+        credential_digest: digest("offline-operator-host-credential"),
+        role: LifecycleActorRoleV2::Producer,
+        authority_epoch: 1,
+        verified_at: 10,
+        expires_at: 100,
+    };
+    let evaluator_actor = LifecycleActorEvidenceV2 {
+        actor_id: principals[1].principal_id.clone(),
+        credential_digest: principals[1].credential_chain_digest,
+        role: LifecycleActorRoleV2::Evaluator,
+        authority_epoch: principals[1].authority_epoch,
+        verified_at: principals[1].authenticated_at,
+        expires_at: principals[1].expires_at,
+    };
     let candidate = host
         .train_evaluate_publish(
             &mut registry,
+            &mut lifecycle,
             &eval.verifier,
             OfflineOperatorCandidateRequestV1 {
                 operation_id: id("product-operator-run"),
                 dataset: &dataset,
                 plan,
                 register_event_id: id("register-policy"),
+                trained_lifecycle_event_id: id("trained-policy"),
+                evaluated_lifecycle_event_id: id("evaluated-policy"),
+                producer_actor,
+                evaluator_actor,
                 manifest: manifest.clone(),
                 payload_target: CreateOnlyArtifactFile::create(&payload_path).unwrap(),
                 registry_snapshot_target: CreateOnlyArtifactFile::create(&snapshot_path).unwrap(),
@@ -563,7 +566,10 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
         OfflineOperatorPhaseV1::EvaluatedEligible
     );
 
-    let not_selected = ArtifactLifecycleJournalV2::new();
+    assert_eq!(
+        lifecycle.records().last().unwrap().event.next_state,
+        ArtifactLifecycleStateV1::Evaluated
+    );
     let view = Arc::new(CurrentView(Mutex::new((
         snapshot_path.clone(),
         candidate.selected_spec.registry_receipt,
@@ -571,7 +577,7 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
     assert!(
         host.load_selected_ranker(
             &candidate,
-            &not_selected,
+            &lifecycle,
             File::open(&snapshot_path).unwrap(),
             File::open(&payload_path).unwrap(),
             view.clone(),
@@ -580,7 +586,10 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
     );
     drop(host);
 
-    let lifecycle = selected_lifecycle(
+    let lifecycle_snapshot = lifecycle.snapshot();
+    let mut lifecycle = ArtifactLifecycleJournalV2::from_snapshot(lifecycle_snapshot, 50).unwrap();
+    complete_external_selection(
+        &mut lifecycle,
         &manifest.producer_id,
         &manifest.artifact_id,
         candidate.evaluation.decision.evidence_digest,
