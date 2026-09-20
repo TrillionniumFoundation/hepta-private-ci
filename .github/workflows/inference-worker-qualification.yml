@@ -6,12 +6,14 @@ on:
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-inferd/**"
+      - "codex-rs/hepta-contracts/**"
       - "docs/modules/inference.worker/**"
       - "qualification/module-execution-dossiers/detail/inference.worker.md"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
       - "scripts/hepta-inference-worker-readiness.py"
       - "scripts/test_hepta_inference_worker_readiness.py"
+      - "scripts/hepta-implementation-maps.py"
       - ".github/workflows/inference-worker-qualification.yml"
   push:
     branches: [main]
@@ -115,7 +117,7 @@ jobs:
           HEPTA_CI_LANE: ${{ matrix.lane }}
         run: |
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/inference-worker-evidence/fmt.json" -- \
-            cargo fmt --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-inferd -- --check
+            cargo fmt --package codex-hepta-contracts --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-inferd -- --check
 
       - name: Test canonical control worker and composition seam
         working-directory: codex-rs
@@ -125,7 +127,7 @@ jobs:
           CARGO_TARGET_DIR: ${{ runner.temp }}/inference-worker-target-${{ matrix.lane }}
         run: |
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/inference-worker-evidence/tests.json" -- \
-            just test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd
+            just test --locked -p codex-hepta-contracts -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd
 
       - name: Strict lint canonical control worker and composition seam
         working-directory: codex-rs
@@ -135,7 +137,7 @@ jobs:
           CARGO_TARGET_DIR: ${{ runner.temp }}/inference-worker-target-${{ matrix.lane }}
         run: |
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/inference-worker-evidence/clippy.json" -- \
-            cargo clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd --all-targets --no-deps -- -D warnings
+            cargo clippy --locked -p codex-hepta-contracts -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd --all-targets --no-deps -- -D warnings
 
       - name: Emit exact candidate receipt and fail-closed hardware template
         env:
@@ -151,6 +153,7 @@ jobs:
           python3 scripts/hepta-inference-worker-readiness.py \
             --expected-sha "$TESTED_SHA" \
             --evidence-class "$class" \
+            --passed-check codex-hepta-contracts-lib \
             --passed-check codex-hepta-infer-core-lib \
             --passed-check codex-hepta-infer-worker-host-lib \
             --passed-check codex-hepta-inferd-lib \
