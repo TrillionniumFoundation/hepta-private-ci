@@ -130,6 +130,40 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
     return commit, tree
 
 
+def verify_observed_source(row: dict[str, Any], module: str) -> None:
+    """Bind an optional source observation to unchanged product paths at HEAD."""
+    observed = row.get("observedAtHead")
+    if observed is None:
+        return
+    need(isinstance(observed, dict), f"{module}: observed source identity")
+    identity = {"commit": observed.get("commit"), "tree": observed.get("tree")}
+    commit, _ = verify_source_base(identity, f"{module}: observedAtHead")
+    roots = row.get("resolvedRoots")
+    need(
+        isinstance(roots, list)
+        and roots
+        and all(isinstance(path, str) and path for path in roots),
+        f"{module}: resolved roots",
+    )
+    paths = row.get("observedSourcePaths", roots)
+    need(
+        isinstance(paths, list)
+        and paths
+        and all(isinstance(path, str) and path for path in paths),
+        f"{module}: observed source paths",
+    )
+    need(
+        set(roots).issubset(set(paths)),
+        f"{module}: observed source paths omit resolved roots",
+    )
+    root = ROOT.resolve()
+    for path in paths:
+        candidate = (ROOT / path).resolve()
+        need(candidate.is_relative_to(root), f"{module}: observed source path escape")
+        need(candidate.exists(), f"{module}: missing observed source path {path}")
+    changed = git("diff", "--name-only", commit, "HEAD", "--", *paths)
+    need(not changed, f"{module}: observed source drift since {commit}")
+
 def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
     index = truth.get("modules")
     need(isinstance(index, list) and len(index) == len(MODULES), "module index")
@@ -154,6 +188,7 @@ def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
             or (base["commit"], base["tree"]) not in verified
         ):
             verified.add(verify_source_base(base, module))
+        verify_observed_source(row, module)
         ids = [
             item.get("designOperation") or item.get("operation")
             for item in row.get("operations", [])
