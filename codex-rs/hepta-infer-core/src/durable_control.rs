@@ -26,6 +26,7 @@ pub enum RequestState {
     Pending,
     Reserved,
     Assigned,
+    Running,
     Cancelling,
     Completed,
     Failed,
@@ -39,6 +40,7 @@ impl RequestState {
             Self::Pending => "pending",
             Self::Reserved => "reserved",
             Self::Assigned => "assigned",
+            Self::Running => "running",
             Self::Cancelling => "cancelling",
             Self::Completed => "completed",
             Self::Failed => "failed",
@@ -52,6 +54,7 @@ impl RequestState {
             "pending" => Ok(Self::Pending),
             "reserved" => Ok(Self::Reserved),
             "assigned" => Ok(Self::Assigned),
+            "running" => Ok(Self::Running),
             "cancelling" => Ok(Self::Cancelling),
             "completed" => Ok(Self::Completed),
             "failed" => Ok(Self::Failed),
@@ -119,8 +122,10 @@ pub struct RequestRecord {
     pub reservation: Option<Reservation>,
     pub assignment: Option<Assignment>,
     pub terminal_observation_digest: Option<String>,
+    pub indeterminate_evidence_digest: Option<String>,
     pub consumed_tokens: u32,
     pub usage_units: u64,
+    pub usage_observed: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -336,6 +341,61 @@ impl DurableInferenceControl {
         })
     }
 
+    /// Durable final entry fence for a concrete worker execution. A crash
+    /// after this commit is never replay-safe under the same request identity.
+    pub fn begin_execution(
+        &mut self,
+        request_id: &str,
+        expected_revision: u64,
+    ) -> Result<ControlReceipt, Error> {
+        validate_identity(request_id, "request")?;
+        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+        if record.revision != expected_revision {
+            return Err(Error::StaleRevision);
+        }
+        if record.state == RequestState::Running {
+            return Ok(receipt(record, /*idempotent*/ true));
+        }
+        if record.state != RequestState::Assigned {
+            return Err(Error::InvalidTransition);
+        }
+        self.commit(Event::BeginExecution {
+            request_id: request_id.to_string(),
+            expected_revision,
+        })
+    }
+
+    /// Preserve an unknown post-entry outcome without inventing zero usage.
+    pub fn mark_execution_indeterminate(
+        &mut self,
+        request_id: &str,
+        expected_revision: u64,
+        evidence_digest: String,
+    ) -> Result<ControlReceipt, Error> {
+        validate_identity(request_id, "request")?;
+        validate_digest(&evidence_digest, "indeterminate evidence")?;
+        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+        if record.revision != expected_revision {
+            return Err(Error::StaleRevision);
+        }
+        if record.state == RequestState::Indeterminate
+            && record.indeterminate_evidence_digest.as_ref() == Some(&evidence_digest)
+        {
+            return Ok(receipt(record, /*idempotent*/ true));
+        }
+        if !matches!(
+            record.state,
+            RequestState::Running | RequestState::Cancelling
+        ) {
+            return Err(Error::InvalidTransition);
+        }
+        self.commit(Event::ExecutionIndeterminate {
+            request_id: request_id.to_string(),
+            expected_revision,
+            evidence_digest,
+        })
+    }
+
     pub fn cancel(
         &mut self,
         request_id: &str,
@@ -489,6 +549,15 @@ enum Event {
         expected_revision: u64,
         assignment: Assignment,
     },
+    BeginExecution {
+        request_id: String,
+        expected_revision: u64,
+    },
+    ExecutionIndeterminate {
+        request_id: String,
+        expected_revision: u64,
+        evidence_digest: String,
+    },
     Cancel {
         request_id: String,
         expected_revision: u64,
@@ -507,6 +576,8 @@ impl Event {
             Self::Submit(request) => &request.request_id,
             Self::Reserve { request_id, .. }
             | Self::Assign { request_id, .. }
+            | Self::BeginExecution { request_id, .. }
+            | Self::ExecutionIndeterminate { request_id, .. }
             | Self::Cancel { request_id, .. }
             | Self::Settle { request_id, .. } => request_id,
         }
@@ -535,8 +606,10 @@ fn apply_event(
                     reservation: None,
                     assignment: None,
                     terminal_observation_digest: None,
+                    indeterminate_evidence_digest: None,
                     consumed_tokens: 0,
                     usage_units: 0,
+                    usage_observed: false,
                 },
             );
         }
@@ -568,6 +641,37 @@ fn apply_event(
             record.state = RequestState::Assigned;
             record.revision = next_revision(record.revision)?;
         }
+        Event::BeginExecution {
+            request_id,
+            expected_revision,
+        } => {
+            let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
+            require_revision(record, *expected_revision, replay)?;
+            if record.state != RequestState::Assigned {
+                return Err(Error::InvalidTransition);
+            }
+            record.state = RequestState::Running;
+            record.revision = next_revision(record.revision)?;
+        }
+        Event::ExecutionIndeterminate {
+            request_id,
+            expected_revision,
+            evidence_digest,
+        } => {
+            let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
+            require_revision(record, *expected_revision, replay)?;
+            validate_digest(evidence_digest, "indeterminate evidence")?;
+            if !matches!(
+                record.state,
+                RequestState::Running | RequestState::Cancelling
+            ) {
+                return Err(Error::InvalidTransition);
+            }
+            record.state = RequestState::Indeterminate;
+            record.indeterminate_evidence_digest = Some(evidence_digest.clone());
+            record.usage_observed = false;
+            record.revision = next_revision(record.revision)?;
+        }
         Event::Cancel {
             request_id,
             expected_revision,
@@ -576,7 +680,7 @@ fn apply_event(
             require_revision(record, *expected_revision, replay)?;
             record.state = match record.state {
                 RequestState::Pending | RequestState::Reserved => RequestState::Cancelled,
-                RequestState::Assigned => RequestState::Cancelling,
+                RequestState::Assigned | RequestState::Running => RequestState::Cancelling,
                 _ => return Err(Error::InvalidTransition),
             };
             record.revision = next_revision(record.revision)?;
@@ -591,7 +695,7 @@ fn apply_event(
             require_revision(record, *expected_revision, replay)?;
             if !matches!(
                 record.state,
-                RequestState::Assigned | RequestState::Cancelling
+                RequestState::Assigned | RequestState::Running | RequestState::Cancelling
             ) {
                 return Err(Error::InvalidTransition);
             }
@@ -605,6 +709,7 @@ fn apply_event(
             record.terminal_observation_digest = Some(observation_digest.clone());
             record.consumed_tokens = observation.consumed_tokens;
             record.usage_units = observation.usage_units;
+            record.usage_observed = true;
             record.revision = next_revision(record.revision)?;
         }
     }
@@ -743,6 +848,17 @@ fn encode_event(event: &Event) -> String {
             "assign|{request_id}|{expected_revision}|{}|{}|{}",
             assignment.worker_id, assignment.worker_generation, assignment.assignment_digest
         ),
+        Event::BeginExecution {
+            request_id,
+            expected_revision,
+        } => format!("begin-execution|{request_id}|{expected_revision}"),
+        Event::ExecutionIndeterminate {
+            request_id,
+            expected_revision,
+            evidence_digest,
+        } => format!(
+            "execution-indeterminate|{request_id}|{expected_revision}|{evidence_digest}"
+        ),
         Event::Cancel {
             request_id,
             expected_revision,
@@ -828,6 +944,17 @@ fn decode_event(line: &str) -> Result<Event, Error> {
                 assignment_digest: (*assignment_digest).to_string(),
             },
         }),
+        ["begin-execution", request_id, revision] => Ok(Event::BeginExecution {
+            request_id: (*request_id).to_string(),
+            expected_revision: parse_u64(revision)?,
+        }),
+        ["execution-indeterminate", request_id, revision, evidence_digest] => {
+            Ok(Event::ExecutionIndeterminate {
+                request_id: (*request_id).to_string(),
+                expected_revision: parse_u64(revision)?,
+                evidence_digest: (*evidence_digest).to_string(),
+            })
+        }
         ["cancel", request_id, revision] => Ok(Event::Cancel {
             request_id: (*request_id).to_string(),
             expected_revision: parse_u64(revision)?,
