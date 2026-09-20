@@ -175,20 +175,20 @@ async fn owner_adapter_exposes_pre_top_four_bounded_candidates() {
 }
 
 #[tokio::test]
-async fn typed_kg_relations_are_not_relabelled_generic_graph_evidence() {
+async fn typed_kg_relations_route_to_exact_owner_channels_without_generic_relabelling() {
     let temp = TempDir::new().expect("temp");
     let owner = agent_id(64);
     let store = CognitiveStore::open(&layout(&temp, &owner))
         .await
         .expect("store");
     let access = CognitiveAccess::agent_private(owner);
-    let draft = revision("Alpha causes Beta.");
+    let draft = revision("Alpha has typed KG relations.");
     store
         .remember_with_kg(
             &access,
-            &source(CognitiveScope::AgentPrivate, "typed-causal", &draft.content),
+            &source(CognitiveScope::AgentPrivate, "typed-relations", &draft.content),
             &MemoryDraft {
-                stable_key: "typed-causal".to_string(),
+                stable_key: "typed-relations".to_string(),
                 revision: draft,
             },
             &KgFactSetDraft {
@@ -203,17 +203,43 @@ async fn typed_kg_relations_are_not_relabelled_generic_graph_evidence() {
                         entity_type: "concept".to_string(),
                         label: "Beta".to_string(),
                     },
+                    KgEntityFactDraft {
+                        key: "gamma".to_string(),
+                        entity_type: "concept".to_string(),
+                        label: "Gamma".to_string(),
+                    },
+                    KgEntityFactDraft {
+                        key: "delta".to_string(),
+                        entity_type: "concept".to_string(),
+                        label: "Delta".to_string(),
+                    },
                 ],
-                relations: vec![KgRelationFactDraft {
-                    key: "alpha-causes-beta".to_string(),
-                    from_entity_key: "alpha".to_string(),
-                    to_entity_key: "beta".to_string(),
-                    relation: KgRelationSemanticV1::Causes.relation().to_string(),
-                }],
+                relations: vec![
+                    KgRelationFactDraft {
+                        key: "alpha-causes-beta".to_string(),
+                        from_entity_key: "alpha".to_string(),
+                        to_entity_key: "beta".to_string(),
+                        relation: KgRelationSemanticV1::Causes.relation().to_string(),
+                    },
+                    KgRelationFactDraft {
+                        key: "alpha-procedure-gamma".to_string(),
+                        from_entity_key: "alpha".to_string(),
+                        to_entity_key: "gamma".to_string(),
+                        relation: KgRelationSemanticV1::ProcedureStep
+                            .relation()
+                            .to_string(),
+                    },
+                    KgRelationFactDraft {
+                        key: "alpha-contradicts-delta".to_string(),
+                        from_entity_key: "alpha".to_string(),
+                        to_entity_key: "delta".to_string(),
+                        relation: KgRelationSemanticV1::Contradicts.relation().to_string(),
+                    },
+                ],
             },
         )
         .await
-        .expect("typed causal seed");
+        .expect("typed relation seed");
 
     let scope = CognitiveScope::AgentPrivate;
     let cut = store
@@ -226,28 +252,40 @@ async fn typed_kg_relations_are_not_relabelled_generic_graph_evidence() {
         .await
         .expect("observation");
 
-    let causal = observation
-        .channels()
-        .iter()
-        .find(|channel| channel.channel == RetrievalChannel::Causal)
-        .expect("causal channel");
-    assert_eq!(causal.candidate_count, 1);
+    for channel in [
+        RetrievalChannel::Causal,
+        RetrievalChannel::Procedural,
+        RetrievalChannel::ContradictionSupport,
+    ] {
+        let observed = observation
+            .channels()
+            .iter()
+            .find(|row| row.channel == channel)
+            .expect("typed channel");
+        assert_eq!(observed.candidate_count, 1);
+    }
     let generic = observation
         .channels()
         .iter()
-        .find(|channel| channel.channel == RetrievalChannel::GraphOneHop)
+        .find(|row| row.channel == RetrievalChannel::GraphOneHop)
         .expect("generic graph channel");
     assert_eq!(generic.candidate_count, 0);
 
     let generated =
         generated_input_from_owner_observation(&observation, &snapshot_key, cut.snapshot())
             .expect("generated input");
-    let causal_batch = generated
-        .batches
-        .iter()
-        .find(|batch| batch.receipt.generator == RetrievalGeneratorOwnerV1::KnowledgeGraphCausal)
-        .expect("typed causal generator");
-    assert_eq!(causal_batch.candidates.len(), 1);
+    for owner in [
+        RetrievalGeneratorOwnerV1::KnowledgeGraphCausal,
+        RetrievalGeneratorOwnerV1::KnowledgeGraphProcedural,
+        RetrievalGeneratorOwnerV1::KnowledgeGraphContradiction,
+    ] {
+        let batch = generated
+            .batches
+            .iter()
+            .find(|batch| batch.receipt.generator == owner)
+            .expect("typed generator");
+        assert_eq!(batch.candidates.len(), 1);
+    }
     assert!(
         generated
             .batches
@@ -258,6 +296,18 @@ async fn typed_kg_relations_are_not_relabelled_generic_graph_evidence() {
             .expect("generic graph generator")
             .candidates
             .is_empty()
+    );
+    let contradiction = generated
+        .batches
+        .iter()
+        .find(|batch| {
+            batch.receipt.generator == RetrievalGeneratorOwnerV1::KnowledgeGraphContradiction
+        })
+        .expect("contradiction generator");
+    assert!(
+        contradiction.candidates[0]
+            .contradiction_group_digest
+            .is_some()
     );
 }
 
