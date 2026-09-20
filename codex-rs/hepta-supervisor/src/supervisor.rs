@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentRecord;
 use codex_hepta_fleet::FleetRegistry;
@@ -24,6 +25,9 @@ use crate::SupervisorEventKind;
 use crate::TickReport;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
+use crate::release_selection::ReleaseSelectionRecord;
+use crate::release_selection::read_selection;
+use crate::release_selection::write_selection;
 use crate::runtime::bounded_message;
 use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantVerifier;
@@ -72,7 +76,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             let result = supervisor.with_slot(&agent_id, |supervisor, slot| {
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
                 supervisor.recover_slot(&agent_id, slot, &record, now)?;
-                supervisor.recover_signed_intent(&agent_id, slot, &record)
+                supervisor.recover_signed_intent(&agent_id, slot, &record)?;
+                supervisor.restore_restart_budget(&agent_id, slot, now)
             });
             if let Err(error) = result {
                 // A signed lifecycle intent is an externally authorized
@@ -455,10 +460,13 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
-            let target = slot
+            let previous = slot
                 .previous_release
-                .clone()
+                .as_ref()
                 .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
+            let target_id = ReleaseId::parse(previous.identity().to_string())?;
+            let target =
+                AgentRelease::try_from(supervisor.registry.resolve_release(agent_id, &target_id)?)?;
             supervisor.upgrade_slot(agent_id, slot, target, now, /*explicit_rollback*/ true)
         })
     }
@@ -489,9 +497,23 @@ impl<D: ProcessDriver> Supervisor<D> {
                     "agent {agent_id} has no explicit active release identity"
                 ))
             })?;
+            let source_id = ReleaseId::parse(current.identity().to_string())?;
+            let source_binding = supervisor.registry.installed_release_binding(&source_id)?;
             let target_id = ReleaseId::parse(grant.target_release.clone())?;
+            let target_binding = supervisor.registry.release_binding(agent_id, &target_id)?;
             let target =
                 AgentRelease::try_from(supervisor.registry.resolve_release(agent_id, &target_id)?)?;
+            let source_manifest = Sha256Digest::parse(source_binding.manifest_sha256)
+                .map_err(SupervisorError::Invalid)?;
+            let target_manifest = Sha256Digest::parse(target_binding.manifest_sha256)
+                .map_err(SupervisorError::Invalid)?;
+            let target_agentd = Sha256Digest::parse(target_binding.agentd_sha256)
+                .map_err(SupervisorError::Invalid)?;
+            let target_matrixd = target_binding
+                .matrixd_sha256
+                .map(Sha256Digest::parse)
+                .transpose()
+                .map_err(SupervisorError::Invalid)?;
             if grant.transition == H7H89ProductionTransition::Rollback {
                 let previous = slot
                     .previous_release
@@ -512,6 +534,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     agent_id,
                     current.identity(),
                     target.identity(),
+                    &source_manifest,
+                    &target_manifest,
+                    &target_agentd,
+                    target_matrixd.as_ref(),
                     slot.control_revision,
                     record.lifecycle.generation,
                     expected_authority_epoch,
@@ -522,13 +548,20 @@ impl<D: ProcessDriver> Supervisor<D> {
             if slot
                 .signed_intent
                 .as_ref()
-                .is_some_and(|intent| !matches!(intent.status, SignedIntentStatus::Committed))
+                .is_some_and(|intent| !intent.status.is_terminal())
             {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
                 ));
             }
             let next_control_revision = supervisor.next_control_revision(agent_id)?;
+            let selection = ReleaseSelectionRecord::from_grant(
+                grant,
+                SignedIntentStatus::Prepared,
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            write_selection(record.layout.run_root(), &selection)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             let intent = SignedSupervisorIntent::new(
                 grant.digest().clone(),
                 agent_id.to_string(),
@@ -561,12 +594,71 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             write_intent(record.layout.run_root(), &queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            let queued_selection = selection
+                .with_status(SignedIntentStatus::Queued)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            if let Err(error) = write_selection(record.layout.run_root(), &queued_selection) {
+                let recovery = queued
+                    .with_status(SignedIntentStatus::RecoveryRequired)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                let _ = write_intent(record.layout.run_root(), &recovery);
+                slot.signed_intent = Some(recovery);
+                return Err(SupervisorError::Invalid(error.to_string()));
+            }
             slot.signed_intent = Some(queued);
             Ok(ProductionMutationReceipt::queued(
                 grant,
                 next_control_revision,
             ))
         })
+    }
+
+    pub fn production_mutation_receipt(
+        &self,
+        agent_id: &AgentId,
+    ) -> Result<Option<ProductionMutationReceipt>, SupervisorError> {
+        let slot = self
+            .slots
+            .get(agent_id)
+            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        Ok(slot
+            .signed_intent
+            .as_ref()
+            .map(ProductionMutationReceipt::from_intent))
+    }
+
+    pub(crate) fn finish_signed_intent(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        status: SignedIntentStatus,
+    ) -> Result<(), SupervisorError> {
+        let Some(intent) = slot.signed_intent.clone() else {
+            return Ok(());
+        };
+        let updated = intent
+            .with_status(status)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let record = self.record(agent_id)?;
+        let selection = read_selection(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+        if selection.grant_sha256 != intent.grant_sha256
+            || selection.agent_id != intent.agent_id
+            || selection.source_release != intent.source_release
+            || selection.target_release != intent.target_release
+        {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()));
+        }
+        let updated_selection = selection
+            .with_status(status)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        write_selection(record.layout.run_root(), &updated_selection)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        write_intent(record.layout.run_root(), &updated)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        slot.signed_intent = Some(updated);
+        Ok(())
     }
 
     pub(crate) fn commit_signed_intent_if_target(
@@ -589,14 +681,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if active.identity() != intent.target_release {
             return Ok(());
         }
-        let committed = intent
-            .with_status(SignedIntentStatus::Committed)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let record = self.record(agent_id)?;
-        write_intent(record.layout.run_root(), &committed)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        slot.signed_intent = Some(committed);
-        Ok(())
+        self.finish_signed_intent(agent_id, slot, SignedIntentStatus::Committed)
     }
 
     fn recover_signed_intent(
@@ -607,36 +692,37 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let Some(intent) = intent else {
-            return Ok(());
+        let selection = read_selection(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let (intent, selection) = match (intent, selection) {
+            (None, None) => return Ok(()),
+            (Some(intent), Some(selection)) => (intent, selection),
+            _ => {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
         };
-        if intent.agent_id != agent_id.to_string() {
-            return Err(SupervisorError::Invalid(
-                "signed supervisor intent agent binding mismatch".to_string(),
+        if intent.agent_id != agent_id.to_string()
+            || selection.agent_id != agent_id.to_string()
+            || selection.grant_sha256 != intent.grant_sha256
+            || selection.source_release != intent.source_release
+            || selection.target_release != intent.target_release
+            || selection.status != intent.status
+        {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
             ));
         }
         slot.signed_intent = Some(intent.clone());
-        if matches!(intent.status, SignedIntentStatus::Committed) {
+        if intent.status.is_terminal() {
             return Ok(());
         }
         // A restart has no durable proof that an apparently matching target
-        // was produced by this exact signed mutation.  In particular, the
-        // one-file intent does not carry an independently committed source /
-        // target release-state revision, control-revision successor,
-        // lifecycle-generation transition, or continuity of the daemon's
-        // authority epoch.  Treating `Running + target` as Committed would
-        // therefore let an unrelated/manual upgrade close an old grant.
-        // Every non-terminal intent must remain fail-closed until an explicit
-        // recovery ceremony supplies those witnesses.
-        //
-        // Fence and kill any adopted child before surfacing the recovery
-        // requirement; normal ticking must not continue an ambiguous
-        // external transition.
+        // was produced by this exact signed mutation. Selection + intent are
+        // both durable and must agree, but a non-terminal pair still cannot
+        // be inferred as committed from process liveness alone.
         if let Some(runtime) = slot.runtime.as_mut() {
-            // A failed fence/kill is still an unresolved signed intent.  Do
-            // not downgrade it to a recoverable driver fault: the caller
-            // must fail closed at daemon startup and require explicit
-            // operator recovery.
             let _ = runtime.process.kill();
             runtime.fenced = true;
             runtime.phase = RuntimePhase::Killing;
