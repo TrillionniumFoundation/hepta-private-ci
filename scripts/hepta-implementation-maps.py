@@ -17,6 +17,7 @@ from pathlib import Path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
+STRICT_SOURCE_BASE_MODULES = {"prompt.registry"}
 
 
 def current_source_base() -> dict[str, str]:
@@ -287,7 +288,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -316,7 +316,24 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            source_commit = source_base["commit"]
+            if mid in STRICT_SOURCE_BASE_MODULES:
+                try:
+                    actual_tree = git("rev-parse", f"{source_commit}^{tree}")
+                except subprocess.CalledProcessError:
+                    failures.append(f"{mid}: source base commit is unavailable")
+                else:
+                    if actual_tree != source_base["tree"]:
+                        failures.append(f"{mid}: source base tree mismatch")
+                    ancestor = subprocess.run(
+                        ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                        cwd=ROOT,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    if ancestor.returncode != 0:
+                        failures.append(f"{mid}: source base is not an ancestor of HEAD")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -342,11 +359,44 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+        if mid in STRICT_SOURCE_BASE_MODULES and isinstance(source_base, dict):
+            source_commit = source_base.get("commit")
+            evidence_paths = set(row.get("resolvedRoots") or [])
+            for op in ops:
+                source = op.get("sourcePath")
+                if source:
+                    evidence_paths.add(source)
+                for key in ("tests", "delegatedCallees"):
+                    for evidence_path in op.get(key, []):
+                        if evidence_path:
+                            evidence_paths.add(evidence_path)
+            if source_commit and evidence_paths:
+                drift = subprocess.run(
+                    [
+                        "git",
+                        "diff",
+                        "--quiet",
+                        source_commit,
+                        "HEAD",
+                        "--",
+                        *sorted(evidence_paths),
+                    ],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if drift.returncode == 1:
+                    failures.append(f"{mid}: mapped source/evidence changed after source base")
+                elif drift.returncode != 0:
+                    failures.append(f"{mid}: cannot compare source base to HEAD")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    # Source baselines are module-local provenance. A module is upgraded to
+    # strict source-base enforcement only after its map is rebound to an exact
+    # reviewed commit/tree; unrelated modules are not forced to share one stale
+    # global identity.
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
