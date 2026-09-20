@@ -19,6 +19,12 @@ boolean-based `decide_integration()` can never produce review eligibility.
 
 [COMPONENTS.json](COMPONENTS.json) and [TRACEABILITY.json](TRACEABILITY.json) are
 source/test navigation maps. They do not self-certify maturity or grant authority.
+`IMPLEMENTATION_MAP.json.sourceBase` is an integration baseline, not the self-referential
+candidate commit. This module opts into `mappingSourceIdentityMode=exact_blob`: every
+mapped operation records the Git blob OID of its current `sourcePath`, and the global
+implementation-map verifier recomputes `HEAD:<sourcePath>` before accepting the map.
+Exact candidate commit/tree identity remains the responsibility of source-head and
+deterministic synthetic-merge execution receipts.
 Historical `HARDENING.json`, `CLOSURE_V4.json`, `MATURITY.json` and copied package
 registries are retired; their useful behavior is in the current source, schema,
 implementation guide and behavioral regressions. No historical materializer,
