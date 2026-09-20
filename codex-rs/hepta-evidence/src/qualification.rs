@@ -338,6 +338,37 @@ pub struct VerifyChainRequestV1 {
     pub now_unix_ms: u64,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EvidenceIssuerTrustBindingV1 {
+    pub issuer_principal_id: String,
+    pub issuer_key_epoch: u64,
+    pub issuer_signing_identity_sha256: Sha256Digest,
+    pub role: EvidenceIssuerRoleV1,
+}
+
+impl EvidenceIssuerTrustBindingV1 {
+    pub fn from_registration(
+        issuer: &IssuerRegistration,
+        role: EvidenceIssuerRoleV1,
+    ) -> Self {
+        Self {
+            issuer_principal_id: issuer.issuer_id.to_string(),
+            issuer_key_epoch: issuer.key_epoch.get(),
+            issuer_signing_identity_sha256: Sha256Digest::for_bytes(
+                issuer.verifying_key.as_bytes(),
+            ),
+            role,
+        }
+    }
+
+    fn matches(&self, row: &StoredQualificationEvidence) -> bool {
+        self.issuer_principal_id == row.issuer_principal_id
+            && self.issuer_key_epoch == row.issuer_key_epoch
+            && self.issuer_signing_identity_sha256 == row.issuer_signing_identity_sha256
+            && self.role == row.envelope.issuer_role
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct EvidenceReferenceV1 {
@@ -578,6 +609,7 @@ impl QualificationEvidenceStore<'_> {
     pub async fn verify_chain(
         &self,
         request: &VerifyChainRequestV1,
+        current_trust: &[EvidenceIssuerTrustBindingV1],
     ) -> Result<EvidenceDispositionV1, EvidenceError> {
         request
             .candidate
@@ -586,6 +618,11 @@ impl QualificationEvidenceStore<'_> {
         if request.required_roles.len() > 32 {
             return Err(EvidenceError::InvalidRecord(
                 "qualification verification requires at most 32 roles".to_string(),
+            ));
+        }
+        if current_trust.len() > QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS {
+            return Err(EvidenceError::InvalidRecord(
+                "qualification verification trust snapshot exceeds 512 bindings".to_string(),
             ));
         }
         let unique_roles = request.required_roles.iter().copied().collect::<BTreeSet<_>>();
@@ -638,6 +675,13 @@ impl QualificationEvidenceStore<'_> {
                 expired.push(row.reference());
                 continue;
             }
+            if !current_trust.iter().any(|binding| binding.matches(&row)) {
+                return Ok(EvidenceDispositionV1::Conflicting {
+                    evidence: vec![row.reference()],
+                    reason: "evidence issuer trust is stale, revoked, role-mismatched, or key-rotated"
+                        .to_string(),
+                });
+            }
             if row.envelope.claim_class == EvidenceClaimClassV1::IndependentDecision {
                 let receipt: IndependentDecisionReceiptV1 =
                     serde_json::from_value(row.envelope.payload.clone()).map_err(|error| {
@@ -679,10 +723,10 @@ impl QualificationEvidenceStore<'_> {
                 return Ok(EvidenceDispositionV1::Missing);
             }
         }
-        if !roles_have_distinct_principals(&request.required_roles, &active) {
+        if !roles_have_distinct_authenticated_identities(&request.required_roles, &active) {
             return Ok(EvidenceDispositionV1::Conflicting {
                 evidence: active.iter().map(StoredQualificationEvidence::reference).collect(),
-                reason: "required independent roles cannot be assigned to distinct authenticated principals"
+                reason: "required independent roles cannot be assigned to distinct authenticated principals and signing identities"
                     .to_string(),
             });
         }
@@ -1157,44 +1201,59 @@ fn verify_rows_integrity(rows: &[StoredQualificationEvidence]) -> Result<(), Evi
     Ok(())
 }
 
-fn roles_have_distinct_principals(
+fn roles_have_distinct_authenticated_identities(
     required_roles: &[EvidenceIssuerRoleV1],
     rows: &[StoredQualificationEvidence],
 ) -> bool {
     fn assign(
         index: usize,
         roles: &[EvidenceIssuerRoleV1],
-        principals: &BTreeMap<EvidenceIssuerRoleV1, BTreeSet<String>>,
-        used: &mut BTreeSet<String>,
+        identities: &BTreeMap<EvidenceIssuerRoleV1, BTreeSet<(String, String)>>,
+        used_principals: &mut BTreeSet<String>,
+        used_signing_identities: &mut BTreeSet<String>,
     ) -> bool {
         if index == roles.len() {
             return true;
         }
-        let Some(candidates) = principals.get(&roles[index]) else {
+        let Some(candidates) = identities.get(&roles[index]) else {
             return false;
         };
-        for principal in candidates {
-            if used.insert(principal.clone()) {
-                if assign(index + 1, roles, principals, used) {
+        for (principal, signing_identity) in candidates {
+            if used_principals.insert(principal.clone())
+                && used_signing_identities.insert(signing_identity.clone())
+            {
+                if assign(
+                    index + 1,
+                    roles,
+                    identities,
+                    used_principals,
+                    used_signing_identities,
+                ) {
                     return true;
                 }
-                used.remove(principal);
+                used_signing_identities.remove(signing_identity);
             }
+            used_principals.remove(principal);
         }
         false
     }
 
-    let mut principals = BTreeMap::<EvidenceIssuerRoleV1, BTreeSet<String>>::new();
+    let mut identities =
+        BTreeMap::<EvidenceIssuerRoleV1, BTreeSet<(String, String)>>::new();
     for row in rows {
-        principals
+        identities
             .entry(row.envelope.issuer_role)
             .or_default()
-            .insert(row.issuer_principal_id.clone());
+            .insert((
+                row.issuer_principal_id.clone(),
+                row.issuer_signing_identity_sha256.as_str().to_string(),
+            ));
     }
     assign(
         0,
         required_roles,
-        &principals,
+        &identities,
+        &mut BTreeSet::<String>::new(),
         &mut BTreeSet::<String>::new(),
     )
 }
