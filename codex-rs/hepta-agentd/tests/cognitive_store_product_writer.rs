@@ -225,7 +225,9 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             scope: scope.clone(),
             content: "invalid semantic mutation".to_string(),
             verification: MemoryVerification::Verified,
-            lifecycle: MemoryLifecycleState::Tombstoned,
+            lifecycle: MemoryLifecycleState::Tombstoned {
+                reason: "invalid semantic mutation".to_string(),
+            },
             valid_from_unix_seconds: now,
             valid_to_unix_seconds: None,
             citations: Vec::new(),
@@ -302,7 +304,10 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         .await?;
     forgotten.validate()?;
     assert_eq!(forgotten.write.memory.id.revision, 3);
-    assert_eq!(forgotten.write.memory.lifecycle, MemoryLifecycleState::Tombstoned);
+    assert!(matches!(
+        forgotten.write.memory.lifecycle,
+        MemoryLifecycleState::Tombstoned { .. }
+    ));
 
     let cut_before_revoked_write = host.writer().recovery_anchor().await?;
     authority_live.store(false, Ordering::SeqCst);
