@@ -8,6 +8,18 @@
 //! and to fail if somebody tries to turn the reference package into a second
 //! authority or contract spine.
 
+pub use codex_hepta_cognitive_types::hnmf::{
+    CrossModalBindingV1, MemoryEventV1, ModalitySpanRefV1,
+};
+pub use codex_hepta_cognitive_types::hnmf_learning::{
+    EngramNodeV1, ForgetPropagationReceiptV1, MemoryCueV1, OutcomeSignalV1,
+    PlasticityBatchV1, RecallPacketV1, ReplaySelectionReceiptV1, SynapseV1,
+    TopologyProposalV1,
+};
+pub use codex_hepta_cognitive_types::wire::{
+    canonical_contract_digest_v1, decode_wire_v1, encode_wire_v1,
+};
+
 pub const CANONICAL_CRATE_PATH: &str = "../../codex-rs/hepta-cognitive-types";
 pub const CANONICAL_CONTRACT_MODULES: [&str; 3] = [
     "src/hnmf.rs",
@@ -37,5 +49,20 @@ mod tests {
         );
         assert_eq!(CANONICAL_CONTRACT_MODULES.len(), 3);
         assert!(CANONICAL_CRATE_PATH.ends_with("hepta-cognitive-types"));
+        let canonical_types = [
+            std::any::type_name::<ModalitySpanRefV1>(),
+            std::any::type_name::<MemoryEventV1>(),
+            std::any::type_name::<CrossModalBindingV1>(),
+            std::any::type_name::<EngramNodeV1>(),
+            std::any::type_name::<SynapseV1>(),
+            std::any::type_name::<MemoryCueV1>(),
+            std::any::type_name::<RecallPacketV1>(),
+            std::any::type_name::<OutcomeSignalV1>(),
+            std::any::type_name::<ReplaySelectionReceiptV1>(),
+            std::any::type_name::<PlasticityBatchV1>(),
+            std::any::type_name::<TopologyProposalV1>(),
+            std::any::type_name::<ForgetPropagationReceiptV1>(),
+        ];
+        assert!(canonical_types.iter().all(|name| name.contains("codex_hepta_cognitive_types")));
     }
 }
