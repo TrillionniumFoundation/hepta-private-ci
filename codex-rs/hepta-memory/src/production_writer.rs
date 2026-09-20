@@ -931,8 +931,16 @@ impl ProductionDurableWriter {
             expected,
         )?;
 
-        // First make the ambiguous external boundary durable. A crash from
-        // this point onward reopens as Indeterminate and must reconcile.
+        // Acquire the retryable owner-local lease first. This claim may be
+        // renewed or taken over after expiry only while the operation has not
+        // crossed the one-shot Indeterminate/effect-entry fence.
+        let owner_claim = self
+            .claim_dispatch_lease(&receipt, PRODUCTION_DISPATCH_CLAIM_LEASE_MS)
+            .await?;
+
+        // Now make the ambiguous external boundary durable. A crash from this
+        // point onward reopens as Indeterminate and must reconcile; the
+        // per-operation claim is no longer allowed to authorize a resend.
         let inherited_from_generation = receipt.inherited_from_generation;
         let dispatch_claim_event_id = match inherited_from_generation {
             Some(source_generation) => {
@@ -967,6 +975,12 @@ impl ProductionDurableWriter {
             other => ProductionWriterError::Local(other),
         })?
         .event_id;
+        let entered_claim = operation_claims::mark_entered(
+            &self.store,
+            &owner_claim,
+            now_unix_ms()?,
+        )
+        .await?;
 
         // Then consume the single-use grant and revalidate it immediately at
         // target entry. If either check fails before the adapter is entered we
@@ -974,13 +988,22 @@ impl ProductionDurableWriter {
         let token = match final_use.claim(signed, expected) {
             Ok(token) => token,
             Err(error) => {
-                let _ = self
+                if self
                     .settle_pre_dispatch_rejection(
                         &receipt.occurrence_key,
                         inherited_from_generation.is_some(),
                         format!("final-use claim rejected: {error}"),
                     )
+                    .await
+                    .is_ok()
+                {
+                    let _ = operation_claims::mark_settled(
+                        &self.store,
+                        &entered_claim,
+                        now_unix_ms().unwrap_or(1),
+                    )
                     .await;
+                }
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
@@ -989,18 +1012,27 @@ impl ProductionDurableWriter {
         {
             Ok(future) => future,
             Err(error) => {
-                let _ = self
+                if self
                     .settle_pre_dispatch_rejection(
                         &receipt.occurrence_key,
                         inherited_from_generation.is_some(),
                         format!("final-use entry rejected: {error}"),
                     )
+                    .await
+                    .is_ok()
+                {
+                    let _ = operation_claims::mark_settled(
+                        &self.store,
+                        &entered_claim,
+                        now_unix_ms().unwrap_or(1),
+                    )
                     .await;
+                }
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
         let outcome = future.await;
-        if inherited_from_generation.is_some() {
+        let settled = if inherited_from_generation.is_some() {
             self.settle_inherited_dispatch_outcome(
                 request,
                 &receipt.occurrence_key,
@@ -1016,7 +1048,21 @@ impl ProductionDurableWriter {
                 outcome,
             )
             .await
+        };
+        if let Ok(dispatch_receipt) = settled.as_ref()
+            && dispatch_receipt.target_disposition != ProductionTargetDisposition::Indeterminate
+        {
+            // Local terminality is already durable at this point, so failure
+            // to append the secondary claim-settled marker must not erase a
+            // real destination result or make the operation retryable.
+            let _ = operation_claims::mark_settled(
+                &self.store,
+                &entered_claim,
+                now_unix_ms().unwrap_or(1),
+            )
+            .await;
         }
+        settled
     }
 
     async fn settle_pre_dispatch_rejection(
@@ -1621,6 +1667,15 @@ fn validate_text(value: &str, label: &str, max_bytes: usize) -> Result<(), Produ
         )));
     }
     Ok(())
+}
+
+fn now_unix_ms() -> Result<u64, ProductionWriterError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| ProductionWriterError::Invalid(format!("system clock failed: {error}")))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|_| ProductionWriterError::Invalid("system clock millisecond overflow".to_string()))
 }
 
 fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
