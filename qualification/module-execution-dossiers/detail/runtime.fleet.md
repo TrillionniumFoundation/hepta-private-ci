@@ -1,7 +1,7 @@
 # runtime.fleet: implementation design
 
 Parent: `docs/modules/runtime.fleet/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: durable agent registry plus bounded in-memory capacity/lease component implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable agent registry, canonical resource model, durable allocation store, deterministic host placement, final-use-authorized grant commit, runtime consumption and holder reconciliation are implemented in source; target-host qualification and independent acceptance remain external. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,12 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `FleetRegistry` in [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); `admit_host` in [codex-rs/hepta-fleet/src/lease_ledger.rs](../../../codex-rs/hepta-fleet/src/lease_ledger.rs); `renew_or_revoke` in [codex-rs/hepta-fleet/src/lease_ledger.rs](../../../codex-rs/hepta-fleet/src/lease_ledger.rs). Durable agent registry plus bounded in-memory capacity/lease component implemented.
-- **State and recovery:** FleetRegistry persists agent manifests and generation-specific lifecycle JSON under the existing fleet layout. The separate BTreeMap allocation ledger tracks resources/epoch/expiry and is not the durable grant authority.
-- **Source tests:** [codex-rs/hepta-fleet/src/registry_tests.rs](../../../codex-rs/hepta-fleet/src/registry_tests.rs), [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json](../../../docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json), [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../../docs/readiness/LANE_B_RUNTIME_COMPOSITION.md).
-- **Remaining work:** Connect the lease component to supervisor-owned durable grants/fences and a real capacity observer; qualify partition, restart and expiry behavior on enrolled hosts.
+- **Durable owner:** `FleetRegistry::allocation_store` opens `FleetAllocationStore` beneath the existing supervisor-owned Fleet state root. Generations publish create-only after file sync; stale writers reject; malformed published state fails closed; holder/revocation/lease state reopens across restart.
+- **Canonical resources:** `FleetResourceVectorV1` is shared by allocator, lease ledger, Agent resource-budget conversion and runtime consumption. The V1 axes are concurrent turns, MiB memory, tool processes and turn-queue slots.
+- **Placement and allocation:** `plan_placement_v1` accepts requests without a caller-selected host, filters fresh eligible hosts, reserves unresolved holder capacity, deterministically selects hosts and applies the existing weighted max-min allocator. Input permutation preserves the plan digest.
+- **Authority and commit:** `capacity_observation_binding` / `admit_host_with_authority` and `placement_authority_binding` / `commit_placement_with_authority` reuse `FinalUseAuthority` so exact subject, request, scope and final payload are revalidated immediately before the durable effect.
+- **Runtime consumer:** `admit_runtime_use_v1` validates active lease, local host, Agent principal and manifest resource budget. The real `hepta-supervisor` calls this boundary before start/restart/upgrade/rollback and before adopting a process after supervisor restart when `HEPTA_FLEET_HOST_ID` is configured.
+- **Holder reconciliation:** `FleetConsumptionObservationV1` records current-fence holder state. Revoked/expired allocations keep reserving capacity until a matching release observation is durable; stale pre-renewal release evidence cannot free a renewed lease.
+- **Capacity producer:** `observe_local_host_capacity_v1` measures logical processors and physical memory on Linux/macOS and combines them with explicit soft-axis policy. The observation still requires signed final-use authority before Fleet publication.
+- **Verification mapping:** FLEET-01 is covered by allocator conservation/minimum tests; FLEET-02 by unresolved-holder and lease-fence reconciliation tests; FLEET-03 by permutation/digest tests; FLEET-04 by exact-payload capacity authority rejection. These are source tests; target-host partition/restart/expiry qualification remains a separate evidence gate.
+- **Remaining external gates:** exact-candidate CI, real enrolled-host measurements, target partition/restart/expiry qualification, independent acceptance, activation and release.
