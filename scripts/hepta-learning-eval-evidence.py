@@ -140,10 +140,24 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
             f"candidate tree mismatch: index={current_tree} supplied={args.candidate_tree}"
         )
     generated = now_utc()
+    source_tree = git_text("rev-parse", f"{args.source_sha}^{{tree}}")
+    candidate_tree = git_text("rev-parse", f"{args.candidate_sha}^{{tree}}")
+    if candidate_tree != args.candidate_tree:
+        raise ValueError("candidate SHA does not resolve to supplied candidate tree")
+    if args.mode == "exact-source" and args.candidate_sha != args.source_sha:
+        raise ValueError("exact-source candidate SHA must equal source SHA")
+    if args.mode == "synthetic-merge":
+        if not args.base_sha:
+            raise ValueError("synthetic-merge evidence requires base SHA")
+        if git_text("rev-parse", f"{args.candidate_sha}^1") != args.base_sha:
+            raise ValueError("synthetic-merge first parent is not base SHA")
+        if git_text("rev-parse", f"{args.candidate_sha}^2") != args.source_sha:
+            raise ValueError("synthetic-merge second parent is not source SHA")
     receipt: dict[str, Any] = {
         "schema": SCHEMA,
         "mode": args.mode,
         "sourceSha": args.source_sha,
+        "sourceTree": source_tree,
         "candidateSha": args.candidate_sha,
         "candidateTree": args.candidate_tree,
         "baseSha": args.base_sha or None,
@@ -194,6 +208,7 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
         for label, value in (
             ("coverage", args.coverage),
             ("stress", args.stress),
+            ("stress-log", args.stress_log),
             ("runtime", args.runtime_log),
         ):
             if not value:
@@ -201,6 +216,7 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
         receipt["qualificationOutputs"] = {
             "coverage": output_digest(args.coverage),
             "stress": output_digest(args.stress),
+            "stressLog": output_digest(args.stress_log),
             "runtime": output_digest(args.runtime_log),
         }
         receipt["lineCoverageThresholdPct"] = 85
@@ -217,12 +233,29 @@ def verify(path: Path) -> dict[str, Any]:
         raise ValueError("unexpected evidence schema")
     if receipt.get("mode") not in {"exact-source", "synthetic-merge"}:
         raise ValueError("invalid evidence mode")
-    for key in ("sourceSha", "candidateSha", "candidateTree", "inputDigest"):
+    for key in ("sourceSha", "sourceTree", "candidateSha", "candidateTree", "inputDigest"):
         value = receipt.get(key)
         if not isinstance(value, str) or not value:
             raise ValueError(f"missing {key}")
+    source_sha = str(receipt["sourceSha"])
+    candidate_sha = str(receipt["candidateSha"])
+    base_sha = receipt.get("baseSha")
+    if receipt.get("sourceTree") != git_text("rev-parse", f"{source_sha}^{{tree}}"):
+        raise ValueError("source SHA/tree binding mismatch")
+    if receipt.get("candidateTree") != git_text("rev-parse", f"{candidate_sha}^{{tree}}"):
+        raise ValueError("candidate SHA/tree binding mismatch")
     if receipt.get("candidateTree") != git_text("write-tree"):
         raise ValueError("evidence does not bind the current candidate tree")
+    if receipt["mode"] == "exact-source":
+        if candidate_sha != source_sha:
+            raise ValueError("exact-source candidate/source SHA mismatch")
+    else:
+        if not isinstance(base_sha, str) or not base_sha:
+            raise ValueError("synthetic-merge base SHA missing")
+        if git_text("rev-parse", f"{candidate_sha}^1") != base_sha:
+            raise ValueError("synthetic-merge first parent mismatch")
+        if git_text("rev-parse", f"{candidate_sha}^2") != source_sha:
+            raise ValueError("synthetic-merge second parent mismatch")
     digest, count = input_digest()
     if receipt.get("inputDigest") != digest or receipt.get("inputFileCount") != count:
         raise ValueError("evidence input digest mismatch")
@@ -258,7 +291,7 @@ def verify(path: Path) -> dict[str, Any]:
         if receipt.get("stressIterations") != 8:
             raise ValueError("stress iteration binding mismatch")
         outputs = receipt.get("qualificationOutputs")
-        if not isinstance(outputs, dict) or set(outputs) != {"coverage", "stress", "runtime"}:
+        if not isinstance(outputs, dict) or set(outputs) != {"coverage", "stress", "stressLog", "runtime"}:
             raise ValueError("qualification output bindings missing")
         for label, item in outputs.items():
             if not isinstance(item, dict):
@@ -296,6 +329,7 @@ def main() -> int:
     emitter.add_argument("--base-sha", default="")
     emitter.add_argument("--coverage")
     emitter.add_argument("--stress")
+    emitter.add_argument("--stress-log")
     emitter.add_argument("--runtime-log")
     emitter.add_argument("--output", required=True)
     verifier = sub.add_parser("verify")

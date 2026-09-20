@@ -200,6 +200,7 @@ jobs:
             --base-sha "${BASE_SHA:-}" \
             --coverage .hepta-evidence/learning-eval/coverage.json \
             --stress .hepta-evidence/learning-eval/stress.json \
+            --stress-log .hepta-evidence/learning-eval/stress.log \
             --runtime-log .hepta-evidence/learning-eval/runtime-e2e.log \
             --output .hepta-evidence/learning-eval/exact-source.json
           python3 scripts/hepta-learning-eval-evidence.py verify \

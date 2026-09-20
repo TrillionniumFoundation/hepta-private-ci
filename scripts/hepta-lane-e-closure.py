@@ -492,6 +492,7 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
     cargo = cargo_path.read_text(encoding="utf-8")
     api_contract = api_contract_path.read_text(encoding="utf-8")
     production = PRODUCTION_CONTRACT_PATH.read_text(encoding="utf-8")
+    evidence_script = EVIDENCE_SCRIPT_PATH.read_text(encoding="utf-8")
 
     findings.require(
         "pub fn evaluate(mut request: EvaluationRequest)" not in lib,
@@ -539,6 +540,20 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
             token in production,
             "learning_eval_production_contract",
             f"production contract is missing normative token: {token}",
+        )
+    for token in (
+        "sourceTree",
+        "candidate SHA/tree binding mismatch",
+        "synthetic-merge first parent mismatch",
+        "qualificationOutputs",
+        "lineCoverageThresholdPct",
+        "stressIterations",
+        "stressLog",
+    ):
+        findings.require(
+            token in evidence_script,
+            "learning_eval_evidence_binding",
+            f"evidence verifier is missing provenance/output binding: {token}",
         )
     for token in (
         "decide_with_signed_evidence_v2",
@@ -674,7 +689,9 @@ def verify_workflow(findings: Findings) -> None:
         "Strict merged Lane E lint",
         "--coverage .hepta-evidence/learning-eval/coverage.json",
         "--stress .hepta-evidence/learning-eval/stress.json",
+        "--stress-log .hepta-evidence/learning-eval/stress.log",
         "--runtime-log .hepta-evidence/learning-eval/runtime-e2e.log",
+        "github.event.before",
     ):
         findings.require(
             token in text,
