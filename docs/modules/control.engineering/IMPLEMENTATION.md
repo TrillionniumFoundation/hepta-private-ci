@@ -17,6 +17,11 @@ mutation testing; verifies source/execution/evaluator evidence; records signed
 candidate-bound review eligibility; exposes distributed-fence, external-audit-anchor
 and external-key-custody admission contracts; and composes consent-bound dormant
 external-system proposals. The repository CI includes a named v4 product caller over the SQLite v9 owner.
+The caller executes registration → lease → claim → heartbeat → worker result → independently
+observed completion → integration-queue reconciliation, then reopens the same owner and
+idempotently replays the accepted registration/lease/claim/heartbeat/result/completion
+and integration observations. Replay must preserve the completed/ready states and the
+audit anchor; this is an acknowledgement-loss recovery fixture, not external independence.
 That caller fail-closed reads the canonical work-package registry from the exact
 `HEAD:docs/delivery/WORK_PACKAGES.json` Git blob (not checkout-filtered worktree
 bytes) and binds its blob OID plus registry/package digests to the tested tree. It
