@@ -19,6 +19,8 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
 pub use v2::AdmittedCognitiveStoreV2;
+pub use v2::CanonicalMemoryEventShadowReceiptV1;
+pub use v2::CanonicalMemoryEventShadowWriteV1;
 pub use v2::CognitiveStoreImageV2;
 pub use v2::CognitiveStoreV2Error;
 pub use v2::ForgetIntentV2;
