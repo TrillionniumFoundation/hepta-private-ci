@@ -342,6 +342,7 @@ impl UiControlGateway {
             .map_err(|_| UiControlGatewayError::OwnerUnavailable)?;
         let context_digest = gateway_context_digest(
             method,
+            &principal.principal_id,
             &normalized.session_id,
             normalized.connection_generation,
             normalized.runtime_generation,
@@ -502,6 +503,7 @@ impl UiControlGateway {
         }
         let expected_context = gateway_context_digest(
             &normalized.method,
+            &principal.principal_id,
             &normalized.origin_session_id,
             normalized.origin_connection_generation,
             normalized.runtime_generation,
@@ -790,6 +792,7 @@ fn request_semantics_value(
 
 fn gateway_context_digest(
     method: &str,
+    principal_id: &StableId,
     origin_session_id: &StableId,
     origin_connection_generation: Generation,
     runtime_generation: Generation,
@@ -797,6 +800,7 @@ fn gateway_context_digest(
     canonical_digest(&serde_json::json!({
         "schema": CONTEXT_SCHEMA,
         "method": method,
+        "principalId": principal_id.as_str(),
         "originSessionId": origin_session_id.as_str(),
         "originConnectionGeneration": origin_connection_generation.get(),
         "runtimeGeneration": runtime_generation.get()
