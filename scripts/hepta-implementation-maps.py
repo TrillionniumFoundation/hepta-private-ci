@@ -17,6 +17,7 @@ from pathlib import Path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
+SOURCE_BASE_SEMANTICS = "exact_non_projection_source_snapshot"
 
 
 def current_source_base() -> dict[str, str]:
@@ -101,6 +102,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
+        "sourceBaseSemantics": SOURCE_BASE_SEMANTICS,
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
@@ -195,6 +197,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             # describe the candidate that was actually inspected, not retain a
             # historical source identity merely because the old field existed.
             "sourceBase": source_base,
+            "sourceBaseSemantics": SOURCE_BASE_SEMANTICS,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -317,6 +320,8 @@ def verify():
             failures.append(f"{mid}: schema must be v3")
         if row.get("module") != mid:
             failures.append(f"{mid}: identity")
+        if row.get("sourceBaseSemantics") != SOURCE_BASE_SEMANTICS:
+            failures.append(f"{mid}: source base semantics")
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
