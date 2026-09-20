@@ -3,6 +3,7 @@ use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
+use std::process::Command;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
@@ -578,4 +579,119 @@ fn corrupt_or_missing_witness_history_never_falls_back_to_reinitialization() {
         LedgerWitnessStore::recover(missing.file("witness"), binding()).err(),
         Some(DurableLedgerError::MissingHeader)
     );
+}
+
+
+#[test]
+fn crash_after_ledger_sync_before_witness_child() {
+    let Ok(root) = std::env::var("HEPTA_PRODUCTION_LEDGER_CRASH_FIXTURE") else {
+        return;
+    };
+    let root = PathBuf::from(root);
+    let open = |name: &str| {
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(root.join(name))
+            .unwrap()
+    };
+
+    let trust = activated_trust();
+    let request = decision();
+    let payload = decision_signing_payload_v2(&request).unwrap();
+    let evidence = sign(
+        trust.verifier(),
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &payload,
+    );
+    let verified = trust
+        .verifier()
+        .verify(
+            LearningEvidenceRoleV1::Generator,
+            &evidence,
+            &payload,
+            50,
+        )
+        .unwrap();
+    let principal = verified.principal().clone();
+    let event = LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
+        record_id: request.record_id,
+        episode_id: request.episode_id,
+        run_snapshot_digest: request.run_snapshot_digest,
+        objective_digest: request.objective_digest,
+        policy_digest: request.policy_digest,
+        generator_id: principal.principal_id.clone(),
+        generator_controller_id: verified.controller_id().clone(),
+        generator_credential_chain_digest: principal.credential_chain_digest,
+        generator_signing_key_digest: principal.signing_key_digest,
+        generator_scope_digest: principal.scope_digest,
+        generator_authority_epoch: principal.authority_epoch,
+        candidate_ids: request.candidate_ids,
+        selected_candidate_id: request.selected_candidate_id,
+        selected_propensity: request.selected_propensity,
+        candidate_completeness_digest: validate_production_completeness(&decision()).unwrap(),
+        support_digest: request.support_digest,
+        authentication_digest: signed_evidence_digest(&evidence),
+    }));
+
+    drop(LedgerWitnessStore::create(open("witness"), binding()).unwrap());
+    let mut ledger = DurableLedger::create(open("ledger"), binding(), 64).unwrap();
+    ledger.append(Digest32::ZERO, event).unwrap();
+    std::process::exit(31);
+}
+
+#[test]
+fn process_death_between_ledger_and_witness_reconciles_without_redispatch() {
+    let fixture = Fixture::new();
+    let output = Command::new(std::env::current_exe().unwrap())
+        .args([
+            "--exact",
+            "production::tests::crash_after_ledger_sync_before_witness_child",
+            "--nocapture",
+        ])
+        .env("HEPTA_PRODUCTION_LEDGER_CRASH_FIXTURE", &fixture.root)
+        .output()
+        .unwrap();
+    assert_eq!(
+        output.status.code(),
+        Some(31),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let ledger = DurableLedger::recover(
+        fixture.file("ledger"),
+        binding(),
+        64,
+        LedgerRecovery::Unacknowledged,
+    )
+    .unwrap();
+    let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
+    let trust = activated_trust();
+    let ledger_directory = fixture.directory();
+    let witness_directory = fixture.directory();
+    let mut writer = LedgerWriter::from_durable(
+        ledger,
+        witness,
+        trust,
+        &ledger_directory,
+        &witness_directory,
+    )
+    .unwrap();
+    assert_eq!(writer.witness_frontier().unwrap().anchor.sequence, 0);
+
+    let request = decision();
+    let payload = decision_signing_payload_v2(&request).unwrap();
+    let evidence = sign(
+        writer.verifier(),
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &payload,
+    );
+    let receipt = writer
+        .append_decision(Digest32::ZERO, request, &evidence, 50)
+        .unwrap();
+    assert_eq!(receipt.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(writer.witness_frontier().unwrap().anchor.sequence, 1);
 }
