@@ -2,6 +2,15 @@ use std::fs::OpenOptions;
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use codex_hepta_intelligence::{
+    AuthenticatedStructuralCanaryErrorV1, observe_authenticated_structural_canary_v1,
+    structural_canary_observation_signing_payload_v1,
+};
+use codex_hepta_learning_ledger::{
+    AuthenticatedPrincipalV1, LearningEvidenceRoleV1, LearningEvidenceTrustV1,
+    LearningEvidenceVerifierV1, SignedEvidenceError, SignedLearningEvidenceV1,
+    TrustedLearningSignerV1,
+};
 use codex_hepta_plasticity::{
     DurableTopologyProposalRegistryV1, GovernedTopologyProposalV1, ProposalWindowV2,
     StructuralCanaryControllerV1, StructuralCanaryObservationV1, StructuralCanaryStateV1,
@@ -10,6 +19,7 @@ use codex_hepta_plasticity::{
     propose_topology_v2,
 };
 use codex_hepta_types::{Digest32, Generation, StableId};
+use ed25519_dalek::{Signer, SigningKey};
 
 struct TestFile {
     path: PathBuf,
@@ -63,6 +73,62 @@ fn digest(value: &str) -> Digest32 {
 
 fn generation(value: u64) -> Generation {
     Generation::new(value).expect("valid generation")
+}
+
+fn canary_observer() -> (LearningEvidenceVerifierV1, SigningKey, AuthenticatedPrincipalV1) {
+    let key = SigningKey::from_bytes(&[23_u8; 32]);
+    let scope = digest("canary:scope");
+    let objective = digest("canary:objective");
+    let principal = AuthenticatedPrincipalV1 {
+        principal_id: id("observer:structural-canary"),
+        credential_chain_digest: digest("canary:credential"),
+        signing_key_digest: Digest32::of_bytes(key.verifying_key().as_bytes()),
+        scope_digest: scope,
+        authority_epoch: 7,
+        authenticated_at: 40,
+        expires_at: 80,
+    };
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: scope,
+        objective_digest: objective,
+        authority_epoch: 7,
+        signers: vec![TrustedLearningSignerV1 {
+            principal: principal.clone(),
+            controller_id: id("controller:structural-canary"),
+            verifying_key: key.verifying_key().to_bytes(),
+            roles: vec![LearningEvidenceRoleV1::Observer],
+            revoked_at: None,
+        }],
+    })
+    .expect("canary verifier");
+    (verifier, key, principal)
+}
+
+fn sign_canary_observation(
+    verifier: &LearningEvidenceVerifierV1,
+    key: &SigningKey,
+    principal: &AuthenticatedPrincipalV1,
+    plan_digest: Digest32,
+    observation: &StructuralCanaryObservationV1,
+    sequence: u64,
+) -> SignedLearningEvidenceV1 {
+    let payload = structural_canary_observation_signing_payload_v1(plan_digest, observation)
+        .expect("canary signing payload");
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: id(&format!("canary:evidence:{sequence}")),
+        principal_id: principal.principal_id.clone(),
+        role: LearningEvidenceRoleV1::Observer,
+        trust_digest: verifier.trust_digest(),
+        scope_digest: principal.scope_digest,
+        objective_digest: digest("canary:objective"),
+        authority_epoch: principal.authority_epoch,
+        issued_at: 45,
+        expires_at: 70,
+        payload_digest: Digest32::of_bytes(&payload),
+        signature: [0; 64],
+    };
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence
 }
 
 fn governed_topology() -> (GovernedTopologyProposalV1, WriterHandoffPlanV1) {
@@ -171,19 +237,36 @@ fn pls3_governed_topology_persists_then_accepts_bounded_canary() {
     )
     .expect("durable-bound canary plan");
     let mut controller = StructuralCanaryControllerV1::new(plan).expect("canary controller");
+    let (verifier, key, observer) = canary_observer();
     for sequence in 1..=2 {
-        let receipt = controller
-            .observe(StructuralCanaryObservationV1 {
-                sequence,
-                health_digest: digest(&format!("health:{sequence}")),
-                evidence_digest: digest(&format!("evidence:{sequence}")),
-                regression_count: 0,
-                safety_violation: false,
-                lineage_mismatch: false,
-                rollback_verified: true,
-            })
-            .expect("canary observation");
-        assert_eq!(receipt.state, StructuralCanaryStateV1::Running);
+        let observation = StructuralCanaryObservationV1 {
+            sequence,
+            health_digest: digest(&format!("health:{sequence}")),
+            evidence_digest: digest(&format!("evidence:{sequence}")),
+            regression_count: 0,
+            safety_violation: false,
+            lineage_mismatch: false,
+            rollback_verified: true,
+        };
+        let attestation = sign_canary_observation(
+            &verifier,
+            &key,
+            &observer,
+            controller.plan_digest(),
+            &observation,
+            u64::from(sequence),
+        );
+        let receipt = observe_authenticated_structural_canary_v1(
+            &mut controller,
+            observation,
+            &attestation,
+            &verifier,
+            50,
+        )
+        .expect("authenticated canary observation");
+        assert_eq!(receipt.canary.state, StructuralCanaryStateV1::Running);
+        assert_eq!(receipt.observer_id, observer.principal_id);
+        assert!(!receipt.observer_authentication_digest.is_zero());
     }
     let accepted = controller.finish().expect("finish canary");
     assert_eq!(accepted.state, StructuralCanaryStateV1::Accepted);
@@ -217,18 +300,58 @@ fn pls3_safety_violation_aborts_after_durable_admission() {
     )
     .expect("durable-bound canary plan");
     let mut controller = StructuralCanaryControllerV1::new(plan).expect("canary controller");
-    let aborted = controller
-        .observe(StructuralCanaryObservationV1 {
-            sequence: 1,
-            health_digest: digest("unsafe-health"),
-            evidence_digest: digest("unsafe-evidence"),
-            regression_count: 0,
-            safety_violation: true,
-            lineage_mismatch: false,
-            rollback_verified: true,
-        })
-        .expect("terminal abort receipt");
-    assert_eq!(aborted.state, StructuralCanaryStateV1::Aborted);
+    let (verifier, key, observer) = canary_observer();
+
+    let safe_claim = StructuralCanaryObservationV1 {
+        sequence: 1,
+        health_digest: digest("unsafe-health"),
+        evidence_digest: digest("unsafe-evidence"),
+        regression_count: 0,
+        safety_violation: false,
+        lineage_mismatch: false,
+        rollback_verified: true,
+    };
+    let stale_attestation = sign_canary_observation(
+        &verifier,
+        &key,
+        &observer,
+        controller.plan_digest(),
+        &safe_claim,
+        1,
+    );
+    let mut tampered = safe_claim;
+    tampered.safety_violation = true;
+    assert!(matches!(
+        observe_authenticated_structural_canary_v1(
+            &mut controller,
+            tampered.clone(),
+            &stale_attestation,
+            &verifier,
+            50,
+        ),
+        Err(AuthenticatedStructuralCanaryErrorV1::Evidence(
+            SignedEvidenceError::PayloadMismatch
+        ))
+    ));
+    assert_eq!(controller.state(), StructuralCanaryStateV1::Prepared);
+
+    let unsafe_attestation = sign_canary_observation(
+        &verifier,
+        &key,
+        &observer,
+        controller.plan_digest(),
+        &tampered,
+        2,
+    );
+    let aborted = observe_authenticated_structural_canary_v1(
+        &mut controller,
+        tampered,
+        &unsafe_attestation,
+        &verifier,
+        50,
+    )
+    .expect("authenticated terminal abort receipt");
+    assert_eq!(aborted.canary.state, StructuralCanaryStateV1::Aborted);
     assert_eq!(
         controller.finish().expect("finish preserves abort").state,
         StructuralCanaryStateV1::Aborted
