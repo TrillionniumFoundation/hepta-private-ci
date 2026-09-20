@@ -329,7 +329,6 @@ impl DurableLeaseRegistryV1 {
                     LeaseOperationStateV1::Applied;
             }
             (_, ProviderLeaseObservationV1::Unknown) => {
-                drop(next);
                 return self.mark_unknown(operation_id);
             }
             (_, ProviderLeaseObservationV1::Denied) => {
