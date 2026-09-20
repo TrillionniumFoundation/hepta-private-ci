@@ -105,11 +105,9 @@ impl BrowserRevocationFeed {
             .name("hepta-browser-revocation-feed".to_string())
             .spawn(move || {
                 while !worker_stop.load(Ordering::Acquire) {
-                    if let Err(error) = refresh_once(
-                        &worker_authority,
-                        &worker_path,
-                        &worker_shared,
-                    ) {
+                    if let Err(error) =
+                        refresh_once(&worker_authority, &worker_path, &worker_shared)
+                    {
                         if let Ok(mut slot) = worker_shared.last_error.lock() {
                             *slot = Some(error);
                         }
