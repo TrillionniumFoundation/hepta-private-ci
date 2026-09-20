@@ -564,7 +564,6 @@ fn target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling() {
     );
 }
 
-
 #[test]
 #[ignore = "target-host structural-ceiling probe; run explicitly with --ignored --nocapture"]
 fn target_host_hnmf_validates_full_structural_ceiling() {
@@ -610,7 +609,6 @@ fn target_host_hnmf_validates_full_structural_ceiling() {
 
     eprintln!(
         "{{\"schema\":\"hepta.memory-retrieval.target-host.v1\",\"phase\":\"hnmf-structural-ceiling\",\"nodes\":4096,\"synapses\":32768,\"build_us\":{},\"validate_us\":{}}}",
-        build_us,
-        validate_us,
+        build_us, validate_us,
     );
 }
