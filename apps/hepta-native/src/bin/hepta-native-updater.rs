@@ -1,6 +1,8 @@
 use std::path::PathBuf;
 use std::process::Command;
+use std::process::ExitStatus;
 use std::time::Duration;
+use std::time::Instant;
 
 use hepta_native::error::ShellError;
 use hepta_native::security::TrustedKeySet;
@@ -34,8 +36,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let manager = UpdateManager::new(key_set.clone(), update_root)?;
     activate_with_bounded_retry(&pending, &key_set, &target, protocol)?;
 
-    let smoke = Command::new(&target).arg("--self-test").status();
-    match smoke {
+    match bounded_self_test(&target) {
         Ok(status) if status.success() => {
             if !manager.confirm_current_digest(&target)? {
                 manager.rollback_unconfirmed()?;
@@ -50,10 +51,31 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
         Err(error) => {
             manager.rollback_unconfirmed()?;
-            return Err(format!("activated binary could not start: {error}").into());
+            return Err(error.into());
         }
     }
     Ok(())
+}
+
+fn bounded_self_test(target: &std::path::Path) -> Result<ExitStatus, ShellError> {
+    const TIMEOUT: Duration = Duration::from_secs(30);
+    const POLL: Duration = Duration::from_millis(25);
+    let mut child = Command::new(target).arg("--self-test").spawn()?;
+    let deadline = Instant::now() + TIMEOUT;
+    loop {
+        if let Some(status) = child.try_wait()? {
+            return Ok(status);
+        }
+        if Instant::now() >= deadline {
+            child.kill()?;
+            let _ = child.wait();
+            return Err(ShellError::Update(
+                "activated binary self-test exceeded the 30 second confirmation deadline"
+                    .to_owned(),
+            ));
+        }
+        std::thread::sleep(POLL);
+    }
 }
 
 fn absolute_arg(
