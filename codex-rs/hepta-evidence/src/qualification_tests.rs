@@ -1199,3 +1199,232 @@ async fn replay_sequence_is_consumed_atomically_with_insert() {
             .all(|reference| reference.evidence_id != second.evidence_id)
     );
 }
+
+
+#[tokio::test]
+async fn claim_query_rejects_more_than_512_references() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let candidate = candidate('b');
+    let observed = now_ms();
+    let (issuer, key) = issuer("principal:query-bound", 51);
+
+    for index in 0_u64..=512 {
+        let receipt = evidence(
+            &format!("evidence:query-bound:{index}"),
+            candidate.clone(),
+            EvidenceClaimClassV1::MandatoryTests,
+            EvidenceIssuerRoleV1::Evaluator,
+            observed,
+            None,
+            json!({"index": index}),
+        );
+        append(&store, &issuer, &key, &receipt, index + 1)
+            .await
+            .expect("append bounded evidence");
+    }
+
+    assert!(matches!(
+        store
+            .qualification()
+            .query_claim(&candidate, EvidenceClaimClassV1::MandatoryTests)
+            .await,
+        Err(EvidenceError::InvalidRecord(message))
+            if message.contains("exceeds 512 references")
+    ));
+}
+
+#[tokio::test]
+async fn predecessor_traversal_fails_closed_beyond_256_edges() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let observed = now_ms();
+    let (issuer, key) = issuer("principal:traversal-bound", 52);
+    let base = evidence(
+        "evidence:traversal:0",
+        candidate('b'),
+        EvidenceClaimClassV1::Conformance,
+        EvidenceIssuerRoleV1::Reviewer,
+        observed,
+        None,
+        json!({"index": 0}),
+    );
+    append(&store, &issuer, &key, &base, 1)
+        .await
+        .expect("append base");
+
+    let mut previous = base;
+    for index in 1_u64..=257 {
+        let next = lineage(
+            &format!("evidence:traversal:{index}"),
+            previous.evidence_id.as_str(),
+            previous.evidence_id.as_str(),
+            &previous,
+            EvidenceReceiptKindV1::Correction,
+            observed.saturating_add(index),
+        );
+        append(&store, &issuer, &key, &next, index + 1)
+            .await
+            .expect("append lineage");
+        previous = next;
+    }
+
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(
+                &VerifyChainRequestV1 {
+                    candidate: previous.candidate.clone(),
+                    claim_class: EvidenceClaimClassV1::Conformance,
+                    required_roles: vec![EvidenceIssuerRoleV1::Reviewer],
+                    now_unix_ms: observed.saturating_add(300),
+                },
+                &[trust_binding(&issuer, EvidenceIssuerRoleV1::Reviewer)],
+            )
+            .await,
+        Err(EvidenceError::Corrupt(message))
+            if message.contains("traversal exhausted")
+    ));
+}
+
+#[tokio::test]
+async fn concurrent_store_handles_serialize_conflicting_evidence_identity() {
+    let temp = TempDir::new().expect("temp");
+    let sqlite = config(&temp);
+    let left_store = HeptaEvidenceStore::open(&sqlite)
+        .await
+        .expect("open left");
+    let right_store = HeptaEvidenceStore::open(&sqlite)
+        .await
+        .expect("open right");
+    let observed = now_ms();
+    let (issuer, key) = issuer("principal:concurrent-writer", 53);
+    let left = evidence(
+        "evidence:concurrent-id",
+        candidate('b'),
+        EvidenceClaimClassV1::RegistrySnapshot,
+        EvidenceIssuerRoleV1::Reviewer,
+        observed,
+        None,
+        json!({"writer": "left"}),
+    );
+    let right = evidence(
+        "evidence:concurrent-id",
+        candidate('b'),
+        EvidenceClaimClassV1::RegistrySnapshot,
+        EvidenceIssuerRoleV1::Reviewer,
+        observed,
+        None,
+        json!({"writer": "right"}),
+    );
+    let left_message = signed(
+        &left,
+        &issuer,
+        &key,
+        1,
+        observed.saturating_add(60_000),
+    );
+    let right_message = signed(
+        &right,
+        &issuer,
+        &key,
+        2,
+        observed.saturating_add(60_000),
+    );
+
+    let (left_result, right_result) = tokio::join!(
+        left_store
+            .qualification()
+            .append_receipt(&issuer, &left_message, &left),
+        right_store
+            .qualification()
+            .append_receipt(&issuer, &right_message, &right),
+    );
+    let inserted = usize::from(left_result.is_ok()) + usize::from(right_result.is_ok());
+    let conflicts = usize::from(matches!(
+        left_result,
+        Err(EvidenceError::IdempotencyConflict { .. })
+    )) + usize::from(matches!(
+        right_result,
+        Err(EvidenceError::IdempotencyConflict { .. })
+    ));
+    assert_eq!(inserted, 1);
+    assert_eq!(conflicts, 1);
+}
+
+#[tokio::test]
+async fn failed_evidence_insert_rolls_back_authbus_replay_advance() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let observed = now_ms();
+    let (issuer, key) = issuer("principal:atomic-fault", 54);
+
+    sqlx::query(
+        "CREATE TRIGGER qualification_fault_injection
+         BEFORE INSERT ON qualification_evidence
+         WHEN NEW.evidence_id = 'evidence:fault-insert'
+         BEGIN
+             SELECT RAISE(ABORT, 'qualification fault injection');
+         END",
+    )
+    .execute(&store.pool)
+    .await
+    .expect("install fault trigger");
+
+    let failed = evidence(
+        "evidence:fault-insert",
+        candidate('b'),
+        EvidenceClaimClassV1::MandatoryTests,
+        EvidenceIssuerRoleV1::Evaluator,
+        observed,
+        None,
+        json!({"fault": true}),
+    );
+    let failed_message = signed(
+        &failed,
+        &issuer,
+        &key,
+        7,
+        observed.saturating_add(60_000),
+    );
+    assert!(
+        store
+            .qualification()
+            .append_receipt(&issuer, &failed_message, &failed)
+            .await
+            .is_err()
+    );
+
+    sqlx::query("DROP TRIGGER qualification_fault_injection")
+        .execute(&store.pool)
+        .await
+        .expect("drop fault trigger");
+
+    let retry = evidence(
+        "evidence:fault-retry",
+        candidate('b'),
+        EvidenceClaimClassV1::MandatoryTests,
+        EvidenceIssuerRoleV1::Evaluator,
+        observed,
+        None,
+        json!({"fault": false}),
+    );
+    let retry_message = signed(
+        &retry,
+        &issuer,
+        &key,
+        7,
+        observed.saturating_add(60_000),
+    );
+    store
+        .qualification()
+        .append_receipt(&issuer, &retry_message, &retry)
+        .await
+        .expect("failed evidence insert must not consume replay sequence");
+}
