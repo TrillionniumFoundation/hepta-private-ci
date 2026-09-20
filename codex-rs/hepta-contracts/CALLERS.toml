@@ -49,7 +49,10 @@ public_items = [
   "CurrentCapabilitySnapshotProviderV3",
   "run_read_only_vertical_outcome_v1",
 ]
-product_callers = ["codex-rs/hepta-agentd/src/lane_b_runtime.rs"]
+product_callers = [
+  "codex-rs/hepta-agentd/src/state_intelligence.rs",
+  "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+]
 
 [[excluded]]
 crate = "codex-hepta-proof"
