@@ -21,7 +21,7 @@ The response digest is recomputed by the V2 engine from the canonical response f
 - generation-vector digest;
 - observed frontier;
 - response expiry;
-- canonicalized evidence items, including owner, record identity/revision, record/support/validity digests;
+- ordered evidence items, including owner, record identity/revision, record/support/validity digests. Item order is semantic because bounded selection keeps the leading `maximum_results` items; a permutation must therefore change the response digest;
 - completeness;
 - terminal-observation bit.
 
@@ -34,7 +34,7 @@ A successful result cannot extend the authority that admitted the read.
 The effective result expiry is:
 
 ```text
-min(remote_response_expiry, capability_lease_expiry, query_deadline)
+min(remote_response_expiry, capability_lease_expiry, query_deadline, live_authority_expiry)
 ```
 
 Post-I/O authority observation must also occur before each of those horizons. A response that finishes after the query deadline, capability expiry or remote response expiry is rejected rather than cached under a longer remote TTL.
@@ -106,7 +106,7 @@ failed_peers
 truncated_items
 ```
 
-A failed peer is not converted into a successful empty result. Partial coverage remains visible in the prepared federated attachment, in the combined local+federated model-input payload, and in the source-binding digest supplied to the model-input proposal.
+A failed peer is not converted into a successful empty result. `Partial + []` also remains `Partial`; an incomplete peer response with zero returned items must not be relabeled as a valid empty result. Partial coverage remains visible in the prepared federated attachment, in the combined local+federated model-input payload, and in the source-binding digest supplied to the model-input proposal.
 
 A successfully observed owner layout with no active grant remains only an enrollment candidate and does not consume a requested-peer slot. An active grant is enrolled only when its consumer-workspace digest exactly matches the requesting `FederationConsumerAccess`; a grant for another workspace never becomes a queried peer and no transport attempt is made. If the owner capability store cannot be observed at all, enrollment status is indeterminate rather than equivalent to "no grant": the product caller reserves a bounded failed slot from the same <=16 peer budget. Likewise, a terminal transport whose post-I/O authority becomes revoked or generation-stale contributes failed aggregate coverage even though the transport itself completed.
 
@@ -115,6 +115,8 @@ A successfully observed owner layout with no active grant remains only an enroll
 The focused V2 suite includes adversarial cases for:
 
 - response-field tampering after digest sealing;
+- item-order permutation changing the bounded selected subset;
+- `Partial + []` preservation rather than relabeling as `Empty`;
 - self-consistent result digests with contradictory completeness/items/truncation state;
 - cross-query response replay;
 - result expiry capped by response/lease/query/live-authority horizons;
