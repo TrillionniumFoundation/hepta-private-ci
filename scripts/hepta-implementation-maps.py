@@ -17,9 +17,6 @@ from pathlib import Path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
-STRICT_SOURCE_BASE_MODULES = {"intelligence.control"}
-
-
 def current_source_base() -> dict[str, str]:
     """Return the immutable source identity used by generated maps."""
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
@@ -317,7 +314,7 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_commit = source_base["commit"]
-            if mid in STRICT_SOURCE_BASE_MODULES:
+            if True:
                 try:
                     actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
                 except subprocess.CalledProcessError:
@@ -359,9 +356,16 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
-        if mid in STRICT_SOURCE_BASE_MODULES and isinstance(source_base, dict):
+        if isinstance(source_base, dict):
             source_commit = source_base.get("commit")
             evidence_paths = set(row.get("resolvedRoots") or [])
+            technical_guide = row.get("technicalGuide")
+            if technical_guide:
+                evidence_paths.add(technical_guide)
+            for caller in row.get("productCallers", []):
+                caller_path = caller.get("path") if isinstance(caller, dict) else None
+                if caller_path:
+                    evidence_paths.add(caller_path)
             for op in ops:
                 source = op.get("sourcePath")
                 if source:
@@ -410,10 +414,12 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    # Source baselines are module-local provenance. A module is upgraded to
-    # strict source-base enforcement only after its map is rebound to an exact
-    # reviewed commit/tree; unrelated modules are not forced to share one stale
-    # global identity.
+    # Source baselines are module-local provenance. Every map must bind an
+    # exact reviewed commit/tree and all mapped source, test, caller and guide
+    # evidence must remain byte-identical after that anchor. This avoids the
+    # impossible self-reference of requiring a tracked map to name the commit
+    # that contains itself while still making any later source/evidence drift
+    # fail closed.
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
