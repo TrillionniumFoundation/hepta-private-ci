@@ -19,7 +19,6 @@ use hepta_native::model::EndpointManifest;
 use hepta_native::model::PlatformObservation;
 use hepta_native::model::PlatformPayload;
 use hepta_native::model::PlatformRequest;
-use hepta_native::model::RuntimeView;
 use hepta_native::model::SessionIncarnation;
 use hepta_native::model::TerminalStatus;
 use hepta_native::platform::PermissionDecision;
@@ -227,17 +226,8 @@ fn request(
 }
 
 fn render(runtime: &mut NativeShellRuntime, revision: u64) {
-    let session = runtime.session().unwrap().clone();
-    runtime
-        .render_runtime_view(RuntimeView {
-            session_id: session.session_id,
-            session_generation: session.generation,
-            generation: 1,
-            revision,
-            digest: D2.to_owned(),
-            modules: vec![],
-        })
-        .unwrap();
+    let (presentation, _) = runtime.refresh_runtime_view().unwrap();
+    assert_eq!(presentation.revision, revision);
 }
 
 fn runtime_fixture(
@@ -395,8 +385,12 @@ fn crash_after_dispatch_before_ack_reconciles_invoking_without_reinvoke() {
                     session_generation: 41,
                     operation_id: "operation.ack-loss".to_owned(),
                 },
+                subject_id: SUBJECT.to_owned(),
+                displayed_revision: 1,
                 action: payload.action(),
                 payload_digest: payload.digest().unwrap(),
+                binding_digest: D1.to_owned(),
+                grant_digest: D2.to_owned(),
                 phase: OperationPhase::Invoking,
                 terminal_status: None,
                 outcome_digest: None,
@@ -526,6 +520,89 @@ fn close_does_not_erase_unobserved_effects() {
         .unwrap();
     runtime.close().unwrap();
     assert_eq!(runtime.pending_operations().len(), 1);
+}
+
+#[test]
+fn stale_backend_view_is_rejected_before_authority_or_platform_entry() {
+    let temp = TempDir::new().unwrap();
+    let (final_use, signing, _) = authority_fixture(&temp);
+    let platform_state = Arc::new(Mutex::new(PlatformState::default()));
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.stale-view".to_owned(),
+        generation: 1,
+    };
+    let mut runtime =
+        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    runtime.connect_runtime(&manifest()).unwrap();
+    render(&mut runtime, 1);
+    let session = runtime.session().unwrap().clone();
+    let payload = PlatformPayload::CopyText {
+        text: "stale".to_owned(),
+    };
+    let stale = request(&signing, &session, "operation.stale", 1, payload, 8);
+    let (fresh, _) = runtime.refresh_runtime_view().unwrap();
+    assert_eq!(fresh.revision, 2);
+
+    let error = runtime.request_platform_capability(stale).unwrap_err();
+    assert!(error.to_string().contains("stale runtime view"));
+    assert_eq!(platform_state.lock().unwrap().invoke_calls, 0);
+    assert!(runtime.operation_history().is_empty());
+}
+
+#[test]
+fn reused_operation_rejects_principal_or_grant_identity_drift() {
+    let temp = TempDir::new().unwrap();
+    let (final_use, signing, _) = authority_fixture(&temp);
+    let platform_state = Arc::new(Mutex::new(PlatformState::default()));
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.semantic-reuse".to_owned(),
+        generation: 1,
+    };
+    let mut runtime =
+        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    runtime.connect_runtime(&manifest()).unwrap();
+    render(&mut runtime, 1);
+    let session = runtime.session().unwrap().clone();
+    let payload = PlatformPayload::CopyText {
+        text: "same payload".to_owned(),
+    };
+    let first = request(
+        &signing,
+        &session,
+        "operation.semantic",
+        1,
+        payload.clone(),
+        9,
+    );
+    runtime.request_platform_capability(first).unwrap();
+
+    let second = request(
+        &signing,
+        &session,
+        "operation.semantic",
+        1,
+        payload.clone(),
+        10,
+    );
+    let error = runtime.request_platform_capability(second).unwrap_err();
+    assert!(error.to_string().contains("changed semantics"));
+
+    let mut changed_principal = request(
+        &signing,
+        &session,
+        "operation.semantic",
+        1,
+        payload,
+        9,
+    );
+    changed_principal.subject_id = "principal.2".to_owned();
+    let error = runtime
+        .request_platform_capability(changed_principal)
+        .unwrap_err();
+    assert!(error.to_string().contains("changed semantics"));
+    assert_eq!(platform_state.lock().unwrap().invoke_calls, 1);
 }
 
 #[test]
