@@ -66,6 +66,8 @@ const RECOVERY_UNKNOWN_DIGEST_DOMAIN: &[u8] =
 const AUTHORITY_REJECTED_DIGEST_DOMAIN: &[u8] =
     b"hepta.kernel.operations.final-use-rejected-before-effect.v1\0";
 const ACK_LOST_DIGEST_DOMAIN: &[u8] = b"hepta.kernel.operations.ack-lost.v1\0";
+const OWNER_HANDOFF_UNKNOWN_DIGEST_DOMAIN: &[u8] =
+    b"hepta.kernel.operations.owner-handoff-unknown-effect.v1\0";
 
 #[derive(Clone)]
 pub struct DurableOperationStore {
@@ -936,6 +938,157 @@ impl DurableOperationStore {
             .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
         tx.commit().await.map_err(sqlx_error)?;
         Ok(operation)
+    }
+
+    /// Adopt one unresolved operation into a newer owner generation without
+    /// changing its logical semantic identity. A higher generation immediately
+    /// fences the predecessor. If dispatch may already have crossed the effect
+    /// boundary, handoff first converges the source truth to `indeterminate`;
+    /// the new generation may then settle it only from destination-owned
+    /// terminal evidence. Prepared work continues to use the normal claim path.
+    pub async fn adopt_unsettled_generation(
+        &self,
+        scope_id: &StableId,
+        operation_id: &StableId,
+        owner_generation: Generation,
+    ) -> Result<DurableOperationRecord, DurableOperationError> {
+        let now = now_millis()?;
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(sqlx_error)?;
+        ensure_clock_not_behind(&mut tx, now).await?;
+        let operation = load_operation_tx(&mut tx, scope_id, operation_id)
+            .await?
+            .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
+        if operation.state.is_terminal() {
+            return Err(DurableOperationError::InvalidTransition {
+                from: operation.state,
+                to: "owner_handoff",
+            });
+        }
+        let current_generation = operation.intent.owner_generation;
+        if owner_generation.get() < current_generation.get() {
+            return Err(DurableOperationError::StaleGeneration);
+        }
+        if owner_generation == current_generation {
+            tx.commit().await.map_err(sqlx_error)?;
+            return Ok(operation);
+        }
+        if !matches!(
+            operation.state,
+            DurableOperationState::Dispatching
+                | DurableOperationState::Dispatched
+                | DurableOperationState::Indeterminate
+        ) {
+            return Err(DurableOperationError::InvalidTransition {
+                from: operation.state,
+                to: "owner_handoff",
+            });
+        }
+
+        let status = load_outbox_tx(
+            &mut tx,
+            &operation.intent.destination,
+            scope_id,
+            operation_id,
+        )
+        .await?
+        .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
+        if !matches!(
+            status.state,
+            DurableOutboxState::Leased
+                | DurableOutboxState::Acknowledged
+                | DurableOutboxState::Indeterminate
+        ) {
+            return Err(DurableOperationError::Corrupt(format!(
+                "unsettled operation {operation_id} has non-handoff outbox state {:?}",
+                status.state
+            )));
+        }
+
+        let next_fence = operation
+            .writer_fence
+            .max(status.fence)
+            .checked_add(1)
+            .ok_or(DurableOperationError::Capacity)?;
+        let revision = next_revision(operation.revision)?;
+        if matches!(
+            operation.state,
+            DurableOperationState::Dispatching | DurableOperationState::Dispatched
+        ) {
+            let unknown = Digest32::of_bytes(OWNER_HANDOFF_UNKNOWN_DIGEST_DOMAIN);
+            sqlx::query(
+                "UPDATE operation_ledger SET owner_generation = ?, writer_fence = ?,
+                 state = 'indeterminate', indeterminate_digest = ?, revision = ?, updated_at_ms = ?
+                 WHERE scope_id = ? AND operation_id = ?",
+            )
+            .bind(encode_u64(owner_generation.get()))
+            .bind(to_i64(next_fence)?)
+            .bind(unknown.as_array().as_slice())
+            .bind(to_i64(revision)?)
+            .bind(now)
+            .bind(scope_id.as_str())
+            .bind(operation_id.as_str())
+            .execute(&mut *tx)
+            .await
+            .map_err(sqlx_error)?;
+        } else {
+            sqlx::query(
+                "UPDATE operation_ledger SET owner_generation = ?, writer_fence = ?,
+                 revision = ?, updated_at_ms = ?
+                 WHERE scope_id = ? AND operation_id = ?",
+            )
+            .bind(encode_u64(owner_generation.get()))
+            .bind(to_i64(next_fence)?)
+            .bind(to_i64(revision)?)
+            .bind(now)
+            .bind(scope_id.as_str())
+            .bind(operation_id.as_str())
+            .execute(&mut *tx)
+            .await
+            .map_err(sqlx_error)?;
+        }
+
+        if status.state == DurableOutboxState::Leased {
+            sqlx::query(
+                "UPDATE cross_owner_outbox SET state = 'indeterminate', owner_generation = ?,
+                 fence = ?, worker_id = NULL, lease_until_ms = NULL, updated_at_ms = ?,
+                 terminal_at_ms = COALESCE(terminal_at_ms, ?)
+                 WHERE destination = ? AND scope_id = ? AND operation_id = ?",
+            )
+            .bind(encode_u64(owner_generation.get()))
+            .bind(to_i64(next_fence)?)
+            .bind(now)
+            .bind(now)
+            .bind(operation.intent.destination.as_str())
+            .bind(scope_id.as_str())
+            .bind(operation_id.as_str())
+            .execute(&mut *tx)
+            .await
+            .map_err(sqlx_error)?;
+        } else {
+            sqlx::query(
+                "UPDATE cross_owner_outbox SET owner_generation = ?, fence = ?, updated_at_ms = ?
+                 WHERE destination = ? AND scope_id = ? AND operation_id = ?",
+            )
+            .bind(encode_u64(owner_generation.get()))
+            .bind(to_i64(next_fence)?)
+            .bind(now)
+            .bind(operation.intent.destination.as_str())
+            .bind(scope_id.as_str())
+            .bind(operation_id.as_str())
+            .execute(&mut *tx)
+            .await
+            .map_err(sqlx_error)?;
+        }
+
+        let adopted = load_operation_tx(&mut tx, scope_id, operation_id)
+            .await?
+            .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
+        tx.commit().await.map_err(sqlx_error)?;
+        Ok(adopted)
     }
 
     pub async fn unsettled_operations(
