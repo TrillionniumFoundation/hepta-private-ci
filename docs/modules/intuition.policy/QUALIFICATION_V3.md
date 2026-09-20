@@ -10,9 +10,9 @@ The current path separates long-lived qualification from per-decision provenance
 2. `decide_calibrated_v2` fails closed when `omitted_count_bound != 0`.
 3. A reusable `CanonicalPolicyProfileV1` freezes policy semantics, model/scorer identities, generation/window, confidence/ECE/OOD thresholds, maximum in-domain OOD score, risk routing, frozen qualification datasets, admitted artifact identities, measured calibration/OOD metadata, detector/support digests and artifact validity windows.
 4. An independent evaluator signs only the canonical profile qualification payload. This attestation can be reused for decisions in the profile validity window.
-5. For each decision, the generator signs candidate identity/completeness, the scorer signs `ScoringCommitmentV1`, and CounterBased assignment requires a RandomSource signature over exact `(stream, request sequence/counter, draw, abstain mass, distribution)`.
+5. For each decision, the generator signs candidate identity/completeness, the scorer signs `ScoringCommitmentV1`, and an independent RequestAttestor signs the exact calibrated request digest (including `risk_class`). CounterBased assignment additionally requires a RandomSource signature over exact `(stream, request sequence/counter, draw, abstain mass, distribution)`.
 6. `codex-hepta-intelligence::decide_authenticated_intuition_v1` verifies all required signatures against `LearningEvidenceVerifierV1`: trust digest, role, signer key, authority epoch, objective/scope, validity, revocation and principal/controller independence.
-7. The consumer computes the exact calibrated request digest and binds it with all verified evidence. No evaluator per-decision signature is required because every mutable decision-time domain has a separately authenticated owner.
+7. The consumer verifies the RequestAttestor's exact-request attestation before policy evaluation, then binds that authenticated request digest with all other verified evidence. No evaluator per-decision signature is required because the reusable profile and per-decision mutable domains have separate authenticated owners.
 8. `decide_calibrated_v3` validates profile/request equality and the scoring commitment, then returns a receipt binding exact request + canonical profile + scoring commitment + bounded V2 outcome.
 
 The legacy Lane-F wrapper still accepts only `HighOnlySlowPath`; stricter V3 risk profiles require a native V3 host port and fail closed at that compatibility boundary.
@@ -32,13 +32,13 @@ This supports model replacement under stable policy semantics, policy/profile re
 - feature snapshot/schema;
 - output schema and score semantics;
 - candidate identity;
-- exact utility/confidence/OOD outputs, presented `risk_class`, and assignment-distribution semantics including Deterministic-vs-CounterBased mode, abstain mass and candidate probabilities.
+- exact utility/confidence/OOD learned outputs. Assignment probabilities are owned by the exact request / random-assignment evidence instead.
 
 Changing score outputs after commitment fails even when the candidate IDs are unchanged.
 
 ## Random assignment provenance
 
-CounterBased assignment cannot be caller-chosen or rebound to Deterministic mode. The scorer/policy-output commitment authenticates the assignment mode/distribution and presented risk class; `RandomSource` then signs a payload binding the random-stream digest, request sequence as counter, exact draw, abstain mass, candidate identities and that same assignment distribution context.
+CounterBased assignment cannot be caller-chosen. The RequestAttestor-authenticated exact request commits the assignment probabilities; `RandomSource` independently signs a payload binding the random-stream digest, request sequence as counter, exact draw, abstain mass, candidate identities and that same assignment distribution context.
 
 A randomized request without that evidence fails closed. Deterministic requests reject unexpected RandomSource evidence.
 
@@ -51,7 +51,7 @@ A randomized request without that evidence fails closed. Deterministic requests 
 - derives calibration/OOD artifact identities;
 - uses a policy digest distinct from the model artifact digest;
 - builds an exact feature/scoring commitment;
-- creates independent Generator, Scorer, Evaluator and RandomSource trust principals;
+- creates independent Generator, Scorer, RequestAttestor, Evaluator and RandomSource trust principals;
 - signs the corresponding payloads;
 - rejects tampered scorer evidence and missing RNG evidence;
 - obtains the current-generation V3 policy decision only after all admission checks pass.
@@ -68,7 +68,7 @@ The qualification workflow intentionally reports two different latency surfaces.
 
 ### Authenticated end-to-end gate
 
-`codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs` measures the host admission path at 1/16/64/128 candidates. It includes four-role Ed25519 verification, trust/revocation/window checks, signer/controller independence, exact request binding, profile admission, scorer provenance, RNG provenance and the V3 decision.
+`codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs` measures the host admission path at 1/16/64/128 candidates. It includes five-role Ed25519 verification, trust/revocation/window checks, signer/controller independence, RequestAttestor-authenticated exact request admission, profile admission, scorer provenance, RNG provenance and the V3 decision.
 
 These CI bounds are regression gates, not target-host production SLOs. Target-host activation must retain its own exact host/profile measurements.
 
