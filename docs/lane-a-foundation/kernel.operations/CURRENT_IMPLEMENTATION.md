@@ -19,7 +19,11 @@ The source outbox has bounded attempts, next-eligible time, worker identity,
 lease expiry, owner generation and a monotonically increasing fence. Expired
 leases are safe to requeue only while the source operation is still `prepared`.
 If dispatch admission may have crossed the effect boundary, recovery changes the
-operation to `indeterminate` and does not blindly retry it.
+operation to `indeterminate` and does not blindly retry it. A newer product
+generation uses `adopt_unsettled_generation` to take execution ownership without
+changing the operation's semantic digest; the handoff advances the durable
+revision/fence, fences the predecessor generation and converts unresolved
+`dispatching`/`dispatched` work to `indeterminate` before reconciliation.
 
 `authorize_dispatch` consumes a real `kernel.authority` `SignedFinalUseGrant`
 and persists a `dispatching` write-ahead state before the adapter entry.
@@ -78,15 +82,27 @@ dedupe receipt, and routes `AutomationCreate` through
 selected target host, operator acceptance, canary, promotion or release is
 claimed by source presence.
 
+## Claim levels
+
+- **target:** the full multi-destination durable-effects contract plus selected-host
+  operational qualification;
+- **reference-implemented:** the retained bounded `OperationLedger`/`Outbox`
+  deterministic oracle;
+- **production-implemented (source):** the SQLite durable owner, final-use effect
+  boundary, Automation destination dedupe/apply, generation handoff and named
+  Agentd runtime/control composition are present in source;
+- **execution-proved:** still false until the current exact-head and
+  synthetic-merge workflows finish successfully. Source presence is not
+  activation, independent acceptance, promotion or release.
+
 ## Target-only design
 
 The remaining target-only capabilities are activation/qualification rather than
-a second durability implementation: executable product-composition coverage for
-the configured Agentd path, continuously operated authority/grant provisioning,
-and selected-host measurements including real power-loss and disk-exhaustion
-behavior. Each additional destination must still install its dedupe table in the
-destination owner's own migration lineage and provide a trusted terminal
-observer.
+a second durability implementation: continuously operated authority/grant
+provisioning and selected-host measurements including real power-loss and
+disk-exhaustion behavior. Each additional destination must still install its
+dedupe table in the destination owner's own migration lineage and provide a
+trusted terminal observer.
 
 A product adapter must continue consuming a fresh final-use authority token at
 the effect boundary. Destination dedupe must remain destination-owned; source
@@ -114,11 +130,14 @@ authority.
 ## Verification
 
 Focused durable tests cover atomic prepare/reopen, exact concurrent prepare,
-payload conflict, lease takeover, stale fencing, crash/reopen after dispatch
-admission, acknowledgement loss, explicit not-dispatched retry, terminal
-reconciliation, migration-checksum drift, database corruption and tombstone
-anti-resurrection. Destination tests prove that a domain mutation and dedupe
-receipt share one transaction and roll back together.
+payload conflict, safe lease takeover, higher-generation unresolved-operation
+handoff, stale fencing, crash/reopen after dispatch admission, acknowledgement
+loss, explicit not-dispatched retry, terminal reconciliation,
+migration-checksum drift, database corruption and tombstone anti-resurrection.
+Destination tests prove that a domain mutation and dedupe receipt share one
+transaction and roll back together. Agentd tests cover generation-two reopen
+reconciliation without redispatch and the configured runtime/control
+`AutomationCreate` path through the durable operations host.
 
 The retained reference tests continue to exercise deterministic transition
 parity, idempotent replay, generation fencing and the distinction between
@@ -130,8 +149,10 @@ success.
 
 ## Integration prerequisites
 
-Before activation, the configured Agentd Automation composition must pass its
-exact-head and merge-candidate executable coverage; the host must supply current
+The configured Agentd Automation composition now has source-level executable
+coverage, but it must still pass on the current exact head and prospective merge
+candidate before its execution claim advances. Before activation, the host must
+supply current
 final-use authority state and independently issued grants, and a trusted terminal
 observer must settle unknown effects. The Automation destination already commits
 its task mutation and dedupe receipt in one owner transaction. Any additional
