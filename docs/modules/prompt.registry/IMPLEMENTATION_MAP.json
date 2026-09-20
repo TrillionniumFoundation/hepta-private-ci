@@ -62,7 +62,7 @@
       "designOperation": "admit_factor",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "kernel.authority::FinalUseAuthority"
+        "codex-rs/hepta-contracts/src/final_use.rs"
       ]
     },
     {
@@ -78,7 +78,7 @@
       "designOperation": "revoke_factor",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "kernel.authority::FinalUseAuthority"
+        "codex-rs/hepta-contracts/src/final_use.rs"
       ]
     },
     {
@@ -94,7 +94,7 @@
       "designOperation": "retire_factor",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "kernel.authority::FinalUseAuthority"
+        "codex-rs/hepta-contracts/src/final_use.rs"
       ]
     },
     {
@@ -125,7 +125,7 @@
       "designOperation": "register_realization",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "kernel.authority::FinalUseAuthority"
+        "codex-rs/hepta-contracts/src/final_use.rs"
       ]
     },
     {
@@ -141,7 +141,7 @@
       "designOperation": "read_compatible",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "intelligence.control::compile_prompt_registry_v2"
+        "codex-rs/hepta-intelligence/src/prompt_delivery.rs"
       ]
     },
     {
@@ -158,7 +158,7 @@
       "designOperation": "read_compatible",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "intelligence.control::compile_prompt_registry_v2"
+        "codex-rs/hepta-intelligence/src/prompt_delivery.rs"
       ]
     }
   ],
