@@ -101,14 +101,15 @@ fn signed_claim_is_single_use_and_delivers_under_same_owner() {
 #[test]
 fn verified_use_witness_binds_the_actual_consumer_entry() {
     let (authority, signed, _directory) = fixture().unwrap();
-    let token = authority
-        .claim(&signed, &signed.grant.binding)
-        .unwrap();
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
     let (value, witness) =
         deliver_final_use_with_witness(&authority, token, &signed.grant.binding, || 11).unwrap();
     assert_eq!(value, 11);
     witness.validate().unwrap();
-    assert_eq!(witness.schema_version, VERIFIED_USE_TOKEN_WITNESS_SCHEMA_VERSION);
+    assert_eq!(
+        witness.schema_version,
+        VERIFIED_USE_TOKEN_WITNESS_SCHEMA_VERSION
+    );
     assert_eq!(witness.authority_epoch, signed.grant.authority_epoch);
     assert_eq!(witness.boundary, VerifiedUseBoundaryV1::ConsumerEntry);
     match witness.authority_ref {
@@ -432,12 +433,16 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
     };
     let old_grant = make("old-key-use", [24; 32], &old);
     let next_grant = make("next-key-use", [25; 32], &next);
-    assert!(authority
-        .claim(&old_grant, &old_grant.grant.binding)
-        .is_ok());
-    assert!(authority
-        .claim(&next_grant, &next_grant.grant.binding)
-        .is_ok());
+    assert!(
+        authority
+            .claim(&old_grant, &old_grant.grant.binding)
+            .is_ok()
+    );
+    assert!(
+        authority
+            .claim(&next_grant, &next_grant.grant.binding)
+            .is_ok()
+    );
 
     let retired_head = FinalUseRevocations {
         authority_epoch: 10,
@@ -445,11 +450,7 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
         revoked_grant_ids: BTreeSet::new(),
     };
     let retired_dir = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(
-        retired_dir.path(),
-        std::fs::Permissions::from_mode(0o700),
-    )
-    .unwrap();
+    std::fs::set_permissions(retired_dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let retired_frontier = Arc::new(MemoryFinalUseFrontier(Mutex::new(
         FinalUseFrontier::for_initial_head(&retired_head).unwrap(),
     )));
@@ -539,12 +540,13 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
 
     std::fs::create_dir(directory.path().join("authority.next")).unwrap();
     assert_eq!(
-        authority
-            .claim(&signed, &signed.grant.binding)
-            .unwrap_err(),
+        authority.claim(&signed, &signed.grant.binding).unwrap_err(),
         FinalUseError::Unavailable
     );
-    assert_eq!(authority.capacity().unwrap_err(), FinalUseError::Unavailable);
+    assert_eq!(
+        authority.capacity().unwrap_err(),
+        FinalUseError::Unavailable
+    );
     assert_ne!(
         frontier_store.load("failure-owner").unwrap(),
         FinalUseFrontier::for_initial_head(&head).unwrap()
