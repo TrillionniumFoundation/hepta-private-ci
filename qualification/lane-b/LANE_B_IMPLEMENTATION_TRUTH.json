@@ -57,7 +57,7 @@
     "ui.control",
     "ui.native"
   ],
-  "operationCount": 39,
+  "operationCount": 43,
   "modules": [
     {
       "module": "runtime.supervisor",
@@ -141,8 +141,12 @@
       "mapPath": "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
       "operationIds": [
         "open_profile",
+        "admit_effect_grant",
         "observe_page",
-        "navigate_or_act"
+        "navigate_or_act",
+        "reconcile_operation",
+        "reconcile_persisted_operation",
+        "close_profile"
       ]
     },
     {
