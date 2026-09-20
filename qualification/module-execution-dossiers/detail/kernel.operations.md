@@ -1,7 +1,7 @@
 # kernel.operations: implementation design
 
 Parent: `docs/modules/kernel.operations/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: bounded operation transition reference and outbox components implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded transition reference components plus a SQLite-backed durable operation-ledger owner candidate are implemented; durable outbox, product composition and independent acceptance remain listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `OperationLedger` in [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); `Outbox` in [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs). Bounded operation transition reference and outbox components implemented.
-- **State and recovery:** OperationLedger is a BTreeMap reference model capped at 16384 records, with semantic duplicate checks, generation/revision transitions and explicit indeterminate state. Cloning or reopening a caller copy is not durable recovery.
-- **Source tests:** [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs), [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md](../../../docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md).
-- **Remaining work:** Bind these transitions to the existing durable effect owner and final-use authority; this reference model does not implement the target transactional production operation ledger.
+- **Implemented entrypoints:** `DurableOperationLedger` in [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs); `OperationLedger` in [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); `Outbox` in [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs). The durable owner persists operation identity, owner generation, authority evidence lineage, dispatch identity, indeterminate reason and terminal evidence.
+- **State and recovery:** `DurableOperationLedger` uses one SQLite connection, WAL, FULL synchronous durability and `BEGIN IMMEDIATE` writer serialization. Equal operation identity/payload/generation is idempotent, changed payload conflicts, dispatch remains non-terminal, and unresolved/terminal state is queryable after reopen. `OperationLedger` and `Outbox` remain bounded in-memory reference models.
+- **Source tests:** [codex-rs/hepta-operations/src/durable_tests.rs](../../../codex-rs/hepta-operations/src/durable_tests.rs), [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs), [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md](../../../docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md), [docs/modules/kernel.operations/TECHNICAL.md](../../../docs/modules/kernel.operations/TECHNICAL.md).
+- **Remaining work:** Compose the durable operation owner behind the authenticated `ui.control` gateway and real final-use authority consumer; implement durable cross-owner outbox claim/ack/crash-takeover semantics and attach real destination terminal observers. No production/activation claim changes in this source candidate.
