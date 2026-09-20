@@ -2,14 +2,16 @@ use std::path::Path;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
-use hepta_native::model::PlatformAction;
-use hepta_native::model::SignedPlatformGrantV1;
+use hepta_native::model::PlatformPayload;
+use hepta_native::model::SessionIncarnation;
 use hepta_native::model::sha256_hex;
-use hepta_native::security::GrantVerifier;
-use hepta_native::security::PlatformGrantContext;
-use hepta_native::security::ReloadingGrantVerifier;
+use hepta_native::security::KernelFinalUseGate;
+use hepta_native::security::platform_final_use_binding;
 use hepta_native::security::SignedEndpointManifestV1;
 use hepta_native::security::TrustedKeySet;
 use hepta_native::security::now_unix_ms;
@@ -18,8 +20,6 @@ use hepta_native::updater::UpdateManager;
 use hepta_native::updater::activate_staged_update;
 use hepta_native::updater::digest_file;
 use tempfile::TempDir;
-
-const D1: &str = "1111111111111111111111111111111111111111111111111111111111111111";
 
 fn key_fixture(root: &Path) -> (SigningKey, TrustedKeySet, std::path::PathBuf) {
     let signing = SigningKey::from_bytes(&[7_u8; 32]);
@@ -38,95 +38,129 @@ fn key_fixture(root: &Path) -> (SigningKey, TrustedKeySet, std::path::PathBuf) {
     (signing, keys, path)
 }
 
-#[test]
-fn platform_grant_signature_binds_session_operation_and_payload() {
-    let temp = TempDir::new().unwrap();
-    let (signing, keys, _) = key_fixture(temp.path());
-    let now = now_unix_ms().unwrap();
-    let mut grant = SignedPlatformGrantV1 {
-        key_id: "release.key".to_owned(),
-        session_id: "session.1".to_owned(),
-        session_generation: 9,
-        operation_id: "operation.1".to_owned(),
-        action: PlatformAction::CopyText,
-        payload_digest: D1.to_owned(),
-        expires_unix_ms: now + 60_000,
-        signature_base64: String::new(),
-    };
-    grant.signature_base64 =
-        STANDARD.encode(signing.sign(grant.signing_message().as_bytes()).to_bytes());
-    keys.verify_platform_grant(
-        &grant,
-        PlatformGrantContext {
-            session_id: "session.1",
-            session_generation: 9,
-            operation_id: "operation.1",
-            action: PlatformAction::CopyText,
-            payload_digest: D1,
-            now_unix_ms: now,
-        },
-    )
-    .unwrap();
 
-    let error = keys
-        .verify_platform_grant(
-            &grant,
-            PlatformGrantContext {
-                session_id: "session.2",
-                session_generation: 9,
-                operation_id: "operation.1",
-                action: PlatformAction::CopyText,
-                payload_digest: D1,
-                now_unix_ms: now,
-            },
-        )
-        .unwrap_err();
-    assert!(error.to_string().contains("not bound"));
-}
-
-#[test]
-fn revoked_signing_key_is_rejected_on_next_grant_verification() {
-    let temp = TempDir::new().unwrap();
-    let (signing, _keys, key_path) = key_fixture(temp.path());
-    let now = now_unix_ms().unwrap();
-    let mut grant = SignedPlatformGrantV1 {
-        key_id: "release.key".to_owned(),
-        session_id: "session.1".to_owned(),
-        session_generation: 9,
-        operation_id: "operation.revoked".to_owned(),
-        action: PlatformAction::CopyText,
-        payload_digest: D1.to_owned(),
-        expires_unix_ms: now + 60_000,
-        signature_base64: String::new(),
-    };
-    grant.signature_base64 =
-        STANDARD.encode(signing.sign(grant.signing_message().as_bytes()).to_bytes());
-    let public = STANDARD.encode(signing.verifying_key().to_bytes());
+#[cfg(unix)]
+fn write_kernel_authority_config(
+    root: &Path,
+    signing: &SigningKey,
+    head: &FinalUseRevocations,
+) -> std::path::PathBuf {
+    let path = root.join("final-use-authority.json");
+    let state_dir = root.join("final-use-state");
     std::fs::write(
-        &key_path,
+        &path,
         serde_json::to_vec(&serde_json::json!({
-            "schema": "hepta.native-trusted-keys.v1",
-            "keys": {"release.key": public},
-            "revoked_key_ids": ["release.key"]
+            "schema": "hepta.native-final-use-authority.v1",
+            "signer_id": "authority.native",
+            "verifying_key_base64": STANDARD.encode(signing.verifying_key().to_bytes()),
+            "state_dir": state_dir,
+            "head": head,
         }))
         .unwrap(),
     )
     .unwrap();
-    let verifier = ReloadingGrantVerifier::new(key_path.clone()).unwrap();
-    let error = verifier
-        .verify_platform_grant(
-            &grant,
-            PlatformGrantContext {
-                session_id: "session.1",
-                session_generation: 9,
-                operation_id: "operation.revoked",
-                action: PlatformAction::CopyText,
-                payload_digest: D1,
-                now_unix_ms: now,
-            },
-        )
-        .unwrap_err();
-    assert!(error.to_string().contains("revoked"));
+    path
+}
+
+#[cfg(unix)]
+fn signed_final_use_grant(
+    signing: &SigningKey,
+    grant_id: &str,
+    nonce: [u8; 32],
+    binding: codex_hepta_contracts::FinalUseBinding,
+) -> SignedFinalUseGrant {
+    let now = now_unix_ms().unwrap();
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "authority.native".to_owned(),
+        authority_epoch: 1,
+        grant_id: grant_id.to_owned(),
+        nonce,
+        binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 60_000,
+    };
+    let signature = signing.sign(&grant.signing_bytes().unwrap()).to_bytes().to_vec();
+    SignedFinalUseGrant { grant, signature }
+}
+
+#[cfg(unix)]
+#[test]
+fn kernel_final_use_binding_rejects_session_drift() {
+    let temp = TempDir::new().unwrap();
+    let signing = SigningKey::from_bytes(&[9_u8; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 1,
+        revision: 1,
+        revoked_grant_ids: Default::default(),
+    };
+    let config = write_kernel_authority_config(temp.path(), &signing, &head);
+    let gate = KernelFinalUseGate::open(config).unwrap();
+    let payload = PlatformPayload::CopyText {
+        text: "bound payload".to_owned(),
+    };
+    let session1 = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.1".to_owned(),
+        generation: 9,
+    };
+    let session2 = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.2".to_owned(),
+        generation: 9,
+    };
+    let binding1 =
+        platform_final_use_binding("principal.1", &session1, "operation.1", 11, &payload).unwrap();
+    let signed = signed_final_use_grant(&signing, "grant.binding", [1_u8; 32], binding1.clone());
+    let _permit = gate.claim_platform(&signed, binding1).unwrap();
+
+    let binding2 =
+        platform_final_use_binding("principal.1", &session2, "operation.1", 11, &payload).unwrap();
+    let error = gate.claim_platform(&signed, binding2).unwrap_err();
+    assert!(error.to_string().contains("BindingMismatch"));
+}
+
+#[cfg(unix)]
+#[test]
+fn kernel_final_use_reloads_revocation_before_os_entry() {
+    let temp = TempDir::new().unwrap();
+    let signing = SigningKey::from_bytes(&[10_u8; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 1,
+        revision: 1,
+        revoked_grant_ids: Default::default(),
+    };
+    let config = write_kernel_authority_config(temp.path(), &signing, &head);
+    let gate = KernelFinalUseGate::open(config.clone()).unwrap();
+    let payload = PlatformPayload::CopyText {
+        text: "revoked payload".to_owned(),
+    };
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.1".to_owned(),
+        generation: 9,
+    };
+    let binding =
+        platform_final_use_binding("principal.1", &session, "operation.revoked", 11, &payload)
+            .unwrap();
+    let signed = signed_final_use_grant(
+        &signing,
+        "grant.revoked",
+        [2_u8; 32],
+        binding.clone(),
+    );
+    let permit = gate.claim_platform(&signed, binding).unwrap();
+
+    let mut revoked = std::collections::BTreeSet::new();
+    revoked.insert("grant.revoked".to_owned());
+    let newer = FinalUseRevocations {
+        authority_epoch: 1,
+        revision: 2,
+        revoked_grant_ids: revoked,
+    };
+    write_kernel_authority_config(temp.path(), &signing, &newer);
+    let error = gate.with_platform_use(permit, || true).unwrap_err();
+    assert!(error.to_string().contains("Revoked"));
 }
 
 #[test]
