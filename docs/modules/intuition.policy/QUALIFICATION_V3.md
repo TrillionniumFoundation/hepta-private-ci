@@ -38,7 +38,7 @@ Changing score outputs after commitment fails even when the candidate IDs are un
 
 ## Random assignment provenance
 
-CounterBased assignment cannot be caller-chosen. The scorer/policy-output commitment authenticates the assignment probabilities; `RandomSource` then signs a payload binding the random-stream digest, request sequence as counter, exact draw, abstain mass, candidate identities and that same assignment distribution context.
+CounterBased assignment cannot be caller-chosen or rebound to Deterministic mode. The scorer/policy-output commitment authenticates the assignment mode/distribution and presented risk class; `RandomSource` then signs a payload binding the random-stream digest, request sequence as counter, exact draw, abstain mass, candidate identities and that same assignment distribution context.
 
 A randomized request without that evidence fails closed. Deterministic requests reject unexpected RandomSource evidence.
 
