@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs); observed identifiers include `OrganHostV1`, `TrustedReadOnlyOrganV1`, `OrganDeliveryV1`, `OrganFaultRecordV1`, `start_all`, `dispatch_once`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) for the implemented subset and remaining product work.
+The registered planner source is [codex-rs/hepta-control-plane/src/planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs); observed identifiers include `collect_snapshot`, `canonical_resource_profile_digest`, `prepare_plan`, `finalize_plan`, `request_execution_grants`, `ExecutionGrantBindingV1` and `GrantRequestV1`. Owner-local durability is implemented in [planner_store.rs](../../../codex-rs/hepta-control-plane/src/planner_store.rs), real NDU composition in [planner_ndu.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu.rs), and the narrow request-local product adapter in [planner_context.rs](../../../codex-rs/hepta-control-plane/src/planner_context.rs). `organ_runtime.rs` remains a separate read-only organ-host component inside the same crate, not the primary global-planner implementation. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -130,7 +130,9 @@ Read-only data dependencies:
 
 For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+`PlannerDurableStoreV1` is the current owner-local durable source candidate. It uses a single-writer lock and immutable contiguous generation files, validates the enclosed semantic journal on reopen, rejects non-prefix rollback, syncs each generation and containing directory, and enters recovery-required on a corrupt/gapped successor. A full-directory restore can still roll back all local generations together, so production activation additionally requires an independent anti-rollback witness and qualified backup/restore ceremony.
+
+Migrations remain deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
@@ -165,7 +167,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Bounded planner and organ-runtime libraries. The real Agentd context caller compares read-context with abstain under measured serialized-byte limits. That local decision is distinct from global adaptive topology/resource reconfiguration; physical execution grants remain separately issued by the owner.
+Bounded planner and organ-runtime libraries. The real Agentd context caller compares read-context with abstain under measured serialized-byte limits and uses a process-local monotonic planner clock. That local decision is distinct from global adaptive topology/resource reconfiguration. Effectful plan candidates now pre-bind subject, destination, scope and payload; `AgentdControlRuntimeAuthorityHost` can convert only that sealed request into the existing kernel final-use binding. It is an explicit attachment and is not enabled by default startup. The global caller remains blocked until registered authoritative owner ports—most concretely `runtime.fleet::fleet_allocation_grantV1`—are materialized.
 
 Current operating and state-format references:
 
@@ -178,8 +180,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs); named case: `typed_controller_and_plant_replay_the_explicit_euler_q24_golden`.
-- [codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs); named case: `blocking_and_higher_priority_interference_are_included`.
+- [codex-rs/hepta-control-plane/src/planner_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_tests.rs): exact resource-profile binding, sealed final-use identity, candidate/payload/snapshot tamper and grant-request revalidation.
+- [codex-rs/hepta-control-plane/src/planner_journal_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_tests.rs): hash-chain integrity plus semantic transition replay.
+- [codex-rs/hepta-control-plane/src/planner_store_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_store_tests.rs): fsync-bound generations, local rollback rejection, corrupt-successor recovery and writer fencing.
+- [codex-rs/hepta-control-plane/src/planner_ndu_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu_tests.rs) and [planner_context_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_context_tests.rs): real NDU composition and request-local product planning.
+- [codex-rs/hepta-agentd/src/control_runtime_authority_tests.rs](../../../codex-rs/hepta-agentd/src/control_runtime_authority_tests.rs): exact sealed-request mapping to `FinalUseBinding` and substitution rejection.
 
 In `codex-rs`, run `just test -p codex-hepta-control-plane`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) separately labels target acceptance designs.
 
@@ -204,7 +209,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Request-local composition is established by Agentd cognitive-context planning; global composition separately requires authenticated multi-owner ports, a named caller, durable-store attachment and final-use consumption. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `control.runtime`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
