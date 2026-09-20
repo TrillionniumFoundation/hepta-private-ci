@@ -353,6 +353,7 @@ pub use production_cognitive_source_target::COGNITIVE_SOURCE_TOPIC_V1;
 pub use production_cognitive_source_target::CognitiveSourceOperationV1;
 pub use production_cognitive_source_target::CognitiveSourceOutboxTarget;
 pub use production_cognitive_source_target::CognitiveSourceTerminalObservation;
+pub use operation_claims::DurableDispatchClaim as ProductionDispatchClaim;
 pub use production_writer::FinalUseProductionOutboxTarget;
 pub use production_writer::PRODUCTION_DURABLE_WRITER_JOURNAL_MODE;
 pub use production_writer::PRODUCTION_DURABLE_WRITER_NAMESPACE;
