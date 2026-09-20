@@ -246,6 +246,9 @@ impl LearningLedger {
         if assignment.assignment_propensity.raw() == 0 {
             return Err(LedgerError::ZeroSelectedPropensity);
         }
+        if assignment.delivery_propensity.raw() == 0 {
+            return Err(LedgerError::ZeroDeliveryPropensity);
+        }
         let candidate_count = assignment.enumerated_candidate_digests.len();
         for index in assignment
             .legal_candidate_indices
@@ -455,6 +458,14 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
                 }
             }
             if value
+                .downstream_policy_digest
+                .is_some_and(Digest32::is_zero)
+            {
+                return Err(LedgerError::EmptyDigest(
+                    "retrieval downstream policy",
+                ));
+            }
+            if value
                 .enumerated_candidate_digests
                 .iter()
                 .any(|digest| digest.is_zero())
@@ -641,6 +652,14 @@ fn push_retrieval_assignment(bytes: &mut Vec<u8>, value: &RetrievalAssignmentFac
     bytes.push(u8::from(value.context_exposed));
     bytes.extend_from_slice(&value.omitted_by_policy_limits.to_be_bytes());
     bytes.extend_from_slice(&value.assignment_propensity.raw().to_be_bytes());
+    match value.downstream_policy_digest {
+        Some(digest) => {
+            bytes.push(1);
+            push_digest(bytes, digest);
+        }
+        None => bytes.push(0),
+    }
+    bytes.extend_from_slice(&value.delivery_propensity.raw().to_be_bytes());
     bytes.push(value.completeness.tag());
     push_digest(bytes, value.support_digest);
 }
