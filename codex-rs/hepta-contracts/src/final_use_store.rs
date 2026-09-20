@@ -11,6 +11,13 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
+#[cfg(unix)]
+type StoreRoot = File;
+#[cfg(windows)]
+type StoreRoot = codex_hepta_private_state::PrivateStateDirectory;
+#[cfg(not(any(unix, windows)))]
+type StoreRoot = File;
+
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct Stored {
@@ -21,7 +28,7 @@ struct Stored {
 }
 
 pub(super) struct Store {
-    root: File,
+    root: StoreRoot,
     signer_id: String,
     verifying_key: [u8; 32],
     _lock: File,
@@ -184,12 +191,36 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     Ok(file)
 }
 
-#[cfg(not(unix))]
-fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<StoreRoot, FinalUseError> {
+    codex_hepta_private_state::PrivateStateDirectory::open(root)
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)
+}
+
+#[cfg(windows)]
+fn open_private(
+    directory: &StoreRoot,
+    name: &str,
+    access: Access,
+) -> Result<File, FinalUseError> {
+    directory
+        .verify_trust()
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)?;
+    directory
+        .open_file(name, matches!(access, Access::Create))
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(not(any(unix, windows)))]
+fn prepare_directory(_root: &Path) -> Result<StoreRoot, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+fn open_private(
+    _directory: &StoreRoot,
+    _name: &str,
+    _access: Access,
+) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 
@@ -208,11 +239,31 @@ fn replace_state(directory: &File) -> Result<(), FinalUseError> {
         .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
-fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
+#[cfg(windows)]
+fn entry_exists(directory: &StoreRoot, name: &str) -> Result<bool, FinalUseError> {
+    directory
+        .verify_trust()
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)?;
+    directory
+        .entry_exists(name)
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &StoreRoot) -> Result<(), FinalUseError> {
+    directory
+        .verify_trust()
+        .map_err(|_| FinalUseError::UnsafeStateDirectory)?;
+    directory
+        .replace("authority.next", "authority.json")
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(not(any(unix, windows)))]
+fn entry_exists(_directory: &StoreRoot, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+fn replace_state(_directory: &StoreRoot) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
