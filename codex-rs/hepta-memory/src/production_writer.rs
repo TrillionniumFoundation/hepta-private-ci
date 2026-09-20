@@ -31,10 +31,6 @@ use crate::CognitiveStoreError;
 use crate::CognitiveWriteReceipt;
 use crate::ForgetMemoryDraft;
 use crate::KgFactSetDraft;
-use crate::MemoryDraft;
-use crate::MemoryRevisionDraft;
-use crate::SourceDraft;
-use crate::StableMemoryId;
 use crate::LocalAdmission;
 use crate::LocalLease;
 use crate::LocalLeaseHeadDisposition;
@@ -43,7 +39,11 @@ use crate::LocalLeaseOutboxError;
 use crate::LocalOutcomeReceipt;
 use crate::LocalOutcomeState;
 use crate::LocalReplayFinalization;
+use crate::MemoryDraft;
+use crate::MemoryRevisionDraft;
 use crate::QueuedReceipt;
+use crate::SourceDraft;
+use crate::StableMemoryId;
 use crate::local_lease_outbox::dispatch_operation_digest;
 
 /// Schema version of the externally-authorized H4 writer boundary.
@@ -867,7 +867,11 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
             self.writer.verify_current_authority().await?;
-            Ok(self.writer.store().remember_with_kg(access, source, draft, facts).await?)
+            Ok(self
+                .writer
+                .store()
+                .remember_with_kg(access, source, draft, facts)
+                .await?)
         })
     }
 
@@ -882,14 +886,11 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
             self.writer.verify_current_authority().await?;
-            Ok(self.writer.store().correct_with_kg(
-                access,
-                memory_id,
-                expected_revision,
-                source,
-                draft,
-                facts,
-            ).await?)
+            Ok(self
+                .writer
+                .store()
+                .correct_with_kg(access, memory_id, expected_revision, source, draft, facts)
+                .await?)
         })
     }
 
@@ -903,13 +904,11 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
             self.writer.verify_current_authority().await?;
-            Ok(self.writer.store().forget_with_kg(
-                access,
-                memory_id,
-                expected_revision,
-                source,
-                draft,
-            ).await?)
+            Ok(self
+                .writer
+                .store()
+                .forget_with_kg(access, memory_id, expected_revision, source, draft)
+                .await?)
         })
     }
 }
@@ -1345,15 +1344,9 @@ mod tests {
         let lease_id = "production:h4:semantic-capability";
 
         let legacy = Arc::new(
-            ProductionDurableWriter::open(
-                store.clone(),
-                auth.clone(),
-                &AllowVerifier,
-                lease_id,
-                1,
-            )
-            .await
-            .unwrap(),
+            ProductionDurableWriter::open(store.clone(), auth.clone(), &AllowVerifier, lease_id, 1)
+                .await
+                .unwrap(),
         );
         assert!(matches!(
             legacy.cognitive_mutation_capability(),
