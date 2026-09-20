@@ -42,6 +42,8 @@ fn digest(value: &str) -> Digest32 {
 fn policy() -> NduProductionPolicyV1 {
     let utility_profile = UtilityProfile {
         profile_id: id("production-utility-v1"),
+        axis_registry_digest: digest("production-utility-axis-registry"),
+        normalization_manifest_digest: digest("production-utility-normalization"),
         dimensions: vec![(id("success"), AxisDirection::Maximize)],
         risk_ceilings: vec![AxisLimit {
             axis: id("privacy-risk"),
