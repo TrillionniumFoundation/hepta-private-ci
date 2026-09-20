@@ -34,6 +34,7 @@ use serde_json::Value;
 use serde_json::json;
 use sha2::Digest;
 use sha2::Sha256;
+use tokio_util::sync::CancellationToken;
 
 use crate::model_worker::DriverModelHandle;
 use crate::model_worker::DriverRunObservation;
@@ -212,9 +213,13 @@ impl LocalProcessDriver {
     fn spawn_runtime(&self) -> Result<RuntimeProcess, Error> {
         let mut child = Command::new(&self.runtime_executable)
             .arg("--hepta-local-model-worker-v1")
+            .env_clear()
+            .env("PATH", "/usr/bin:/bin")
+            .env("LANG", "C")
+            .env("LC_ALL", "C")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
-            .stderr(Stdio::inherit())
+            .stderr(Stdio::null())
             .spawn()
             .map_err(io_error)?;
         let stdin = child
@@ -398,6 +403,7 @@ impl ModelDriver for LocalProcessDriver {
         &mut self,
         handle: &DriverModelHandle,
         request: &WorkerRequest,
+        cancellation: &CancellationToken,
         response_timeout: Duration,
     ) -> Result<DriverRunObservation, Error> {
         let process = self
@@ -425,15 +431,75 @@ impl ModelDriver for LocalProcessDriver {
             process.terminate();
             return Ok(indeterminate(process.observed_memory_bytes));
         }
-        let response = match read_message(
-            &process.stdout,
-            self.config.response_timeout.min(response_timeout),
-        ) {
-            Ok(response) => response,
-            Err(_) => {
+        let overall_timeout = self.config.response_timeout.min(response_timeout);
+        let overall_deadline = Instant::now() + overall_timeout;
+        let mut cancel_sent = false;
+        let mut cancel_deadline = None;
+        let response = loop {
+            if cancellation.is_cancelled() && !cancel_sent {
+                let cancel = json!({
+                    "protocol": LOCAL_RUNTIME_PROTOCOL,
+                    "op": "cancel",
+                    "handle_id": handle.opaque_id,
+                    "request_id": request.request_id,
+                });
+                if write_message(&mut process.stdin, &cancel).is_err() {
+                    process.terminate();
+                    return Ok(indeterminate(process.observed_memory_bytes));
+                }
+                cancel_sent = true;
+                cancel_deadline = Some(
+                    (Instant::now() + self.config.shutdown_timeout).min(overall_deadline),
+                );
+            }
+            let now = Instant::now();
+            let effective_deadline = cancel_deadline
+                .map(|deadline| deadline.min(overall_deadline))
+                .unwrap_or(overall_deadline);
+            if now >= effective_deadline {
                 process.terminate();
                 return Ok(indeterminate(process.observed_memory_bytes));
             }
+            let wait = (effective_deadline - now).min(Duration::from_millis(50));
+            let response = match process.stdout.recv_timeout(wait) {
+                Ok(Ok(response)) => response,
+                Ok(Err(_)) | Err(RecvTimeoutError::Disconnected) => {
+                    process.terminate();
+                    return Ok(indeterminate(process.observed_memory_bytes));
+                }
+                Err(RecvTimeoutError::Timeout) => continue,
+            };
+            if cancel_sent && response.get("op").and_then(Value::as_str) == Some("cancel_ack") {
+                if require_string(&response, "protocol", LOCAL_RUNTIME_PROTOCOL).is_err()
+                    || require_string(&response, "handle_id", &handle.opaque_id).is_err()
+                    || require_string(&response, "request_id", &request.request_id).is_err()
+                {
+                    process.terminate();
+                    return Ok(indeterminate(process.observed_memory_bytes));
+                }
+                let terminal_observed = bool_field(&response, "terminal_observed")
+                    .unwrap_or(false);
+                let observed_memory_bytes = u64_field(&response, "observed_memory_bytes")
+                    .unwrap_or(process.observed_memory_bytes);
+                if !terminal_observed
+                    || observed_memory_bytes > process.reserved_memory_bytes
+                {
+                    process.terminate();
+                    return Ok(indeterminate(process.observed_memory_bytes));
+                }
+                process.observed_memory_bytes = observed_memory_bytes;
+                let consumed_tokens =
+                    optional_u32_field(&response, "consumed_tokens").unwrap_or(None);
+                return Ok(DriverRunObservation {
+                    terminal_observed: true,
+                    succeeded: false,
+                    cancelled: true,
+                    output_digest: None,
+                    consumed_tokens,
+                    observed_memory_bytes,
+                });
+            }
+            break response;
         };
         if require_string(&response, "protocol", LOCAL_RUNTIME_PROTOCOL).is_err()
             || require_string(&response, "op", "run_result").is_err()
@@ -480,6 +546,7 @@ impl ModelDriver for LocalProcessDriver {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
                 succeeded: false,
+                cancelled: false,
                 output_digest: None,
                 consumed_tokens,
                 observed_memory_bytes,
@@ -497,6 +564,7 @@ impl ModelDriver for LocalProcessDriver {
         Ok(DriverRunObservation {
             terminal_observed: true,
             succeeded,
+            cancelled: false,
             output_digest,
             consumed_tokens,
             observed_memory_bytes,
@@ -541,6 +609,7 @@ fn indeterminate(observed_memory_bytes: u64) -> DriverRunObservation {
     DriverRunObservation {
         terminal_observed: false,
         succeeded: false,
+        cancelled: false,
         output_digest: None,
         consumed_tokens: None,
         observed_memory_bytes,
