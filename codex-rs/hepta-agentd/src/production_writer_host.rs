@@ -8,6 +8,7 @@
 use std::fmt;
 use std::sync::Arc;
 
+use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
@@ -57,6 +58,40 @@ impl AgentdProductionWriterHost {
             .map_err(|error| {
                 AgentdError::Protocol(format!("open production cognitive store: {error}"))
             })?;
+        let writer =
+            ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
+                .await?;
+        Ok(Self {
+            writer: Arc::new(writer),
+            dispatcher: None,
+        })
+    }
+
+    /// Recover the exact independently retained current cut and immediately
+    /// bind the recovered generation to the same externally verified authority
+    /// lease used by the production writer. Recovery keeps its exclusive store
+    /// fence for the lifetime of the returned writer generation.
+    pub async fn open_with_recovery<V>(
+        config: &AgentdConfig,
+        requirement: CognitiveRecoveryRequirement<'_>,
+        authority: ProductionAuthorityLease,
+        verifier: &V,
+        lease_id: impl Into<String>,
+        lease_generation: u64,
+    ) -> Result<Self, AgentdError>
+    where
+        V: ProductionAuthorityVerifier + ?Sized,
+    {
+        let store = CognitiveStore::open_with_recovery(
+            &config.identity().layout,
+            requirement,
+            &authority,
+            verifier,
+        )
+        .await
+        .map_err(|error| {
+            AgentdError::Protocol(format!("recover production cognitive store: {error}"))
+        })?;
         let writer =
             ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
                 .await?;
