@@ -1,3 +1,56 @@
+-- Schema evolution from 0002: preserve the historical migration checksum and
+-- rebuild only the reservation table so the explicit cancelled terminal state
+-- can be represented on existing databases.
+ALTER TABLE authbus_quota_reservation RENAME TO authbus_quota_reservation_v3_old;
+DROP INDEX authbus_reservation_principal_state;
+DROP INDEX authbus_reservation_quota_state;
+DROP TRIGGER authbus_reservation_immutable;
+
+CREATE TABLE authbus_quota_reservation (
+    reservation_id TEXT PRIMARY KEY,
+    operation_id TEXT NOT NULL UNIQUE,
+    quota_key TEXT NOT NULL REFERENCES authbus_quota_registry(quota_key),
+    period_id TEXT NOT NULL,
+    principal TEXT NOT NULL,
+    amount BLOB NOT NULL CHECK (length(amount) = 8),
+    effect_digest BLOB NOT NULL CHECK (length(effect_digest) = 32),
+    policy_id TEXT NOT NULL,
+    policy_revision BLOB NOT NULL CHECK (length(policy_revision) = 8),
+    policy_decision_digest BLOB NOT NULL CHECK (length(policy_decision_digest) = 32),
+    state TEXT NOT NULL CHECK (state IN
+        ('held', 'dispatch_attempted', 'indeterminate', 'settled', 'released', 'expired', 'cancelled')),
+    revision BLOB NOT NULL CHECK (length(revision) = 8),
+    expires_at_ms BLOB NOT NULL CHECK (length(expires_at_ms) = 8),
+    created_at_ms BLOB NOT NULL CHECK (length(created_at_ms) = 8),
+    updated_at_ms BLOB NOT NULL CHECK (length(updated_at_ms) = 8),
+    dispatch_digest BLOB CHECK (dispatch_digest IS NULL OR length(dispatch_digest) = 32),
+    terminal_evidence BLOB CHECK (terminal_evidence IS NULL OR length(terminal_evidence) = 32),
+    observed_cost BLOB CHECK (observed_cost IS NULL OR length(observed_cost) = 8),
+    settlement_digest BLOB CHECK (settlement_digest IS NULL OR length(settlement_digest) = 32)
+) WITHOUT ROWID;
+
+INSERT INTO authbus_quota_reservation
+SELECT reservation_id, operation_id, quota_key, period_id, principal, amount,
+       effect_digest, policy_id, policy_revision, policy_decision_digest, state,
+       revision, expires_at_ms, created_at_ms, updated_at_ms, dispatch_digest,
+       terminal_evidence, observed_cost, settlement_digest
+FROM authbus_quota_reservation_v3_old;
+
+DROP TABLE authbus_quota_reservation_v3_old;
+
+CREATE INDEX authbus_reservation_principal_state
+    ON authbus_quota_reservation(principal, state);
+CREATE INDEX authbus_reservation_quota_state
+    ON authbus_quota_reservation(quota_key, state);
+
+CREATE TRIGGER authbus_reservation_immutable BEFORE UPDATE OF
+    reservation_id, operation_id, quota_key, period_id, principal, amount, effect_digest,
+    policy_id, policy_revision, policy_decision_digest, expires_at_ms, created_at_ms
+    ON authbus_quota_reservation
+BEGIN
+    SELECT RAISE(ABORT, 'AuthBus reservation identity is immutable');
+END;
+
 -- Rollback-resistant authority frontier, restart reconciliation and safe terminal retention.
 CREATE TABLE authbus_authority_checkpoint (
     singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
