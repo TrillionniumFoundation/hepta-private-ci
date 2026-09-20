@@ -19,9 +19,22 @@ from hepta_module_source_roots import resolve_source_roots
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def source_identity_paths() -> list[str]:
+    """Return every canonical path whose mutation changes implementation-map source truth."""
+    modules = load("docs/modules/MODULES.json")["modules"]
+    paths = {"docs/modules/MODULES.json", "docs/modules/SOURCE_BINDINGS.json", "codex-rs/Cargo.lock"}
+    for module in modules:
+        paths.update(binding["path"] for binding in module["rootBindings"])
+        paths.update(resolve_source_roots(ROOT, module))
+    return sorted(paths)
+
+
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
-    return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+    """Derive the latest canonical source snapshot without self-referential HEAD hashing."""
+    commit = git("log", "-1", "--format=%H", "HEAD", "--", *source_identity_paths())
+    if not commit:
+        raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: no canonical source commit")
+    return {"commit": commit, "tree": git("rev-parse", f"{commit}^{{tree}}")}
 
 
 def load(rel: str):
@@ -181,7 +194,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -288,6 +301,7 @@ def verify():
     lanes = lane_by_module()
     failures = []
     source_bases = set()
+    expected_source_base = current_source_base()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -317,6 +331,8 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
+            if source_base != expected_source_base:
+                failures.append(f"{mid}: sourceBase != current_source_base ({source_base['commit']} != {expected_source_base['commit']})")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):

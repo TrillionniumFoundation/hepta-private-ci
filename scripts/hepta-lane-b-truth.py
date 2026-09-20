@@ -10,6 +10,8 @@ import re
 import subprocess
 import tomllib
 from pathlib import Path
+
+from hepta_module_source_roots import resolve_source_roots
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -106,29 +108,31 @@ def allowed(path: str, prefixes: list[str]) -> bool:
     return any(path == prefix or path.startswith(prefix) for prefix in prefixes)
 
 
-def verify_source_base(value: Any, label: str) -> tuple[str, str]:
-    """Validate historical provenance, independently of the candidate checkout.
+def source_identity_paths() -> list[str]:
+    modules = load(ROOT / "docs/modules/MODULES.json")["modules"]
+    paths = {"docs/modules/MODULES.json", "docs/modules/SOURCE_BINDINGS.json", "codex-rs/Cargo.lock"}
+    for module in modules:
+        paths.update(binding["path"] for binding in module["rootBindings"])
+        paths.update(resolve_source_roots(ROOT, module))
+    return sorted(paths)
 
-    Module maps can advance from a newer source base than the lane's original
-    batch. Equality between those snapshots is not an implementation invariant.
-    Both must nevertheless identify real, exact trees in the current history.
-    """
-    need(
-        isinstance(value, dict) and set(value) == {"commit", "tree"},
-        f"{label}: source base",
-    )
+
+def current_source_base() -> dict[str, str]:
+    commit = git("log", "-1", "--format=%H", "HEAD", "--", *source_identity_paths())
+    need(bool(commit), "no canonical source commit")
+    return {"commit": commit, "tree": git("rev-parse", f"{commit}^{{tree}}")}
+
+
+def verify_source_base(value: Any, label: str) -> tuple[str, str]:
+    """Require exact equality with the latest canonical source snapshot."""
+    need(isinstance(value, dict) and set(value) == {"commit", "tree"}, f"{label}: source base")
     commit, tree = value["commit"], value["tree"]
-    need(
-        isinstance(commit, str)
-        and bool(HEX40.fullmatch(commit))
-        and isinstance(tree, str)
-        and bool(HEX40.fullmatch(tree)),
-        f"{label}: source identity",
-    )
+    need(isinstance(commit, str) and bool(HEX40.fullmatch(commit)) and isinstance(tree, str) and bool(HEX40.fullmatch(tree)), f"{label}: source identity")
+    expected = current_source_base()
+    need(value == expected, f"{label}: source base drift")
     need(git("rev-parse", f"{commit}^{{tree}}") == tree, f"{label}: source tree")
     git("merge-base", "--is-ancestor", commit, "HEAD")
     return commit, tree
-
 
 def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
     index = truth.get("modules")

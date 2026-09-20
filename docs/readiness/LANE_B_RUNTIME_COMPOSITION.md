@@ -4,7 +4,7 @@ Implementation correction: [Lane B native host](LANE_B_NATIVE_HOST.md) records a
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0  
 **Lane:** `LANE-B-RUNTIME`  
-**Immutable source base:** `7e8379b3954808d4138a7bd2f3773f75691291a3` / tree `ff9fa6baf95a35fd2f49816e0a80097688f2aeeb`
+**Immutable source base:** `446aff8c6c5b38c5a0df0bf4358bfed9d72e7772` / tree `1953e473ff4c398644ce1fd5dc2bb65ae4d9f2c2`
 **Exact candidate:** derived by the verifier from Git HEAD  
 **Truth registry:** `qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json`
 
