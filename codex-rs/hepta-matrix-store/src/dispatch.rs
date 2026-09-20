@@ -779,6 +779,8 @@ impl MatrixDurableStore {
             txn_id,
             &existing.operation_id,
             &existing.payload_digest,
+            existing.attempts,
+            self.owner_agent_id().as_str(),
         )
         .await?;
         let terminal_state = if qualified {
@@ -874,6 +876,8 @@ impl MatrixDurableStore {
             &existing.stable_txn_id,
             &existing.operation_id,
             &existing.payload_digest,
+            existing.attempts,
+            self.owner_agent_id().as_str(),
         )
         .await?;
         let terminal_state = if qualified {
@@ -965,20 +969,21 @@ async fn qualified_authority_claim_exists_tx(
     txn_id: &MatrixTransactionId,
     operation_id: &str,
     payload_digest: &str,
+    expected_attempt: u64,
+    expected_subject_id: &str,
 ) -> Result<bool, MatrixDurableError> {
-    let exists: i64 = sqlx::query_scalar(
-        "SELECT EXISTS(
-            SELECT 1 FROM matrix_dispatch_authority_claims
-            WHERE stable_txn_id = ? AND operation_id = ? AND payload_sha256 = ?
-         )",
-    )
-    .bind(txn_id.as_str())
-    .bind(operation_id)
-    .bind(payload_digest)
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
-    Ok(exists == 1)
+    let claim = authority_claim_by_attempt_tx(transaction, txn_id, expected_attempt).await?;
+    let Some(claim) = claim else {
+        return Ok(false);
+    };
+    if claim.operation_id != operation_id
+        || claim.payload_digest != payload_digest
+        || claim.subject_id != expected_subject_id
+        || claim.attempt != expected_attempt
+    {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    Ok(true)
 }
 
 async fn authority_claim_by_attempt_tx(

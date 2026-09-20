@@ -1382,6 +1382,112 @@ async fn qualified_success_requires_matching_durable_final_use_claim() -> TestRe
 }
 
 #[tokio::test]
+async fn prior_attempt_authority_claim_cannot_qualify_unclaimed_retry() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let room_id = room("!stale-attempt-claim:example.test")?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+
+    let logical_outbox_id = "stale-attempt-claim";
+    let payload = b"stale attempt must not qualify retry".to_vec();
+    let payload_digest = Sha256Digest::for_bytes(&payload).as_str().to_string();
+    let txn_id = transaction_id(logical_outbox_id, 1)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_outbox_id.to_string(),
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload,
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?;
+
+    let first = store.claim_outbox(11, 100, 1).await?;
+    let first = first.first().ok_or("missing first dispatch attempt")?;
+    let prepared = store.prepare_outbox_dispatch(first, 11).await?;
+    store
+        .record_dispatch_authority_claim(
+            &txn_id,
+            &MatrixDispatchAuthorityClaim {
+                operation_id: prepared.operation_id.clone(),
+                subject_id: agent_id.as_str().to_string(),
+                destination_id: "matrix:stale-attempt".to_string(),
+                homeserver_id: "https://example.test".to_string(),
+                matrix_user_id: AGENT_USER_ID.to_string(),
+                device_id: "DEVICE".to_string(),
+                session_generation: 1,
+                authority_epoch: 7,
+                revocation_revision: 3,
+                grant_id: "stale-attempt-grant-1".to_string(),
+                request_digest: "3".repeat(64),
+                scope_digest: "4".repeat(64),
+                payload_digest,
+                attempt: first.attempts,
+                expires_at_ms: 10_000,
+                claimed_at_ms: 12,
+            },
+        )
+        .await?;
+    store
+        .mark_outbox_retry(&txn_id, first.attempts, 13, 20)
+        .await?;
+
+    let second = store.claim_outbox(20, 100, 1).await?;
+    let second = second.first().ok_or("missing second dispatch attempt")?;
+    assert_eq!(second.attempts, first.attempts + 1);
+    store.prepare_outbox_dispatch(second, 20).await?;
+    assert!(
+        store
+            .dispatch_authority_claim(&txn_id, second.attempts)
+            .await?
+            .is_none(),
+        "the retry must remain unqualified until its own final-use claim is durable",
+    );
+
+    let observed = MatrixSyncMutationV2 {
+        source_event_id: event("$stale-attempt-observed")?,
+        room_id,
+        sender: user(AGENT_USER_ID)?,
+        transaction_id: Some(txn_id.clone()),
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 21,
+        received_at_ms: 22,
+        body: MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"stale attempt observed".to_vec(),
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(None, "stale-attempt-s1", 22, vec![observed]))
+        .await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("stale-attempt dispatch disappeared")?
+            .state,
+        MatrixDispatchState::ObservedUnqualified,
+        "a prior attempt's claim must not qualify a later unclaimed retry",
+    );
+    Ok(())
+}
+
+#[tokio::test]
 async fn outbound_terminal_observation_rolls_back_with_failed_sync_batch() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent()?;
