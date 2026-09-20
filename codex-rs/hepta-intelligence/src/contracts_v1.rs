@@ -6,7 +6,9 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-const MAX_LEGAL_CANDIDATES_V1: usize = 128;
+// The objective compiler reserves one of its 128 legal-action slots for intrinsic abstain.
+// This contract carries only external candidates, so callers may supply at most 127.
+const MAX_LEGAL_CANDIDATES_V1: usize = 127;
 const MAX_SUPPORT_PPM: u32 = 1_000_000;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -59,7 +61,6 @@ pub enum IntelligenceContractErrorV1 {
     EmptyDigest(&'static str),
     InvalidSupportFloor,
     CandidateLimitExceeded,
-    EmptyCandidateSet,
     DuplicateCandidate(String),
     InvalidCandidate(String),
     InvalidProducer,
@@ -95,9 +96,6 @@ pub fn build_legal_candidates_v1(
     }
     if support_floor_ppm > MAX_SUPPORT_PPM {
         return Err(IntelligenceContractErrorV1::InvalidSupportFloor);
-    }
-    if candidates.is_empty() {
-        return Err(IntelligenceContractErrorV1::EmptyCandidateSet);
     }
     if candidates.len() > MAX_LEGAL_CANDIDATES_V1 {
         return Err(IntelligenceContractErrorV1::CandidateLimitExceeded);
@@ -437,6 +435,31 @@ mod tests {
         .expect("candidate set");
         assert_eq!(first, second);
         first.validate().expect("valid candidate set");
+
+        let abstain_only = build_legal_candidates_v1(
+            id("abstain-only-set"),
+            digest("state"),
+            digest("grammar"),
+            0,
+            Vec::new(),
+        )
+        .expect("zero external candidates leaves intrinsic abstain");
+        assert!(abstain_only.candidates.is_empty());
+        abstain_only.validate().expect("valid abstain-only candidate set");
+
+        let too_many = (0..128)
+            .map(|index| candidate(&format!("action-{index}")))
+            .collect();
+        assert_eq!(
+            build_legal_candidates_v1(
+                id("too-many"),
+                digest("state"),
+                digest("grammar"),
+                0,
+                too_many,
+            ),
+            Err(IntelligenceContractErrorV1::CandidateLimitExceeded)
+        );
 
         let mut bad = first.clone();
         bad.candidates[0].support_ppm = 10;
