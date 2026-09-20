@@ -33,6 +33,32 @@ const PLACEMENT_DESTINATION: &str = "runtime.fleet.allocation";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct FleetCapacityMeasurementV1 {
+    /// Stable identity of the trusted measurement implementation.
+    pub measurement_source_id: String,
+    /// Measured/fresh host facts. The observation timestamps define freshness.
+    pub observation: HostObservation,
+    /// Explicit conservative uncertainty bound for each resource axis.
+    pub uncertainty: FleetResourceVectorV1,
+}
+
+impl FleetCapacityMeasurementV1 {
+    fn validate(&self, observer_id: &str) -> Result<(), FleetPlacementError> {
+        if !valid_identity(observer_id)
+            || self.measurement_source_id != observer_id
+            || !valid_identity(&self.measurement_source_id)
+            || !self.uncertainty.fits(self.observation.capacity)
+        {
+            return Err(FleetPlacementError::Invalid(
+                "capacity measurement provenance or uncertainty is invalid".into(),
+            ));
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct FleetPlacementRequestV1 {
     pub allocation_id: String,
     pub request_id: String,
@@ -106,11 +132,13 @@ pub enum FleetPlacementError {
 pub fn capacity_observation_binding(
     observer_id: &str,
     expected_generation: u64,
-    observation: &HostObservation,
+    measurement: &FleetCapacityMeasurementV1,
 ) -> Result<FinalUseBinding, FleetPlacementError> {
+    measurement.validate(observer_id)?;
+    let observation = &measurement.observation;
     let payload_sha256 = digest_json(
-        b"hepta.runtime-fleet.capacity-observation.v1\0",
-        observation,
+        b"hepta.runtime-fleet.capacity-measurement.v1\0",
+        measurement,
     )?;
     let request_sha256 = digest_parts(
         b"hepta.runtime-fleet.capacity-request.v1\0",
@@ -118,11 +146,14 @@ pub fn capacity_observation_binding(
             &expected_generation.to_be_bytes(),
             observation.host_id.as_bytes(),
             &observation.generation.to_be_bytes(),
+            &observation.observed_at_ms.to_be_bytes(),
+            &observation.valid_until_ms.to_be_bytes(),
         ],
     );
     let scope_sha256 = digest_parts(
         b"hepta.runtime-fleet.capacity-scope.v1\0",
         &[
+            measurement.measurement_source_id.as_bytes(),
             observation.host_id.as_bytes(),
             observation.failure_domain_id.as_bytes(),
         ],
@@ -143,10 +174,11 @@ pub fn admit_host_with_authority(
     observer_id: &str,
     expected_generation: u64,
     now_ms: u64,
-    observation: HostObservation,
+    measurement: FleetCapacityMeasurementV1,
 ) -> Result<u64, FleetPlacementError> {
-    let binding = capacity_observation_binding(observer_id, expected_generation, &observation)?;
+    let binding = capacity_observation_binding(observer_id, expected_generation, &measurement)?;
     let token = authority.claim(signed, &binding)?;
+    let observation = measurement.observation;
     let result = authority.with_verified_use(token, &binding, || {
         store.admit_host(expected_generation, now_ms, observation)
     })?;
@@ -506,6 +538,14 @@ fn push_vector(hasher: &mut Sha256, vector: FleetResourceVectorV1) {
     hasher.update(vector.memory_mib.to_be_bytes());
     hasher.update(vector.tool_processes.to_be_bytes());
     hasher.update(vector.turn_queue_slots.to_be_bytes());
+}
+
+fn valid_identity(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 128
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
 }
 
 fn valid_digest(value: &str) -> bool {
