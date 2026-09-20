@@ -12,10 +12,11 @@ use codex_hepta_intelligence::LaneFRunRequestV3;
 use codex_hepta_intelligence::NativeV3OwnerInputs;
 
 use crate::AgentdError;
-use crate::AgentdState;
 use crate::IntelligenceRunReceiptV3;
-use crate::poisoned_state;
-use crate::run_error;
+
+use super::AgentdState;
+use super::poisoned_state;
+use super::run_error;
 
 impl AgentdState {
     pub(crate) fn run_native_intelligence_v3<C: CompositionControlV3>(
