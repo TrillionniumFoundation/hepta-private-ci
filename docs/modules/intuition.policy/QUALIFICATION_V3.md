@@ -32,7 +32,7 @@ This supports model replacement under stable policy semantics, policy/profile re
 - feature snapshot/schema;
 - output schema and score semantics;
 - candidate identity;
-- exact utility/confidence/OOD outputs and randomized assignment probabilities.
+- exact utility/confidence/OOD outputs, presented `risk_class`, and assignment-distribution semantics including Deterministic-vs-CounterBased mode, abstain mass and candidate probabilities.
 
 Changing score outputs after commitment fails even when the candidate IDs are unchanged.
 
