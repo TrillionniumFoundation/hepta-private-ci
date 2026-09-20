@@ -644,11 +644,15 @@ where
             };
             let completeness = if stale_generation || revoked {
                 FederatedCompletenessV2::Partial
+            } else if matches!(response.completeness, FederatedCompletenessV2::Partial) {
+                // Partial coverage remains partial even when the peer returned
+                // no items. Relabeling Partial + [] as Empty would erase the
+                // distinction between incomplete coverage and a valid empty
+                // result.
+                FederatedCompletenessV2::Partial
             } else if items.is_empty() {
                 FederatedCompletenessV2::Empty
-            } else if truncated_items > 0
-                || matches!(response.completeness, FederatedCompletenessV2::Partial)
-            {
+            } else if truncated_items > 0 {
                 FederatedCompletenessV2::Partial
             } else {
                 response.completeness
@@ -890,13 +894,10 @@ fn validate_unique_items(items: &[FederatedEvidenceItemV2]) -> Result<(), Federa
 }
 
 fn push_items(bytes: &mut Vec<u8>, items: &[FederatedEvidenceItemV2]) {
-    let mut items = items.iter().collect::<Vec<_>>();
-    items.sort_by(|left, right| {
-        left.source_owner_id
-            .cmp(&right.source_owner_id)
-            .then_with(|| left.record_id.cmp(&right.record_id))
-            .then_with(|| left.record_revision.cmp(&right.record_revision))
-    });
+    // Item order is semantic: execute_once applies maximum_results by taking
+    // the leading items from the authenticated response. Hashing a sorted set
+    // here would allow a permutation to preserve response_digest while changing
+    // which records survive truncation.
     push_len(bytes, items.len());
     for item in items {
         push_id(bytes, &item.source_owner_id);
