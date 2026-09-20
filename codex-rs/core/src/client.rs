@@ -341,6 +341,11 @@ pub struct ModelClientSession {
     /// keep sending it unchanged between turn requests (e.g., for retries, incremental
     /// appends, or continuation requests), and must not send it between different turns.
     turn_state: Arc<OnceLock<String>>,
+    /// Optional final-use observer for the exact encoded Responses JSON body.
+    ///
+    /// When present, the turn is forced onto the HTTP single-attempt path so
+    /// every physical send remains behind the host provider-policy claim.
+    encoded_request_body_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 }
 
 #[derive(Debug, Clone)]
@@ -687,6 +692,7 @@ impl ModelClient {
             client: self.clone(),
             websocket_session: self.take_cached_websocket_session(),
             turn_state: Arc::new(OnceLock::new()),
+            encoded_request_body_observer: None,
         }
     }
 
@@ -1569,6 +1575,23 @@ impl ModelClientSession {
         Arc::clone(&self.turn_state)
     }
 
+    /// Installs a host-owned final-use observer for one turn.
+    ///
+    /// The observer sees the canonical encoded Responses JSON bytes immediately
+    /// before the transport boundary. Installing it also disables WebSocket
+    /// request sends for this turn because the WebSocket path has a different
+    /// encoding boundary.
+    pub fn set_encoded_request_body_observer(
+        &mut self,
+        observer: Arc<dyn codex_api::EncodedRequestBodyObserver>,
+    ) {
+        self.encoded_request_body_observer = Some(observer);
+    }
+
+    pub fn clear_encoded_request_body_observer(&mut self) {
+        self.encoded_request_body_observer = None;
+    }
+
     fn reset_websocket_session(&mut self) {
         self.websocket_session.connection = None;
         self.websocket_session.last_request = None;
@@ -1611,6 +1634,7 @@ impl ModelClientSession {
             },
             compression,
             turn_state: Some(Arc::clone(&self.turn_state)),
+            encoded_body_observer: self.encoded_request_body_observer.clone(),
         }
     }
 
