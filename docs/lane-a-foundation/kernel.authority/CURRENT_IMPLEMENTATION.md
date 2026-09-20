@@ -71,7 +71,7 @@ The CAS protocol intentionally advances the external frontier before the local s
 
 ### Capacity lifecycle
 
-General leases are bounded at 16,384 live lease records and 16,384 revocation records. `prune_expired_leases` can reclaim at most 1,024 expired unrevoked leases per call. Revocation tombstones are not silently collected within an epoch. Epoch advance fences prior authority and clears bounded history.
+General leases are bounded at 16,384 live lease records, 16,384 revocation records and 16,384 retired lease-ID revision records. `prune_expired_leases` can reclaim at most 1,024 expired unrevoked live leases per call, but every reclaimed ID first records its last revision in the durable retired-lineage map. Same-epoch reuse must continue at exactly the next revision and can never restart at revision 1. Revocation tombstones and retired revision lineage are not silently collected within an epoch. Epoch advance fences prior authority and clears bounded old-epoch history.
 
 FinalUse nonce/revocation history remains explicitly bounded and is cleared only by a stronger trusted epoch transition. There is no silent replay-history eviction.
 
