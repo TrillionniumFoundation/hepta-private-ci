@@ -14,6 +14,7 @@ from control_engineering_v2 import (
     WorkEnvelope,
     integration_queue_generation,
     integration_queue_item,
+    observe_integration_stage,
     plan_engineering_work,
     publish_integration_queue,
     reconcile_integration_item,
@@ -39,7 +40,49 @@ class IntegrationControllerTests(unittest.TestCase):
         self.base_commit = "e" * 40
         self.base_tree = "f" * 40
         self.trust = HmacTrustStore(
-            {("integration_terminal_observer", "terminal-key"): b"terminal"}
+            {
+                ("integration_terminal_observer", "terminal-key"): b"terminal",
+                ("engineering_evidence_binder", "candidate-key"): b"candidate",
+                ("github_review_observer", "review-key"): b"review",
+                ("ci_executor", "ci-key"): b"ci",
+            }
+        )
+
+    def stage_receipt(
+        self,
+        stage,
+        digest,
+        *,
+        satisfied=True,
+        issuer=None,
+        signing_identity=None,
+        observed=None,
+    ):
+        roles = {
+            "candidate": ("engineering_evidence_binder", "candidate-key"),
+            "review": ("github_review_observer", "review-key"),
+            "ci": ("ci_executor", "ci-key"),
+        }
+        expected_issuer, expected_identity = roles[stage]
+        issuer = expected_issuer if issuer is None else issuer
+        signing_identity = (
+            expected_identity if signing_identity is None else signing_identity
+        )
+        observed = self.now + 2 if observed is None else observed
+        value = IntegrationStageReceipt(
+            "queue-a",
+            "package-a",
+            stage,
+            digest,
+            satisfied,
+            issuer,
+            signing_identity,
+            observed,
+            observed + 1_000_000,
+        )
+        return replace(
+            value,
+            signature=self.trust.sign(value, issuer, signing_identity),
         )
 
     def terminal_receipt(self, *, outcome="merged_observed", observed=None):
@@ -96,6 +139,61 @@ class IntegrationControllerTests(unittest.TestCase):
             base_tree=self.base_tree,
             now_ns=self.now + 1,
         )
+
+    def test_authenticated_stage_observations_gate_product_readiness_projection(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
+                self.publish(store)
+                candidate = observe_integration_stage(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit=self.base_commit,
+                    current_base_tree=self.base_tree,
+                    receipt=self.stage_receipt("candidate", "1" * 64),
+                    trust_store=self.trust,
+                    now_ns=self.now + 2,
+                )
+                self.assertEqual(candidate.state, "awaiting_review")
+                with self.assertRaisesRegex(
+                    ValueError, "integration_stage_receipt_binding"
+                ):
+                    observe_integration_stage(
+                        store,
+                        "queue-a",
+                        "package-a",
+                        current_base_commit=self.base_commit,
+                        current_base_tree=self.base_tree,
+                        receipt=self.stage_receipt(
+                            "review", "2" * 64, satisfied=False, observed=self.now + 3
+                        ),
+                        trust_store=self.trust,
+                        now_ns=self.now + 3,
+                    )
+                review = observe_integration_stage(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit=self.base_commit,
+                    current_base_tree=self.base_tree,
+                    receipt=self.stage_receipt(
+                        "review", "2" * 64, observed=self.now + 3
+                    ),
+                    trust_store=self.trust,
+                    now_ns=self.now + 3,
+                )
+                self.assertEqual(review.state, "awaiting_ci")
+                ready = observe_integration_stage(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit=self.base_commit,
+                    current_base_tree=self.base_tree,
+                    receipt=self.stage_receipt("ci", "3" * 64, observed=self.now + 4),
+                    trust_store=self.trust,
+                    now_ns=self.now + 4,
+                )
+                self.assertEqual(ready.state, "ready_external_merge")
 
     def test_evidence_progression_reopen_and_terminal_observation(self):
         with tempfile.TemporaryDirectory() as temporary:
