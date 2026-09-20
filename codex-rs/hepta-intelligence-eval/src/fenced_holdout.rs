@@ -158,9 +158,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
             return Err(FencedHoldoutError::Binding);
         }
         fence.validate()?;
-        let current = store
-            .load(binding)?
-            .ok_or(FencedHoldoutError::Missing)?;
+        let current = store.load(binding)?.ok_or(FencedHoldoutError::Missing)?;
         current.validate(binding)?;
         let journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(
             current.journal.clone(),
@@ -174,14 +172,8 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
             if fence.generation <= current.fence.generation {
                 return Err(FencedHoldoutError::StaleFence);
             }
-            let next =
-                FinalHoldoutCasRecordV1::new(binding, fence.clone(), journal.snapshot())?;
-            apply_cas(
-                &mut store,
-                binding,
-                Some(current.state_digest),
-                &next,
-            )?;
+            let next = FinalHoldoutCasRecordV1::new(binding, fence.clone(), journal.snapshot())?;
+            apply_cas(&mut store, binding, Some(current.state_digest), &next)?;
             next
         };
 
@@ -208,17 +200,13 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         let receipt = candidate
             .consume(candidate.head_digest(), plan)
             .map_err(FencedHoldoutError::Journal)?;
-        let next = FinalHoldoutCasRecordV1::new(
-            self.binding,
-            self.fence.clone(),
-            candidate.snapshot(),
-        )?;
+        let next =
+            FinalHoldoutCasRecordV1::new(self.binding, self.fence.clone(), candidate.snapshot())?;
 
-        match self.store.compare_and_swap(
-            self.binding,
-            Some(self.state_digest),
-            &next,
-        ) {
+        match self
+            .store
+            .compare_and_swap(self.binding, Some(self.state_digest), &next)
+        {
             Ok(()) => {
                 self.journal = candidate;
                 self.state_digest = next.state_digest;
