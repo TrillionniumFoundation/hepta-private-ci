@@ -1886,9 +1886,9 @@
       "guide": "docs/modules/intelligence.control/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/intelligence.control.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "build_legal_candidates_v1(...); run_composition_v3(request,ports); run_composition_v3_with_control(request,ports,control); AgentRunCoordinator::run_native_intelligence_v3(...). V1/V2 remain compatibility surfaces; composition never becomes a second model/effect loop.",
-      "stateAndEncoding": "Ephemeral V3 orchestration binds one CapabilitySnapshotV2 and exact per-stage implementation digest/generation, native legal-set and host-envelope contracts, bounded receipt chain and owner references. Durable Decision/Outcome/Credit remain learning.ledger-owned.",
-      "linearizationAndRecovery": "Admit objective, build legal set, evaluate policy-bound NDU, authenticate independent evaluation, optional neuron/prompt, calibrated intuition, context, typed Agentd attach, durable Decision. Terminal runtime observation then drives Outcome/Credit closure; partial learning commits remain explicit reconciliation evidence.",
+      "apiContract": "build_legal_candidates_v1(...); run_composition_v3(request,ports); run_composition_v3_with_control(request,ports,control); AgentRunCoordinator::run_native_intelligence_v3(..., current_snapshot_provider, ...); CapabilitySnapshotV2::revalidate_current(...); run_read_only_vertical_outcome_v1(...). V1/V2/read-only/evaluated-shadow remain compatibility or qualification surfaces; composition never becomes a second model/effect loop.",
+      "stateAndEncoding": "Ephemeral V3 orchestration binds one frozen CapabilitySnapshotV2 and exact per-stage capability ID, implementation digest/generation, native legal-set and host-envelope contracts, bounded receipt chain and owner references. The registered native Agentd caller requires a freshly admitted current snapshot immediately before handoff and rejects any digest drift. Durable Decision/Outcome/Credit remain learning.ledger-owned.",
+      "linearizationAndRecovery": "Admit objective, build legal set, evaluate policy-bound NDU, authenticate independent evaluation, optional neuron/prompt, calibrated intuition, context, revalidate the current capability snapshot, typed Agentd attach, durable Decision. Terminal runtime observation then drives Outcome/Credit closure; partial learning commits remain explicit reconciliation evidence.",
       "algorithmAndBounds": "Legal candidates<=128; one frozen implementation generation per capability; absolute run/stage deadlines plus monotonic elapsed checks; optional neuron/prompt may fail through bounded fallback, required stages fail closed. Synchronous blocked calls require owner-side deadline enforcement.",
       "acceptanceOracle": "C1 traverses named host+real owner storage. Undelivered context yields no exposure credit. Dependency faults never invent success. New-process selected-artifact behavior change and current-revocation-safe rollback are separate receipts.",
       "nativeMappingRequired": true,
@@ -1899,6 +1899,10 @@
           {
             "path": "codex-rs/hepta-intelligence/src/contracts_v1.rs",
             "symbol": "build_legal_candidates_v1"
+          },
+          {
+            "path": "codex-rs/hepta-intelligence/src/capability_snapshot.rs",
+            "symbol": "CapabilitySnapshotV2::revalidate_current"
           },
           {
             "path": "codex-rs/hepta-intelligence/src/pipeline_v3.rs",
@@ -1921,11 +1925,15 @@
             "symbol": "run_read_only_vertical"
           },
           {
+            "path": "codex-rs/hepta-intelligence/src/vertical_outcome.rs",
+            "symbol": "run_read_only_vertical_outcome_v1"
+          },
+          {
             "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
             "symbol": "run_evaluated_shadow_v1"
           }
         ],
-        "stateAndRecovery": "V3 uses admitted/current owner APIs and a frozen implementation-generation snapshot; Agentd performs the real runtime attach. The sealed learning journal owns Decision/Outcome/Credit durability and exposes partial-commit recovery evidence. No model/tool/effect loop is created.",
+        "stateAndRecovery": "V3 uses admitted/current owner APIs and a frozen implementation-generation snapshot; immediately before Agentd handoff the product path obtains a current admitted snapshot through CurrentCapabilitySnapshotProviderV3 and requires exact equality. Agentd performs the real runtime attach. The sealed learning journal owns Decision/Outcome/Credit durability and exposes partial-commit recovery evidence. No model/tool/effect loop is created.",
         "testFiles": [
           "codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs",
           "codex-rs/hepta-intelligence/src/native_ports_v3_tests.rs",
@@ -1933,14 +1941,16 @@
           "codex-rs/hepta-intelligence/src/vertical_tests.rs",
           "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
           "codex-rs/hepta-agentd/src/intelligence_host.rs",
-          "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
+          "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+          "codex-rs/hepta-intelligence/src/capability_snapshot_tests.rs",
+          "codex-rs/hepta-intelligence/src/vertical_outcome.rs"
         ],
         "runtimeDocuments": [
           "codex-rs/hepta-intelligence/V3_COMPOSITION.md",
           "codex-rs/hepta-intelligence/EVALUATED_SHADOW.md"
         ],
         "remainingWork": [
-          "Execute the registered AgentRunCoordinator V3 callsite with authenticated current owner inputs and actual Codex delivery/terminal observations; pass exact-candidate and target-host qualification. Independent acceptance, canary, promotion and release remain external."
+          "Back CurrentCapabilitySnapshotProviderV3 with authenticated current owner/trust sources; execute the registered AgentRunCoordinator V3 callsite through actual Codex delivery/terminal observation; enforce owner-side interruption at blocking I/O; pass exact-head, deterministic synthetic-merge and target-host qualification. Independent acceptance, canary, promotion and release remain external."
         ]
       }
     },
