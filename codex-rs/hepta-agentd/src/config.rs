@@ -38,6 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
 }
 
 impl AgentdConfig {
@@ -143,6 +144,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            production_writer_host: None,
         })
     }
 
@@ -178,6 +180,40 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Attach an externally verified production cognitive writer to normal
+    /// Agentd composition. Agentd never manufactures this authority.
+    pub fn with_production_writer_host(
+        mut self,
+        host: std::sync::Arc<crate::AgentdProductionWriterHost>,
+    ) -> Result<Self, AgentdError> {
+        if self.production_writer_host.is_some() {
+            return Err(AgentdError::Invalid(
+                "production cognitive writer host already configured".to_string(),
+            ));
+        }
+        let writer = host.writer();
+        if writer.store().owner_agent_id() != &self.identity.agent_id {
+            return Err(AgentdError::GenerationFenced(
+                "production cognitive writer owner does not match Agentd identity".to_string(),
+            ));
+        }
+        if writer.generation() != self.identity.spawn_generation {
+            return Err(AgentdError::GenerationFenced(format!(
+                "production cognitive writer generation {} does not match Agentd spawn generation {}",
+                writer.generation(),
+                self.identity.spawn_generation
+            )));
+        }
+        self.production_writer_host = Some(host);
+        Ok(self)
+    }
+
+    pub(crate) fn production_writer_host(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdProductionWriterHost>> {
+        self.production_writer_host.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

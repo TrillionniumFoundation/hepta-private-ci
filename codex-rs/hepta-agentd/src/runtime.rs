@@ -44,6 +44,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let production_writer_host = config.production_writer_host();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -73,11 +74,22 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .set(Arc::new(host))
             .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
     }
-    let cognitive_layout = identity.layout.clone();
-    let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
-        CognitiveStore::open(&cognitive_layout).await
-    })
-    .await?;
+    let cognitive_runtime = match production_writer_host.as_ref() {
+        Some(host) => {
+            state.refresh_generation()?;
+            let writer = host.writer();
+            let runtime = CognitiveRuntime::Available(Arc::new(writer.store().clone()));
+            state.refresh_generation()?;
+            runtime
+        }
+        None => {
+            let cognitive_layout = identity.layout.clone();
+            open_cognitive_runtime_after_generation_fence(&state, || async move {
+                CognitiveStore::open(&cognitive_layout).await
+            })
+            .await?
+        }
+    };
     // The writer-enabled qualification binary must never start in a
     // degraded CognitiveRuntime state.  The default/production binary keeps
     // the existing availability-tolerant behavior; only the explicit
@@ -113,6 +125,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         arg0_paths,
         cognitive_runtime,
         Arc::clone(&state),
+        production_writer_host,
     ));
     let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
     let automation_cancellation = cancellation.clone();
