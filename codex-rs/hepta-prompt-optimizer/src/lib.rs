@@ -15,6 +15,66 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 pub mod local_shadow;
+pub mod policy;
+
+mod canonical_v1;
+mod pricing_v1;
+mod relations_v1;
+mod portfolio_v1;
+mod exercise_v1;
+
+pub use canonical_v1::CANONICAL_NO_INTERVENTION_ID_V1;
+pub use canonical_v1::CanonicalPromptErrorV1;
+pub use canonical_v1::MAX_CANONICAL_PROMPT_CANDIDATES_V1;
+pub use canonical_v1::PromptAuthenticationErrorV1;
+pub use canonical_v1::PromptCandidateBindingV1;
+pub use canonical_v1::PromptCandidateRoleV1;
+pub use canonical_v1::PromptCandidateEnumerationRequestV1;
+pub use canonical_v1::PromptCandidateSetReceiptV1 as PromptRegistryCandidateSetAuditV1;
+pub use canonical_v1::PromptCandidateSourceAuthenticatorV1;
+pub use canonical_v1::PromptCandidateSourceV1;
+pub use canonical_v1::PromptModelProfileV1;
+pub use canonical_v1::enumerate_factors_v1;
+pub use pricing_v1::PromptCostBreakdownV1;
+pub use pricing_v1::PromptPriceAvailabilityV1;
+pub use pricing_v1::PromptPriceV1;
+pub use pricing_v1::PromptPricingEvidenceAuthenticatorV1;
+pub use pricing_v1::PromptPricingEvidenceV1;
+pub use pricing_v1::PromptPricingReceiptV1 as PromptRegistryPricingSetAuditV1;
+pub use pricing_v1::price_factors_v1;
+pub use relations_v1::MAX_CANONICAL_PROMPT_CONSTRAINTS_V1;
+pub use relations_v1::MAX_CANONICAL_PROMPT_INTERACTIONS_V1;
+pub use relations_v1::PromptHardConstraintV1;
+pub use relations_v1::PromptPairInteractionV1;
+pub use relations_v1::PromptRelationErrorV1;
+pub use relations_v1::PromptRelationSourceAuthenticatorV1;
+pub use relations_v1::PromptRelationSourceV1;
+pub use portfolio_v1::MAX_CANONICAL_SELECTED_FACTORS_V1;
+pub use portfolio_v1::MAX_CANONICAL_SELECTION_STEPS_V1;
+pub use portfolio_v1::PromptOptimalityDisclosureV1;
+pub use portfolio_v1::PromptPortfolioCandidateDecisionV1;
+pub use portfolio_v1::PromptPortfolioCandidateDispositionV1;
+pub use portfolio_v1::PromptPortfolioErrorV1;
+pub use portfolio_v1::PromptPortfolioReceiptV1 as PromptRegistryPortfolioAuditV1;
+pub use portfolio_v1::PromptPortfolioSelectionRequestV1;
+pub use portfolio_v1::select_portfolio_v1;
+pub use exercise_v1::PromptExerciseBoundaryV1;
+pub use exercise_v1::PromptExerciseDecisionV1 as PromptRegistryExerciseAuditV1;
+pub use exercise_v1::PromptExerciseDispositionV1;
+pub use exercise_v1::PromptExerciseErrorV1;
+pub use exercise_v1::PromptExerciseInvalidationV1;
+pub use exercise_v1::PromptExerciseRequestV1;
+pub use exercise_v1::exercise_portfolio_v1;
+
+// Registered V1 wire-contract names are exported only from the canonical
+// policy surface. Rich registry/source/revalidation diagnostics use *AuditV1
+// aliases above so the V1 protocol meaning is never widened in place.
+pub use policy::PromptCandidateSetReceiptV1;
+pub use policy::PromptExerciseDecisionV1;
+pub use policy::PromptPortfolioReceiptV1;
+pub use policy::PromptPricingReceiptV1;
+
+
 
 const MAX_CANDIDATES: usize = 4_096;
 const MAX_SELECTED: usize = 128;
