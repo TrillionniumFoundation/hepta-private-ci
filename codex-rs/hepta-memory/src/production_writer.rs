@@ -771,7 +771,7 @@ impl ProductionDurableWriter {
         self.authority
             .validate_for_agent(self.store.owner_agent_id())?;
         verify_durable_store(&self.store).await?;
-        self.lease.verify_current().await?;
+        self.lease.verify_current_hot_path().await?;
         Ok(())
     }
 
