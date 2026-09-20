@@ -56,11 +56,26 @@
       "designOperation": "recall",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "adapt_generation_bound_recall_to_canonical_shadow_v1",
+      "nativeSymbol": "adapt_generation_bound_recall_to_canonical_shadow_v1",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "state": "source_implemented_shadow_only_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_recall_shadow_adapter",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Qualify the explicit generation-bound RecallPacketV1 -> canonical cognitive.types RecallPacketV1 shadow adapter on exact source-head and deterministic synthetic merge.",
+    "Migrate consumer-owned callsites only after the exact legacy-to-canonical event/cue/snapshot bridge is supplied by authoritative owners; do not infer event identity from legacy record identity.",
+    "Bind every product operation to an authenticated consumer callsite and owner store before changing production-composition claims."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -78,5 +93,15 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-retrieval"
-  ]
+  ],
+  "canonicalCognitiveRecallMigration": {
+    "state": "shadow_adapter_source_candidate",
+    "predecessorSurface": "memory.retrieval::generation_bound::RecallPacketV1",
+    "targetSurface": "cognitive.types::hnmf_learning::RecallPacketV1",
+    "exactIdentityBridgeRequired": true,
+    "legacyCueDigestReusedAsCanonicalDigest": false,
+    "legacyRecordIdReusedAsCanonicalEventId": false,
+    "replacesLegacyOutput": false,
+    "productComposed": false
+  }
 }
