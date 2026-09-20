@@ -22,6 +22,7 @@ mod outbox;
 pub use durable::DurableOperationBinding;
 pub use durable::DurableOutboxRecord;
 pub use durable::DurableOutboxState;
+pub use durable::MAX_DURABLE_OUTBOX_PAYLOAD_BYTES;
 pub use durable::DurableOperationLedger;
 pub use durable::DurableOperationRecord;
 pub use error::OperationError;

@@ -34,15 +34,17 @@ mod durable_outbox;
 
 pub use durable_outbox::DurableOutboxRecord;
 pub use durable_outbox::DurableOutboxState;
+pub use durable_outbox::MAX_DURABLE_OUTBOX_PAYLOAD_BYTES;
 
-const SCHEMA_VERSION: i64 = 1;
+const SCHEMA_VERSION: i64 = 4;
 const MAX_DURABLE_OPERATION_RECORDS: i64 = MAX_MODEL_OPERATION_RECORDS as i64;
 
 const SELECT_RECORD: &str = r#"
 SELECT operation_id, payload_digest, destination_id, context_digest,
        owner_generation, revision, state,
        authority_evidence_digest, authority_generation, dispatch_digest,
-       indeterminate_reason_digest, terminal_evidence_digest
+       indeterminate_reason_digest, terminal_evidence_digest,
+       terminal_observer_generation
 FROM hepta_operation_ledger_v1
 WHERE operation_id = ?
 "#;
@@ -74,6 +76,7 @@ pub struct DurableOperationRecord {
     pub dispatch_digest: Option<Digest32>,
     pub indeterminate_reason_digest: Option<Digest32>,
     pub terminal_evidence_digest: Option<Digest32>,
+    pub terminal_observer_generation: Option<Generation>,
 }
 
 #[derive(Clone, Debug)]
@@ -151,7 +154,8 @@ impl DurableOperationLedger {
                 ),
                 terminal_evidence_digest BLOB CHECK(
                     terminal_evidence_digest IS NULL OR length(terminal_evidence_digest) = 32
-                )
+                ),
+                terminal_observer_generation TEXT
             )
             "#,
         )
@@ -250,6 +254,7 @@ impl DurableOperationLedger {
             dispatch_digest: None,
             indeterminate_reason_digest: None,
             terminal_evidence_digest: None,
+            terminal_observer_generation: None,
         };
         insert_record(&mut tx, &record).await?;
         tx.commit()
@@ -414,7 +419,11 @@ impl DurableOperationLedger {
             return Err(OperationError::InvalidDigest("terminal outcome"));
         }
         self.transition(operation_id, |mut record| {
-            if observer_generation != record.operation.owner_generation {
+            if observer_generation.get() < record.operation.owner_generation.get()
+                || record
+                    .terminal_observer_generation
+                    .is_some_and(|generation| observer_generation.get() < generation.get())
+            {
                 return Err(OperationError::StaleGeneration);
             }
             if terminal_matches(&record.operation.state, outcome, outcome_digest) {
@@ -425,6 +434,7 @@ impl DurableOperationLedger {
                     advance(&mut record.operation)?;
                     record.operation.state = terminal_state(outcome, outcome_digest);
                     record.terminal_evidence_digest = Some(outcome_digest);
+                    record.terminal_observer_generation = Some(observer_generation);
                 }
                 ref state if state.is_terminal() => return Err(OperationError::Terminal),
                 ref state => return invalid(state, "terminal_observation"),
@@ -495,8 +505,8 @@ async fn insert_record(
             operation_id, payload_digest, destination_id, context_digest,
             owner_generation, revision, state, authority_evidence_digest,
             authority_generation, dispatch_digest, indeterminate_reason_digest,
-            terminal_evidence_digest
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            terminal_evidence_digest, terminal_observer_generation
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(record.operation.key.id.as_str())
@@ -511,6 +521,7 @@ async fn insert_record(
     .bind(columns.dispatch)
     .bind(columns.indeterminate)
     .bind(columns.terminal)
+    .bind(columns.terminal_observer_generation)
     .execute(&mut **tx)
     .await
     .map_err(|_| OperationError::StorageUnavailable)?;
@@ -527,7 +538,8 @@ async fn update_record(
         UPDATE hepta_operation_ledger_v1
         SET revision = ?, state = ?, authority_evidence_digest = ?,
             authority_generation = ?, dispatch_digest = ?,
-            indeterminate_reason_digest = ?, terminal_evidence_digest = ?
+            indeterminate_reason_digest = ?, terminal_evidence_digest = ?,
+            terminal_observer_generation = ?
         WHERE operation_id = ? AND payload_digest = ? AND destination_id = ?
           AND context_digest = ? AND owner_generation = ?
         "#,
@@ -539,6 +551,7 @@ async fn update_record(
     .bind(columns.dispatch)
     .bind(columns.indeterminate)
     .bind(columns.terminal)
+    .bind(columns.terminal_observer_generation)
     .bind(record.operation.key.id.as_str())
     .bind(record.operation.key.payload_digest.as_array().to_vec())
     .bind(record.destination_id.as_str())
@@ -560,6 +573,7 @@ struct EncodedState {
     dispatch: Option<Vec<u8>>,
     indeterminate: Option<Vec<u8>>,
     terminal: Option<Vec<u8>>,
+    terminal_observer_generation: Option<String>,
 }
 
 fn encoded_state(record: &DurableOperationRecord) -> EncodedState {
@@ -578,6 +592,9 @@ fn encoded_state(record: &DurableOperationRecord) -> EncodedState {
         terminal: record
             .terminal_evidence_digest
             .map(|digest| digest.as_array().to_vec()),
+        terminal_observer_generation: record
+            .terminal_observer_generation
+            .map(|generation| generation.get().to_string()),
     }
 }
 
@@ -606,6 +623,10 @@ fn decode_record(row: sqlx::sqlite::SqliteRow) -> Result<DurableOperationRecord,
     )?;
     let terminal_evidence_digest =
         optional_digest(row.try_get("terminal_evidence_digest").map_err(storage)?, "terminal evidence")?;
+    let terminal_observer_generation = optional_generation(
+        row.try_get("terminal_observer_generation").map_err(storage)?,
+        "terminal observer generation",
+    )?;
 
     let operation_state = match state.as_str() {
         "pending" => OperationState::Pending,
@@ -654,6 +675,12 @@ fn decode_record(row: sqlx::sqlite::SqliteRow) -> Result<DurableOperationRecord,
     {
         return Err(OperationError::CorruptStore("missing dispatch lineage"));
     }
+    if operation_state.is_terminal() && terminal_observer_generation.is_none() {
+        return Err(OperationError::CorruptStore("missing terminal observer generation"));
+    }
+    if !operation_state.is_terminal() && terminal_observer_generation.is_some() {
+        return Err(OperationError::CorruptStore("unexpected terminal observer generation"));
+    }
 
     Ok(DurableOperationRecord {
         operation: OperationRecord {
@@ -672,6 +699,7 @@ fn decode_record(row: sqlx::sqlite::SqliteRow) -> Result<DurableOperationRecord,
         dispatch_digest,
         indeterminate_reason_digest,
         terminal_evidence_digest,
+        terminal_observer_generation,
     })
 }
 

@@ -116,7 +116,7 @@ async fn reopen_preserves_indeterminate_and_terminal_history() {
             &stable_id("operation:ui:1"),
             ReconciliationOutcome::Applied,
             digest(b"terminal-applied"),
-            generation(8),
+            generation(6),
         )
         .await
         .expect_err("stale observer must reject");
@@ -128,13 +128,14 @@ async fn reopen_preserves_indeterminate_and_terminal_history() {
             &stable_id("operation:ui:1"),
             ReconciliationOutcome::Applied,
             terminal_digest,
-            owner_generation,
+            generation(8),
         )
         .await
-        .expect("terminal observation");
+        .expect("higher current observer terminal observation");
     assert_eq!(terminal.operation.revision.get(), 5);
     assert!(terminal.operation.state.is_terminal());
     assert_eq!(terminal.terminal_evidence_digest, Some(terminal_digest));
+    assert_eq!(terminal.terminal_observer_generation, Some(generation(8)));
 
     recovered.close().await;
 
@@ -149,24 +150,39 @@ async fn reopen_preserves_indeterminate_and_terminal_history() {
         OperationState::Applied { .. }
     ));
     assert_eq!(final_record.terminal_evidence_digest, Some(terminal_digest));
+    assert_eq!(
+        final_record.terminal_observer_generation,
+        Some(generation(8))
+    );
 
     let idempotent_terminal = final_reopen
         .observe_terminal(
             &stable_id("operation:ui:1"),
             ReconciliationOutcome::Applied,
             terminal_digest,
-            owner_generation,
+            generation(8),
         )
         .await
-        .expect("same terminal evidence is idempotent");
+        .expect("same current terminal evidence is idempotent");
     assert_eq!(idempotent_terminal.operation.revision.get(), 5);
+
+    let stale_replay = final_reopen
+        .observe_terminal(
+            &stable_id("operation:ui:1"),
+            ReconciliationOutcome::Applied,
+            terminal_digest,
+            generation(7),
+        )
+        .await
+        .expect_err("pre-takeover generation cannot replay terminal settlement");
+    assert_eq!(stale_replay, OperationError::StaleGeneration);
 
     let conflicting_terminal = final_reopen
         .observe_terminal(
             &stable_id("operation:ui:1"),
             ReconciliationOutcome::NotApplied,
             digest(b"different-terminal"),
-            owner_generation,
+            generation(8),
         )
         .await
         .expect_err("terminal state cannot be rewritten");

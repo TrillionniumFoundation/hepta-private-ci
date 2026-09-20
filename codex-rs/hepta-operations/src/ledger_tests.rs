@@ -105,7 +105,7 @@ fn indeterminate_requires_current_fence_reconciliation() {
                 &key.id,
                 ReconciliationOutcome::Applied,
                 Digest32::of_bytes(b"observed"),
-                generation(3),
+                generation(4),
             )
             .is_ok()
     );
