@@ -219,6 +219,32 @@ impl LedgerWriter {
         Ok(self.backend.snapshot()?.records().to_vec())
     }
 
+    /// Verify that a currently active authenticated Decision binds this exact
+    /// product run identity to the supplied learning episode. Product callers
+    /// use this before recording externally observed outcomes so a terminal fact
+    /// cannot be attached to a different or revoked run.
+    pub fn verify_active_decision_binding(
+        &self,
+        record_id: &StableId,
+        episode_id: &StableId,
+    ) -> Result<(), ProductionLedgerError> {
+        let snapshot = self.backend.snapshot()?;
+        let ledger = LearningLedger::from_snapshot(snapshot)?;
+        if ledger.active_records().into_iter().any(|record| {
+            matches!(
+                &record.event,
+                LedgerEvent::AuthenticatedDecisionV2(value)
+                    if &value.record_id == record_id && &value.episode_id == episode_id
+            )
+        }) {
+            Ok(())
+        } else {
+            Err(ProductionLedgerError::Binding(
+                "active decision run/episode binding",
+            ))
+        }
+    }
+
     pub fn witness_frontier(&self) -> Result<LedgerWitnessFrontier, ProductionLedgerError> {
         self.witness.frontier().map_err(Into::into)
     }
