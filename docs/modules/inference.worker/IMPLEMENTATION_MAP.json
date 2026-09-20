@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "83eb4ec4b14525830342c55b682294f8d6651f84",
-    "tree": "1777df7b8dd83717c7cbd90fdd18d5da83b69fce"
+    "commit": "00abff9823c09b991fb672ff1cffb5f714e822f5",
+    "tree": "ff7f5eb0d67a23e05f6be9720cce2ca13191fca3"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -14,8 +14,8 @@
   "resolvedRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
-  "stateOwnerDisposition": "Owns live local-runtime/provider client handles and bounded in-process execution state. Persistent reservation/dispatch/observation facts remain in the canonical inference.control journal; App Server/Core own provider thread/queue truth; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "Hosted execution observes exact provider turn/output/optional-token facts and reconciles a journaled client-message identity through Core without replay. Local execution observes a resident runtime protocol with explicit reserved/observed memory; cancellation requires a matching terminal cancel acknowledgement before it is classified terminal, otherwise the child is killed/waited and the outcome remains indeterminate. An independently authenticated exact-turn usage settlement may refine missing usage without inventing zero.",
+  "stateOwnerDisposition": "Owns live local-runtime/provider client handles and bounded in-process execution state. Canonical local request/reservation/assignment/Running/AwaitingSettlement facts and hosted native reservation/dispatch/observation facts remain in DurableInferenceControl; App Server/Core own provider thread/queue truth; artifact/cache owners retain model bytes.",
+  "terminalObserverDisposition": "Hosted execution observes exact provider turn/output/optional-token facts and reconciles a journaled client-message identity through Core without replay. Local execution records exact terminal runtime facts separately from economic settlement; worker-observed terminality becomes AwaitingSettlement and cannot mint usage_units. Missing authoritative usage remains unknown.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -118,9 +118,23 @@
           "ownerModule": "inference.control"
         },
         {
-          "role": "trusted_usage_reconciliation",
+          "role": "durable_execution_fence",
+          "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+          "symbol": "pub fn begin_execution(",
+          "buildTarget": "codex-hepta-infer-core::durable_control",
+          "ownerModule": "inference.control"
+        },
+        {
+          "role": "terminal_execution_observer",
+          "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+          "symbol": "pub fn observe_execution(",
+          "buildTarget": "codex-hepta-infer-core::durable_control",
+          "ownerModule": "inference.control"
+        },
+        {
+          "role": "authoritative_usage_settlement",
           "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-          "symbol": "pub fn reconcile_native_usage(",
+          "symbol": "pub fn reconcile_native_usage_authorized(",
           "buildTarget": "codex-hepta-infer-core::durable_control::native",
           "ownerModule": "inference.control"
         }
@@ -150,9 +164,19 @@
           "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
           "kind": "authoritative_usage_reconciliation_exact_idempotent_durable",
           "command": "just test -p codex-hepta-infer-core --lib"
+        },
+        {
+          "path": "codex-rs/hepta-inferd/src/bin/hepta-local-inference-runtime-host.rs",
+          "kind": "durable_assignment_entry_fence_no_replay_and_pending_settlement",
+          "command": "just test -p codex-hepta-inferd"
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+          "kind": "running_recovery_and_terminal_execution_pending_authoritative_usage",
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, claims independently signed final-use authority only for a fresh request, records exact Core client-message/payload dispatch identity, invokes the private Agent/App Server, and settles matching observations. Reopen uses Core ReconcileOnly to recover the original turn or prove no durable admission; recovered terminal turns await exact-turn persisted usage replay under the RPC bound and never submit a replacement turn. The named long-lived local product owner revalidates the shared FinalUseAuthority before admission and during a run, applies live revocation updates concurrently, cancels and fences the generation on authority loss, and unloads resident models. Local cancellation sends an exact runtime cancel request, requires a matching terminal cancel acknowledgement by a bounded deadline, then kill/waits and returns indeterminate if terminality is not proven. Trusted exact-turn usage evidence can durably refine missing usage without replay or synthetic zero.",
+      "sourceSemantics": "Hosted execution reserves through durable inference.control, claims independently signed final-use authority only for a fresh request, records exact Core client-message/payload dispatch identity, invokes the private Agent/App Server, and settles matching observations. Local execution is composed by the long-lived hepta-local-inference-runtime-host: submit/reserve/assign are canonical DurableInferenceControl facts; run accepts only request identity plus exact input, durably commits Assigned→Running before child entry, derives reservation/model/token/deadline from the owner record, never replays Running/Indeterminate, and persists terminal model truth as AwaitingSettlement until authoritative usage settlement. Recovered provider turns never submit a replacement turn.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -174,6 +198,13 @@
           "symbol": "fn unload(",
           "buildTarget": "codex-hepta-infer-worker-host::local_process_driver",
           "ownerModule": "inference.worker"
+        },
+        {
+          "role": "local_generation_cleanup",
+          "path": "codex-rs/hepta-inferd/src/local_worker_host.rs",
+          "symbol": "pub fn shutdown(",
+          "buildTarget": "codex-hepta-inferd::local_worker_host",
+          "ownerModule": "inference.control"
         }
       ],
       "tests": [
@@ -215,7 +246,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "hosted_and_local_source_product_hosts_composed_deployment_unproved",
+  "productCallerState": "hosted_and_local_long_lived_source_product_hosts_composed_deployment_unproved",
   "productionWriterState": "canonical_durable_inference_control_reused",
   "owner": "inference-platform",
   "deputy": "security-authority",
