@@ -2,6 +2,9 @@ use super::*;
 
 use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf_learning::RecallAbstainReasonV1 as CanonicalRecallAbstainReasonV1;
+use codex_hepta_cognitive_types::hnmf_learning::RecallResourceReceiptV1 as CanonicalRecallResourceReceiptV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Generation;
 
@@ -97,6 +100,31 @@ fn record(number: u64) -> MemoryRecord {
             source_digest: digest(&format!("source-{number}")),
         }],
         state: RecordState::Live,
+    }
+}
+
+fn canonical_digest(value: &str) -> ContractDigestV1 {
+    ContractDigestV1::from_digest(digest(value))
+        .unwrap_or_else(|error| panic!("valid canonical digest: {error}"))
+}
+
+fn canonical_context(candidate_count: u16) -> CanonicalRecallShadowContextV1 {
+    CanonicalRecallShadowContextV1 {
+        event_snapshot_digest: canonical_digest("event-snapshot"),
+        engram_snapshot_digest: canonical_digest("engram-snapshot"),
+        active_nodes: Vec::new(),
+        activation_paths: Vec::new(),
+        contradictions: Vec::new(),
+        coverage_ppm: 900_000,
+        confidence_ppm: 800_000,
+        ood_ppm: 100_000,
+        resource_receipt: CanonicalRecallResourceReceiptV1 {
+            candidate_event_count: candidate_count,
+            node_count: 0,
+            synapse_count: 0,
+            active_node_count: 0,
+            settling_steps: 0,
+        },
     }
 }
 
@@ -225,3 +253,90 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
         ))
     );
 }
+
+#[test]
+fn legacy_recall_projects_to_canonical_shadow_without_fabricating_authority() {
+    let cue = cue();
+    let policy = policy();
+    let first = record(1);
+    let second = record(2);
+    let legacy = recall(
+        &cue,
+        &policy,
+        vec![
+            candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
+            candidate(first, RetrievalChannelV1::Entity, 1),
+            candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
+            candidate(second, RetrievalChannelV1::Entity, 2),
+        ],
+    )
+    .unwrap_or_else(|error| panic!("legacy recall: {error}"));
+
+    let canonical = adapt_generation_bound_recall_to_canonical_shadow_v1(
+        &legacy,
+        canonical_context(2),
+    )
+    .unwrap_or_else(|error| panic!("canonical shadow projection: {error}"));
+
+    assert_eq!(canonical.cue_digest.digest(), legacy.cue_digest);
+    assert_eq!(canonical.selected_events.len(), legacy.selections.len());
+    assert!(canonical.abstain.is_none());
+    assert!(canonical
+        .selected_events
+        .windows(2)
+        .all(|rows| rows[0] < rows[1]));
+}
+
+#[test]
+fn legacy_abstention_maps_to_canonical_abstention_without_selected_events() {
+    let cue = cue();
+    let policy = policy();
+    let legacy = recall(
+        &cue,
+        &policy,
+        vec![candidate(record(1), RetrievalChannelV1::Lexical, 1)],
+    )
+    .unwrap_or_else(|error| panic!("legacy abstention: {error}"));
+
+    let canonical = adapt_generation_bound_recall_to_canonical_shadow_v1(
+        &legacy,
+        canonical_context(1),
+    )
+    .unwrap_or_else(|error| panic!("canonical abstention: {error}"));
+
+    assert_eq!(
+        canonical.abstain,
+        Some(CanonicalRecallAbstainReasonV1::InsufficientCoverage)
+    );
+    assert!(canonical.selected_events.is_empty());
+}
+
+#[test]
+fn canonical_shadow_receipt_cannot_undercount_legacy_selection() {
+    let cue = cue();
+    let policy = policy();
+    let first = record(1);
+    let second = record(2);
+    let legacy = recall(
+        &cue,
+        &policy,
+        vec![
+            candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
+            candidate(first, RetrievalChannelV1::Entity, 1),
+            candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
+            candidate(second, RetrievalChannelV1::Entity, 2),
+        ],
+    )
+    .unwrap_or_else(|error| panic!("legacy recall: {error}"));
+
+    assert_eq!(
+        adapt_generation_bound_recall_to_canonical_shadow_v1(
+            &legacy,
+            canonical_context(1),
+        ),
+        Err(RecallErrorV1::CanonicalAdapter(
+            "candidate receipt undercounts legacy selected plus omitted events"
+        ))
+    );
+}
+
