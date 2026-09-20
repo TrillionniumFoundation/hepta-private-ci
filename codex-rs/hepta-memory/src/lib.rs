@@ -373,6 +373,7 @@ pub use production_writer::ProductionOutcomeReceipt;
 pub use production_writer::ProductionQueuedReceipt;
 pub use production_writer::ProductionRecoveryReceipt;
 pub use production_writer::ProductionTargetDisposition;
+pub use production_writer::ProductionTerminalObservation;
 pub use production_writer::ProductionTargetOutcome;
 pub use production_writer::ProductionWriterError;
 pub use recall::RECALL_OBSERVATION_SCHEMA_VERSION;
