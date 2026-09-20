@@ -22,8 +22,11 @@ The native qualification facade is
 Append authenticates the issuer with the existing AuthBus Ed25519 contract,
 binds candidate/tree/role to the signed subject, and advances durable replay
 state in the same SQLite transaction as the evidence insert. Verification
-preserves claim classes, evidence expiry, correction/revocation lineage and distinct
-authenticated principals for required independent roles. Corrections and ordinary
+preserves claim classes, evidence expiry, correction/revocation lineage and
+requires both distinct authenticated principals and distinct signing identities
+for required independent roles. Positive verification is revalidated against a
+fresh host-supplied current issuer/key/role snapshot; removed, revoked or
+key-rotated issuers cannot continue satisfying a supported claim. Corrections and ordinary
 revocations are owner-principal/role scoped; only a currently trusted `security`
 issuer may cross that boundary for emergency revocation. AuthBus message expiry
 controls admission freshness and is not reused as durable evidence expiry.
@@ -33,7 +36,7 @@ provides `--evidence-trust-file`. Agentd advertises `kernel.evidence@1.0`
 only when that host is attached and exposes append/query/verify through its
 bounded control socket. The trust registry supports multiple issuer principals,
 role allowlists, key epochs and current revocation; it is reloaded immediately
-before physical evidence append.
+before physical evidence append and again before positive chain verification.
 
 ## Public symbols and source bindings
 
@@ -47,7 +50,11 @@ before physical evidence append.
 - physical schema: `migrations/*.sql`;
 - Agentd product host: `codex-rs/hepta-agentd/src/evidence_host.rs`;
 - Agentd multi-issuer trust boundary:
-  `codex-rs/hepta-agentd/src/evidence_trust.rs`.
+  `codex-rs/hepta-agentd/src/evidence_trust.rs`;
+- deterministic migration/qualification/AuthBus recovery snapshot:
+  `codex-rs/hepta-evidence/src/recovery_frontier.rs`;
+- independent signed startup/restore verifier:
+  `codex-rs/hepta-agentd/src/evidence_frontier.rs`.
 
 The pre-existing governance `HeptaEvidenceStore::append_receipt` remains for
 backward compatibility. The target qualification operation is the
@@ -62,9 +69,14 @@ rows, canonical qualification rows and foreign keys on open. A read-only
 diagnostic open neither creates nor migrates.
 
 Agentd product composition is source implemented and explicitly configuration
-gated. It does not grant selection, promotion or release authority. External
-anti-rollback frontier service selection, independent acceptance and operator
-activation remain separate gates.
+gated. It does not grant selection, promotion or release authority. When the
+operator supplies both recovery-frontier files, Agentd verifies an Ed25519-signed
+external snapshot of the migration set, qualification high-water/hash frontier,
+AuthBus replay frontier and immutable store identity before attaching the
+evidence host. A valid older complete SQLite image therefore fails
+`recovery_required` against a newer signed frontier. The durable external
+CAS/checkpoint service that publishes the latest frontier, independent
+acceptance and operator activation remain separate gates.
 
 ## Target-only design
 
@@ -96,11 +108,14 @@ review the exact source/merge candidate and sign that decision.
 ## Verification
 
 Native tests in `src/qualification_tests.rs` cover EVID-01 through EVID-04,
-authenticated replay/idempotency, correction/revocation non-resurrection and
-reopen corruption failure. The real Agentd process test
-`tests/kernel_evidence_product.rs` covers named product composition,
-multi-principal independent decisions, terminal-observer evidence and
-revocation reload at the append boundary.
+shared-signing-key independence rejection, current trust/key-rotation
+invalidation, authenticated replay/idempotency, correction/revocation
+non-resurrection, reopen corruption, query/traversal ceilings, concurrent
+writers and transactional replay rollback under injected insert failure. The
+real Agentd process test `tests/kernel_evidence_product.rs` covers named
+product composition, wrong tree/role, replay, expiry, stale/revoked keys,
+terminal-observer evidence, current-trust verification and signed
+recovery-frontier startup including valid-old-database rejection.
 
 The dedicated qualification workflow runs the evidence package, Agentd product
 test, Lane-A truth verifier and documentation/implementation-map gates on both
