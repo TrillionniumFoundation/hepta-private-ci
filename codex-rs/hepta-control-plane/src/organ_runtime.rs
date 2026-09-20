@@ -186,6 +186,10 @@ pub enum OrganRuntimeError {
         organ: StableId,
         port: usize,
     },
+    RecoveryPredecessorActive {
+        organ: StableId,
+        state: HostedOrganStateV1,
+    },
     OrganNotReady {
         organ: StableId,
         state: HostedOrganStateV1,
@@ -403,6 +407,52 @@ impl OrganHostV1 {
     ) -> Result<(), OrganRuntimeError> {
         self.validate_read_only_successor(expected, candidate.generation())?;
         self.activate_read_only_successor(candidate)
+    }
+
+    /// Recover an already-stopped or quarantined generation into one independently
+    /// admitted exact successor. This is deliberately separate from healthy
+    /// replacement: a Ready predecessor is rejected, candidate start happens
+    /// before publication, and failure leaves the predecessor inactive.
+    pub(crate) fn recover_admitted_read_only_generation(
+        &mut self,
+        expected: Generation,
+        mut candidate: Self,
+    ) -> Result<(), OrganRuntimeError> {
+        self.validate_recovery_successor(expected, candidate.generation())?;
+        candidate.start_all()?;
+        *self = candidate;
+        Ok(())
+    }
+
+    fn validate_recovery_successor(
+        &self,
+        expected: Generation,
+        proposed: Generation,
+    ) -> Result<(), OrganRuntimeError> {
+        if self.generation() != expected {
+            return Err(OrganRuntimeError::GenerationMismatch {
+                expected: self.generation(),
+                actual: expected,
+            });
+        }
+        if expected.next().ok() != Some(proposed) {
+            return Err(OrganRuntimeError::NonSuccessorGeneration {
+                current: expected,
+                proposed,
+            });
+        }
+        for slot in &self.slots {
+            if !matches!(
+                slot.state,
+                HostedOrganStateV1::Stopped | HostedOrganStateV1::Quarantined
+            ) {
+                return Err(OrganRuntimeError::RecoveryPredecessorActive {
+                    organ: slot.id.clone(),
+                    state: slot.state,
+                });
+            }
+        }
+        Ok(())
     }
 
     fn validate_read_only_successor(
