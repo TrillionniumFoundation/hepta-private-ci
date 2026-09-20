@@ -93,7 +93,7 @@ The product adapter is read-only. It does not enroll peers, mint capability gran
 
 `CognitiveRuntime::AvailableFederated` and `FederatedRecallSet` remain available for compatibility-focused tests and callers. Agentd product composition is migrated to `AvailableFederatedV2`.
 
-This distinction is deliberate: legacy APIs are not allowed to silently stand in for the canonical module contract. Product model-input federation is registered from `CognitiveRuntime`; when the V2 variant is active, retrieval and final attachment revalidation use the canonical path.
+This distinction is enforced in source, not only by convention: product model-input registration requires `CognitiveRuntime::has_product_federation()`, and the extension calls `retrieve_product_federated` / `revalidate_product_federated`. Those APIs reject `AvailableFederated`; the legacy variant remains reachable only through explicit compatibility surfaces and therefore cannot silently stand in for the canonical module contract.
 
 ## 7. Coverage semantics
 
