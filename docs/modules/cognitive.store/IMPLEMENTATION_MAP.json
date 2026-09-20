@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "c511e129dfe3d68ba750117e03dfdb07c38dc330",
-    "tree": "5966baf2e3e16b17e594e640dc9d5ba237f499c5"
+    "commit": "12ff65efcffa6dd042bcf39c70b46f4263bf94a4",
+    "tree": "8e9e3df7ca7abc27bb6f6e179720fee24788bdbc"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -17,9 +17,9 @@
     "codex-rs/hepta-cognitive-store"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": true,
-  "productCallerState": "named_agentd_product_caller_source_bound",
-  "productionWriterState": "canonical_durable_writer_source_bound",
+  "productionImplementation": false,
+  "productCallerState": "normal_agentd_runtime_capability_composed_external_bootstrap_pending",
+  "productionWriterState": "sealed_durable_writer_source_bound_qualification_pending",
   "operations": [
     {
       "operation": "semantic_revision_ledger",
@@ -39,14 +39,14 @@
       "operation": "durable_owner",
       "nativeSymbol": "DurableCognitiveStore",
       "sourcePath": "codex-rs/hepta-cognitive-store/src/durable.rs",
-      "state": "production_facade_source_implemented",
+      "state": "canonical_durable_owner_source_implemented_qualification_pending",
       "authority": "externally_verified",
       "tests": [
         "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
         "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "authoritative_memory_knowledge_fact_storage",
+      "designOperation": "authoritative_memory_and_memory_revision_bound_fact_set_storage",
       "mappingClass": "canonical_facade",
       "delegatedCallees": [
         "hepta-memory::CognitiveStore"
@@ -73,7 +73,8 @@
       "state": "descriptor_bound_recovery_source_implemented",
       "authority": "externally_verified",
       "tests": [
-        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+        "codex-rs/state/src/sqlite_recovery_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "open_with_recovery",
@@ -84,7 +85,7 @@
       "operation": "product_writer_host",
       "nativeSymbol": "AgentdProductionWriterHost",
       "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
-      "state": "named_product_caller_source_bound",
+      "state": "normal_runtime_composition_source_bound_external_bootstrap_pending",
       "authority": "externally_verified",
       "tests": [
         "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
@@ -94,23 +95,43 @@
       "mappingClass": "product_caller",
       "delegatedCallees": [
         "cognitive.store::DurableCognitiveStore",
-        "cognitive.store::ProductionDurableWriter"
+        "cognitive.store::ProductionDurableWriter",
+        "cognitive.store::ProductionCognitiveMutationCapability"
+      ]
+    },
+    {
+      "operation": "production_mutation_capability",
+      "nativeSymbol": "ProductionCognitiveMutationCapability",
+      "sourcePath": "codex-rs/hepta-memory/src/production_writer.rs",
+      "state": "sealed_live_verified_capability_source_implemented",
+      "authority": "externally_verified_final_use",
+      "tests": [
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "remember_correct_forget_production_capability",
+      "mappingClass": "canonical_capability",
+      "delegatedCallees": [
+        "hepta-memory::CognitiveStore"
       ]
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain current exact-head and deterministic synthetic-merge receipts for this candidate, including maximum-retained PERF-DURABLE artifacts.",
-    "Keep current-cut witness retention/authentication and product authority verification owned by the host; source code cannot self-issue those external facts."
+    "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for this source baseline, including child-process crash/reopen and 256/16384 PERF-DURABLE artifacts.",
+    "Keep productionImplementation false until the normal-runtime sealed capability path compiles/tests on the exact candidate and product execution evidence is current.",
+    "Standalone deployment must receive an independently authenticated current-cut witness and externally verified live production authority from its host; Agentd must not self-mint either."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "trusted host bootstrap and target-host product qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": true,
+    "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
