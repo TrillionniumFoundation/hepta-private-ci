@@ -43,6 +43,8 @@ use codex_hepta_matrix_sdk::IngressIgnoredReason;
 #[cfg(unix)]
 use codex_hepta_matrix_sdk::MatrixAuthorityError;
 #[cfg(unix)]
+use codex_hepta_matrix_sdk::build_matrix_final_use_request;
+#[cfg(unix)]
 use codex_hepta_matrix_sdk::MatrixFinalUseRequest;
 #[cfg(unix)]
 use codex_hepta_matrix_sdk::MatrixGrantFuture;
@@ -60,6 +62,7 @@ use codex_hepta_matrix_sdk::OutboxDispatchConfig;
 use codex_hepta_matrix_sdk::dispatch_outbox_once;
 use codex_hepta_matrix_sdk::run_outbox_sender;
 use codex_hepta_matrix_store::MatrixDurableConfig;
+use codex_hepta_matrix_store::MatrixDispatchAuthorityClaim;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::OutboxDisposition;
@@ -743,6 +746,130 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(reopened_first.grant_id, first_claim.grant_id);
     assert_eq!(reopened_second.grant_id, second_claim.grant_id);
     reopened.close().await;
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> TestResult {
+    let authorizer = TestAuthorizer::new()?;
+    let temp = TempDir::new()?;
+    let agent_id = agent(FIRST_AGENT)?;
+    let layout = layout(&temp, &agent_id)?;
+    let store = prepared_store(&layout).await?;
+    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let accepted_event_id = event("$after-pre-io-crashes")?;
+    let transport = FakeTransport::new([Ok(accepted_event_id)]);
+    let config = OutboxDispatchConfig {
+        lease_ms: 5,
+        retry_delay_ms: 5,
+        max_retry_delay_ms: 20,
+        max_attempts: 4,
+        claim_limit: 1,
+        idle_poll: Duration::from_millis(10),
+    };
+
+    // Cut 1: final-use nonce has been consumed and adapter entry returned a
+    // lazy future, but Matrix has not durably recorded the claim and the
+    // future has never been polled.
+    let first = store.claim_outbox(10, config.lease_ms, 1).await?;
+    let first = first.first().ok_or("missing first crash-cut claim")?.clone();
+    let prepared = store.prepare_outbox_dispatch(&first, 10).await?;
+    let request = build_matrix_final_use_request(
+        agent_id.as_str(),
+        &prepared,
+        &first,
+        &fake_outbound_identity(),
+    )?;
+    let signed = authorizer.signed_grant(&request).await?;
+    let token = authorizer.authority().claim(&signed, &request.binding)?;
+    let (future, _) = authorizer
+        .authority()
+        .with_verified_use_at_frontier(token, &request.binding, || transport.send(&first))?;
+    drop(future);
+    assert!(transport.txn_ids()?.is_empty());
+    assert!(
+        store
+            .dispatch_authority_claim(&original.stable_txn_id, first.attempts)
+            .await?
+            .is_none()
+    );
+    store.close().await;
+
+    // Cut 2: the exact authority claim is durable, but the lazy network future
+    // is still dropped before its first poll.
+    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+    let second = store.claim_outbox(20, config.lease_ms, 1).await?;
+    let second = second.first().ok_or("missing second crash-cut claim")?.clone();
+    let prepared = store.prepare_outbox_dispatch(&second, 20).await?;
+    let request = build_matrix_final_use_request(
+        agent_id.as_str(),
+        &prepared,
+        &second,
+        &fake_outbound_identity(),
+    )?;
+    let signed = authorizer.signed_grant(&request).await?;
+    let token = authorizer.authority().claim(&signed, &request.binding)?;
+    let (future, frontier) = authorizer
+        .authority()
+        .with_verified_use_at_frontier(token, &request.binding, || transport.send(&second))?;
+    store
+        .record_dispatch_authority_claim(
+            &original.stable_txn_id,
+            &MatrixDispatchAuthorityClaim {
+                operation_id: request.operation_id.clone(),
+                subject_id: request.subject_id.clone(),
+                destination_id: request.destination_id.clone(),
+                homeserver_id: request.homeserver_id.clone(),
+                matrix_user_id: request.matrix_user_id.clone(),
+                device_id: request.device_id.clone(),
+                session_generation: request.session_generation,
+                authority_epoch: frontier.authority_epoch,
+                revocation_revision: frontier.revision,
+                grant_id: signed.grant.grant_id.clone(),
+                request_digest: request.request_digest.clone(),
+                scope_digest: request.scope_digest.clone(),
+                payload_digest: request.payload_digest.clone(),
+                attempt: second.attempts,
+                expires_at_ms: signed.grant.expires_at_unix_ms,
+                claimed_at_ms: SystemTime::now()
+                    .duration_since(UNIX_EPOCH)?
+                    .as_millis() as u64,
+            },
+        )
+        .await?;
+    drop(future);
+    assert!(transport.txn_ids()?.is_empty());
+    let durable_second = store
+        .dispatch_authority_claim(&original.stable_txn_id, second.attempts)
+        .await?
+        .ok_or("durable second crash-cut authority claim disappeared")?;
+    store.close().await;
+
+    // Restart/reclaim must keep the same stable Matrix transaction, obtain a
+    // fresh grant, and only then cross the network boundary.
+    let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+    let stats = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authorizer,
+        &config,
+        &CancellationToken::new(),
+        30,
+    )
+    .await?;
+    assert_eq!(stats.transport_accepted, 1);
+    assert_eq!(transport.txn_ids()?, vec![original.stable_txn_id.clone()]);
+    let current = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("reclaimed outbox disappeared")?;
+    let durable_retry = store
+        .dispatch_authority_claim(&original.stable_txn_id, current.attempts)
+        .await?
+        .ok_or("fresh retry authority claim disappeared")?;
+    assert_ne!(durable_second.grant_id, durable_retry.grant_id);
+    assert_eq!(durable_second.payload_digest, durable_retry.payload_digest);
     Ok(())
 }
 

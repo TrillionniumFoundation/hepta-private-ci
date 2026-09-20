@@ -30,7 +30,7 @@ CREATE TABLE matrix_dispatch_ledger (
         )
     ),
     state TEXT NOT NULL CHECK (
-        state IN ('dispatched', 'accepted', 'indeterminate', 'succeeded', 'failed', 'redacted')
+        state IN ('dispatched', 'accepted', 'indeterminate', 'succeeded', 'observed_unqualified', 'failed', 'redacted')
     ),
     accepted_event_id TEXT,
     terminal_event_id TEXT,
@@ -69,10 +69,10 @@ CREATE TABLE matrix_dispatch_ledger (
         OR state != 'accepted'
     ),
     CHECK (
-        (state = 'succeeded' AND terminal_event_id IS NOT NULL
+        (state IN ('succeeded', 'observed_unqualified') AND terminal_event_id IS NOT NULL
             AND send_observation_sha256 IS NOT NULL
             AND terminal_observed_at_ms IS NOT NULL)
-        OR state != 'succeeded'
+        OR state NOT IN ('succeeded', 'observed_unqualified')
     ),
     CHECK (
         (state = 'redacted' AND terminal_event_id IS NOT NULL
@@ -85,7 +85,7 @@ CREATE TABLE matrix_dispatch_ledger (
         OR state != 'failed'
     ),
     CHECK (
-        (state IN ('succeeded', 'failed', 'redacted') AND terminal_observed_at_ms IS NOT NULL)
+        (state IN ('succeeded', 'observed_unqualified', 'failed', 'redacted') AND terminal_observed_at_ms IS NOT NULL)
         OR
         (state IN ('dispatched', 'accepted', 'indeterminate') AND terminal_observed_at_ms IS NULL)
     )
@@ -211,4 +211,17 @@ END;
 CREATE TRIGGER matrix_dispatch_observations_no_delete
 BEFORE DELETE ON matrix_dispatch_observations BEGIN
     SELECT RAISE(ABORT, 'Matrix dispatch observation is immutable');
+END;
+
+CREATE TRIGGER matrix_dispatch_succeeded_requires_authority_claim
+BEFORE UPDATE OF state ON matrix_dispatch_ledger
+WHEN NEW.state = 'succeeded'
+     AND NOT EXISTS (
+         SELECT 1 FROM matrix_dispatch_authority_claims
+         WHERE stable_txn_id = NEW.stable_txn_id
+           AND operation_id = NEW.operation_id
+           AND payload_sha256 = NEW.payload_sha256
+     )
+BEGIN
+    SELECT RAISE(ABORT, 'qualified Matrix success requires a durable final-use claim');
 END;

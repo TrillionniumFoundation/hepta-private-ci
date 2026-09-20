@@ -21,6 +21,7 @@ pub enum MatrixDispatchState {
     Accepted,
     Indeterminate,
     Succeeded,
+    ObservedUnqualified,
     Failed,
     Redacted,
 }
@@ -32,6 +33,7 @@ impl MatrixDispatchState {
             Self::Accepted => "accepted",
             Self::Indeterminate => "indeterminate",
             Self::Succeeded => "succeeded",
+            Self::ObservedUnqualified => "observed_unqualified",
             Self::Failed => "failed",
             Self::Redacted => "redacted",
         }
@@ -43,6 +45,7 @@ impl MatrixDispatchState {
             "accepted" => Some(Self::Accepted),
             "indeterminate" => Some(Self::Indeterminate),
             "succeeded" => Some(Self::Succeeded),
+            "observed_unqualified" => Some(Self::ObservedUnqualified),
             "failed" => Some(Self::Failed),
             "redacted" => Some(Self::Redacted),
             _ => None,
@@ -50,7 +53,10 @@ impl MatrixDispatchState {
     }
 
     pub fn is_terminal(self) -> bool {
-        matches!(self, Self::Succeeded | Self::Failed | Self::Redacted)
+        matches!(
+            self,
+            Self::Succeeded | Self::ObservedUnqualified | Self::Failed | Self::Redacted
+        )
     }
 }
 
@@ -121,6 +127,7 @@ impl MatrixDurableStore {
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
         if dispatch.state.is_terminal()
+            || claim.subject_id != self.owner_agent_id().as_str()
             || dispatch.operation_id != claim.operation_id
             || dispatch.payload_digest != claim.payload_digest
             || dispatch.attempts != claim.attempt
@@ -654,6 +661,10 @@ impl MatrixDurableStore {
         let existing = match dispatch_by_txn_tx(transaction, txn_id).await? {
             Some(existing) => existing,
             None => {
+                // Compatibility-only recovery: a homeserver echo for an old
+                // outbox row proves remote persistence, but it cannot prove
+                // that the physical send crossed the current final-use gate.
+                // Preserve it as explicitly unqualified terminal evidence.
                 let row = sqlx::query(
                     "SELECT logical_outbox_id, room_id, binding_revision, generation,
                             payload_sha256, attempts, created_at_ms
@@ -686,7 +697,7 @@ impl MatrixDurableStore {
                         redaction_observation_sha256, attempts, prepared_at_ms,
                         updated_at_ms, terminal_observed_at_ms
                      ) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL,
-                               'succeeded', NULL, ?, NULL, ?, NULL, ?, ?, ?, ?)",
+                               'observed_unqualified', NULL, ?, NULL, ?, NULL, ?, ?, ?, ?)",
                 )
                 .bind(txn_id.as_str())
                 .bind(&operation_id)
@@ -740,7 +751,7 @@ impl MatrixDurableStore {
                 }
                 return Err(MatrixDurableError::Conflict);
             }
-            MatrixDispatchState::Succeeded => {
+            MatrixDispatchState::Succeeded | MatrixDispatchState::ObservedUnqualified => {
                 if existing.terminal_event_id.as_ref() == Some(event_id)
                     && existing.send_observation_digest.as_deref()
                         == Some(observation_digest.as_str())
@@ -763,13 +774,26 @@ impl MatrixDurableStore {
             observed_at_ms,
         )
         .await?;
+        let qualified = qualified_authority_claim_exists_tx(
+            transaction,
+            txn_id,
+            &existing.operation_id,
+            &existing.payload_digest,
+        )
+        .await?;
+        let terminal_state = if qualified {
+            MatrixDispatchState::Succeeded
+        } else {
+            MatrixDispatchState::ObservedUnqualified
+        };
         sqlx::query(
             "UPDATE matrix_dispatch_ledger
-             SET state = 'succeeded', terminal_event_id = ?,
+             SET state = ?, terminal_event_id = ?,
                  send_observation_sha256 = ?, updated_at_ms = ?,
                  terminal_observed_at_ms = ?
              WHERE stable_txn_id = ?",
         )
+        .bind(terminal_state.as_str())
         .bind(event_id.as_str())
         .bind(observation_digest.as_str())
         .bind(to_i64(observed_at_ms)?)
@@ -779,7 +803,7 @@ impl MatrixDurableStore {
         .await
         .map_err(unavailable)?;
         let record = MatrixDispatchRecord {
-            state: MatrixDispatchState::Succeeded,
+            state: terminal_state,
             terminal_event_id: Some(event_id.clone()),
             send_observation_digest: Some(observation_digest.to_string()),
             updated_at_ms: observed_at_ms,
@@ -918,6 +942,27 @@ async fn settle_outbox_sent_tx(
         )
         .await?;
     Ok(())
+}
+
+async fn qualified_authority_claim_exists_tx(
+    transaction: &mut Transaction<'_, Sqlite>,
+    txn_id: &MatrixTransactionId,
+    operation_id: &str,
+    payload_digest: &str,
+) -> Result<bool, MatrixDurableError> {
+    let exists: i64 = sqlx::query_scalar(
+        "SELECT EXISTS(
+            SELECT 1 FROM matrix_dispatch_authority_claims
+            WHERE stable_txn_id = ? AND operation_id = ? AND payload_sha256 = ?
+         )",
+    )
+    .bind(txn_id.as_str())
+    .bind(operation_id)
+    .bind(payload_digest)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    Ok(exists == 1)
 }
 
 async fn authority_claim_by_attempt_tx(
