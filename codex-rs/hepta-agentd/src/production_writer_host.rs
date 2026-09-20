@@ -27,6 +27,7 @@ use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::ProductionOutboxDispatcher;
 use codex_hepta_cognitive_store::ProductionOutboxTarget;
 use codex_hepta_cognitive_store::ProductionQueuedReceipt;
+#[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_cognitive_store::ProductionWriterError;
 
 use crate::AgentdConfig;
@@ -50,7 +51,10 @@ impl fmt::Debug for AgentdProductionWriterHost {
         formatter
             .debug_struct("AgentdProductionWriterHost")
             .field("writer", &self.writer)
-            .field("cognitive_runtime_available", &self.cognitive_runtime.available_store().is_some())
+            .field(
+                "cognitive_runtime_available",
+                &self.cognitive_runtime.available_store().is_some(),
+            )
             .field("production_mutation_attached", &self.mutation.is_some())
             .field("dispatcher_attached", &self.dispatcher.is_some())
             .finish()
@@ -116,7 +120,9 @@ impl AgentdProductionWriterHost {
         let mutation = Arc::new(writer.cognitive_mutation_capability()?);
         Ok(Self {
             writer,
-            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(runtime_store)),
+            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
+                runtime_store,
+            )),
             mutation: Some(mutation),
             dispatcher: None,
         })
@@ -143,7 +149,9 @@ impl AgentdProductionWriterHost {
                 .await?;
         Ok(Self {
             writer: Arc::new(writer),
-            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(runtime_store)),
+            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
+                runtime_store,
+            )),
             mutation: None,
             dispatcher: None,
         })
@@ -223,7 +231,7 @@ impl AgentdProductionWriterHost {
     /// created through exact-cut recovery with a retained live verifier.
     pub fn production_mutation(&self) -> Option<Arc<dyn ProductionCognitiveMutation>> {
         self.mutation.as_ref().map(|capability| {
-            let capability: Arc<dyn ProductionCognitiveMutation> = Arc::clone(capability);
+            let capability: Arc<dyn ProductionCognitiveMutation> = capability.clone();
             capability
         })
     }
