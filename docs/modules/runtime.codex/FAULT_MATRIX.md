@@ -22,6 +22,7 @@ This matrix is the repository-side acceptance contract for the composed Codex Ap
 | App Server history is unavailable after process loss | remain indeterminate | never infer “not applied” | external policy/evidence is required before release |
 | Final-use authority is absent, malformed, denied, expired, revoked, forged, stale, or nonce-reused | reject before physical `turn/start` | none | release only while no effect crossed the boundary |
 | Authority endpoint/revocation head rolls backward | reject | none | fail closed |
+| Revocation frontier advances after claim but before physical effect entry, even without revoking this grant | reject stale token before `turn/start` | obtain a fresh independently signed/verified claim only while the local pre-effect proof still exists | persisted witness remains bound to the old exact frontier; no effect is inferred |
 | Cancellation/deadline changes after durable write-ahead but before external effect and the live one-shot abort proof still exists | definitive local pre-effect stop | none | consume abort proof and release |
 | Process dies after write-ahead so the in-memory abort proof is lost | accepted-or-unknown | reconcile same operation | recovery cannot downgrade to “unsent” |
 | Cancellation after turn admission | `NativeBoundaryStatus::Cancelled` | reconcile terminal facts | interrupt; a late Completed event remains a provider fact but does not upgrade the boundary to success |
@@ -42,7 +43,7 @@ Production terminal/rejection observations are created from the bounded `RemoteA
 
 ## Final-use boundary
 
-The worker obtains an independently signed exact-binding grant from the configured final-use authority port, synchronizes the issuer-provided monotonic revocation head, claims a non-constructible `VerifiedUseToken`, rechecks cancellation/deadline/owner ingress, consumes the token at final-use entry, and durably records the authority witness/request binding before the network await. The worker does not hold the issuer private key. `VerifiedUseToken::enter()` rechecks expiry and the worker-local monotonic revocation head; a fresher head must arrive through the independently qualified target-host authority/revocation-distribution path.
+The worker obtains an independently signed exact-binding grant from the configured final-use authority port, synchronizes the issuer-provided monotonic revocation head, claims a non-constructible `VerifiedUseToken`, rechecks cancellation/deadline/owner ingress, consumes the token at final-use entry, and durably records the authority witness/request binding before the network await. The worker does not hold the issuer private key. The witness hashes the signed grant and the exact claim-time revocation head; `VerifiedUseToken::enter()` rechecks expiry/revocation and requires that exact head to remain current. Any frontier advance invalidates the token before physical `turn/start`. A fresher head must arrive through the independently qualified target-host authority/revocation-distribution path.
 
 ## Required repository tests
 
@@ -51,7 +52,7 @@ The focused source matrix includes:
 - `codex-rs/hepta-codex-adapter/src/lib_tests.rs`: terminal status separation, correlation, overload, recovery conflict cases.
 - `codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs`: deadline binding and late terminal evidence.
 - `codex-rs/hepta-infer-core/src/native_control_tests.rs`: durable write-ahead, unknown-outcome slot retention, live abort proof, replay compatibility.
-- `codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs`: real caller status/owner/cancel/deadline behavior.
+- `codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs`: real caller status/owner/cancel/deadline behavior, explicit event-lag/disconnect quarantine classification, and final-use owner/ingress/cancellation/deadline fence drift.
 - `codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs`: reopen/no-replay and explicit pre-start rejection.
 - `codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs`: signed exact-binding grant, peer identity, revocation rollback, and denial.
 - `codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs`: real Agentd + real App Server + named runtime.codex caller + signed final-use authority, with a mock Responses provider; asserts exactly one physical model request and durable terminal correlation.
