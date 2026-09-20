@@ -68,8 +68,10 @@ changing the V1 wire meaning:
 - the runtime/provider owner, not this compiler, performs the physical model
   request and consumes any required final-use authority. Its canonical
   `ProviderRequestBinding` must carry the exact payload SHA-256 in
-  `ephemeral_input_sha256` and the delivery-preparation witness SHA-256 in
-  `ephemeral_input_witness_sha256`;
+  `ephemeral_input_sha256`. The existing `ephemeral_input_witness_sha256`
+  remains the provider-owned exact-attempt witness; the independent delivery
+  verifier must authenticate that witness against the current
+  `ContextDeliveryPreparationV2`;
 - `observe_delivery` accepts only a structurally valid
   `ProviderInvocationReceipt` plus an independent
   `ContextProviderDeliveryVerifierV2` decision, verifies the exact payload
