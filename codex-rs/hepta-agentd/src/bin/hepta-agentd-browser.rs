@@ -44,6 +44,8 @@ struct HostConfig {
     profile_root: PathBuf,
     journal_path: PathBuf,
     reconciliation_root: Option<PathBuf>,
+    reconciliation_observer_id: Option<String>,
+    reconciliation_verifying_key: Option<String>,
     bwrap_path: PathBuf,
     bwrap_sha256: String,
     prlimit_path: PathBuf,
@@ -124,6 +126,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         profile_root: config.profile_root,
         journal_path: config.journal_path,
         reconciliation_root: config.reconciliation_root,
+        reconciliation_observer_id: config.reconciliation_observer_id,
+        reconciliation_verifying_key: config
+            .reconciliation_verifying_key
+            .as_deref()
+            .map(|value| parse_digest(value, "reconciliation_verifying_key"))
+            .transpose()?,
         bwrap_path: config.bwrap_path,
         bwrap_sha256: parse_digest(&config.bwrap_sha256, "bwrap_sha256")?,
         prlimit_path: config.prlimit_path,
