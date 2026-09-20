@@ -796,9 +796,17 @@ async fn handle_mutation<D: ProcessDriver>(
         (SupervisordMutation::Stop, None) => PreparedMutation::Stop,
         (SupervisordMutation::Kill, None) => PreparedMutation::Kill,
         (SupervisordMutation::Restart, None) => PreparedMutation::Restart,
-        (SupervisordMutation::Upgrade, Some(target)) => PreparedMutation::Upgrade(target),
-        (SupervisordMutation::Rollback, None) => PreparedMutation::Rollback,
-        (SupervisordMutation::Start | SupervisordMutation::Upgrade, None) => {
+        (
+            SupervisordMutation::Upgrade | SupervisordMutation::Rollback,
+            _,
+        ) => {
+            return error_payload(
+                "production_authority_required",
+                "daemon release changes require the signed production path",
+                Some(actual),
+            );
+        }
+        (SupervisordMutation::Start, None) => {
             return error_payload(
                 "invalid_frame",
                 "request is not valid supervisord control JSON",
@@ -809,8 +817,7 @@ async fn handle_mutation<D: ProcessDriver>(
             SupervisordMutation::Drain
             | SupervisordMutation::Stop
             | SupervisordMutation::Kill
-            | SupervisordMutation::Restart
-            | SupervisordMutation::Rollback,
+            | SupervisordMutation::Restart,
             Some(_),
         ) => {
             return error_payload(
@@ -828,8 +835,6 @@ async fn handle_mutation<D: ProcessDriver>(
             supervisor.preflight_stop_or_kill(&agent_id)
         }
         PreparedMutation::Restart => supervisor.preflight_restart(&agent_id),
-        PreparedMutation::Upgrade(target) => supervisor.preflight_upgrade(&agent_id, target),
-        PreparedMutation::Rollback => supervisor.preflight_rollback(&agent_id),
     };
     if let Err(error) = preflight {
         let refreshed = agent_status_locked(&state, &supervisor, &agent_id).ok();
@@ -856,8 +861,6 @@ async fn handle_mutation<D: ProcessDriver>(
         PreparedMutation::Stop => supervisor.stop(&agent_id, Instant::now()),
         PreparedMutation::Kill => supervisor.kill(&agent_id),
         PreparedMutation::Restart => supervisor.restart(&agent_id, Instant::now()),
-        PreparedMutation::Upgrade(target) => supervisor.upgrade(&agent_id, target, Instant::now()),
-        PreparedMutation::Rollback => supervisor.rollback(&agent_id, Instant::now()),
     };
     let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
     if let Err(_error) = mutation {
@@ -889,8 +892,6 @@ enum PreparedMutation {
     Stop,
     Kill,
     Restart,
-    Upgrade(AgentRelease),
-    Rollback,
 }
 
 #[cfg(unix)]
