@@ -1,10 +1,12 @@
 //! Long-lived production composition root for local isolated inference.
 //!
-//! One process owns one authenticated worker generation, resident model
-//! runtimes and the live resource-authority handle. JSONL control input is a
-//! bounded host-local control surface: run requests execute on the owner thread,
-//! cancel signals can interrupt an in-flight request, and trusted revocation
-//! updates apply concurrently through the shared FinalUseAuthority.
+//! This process owns the canonical inference-control journal and one
+//! authenticated local worker generation. Admission/reservation/assignment are
+//! durable owner facts. A run command supplies only the stable request identity
+//! plus the exact payload bytes; the host derives every model/reservation/token/
+//! deadline field from the assigned durable record, commits an execution-entry
+//! fence before touching the child runtime, and never replays a post-entry
+//! unknown attempt.
 
 #![forbid(unsafe_code)]
 
@@ -27,14 +29,24 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_infer_core::durable_control::Assignment;
+use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::ExecutionObservation as ControlExecutionObservation;
+use codex_hepta_infer_core::durable_control::InferenceRequest as ControlInferenceRequest;
+use codex_hepta_infer_core::durable_control::RequestState;
+use codex_hepta_infer_core::durable_control::Reservation as ControlReservation;
+use codex_hepta_infer_core::durable_control::TerminalObservation;
 use codex_hepta_infer_worker_host::local_process_driver::LocalModelArtifacts;
 use codex_hepta_infer_worker_host::local_process_driver::LocalProcessDriverConfig;
 use codex_hepta_infer_worker_host::model_worker::ExecutionStatus;
+use codex_hepta_infer_worker_host::model_worker::InferenceExecutionObservation;
 use codex_hepta_infer_worker_host::model_worker::ModelManifest;
 use codex_hepta_infer_worker_host::model_worker::ResourceGrant;
 use codex_hepta_infer_worker_host::model_worker::WorkerRequest;
 use codex_hepta_inferd::local_worker_host::LocalWorkerHost;
+use codex_hepta_inferd::local_worker_host::LocalWorkerHostError;
 use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 use serde_json::json;
 use sha2::Digest;
@@ -49,6 +61,8 @@ const MAX_COMMAND_BYTES: usize = 1024 * 1024 + 16 * 1024;
 #[serde(deny_unknown_fields)]
 struct HostConfig {
     worker_id: String,
+    control_journal: PathBuf,
+    control_capacity: usize,
     authority_state_dir: PathBuf,
     signer_id: String,
     verifying_key: [u8; 32],
@@ -99,12 +113,34 @@ struct ModelConfig {
 #[derive(Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
 enum ControlCommand {
-    Run {
+    Submit {
         request_id: String,
-        reservation_id: String,
-        input: String,
+        principal_id: String,
+        model_digest: String,
+        payload_digest: String,
         maximum_tokens: u32,
         deadline_ms: u64,
+        semantic_digest: String,
+    },
+    Reserve {
+        request_id: String,
+        expected_revision: u64,
+        reservation_id: String,
+        quota_units: u64,
+        maximum_tokens: u32,
+        authority_epoch: u64,
+        valid_until_ms: u64,
+    },
+    Assign {
+        request_id: String,
+        expected_revision: u64,
+        worker_id: String,
+        worker_generation: u64,
+        assignment_digest: String,
+    },
+    Run {
+        request_id: String,
+        input: String,
     },
     Cancel {
         request_id: String,
@@ -161,6 +197,8 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         maximum_memory_bytes: config.resource_grant.maximum_memory_bytes,
         semantic_digest: config.resource_grant.semantic_digest.clone(),
     };
+    let worker_generation = resource_grant.generation;
+    let worker_id = config.worker_id.clone();
     let manifest = ModelManifest {
         model_id: config.model.model_id.clone(),
         model_digest: config.model.model_digest.clone(),
@@ -193,7 +231,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let mut host = LocalWorkerHost::new(
         now_ms()?,
-        config.worker_id.clone(),
+        worker_id.clone(),
         resource_grant,
         authority,
         signed,
@@ -201,10 +239,17 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     )?;
     host.load_model(now_ms()?, manifest.clone())?;
 
+    let control = Arc::new(Mutex::new(DurableInferenceControl::open(
+        &config.control_journal,
+        config.control_capacity,
+    )?));
+    require_owner_only_file(&config.control_journal)?;
+
     let (owner_tx, owner_rx) = mpsc::channel::<OwnerCommand>();
     let (output_tx, output_rx) = mpsc::channel::<Value>();
     let current = Arc::new(Mutex::new(None::<(String, CancellationToken)>));
     let current_owner = Arc::clone(&current);
+    let control_owner = Arc::clone(&control);
     let busy = Arc::new(AtomicBool::new(false));
     let busy_owner = Arc::clone(&busy);
     let model_id = manifest.model_id.clone();
@@ -225,27 +270,12 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                             request,
                             &cancellation,
                         );
+                        let response =
+                            persist_run_result(&control_owner, &request_id, result);
                         if let Ok(mut slot) = current_owner.lock() {
                             *slot = None;
                         }
                         busy_owner.store(false, Ordering::Release);
-                        let response = match result {
-                            Ok(observed) => json!({
-                                "op": "run_result",
-                                "request_id": observed.request_id,
-                                "status": status_name(&observed.status),
-                                "terminal_observed": observed.terminal_observed,
-                                "output_digest": observed.output_digest,
-                                "consumed_tokens": observed.consumed_tokens,
-                                "observed_memory_bytes": observed.observed_memory_bytes,
-                            }),
-                            Err(error) => json!({
-                                "op": "run_result",
-                                "request_id": request_id,
-                                "status": "error",
-                                "error": error.to_string(),
-                            }),
-                        };
                         let _ = output_tx.send(response);
                     }
                     OwnerCommand::Shutdown => {
@@ -285,13 +315,91 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             }
         };
         match command {
-            ControlCommand::Run {
+            ControlCommand::Submit {
                 request_id,
-                reservation_id,
-                input,
+                principal_id,
+                model_digest,
+                payload_digest,
                 maximum_tokens,
                 deadline_ms,
+                semantic_digest,
             } => {
+                if model_digest != manifest.model_digest {
+                    println!("{}", json!({"op":"submit","status":"error","error":"model mismatch"}));
+                    continue;
+                }
+                let result = control
+                    .lock()
+                    .map_err(|_| "inference control lock poisoned")?
+                    .submit(
+                        now_ms()?,
+                        ControlInferenceRequest {
+                            request_id,
+                            principal_id,
+                            model_digest,
+                            payload_digest,
+                            maximum_tokens,
+                            deadline_ms,
+                            semantic_digest,
+                        },
+                    );
+                println!("{}", receipt_or_error("submit", result));
+            }
+            ControlCommand::Reserve {
+                request_id,
+                expected_revision,
+                reservation_id,
+                quota_units,
+                maximum_tokens,
+                authority_epoch,
+                valid_until_ms,
+            } => {
+                let result = control
+                    .lock()
+                    .map_err(|_| "inference control lock poisoned")?
+                    .reserve(
+                        now_ms()?,
+                        &request_id,
+                        expected_revision,
+                        ControlReservation {
+                            reservation_id,
+                            quota_units,
+                            maximum_tokens,
+                            authority_epoch,
+                            valid_until_ms,
+                        },
+                    );
+                println!("{}", receipt_or_error("reserve", result));
+            }
+            ControlCommand::Assign {
+                request_id,
+                expected_revision,
+                worker_id: requested_worker,
+                worker_generation: requested_generation,
+                assignment_digest,
+            } => {
+                if requested_worker != worker_id || requested_generation != worker_generation {
+                    println!(
+                        "{}",
+                        json!({"op":"assign","request_id":request_id,"status":"error","error":"assignment targets another worker generation"})
+                    );
+                    continue;
+                }
+                let result = control
+                    .lock()
+                    .map_err(|_| "inference control lock poisoned")?
+                    .assign(
+                        &request_id,
+                        expected_revision,
+                        Assignment {
+                            worker_id: requested_worker,
+                            worker_generation: requested_generation,
+                            assignment_digest,
+                        },
+                    );
+                println!("{}", receipt_or_error("assign", result));
+            }
+            ControlCommand::Run { request_id, input } => {
                 if busy.swap(true, Ordering::AcqRel) {
                     println!(
                         "{}",
@@ -299,27 +407,39 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                     );
                     continue;
                 }
-                let payload_digest = sha256(input.as_bytes());
-                let active_request_id = request_id.clone();
-                let request = WorkerRequest {
-                    request_id,
-                    reservation_id,
-                    model_digest: manifest.model_digest.clone(),
+
+                let prepared = prepare_run(
+                    &control,
+                    &request_id,
                     input,
-                    payload_digest: payload_digest.clone(),
-                    maximum_tokens,
-                    deadline_ms,
-                    lease_payload_digest: payload_digest,
-                    reservation_model_digest: manifest.model_digest.clone(),
-                    reservation_maximum_tokens: maximum_tokens,
-                    cancelled: false,
+                    &manifest,
+                    &worker_id,
+                    worker_generation,
+                );
+                let request = match prepared {
+                    Ok(request) => request,
+                    Err(error) => {
+                        busy.store(false, Ordering::Release);
+                        println!(
+                            "{}",
+                            json!({"op":"run","request_id":request_id,"status":"error","error":error.to_string()})
+                        );
+                        continue;
+                    }
                 };
+
+                let active_request_id = request.request_id.clone();
                 let cancellation = CancellationToken::new();
                 match current.lock() {
                     Ok(mut slot) => {
-                        *slot = Some((active_request_id, cancellation.clone()));
+                        *slot = Some((active_request_id.clone(), cancellation.clone()));
                     }
                     Err(_) => {
+                        mark_current_indeterminate(
+                            &control,
+                            &active_request_id,
+                            "local cancellation registry unavailable",
+                        );
                         busy.store(false, Ordering::Release);
                         return Err("local cancellation registry unavailable".into());
                     }
@@ -331,6 +451,11 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                     })
                     .is_err()
                 {
+                    mark_current_indeterminate(
+                        &control,
+                        &active_request_id,
+                        "local inference owner channel closed before execution",
+                    );
                     if let Ok(mut slot) = current.lock() {
                         *slot = None;
                     }
@@ -339,21 +464,30 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                 }
             }
             ControlCommand::Cancel { request_id } => {
-                let cancelled = current
+                let active = current
                     .lock()
                     .ok()
-                    .and_then(|slot| slot.as_ref().cloned())
-                    .is_some_and(|(active, token)| {
-                        if active == request_id {
-                            token.cancel();
-                            true
-                        } else {
-                            false
-                        }
-                    });
+                    .and_then(|slot| slot.as_ref().cloned());
+                if let Some((active_id, token)) = active
+                    && active_id == request_id
+                {
+                    let durable = record_cancel(&control, &request_id);
+                    token.cancel();
+                    println!(
+                        "{}",
+                        json!({
+                            "op":"cancel",
+                            "request_id":request_id,
+                            "accepted":true,
+                            "durable":durable.is_ok(),
+                            "durable_error":durable.err().map(|error| error.to_string()),
+                        })
+                    );
+                    continue;
+                }
                 println!(
                     "{}",
-                    json!({"op":"cancel","request_id":request_id,"accepted":cancelled})
+                    cancel_without_active_run(&control, &request_id)
                 );
             }
             ControlCommand::Revocations {
@@ -378,8 +512,9 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             }
             ControlCommand::Shutdown => {
                 if let Ok(slot) = current.lock()
-                    && let Some((_, token)) = slot.as_ref()
+                    && let Some((request_id, token)) = slot.as_ref()
                 {
+                    let _ = record_cancel(&control, request_id);
                     token.cancel();
                 }
                 owner_tx.send(OwnerCommand::Shutdown)?;
@@ -395,8 +530,374 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     Ok(())
 }
 
+fn prepare_run(
+    control: &Arc<Mutex<DurableInferenceControl>>,
+    request_id: &str,
+    input: String,
+    manifest: &ModelManifest,
+    worker_id: &str,
+    worker_generation: u64,
+) -> Result<WorkerRequest, Box<dyn std::error::Error + Send + Sync>> {
+    let now = now_ms()?;
+    let mut control = control
+        .lock()
+        .map_err(|_| "inference control lock poisoned")?;
+    let record = control
+        .get(request_id)
+        .cloned()
+        .ok_or("assigned inference request not found")?;
+
+    if matches!(record.state, RequestState::Running | RequestState::Cancelling) {
+        let evidence = digest_json(&(
+            "hepta.local-inference.recovered-running.v1",
+            request_id,
+            control_state_name(record.state),
+        ))?;
+        control.mark_execution_indeterminate(
+            request_id,
+            record.revision,
+            evidence,
+        )?;
+        return Err("request crossed execution entry before restart; replay is forbidden".into());
+    }
+    if record.state == RequestState::AwaitingSettlement {
+        return Err("request execution is terminal and awaiting authoritative settlement".into());
+    }
+    if record.state != RequestState::Assigned {
+        return Err(format!("request is not executable from state {}", control_state_name(record.state)).into());
+    }
+
+    let reservation = record
+        .reservation
+        .clone()
+        .ok_or("assigned request is missing reservation")?;
+    let assignment = record
+        .assignment
+        .clone()
+        .ok_or("assigned request is missing worker assignment")?;
+    let payload_digest = sha256(input.as_bytes());
+    if record.request.model_digest != manifest.model_digest
+        || record.request.payload_digest != payload_digest
+        || record.request.maximum_tokens > manifest.maximum_tokens
+        || record.request.deadline_ms <= now
+        || reservation.valid_until_ms <= now
+        || assignment.worker_id != worker_id
+        || assignment.worker_generation != worker_generation
+    {
+        return Err("assigned request failed final local execution revalidation".into());
+    }
+
+    control.begin_execution(request_id, record.revision)?;
+    Ok(WorkerRequest {
+        request_id: record.request.request_id,
+        reservation_id: reservation.reservation_id,
+        model_digest: record.request.model_digest.clone(),
+        input,
+        payload_digest: record.request.payload_digest.clone(),
+        maximum_tokens: record.request.maximum_tokens,
+        deadline_ms: record.request.deadline_ms,
+        lease_payload_digest: record.request.payload_digest,
+        reservation_model_digest: record.request.model_digest,
+        reservation_maximum_tokens: reservation.maximum_tokens,
+        cancelled: false,
+    })
+}
+
+fn persist_run_result(
+    control: &Arc<Mutex<DurableInferenceControl>>,
+    request_id: &str,
+    result: Result<InferenceExecutionObservation, LocalWorkerHostError>,
+) -> Value {
+    let mut control = match control.lock() {
+        Ok(control) => control,
+        Err(_) => {
+            return json!({
+                "op":"run_result",
+                "request_id":request_id,
+                "status":"error",
+                "error":"inference control lock poisoned after execution",
+            });
+        }
+    };
+    let record = match control.get(request_id).cloned() {
+        Some(record) => record,
+        None => {
+            return json!({
+                "op":"run_result",
+                "request_id":request_id,
+                "status":"error",
+                "error":"durable request disappeared after execution",
+            });
+        }
+    };
+
+    match result {
+        Ok(observed)
+            if observed.terminal_observed
+                && !matches!(observed.status, ExecutionStatus::Indeterminate) =>
+        {
+            let status = match observed.status {
+                ExecutionStatus::Succeeded => RequestState::Completed,
+                ExecutionStatus::Failed => RequestState::Failed,
+                ExecutionStatus::Cancelled => RequestState::Cancelled,
+                ExecutionStatus::Indeterminate => unreachable!(),
+            };
+            let reservation = match &record.reservation {
+                Some(reservation) => reservation,
+                None => {
+                    return durable_result_error(
+                        request_id,
+                        "terminal execution lost its durable reservation",
+                    );
+                }
+            };
+            let assignment = match &record.assignment {
+                Some(assignment) => assignment,
+                None => {
+                    return durable_result_error(
+                        request_id,
+                        "terminal execution lost its durable assignment",
+                    );
+                }
+            };
+            let execution = ControlExecutionObservation {
+                request_id: observed.request_id.clone(),
+                reservation_id: reservation.reservation_id.clone(),
+                worker_id: assignment.worker_id.clone(),
+                worker_generation: observed.worker_generation,
+                model_digest: observed.model_digest.clone(),
+                payload_digest: observed.payload_digest.clone(),
+                terminal_status: status,
+                output_digest: observed.output_digest.clone(),
+                consumed_tokens: observed.consumed_tokens,
+            };
+            let digest = match digest_json(&(
+                "hepta.local-inference.execution-observation.v1",
+                &execution.request_id,
+                &execution.reservation_id,
+                &execution.worker_id,
+                execution.worker_generation,
+                &execution.model_digest,
+                &execution.payload_digest,
+                control_state_name(execution.terminal_status),
+                &execution.output_digest,
+                execution.consumed_tokens,
+            )) {
+                Ok(digest) => digest,
+                Err(error) => return durable_result_error(request_id, &error.to_string()),
+            };
+            match control.observe_execution(request_id, record.revision, digest, execution) {
+                Ok(receipt) => json!({
+                    "op":"run_result",
+                    "request_id":request_id,
+                    "status":status_name(&observed.status),
+                    "terminal_observed":true,
+                    "output_digest":observed.output_digest,
+                    "consumed_tokens":observed.consumed_tokens,
+                    "observed_memory_bytes":observed.observed_memory_bytes,
+                    "control_state":control_state_name(receipt.state),
+                    "settlement_required":true,
+                }),
+                Err(error) => durable_result_error(request_id, &error.to_string()),
+            }
+        }
+        Ok(observed) => {
+            let evidence = digest_json(&(
+                "hepta.local-inference.indeterminate.v1",
+                request_id,
+                status_name(&observed.status),
+                &observed.output_digest,
+                observed.consumed_tokens,
+                observed.observed_memory_bytes,
+            ))
+            .unwrap_or_else(|_| "f".repeat(64));
+            match control.mark_execution_indeterminate(request_id, record.revision, evidence) {
+                Ok(_) => json!({
+                    "op":"run_result",
+                    "request_id":request_id,
+                    "status":"indeterminate",
+                    "terminal_observed":false,
+                    "output_digest":Value::Null,
+                    "consumed_tokens":observed.consumed_tokens,
+                }),
+                Err(error) => durable_result_error(request_id, &error.to_string()),
+            }
+        }
+        Err(error) => {
+            let evidence = digest_json(&(
+                "hepta.local-inference.owner-error.v1",
+                request_id,
+                error.to_string(),
+            ))
+            .unwrap_or_else(|_| "e".repeat(64));
+            let durable = control.mark_execution_indeterminate(
+                request_id,
+                record.revision,
+                evidence,
+            );
+            json!({
+                "op":"run_result",
+                "request_id":request_id,
+                "status":"error",
+                "error":error.to_string(),
+                "durable_indeterminate":durable.is_ok(),
+                "durable_error":durable.err().map(|value| value.to_string()),
+            })
+        }
+    }
+}
+
+fn record_cancel(
+    control: &Arc<Mutex<DurableInferenceControl>>,
+    request_id: &str,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let mut control = control
+        .lock()
+        .map_err(|_| "inference control lock poisoned")?;
+    let revision = control
+        .get(request_id)
+        .ok_or("request not found")?
+        .revision;
+    control.cancel(request_id, revision)?;
+    Ok(())
+}
+
+fn cancel_without_active_run(
+    control: &Arc<Mutex<DurableInferenceControl>>,
+    request_id: &str,
+) -> Value {
+    let mut control = match control.lock() {
+        Ok(control) => control,
+        Err(_) => {
+            return json!({"op":"cancel","request_id":request_id,"accepted":false,"error":"control lock poisoned"});
+        }
+    };
+    let record = match control.get(request_id).cloned() {
+        Some(record) => record,
+        None => {
+            return json!({"op":"cancel","request_id":request_id,"accepted":false,"error":"request not found"});
+        }
+    };
+    let result = match record.state {
+        RequestState::Pending | RequestState::Reserved => {
+            control.cancel(request_id, record.revision)
+        }
+        RequestState::Assigned => {
+            let reservation = match &record.reservation {
+                Some(value) => value,
+                None => {
+                    return json!({"op":"cancel","request_id":request_id,"accepted":false,"error":"reservation missing"});
+                }
+            };
+            let assignment = match &record.assignment {
+                Some(value) => value,
+                None => {
+                    return json!({"op":"cancel","request_id":request_id,"accepted":false,"error":"assignment missing"});
+                }
+            };
+            let observation = TerminalObservation {
+                request_id: request_id.to_string(),
+                reservation_id: reservation.reservation_id.clone(),
+                worker_id: assignment.worker_id.clone(),
+                worker_generation: assignment.worker_generation,
+                model_digest: record.request.model_digest.clone(),
+                payload_digest: record.request.payload_digest.clone(),
+                terminal_observed: true,
+                terminal_status: Some(RequestState::Cancelled),
+                output_digest: None,
+                consumed_tokens: 0,
+                usage_units: 0,
+            };
+            match digest_json(&(
+                "hepta.local-inference.pre-entry-cancel.v1",
+                request_id,
+                record.revision,
+            )) {
+                Ok(digest) => control.settle(request_id, record.revision, digest, observation),
+                Err(_) => return json!({"op":"cancel","request_id":request_id,"accepted":false,"error":"cancel digest failed"}),
+            }
+        }
+        _ => {
+            return json!({
+                "op":"cancel",
+                "request_id":request_id,
+                "accepted":false,
+                "state":control_state_name(record.state),
+            });
+        }
+    };
+    match result {
+        Ok(receipt) => json!({
+            "op":"cancel",
+            "request_id":request_id,
+            "accepted":true,
+            "state":control_state_name(receipt.state),
+        }),
+        Err(error) => json!({
+            "op":"cancel",
+            "request_id":request_id,
+            "accepted":false,
+            "error":error.to_string(),
+        }),
+    }
+}
+
+fn mark_current_indeterminate(
+    control: &Arc<Mutex<DurableInferenceControl>>,
+    request_id: &str,
+    reason: &str,
+) {
+    let Ok(mut control) = control.lock() else {
+        return;
+    };
+    let Some(record) = control.get(request_id).cloned() else {
+        return;
+    };
+    if !matches!(record.state, RequestState::Running | RequestState::Cancelling) {
+        return;
+    }
+    let Ok(digest) = digest_json(&(
+        "hepta.local-inference.internal-owner-failure.v1",
+        request_id,
+        reason,
+    )) else {
+        return;
+    };
+    let _ = control.mark_execution_indeterminate(request_id, record.revision, digest);
+}
+
+fn receipt_or_error(
+    operation: &str,
+    result: Result<
+        codex_hepta_infer_core::durable_control::ControlReceipt,
+        codex_hepta_infer_core::durable_control::Error,
+    >,
+) -> Value {
+    match result {
+        Ok(receipt) => json!({
+            "op":operation,
+            "request_id":receipt.request_id,
+            "status":"ok",
+            "revision":receipt.revision,
+            "state":control_state_name(receipt.state),
+            "idempotent":receipt.idempotent,
+        }),
+        Err(error) => json!({"op":operation,"status":"error","error":error.to_string()}),
+    }
+}
+
+fn durable_result_error(request_id: &str, error: &str) -> Value {
+    json!({
+        "op":"run_result",
+        "request_id":request_id,
+        "status":"error",
+        "error":error,
+    })
+}
+
 fn validate_config(config: &HostConfig) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     for path in [
+        &config.control_journal,
         &config.authority_state_dir,
         &config.runtime_executable,
         &config.sandbox_launcher,
@@ -411,7 +912,8 @@ fn validate_config(config: &HostConfig) -> Result<(), Box<dyn std::error::Error 
             return Err("all product host paths must be absolute".into());
         }
     }
-    if config.resource_grant.generation == 0
+    if config.control_capacity == 0
+        || config.resource_grant.generation == 0
         || config.resource_grant.maximum_models == 0
         || config.resource_grant.maximum_active_requests == 0
         || config.resource_grant.maximum_memory_bytes == 0
@@ -420,6 +922,19 @@ fn validate_config(config: &HostConfig) -> Result<(), Box<dyn std::error::Error 
         || config.maximum_protocol_line_bytes == 0
     {
         return Err("invalid local product host bounds".into());
+    }
+    Ok(())
+}
+
+fn require_owner_only_file(
+    path: &Path,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if fs::metadata(path)?.permissions().mode() & 0o077 != 0 {
+            return Err("inference control journal must be owner-only".into());
+        }
     }
     Ok(())
 }
@@ -434,13 +949,6 @@ fn read_private_file(
     let metadata = fs::symlink_metadata(path)?;
     if metadata.file_type().is_symlink() || !metadata.is_file() {
         return Err("host input must be a regular non-symlink file".into());
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
-            return Err("host input must not be group/world accessible".into());
-        }
     }
     let mut bytes = Vec::new();
     fs::File::open(path)?
@@ -462,12 +970,31 @@ fn sha256(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 
+fn digest_json(value: &impl Serialize) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    Ok(sha256(&serde_json::to_vec(value)?))
+}
+
 fn status_name(status: &ExecutionStatus) -> &'static str {
     match status {
         ExecutionStatus::Succeeded => "succeeded",
         ExecutionStatus::Failed => "failed",
         ExecutionStatus::Cancelled => "cancelled",
         ExecutionStatus::Indeterminate => "indeterminate",
+    }
+}
+
+fn control_state_name(state: RequestState) -> &'static str {
+    match state {
+        RequestState::Pending => "pending",
+        RequestState::Reserved => "reserved",
+        RequestState::Assigned => "assigned",
+        RequestState::Running => "running",
+        RequestState::Cancelling => "cancelling",
+        RequestState::AwaitingSettlement => "awaiting_settlement",
+        RequestState::Completed => "completed",
+        RequestState::Failed => "failed",
+        RequestState::Cancelled => "cancelled",
+        RequestState::Indeterminate => "indeterminate",
     }
 }
 
