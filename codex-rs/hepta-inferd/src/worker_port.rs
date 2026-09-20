@@ -16,8 +16,7 @@ use codex_hepta_infer_worker_host::native_app_server::NativeRunOutput;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use tokio_util::sync::CancellationToken;
 
-pub type WorkerPortResult<T> =
-    Result<T, Box<dyn std::error::Error + Send + Sync>>;
+pub type WorkerPortResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 /// Source-composed implementation of
 /// `ModulePort::inference.control::inference.worker`.
@@ -62,14 +61,7 @@ impl NativeWorkerPort {
         cancellation: &CancellationToken,
     ) -> WorkerPortResult<NativeRunOutput> {
         self.driver
-            .run_authorized(
-                control,
-                authority,
-                signed,
-                admission,
-                prompt,
-                cancellation,
-            )
+            .run_authorized(control, authority, signed, admission, prompt, cancellation)
             .await
     }
 }
@@ -107,10 +99,7 @@ mod tests {
             .expect("changed binding");
 
         assert_eq!(first, same);
-        assert_eq!(
-            first.subject_id,
-            "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12"
-        );
+        assert_eq!(first.subject_id, "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12");
         assert_eq!(first.destination_id, "provider:codex-app-server");
         assert_ne!(first.request_sha256, [0; 32]);
         assert_ne!(first.scope_sha256, [0; 32]);
