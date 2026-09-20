@@ -522,6 +522,37 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         ],
     },
     SchemaObjectSpec {
+        name: "evidence_recovery_identity",
+        object_type: "table",
+        table_name: "evidence_recovery_identity",
+        required_sql_fragments: &[
+            "create table",
+            "evidence_recovery_identity",
+            "singleton integer primary key check (singleton = 1)",
+            "store_id text not null unique",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "evidence_recovery_identity_no_update",
+        object_type: "trigger",
+        table_name: "evidence_recovery_identity",
+        required_sql_fragments: &[
+            "before update on evidence_recovery_identity",
+            "raise(abort",
+            "evidence recovery identity is immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "evidence_recovery_identity_no_delete",
+        object_type: "trigger",
+        table_name: "evidence_recovery_identity",
+        required_sql_fragments: &[
+            "before delete on evidence_recovery_identity",
+            "raise(abort",
+            "evidence recovery identity is immutable",
+        ],
+    },
+    SchemaObjectSpec {
         name: "memory_mutation_shadow_observations",
         object_type: "table",
         table_name: "memory_mutation_shadow_observations",
