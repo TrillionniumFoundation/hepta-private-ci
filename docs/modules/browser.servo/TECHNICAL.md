@@ -27,7 +27,7 @@ Both roots are present. The selected upstream qualification candidate is `servo/
 
 The current repository-owned implementation includes `browser.js`, `action.js`, `bridge.js`, `runtime.js`, `runtime-host.js`, `runtime-contract.js`, `runtime-boundary.js`, the versioned durable `journal.js`, authenticated `persisted-reconciler.js`, `worker-protocol.js`, `worker-driver.js`, the Agentd parent protocol/service, and `servo-worker/`. Cross-owner product composition is present in `codex-rs/hepta-agentd/src/browser_servo.rs`, `browser_revocation_feed.rs`, `runtime.rs` and `state_control.rs`. The one-shot `hepta-agentd-browser` binary is diagnostic/qualification only.
 
-The strict implementation map binds the exact mapped source/evidence snapshot at `44cdb5e35649efd4c1ac3158fddb10c9270d2947` / tree `87dce666e364741193b12f68dcb5ebdf93278d0d`. Because a Git commit cannot embed its own future SHA/tree, later map/verifier/document-only commits are admissible only when the strict verifier proves zero drift under every mapped Browser root, test and Agentd callee.
+The strict implementation map binds the exact mapped source/evidence snapshot at `44cdb5e35649efd4c1ac3158fddb10c9270d2947` / tree `2de770e678de936de42dfb9e19730804a5a013e7`. Because a Git commit cannot embed its own future SHA/tree, later map/verifier/document-only commits are admissible only when the strict verifier proves zero drift under every mapped Browser root, test and Agentd callee.
 
 A worker source tree is not a qualified worker artifact. The candidate still requires exact-SHA build/SBOM receipts, target-host evidence and the independently governed activation/acceptance decisions.
 
