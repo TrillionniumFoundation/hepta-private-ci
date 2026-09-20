@@ -1000,10 +1000,25 @@ impl ProductionDurableWriter {
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Committed,
+                    target_disposition: ProductionTargetDisposition::Committed,
                     target_receipt: Some(receipt),
                     target_reason: None,
                     local_event_id: local.event_id,
                     external_effect: true,
+                })
+            }
+            ProductionTargetOutcome::NotApplied { reason } => {
+                let local = self
+                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                    .await?;
+                Ok(ProductionDispatchReceipt {
+                    request,
+                    state: LocalOutcomeState::Rejected,
+                    target_disposition: ProductionTargetDisposition::NotApplied,
+                    target_receipt: None,
+                    target_reason: Some(reason),
+                    local_event_id: local.event_id,
+                    external_effect: false,
                 })
             }
             ProductionTargetOutcome::Rejected { reason } => {
@@ -1013,6 +1028,7 @@ impl ProductionDurableWriter {
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
+                    target_disposition: ProductionTargetDisposition::Rejected,
                     target_receipt: None,
                     target_reason: Some(reason),
                     local_event_id: local.event_id,
@@ -1022,6 +1038,7 @@ impl ProductionDurableWriter {
             ProductionTargetOutcome::Indeterminate { reason } => Ok(ProductionDispatchReceipt {
                 request,
                 state: LocalOutcomeState::Indeterminate,
+                target_disposition: ProductionTargetDisposition::Indeterminate,
                 target_receipt: None,
                 target_reason: Some(reason),
                 local_event_id: dispatch_claim_event_id,
@@ -1046,6 +1063,7 @@ impl ProductionDurableWriter {
                     Ok(local) => Ok(ProductionDispatchReceipt {
                         request,
                         state: LocalOutcomeState::Committed,
+                        target_disposition: ProductionTargetDisposition::Committed,
                         target_receipt: Some(target_receipt),
                         target_reason: None,
                         local_event_id: local.event_id,
@@ -1056,11 +1074,24 @@ impl ProductionDurableWriter {
                     Err(error) => Err(error),
                 }
             }
+            ProductionTargetOutcome::NotApplied { reason } => {
+                let local = self.reject(occurrence_key, &reason).await?;
+                Ok(ProductionDispatchReceipt {
+                    request,
+                    state: LocalOutcomeState::Rejected,
+                    target_disposition: ProductionTargetDisposition::NotApplied,
+                    target_receipt: None,
+                    target_reason: Some(reason),
+                    local_event_id: local.event_id,
+                    external_effect: false,
+                })
+            }
             ProductionTargetOutcome::Rejected { reason } => {
                 let local = self.reject(occurrence_key, &reason).await?;
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
+                    target_disposition: ProductionTargetDisposition::Rejected,
                     target_receipt: None,
                     target_reason: Some(reason),
                     local_event_id: local.event_id,
@@ -1070,6 +1101,7 @@ impl ProductionDurableWriter {
             ProductionTargetOutcome::Indeterminate { reason } => Ok(ProductionDispatchReceipt {
                 request,
                 state: LocalOutcomeState::Indeterminate,
+                target_disposition: ProductionTargetDisposition::Indeterminate,
                 target_receipt: None,
                 target_reason: Some(reason),
                 local_event_id: dispatch_claim_event_id,
@@ -1198,6 +1230,12 @@ pub enum ProductionTargetOutcome {
     Committed {
         receipt: String,
     },
+    /// The destination deterministically proved that the requested mutation
+    /// was not applied (for example, predecessor/CAS mismatch).
+    NotApplied {
+        reason: String,
+    },
+    /// The request itself is invalid or unauthorized for this destination.
     Rejected {
         reason: String,
     },
@@ -1205,6 +1243,15 @@ pub enum ProductionTargetOutcome {
     Indeterminate {
         reason: String,
     },
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ProductionTargetDisposition {
+    Committed,
+    NotApplied,
+    Rejected,
+    Indeterminate,
 }
 
 pub type ProductionDispatchFuture<'a> =
@@ -1297,6 +1344,7 @@ impl ProductionFinalUseOutboxDispatcher {
 pub struct ProductionDispatchReceipt {
     pub request: ProductionDispatchRequest,
     pub state: LocalOutcomeState,
+    pub target_disposition: ProductionTargetDisposition,
     pub target_receipt: Option<String>,
     /// Provider-side reason is returned verbatim for status/reconcile
     /// qualification. It is not an authority receipt; committed outcomes
