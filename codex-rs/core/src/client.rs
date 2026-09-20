@@ -3183,6 +3183,23 @@ where
                             return;
                         }
                     };
+                    if let Err(error) = observe_encoded_request_terminal(
+                        encoded_request_observer.as_ref(),
+                        codex_api::EncodedRequestTerminal::Completed {
+                            response_id: response_id.clone(),
+                        },
+                    )
+                    .await
+                    {
+                        inference_trace_attempt.record_failed(
+                            &error,
+                            upstream_request_id,
+                            &items_added,
+                        );
+                        session_telemetry.see_event_completed_failed(&error);
+                        let _ = tx_event.send(Err(error)).await;
+                        return;
+                    }
                     feedback_tags!(last_model_response_id = &response_id);
                     if let Some(usage) = &token_usage {
                         session_telemetry.sse_event_completed(usage, ttft_ms);
@@ -3237,8 +3254,9 @@ where
                     }
                 }
                 Err(err) => {
-                    let provider_terminal_result = if api_error_http_status(&err)
-                        == Some(StatusCode::UNAUTHORIZED.as_u16())
+                    let provider_rejected = api_error_http_status(&err)
+                        == Some(StatusCode::UNAUTHORIZED.as_u16());
+                    let provider_terminal_result = if provider_rejected
                     {
                         provider_terminal
                             .finish_rejected("provider_response_unauthorized")
@@ -3271,6 +3289,30 @@ where
                             return;
                         }
                     };
+                    let observed_terminal = if provider_rejected {
+                        codex_api::EncodedRequestTerminal::Rejected {
+                            reason_code: "provider_response_unauthorized".to_string(),
+                        }
+                    } else {
+                        codex_api::EncodedRequestTerminal::Indeterminate {
+                            reason_code: "provider_response_stream_error".to_string(),
+                        }
+                    };
+                    if let Err(error) = observe_encoded_request_terminal(
+                        encoded_request_observer.as_ref(),
+                        observed_terminal,
+                    )
+                    .await
+                    {
+                        inference_trace_attempt.record_failed(
+                            &error,
+                            upstream_request_id,
+                            &items_added,
+                        );
+                        session_telemetry.see_event_completed_failed(&error);
+                        let _ = tx_event.send(Err(error)).await;
+                        return;
+                    }
                     let mapped = redact_ephemeral_provider_error(
                         provider.map_api_error(err),
                         redact_provider_errors,
@@ -3303,6 +3345,19 @@ where
             let _ = tx_event.send(Err(error)).await;
             return;
         }
+        if let Err(error) = observe_encoded_request_terminal(
+            encoded_request_observer.as_ref(),
+            codex_api::EncodedRequestTerminal::Indeterminate {
+                reason_code: "provider_response_stream_closed".to_string(),
+            },
+        )
+        .await
+        {
+            inference_trace_attempt.record_failed(&error, upstream_request_id, &items_added);
+            session_telemetry.see_event_completed_failed(&error);
+            let _ = tx_event.send(Err(error)).await;
+            return;
+        }
         inference_trace_attempt.record_failed(
             "stream closed before response.completed",
             upstream_request_id,
@@ -3317,6 +3372,23 @@ where
         },
         rx_last_response,
     )
+}
+
+async fn observe_encoded_request_terminal(
+    observer: Option<&Arc<dyn codex_api::EncodedRequestBodyObserver>>,
+    terminal: codex_api::EncodedRequestTerminal,
+) -> Result<()> {
+    let Some(observer) = observer else {
+        return Ok(());
+    };
+    observer
+        .observe_terminal(terminal)
+        .await
+        .map_err(|error| {
+            CodexErr::Fatal(format!(
+                "exact provider request terminal observation failed: {error}"
+            ))
+        })
 }
 
 async fn finish_abandoned_provider_response(
