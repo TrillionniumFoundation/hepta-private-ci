@@ -51,6 +51,7 @@ use zeroize::Zeroizing;
 pub use topology_execution::{
     RuntimeTopologyApplyReceiptV1, RuntimeTopologyApplyRequestV1, RuntimeTopologyExecutionError,
     RuntimeTopologySnapshotV1, RuntimeTopologySuccessorV1, runtime_topology_final_use_binding_v1,
+    runtime_topology_recovery_final_use_binding_v1,
 };
 
 pub const EXISTING_SCHEMA_VERSION: i64 = 5;
@@ -129,6 +130,17 @@ impl HeptaRuntime {
     ) -> Result<RuntimeTopologyApplyReceiptV1> {
         self.organs
             .apply_governed_topology(authority, signed_grant, request)
+            .map_err(|error| anyhow::anyhow!("{error}"))
+    }
+
+    pub fn recover_governed_topology(
+        &self,
+        authority: &codex_hepta_contracts::FinalUseAuthority,
+        signed_grant: &codex_hepta_contracts::SignedFinalUseGrant,
+        request: RuntimeTopologyApplyRequestV1,
+    ) -> Result<RuntimeTopologyApplyReceiptV1> {
+        self.organs
+            .recover_governed_topology(authority, signed_grant, request)
             .map_err(|error| anyhow::anyhow!("{error}"))
     }
 
