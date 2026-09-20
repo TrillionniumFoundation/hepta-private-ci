@@ -224,7 +224,8 @@
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-cognitive-types/src/contract_tests.rs"
+        "codex-rs/hepta-cognitive-types/src/contract_tests.rs",
+        "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "canonical_wire_v1",
