@@ -2,12 +2,12 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "44cdb5e35649efd4c1ac3158fddb10c9270d2947",
-    "tree": "2de770e678de936de42dfb9e19730804a5a013e7"
+    "commit": "b5a022dbe7c69e5b2063429cd4dec52ccd9ca7a6",
+    "tree": "0a8d46bc0895d4bd581ae5aed5ef2dfa5f5a63d3"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
-  "sourceMaturity": "persistent_agentd_owned_servo_worker_pool_with_live_revocation_and_authenticated_recovery",
+  "sourceMaturity": "persistent_agentd_owned_servo_worker_pool_b5a1_candidate_lock_generation_pending",
   "declaredRoots": [
     "apps/hepta-browser",
     "third_party/servo-patches"
@@ -295,9 +295,9 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "terminal-success exact-head selected-pin build and real Browser E2E",
-    "terminal-success exact-head current-pin build must bind the committed Servo-worker Cargo.lock",
-    "terminal-success reproducible worker artifact/SPDX receipt",
+    "terminal-success exact-head b5a1 generated candidate Cargo.lock, review and committed-lock rerun",
+    "terminal-success exact-head b5a1 compile/unit tests plus real Browser E2E",
+    "terminal-success reproducible worker artifact/SPDX receipt from the committed b5a1 lock",
     "trusted Linux target-host Bubblewrap/prlimit/parent-death/no-listener plus real public DNS and certificate-validating HTTPS egress qualification",
     "retained cross-profile cookie/cache/storage isolation, revocation-race and 32-cycle resource-soak evidence",
     "actual current signed remote-business receipts from the configured independent terminal observer where business terminality is claimed",
@@ -320,7 +320,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "persistent_agentd_owner_source_present_not_qualified",
+  "productCallerState": "persistent_agentd_owner_source_present_b5a1_lock_pending",
   "productionWriterState": "browser_owner_journal_and_settlement_source_present_not_activated",
   "owner": "browser-platform",
   "deputy": "security-authority",
