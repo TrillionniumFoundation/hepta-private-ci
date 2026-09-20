@@ -615,6 +615,33 @@ async fn migration_checksum_tamper_fails_reopen() {
 }
 
 #[tokio::test]
+async fn future_migration_lineage_blocks_old_binary_reopen() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let store = DurableOperationStore::open(&path).await.expect("open");
+    store.close().await;
+    let pool = SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(SqliteConnectOptions::new().filename(&path))
+        .await
+        .expect("raw open");
+    sqlx::query(
+        "INSERT INTO _sqlx_migrations
+         (version, description, success, checksum, execution_time)
+         VALUES (999, 'future_kernel_operations_schema', 1, X'00', 0)",
+    )
+    .execute(&pool)
+    .await
+    .expect("install future migration marker");
+    pool.close().await;
+
+    assert!(matches!(
+        DurableOperationStore::open(&path).await,
+        Err(DurableOperationError::Corrupt(_))
+    ));
+}
+
+#[tokio::test]
 async fn corrupt_database_fails_closed() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");
