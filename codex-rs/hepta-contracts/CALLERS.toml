@@ -45,6 +45,9 @@ public_items = [
   "IntelligenceHostEnvelopeV1",
   "LegalActionCandidateSetV1",
   "append_outcome_credit_v1",
+  "CapabilitySnapshotV2",
+  "CurrentCapabilitySnapshotProviderV3",
+  "run_read_only_vertical_outcome_v1",
 ]
 product_callers = ["codex-rs/hepta-agentd/src/lane_b_runtime.rs"]
 
