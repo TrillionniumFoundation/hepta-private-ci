@@ -199,11 +199,24 @@ impl Fixture {
             .unwrap()
     }
 
+    fn directory(&self) -> File {
+        File::open(&self.root).unwrap()
+    }
+
     fn writer(&self) -> LedgerWriter {
         let ledger = DurableLedger::create(self.file("ledger"), binding(), 64).unwrap();
         let witness = LedgerWitnessStore::create(self.file("witness"), binding()).unwrap();
         let trust = activated_trust();
-        LedgerWriter::from_durable(ledger, witness, trust).unwrap()
+        let ledger_directory = self.directory();
+        let witness_directory = self.directory();
+        LedgerWriter::from_durable(
+            ledger,
+            witness,
+            trust,
+            &ledger_directory,
+            &witness_directory,
+        )
+        .unwrap()
     }
 }
 
@@ -429,7 +442,16 @@ fn production_writer_recovers_against_independent_witness() {
     .unwrap();
     let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
     let trust = activated_trust();
-    let recovered = LedgerWriter::from_durable(ledger, witness, trust).unwrap();
+    let ledger_directory = fixture.directory();
+    let witness_directory = fixture.directory();
+    let recovered = LedgerWriter::from_durable(
+        ledger,
+        witness,
+        trust,
+        &ledger_directory,
+        &witness_directory,
+    )
+    .unwrap();
     assert_eq!(
         recovered.witness_frontier().unwrap().anchor.chain_digest,
         receipt.chain_digest
@@ -497,7 +519,16 @@ fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
     )
     .unwrap();
     let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
-    let mut writer = LedgerWriter::from_durable(ledger, witness, trust).unwrap();
+    let ledger_directory = fixture.directory();
+    let witness_directory = fixture.directory();
+    let mut writer = LedgerWriter::from_durable(
+        ledger,
+        witness,
+        trust,
+        &ledger_directory,
+        &witness_directory,
+    )
+    .unwrap();
     assert_eq!(writer.witness_frontier().unwrap().anchor.sequence, 0);
 
     let reconciled = writer
