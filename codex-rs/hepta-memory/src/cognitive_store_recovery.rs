@@ -4,8 +4,10 @@
 //! needs a fresh, independently retained host witness. Capturing a witness from
 //! a suspect backup cannot authenticate that backup. No witness is auto-saved,
 //! no grant is issued, and no migration, repair or unanchored fallback occurs.
-//! The pilot permits 65,536 logical rows, 64 MiB of framed values, 2 MiB per
-//! row and 1 MiB of required schema definitions. Integrity checking still scans physical
+//! The maximum-retained profile permits 262,144 logical rows and 128 MiB of
+//! framed values, with 2 MiB per row and 1 MiB of required schema definitions.
+//! This keeps recovery bounded while covering the 16,384-memory durable profile.
+//! Integrity checking still scans physical
 //! database pages; these logical limits are not a host latency qualification.
 
 use codex_hepta_contracts::AgentId;
@@ -44,8 +46,8 @@ mod read_only;
 pub use read_only::RecoveredCognitiveReadOnly;
 
 const PROFILE: &str = "hepta:cognitive:exact-current-cut:v1";
-const MAX_ROWS: i64 = 65_536;
-const MAX_BYTES: i64 = 64 * 1024 * 1024;
+const MAX_ROWS: i64 = 262_144;
+const MAX_BYTES: i64 = 128 * 1024 * 1024;
 const MAX_ROW_BYTES: i64 = 2 * 1024 * 1024;
 const MAX_SCHEMA_BYTES: i64 = 1024 * 1024;
 
