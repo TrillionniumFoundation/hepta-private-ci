@@ -160,10 +160,13 @@ fn final_use(
     tempfile::TempDir,
 ) {
     let issuer = SigningKey::from_bytes(&[47; 32]);
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("wall clock")
-        .as_millis() as u64;
+    let now = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("wall clock")
+            .as_millis(),
+    )
+    .expect("wall clock milliseconds fit u64");
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "security-owner".to_string(),
