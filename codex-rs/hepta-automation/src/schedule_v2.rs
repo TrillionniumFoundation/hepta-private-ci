@@ -30,8 +30,7 @@ const MAX_TIMEZONE_TRANSITIONS: usize = 512;
 const MAX_TIMEZONE_ID_BYTES: usize = 96;
 const MAX_OFFSET_SECONDS: i32 = 18 * 60 * 60;
 const MAX_CALENDAR_SCAN: usize = 1_032;
-const ZERO_DIGEST: &str =
-    "0000000000000000000000000000000000000000000000000000000000000000";
+const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -162,12 +161,9 @@ impl AutomationTimeZoneProfileV1 {
                     if transition.offset_after_seconds <= transition.offset_before_seconds {
                         continue;
                     }
-                    let gap_start = shift_ms(
-                        transition.at_utc_ms,
-                        transition.offset_before_seconds,
-                    )?;
-                    let gap_end =
-                        shift_ms(transition.at_utc_ms, transition.offset_after_seconds)?;
+                    let gap_start =
+                        shift_ms(transition.at_utc_ms, transition.offset_before_seconds)?;
+                    let gap_end = shift_ms(transition.at_utc_ms, transition.offset_after_seconds)?;
                     if local_ms >= gap_start && local_ms < gap_end {
                         return Ok(Some(transition.at_utc_ms));
                     }
@@ -291,12 +287,12 @@ impl AutomationCalendarScheduleV2 {
 
             if forward {
                 day = day.checked_add(stride).ok_or(AutomationError::Invalid)?;
-                let probe = day
-                    .checked_mul(DAY_MS)
-                    .ok_or(AutomationError::Invalid)?;
-                if probe >= self.clock_profile.utc_to_local_ms(
-                    self.clock_profile.valid_until_utc_ms.saturating_sub(1),
-                )? {
+                let probe = day.checked_mul(DAY_MS).ok_or(AutomationError::Invalid)?;
+                if probe
+                    >= self
+                        .clock_profile
+                        .utc_to_local_ms(self.clock_profile.valid_until_utc_ms.saturating_sub(1))?
+                {
                     if self.end_at_utc_ms.is_some() {
                         return Ok(None);
                     }
@@ -631,15 +627,8 @@ pub(crate) async fn advance_calendar_schedule_v2(
                         reset_catch_up(tx, store, task_id, observed_at_ms).await?;
                         schedule.first_at_or_after(observed_at_ms.saturating_add(1))?
                     } else {
-                        set_catch_up_state(
-                            tx,
-                            store,
-                            task_id,
-                            true,
-                            remaining - 1,
-                            observed_at_ms,
-                        )
-                        .await?;
+                        set_catch_up_state(tx, store, task_id, true, remaining - 1, observed_at_ms)
+                            .await?;
                         Some(baseline)
                     }
                 } else {
@@ -655,15 +644,8 @@ pub(crate) async fn advance_calendar_schedule_v2(
                     if count == 0 {
                         schedule.first_at_or_after(observed_at_ms.saturating_add(1))?
                     } else {
-                        set_catch_up_state(
-                            tx,
-                            store,
-                            task_id,
-                            true,
-                            count - 1,
-                            observed_at_ms,
-                        )
-                        .await?;
+                        set_catch_up_state(tx, store, task_id, true, count - 1, observed_at_ms)
+                            .await?;
                         Some(baseline)
                     }
                 }
@@ -875,11 +857,7 @@ mod tests {
         Sha256Digest::for_bytes(label)
     }
 
-    fn profile(
-        at_utc_ms: u64,
-        before: i32,
-        after: i32,
-    ) -> AutomationTimeZoneProfileV1 {
+    fn profile(at_utc_ms: u64, before: i32, after: i32) -> AutomationTimeZoneProfileV1 {
         AutomationTimeZoneProfileV1 {
             timezone_id: "America/Test".to_string(),
             tzdb_digest: digest(b"tzdb-test"),
@@ -1039,7 +1017,10 @@ mod tests {
             .expect("read calendar")
             .expect("calendar exists");
         assert_eq!(revision, 1);
-        assert_eq!(stored.digest().expect("digest"), calendar.digest().expect("digest"));
+        assert_eq!(
+            stored.digest().expect("digest"),
+            calendar.digest().expect("digest")
+        );
 
         let policy = store
             .set_schedule_policy(
@@ -1058,7 +1039,10 @@ mod tests {
             .expect("read cloned calendar")
             .expect("calendar exists");
         assert_eq!(revision, 2);
-        assert_eq!(cloned.digest().expect("digest"), calendar.digest().expect("digest"));
+        assert_eq!(
+            cloned.digest().expect("digest"),
+            calendar.digest().expect("digest")
+        );
 
         let mut replacement = calendar.clone();
         replacement.every_days = 2;
@@ -1099,6 +1083,9 @@ mod tests {
         let mut second = first.clone();
         second.tzdb_digest = digest(b"tzdb-second");
         second.clock_profile.tzdb_digest = second.tzdb_digest.clone();
-        assert_ne!(first.digest().expect("first"), second.digest().expect("second"));
+        assert_ne!(
+            first.digest().expect("first"),
+            second.digest().expect("second")
+        );
     }
 }
