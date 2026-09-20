@@ -79,7 +79,7 @@
       "lifecycle": "existing",
       "sourceStatus": "existing_bound",
       "source_root_present": true,
-      "production_implementation": false,
+      "production_implementation": true,
       "declaredRoots": [
         "codex-rs/hepta-operations"
       ],
@@ -87,12 +87,14 @@
         "codex-rs/hepta-operations"
       ],
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-operations"
+        "codex-rs/hepta-operations",
+        "codex-rs/hepta-memory",
+        "codex-rs/hepta-agentd"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7D-FAULT-MATRIX",
       "technicalDocument": "docs/modules/kernel.operations/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_and_release_remain_separate"
+      "interpretation": "exclusive contract root is hepta-operations; production implementation is delegated into the existing CognitiveStore/Agentd owners, while activation and release remain separate"
     },
     {
       "module": "kernel.evidence",
