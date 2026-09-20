@@ -2,11 +2,17 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseToken;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Verifier as _;
 use ed25519_dalek::VerifyingKey;
@@ -15,23 +21,14 @@ use serde::Serialize;
 
 use crate::error::ShellError;
 use crate::model::EndpointManifest;
-use crate::model::PlatformAction;
-use crate::model::SignedPlatformGrantV1;
+use crate::model::PlatformPayload;
+use crate::model::SessionIncarnation;
+use crate::model::sha256_bytes;
 use crate::model::sha256_hex;
 use crate::model::validate_digest;
 use crate::model::validate_stable_id;
 
 const MAX_CLOCK_SKEW_MS: u64 = 5 * 60 * 1000;
-
-#[derive(Debug, Clone, Copy)]
-pub struct PlatformGrantContext<'a> {
-    pub session_id: &'a str,
-    pub session_generation: u64,
-    pub operation_id: &'a str,
-    pub action: PlatformAction,
-    pub payload_digest: &'a str,
-    pub now_unix_ms: u64,
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -132,14 +129,6 @@ impl SignedEndpointManifestV1 {
     }
 }
 
-pub trait GrantVerifier: Send + Sync {
-    fn verify_platform_grant(
-        &self,
-        grant: &SignedPlatformGrantV1,
-        context: PlatformGrantContext<'_>,
-    ) -> Result<(), ShellError>;
-}
-
 #[derive(Debug, Clone)]
 pub struct TrustedKeySet {
     keys: BTreeMap<String, VerifyingKey>,
@@ -216,69 +205,194 @@ impl TrustedKeySet {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct ReloadingGrantVerifier {
-    path: PathBuf,
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct KernelFinalUseAuthorityConfigV1 {
+    pub schema: String,
+    pub signer_id: String,
+    pub verifying_key_base64: String,
+    pub state_dir: PathBuf,
+    pub head: FinalUseRevocations,
 }
 
-impl ReloadingGrantVerifier {
-    pub fn new(path: PathBuf) -> Result<Self, ShellError> {
+impl KernelFinalUseAuthorityConfigV1 {
+    fn load(path: &Path) -> Result<(Self, [u8; 32]), ShellError> {
         if !path.is_absolute() {
             return Err(ShellError::InvalidInput(
-                "reloading grant trust path must be absolute".to_owned(),
+                "kernel final-use authority config path must be absolute".to_owned(),
             ));
         }
-        TrustedKeySet::from_path(&path)?;
-        Ok(Self { path })
+        let config: Self = serde_json::from_slice(&std::fs::read(path)?)?;
+        if config.schema != "hepta.native-final-use-authority.v1" {
+            return Err(ShellError::Security(
+                "unsupported kernel final-use authority config schema".to_owned(),
+            ));
+        }
+        validate_stable_id(&config.signer_id, "final-use signer_id")?;
+        if !config.state_dir.is_absolute() {
+            return Err(ShellError::Security(
+                "kernel final-use state directory must be absolute".to_owned(),
+            ));
+        }
+        let decoded = STANDARD
+            .decode(&config.verifying_key_base64)
+            .map_err(|error| ShellError::Security(error.to_string()))?;
+        let verifying_key: [u8; 32] = decoded.try_into().map_err(|_| {
+            ShellError::Security("kernel final-use Ed25519 public key must be 32 bytes".to_owned())
+        })?;
+        Ok((config, verifying_key))
     }
 }
 
-impl GrantVerifier for ReloadingGrantVerifier {
-    fn verify_platform_grant(
-        &self,
-        grant: &SignedPlatformGrantV1,
-        context: PlatformGrantContext<'_>,
-    ) -> Result<(), ShellError> {
-        TrustedKeySet::from_path(&self.path)?.verify_platform_grant(grant, context)
-    }
+#[derive(Debug)]
+pub struct KernelFinalUseGate {
+    authority: FinalUseAuthority,
+    config_path: PathBuf,
+    signer_id: String,
+    verifying_key: [u8; 32],
+    state_dir: PathBuf,
+    current_head: Mutex<FinalUseRevocations>,
 }
 
-impl GrantVerifier for TrustedKeySet {
-    fn verify_platform_grant(
-        &self,
-        grant: &SignedPlatformGrantV1,
-        context: PlatformGrantContext<'_>,
-    ) -> Result<(), ShellError> {
-        validate_stable_id(&grant.key_id, "grant.key_id")?;
-        validate_stable_id(&grant.session_id, "grant.session_id")?;
-        validate_stable_id(&grant.operation_id, "grant.operation_id")?;
-        validate_digest(&grant.payload_digest, "grant.payload_digest")?;
-        if grant.session_id != context.session_id
-            || grant.session_generation != context.session_generation
-            || grant.operation_id != context.operation_id
-            || grant.action != context.action
-            || grant.payload_digest != context.payload_digest
-        {
-            return Err(ShellError::Security(
-                "platform grant is not bound to the current final operation".to_owned(),
-            ));
-        }
-        if grant.expires_unix_ms < context.now_unix_ms {
-            return Err(ShellError::Security("platform grant expired".to_owned()));
-        }
-        if grant.expires_unix_ms.saturating_sub(context.now_unix_ms)
-            > 15 * 60 * 1000 + MAX_CLOCK_SKEW_MS
-        {
-            return Err(ShellError::Security(
-                "platform grant lifetime exceeds the native short-lived ceiling".to_owned(),
-            ));
-        }
-        self.verify_message(
-            &grant.key_id,
-            &grant.signature_base64,
-            grant.signing_message().as_bytes(),
+pub struct KernelFinalUsePermit {
+    token: VerifiedUseToken,
+    binding: FinalUseBinding,
+}
+
+impl KernelFinalUseGate {
+    pub fn open(config_path: PathBuf) -> Result<Self, ShellError> {
+        let (config, verifying_key) = KernelFinalUseAuthorityConfigV1::load(&config_path)?;
+        let authority = FinalUseAuthority::open_state_dir(
+            &config.state_dir,
+            config.signer_id.clone(),
+            verifying_key,
+            config.head.clone(),
         )
+        .map_err(|error| {
+            ShellError::Security(format!("open kernel final-use authority: {error}"))
+        })?;
+        Ok(Self {
+            authority,
+            config_path,
+            signer_id: config.signer_id,
+            verifying_key,
+            state_dir: config.state_dir,
+            current_head: Mutex::new(config.head),
+        })
     }
+
+    pub fn claim_platform(
+        &self,
+        signed: &SignedFinalUseGrant,
+        binding: FinalUseBinding,
+    ) -> Result<KernelFinalUsePermit, ShellError> {
+        self.refresh_revocations()?;
+        let token = self
+            .authority
+            .claim(signed, &binding)
+            .map_err(|error| ShellError::Security(format!("kernel final-use claim: {error}")))?;
+        Ok(KernelFinalUsePermit { token, binding })
+    }
+
+    pub fn with_platform_use<T>(
+        &self,
+        permit: KernelFinalUsePermit,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<T, ShellError> {
+        self.refresh_revocations()?;
+        self.authority
+            .with_verified_use(permit.token, &permit.binding, consumer)
+            .map_err(|error| {
+                ShellError::Security(format!("kernel final-use revalidation: {error}"))
+            })
+    }
+
+    fn refresh_revocations(&self) -> Result<(), ShellError> {
+        let (config, verifying_key) = KernelFinalUseAuthorityConfigV1::load(&self.config_path)?;
+        if config.signer_id != self.signer_id
+            || verifying_key != self.verifying_key
+            || config.state_dir != self.state_dir
+        {
+            return Err(ShellError::Security(
+                "kernel final-use trust identity changed in place".to_owned(),
+            ));
+        }
+        let mut current = self
+            .current_head
+            .lock()
+            .map_err(|_| ShellError::Security("kernel final-use head lock poisoned".to_owned()))?;
+        let same = config.head.authority_epoch == current.authority_epoch
+            && config.head.revision == current.revision
+            && config.head.revoked_grant_ids == current.revoked_grant_ids;
+        if same {
+            return Ok(());
+        }
+        if config.head.authority_epoch < current.authority_epoch
+            || config.head.revision <= current.revision
+            || (config.head.authority_epoch == current.authority_epoch
+                && !config
+                    .head
+                    .revoked_grant_ids
+                    .is_superset(&current.revoked_grant_ids))
+        {
+            return Err(ShellError::Security(
+                "kernel final-use revocation head regressed".to_owned(),
+            ));
+        }
+        self.authority
+            .update_revocations(config.head.clone())
+            .map_err(|error| {
+                ShellError::Security(format!("update kernel final-use revocations: {error}"))
+            })?;
+        *current = config.head;
+        Ok(())
+    }
+}
+
+pub fn platform_final_use_binding(
+    subject_id: &str,
+    session: &SessionIncarnation,
+    operation_id: &str,
+    displayed_revision: u64,
+    payload: &PlatformPayload,
+) -> Result<FinalUseBinding, ShellError> {
+    validate_stable_id(subject_id, "final-use subject_id")?;
+    validate_stable_id(operation_id, "final-use operation_id")?;
+    session.validate()?;
+    payload.validate()?;
+    if displayed_revision == 0 {
+        return Err(ShellError::InvalidInput(
+            "displayed revision must be positive".to_owned(),
+        ));
+    }
+    let payload_bytes = serde_json::to_vec(payload)?;
+    let payload_sha256 = sha256_bytes(&payload_bytes);
+    let payload_digest = sha256_hex(&payload_bytes);
+    let destination_id = format!("ui.native.platform:{}", payload.action());
+    validate_stable_id(&destination_id, "final-use destination_id")?;
+    let request_sha256 = sha256_bytes(
+        format!(
+            "hepta.ui.native.platform-request.v1|{subject_id}|{}|{}|{operation_id}|{}|{displayed_revision}|{payload_digest}",
+            session.session_id,
+            session.generation,
+            payload.action(),
+        )
+        .as_bytes(),
+    );
+    let scope_sha256 = sha256_bytes(
+        format!(
+            "hepta.ui.native.platform-scope.v1|{subject_id}|{destination_id}|{}|{payload_digest}",
+            payload.action(),
+        )
+        .as_bytes(),
+    );
+    Ok(FinalUseBinding {
+        subject_id: subject_id.to_owned(),
+        destination_id,
+        request_sha256,
+        scope_sha256,
+        payload_sha256,
+    })
 }
 
 pub fn now_unix_ms() -> Result<u64, ShellError> {
