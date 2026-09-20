@@ -37,7 +37,7 @@ Current-fence reconciliation records the observed holder disposition; pure alloc
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/allocation_store.rs` — `pub fn admit_host(` |
+| `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/allocation_store.rs` — `pub fn admit_local_host(` |
 | `allocate` | `owner_boundary` | `codex-rs/hepta-fleet/src/allocation_store.rs` — `pub fn commit_prepared(` |
 | `renew_or_revoke` | `owner_native` | `codex-rs/hepta-fleet/src/allocation_store.rs` — `pub fn renew_verified(` |
 

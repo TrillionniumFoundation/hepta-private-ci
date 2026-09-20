@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b2c323eddf0f29ee4d3e9d9896f10226052a8d7a",
-    "tree": "cc514c8a43e514b94f4f0aa315a9cb1704a24a50"
+    "commit": "a8695e76adcb06183d2b4a2861d97e84b4c50cf3",
+    "tree": "bd736e285d1cf7b225c71fc874565c4811457de0"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.fleet",
@@ -23,7 +23,7 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-fleet/src/allocation_store.rs",
-        "symbol": "pub fn admit_host(",
+        "symbol": "pub fn admit_local_host(",
         "buildTarget": "codex-hepta-fleet::allocation_store"
       },
       "delegatedCallees": [],
@@ -34,9 +34,9 @@
           "command": "just test -p codex-hepta-fleet --lib"
         }
       ],
-      "sourceSemantics": "Persists a generation- and revision-fenced host capacity observation in the single FleetAllocationStore writer.",
+      "sourceSemantics": "Admits durable local-host capacity only from the opaque LocalCapacityObservationV1 produced by LocalCapacityObserverV1; the raw host reducer is crate-internal.",
       "operation": "admit_host",
-      "nativeSymbol": "pub fn admit_host(",
+      "nativeSymbol": "pub fn admit_local_host(",
       "sourcePath": "codex-rs/hepta-fleet/src/allocation_store.rs",
       "sourcePathExists": true
     },
