@@ -881,6 +881,10 @@ impl H7H89ProductionGrant {
 #[serde(deny_unknown_fields)]
 pub struct ProductionMutationReceipt {
     pub grant_sha256: Sha256Digest,
+    /// Digest of the durable supervisor intent that an independent recovery
+    /// signer must bind. Exposing the digest makes recovery operable through
+    /// the registered status RPC without granting access to the private file.
+    pub intent_sha256: Sha256Digest,
     pub agent_id: String,
     pub transition: H7H89ProductionTransition,
     pub source_release: String,
@@ -903,9 +907,14 @@ pub enum ProductionMutationStatus {
 }
 
 impl ProductionMutationReceipt {
-    pub(crate) fn queued(grant: &H7H89ProductionGrant, control_revision: u64) -> Self {
+    pub(crate) fn queued(
+        grant: &H7H89ProductionGrant,
+        intent_sha256: Sha256Digest,
+        control_revision: u64,
+    ) -> Self {
         Self {
             grant_sha256: grant.grant_sha256.clone(),
+            intent_sha256,
             agent_id: grant.agent_id.clone(),
             transition: grant.transition,
             source_release: grant.source_release.clone(),
