@@ -16,6 +16,7 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::ActivatedLearningTrustV1;
+use crate::AppendDisposition;
 use crate::AppendReceipt;
 use crate::AuthenticatedDecisionRecordV2;
 use crate::AuthenticatedOutcomeRecordV2;
@@ -541,7 +542,13 @@ impl LedgerWriter {
             let Some(last) = before_snapshot.records().last() else {
                 return Err(ProductionLedgerError::WitnessLag);
             };
-            if last.event != event || last.predecessor_chain_digest != expected_predecessor {
+            let replay = LearningLedger::from_snapshot(before_snapshot.clone())?
+                .prepare(event.clone())
+                .map_err(|_| ProductionLedgerError::WitnessLag)?;
+            if replay.disposition != AppendDisposition::IdempotentReplay
+                || replay.record != *last
+                || last.predecessor_chain_digest != expected_predecessor
+            {
                 return Err(ProductionLedgerError::WitnessLag);
             }
         }
