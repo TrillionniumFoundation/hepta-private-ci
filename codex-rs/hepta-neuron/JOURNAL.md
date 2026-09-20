@@ -45,9 +45,8 @@ segment rollover, compaction and cross-segment temporal continuity are not yet
 implemented. This synced disk path has no real-time latency claim. Configuration,
 selected model weights and topology remain immutable throughout a segment.
 
-The host must revoke/rebuild deleted-data-derived state before reopening it.
-Encryption, backup deletion, canonical Neuron wire protocols, authenticated
-provenance and real model/caller composition remain separate work. Process-exit
+The host must revoke/rebuild deleted-data-derived state before reopening it. The V1 journal remains deliberately tied to the single-population/same-width `SparseConfig` replay format. `PopulationSparseConfigV2` is a different mechanism generation and may not be written into this V1 format; durable V2 use requires an explicitly versioned store/migration.
+Encryption and backup deletion remain separate work. Canonical Neuron JSON protocol adapters, an independently synced file-backed acknowledgement witness, and exact inference-control feature-receipt binding are implemented on the closure line; authenticated selected-artifact/current-owner distribution and daemon activation remain separate composition/evidence work. Process-exit
 tests do not certify physical power-loss behavior or target-hardware p99 timing.
 Downgrade leaves this new journal inert; never silently choose a stale checkpoint.
 
