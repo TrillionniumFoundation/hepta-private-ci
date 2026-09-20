@@ -185,23 +185,29 @@ External evidence gates:
 
 ## 10. `browser.servo`
 
-Owns serialized profile/session/page state plus a strict durable operation journal; a fresh principal-bound private profile directory is created for each worker generation and raw credentials remain external references.
+Owns serialized profile/session/page state plus a strict persistent operation journal; expiresAtMs is a physical process/network lease and owner close is its early-revocation ceremony; long-running Agentd retains the Browser port and monotonic final-use revocation feed; each active profile owns one private Servo worker/profile directory.
 
-The current-pin Servo worker source supplies bounded semantic page observations and local action observations; durable reconciliation owns unknown dispatches, while remote business terminality and target-host enforcement still require independent evidence.
+Worker admission and terminal response are distinct. Live terminal settlement is persisted; post-process-loss terminalization requires an Ed25519 observer receipt that also satisfies configured minimum observer generation/time and exact current frontier. Stale, rollback, future or misbound evidence remains indeterminate.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `open_profile` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async openProfile(` |
+| `admit_effect_grant` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async admitEffectGrant(` |
 | `observe_page` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async observePage(` |
 | `navigate_or_act` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async navigateOrAct(` |
+| `reconcile_operation` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async reconcileOperation(` |
+| `reconcile_persisted_operation` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async reconcilePersistedOperation(` |
+| `close_profile` | `owner_boundary` | `apps/hepta-browser/src/runtime.js` — `async closeProfile(` |
 
 External evidence gates:
 
-- reviewed committed exact Servo-worker Cargo.lock bound to the qualified build
-- terminal-success reproducible current-pin Servo worker artifact/SBOM receipt
-- independent Linux target-host namespace/profile/credential/network/no-listener/descendant-cleanup qualification and platform equivalents where targeted
-- real credential broker and download/upload terminal observers when those capabilities are enabled
-- real remote business terminal observations plus independent acceptance/promotion/release
+- terminal-success exact-head selected-pin build and real Browser E2E
+- terminal-success exact-head current-pin build must bind the committed Servo-worker Cargo.lock
+- terminal-success reproducible worker artifact/SPDX receipt
+- trusted Linux target-host Bubblewrap/prlimit/parent-death/no-listener plus real public DNS and certificate-validating HTTPS egress qualification
+- retained cross-profile cookie/cache/storage isolation, revocation-race and 32-cycle resource-soak evidence
+- actual current signed remote-business receipts from the configured independent terminal observer where business terminality is claimed
+- independent operator acceptance, activation, promotion and release
 
 ## 11. `ui.control`
 
@@ -242,6 +248,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 39 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 43 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.
