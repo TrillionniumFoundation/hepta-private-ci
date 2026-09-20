@@ -221,6 +221,38 @@ fn v3_rejects_score_mutation_after_scoring_commitment() {
 }
 
 #[test]
+fn v3_rejects_risk_class_rebinding_after_scoring_commitment() {
+    let (mut request, profile, scoring) = fixture();
+    request.risk_class = RiskClass::Elevated;
+    assert_eq!(
+        decide_calibrated_v3(request, &profile, &scoring),
+        Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "risk class"
+        ))
+    );
+}
+
+#[test]
+fn v3_rejects_counterbased_to_deterministic_rebinding() {
+    let (mut request, profile, _) = fixture();
+    request.assignment = AssignmentModeV1::CounterBased {
+        random_stream_digest: digest("qualified-random-stream"),
+        draw: ProbabilityQ32::ZERO,
+        abstain_probability: ProbabilityQ32::ONE,
+    };
+    let scoring =
+        scoring_commitment_for_request_v1(&request, &profile, digest("feature-snapshot")).unwrap();
+
+    request.assignment = AssignmentModeV1::Deterministic;
+    assert_eq!(
+        decide_calibrated_v3(request, &profile, &scoring),
+        Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "assignment distribution"
+        ))
+    );
+}
+
+#[test]
 fn evidence_payloads_partition_generator_scorer_profile_and_random_source_ownership() {
     let (mut request, profile, scoring) = fixture();
     let completeness = canonical_completeness_evidence_payload_v1(&request).unwrap();
