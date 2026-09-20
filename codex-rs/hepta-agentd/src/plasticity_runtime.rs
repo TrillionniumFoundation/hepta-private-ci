@@ -297,6 +297,10 @@ impl PlasticityRuntimeOwnerV1 {
 }
 
 #[cfg(test)]
+#[path = "plasticity_runtime_lifetime_tests.rs"]
+mod lifetime_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
