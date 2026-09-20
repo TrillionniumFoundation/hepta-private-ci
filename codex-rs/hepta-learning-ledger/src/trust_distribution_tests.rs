@@ -182,6 +182,28 @@ fn trust_distribution_rejects_bad_signature_generation_skips_and_epoch_rollback(
 }
 
 #[test]
+fn trust_distribution_rejects_retroactive_effective_time() {
+    let root_key = SigningKey::from_bytes(&[99; 32]);
+    let root = root(&root_key);
+    let mut signed = signed_distribution(
+        &root_key,
+        LearningTrustDistributionV1 {
+            distribution_id: id("trust-retroactive"),
+            generation: 1,
+            effective_at: 10,
+            trust: trust(7, 1),
+        },
+    );
+    signed.issued_at = 15;
+    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+
+    assert_eq!(
+        activate_learning_trust(&root, signed, None, 50).unwrap_err(),
+        LearningTrustDistributionError::DistributionWindow
+    );
+}
+
+#[test]
 fn trust_distribution_rejects_root_substitution_and_revocation() {
     let root_key = SigningKey::from_bytes(&[99; 32]);
     let root = root(&root_key);

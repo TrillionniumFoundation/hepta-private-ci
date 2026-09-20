@@ -116,6 +116,7 @@ pub fn activate_learning_trust(
     }
     if signed.issued_at > now
         || signed.issued_at > signed.expires_at
+        || signed.issued_at > signed.distribution.effective_at
         || now > signed.expires_at
         || signed.issued_at < root.valid_from
         || signed.expires_at > root.expires_at
