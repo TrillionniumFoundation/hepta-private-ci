@@ -20,9 +20,9 @@ use codex_hepta_learning_artifacts::{ArtifactKind, ArtifactRegistry};
 use codex_hepta_learning_ledger::{DurableLedger, DurableLedgerError, LearningEvidenceVerifierV1};
 use codex_hepta_plasticity::{
     DurableRegistryAnchorV1, GeneratedParameterCandidateSetV3, ParameterGeneratorProfileV3,
-    ProposalWindowV2,
+    ParameterPlasticitySignalV3, ProposalWindowV2,
 };
-use codex_hepta_types::{Digest32, Generation, StableId};
+use codex_hepta_types::{Digest32, FixedQ32, Generation, StableId};
 
 use crate::plasticity_anchor_journal::{
     AdaptiveAnchorJournalErrorV1, AdaptiveAnchorJournalV1, AdaptiveAnchorV1,
@@ -201,6 +201,11 @@ pub struct PlasticityOwnerEvidenceQueryV1 {
     pub baseline_generation: Generation,
     pub layer_id: Option<StableId>,
     pub parameter_id: Option<StableId>,
+    pub signal_eligibility: Option<FixedQ32>,
+    pub signal_modulator: Option<FixedQ32>,
+    pub signal_learning_rate: Option<FixedQ32>,
+    pub signal_lower_bound: Option<FixedQ32>,
+    pub signal_upper_bound: Option<FixedQ32>,
     pub now: u64,
 }
 
@@ -218,6 +223,11 @@ pub struct VerifiedPlasticityOwnerEvidenceV1 {
     pub baseline_generation: Generation,
     pub layer_id: Option<StableId>,
     pub parameter_id: Option<StableId>,
+    pub signal_eligibility: Option<FixedQ32>,
+    pub signal_modulator: Option<FixedQ32>,
+    pub signal_learning_rate: Option<FixedQ32>,
+    pub signal_lower_bound: Option<FixedQ32>,
+    pub signal_upper_bound: Option<FixedQ32>,
     pub observed_at: u64,
     pub expires_at: u64,
 }
@@ -267,6 +277,11 @@ pub fn verify_agentd_plasticity_owner_evidence_v1(
         || receipt.baseline_generation != query.baseline_generation
         || receipt.layer_id != query.layer_id
         || receipt.parameter_id != query.parameter_id
+        || receipt.signal_eligibility != query.signal_eligibility
+        || receipt.signal_modulator != query.signal_modulator
+        || receipt.signal_learning_rate != query.signal_learning_rate
+        || receipt.signal_lower_bound != query.signal_lower_bound
+        || receipt.signal_upper_bound != query.signal_upper_bound
     {
         return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
     }
@@ -301,6 +316,15 @@ pub fn verify_agentd_plasticity_owner_evidence_v1(
     bytes.extend_from_slice(&receipt.baseline_generation.get().to_be_bytes());
     push_optional_owner_id(&mut bytes, receipt.layer_id.as_ref())?;
     push_optional_owner_id(&mut bytes, receipt.parameter_id.as_ref())?;
+    for value in [
+        receipt.signal_eligibility,
+        receipt.signal_modulator,
+        receipt.signal_learning_rate,
+        receipt.signal_lower_bound,
+        receipt.signal_upper_bound,
+    ] {
+        push_optional_fixed_q32(&mut bytes, value);
+    }
     bytes.extend_from_slice(&receipt.observed_at.to_be_bytes());
     bytes.extend_from_slice(&receipt.expires_at.to_be_bytes());
     Ok(Digest32::of_bytes(&bytes))
@@ -317,14 +341,27 @@ fn validate_owner_evidence_query(
     {
         return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
     }
+    let signal_values = [
+        query.signal_eligibility,
+        query.signal_modulator,
+        query.signal_learning_rate,
+        query.signal_lower_bound,
+        query.signal_upper_bound,
+    ];
     match query.kind {
         PlasticityOwnerEvidenceKindV1::ParameterSignal => {
-            if query.layer_id.is_none() || query.parameter_id.is_none() {
+            if query.layer_id.is_none()
+                || query.parameter_id.is_none()
+                || signal_values.iter().any(Option::is_none)
+            {
                 return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
             }
         }
         _ => {
-            if query.layer_id.is_some() || query.parameter_id.is_some() {
+            if query.layer_id.is_some()
+                || query.parameter_id.is_some()
+                || signal_values.iter().any(Option::is_some)
+            {
                 return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
             }
         }
@@ -355,6 +392,16 @@ fn push_optional_owner_id(
         None => bytes.push(0),
     }
     Ok(())
+}
+
+fn push_optional_fixed_q32(bytes: &mut Vec<u8>, value: Option<FixedQ32>) {
+    match value {
+        Some(value) => {
+            bytes.push(1);
+            bytes.extend_from_slice(&value.raw().to_be_bytes());
+        }
+        None => bytes.push(0),
+    }
 }
 
 /// Independently durable append-only host journal for the proposal-registry fence
@@ -492,7 +539,7 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
         digests.push(verify_agentd_plasticity_owner_evidence_v1(
             resolver,
             policy,
-            &owner_evidence_query(input, kind, evidence_digest, None, None, now),
+            &owner_evidence_query(input, kind, evidence_digest, None, now),
         )?);
     }
 
@@ -510,8 +557,7 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
                 input,
                 PlasticityOwnerEvidenceKindV1::ParameterSignal,
                 signal.evidence_digest,
-                Some(signal.layer_id.clone()),
-                Some(signal.parameter_id.clone()),
+                Some(signal),
                 now,
             ),
         )?);
@@ -532,8 +578,7 @@ fn owner_evidence_query(
     input: &AgentdPlasticityAdmissionInputV1,
     kind: PlasticityOwnerEvidenceKindV1,
     evidence_digest: Digest32,
-    layer_id: Option<StableId>,
-    parameter_id: Option<StableId>,
+    signal: Option<&ParameterPlasticitySignalV3>,
     now: u64,
 ) -> PlasticityOwnerEvidenceQueryV1 {
     PlasticityOwnerEvidenceQueryV1 {
@@ -544,8 +589,13 @@ fn owner_evidence_query(
         window: input.generated.window.clone(),
         dataset_digest: input.dataset_digest,
         baseline_generation: input.baseline_generation,
-        layer_id,
-        parameter_id,
+        layer_id: signal.map(|value| value.layer_id.clone()),
+        parameter_id: signal.map(|value| value.parameter_id.clone()),
+        signal_eligibility: signal.map(|value| value.eligibility),
+        signal_modulator: signal.map(|value| value.modulator),
+        signal_learning_rate: signal.map(|value| value.learning_rate),
+        signal_lower_bound: signal.map(|value| value.lower_bound),
+        signal_upper_bound: signal.map(|value| value.upper_bound),
         now,
     }
 }
@@ -772,6 +822,11 @@ mod tests {
                 baseline_generation: query.baseline_generation,
                 layer_id: query.layer_id.clone(),
                 parameter_id: query.parameter_id.clone(),
+                signal_eligibility: query.signal_eligibility,
+                signal_modulator: query.signal_modulator,
+                signal_learning_rate: query.signal_learning_rate,
+                signal_lower_bound: query.signal_lower_bound,
+                signal_upper_bound: query.signal_upper_bound,
                 observed_at: 49,
                 expires_at: 51,
             })
@@ -803,6 +858,11 @@ mod tests {
             baseline_generation: Generation::new(7).expect("generation"),
             layer_id: None,
             parameter_id: None,
+            signal_eligibility: None,
+            signal_modulator: None,
+            signal_learning_rate: None,
+            signal_lower_bound: None,
+            signal_upper_bound: None,
             now: 50,
         }
     }
