@@ -63,6 +63,8 @@ pub use durable::SourceDraft;
 pub use durable::StableMemoryId;
 
 pub use v2::AdmittedCognitiveStoreV2;
+pub use v2::CanonicalMemoryEventShadowReceiptV1;
+pub use v2::CanonicalMemoryEventShadowWriteV1;
 pub use v2::CognitiveStoreImageV2;
 pub use v2::CognitiveStoreV2Error;
 pub use v2::ForgetIntentV2;
