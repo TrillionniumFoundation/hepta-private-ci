@@ -309,15 +309,18 @@ impl LaneFCompositionReceiptV3 {
                 }
             }
             PipelineDispositionV3::Abstained => {
+                let abstentions = self
+                    .stages
+                    .iter()
+                    .filter(|trace| trace.outcome == StageOutcomeV3::Abstained)
+                    .collect::<Vec<_>>();
                 if self.host_envelope.is_some()
                     || self.stages.last().map(|trace| trace.stage)
                         != Some(LaneFStageV3::LearningRecorded)
+                    || abstentions.len() != 1
                     || !matches!(
-                        self.stages
-                            .iter()
-                            .find(|trace| trace.stage == LaneFStageV3::IntuitionDecided)
-                            .map(|trace| trace.outcome),
-                        Some(StageOutcomeV3::Abstained)
+                        abstentions[0].stage,
+                        LaneFStageV3::ObjectiveValidated | LaneFStageV3::IntuitionDecided
                     )
                 {
                     return Err(PipelineErrorV3::InvalidReceipt("abstain disposition"));
@@ -499,34 +502,91 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
     let mut stages = Vec::with_capacity(MAX_V3_STAGES);
     let mut predecessor = request.request_digest;
 
-    predecessor = match required_port_stage(
+    let objective_input = port_input(
         &request,
         snapshot_digest,
         predecessor,
         LaneFStageV3::ObjectiveValidated,
-        "objective.compiler",
-        &mut stages,
+        control.now_unix_micros(),
+    )?;
+    let objective = timed_call(
+        &request,
+        snapshot_digest,
+        predecessor,
+        &objective_input,
         started,
         control,
         |input| ports.validate_objective(input),
-    )? {
-        StageAdvanceV3::Continue(output) => {
-            if output != objective_digest {
-                return Err(PipelineErrorV3::ObjectiveDigestMismatch);
-            }
-            output
+    )?;
+    let objective = match objective {
+        Ok(receipt) => {
+            validate_receipt(&objective_input, "objective.compiler", &receipt)?;
+            receipt
         }
-        StageAdvanceV3::Terminal(class, output) => {
-            return finish(
+        Err(failure) => {
+            return terminal_failure(
                 request.run_id,
                 snapshot_digest,
-                PipelineDispositionV3::Failed(class),
                 stages,
-                output,
+                LaneFStageV3::ObjectiveValidated,
+                "objective.compiler",
+                predecessor,
+                failure,
                 None,
             );
         }
     };
+    if objective.output_digest != objective_digest {
+        return Err(PipelineErrorV3::ObjectiveDigestMismatch);
+    }
+    predecessor = objective.output_digest;
+    let objective_decision = objective.decision;
+    stages.push(StageTraceV3 {
+        stage: LaneFStageV3::ObjectiveValidated,
+        producer: objective.producer,
+        predecessor_digest: objective.predecessor_digest,
+        output_digest: objective.output_digest,
+        outcome: match objective_decision {
+            PortDecisionV3::Continue => StageOutcomeV3::Completed,
+            PortDecisionV3::Abstain => StageOutcomeV3::Abstained,
+            PortDecisionV3::SlowPath => return Err(PipelineErrorV3::UnexpectedDecision),
+        },
+        evidence_digest: objective.output_digest,
+    });
+
+    if objective_decision == PortDecisionV3::Abstain {
+        predecessor = match required_port_stage(
+            &request,
+            snapshot_digest,
+            predecessor,
+            LaneFStageV3::LearningRecorded,
+            "learning.ledger",
+            &mut stages,
+            started,
+            control,
+            |input| ports.record_learning(input),
+        )? {
+            StageAdvanceV3::Continue(output) => output,
+            StageAdvanceV3::Terminal(class, output) => {
+                return finish(
+                    request.run_id,
+                    snapshot_digest,
+                    PipelineDispositionV3::Failed(class),
+                    stages,
+                    output,
+                    None,
+                );
+            }
+        };
+        return finish(
+            request.run_id,
+            snapshot_digest,
+            PipelineDispositionV3::Abstained,
+            stages,
+            predecessor,
+            None,
+        );
+    }
 
     predecessor = internal_stage(
         predecessor,
@@ -1272,7 +1332,14 @@ fn valid_transition(
         return false;
     }
     match prior_outcome {
-        StageOutcomeV3::Abstained | StageOutcomeV3::SlowPath => {
+        StageOutcomeV3::Abstained => {
+            matches!(
+                (prior, next),
+                (LaneFStageV3::ObjectiveValidated, LaneFStageV3::LearningRecorded)
+                    | (LaneFStageV3::IntuitionDecided, LaneFStageV3::LearningRecorded)
+            )
+        }
+        StageOutcomeV3::SlowPath => {
             prior == LaneFStageV3::IntuitionDecided && next == LaneFStageV3::LearningRecorded
         }
         StageOutcomeV3::Completed | StageOutcomeV3::FallbackUsed(_) => matches!(
