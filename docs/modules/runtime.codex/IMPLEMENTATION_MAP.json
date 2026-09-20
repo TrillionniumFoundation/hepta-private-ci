@@ -257,6 +257,18 @@
         "peer identity",
         "revocation-head rollback rejection"
       ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+      "command": "just test -p codex-hepta-agentd runtime_codex_product_caller_commits_one_authorized_terminal_turn",
+      "covers": [
+        "real Agentd and App Server process composition",
+        "named runtime.codex AppServerModelDriver caller",
+        "independently signed exact final-use grant",
+        "single physical Responses provider dispatch",
+        "durable terminal observation and correlation witness"
+      ],
+      "evidenceBoundary": "controlled mock Responses provider only; real provider and target-host identity remain external qualification gates"
     }
   ]
 }
