@@ -250,6 +250,17 @@ pub trait ModelProvider: fmt::Debug + Send + Sync {
         &self,
     ) -> ModelProviderFuture<'_, codex_protocol::error::Result<SharedAuthProvider>> {
         Box::pin(async move {
+            if let Some(auth_manager) = self.auth_manager.as_ref()
+                && let Some(host_auth) = auth_manager
+                    .host_provider_auth_for(self.info())
+                    .map_err(|error| {
+                        CodexErr::InvalidRequest(format!(
+                            "host provider auth rejected runtime provider: {error}"
+                        ))
+                    })?
+            {
+                return Ok(host_auth);
+            }
             let auth = self.auth().await;
             resolve_provider_auth(auth.as_ref(), self.info())
         })
