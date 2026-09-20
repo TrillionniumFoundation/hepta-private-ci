@@ -111,8 +111,7 @@ pub(crate) fn app_server_runtime_options_for_agent(
 fn app_server_runtime_options_with_writer(
     identity: &AgentdIdentity,
     cognitive_runtime: CognitiveRuntime,
-    production_cognitive_mutation:
-        Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
+    production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
     qualification_turn_writer: Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let cognitive_write_enabled =
