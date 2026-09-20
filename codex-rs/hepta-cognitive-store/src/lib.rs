@@ -47,6 +47,7 @@ pub use durable::ProductionAuthorityLease;
 pub use durable::ProductionAuthorityToken;
 pub use durable::ProductionAuthorityVerifier;
 pub use durable::ProductionCognitiveMutation;
+pub use durable::ProductionCognitiveMutationCapability;
 pub use durable::ProductionCognitiveMutationError;
 pub use durable::ProductionCognitiveMutationFuture;
 pub use durable::ProductionDispatchFuture;
