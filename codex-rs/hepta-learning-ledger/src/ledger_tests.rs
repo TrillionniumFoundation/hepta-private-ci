@@ -430,7 +430,10 @@ fn explicit_unlearning_lineage_revokes_source_and_derived_credit() {
         .iter()
         .map(|record| record.event.record_id().to_string())
         .collect();
-    assert_eq!(active_ids, vec!["record-auth-decision-1", "record-unlearning-1"]);
+    assert_eq!(
+        active_ids,
+        vec!["record-auth-decision-1", "record-unlearning-1"]
+    );
 
     let restored = must(LearningLedger::from_snapshot(ledger.snapshot()));
     assert_eq!(restored.active_records().len(), 2);
