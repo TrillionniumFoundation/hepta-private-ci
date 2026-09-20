@@ -413,3 +413,139 @@ mod tests {
         assert!(!original.is_empty());
     }
 }
+
+
+#[cfg(test)]
+mod additional_substitution_tests {
+    use super::*;
+    use crate::calibrated::{
+        AssignmentModeV1, CalibratedActionCandidateV1, CalibrationArtifactV1,
+        CandidateSetCompletenessBindingV1, OodArtifactV1, RiskClass,
+        canonical_candidate_order_digest_v1,
+    };
+    use crate::qualified::{CanonicalPolicyProfileV1, CanonicalRiskRuleV1, LearnedScorerContractV1};
+    use codex_hepta_types::{FixedQ32, StableId};
+
+    fn d(value: &str) -> Digest32 { Digest32::of_bytes(value.as_bytes()) }
+    fn id(value: &str) -> StableId { StableId::new(value).expect("id") }
+
+    #[test]
+    fn runtime_commitment_rejects_stream_and_draw_substitution() {
+        let candidates = vec![CalibratedActionCandidateV1 {
+            candidate_id: id("candidate:a"),
+            legal: true,
+            hard_veto: false,
+            utility: FixedQ32::from_raw(1),
+            calibrated_confidence: ProbabilityQ32::ONE,
+            ood_score: ProbabilityQ32::ZERO,
+            assignment_probability: ProbabilityQ32::ONE,
+            support_digest: d("support"),
+        }];
+        let set = canonical_candidate_set_digest_v1(&candidates).expect("set");
+        let request = CalibratedDecisionRequestV1 {
+            decision_id: id("decision"),
+            objective_digest: d("objective"),
+            objective_class_digest: d("class"),
+            state_digest: d("state"),
+            policy_digest: d("policy"),
+            policy_generation: 3,
+            sequence: 9,
+            minimum_confidence: ProbabilityQ32::ZERO,
+            maximum_ece_ppm: 10,
+            maximum_ood_false_acceptance_ppm: 10,
+            risk_class: RiskClass::Low,
+            completeness: CandidateSetCompletenessBindingV1 {
+                receipt_digest: d("complete"),
+                generator_digest: d("generator"),
+                grammar_digest: d("grammar"),
+                hard_filter_digest: d("filter"),
+                truncation_digest: d("truncation"),
+                candidate_set_digest: set,
+                canonical_order_digest: canonical_candidate_order_digest_v1(&candidates).expect("order"),
+                candidate_count: 1,
+                omitted_count_bound: 0,
+            },
+            calibration: CalibrationArtifactV1 {
+                artifact_digest: d("calibration"),
+                policy_digest: d("policy"),
+                objective_class_digest: d("class"),
+                generation: 3,
+                valid_from_sequence: 1,
+                expires_after_sequence: 20,
+                measured_ece_ppm: 1,
+                subgroup_audit_digest: d("audit"),
+            },
+            ood: OodArtifactV1 {
+                artifact_digest: d("ood"),
+                policy_digest: d("policy"),
+                detector_digest: d("detector"),
+                support_digest: d("ood-support"),
+                generation: 3,
+                valid_from_sequence: 1,
+                expires_after_sequence: 20,
+                maximum_in_domain_score: ProbabilityQ32::ONE,
+                measured_false_acceptance_ppm: 1,
+            },
+            assignment: AssignmentModeV1::CounterBased {
+                random_stream_digest: d("stream"),
+                draw: ProbabilityQ32::ZERO,
+                abstain_probability: ProbabilityQ32::ZERO,
+            },
+            candidates,
+        };
+        let profile = CanonicalPolicyProfileV1 {
+            profile_id: id("profile"),
+            policy_digest: d("policy"),
+            objective_class_digest: d("class"),
+            generation: 3,
+            valid_from_sequence: 1,
+            expires_after_sequence: 20,
+            minimum_confidence: ProbabilityQ32::ZERO,
+            maximum_ece_ppm: 10,
+            maximum_ood_false_acceptance_ppm: 10,
+            maximum_in_domain_score: ProbabilityQ32::ONE,
+            risk_rule: CanonicalRiskRuleV1::HighOnlySlowPath,
+            scorer: LearnedScorerContractV1 {
+                model_digest: d("model"),
+                feature_schema_digest: d("features"),
+                output_schema_digest: d("outputs"),
+                score_semantics_digest: d("semantics"),
+                scorer_contract_digest: d("scorer"),
+            },
+            calibration_dataset_digest: d("cal-data"),
+            ood_dataset_digest: d("ood-data"),
+            calibration_artifact_digest: d("calibration"),
+            ood_artifact_digest: d("ood"),
+        };
+        let scoring = ScoringCommitmentV1 {
+            model_artifact_digest: profile.scorer.model_digest,
+            feature_snapshot_digest: d("feature-snapshot"),
+            feature_schema_digest: profile.scorer.feature_schema_digest,
+            scorer_contract_digest: profile.scorer.scorer_contract_digest,
+            candidate_set_digest: request.completeness.candidate_set_digest,
+            scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).expect("scores"),
+            policy_digest: request.policy_digest,
+            policy_generation: request.policy_generation,
+        };
+        let wrong_stream = AssignmentCommitmentV1::CounterBased {
+            rng_owner_digest: d("rng-owner"),
+            random_stream_digest: d("other-stream"),
+            counter: request.sequence,
+            draw: ProbabilityQ32::ZERO,
+        };
+        assert_eq!(
+            canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &wrong_stream),
+            Err(RuntimeCommitmentError::AssignmentStreamMismatch)
+        );
+        let wrong_draw = AssignmentCommitmentV1::CounterBased {
+            rng_owner_digest: d("rng-owner"),
+            random_stream_digest: d("stream"),
+            counter: request.sequence,
+            draw: ProbabilityQ32::ONE,
+        };
+        assert_eq!(
+            canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &wrong_draw),
+            Err(RuntimeCommitmentError::AssignmentDrawMismatch)
+        );
+    }
+}

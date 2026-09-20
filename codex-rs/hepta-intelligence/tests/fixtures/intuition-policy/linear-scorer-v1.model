@@ -1,0 +1,10 @@
+format=hepta.intuition.linear-scorer.v1
+feature_schema=x_q16,y_q16
+output_schema=utility_q32,confidence_ppm,ood_score_ppm
+score_semantics=utility=maximize;confidence=probability-of-correct-choice;ood=higher-is-farther-from-qualified-support
+bias_confidence_ppm=500000
+x_confidence_ppm_per_q16=220000
+y_confidence_ppm_per_q16=-80000
+utility_x_weight_q16=65536
+utility_y_weight_q16=-32768
+ood_scale_q16=196608

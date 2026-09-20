@@ -386,3 +386,23 @@ fn canonical_candidate_order_is_required() {
         Err(CalibratedError::NonCanonicalCandidateOrder)
     );
 }
+
+
+#[test]
+fn v2_rejects_nonzero_omitted_candidate_bound() {
+    let mut request = request_with(
+        vec![candidate(
+            "candidate:a",
+            10,
+            ProbabilityQ32::ONE.raw(),
+            0,
+            ProbabilityQ32::ONE.raw(),
+        )],
+        AssignmentModeV1::Deterministic,
+    );
+    request.completeness.omitted_count_bound = 1;
+    assert_eq!(
+        decide_calibrated_v2(request),
+        Err(CalibratedError::IncompleteCandidateSet)
+    );
+}
