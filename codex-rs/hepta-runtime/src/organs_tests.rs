@@ -109,6 +109,7 @@ fn status_consumer_checks_the_complete_hierarchy_without_direct_adapter_fallback
 
 #[cfg(unix)]
 fn governed_topology_for_runtime(
+    label: &str,
     current: &crate::RuntimeTopologySnapshotV1,
     successor: &crate::RuntimeTopologySnapshotV1,
 ) -> (codex_hepta_plasticity::GovernedTopologyProposalV1, StableId) {
@@ -122,8 +123,10 @@ fn governed_topology_for_runtime(
     let rollback = Digest32::of_bytes(b"runtime-topology-rollback");
     let handoff = build_writer_handoff_plan_v1(
         StableId::new("runtime.status.adapter").expect("module id"),
-        StableId::new("runtime.owner.generation-1").expect("from owner"),
-        StableId::new("runtime.owner.generation-2").expect("to owner"),
+        StableId::new(format!("runtime.owner.generation-{}", current.generation().get()))
+            .expect("from owner"),
+        StableId::new(format!("runtime.owner.generation-{}", successor.generation().get()))
+            .expect("to owner"),
         current.generation().get(),
         successor.generation().get(),
         current.hierarchy_digest(),
@@ -134,13 +137,13 @@ fn governed_topology_for_runtime(
     .expect("writer handoff");
     let selected = Digest32::of_bytes(b"runtime-selected-artifact");
     let proposal = propose_topology_v2(TopologyProposalRequestV2 {
-        proposal_id: StableId::new("topology:runtime:1").expect("proposal id"),
+        proposal_id: StableId::new(format!("topology:runtime:{label}")).expect("proposal id"),
         proposer_id: StableId::new("learning.plasticity").expect("proposer"),
         evaluator_id: StableId::new("learning.eval").expect("evaluator"),
         selected_artifact_digest: selected,
         window: ProposalWindowV2 {
-            window_id: StableId::new("window:runtime:1").expect("window"),
-            window_digest: Digest32::of_bytes(b"runtime-window"),
+            window_id: StableId::new(format!("window:runtime:{label}")).expect("window"),
+            window_digest: Digest32::of_bytes(format!("runtime-window:{label}").as_bytes()),
         },
         baseline_generation: current.generation(),
         candidate_generation: successor.generation(),
@@ -244,6 +247,79 @@ fn final_use_authority_and_grant(
 }
 
 #[cfg(unix)]
+fn runtime_canary_observer() -> (
+    codex_hepta_learning_ledger::LearningEvidenceVerifierV1,
+    ed25519_dalek::SigningKey,
+    codex_hepta_learning_ledger::AuthenticatedPrincipalV1,
+) {
+    use codex_hepta_learning_ledger::{
+        AuthenticatedPrincipalV1, LearningEvidenceRoleV1, LearningEvidenceTrustV1,
+        LearningEvidenceVerifierV1, TrustedLearningSignerV1,
+    };
+
+    let key = ed25519_dalek::SigningKey::from_bytes(&[0x66; 32]);
+    let scope = Digest32::of_bytes(b"runtime-topology-canary-scope");
+    let objective = Digest32::of_bytes(b"runtime-topology-canary-objective");
+    let principal = AuthenticatedPrincipalV1 {
+        principal_id: StableId::new("observer:runtime-topology-canary").expect("observer"),
+        credential_chain_digest: Digest32::of_bytes(b"runtime-topology-canary-credential"),
+        signing_key_digest: Digest32::of_bytes(key.verifying_key().as_bytes()),
+        scope_digest: scope,
+        authority_epoch: 9,
+        authenticated_at: 10,
+        expires_at: 100,
+    };
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: scope,
+        objective_digest: objective,
+        authority_epoch: 9,
+        signers: vec![TrustedLearningSignerV1 {
+            principal: principal.clone(),
+            controller_id: StableId::new("controller:runtime-topology-canary")
+                .expect("controller"),
+            verifying_key: key.verifying_key().to_bytes(),
+            roles: vec![LearningEvidenceRoleV1::Observer],
+            revoked_at: None,
+        }],
+    })
+    .expect("runtime canary verifier");
+    (verifier, key, principal)
+}
+
+#[cfg(unix)]
+fn sign_runtime_canary_observation(
+    verifier: &codex_hepta_learning_ledger::LearningEvidenceVerifierV1,
+    key: &ed25519_dalek::SigningKey,
+    principal: &codex_hepta_learning_ledger::AuthenticatedPrincipalV1,
+    plan_digest: Digest32,
+    observation: &codex_hepta_plasticity::StructuralCanaryObservationV1,
+) -> codex_hepta_learning_ledger::SignedLearningEvidenceV1 {
+    use codex_hepta_intelligence::structural_canary_observation_signing_payload_v1;
+    use codex_hepta_learning_ledger::{LearningEvidenceRoleV1, SignedLearningEvidenceV1};
+    use ed25519_dalek::Signer;
+
+    let payload =
+        structural_canary_observation_signing_payload_v1(plan_digest, observation)
+            .expect("runtime canary signing payload");
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: StableId::new(format!("runtime-canary:evidence:{}", observation.sequence))
+            .expect("evidence id"),
+        principal_id: principal.principal_id.clone(),
+        role: LearningEvidenceRoleV1::Observer,
+        trust_digest: verifier.trust_digest(),
+        scope_digest: principal.scope_digest,
+        objective_digest: Digest32::of_bytes(b"runtime-topology-canary-objective"),
+        authority_epoch: principal.authority_epoch,
+        issued_at: 20,
+        expires_at: 90,
+        payload_digest: Digest32::of_bytes(&payload),
+        signature: [0; 64],
+    };
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence
+}
+
+#[cfg(unix)]
 #[test]
 fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -> Result<()> {
     let calls = Arc::new(AtomicUsize::new(0));
@@ -260,7 +336,8 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
     let successor = RuntimeTopologySuccessorV1::new(next.host, next.route)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     let successor_snapshot = successor.snapshot();
-    let (governed, candidate_id) = governed_topology_for_runtime(&current, &successor_snapshot);
+    let (governed, candidate_id) =
+        governed_topology_for_runtime("apply", &current, &successor_snapshot);
     let request = RuntimeTopologyApplyRequestV1 {
         governed,
         candidate_id,
@@ -316,7 +393,7 @@ fn revoked_final_use_never_mutates_the_live_topology() -> Result<()> {
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     let successor_snapshot = successor.snapshot();
     let (governed, candidate_id) =
-        governed_topology_for_runtime(&current, &successor_snapshot);
+        governed_topology_for_runtime("revoked", &current, &successor_snapshot);
     let request = RuntimeTopologyApplyRequestV1 {
         governed,
         candidate_id,
@@ -346,5 +423,167 @@ fn revoked_final_use_never_mutates_the_live_topology() -> Result<()> {
         current
     );
     assert_eq!(calls.load(Ordering::SeqCst), 0);
+    Ok(())
+}
+
+
+#[cfg(unix)]
+#[test]
+fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics(
+) -> Result<()> {
+    use codex_hepta_intelligence::observe_authenticated_structural_canary_v1;
+    use codex_hepta_plasticity::{
+        DurableTopologyProposalRegistryV1, StructuralCanaryControllerV1,
+        StructuralCanaryObservationV1, StructuralCanaryStateV1, build_structural_canary_plan_v1,
+    };
+
+    let calls = Arc::new(AtomicUsize::new(0));
+    let root = HeptaStateRoot::parse(std::env::temp_dir().join(format!(
+        "hepta-topology-real-canary-{}",
+        std::process::id()
+    )))?;
+    let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&calls)));
+    let organs = RuntimeOrgans::new(root.clone(), Arc::clone(&state));
+    let baseline = organs
+        .topology_snapshot()
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+
+    let next = build_host_generation(root.clone(), Arc::clone(&state), Generation::new(2)?)?;
+    let successor = RuntimeTopologySuccessorV1::new(next.host, next.route)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let successor_snapshot = successor.snapshot();
+    let (governed, candidate_id) =
+        governed_topology_for_runtime("canary-apply", &baseline, &successor_snapshot);
+
+    // Bind the canary controller to the exact durable governed proposal before execution.
+    let mut registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
+        tempfile::tempfile()?,
+        Digest32::of_bytes(b"runtime-topology-canary-registry"),
+        1,
+        8,
+    )?;
+    let append = registry.append(Digest32::ZERO, governed.clone())?;
+    assert_eq!(append.sequence, 1);
+    let plan = build_structural_canary_plan_v1(
+        &registry,
+        &governed.proposal.proposal_id,
+        candidate_id.clone(),
+        Digest32::of_bytes(b"runtime-topology-baseline-health"),
+        2,
+        0,
+        1,
+    )?;
+    let mut controller = StructuralCanaryControllerV1::new(plan)?;
+
+    let apply_request = RuntimeTopologyApplyRequestV1 {
+        governed,
+        candidate_id,
+        accepted_subject_id: StableId::new("operator:runtime-canary-apply")?,
+        successor,
+    };
+    let apply_binding = runtime_topology_final_use_binding_v1(&baseline, &apply_request)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let (_apply_dir, apply_authority, apply_grant) =
+        final_use_authority_and_grant(apply_binding, "grant:runtime-canary:apply", [0x31; 32]);
+    let apply_receipt = organs
+        .apply_governed_topology(&apply_authority, &apply_grant, apply_request)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    assert_eq!(apply_receipt.predecessor_generation, Generation::new(1)?);
+    assert_eq!(apply_receipt.successor_generation, Generation::new(2)?);
+
+    // Force a real live-host failure after cutover, rather than synthesizing a boolean-only fault.
+    {
+        let mut guard = organs
+            .host
+            .lock()
+            .map_err(|_| anyhow::anyhow!("test host poisoned"))?;
+        let live = guard
+            .as_mut()
+            .map_err(|error| anyhow::anyhow!("{error}"))?;
+        live.host.stop_all()?;
+    }
+    assert!(organs.status_json().is_err());
+
+    // Rollback is an authorized new transition (generation 2 -> 3), not time travel.
+    let failed = organs
+        .topology_snapshot()
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let rollback_host =
+        build_host_generation(root, Arc::clone(&state), Generation::new(3)?)?;
+    let rollback_successor = RuntimeTopologySuccessorV1::new(
+        rollback_host.host,
+        rollback_host.route,
+    )
+    .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let rollback_snapshot = rollback_successor.snapshot();
+    let (rollback_governed, rollback_candidate_id) =
+        governed_topology_for_runtime("canary-rollback", &failed, &rollback_snapshot);
+    let rollback_request = RuntimeTopologyApplyRequestV1 {
+        governed: rollback_governed,
+        candidate_id: rollback_candidate_id,
+        accepted_subject_id: StableId::new("operator:runtime-canary-rollback")?,
+        successor: rollback_successor,
+    };
+    let rollback_binding = runtime_topology_final_use_binding_v1(&failed, &rollback_request)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let (_rollback_dir, rollback_authority, rollback_grant) = final_use_authority_and_grant(
+        rollback_binding,
+        "grant:runtime-canary:rollback",
+        [0x32; 32],
+    );
+    let rollback_receipt = organs
+        .apply_governed_topology(&rollback_authority, &rollback_grant, rollback_request)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    assert_eq!(rollback_receipt.predecessor_generation, Generation::new(2)?);
+    assert_eq!(rollback_receipt.successor_generation, Generation::new(3)?);
+
+    let recovered_status = organs.status_json()?;
+    let recovered = organs
+        .topology_snapshot()
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    assert_eq!(recovered.generation(), Generation::new(3)?);
+    assert_eq!(recovered.route.source.system, baseline.route.source.system);
+    assert_eq!(recovered.route.source.organ, baseline.route.source.organ);
+    assert_eq!(recovered.route.source.driver, baseline.route.source.driver);
+    assert_eq!(recovered.route.output_port, baseline.route.output_port);
+    assert_eq!(recovered.route.targets, baseline.route.targets);
+
+    // The independent Observer signs telemetry only after actual rollback succeeded.
+    let mut evidence = Vec::new();
+    evidence.extend_from_slice(apply_receipt.final_use_request_digest.as_array());
+    evidence.extend_from_slice(rollback_receipt.final_use_request_digest.as_array());
+    evidence.extend_from_slice(&recovered_status);
+    let observation = StructuralCanaryObservationV1 {
+        sequence: 1,
+        health_digest: Digest32::of_bytes(&recovered_status),
+        evidence_digest: Digest32::of_bytes(&evidence),
+        regression_count: 0,
+        safety_violation: true,
+        lineage_mismatch: false,
+        rollback_verified: true,
+    };
+    let (verifier, key, observer) = runtime_canary_observer();
+    let attestation = sign_runtime_canary_observation(
+        &verifier,
+        &key,
+        &observer,
+        controller.plan_digest(),
+        &observation,
+    );
+    let authenticated = observe_authenticated_structural_canary_v1(
+        &mut controller,
+        observation,
+        &attestation,
+        &verifier,
+        50,
+    )?;
+    assert_eq!(authenticated.canary.state, StructuralCanaryStateV1::Aborted);
+    assert_eq!(authenticated.observer_id, observer.principal_id);
+    assert!(!authenticated.observer_authentication_digest.is_zero());
+    assert_eq!(
+        controller.finish()?.state,
+        StructuralCanaryStateV1::Aborted
+    );
+
     Ok(())
 }
