@@ -456,6 +456,115 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         .is_err()
     );
 
+    let mut wrong_role_runtime = runtime_evidence.clone();
+    wrong_role_runtime.role = LearningEvidenceRoleV1::Evaluator;
+    assert!(
+        decide_authenticated_intuition_v2(
+            request.clone(),
+            profile.clone(),
+            scoring.clone(),
+            assignment.clone(),
+            IntuitionQualificationEvidenceV2 {
+                completeness: &completeness_evidence,
+                profile_qualification: &profile_qualification_evidence,
+                runtime: &wrong_role_runtime,
+            },
+            &verifier,
+            150,
+        )
+        .is_err()
+    );
+
+    assert!(
+        decide_authenticated_intuition_v2(
+            request.clone(),
+            profile.clone(),
+            scoring.clone(),
+            assignment.clone(),
+            IntuitionQualificationEvidenceV2 {
+                completeness: &completeness_evidence,
+                profile_qualification: &profile_qualification_evidence,
+                runtime: &runtime_evidence,
+            },
+            &verifier,
+            201,
+        )
+        .is_err()
+    );
+
+    let revoked_verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: digest("intuition-qualification-scope"),
+        objective_digest,
+        authority_epoch: 12,
+        signers: vec![
+            TrustedLearningSignerV1 {
+                principal: principals[0].clone(),
+                controller_id: id("candidate-generator-controller"),
+                verifying_key: keys[0].verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Generator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: principals[1].clone(),
+                controller_id: id("independent-evaluator-controller"),
+                verifying_key: keys[1].verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Evaluator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: principals[2].clone(),
+                controller_id: id("runtime-observer-controller"),
+                verifying_key: keys[2].verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Observer],
+                revoked_at: Some(140),
+            },
+        ],
+    })
+    .unwrap();
+    let revoked_completeness_evidence = sign(
+        &revoked_verifier,
+        &principals[0],
+        &keys[0],
+        LearningEvidenceRoleV1::Generator,
+        "evidence:intuition-completeness:revoked",
+        objective_digest,
+        &completeness_payload,
+    );
+    let revoked_profile_evidence = sign(
+        &revoked_verifier,
+        &principals[1],
+        &keys[1],
+        LearningEvidenceRoleV1::Evaluator,
+        "evidence:intuition-profile:revoked",
+        objective_digest,
+        &profile_qualification_payload,
+    );
+    let revoked_runtime_evidence = sign(
+        &revoked_verifier,
+        &principals[2],
+        &keys[2],
+        LearningEvidenceRoleV1::Observer,
+        "evidence:intuition-runtime:revoked",
+        objective_digest,
+        &runtime_payload,
+    );
+    assert!(
+        decide_authenticated_intuition_v2(
+            request.clone(),
+            profile.clone(),
+            scoring.clone(),
+            assignment.clone(),
+            IntuitionQualificationEvidenceV2 {
+                completeness: &revoked_completeness_evidence,
+                profile_qualification: &revoked_profile_evidence,
+                runtime: &revoked_runtime_evidence,
+            },
+            &revoked_verifier,
+            150,
+        )
+        .is_err()
+    );
+
     let receipt = decide_authenticated_intuition_v2(
         request,
         profile,
