@@ -207,6 +207,10 @@ enum ShutdownSignal {
     Forceable,
     #[cfg(unix)]
     GracefulOnly,
+    /// Embedding-owned graceful drain. Unlike the ordinary signal path this
+    /// closes transports immediately so no new requests can enter while
+    /// already-admitted assistant turns reconcile to terminality.
+    ExternalDrain,
 }
 
 async fn shutdown_signal() -> IoResult<ShutdownSignal> {
@@ -450,6 +454,10 @@ pub struct AppServerRuntimeOptions {
     pub plugin_startup_tasks: PluginStartupTasks,
     pub remote_control_startup_mode: RemoteControlStartupMode,
     pub install_shutdown_signal_handler: bool,
+    /// Optional embedding-owned graceful-drain trigger. Cancellation closes
+    /// ingress immediately, disconnects existing clients, and then waits for
+    /// already-admitted assistant turns to reach terminality before shutdown.
+    pub external_shutdown_token: Option<CancellationToken>,
     /// Optional maximum pending turn rows in this runtime's queue database.
     ///
     /// Ordinary Codex leaves this unset and retains only its historical
@@ -511,6 +519,10 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
                 "install_shutdown_signal_handler",
                 &self.install_shutdown_signal_handler,
             )
+            .field(
+                "external_shutdown_token",
+                &self.external_shutdown_token.is_some(),
+            )
             .field("turn_queue_capacity", &self.turn_queue_capacity)
             .field("required_sqlite_home", &self.required_sqlite_home)
             .field(
@@ -545,6 +557,8 @@ impl PartialEq for AppServerRuntimeOptions {
             && self.plugin_startup_tasks == other.plugin_startup_tasks
             && self.remote_control_startup_mode == other.remote_control_startup_mode
             && self.install_shutdown_signal_handler == other.install_shutdown_signal_handler
+            && self.external_shutdown_token.is_some()
+                == other.external_shutdown_token.is_some()
             && self.turn_queue_capacity == other.turn_queue_capacity
             && self.required_sqlite_home == other.required_sqlite_home
             && self.required_thread_store_mode == other.required_thread_store_mode
@@ -597,6 +611,7 @@ impl Default for AppServerRuntimeOptions {
             plugin_startup_tasks: PluginStartupTasks::Start,
             remote_control_startup_mode: RemoteControlStartupMode::ResolvePersisted,
             install_shutdown_signal_handler: true,
+            external_shutdown_token: None,
             turn_queue_capacity: None,
             required_sqlite_home: None,
             required_thread_store_mode: None,
@@ -1077,6 +1092,7 @@ pub async fn run_main_with_transport_options(
         ));
         let initialize_notification_sender = outgoing_message_sender.clone();
         let outbound_control_tx = outbound_control_tx;
+        let external_shutdown_token = runtime_options.external_shutdown_token.clone();
         let processor = Arc::new(MessageProcessor::new(MessageProcessorArgs {
             outgoing: outgoing_message_sender,
             analytics_events_client,
@@ -1130,6 +1146,26 @@ pub async fn run_main_with_transport_options(
                 }
 
                 tokio::select! {
+                    _ = async {
+                        match external_shutdown_token.as_ref() {
+                            Some(token) => token.cancelled().await,
+                            None => std::future::pending::<()>().await,
+                        }
+                    }, if !shutdown_state.requested() => {
+                        let running_turn_count = *running_turn_count_rx.borrow();
+                        shutdown_state.on_signal(
+                            ShutdownSignal::ExternalDrain,
+                            connections.len(),
+                            running_turn_count,
+                        );
+                        // Product drain differs from the ordinary signal path:
+                        // close ingress immediately so the observed running
+                        // set can only shrink while existing turns reconcile.
+                        transport_shutdown_token.cancel();
+                        let _ = outbound_control_tx
+                            .send(OutboundControlEvent::DisconnectAll)
+                            .await;
+                    }
                     shutdown_signal_result = shutdown_signal(), if graceful_signal_restart_enabled && !shutdown_state.forced() => {
                         let signal = match shutdown_signal_result {
                             Ok(signal) => signal,
