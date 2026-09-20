@@ -174,15 +174,19 @@ pub(crate) async fn verify(
         .iter()
         .map(|role| EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error)))
         .collect::<Result<Vec<_>, _>>()?;
+    let current_trust = host.trust(state)?.verification_bindings()?;
     let disposition = host
         .store
         .qualification()
-        .verify_chain(&VerifyChainRequestV1 {
-            candidate,
-            claim_class,
-            required_roles,
-            now_unix_ms: current_time_millis()?,
-        })
+        .verify_chain(
+            &VerifyChainRequestV1 {
+                candidate,
+                claim_class,
+                required_roles,
+                now_unix_ms: current_time_millis()?,
+            },
+            &current_trust,
+        )
         .await
         .map_err(evidence_error)?;
     require_ready(state)?;
