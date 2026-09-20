@@ -156,9 +156,7 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Compose the registered kernel.operations OperationIntentV1 producer into the external-effect path before product activation. Current main exposes only the kernel.operations in-memory reference model; automation's owner-local AuthorizedEffectIntent is not a substitute for the producer-owned contract."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",
     "concrete registered downstream effect owner and trusted terminal/reconciliation evidence for every activated external effect",
@@ -169,7 +167,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -182,7 +180,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_composed_for_codex_activity_external_effect_requires_kernel_operations_operation_intent_v1_and_concrete_effect_owner",
+  "productCallerState": "agentd_app_server_composed_for_codex_activity_operation_intent_v1_and_final_use_effect_seam_composed_concrete_effect_owner_pending",
   "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
