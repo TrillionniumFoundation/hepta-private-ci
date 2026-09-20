@@ -17,6 +17,8 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
+    pub(crate) neuron_runtime:
+        std::sync::OnceLock<Arc<dyn codex_hepta_intelligence::NeuronRuntimeProductPort>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -47,6 +49,7 @@ impl AgentdState {
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            neuron_runtime: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -78,6 +81,45 @@ impl AgentdState {
         }
         *cognitive = Some(store);
         Ok(())
+    }
+
+    pub(crate) fn attach_neuron_runtime_port(
+        &self,
+        port: Arc<dyn codex_hepta_intelligence::NeuronRuntimeProductPort>,
+    ) -> Result<(), AgentdError> {
+        self.neuron_runtime
+            .set(port)
+            .map_err(|_| AgentdError::Protocol("neuron runtime port already attached".to_string()))
+    }
+
+    pub(crate) fn consume_neuron_tick(
+        &self,
+        input: codex_hepta_intelligence::NeuronTickInputV1,
+        observation: codex_hepta_intelligence::RuntimeTickObservationV1,
+    ) -> Result<codex_hepta_intelligence::NeuronConsumerReceiptV1, AgentdError> {
+        self.refresh_generation()?;
+        {
+            let runtime = self.runtime.lock().map_err(poisoned_state)?;
+            if runtime.lifecycle != AgentLifecycle::Running
+                || !runtime.app_server_ready
+                || runtime.fenced
+            {
+                return Err(AgentdError::GenerationFenced(
+                    "neuron runtime is unavailable outside a ready running Agentd generation"
+                        .to_string(),
+                ));
+            }
+        }
+        let port = self.neuron_runtime.get().ok_or_else(|| {
+            AgentdError::Protocol("neuron runtime port is not configured".to_string())
+        })?;
+        let receipt = port
+            .consume(input, observation)
+            .map_err(|error| AgentdError::Protocol(format!("neuron runtime: {error}")))?;
+        // The bounded owner call may include durable I/O; close the generation
+        // race before the advisory receipt reaches another product stage.
+        self.refresh_generation()?;
+        Ok(receipt)
     }
 
     pub(crate) fn attach_automation_store(
