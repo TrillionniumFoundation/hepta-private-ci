@@ -2,7 +2,6 @@ use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::ReleaseId;
 
 use crate::AgentRelease;
 use crate::ProcessDriver;
@@ -12,6 +11,7 @@ use crate::SupervisorEventKind;
 use crate::runtime::AgentSlot;
 use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
+use crate::release_selection::read_release_selection;
 use crate::signed_intent::SignedIntentStatus;
 
 impl<D: ProcessDriver> Supervisor<D> {
@@ -82,7 +82,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         generation: u64,
     ) -> Result<(), SupervisorError> {
-        let mut signed_terminal = None;
+        let mut automatic_rollback_committed = false;
         if let Some(change) = slot.release_change.take() {
             match change.phase {
                 ReleaseChangePhase::TargetStarting => {
@@ -109,7 +109,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                             restored: change.origin.identity().to_string(),
                         },
                     );
-                    signed_terminal = Some(SignedIntentStatus::RolledBack);
+                    automatic_rollback_committed = true;
                 }
                 ReleaseChangePhase::WaitingForTargetExit => {
                     slot.release_change = Some(change);
@@ -117,8 +117,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
         self.persist_release_state(agent_id, slot)?;
-        if let Some(status) = signed_terminal {
-            self.finish_signed_intent(agent_id, slot, status)
+        if automatic_rollback_committed {
+            self.mark_signed_intent_rolled_back(agent_id, slot)
         } else {
             self.commit_signed_intent_if_target(agent_id, slot)
         }
@@ -192,7 +192,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                         rollback: change.origin.identity().to_string(),
                     },
                 );
-                self.finish_signed_intent(agent_id, slot, SignedIntentStatus::Failed)?;
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
                 Ok(true)
             }
         }
@@ -215,9 +215,72 @@ impl<D: ProcessDriver> Supervisor<D> {
                 target: change.origin.identity().to_string(),
             },
         );
-        let rollback_id = ReleaseId::parse(change.origin.identity().to_string())?;
-        let rollback =
-            AgentRelease::try_from(self.registry.resolve_release(agent_id, &rollback_id)?)?;
+        // Never restart the cached predecessor directly. Re-resolve the
+        // current per-Agent allowance and immutable catalog bytes first.
+        let rollback = match self
+            .registry
+            .resolve_release(agent_id, change.origin.release_id())
+            .map_err(SupervisorError::from)
+            .and_then(AgentRelease::try_from)
+        {
+            Ok(rollback) => rollback,
+            Err(error) => {
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
+                return Err(error);
+            }
+        };
+
+        // A signed production transition additionally binds the predecessor
+        // bytes to its durable selection record. Catalog/allowance drift after
+        // admission therefore quarantines rollback instead of silently
+        // executing a differently installed predecessor.
+        if slot.signed_intent.as_ref().is_some_and(|intent| {
+            matches!(
+                intent.status,
+                SignedIntentStatus::Prepared | SignedIntentStatus::Queued
+            )
+        }) {
+            let record = self.record(agent_id)?;
+            let selection = read_release_selection(record.layout.run_root())?
+                .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+            let Some(current_frontier) = self.production_revocation_frontier else {
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            };
+            if selection.binding.revocation_frontier != current_frontier {
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
+            if selection.source_release != rollback.identity() {
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
+            let provenance = self
+                .registry
+                .release_provenance(agent_id, rollback.release_id())?;
+            let binding = &selection.binding;
+            let bytes_match = provenance.manifest_sha256
+                == binding.source_manifest_sha256.as_str()
+                && provenance.agentd_sha256 == binding.source_agentd_sha256.as_str()
+                && provenance.matrixd_sha256.as_deref()
+                    == binding
+                        .source_matrixd_sha256
+                        .as_ref()
+                        .map(|digest| digest.as_str());
+            if !bytes_match {
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
+        }
+
         change.phase = ReleaseChangePhase::AutomaticRollbackStarting;
         slot.release_change = Some(change);
         slot.active_release = None;
@@ -232,7 +295,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     },
                 );
             }
-            self.finish_signed_intent(agent_id, slot, SignedIntentStatus::Failed)?;
+            self.mark_signed_intent_recovery_required(agent_id, slot)?;
             return Err(error);
         }
         Ok(true)
