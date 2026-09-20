@@ -2,7 +2,7 @@
 
 Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
 
-The native App Server worker now calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and actual observed settlement. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This does not close economic quota, local weights/device or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
+The native App Server worker calls the same durable control owner for explicit local-slot admission, exact persisted dispatch identity, cancellation intent and observed settlement. A synced dispatch binds the stable client-message identity and canonical input digest; restart uses Core reconciliation in read-only/reconcile-only mode to recover the original persisted turn, prove no durable admission, or remain indeterminate without replacement dispatch. Optional observed tokens remain unknown when neither the live stream nor bounded recovered usage replay exposes them. Local execution also has a concrete digest-pinned `LocalProcessDriver`: it verifies the selected runtime plus weights/tokenizer/preprocessor/quantization/device descriptors, requires a grant-bounded memory reservation/load handshake, binds the exact lease payload on run, and performs bounded unload/kill cleanup. External resource grants cross the worker boundary only through `VerifiedResourceGrant`; raw `ResourceGrant` values are data, not authenticity proof. These source paths do not establish target-host cgroup/namespace/seccomp/GPU enforcement, real CPU/GPU qualification, economic quota authority, a deployed named product caller, independent acceptance or release. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits and hosted recovery semantics; the [production readiness/runbook](PRODUCTION_READINESS.md) records local-runtime, isolation, recovery and activation obligations.
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
@@ -157,11 +157,12 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Build hepta-infer-worker and explicitly select --profile native-app-server. Supply the owning Agentd socket, Agent ID/generation, exact configured model, private journal and stable request ID as documented. Hosted execution uses the owning App Server; it does not establish local model weights, device grants or GPU isolation.
+Build `hepta-infer-worker` and explicitly select `--profile native-app-server` for the hosted qualification/operator path. Supply the owning Agentd socket, Agent ID/generation, exact configured model, private journal and stable request ID as documented. The hosted profile uses the owning App Server. Local model execution is a separate library driver path: the caller supplies an authenticated `VerifiedResourceGrant` plus an exact `ModelManifest` and configured digest-pinned local runtime/artifact paths. Neither path by itself proves OS sandboxing or physical GPU/CPU resource enforcement; those deployment obligations are enumerated in `PRODUCTION_READINESS.md`.
 
 Current operating and state-format references:
 
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
+- [docs/modules/inference.worker/PRODUCTION_READINESS.md](PRODUCTION_READINESS.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -170,7 +171,9 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-infer-worker-host/src/lib_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/lib_tests.rs); named case: `terminal_success_requires_exact_authority_binding`.
-- [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs); named case: `loads_runs_and_unloads_exact_model_tuple`.
+- [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs); named cases: `loads_runs_and_unloads_exact_model_tuple`, `external_grants_require_explicit_verification_evidence` and `local_input_is_bound_to_the_lease_payload_digest`.
+- [codex-rs/hepta-infer-worker-host/src/local_process_driver_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/local_process_driver_tests.rs); named cases: `real_local_process_driver_loads_runs_and_unloads_digest_pinned_runtime` and `local_process_driver_rejects_artifact_mutation_before_spawn`.
+- [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs); named case: `reopened_dispatch_reconciles_without_submitting_a_replacement_turn`.
 
 In `codex-rs`, run `just test -p codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
 
