@@ -74,6 +74,12 @@ pub struct RetrievalAssignmentFact {
     pub context_exposed: bool,
     pub omitted_by_policy_limits: u32,
     pub assignment_propensity: ProbabilityQ32,
+    /// Exact learned policy payload that affected final delivery, when a
+    /// downstream ranker actually applied. None means HNMF/order/budget only.
+    pub downstream_policy_digest: Option<Digest32>,
+    /// Propensity of the final delivered subset under the downstream decision
+    /// path. Current deterministic rank/budget/planning paths record one.
+    pub delivery_propensity: ProbabilityQ32,
     pub completeness: CandidateSetCompleteness,
     /// Digest of the complete retrieval-native assignment observation.
     pub support_digest: Digest32,
