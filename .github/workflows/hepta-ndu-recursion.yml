@@ -4,6 +4,15 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
+      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs"
+      - "codex-rs/hepta-learning-artifacts/src/pinned.rs"
+      - "codex-rs/hepta-learning-ledger/src/signed_evidence.rs"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/hepta-control-plane/src/planner_ndu.rs"
       - "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
       - "codex-rs/hepta-control-plane/src/planner_context.rs"
@@ -22,6 +31,15 @@ on:
       - main
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
+      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs"
+      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs"
+      - "codex-rs/hepta-learning-artifacts/src/pinned.rs"
+      - "codex-rs/hepta-learning-ledger/src/signed_evidence.rs"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/hepta-control-plane/src/planner_ndu.rs"
       - "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
       - "codex-rs/hepta-control-plane/src/planner_context.rs"
