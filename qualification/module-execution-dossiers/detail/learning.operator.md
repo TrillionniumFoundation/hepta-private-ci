@@ -41,7 +41,9 @@ These are source bounds, not target-host measurements. A coordinate failing assu
 - OP-01: analytic sensor/Bellman table reproduces canonical Q32 goldens.
 - OP-02: degenerate diffusion, bad mesh ratio or excessive reconstruction gain disables the learned path.
 - OP-03: a high in-sample fit with poor future calibration/retention fails evaluation.
-- OP-04: model-generated rollouts remain synthetic and cannot become independent factual outcome evidence.
+- OP-04: model-generated rollouts remain synthetic, unsupported pairs abstain and relabelled duplicate world-model evidence rejects.
+- OP-05: canonical tabular fitting is deterministic and complete-grid, and both default and strict V2 admission reject relabelled duplicate evidence.
+- OP-06: qualification fitting consumes an exact self-verifying frozen dataset receipt; persisted candidates require an independent pin and separate-process reload/rollback behavior.
 
 Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. Additional learned-grid tests verify order independence, complete-cell admission, minimum samples and domain-bounded prediction.
 
