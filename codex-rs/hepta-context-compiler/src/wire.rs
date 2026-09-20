@@ -140,7 +140,11 @@ pub fn encode_compilation_receipt_wire_v2(
             .iter()
             .map(ToString::to_string)
             .collect(),
-        omitted_ids: receipt.omitted_ids.iter().map(ToString::to_string).collect(),
+        omitted_ids: receipt
+            .omitted_ids
+            .iter()
+            .map(ToString::to_string)
+            .collect(),
         used_tokens: receipt.used_tokens,
         context_digest: receipt.context_digest.to_string(),
     };
