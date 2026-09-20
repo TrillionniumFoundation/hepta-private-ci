@@ -12,7 +12,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`compose_runtime(supervisor_snapshot, ports, configuration) -> AgentHost`; `start_run(authenticated_request, objective_snapshot, body_snapshot, artifact_set, authority_epoch, deadline) -> RunHandle`; `attach_context(run_id, expected_revision, complete_frozen_tuple, compilation_receipt) -> AttachmentObservation`; `mark_dispatched(run_id, expected_revision) -> RunReceipt`; `cancel_run(run_id, expected_revision, reason) -> CancellationDisposition`; `observe_terminal(run_id, expected_revision, owner_observation) -> RunReceipt`; `recover_indeterminate(external_recovery) -> RunReceipt`. The local control socket advertises `run.lifecycle/1.1` before clients use these additive methods. Each operation uses the existing Codex session spine and typed owner ports. Agentd cannot create a second memory/learning store.
+`compose_runtime(supervisor_snapshot, ports, configuration) -> AgentHost`; `start_run(authenticated_request, objective_snapshot, body_snapshot, artifact_set, authority_epoch, deadline) -> RunHandle`; `attach_context(run_id, expected_revision, complete_frozen_tuple, compilation_receipt) -> AttachmentObservation`; `mark_dispatched(run_id, expected_revision) -> RunReceipt`; `cancel_run(run_id, expected_revision, reason) -> CancellationDisposition`; `observe_terminal(run_id, expected_revision, owner_observation) -> RunReceipt`; `recover_indeterminate(external_recovery) -> RunReceipt`; `release_closed(run_id, expected_revision) -> RunReceipt`. The local control socket advertises `run.lifecycle/1.1` before clients use these additive methods. Each operation uses the existing Codex session spine and typed owner ports. Agentd cannot create a second memory/learning store.
 
 ## 3. State records and transaction design
 
@@ -24,7 +24,7 @@ Bootstrap auth and revocation readers, stores/read ports, execution adapters and
 
 ## 5. Capacity and performance profile
 
-Pilot <= 256 active runs, bounded ingress <= 1024 requests, each attachment <= the context/wire profile. Per-run deadlines and cancellation acknowledgement deadlines are mandatory host configuration. Track queue age and dependency/readiness latency.
+Active runs are bounded by the owning Fleet `ResourceBudget.max_concurrent_turns` (currently 1..=32); the coordinator retains at most 1024 records until closed runs are explicitly released. Bounded ingress remains <= 1024 requests and each attachment <= the context/wire profile. Per-run deadlines are caller-supplied and continuously enforced; post-dispatch cancellation currently uses a fixed 3-second acknowledgement window before becoming `Indeterminate`. Track queue age and dependency/readiness latency.
 
 Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
 
