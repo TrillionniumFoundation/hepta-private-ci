@@ -95,7 +95,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement that closes admission for the current spawn/draining generation. A process without that typed boundary fails closed; drain never falls back to SIGTERM and never relabels unknown in-flight work as complete.",
+      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement that closes admission for the current spawn/draining generation. Recovery replays the idempotent typed Drain RPC when a crash occurs after the durable Draining transition but before acknowledgement. A process without that typed boundary fails closed; drain never falls back to SIGTERM and never relabels unknown in-flight work as complete.",
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -253,7 +253,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target bytes, compatibility evidence, control/lifecycle/authority fences and current pinned revocation frontier.",
+      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target bytes, compatibility evidence, control/lifecycle/authority fences and current pinned revocation frontier. The authoritative release-selection journal is fsynced before the execution intent so the earliest crash cut remains reconstructible.",
       "operation": "signed_upgrade",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -319,7 +319,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Resolves only recovery_required signed mutations using an independently signed recovery decision bound to the durable intent, observed release bytes, current lifecycle/control/authority fences and revocation frontier.",
+      "sourceSemantics": "Uses the authoritative release-selection journal to classify crash cuts, repairs terminal intent only when Fleet durable current release and immutable bytes prove the same outcome, otherwise normalizes to recovery_required. The new status RPC exposes the durable intent digest needed for an independently signed recovery decision bound to observed release bytes and current lifecycle/control/authority/revocation fences.",
       "operation": "reconcile_signed_intent",
       "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
