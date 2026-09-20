@@ -179,5 +179,69 @@ class SourceRootTests(unittest.TestCase):
             resolve_source_roots(self.root, self.module)
 
 
+
+class ImplementationMapFreshnessTests(unittest.TestCase):
+    def load_maps(self):
+        spec = importlib.util.spec_from_file_location(
+            "implementation_maps_freshness",
+            Path(__file__).with_name("hepta-implementation-maps.py"),
+        )
+        maps = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(maps)
+        return maps
+
+    def test_commit_only_source_base_is_exact_historical_provenance(self):
+        maps = self.load_maps()
+        commit = "a" * 40
+        tree = "b" * 40
+
+        def git(*args):
+            if args == ("rev-parse", "--verify", f"{commit}^{{commit}}"):
+                return commit
+            if args == ("rev-parse", f"{commit}^{{tree}}"):
+                return tree
+            if args[:5] == ("diff", "--name-only", "-z", "--no-renames", commit):
+                return ""
+            raise AssertionError(args)
+
+        with mock.patch.object(maps, "git", side_effect=git), mock.patch.object(
+            maps.subprocess,
+            "run",
+            return_value=mock.Mock(returncode=0),
+        ):
+            self.assertEqual(
+                maps.verify_map_source_freshness(
+                    {"commit": commit}, "fixture", ["src/fixture"]
+                ),
+                (commit, tree),
+            )
+
+    def test_uniformly_stale_maps_fail_when_mapped_source_changed(self):
+        maps = self.load_maps()
+        commit = "a" * 40
+        tree = "b" * 40
+
+        def git(*args):
+            if args == ("rev-parse", "--verify", f"{commit}^{{commit}}"):
+                return commit
+            if args == ("rev-parse", f"{commit}^{{tree}}"):
+                return tree
+            if args[:5] == ("diff", "--name-only", "-z", "--no-renames", commit):
+                return "src/fixture/lib.rs\0"
+            raise AssertionError(args)
+
+        with mock.patch.object(maps, "git", side_effect=git), mock.patch.object(
+            maps.subprocess,
+            "run",
+            return_value=mock.Mock(returncode=0),
+        ):
+            with self.assertRaisesRegex(
+                ValueError, "mapped source changed after sourceBase"
+            ):
+                maps.verify_map_source_freshness(
+                    {"commit": commit}, "fixture", ["src/fixture"]
+                )
+
+
 if __name__ == "__main__":
     unittest.main()
