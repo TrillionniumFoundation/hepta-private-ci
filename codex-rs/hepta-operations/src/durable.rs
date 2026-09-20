@@ -223,7 +223,7 @@ impl DurableOperationLedger {
             return Err(OperationError::InvalidDigest("authority evidence"));
         }
         self.transition(operation_id, |mut record| {
-            match record.operation.state {
+            match record.operation.state.clone() {
                 OperationState::Pending => {
                     advance(&mut record.operation)?;
                     record.operation.state = OperationState::Authorized {
@@ -258,7 +258,7 @@ impl DurableOperationLedger {
             return Err(OperationError::InvalidDigest("dispatch"));
         }
         self.transition(operation_id, |mut record| {
-            match record.operation.state {
+            match record.operation.state.clone() {
                 OperationState::Authorized { .. } => {
                     advance(&mut record.operation)?;
                     record.operation.state = OperationState::Dispatched { dispatch_digest };
@@ -284,7 +284,7 @@ impl DurableOperationLedger {
             return Err(OperationError::InvalidDigest("indeterminate reason"));
         }
         self.transition(operation_id, |mut record| {
-            match record.operation.state {
+            match record.operation.state.clone() {
                 OperationState::Dispatched { .. } => {
                     advance(&mut record.operation)?;
                     record.operation.state = OperationState::Indeterminate { reason_digest };
@@ -318,7 +318,7 @@ impl DurableOperationLedger {
             if terminal_matches(&record.operation.state, outcome, outcome_digest) {
                 return Ok(record);
             }
-            match record.operation.state {
+            match record.operation.state.clone() {
                 OperationState::Dispatched { .. } | OperationState::Indeterminate { .. } => {
                     advance(&mut record.operation)?;
                     record.operation.state = terminal_state(outcome, outcome_digest);
@@ -474,24 +474,24 @@ fn encoded_state(record: &DurableOperationRecord) -> EncodedState {
 }
 
 fn decode_record(row: sqlx::sqlite::SqliteRow) -> Result<DurableOperationRecord, OperationError> {
-    let operation_id = stable_id(row.try_get("operation_id")?, "operation id")?;
-    let payload_digest = digest_blob(row.try_get("payload_digest")?, "payload digest")?;
-    let owner_generation = generation_text(row.try_get("owner_generation")?, "owner generation")?;
-    let revision = revision_text(row.try_get("revision")?, "revision")?;
+    let operation_id = stable_id(row.try_get("operation_id").map_err(storage)?, "operation id")?;
+    let payload_digest = digest_blob(row.try_get("payload_digest").map_err(storage)?, "payload digest")?;
+    let owner_generation = generation_text(row.try_get("owner_generation").map_err(storage)?, "owner generation")?;
+    let revision = revision_text(row.try_get("revision").map_err(storage)?, "revision")?;
     let state: String = row.try_get("state").map_err(storage)?;
     let authority_evidence_digest =
-        optional_digest(row.try_get("authority_evidence_digest")?, "authority evidence")?;
+        optional_digest(row.try_get("authority_evidence_digest").map_err(storage)?, "authority evidence")?;
     let authority_generation = optional_generation(
-        row.try_get("authority_generation")?,
+        row.try_get("authority_generation").map_err(storage)?,
         "authority generation",
     )?;
-    let dispatch_digest = optional_digest(row.try_get("dispatch_digest")?, "dispatch digest")?;
+    let dispatch_digest = optional_digest(row.try_get("dispatch_digest").map_err(storage)?, "dispatch digest")?;
     let indeterminate_reason_digest = optional_digest(
-        row.try_get("indeterminate_reason_digest")?,
+        row.try_get("indeterminate_reason_digest").map_err(storage)?,
         "indeterminate reason",
     )?;
     let terminal_evidence_digest =
-        optional_digest(row.try_get("terminal_evidence_digest")?, "terminal evidence")?;
+        optional_digest(row.try_get("terminal_evidence_digest").map_err(storage)?, "terminal evidence")?;
 
     let operation_state = match state.as_str() {
         "pending" => OperationState::Pending,
@@ -524,13 +524,13 @@ fn decode_record(row: sqlx::sqlite::SqliteRow) -> Result<DurableOperationRecord,
         _ => return Err(OperationError::CorruptStore("operation state")),
     };
 
-    if !matches!(operation_state, OperationState::Pending)
+    if !matches!(&operation_state, OperationState::Pending)
         && (authority_evidence_digest.is_none() || authority_generation.is_none())
     {
         return Err(OperationError::CorruptStore("missing authority lineage"));
     }
     if matches!(
-        operation_state,
+        &operation_state,
         OperationState::Dispatched { .. }
             | OperationState::Indeterminate { .. }
             | OperationState::Applied { .. }
