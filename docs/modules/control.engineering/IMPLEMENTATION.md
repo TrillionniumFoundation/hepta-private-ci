@@ -72,7 +72,7 @@ caller that can directly rewrite its connection, modules or database.
 
 `EngineeringStore` uses SQLite foreign keys, WAL, `synchronous=FULL` and one outer
 `BEGIN IMMEDIATE` per mutation. Nested owner operations share that transaction.
-`SCHEMA.sql` is the single schema source, currently version 8. Tables are:
+`SCHEMA.sql` is the single schema source, currently version 9. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;
 - `path_leases`: state, revision, authority epoch, monotonically increasing fence and expiry;
@@ -81,6 +81,7 @@ caller that can directly rewrite its connection, modules or database.
 - `orchestration_generations`: immutable normalized resource-aware plan and semantic digest;
 - `worker_registrations`: authenticated worker profile, signing identity, scope, expiry and revision;
 - `worker_claims`: fenced assignment claims, heartbeat/result state, bounded attempts and observed completion;
+- `worker_completion_observations`: immutable accepted CI completion receipt digests used for acknowledgement-loss replay after reopen;
 - `integration_queue_generations`: durable orchestration/base-bound integration queue generation and invalidation state;
 - `integration_queue_items`: revisioned candidate/review/CI observations, ready-external-merge state and terminal outcome;
 - `distributed_cluster_frontiers`: cluster-global highest admitted leader term and revocation frontier, shared across all holders;
@@ -93,8 +94,8 @@ caller that can directly rewrite its connection, modules or database.
 
 An owner mutation, its binding/frontier and audit event either commit together or
 roll back together. Equal identity and semantics replay idempotently; different
-semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5/v6/v7 stores migrate
-transactionally to v8; historical generations without a bound frontier remain
+semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5/v6/v7/v8 stores migrate
+transactionally to v9; historical generations without a bound frontier remain
 unusable and require a new generation. A future version is rejected before any
 schema or journal-mode write. A database claiming v7 but missing a required table
 is rejected. A corrupted store must be quarantined and restored from a verified
@@ -140,7 +141,7 @@ packages with an eligible worker, remaining worker/CI/reviewer capacity and no p
 conflict. Infeasible work does not consume the assignment limit. The exact final
 assigned/blocked set—not a coarser preliminary schedule—is written to
 `assignment_generations` in the same transaction as its frontier and audit event.
-The generation semantic digest binds normalized package/worker/capacity inputs and is persisted in `orchestration_generations`. Integration reconciliation is replay-stable: identical candidate/review/CI or base-drift observations are no-op retries, evidence order is candidate → review → CI (or one atomic observation carrying all three), and terminal observations are immutable under later base movement. Worker execution then uses `worker_registrations` and `worker_claims`: a claim must match the scheduler-selected worker and an active fenced path lease; signed heartbeat expiry can enter bounded retry, semantic failure cannot; a worker `success` result is non-terminal until an independent CI completion receipt is observed. The generation semantic digest binds normalized package/worker/capacity inputs,
+The generation semantic digest binds normalized package/worker/capacity inputs and is persisted in `orchestration_generations`. Integration reconciliation is replay-stable: identical candidate/review/CI or base-drift observations are no-op retries, evidence order is candidate → review → CI (or one atomic observation carrying all three), and terminal observations are immutable under later base movement. Worker execution then uses `worker_registrations`, `worker_claims` and `worker_completion_observations`: exact acknowledgement-loss replay is revision/audit-stable, accepted CI completion digests survive reopen, and  a claim must match the scheduler-selected worker and an active fenced path lease; signed heartbeat expiry can enter bounded retry, semantic failure cannot; a worker `success` result is non-terminal until an independent CI completion receipt is observed. The generation semantic digest binds normalized package/worker/capacity inputs,
 completion frontier, assignments, integration order and merge queue. A changed
 frontier or planning input requires a new generation ID. An assignment is still
 a proposal; workers must acquire the exact local lease, and multi-host production
