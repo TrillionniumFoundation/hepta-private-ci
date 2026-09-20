@@ -177,7 +177,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Offline/reference learning library. Qualification fitting now binds a self-verifying `DatasetSnapshotReceiptV3` to the exact training-row evidence set through `VerifiedOperatorDatasetV2`; detached dataset digests remain legacy compatibility inputs. Applicability and regularity claims have signed V2 admission that reuses the host-owned `LearningEvidenceVerifierV1` rather than treating an evaluator ID/digest or approval boolean as authentication. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
+Offline/reference learning library. Qualification target construction, tabular fitting and world-model fitting now bind a self-verifying `DatasetSnapshotReceiptV3` through `VerifiedOperatorDatasetV2`. `build_targets_bound_v2` additionally requires the exact snapshot ID, objective, ledger head and source-record evidence set, while the bound fit paths require the exact frozen source-record set; detached dataset/head identities remain legacy compatibility inputs. Legacy `build_targets` also rejects relabelled reuse of one underlying support digest. Applicability and regularity claims have signed V2 admission that reuses the host-owned `LearningEvidenceVerifierV1` rather than treating an evaluator ID/digest or approval boolean as authentication. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
 
 Current operating and state-format references:
 
@@ -189,10 +189,13 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs); named case: `op_05_tabular_operator_fits_complete_grid_deterministically`.
-- [codex-rs/hepta-bellman-operator/src/lib_tests.rs](../../../codex-rs/hepta-bellman-operator/src/lib_tests.rs); named case: `deterministic_and_canonical`.
+- [codex-rs/hepta-bellman-operator/src/lib_tests.rs](../../../codex-rs/hepta-bellman-operator/src/lib_tests.rs); deterministic target construction plus relabelled-support replay rejection.
+- [codex-rs/hepta-bellman-operator/src/reference_tests.rs](../../../codex-rs/hepta-bellman-operator/src/reference_tests.rs); OP-01/OP-02 sensor, Bellman-reference and regularity/applicability cases.
+- [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs); OP-05 complete-grid and replay-resistant tabular fitting.
+- [codex-rs/hepta-bellman-operator/src/world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/world_model_tests.rs); OP-04 synthetic/action-conditioned behavior and replay rejection.
+- [codex-rs/hepta-bellman-operator/src/loaded_tests.rs](../../../codex-rs/hepta-bellman-operator/src/loaded_tests.rs) and [loaded_world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/loaded_world_model_tests.rs); independently pinned persisted inference, tamper and stale-pin rejection.
 - [codex-rs/hepta-bellman-operator/src/authenticated.rs](../../../codex-rs/hepta-bellman-operator/src/authenticated.rs); OP-06 signed evaluator role/identity/payload regressions.
-- [codex-rs/hepta-bellman-operator/src/dataset_binding.rs](../../../codex-rs/hepta-bellman-operator/src/dataset_binding.rs); OP-07 V3 dataset receipt/row-binding regressions.
+- [codex-rs/hepta-bellman-operator/src/dataset_binding.rs](../../../codex-rs/hepta-bellman-operator/src/dataset_binding.rs); OP-07 V3 target/tabular/world-model dataset binding regressions.
 
 In `codex-rs`, run `just test -p codex-hepta-bellman-operator`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.operator.md) separately labels target acceptance designs.
 
