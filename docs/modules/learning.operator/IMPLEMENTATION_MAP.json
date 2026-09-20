@@ -2,7 +2,7 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3df42e024386b15ddc45ce1e1654f4236499021d",
+    "commit": "cb779982e7a02b602fa13d01de202dc09a967e3d",
     "tree": "d738cf72f985f763ae3b93a970af064960dbc673"
   },
   "laneId": "LANE-E-LEARNING",
@@ -37,6 +37,10 @@
         {
           "path": "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
           "symbol": "duplicate_sample_fails"
+        },
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
+          "symbol": "relabelled_support_evidence_fails"
         }
       ],
       "sourcePathExists": true,
@@ -322,6 +326,27 @@
       "authority": "none",
       "sourcePathExists": true,
       "designOperation": "verify_operator_dataset_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_targets_bound_v2",
+      "nativeSymbol": "build_targets_bound_v2",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "symbol": "op_07_bound_target_builder_consumes_exact_v3_dataset_rows"
+        },
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "symbol": "op_07_bound_target_builder_rejects_detached_head_or_relabelled_evidence"
+        }
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true,
+      "designOperation": "build_targets_bound_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
