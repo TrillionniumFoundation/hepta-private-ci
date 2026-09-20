@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "lane": "LANE-A-FOUNDATION",
   "closureScope": "current executable capabilities only",
-  "entryCount": 23,
+  "entryCount": 24,
   "entries": [
     {
       "capabilityId": "platform.types.bounded-values.v1",
@@ -574,7 +574,7 @@
         }
       ],
       "durability": "sqlite_migrations_0001_0011",
-      "activation": "agentd_product_composed_feature_gated",
+      "activation": "agentd_product_composed_config_gated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -614,7 +614,7 @@
         }
       ],
       "durability": "sqlite_migrations_0001_0011",
-      "activation": "agentd_product_composed_feature_gated",
+      "activation": "agentd_product_composed_config_gated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -653,7 +653,7 @@
         }
       ],
       "durability": "sqlite_migrations_0001_0011",
-      "activation": "agentd_product_composed_feature_gated",
+      "activation": "agentd_product_composed_config_gated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -714,18 +714,29 @@
           "mustContain": [
             "evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence",
             "evid_02_wrong_tree_and_expired_candidate_are_unavailable",
-            "evid_04_fixture_cannot_satisfy_hardware_claim"
+            "evid_04_fixture_cannot_satisfy_hardware_claim",
+            "evid_01_distinct_principals_sharing_one_signing_identity_are_not_independent",
+            "current_trust_rotation_or_revocation_invalidates_positive_verification",
+            "claim_query_rejects_more_than_512_references",
+            "predecessor_traversal_fails_closed_beyond_256_edges",
+            "concurrent_store_handles_serialize_conflicting_evidence_identity",
+            "failed_evidence_insert_rolls_back_authbus_replay_advance"
           ]
         },
         {
           "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
           "mustContain": [
+            "wrong candidate tree satisfied exact-source evidence through Agentd",
+            "wrong-role evidence writer was accepted",
+            "replayed evidence sequence was accepted",
+            "expired evidence ingress was accepted",
+            "stale evidence signing key was accepted",
             "revoked evidence writer was accepted"
           ]
         }
       ],
       "durability": "sqlite_migrations_0001_0011",
-      "activation": "agentd_product_composed_feature_gated",
+      "activation": "agentd_product_composed_config_gated",
       "productionCaller": "runtime.agentd",
       "receiptStatus": "native_workflow_required"
     },
@@ -1048,6 +1059,63 @@
       "durability": "external_authority_plus_local_final_use_state",
       "activation": "host_composition_required",
       "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.evidence.recovery-frontier.v1",
+      "module": "kernel.evidence",
+      "summary": "deterministic recovery snapshot with independent signed Agentd startup/restore verification",
+      "publicSymbols": [
+        "HeptaEvidenceStore::recovery_snapshot",
+        "HeptaEvidenceStore::bind_recovery_store_id",
+        "EvidenceRecoveryFrontierV1",
+        "evidence_recovery_frontier_signing_bytes"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
+          "mustContain": [
+            "EvidenceRecoverySnapshotV1",
+            "pub async fn recovery_snapshot",
+            "pub async fn bind_recovery_store_id"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+          "mustContain": [
+            "EvidenceRecoveryFrontierV1",
+            "verify_evidence_recovery_frontier",
+            "recovery_required"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
+          "mustContain": [
+            "CREATE TABLE evidence_recovery_identity",
+            "evidence_recovery_identity_no_update"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+          "mustContain": [
+            "signed_recovery_frontier_allows_exact_current_database"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+          "mustContain": [
+            "signed_recovery_frontier_rejects_valid_older_database_image",
+            "recovery_required"
+          ]
+        }
+      ],
+      "durability": "sqlite_migrations_0001_0011_plus_external_signed_frontier_consumer",
+      "activation": "agentd_product_composed_config_gated_external_backend_unproven",
+      "productionCaller": "runtime.agentd",
       "receiptStatus": "native_workflow_required"
     }
   ]
