@@ -505,7 +505,7 @@ export class FileBrowserOperationJournal {
     );
     if (
       object.schema !== RETIRED_SCHEMA ||
-      object.version !== 2 ||
+      object.version !== 1 ||
       typeof object.checksum !== "string" ||
       !DIGEST.test(object.checksum)
     ) {
