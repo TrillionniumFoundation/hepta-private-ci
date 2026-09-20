@@ -541,7 +541,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if request.payload_digest != request.lease_payload_digest {
             return Err(Error::PayloadMismatch);
         }
-        if request.cancelled {
+        if request.cancelled || cancellation.is_cancelled() {
             return Ok(InferenceExecutionObservation {
                 request_id: request.request_id,
                 reservation_id: request.reservation_id,
