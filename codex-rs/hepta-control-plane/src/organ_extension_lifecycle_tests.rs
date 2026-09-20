@@ -320,8 +320,7 @@ fn factory_or_start_panic_never_replaces_the_serving_generation() {
     let registry = registry();
     let mut host = live_host(&registry, false);
     for driver in ["factory-panic", "start-panic"] {
-        let error =
-            replace(&registry, &mut host, 2, true, driver).expect_err("candidate must fail");
+        let error = replace(&registry, &mut host, 2, true, driver).expect_err("candidate must fail");
         match driver {
             "factory-panic" => {
                 assert!(matches!(error, OrganHandlerRegistryError::Factory { .. }));
