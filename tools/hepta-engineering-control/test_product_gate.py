@@ -119,7 +119,28 @@ class ProductGateTests(unittest.TestCase):
                 "release_authority": False,
             },
             "auditAnchor": {"sequence": 1, "eventDigest": "3" * 64},
+            "workerLifecycle": {
+                "registrationDigest": "4" * 64,
+                "leaseId": "lease-a",
+                "claimId": "claim-a",
+                "completedState": "completed_observed",
+                "reopenedState": "completed_observed",
+                "resultDigest": "5" * 64,
+                "independentlyObservedCompletion": True,
+                "trustClass": "ci_reference_hmac_fixture",
+            },
+            "integrationReconciliation": {
+                "queueGenerationId": "queue-a",
+                "baseCommit": base,
+                "baseTree": "7" * 40,
+                "state": "ready_external_merge",
+                "reopenedState": "ready_external_merge",
+                "mergeAuthority": False,
+            },
             "productCallerComposed": True,
+            "workerLifecycleObserved": True,
+            "integrationReconciliationObserved": True,
+            "reopenRecoveryObserved": True,
             "productTestsUpstreamRequired": True,
             "runtimeAuthority": False,
             "mergeAuthority": False,
@@ -143,6 +164,7 @@ class ProductGateTests(unittest.TestCase):
             ("rev-parse", "HEAD"): merge,
             ("rev-parse", "HEAD^{tree}"): merge_tree,
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
+            ("rev-parse", f"{base}^{{tree}}"): "7" * 40,
             ("show", "-s", "--format=%P", "HEAD"): f"{base} {source}",
             ("rev-parse", f"HEAD:{CANONICAL_PATH}"): CANONICAL_BLOB,
         }
@@ -194,16 +216,28 @@ class ProductGateTests(unittest.TestCase):
                 "DOC-2-DEFAULT-BRANCH-SELECTION",
             ],
         )
+        self.assertTrue(receipt["workerLifecycleObserved"])
+        self.assertEqual(
+            receipt["workerLifecycle"]["reopenedState"], "completed_observed"
+        )
+        self.assertTrue(receipt["integrationReconciliationObserved"])
+        self.assertEqual(
+            receipt["integrationReconciliation"]["reopenedState"],
+            "ready_external_merge",
+        )
+        self.assertTrue(receipt["reopenRecoveryObserved"])
         self.assertFalse(receipt["mergeAuthority"])
         self.assertFalse(receipt["releaseAuthority"])
 
     def test_pull_request_source_head_product_caller_composes_same_v2_path(self):
         source = "a" * 40
+        base = "b" * 40
         source_tree = "e" * 40
         calls = {
             ("rev-parse", "HEAD"): source,
             ("rev-parse", "HEAD^{tree}"): source_tree,
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
+            ("rev-parse", f"{base}^{{tree}}"): "7" * 40,
             ("show", "-s", "--format=%P", "HEAD"): "f" * 40,
             ("rev-parse", f"HEAD:{CANONICAL_PATH}"): CANONICAL_BLOB,
         }
@@ -235,7 +269,7 @@ class ProductGateTests(unittest.TestCase):
                 receipt = product_gate.build_product_receipt(
                     Path(temp),
                     source_sha=source,
-                    base_sha="b" * 40,
+                    base_sha=base,
                     **self.identity(lane="source-head"),
                 )
         self.assertEqual(receipt["mode"], "source-head")
