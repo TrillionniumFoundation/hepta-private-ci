@@ -11,15 +11,22 @@ use serde_json::Value;
 use crate::error::ShellError;
 use crate::model::EndpointManifest;
 use crate::model::SessionIncarnation;
+use crate::model::sha256_hex;
 use crate::security::now_unix_ms;
 
 const MAX_HTTP_RESPONSE_BYTES: usize = 1024 * 1024;
 const HTTP_TIMEOUT: Duration = Duration::from_secs(3);
 static SESSION_COUNTER: AtomicU64 = AtomicU64::new(1);
 
+#[derive(Debug, Clone)]
+pub struct AuthenticatedRuntimeStatus {
+    pub value: Value,
+    pub body_digest: String,
+}
+
 pub trait BackendAdapter: Send {
     fn connect(&mut self, manifest: &EndpointManifest) -> Result<SessionIncarnation, ShellError>;
-    fn runtime_status(&mut self) -> Result<Value, ShellError>;
+    fn runtime_status(&mut self) -> Result<AuthenticatedRuntimeStatus, ShellError>;
     fn close(&mut self, session: &SessionIncarnation) -> Result<(), ShellError>;
 }
 
@@ -42,7 +49,7 @@ impl LoopbackGatewayBackend {
         })
     }
 
-    fn get_json(&self, path: &str) -> Result<Value, ShellError> {
+    fn get_json(&self, path: &str) -> Result<AuthenticatedRuntimeStatus, ShellError> {
         let mut stream = TcpStream::connect_timeout(&self.address, HTTP_TIMEOUT)
             .map_err(|error| ShellError::Backend(format!("connect gateway: {error}")))?;
         stream
@@ -86,7 +93,11 @@ impl LoopbackGatewayBackend {
             )));
         }
         let body = &response[header_end + 4..];
-        serde_json::from_slice(body).map_err(ShellError::from)
+        let value = serde_json::from_slice(body).map_err(ShellError::from)?;
+        Ok(AuthenticatedRuntimeStatus {
+            value,
+            body_digest: sha256_hex(body),
+        })
     }
 }
 
@@ -118,9 +129,10 @@ impl BackendAdapter for LoopbackGatewayBackend {
             ));
         }
         let health = self.get_json("/healthz")?;
-        if health.get("product").and_then(Value::as_str) != Some("hepta")
-            || health.get("status").and_then(Value::as_str) != Some("ok")
-            || health.get("native_auth").and_then(Value::as_str) != Some("keyring_bearer_v1")
+        if health.value.get("product").and_then(Value::as_str) != Some("hepta")
+            || health.value.get("status").and_then(Value::as_str) != Some("ok")
+            || health.value.get("native_auth").and_then(Value::as_str)
+                != Some("keyring_bearer_v1")
         {
             return Err(ShellError::Backend(
                 "gateway health identity is not the expected Hepta product".to_owned(),
@@ -137,7 +149,7 @@ impl BackendAdapter for LoopbackGatewayBackend {
         Ok(session)
     }
 
-    fn runtime_status(&mut self) -> Result<Value, ShellError> {
+    fn runtime_status(&mut self) -> Result<AuthenticatedRuntimeStatus, ShellError> {
         self.get_json("/api/hepta/runtime")
     }
 
