@@ -615,9 +615,11 @@ export class FileBrowserOperationJournal {
       await handle.close();
     }
     const records = new Map();
+    const trailingLineWasDurablyTerminated =
+      bytes.length === 0 || bytes.endsWith("\n");
     const lines = bytes.length === 0 ? [] : bytes.split("\n");
     if (lines.at(-1) === "") lines.pop();
-    for (const line of lines) {
+    for (const [index, line] of lines.entries()) {
       if (UTF8.encode(line).byteLength > MAX_LINE_BYTES) {
         throw new TypeError("browser journal line exceeds limit");
       }
@@ -625,6 +627,16 @@ export class FileBrowserOperationJournal {
       try {
         envelope = JSON.parse(line);
       } catch {
+        // Append records are fsynced before an external dispatch can cross.
+        // A process/power cut may therefore leave only the final JSON line
+        // partially written. Recover every complete validated prefix record,
+        // but never forgive malformed data that was newline-terminated.
+        if (
+          !trailingLineWasDurablyTerminated &&
+          index === lines.length - 1
+        ) {
+          break;
+        }
         throw new TypeError("browser journal contains malformed JSON");
       }
       const object = requireRecord(envelope, "browser journal envelope");
