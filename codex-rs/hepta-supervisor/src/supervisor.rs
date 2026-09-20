@@ -1029,68 +1029,52 @@ impl<D: ProcessDriver> Supervisor<D> {
         })
     }
 
-    fn recover_signed_intent(
+    fn intent_from_release_selection(
+        selection: &ReleaseSelectionRecord,
+        status: SignedIntentStatus,
+    ) -> Result<SignedSupervisorIntent, SupervisorError> {
+        let expected_control_revision = selection.control_revision.checked_sub(1).ok_or_else(|| {
+            SupervisorError::Invalid(
+                "release selection control revision has no predecessor".to_string(),
+            )
+        })?;
+        SignedSupervisorIntent::new(
+            selection.grant_sha256.clone(),
+            selection.agent_id.clone(),
+            selection.transition,
+            selection.source_release.clone(),
+            selection.target_release.clone(),
+            expected_control_revision,
+            selection.lifecycle_generation,
+            selection.authority_epoch,
+            status,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))
+    }
+
+    fn quarantine_unresolved_selection(
         &mut self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
-        record: &AgentRecord,
+        selection: &ReleaseSelectionRecord,
     ) -> Result<(), SupervisorError> {
-        let intent = read_intent(record.layout.run_root())
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let selection = read_release_selection(record.layout.run_root())?;
-        if let Some(selection) = selection.as_ref() {
-            slot.control_revision = selection.control_revision;
-        }
-        let Some(intent) = intent else {
-            if selection.is_some() {
-                return Err(SupervisorError::SignedIntentRecoveryRequired(
-                    agent_id.clone(),
-                ));
-            }
-            return Ok(());
-        };
-        if intent.agent_id != agent_id.to_string() {
-            return Err(SupervisorError::Invalid(
-                "signed supervisor intent agent binding mismatch".to_string(),
-            ));
-        }
-        slot.signed_intent = Some(intent.clone());
-        if matches!(
-            intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-        ) {
-            let Some(selection) = selection else {
-                return Err(SupervisorError::SignedIntentRecoveryRequired(
-                    agent_id.clone(),
-                ));
-            };
-            let expected_status = match intent.status {
-                SignedIntentStatus::Committed => ReleaseSelectionStatus::Committed,
-                SignedIntentStatus::RolledBack => ReleaseSelectionStatus::RolledBack,
-                _ => unreachable!(),
-            };
-            if selection.grant_sha256 != intent.grant_sha256 || selection.status != expected_status
-            {
-                return Err(SupervisorError::SignedIntentRecoveryRequired(
-                    agent_id.clone(),
-                ));
-            }
-            return Ok(());
-        }
-        // A restart has no durable proof that an apparently matching target
-        // was produced by this exact signed mutation.  In particular, the
-        // one-file intent does not carry an independently committed source /
-        // target release-state revision, control-revision successor,
-        // lifecycle-generation transition, or continuity of the daemon's
-        // authority epoch.  Treating `Running + target` as Committed would
-        // therefore let an unrelated/manual upgrade close an old grant.
-        // Every non-terminal intent must remain fail-closed until an explicit
-        // recovery ceremony supplies those witnesses.
-        //
-        // Fence and kill any adopted child before surfacing the recovery
-        // requirement; normal ticking must not continue an ambiguous
-        // external transition.
-        self.mark_signed_intent_recovery_required(agent_id, slot)?;
+        let recovery_selection =
+            selection.with_status(ReleaseSelectionStatus::RecoveryRequired)?;
+        // The authoritative selection goes first. A crash before the intent
+        // write remains reconstructible from this complete record.
+        write_release_selection(
+            self.record(agent_id)?.layout.run_root(),
+            &recovery_selection,
+        )?;
+        let recovery_intent =
+            Self::intent_from_release_selection(&recovery_selection, SignedIntentStatus::RecoveryRequired)?;
+        write_intent(
+            self.record(agent_id)?.layout.run_root(),
+            &recovery_intent,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        slot.signed_intent = Some(recovery_intent);
+
         let lifecycle = self.record(agent_id)?.lifecycle;
         if matches!(
             lifecycle.lifecycle,
@@ -1111,6 +1095,91 @@ impl<D: ProcessDriver> Supervisor<D> {
         Err(SupervisorError::SignedIntentRecoveryRequired(
             agent_id.clone(),
         ))
+    }
+
+    fn recover_signed_intent(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        record: &AgentRecord,
+    ) -> Result<(), SupervisorError> {
+        let intent = read_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let Some(selection) = read_release_selection(record.layout.run_root())? else {
+            // New production admissions always persist the authoritative
+            // release-selection record first. An intent without its selection
+            // can only be legacy/corrupt state and cannot be reconstructed
+            // without inventing compatibility/provenance facts.
+            if intent.is_some() {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
+            return Ok(());
+        };
+        selection.validate()?;
+        if selection.agent_id != agent_id.to_string() {
+            return Err(SupervisorError::Invalid(
+                "release selection Agent binding mismatch".to_string(),
+            ));
+        }
+        slot.control_revision = selection.control_revision;
+
+        // A terminal authoritative selection is sufficient to repair a
+        // missing/stale intent after a crash between the two terminal writes.
+        if selection.status.terminal() {
+            let terminal_intent_status = match selection.status {
+                ReleaseSelectionStatus::Committed => SignedIntentStatus::Committed,
+                ReleaseSelectionStatus::RolledBack => SignedIntentStatus::RolledBack,
+                _ => unreachable!(),
+            };
+            let expected =
+                Self::intent_from_release_selection(&selection, terminal_intent_status)?;
+            let needs_repair = intent.as_ref().is_none_or(|actual| {
+                actual.agent_id != expected.agent_id
+                    || actual.grant_sha256 != expected.grant_sha256
+                    || actual.transition != expected.transition
+                    || actual.source_release != expected.source_release
+                    || actual.target_release != expected.target_release
+                    || actual.expected_control_revision != expected.expected_control_revision
+                    || actual.expected_lifecycle_generation
+                        != expected.expected_lifecycle_generation
+                    || actual.authority_epoch != expected.authority_epoch
+                    || actual.status != terminal_intent_status
+            });
+            if needs_repair {
+                write_intent(record.layout.run_root(), &expected)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            }
+            slot.signed_intent = Some(expected);
+            return Ok(());
+        }
+
+        // Prepared plus an unchanged Running lifecycle is a provably
+        // pre-dispatch crash cut: selection was durable, but drain had not
+        // linearized. Close it as RolledBack without killing the healthy
+        // predecessor. Every later durable lifecycle state remains unknown and
+        // requires the independently signed recovery ceremony.
+        let lifecycle = self.record(agent_id)?.lifecycle;
+        if selection.status == ReleaseSelectionStatus::Prepared
+            && lifecycle.lifecycle == AgentLifecycle::Running
+            && lifecycle.generation == selection.lifecycle_generation
+        {
+            let rolled_back = selection.with_status(ReleaseSelectionStatus::RolledBack)?;
+            write_release_selection(record.layout.run_root(), &rolled_back)?;
+            let rolled_back_intent =
+                Self::intent_from_release_selection(&rolled_back, SignedIntentStatus::RolledBack)?;
+            write_intent(record.layout.run_root(), &rolled_back_intent)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.signed_intent = Some(rolled_back_intent);
+            return Ok(());
+        }
+
+        // Any queued/recovery-required state, or Prepared after the lifecycle
+        // generation moved, crossed a boundary whose outcome cannot be
+        // inferred from process liveness. Normalize both witnesses to the same
+        // recoverable state and quarantine the exact process generation.
+        self.quarantine_unresolved_selection(agent_id, slot, &selection)
     }
 
     pub fn tick(&mut self, now: Instant) -> TickReport {
