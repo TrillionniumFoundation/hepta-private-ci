@@ -451,6 +451,25 @@ fn image_rejects_sequence_and_frontier_claims_not_derived_from_history() {
         Err(CognitiveStoreV2Error::ImageSequenceMismatch)
     );
 
+    let mut inflated_frontier = image.clone();
+    let mut vector = inflated_frontier.snapshot_key.vector.clone();
+    vector.memory_ledger_frontier = vector.memory_ledger_frontier.saturating_add(5);
+    inflated_frontier.snapshot_key =
+        CognitiveSnapshotKeyV1::new(vector).unwrap_or_else(|error| panic!("snapshot key: {error}"));
+    inflated_frontier.image_digest = inflated_frontier.compute_image_digest();
+    assert_eq!(
+        inflated_frontier.validate(),
+        Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)
+    );
+
+    let mut missing_receipt = image.clone();
+    missing_receipt.journal.clear();
+    missing_receipt.image_digest = missing_receipt.compute_image_digest();
+    assert_eq!(
+        missing_receipt.validate(),
+        Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)
+    );
+
     let mut wrong_frontier = image;
     wrong_frontier.journal.clear();
     let mut vector = wrong_frontier.snapshot_key.vector.clone();
