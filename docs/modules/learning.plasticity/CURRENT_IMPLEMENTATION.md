@@ -44,8 +44,8 @@ override these machine status facts.
 | `agentd_anchor_fence_journal` | `source_implemented_append_only_checksum_journal_crash_tail_repair_monotonic_generation_fences_and_safe_bootstrap_resume` | `codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs` | 3 |
 | `structural_canary_controller` | `source_implemented_durable_candidate_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 6 |
 | `authenticated_structural_canary_observation` | `source_implemented_observer_signature_binds_exact_plan_and_observation_no_topology_apply_authority` | `codex-rs/hepta-intelligence/src/topology_canary_product.rs` | 1 |
-| `runtime_topology_execution` | `source_implemented_final_use_authorized_live_cns_generation_replacement_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 2 |
-| `runtime_structural_canary_fault_rollback` | `qualification_composed_live_apply_forced_host_fault_authorized_rollforward_rollback_and_authenticated_observer_receipt_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
+| `runtime_topology_execution` | `source_implemented_distinct_final_use_authorized_live_cns_replacement_and_stopped_quarantined_recovery_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 2 |
+| `runtime_structural_canary_fault_rollback` | `qualification_composed_live_apply_forced_stopped_host_fault_distinct_recovery_final_use_rollforward_and_authenticated_observer_receipt_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
 
 ### Repository-controlled gaps
 
