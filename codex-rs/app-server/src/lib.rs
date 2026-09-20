@@ -11,6 +11,7 @@ use codex_core::config::Config;
 pub use codex_core::config::ThreadStoreConfig;
 use codex_core::resolve_installation_id;
 use codex_login::AuthManager;
+use codex_login::HostProviderAuthBinding;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_cli::CliConfigOverrides;
 use std::collections::HashMap;
@@ -468,6 +469,11 @@ pub struct AppServerRuntimeOptions {
     /// of their isolation contract can reject configuration that substitutes
     /// an in-memory or otherwise incompatible store.
     pub required_thread_store_mode: Option<ThreadStoreConfig>,
+    /// Host-owned authentication for one exact provider snapshot.
+    ///
+    /// Installed only after final config resolution. A mismatch aborts startup
+    /// and never falls back to environment or static provider credentials.
+    pub host_provider_auth: Option<HostProviderAuthBinding>,
     /// Cognitive Plane capability owned by the embedding runtime.
     ///
     /// Plain Codex and the Hepta live shell pass `Absent`. A workspace agent
@@ -517,6 +523,7 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
                 "required_thread_store_mode",
                 &self.required_thread_store_mode,
             )
+            .field("host_provider_auth", &self.host_provider_auth)
             .field("hepta_cognitive_runtime", &self.hepta_cognitive_runtime)
             .field(
                 "hepta_local_turn_lifecycle_enabled",
@@ -548,6 +555,7 @@ impl PartialEq for AppServerRuntimeOptions {
             && self.turn_queue_capacity == other.turn_queue_capacity
             && self.required_sqlite_home == other.required_sqlite_home
             && self.required_thread_store_mode == other.required_thread_store_mode
+            && self.host_provider_auth == other.host_provider_auth
             && match (
                 &self.hepta_cognitive_runtime,
                 &other.hepta_cognitive_runtime,
@@ -600,6 +608,7 @@ impl Default for AppServerRuntimeOptions {
             turn_queue_capacity: None,
             required_sqlite_home: None,
             required_thread_store_mode: None,
+            host_provider_auth: None,
             hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Absent,
             hepta_local_turn_lifecycle_enabled: false,
             hepta_local_development_policy: None,
@@ -937,6 +946,11 @@ pub async fn run_main_with_transport_options(
         AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false)
             .await
             .map_err(std::io::Error::other)?;
+    if let Some(binding) = runtime_options.host_provider_auth.clone() {
+        auth_manager
+            .install_host_provider_auth(binding, &config.model_provider)
+            .map_err(std::io::Error::other)?;
+    }
 
     let remote_control_enabled = remote_control_policy == RemoteControlPolicy::Allowed
         && remote_control_explicitly_requested
