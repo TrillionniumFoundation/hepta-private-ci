@@ -81,7 +81,7 @@ class EngineeringControlProductTests(unittest.TestCase):
                 self.assertEqual(plan.assignments[0].worker_id, "worker-a")
                 self.assertEqual(
                     product.store.connection.execute("PRAGMA user_version").fetchone()[0],
-                    8,
+                    9,
                 )
             self.assertTrue(database.exists())
 
