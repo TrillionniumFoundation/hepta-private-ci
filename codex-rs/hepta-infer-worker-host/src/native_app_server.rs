@@ -254,6 +254,7 @@ impl AppServerModelDriver {
         };
         let turn_payload = serde_json::to_vec(&turn_params)?;
         let payload_digest = Digest32::of_bytes(&turn_payload);
+        let user_input_digest = Digest32::of_bytes(&serde_json::to_vec(&turn_params.input)?);
         let adapted_at_ms = unix_time_ms()?;
         let execution_timeout_ms = u64::try_from(self.config.timeout.as_millis())
             .map_err(|_| "native execution timeout does not fit u64 milliseconds")?;
@@ -279,6 +280,8 @@ impl AppServerModelDriver {
                 source_admission_digest,
                 agent_generation: Generation::new(self.config.generation)?,
                 session_id: StableId::new(started.thread.session_id.clone())?,
+                client_user_message_id: StableId::new(request_id.to_string())?,
+                user_input_digest,
                 protocol_id: StableId::new(APP_SERVER_V2_PROTOCOL_ID)?,
                 app_server_version: app_server_version.clone(),
                 codex_home_digest,
