@@ -135,6 +135,9 @@ fn immutable_retry_never_replaces_corrupt_or_different_bytes() {
         write_immutable(&path, b"data"),
         Err(LongHorizonLedgerErrorV1::CatalogCorrupt)
     ));
-    assert_eq!(fs::metadata(&path).expect("retained row").len(), 1_u64 << 30);
+    assert_eq!(
+        fs::metadata(&path).expect("retained row").len(),
+        1_u64 << 30
+    );
     assert!(!path.with_extension("tmp").exists());
 }
