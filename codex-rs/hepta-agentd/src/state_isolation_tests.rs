@@ -123,3 +123,150 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
         Err(AgentdError::GenerationFenced(_))
     ));
 }
+
+
+fn digest(byte: char) -> String {
+    byte.to_string().repeat(64)
+}
+
+#[tokio::test]
+async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
+    let (_temp, _registry, state) = fixture().expect("runtime fixture");
+
+    let capabilities = state
+        .response(
+            /*request_id*/ 10,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Capabilities,
+        )
+        .await
+        .expect("capabilities");
+    let AgentdPayload::Capabilities(capabilities) = capabilities.payload else {
+        panic!("expected capabilities payload");
+    };
+    assert!(capabilities.capabilities.iter().any(|capability| {
+        capability.id == crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_ID
+            && capability.major == crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR
+            && capability.minor == crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR
+    }));
+
+    let snapshot = crate::AgentRunSnapshot {
+        run_id: "run.control.1".to_string(),
+        request_digest: digest('1'),
+        objective_digest: digest('2'),
+        body_digest: digest('3'),
+        artifact_set_digest: digest('4'),
+        authority_epoch: 7,
+        deadline_ms: u64::MAX - 1,
+    };
+    let started = state
+        .response(
+            11,
+            1,
+            crate::AgentdMethod::RunStart {
+                snapshot: snapshot.clone(),
+            },
+        )
+        .await
+        .expect("start run");
+    let AgentdPayload::RunReceipt(started) = started.payload else {
+        panic!("expected run receipt");
+    };
+    assert_eq!(started.phase, crate::AgentRunPhase::Admitted);
+    assert_eq!(started.revision, 1);
+
+    let attached = state
+        .response(
+            12,
+            1,
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision: started.revision,
+                attachment: crate::AgentContextAttachment {
+                    run_id: snapshot.run_id.clone(),
+                    request_digest: snapshot.request_digest.clone(),
+                    objective_digest: snapshot.objective_digest.clone(),
+                    body_digest: snapshot.body_digest.clone(),
+                    artifact_set_digest: snapshot.artifact_set_digest.clone(),
+                    authority_epoch: snapshot.authority_epoch,
+                    deadline_ms: snapshot.deadline_ms,
+                    context_digest: digest('5'),
+                    compilation_receipt_digest: digest('6'),
+                },
+            },
+        )
+        .await
+        .expect("attach context");
+    let AgentdPayload::RunReceipt(attached) = attached.payload else {
+        panic!("expected run receipt");
+    };
+    assert_eq!(attached.phase, crate::AgentRunPhase::ContextAttached);
+    assert_eq!(attached.revision, 2);
+
+    let dispatched = state
+        .response(
+            13,
+            1,
+            crate::AgentdMethod::RunMarkDispatched {
+                run_id: snapshot.run_id.clone(),
+                expected_revision: attached.revision,
+            },
+        )
+        .await
+        .expect("mark dispatched");
+    let AgentdPayload::RunReceipt(dispatched) = dispatched.payload else {
+        panic!("expected run receipt");
+    };
+    assert_eq!(dispatched.phase, crate::AgentRunPhase::Dispatched);
+    assert_eq!(dispatched.revision, 3);
+
+    state.mark_draining().expect("begin local drain");
+    assert!(state
+        .response(
+            14,
+            1,
+            crate::AgentdMethod::RunStart {
+                snapshot: crate::AgentRunSnapshot {
+                    run_id: "run.control.2".to_string(),
+                    ..snapshot.clone()
+                },
+            },
+        )
+        .await
+        .is_err());
+
+    let status = state
+        .response(
+            15,
+            1,
+            crate::AgentdMethod::RunStatus {
+                run_id: snapshot.run_id.clone(),
+            },
+        )
+        .await
+        .expect("run remains queryable during drain");
+    let AgentdPayload::RunStatus { run: Some(draining) } = status.payload else {
+        panic!("expected draining run status");
+    };
+    assert_eq!(draining.phase, crate::AgentRunPhase::Cancelling);
+    assert_eq!(draining.cancel_reason.as_deref(), Some("agentd_shutdown"));
+
+    let terminal = state
+        .response(
+            16,
+            1,
+            crate::AgentdMethod::RunObserveTerminal {
+                run_id: snapshot.run_id,
+                expected_revision: draining.revision,
+                phase: crate::AgentRunPhase::Succeeded,
+                terminal_observed: true,
+            },
+        )
+        .await
+        .expect("terminal observation during drain");
+    let AgentdPayload::RunReceipt(terminal) = terminal.payload else {
+        panic!("expected terminal receipt");
+    };
+    assert_eq!(terminal.phase, crate::AgentRunPhase::Succeeded);
+    assert!(terminal.terminal_observed);
+    assert_eq!(state.active_run_count().expect("active runs"), 0);
+}
