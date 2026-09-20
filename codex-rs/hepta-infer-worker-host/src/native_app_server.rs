@@ -542,6 +542,10 @@ impl AppServerModelDriver {
         let verified_use = timeout(claim_budget, authorizer.claim(authority_binding.clone()))
             .await
             .map_err(|_| "final-use authority request exceeded runtime.codex deadline")??;
+        let authority_epoch = verified_use.claimed_authority_epoch();
+        let revocation_revision = verified_use.claimed_revocation_revision();
+        let revocation_head_digest =
+            Digest32::from_array(verified_use.claimed_revocation_head_sha256()).to_string();
         let authority_witness = Digest32::from_array(verified_use.witness_sha256()).to_string();
 
         let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
@@ -561,6 +565,9 @@ impl AppServerModelDriver {
                 codex_connection_id: Some(connection_id),
                 codex_session_id: Some(started.thread.session_id.clone()),
                 codex_deadline_ms: Some(adapter_intent.deadline_ms),
+                codex_authority_epoch: Some(authority_epoch),
+                codex_revocation_revision: Some(revocation_revision),
+                codex_revocation_head_sha256: Some(revocation_head_digest.clone()),
                 codex_authority_witness_sha256: Some(authority_witness.clone()),
             },
         )?;
@@ -574,6 +581,9 @@ impl AppServerModelDriver {
             connection_id,
             &started.thread.session_id,
             adapter_intent.deadline_ms,
+            authority_epoch,
+            revocation_revision,
+            &revocation_head_digest,
             &authority_witness,
             &app_server_version,
         )?;
@@ -948,6 +958,9 @@ fn verify_persisted_dispatch_binding(
     connection_id: u64,
     session_id: &str,
     deadline_ms: u64,
+    authority_epoch: u64,
+    revocation_revision: u64,
+    revocation_head_digest: &str,
     authority_witness: &str,
     app_server_version: &str,
 ) -> Result<()> {
@@ -967,6 +980,9 @@ fn verify_persisted_dispatch_binding(
         && dispatch.codex_connection_id == Some(connection_id)
         && dispatch.codex_session_id.as_deref() == Some(session_id)
         && dispatch.codex_deadline_ms == Some(deadline_ms)
+        && dispatch.codex_authority_epoch == Some(authority_epoch)
+        && dispatch.codex_revocation_revision == Some(revocation_revision)
+        && dispatch.codex_revocation_head_sha256.as_deref() == Some(revocation_head_digest)
         && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
         && dispatch.app_server_version.as_deref() == Some(app_server_version)
         && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
