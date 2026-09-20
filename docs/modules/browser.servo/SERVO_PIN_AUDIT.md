@@ -58,6 +58,33 @@ Because the combined history overlaps navigation, proxy routing, TLS/network
 types, semantic observation, form/input behavior and embedding lifecycle,
 compile success alone is not a promotion oracle.
 
+### 2.1 Post-selection upstream review (2026-09-21)
+
+After b5a1 was selected, Servo `main` advanced to
+`e6a6850437c659c07e65402a97049a09efb23a0e`, 10 commits ahead of b5a1 and
+zero commits behind. The reviewed window includes:
+
+- `08ac5f466f90e1c38599f6861914843147659b44` — `surfman@0.14.0`;
+- `04dcdfaf9a2b65dcf4dc0362097ab852a49449bc` — rooted/traced
+  EventListener/EventHandler callback conversion;
+- `626c51bc0083d81132c25d55e3dc78c212ad37b3` — RoutedPromise/WebGPU
+  listener relocation;
+- `addf39ddea3b4a75775e09ccf123bf0c623a5907` and
+  `d29763b95954edd0e9592529d2ddc54cbe16197d` — safer JS/DOM conversion
+  paths;
+- `e6a6850437c659c07e65402a97049a09efb23a0e` — further mechanical
+  `reflect_dom_object` migration;
+- Cargo manifest/lock updates plus WPT metadata and script-level changes.
+
+The compare does not show another direct `WebView::load()` fix, a change to
+the proxy-preference API used by Hepta, or a new net connector/HTTP loader
+change comparable to the already-absorbed b5a1 window. The selected pin
+therefore remains b5a1 for this qualification cycle instead of chasing
+upstream during lock generation. This is not a compatibility claim for
+`e6a6850...`: the 10-commit window is recorded as the next pin-refresh
+review set, with the `surfman` dependency and script/callback changes
+requiring compile/behavioral requalification if adopted.
+
 ## 3. Hepta embedding relevance
 
 The worker owns one Servo / one WebView per profile generation and directly
