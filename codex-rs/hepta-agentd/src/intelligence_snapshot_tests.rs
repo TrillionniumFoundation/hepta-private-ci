@@ -107,10 +107,7 @@ impl Fixture {
         let trust_file = home.join("intelligence-capability-trust.json");
         let snapshot = snapshot();
         let owners = vec![
-            (
-                id("objective.compiler"),
-                SigningKey::from_bytes(&[21; 32]),
-            ),
+            (id("objective.compiler"), SigningKey::from_bytes(&[21; 32])),
             (id("utility.ndu"), SigningKey::from_bytes(&[22; 32])),
         ];
         let now_ms = 1_800_000_000_000;
