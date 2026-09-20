@@ -34,6 +34,12 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .ok_or("pending update record must have a parent directory")?
         .to_path_buf();
     let manager = UpdateManager::new(key_set.clone(), update_root)?;
+    if manager.recover_interrupted_activation()? {
+        return Err(
+            "recovered an interrupted native update to its admitted predecessor; restage before retrying activation"
+                .into(),
+        );
+    }
     activate_staged_update(&pending, &key_set, &target, protocol)?;
 
     match bounded_self_test(&target) {
