@@ -28,6 +28,7 @@ use std::time::Instant;
 
 #[cfg(any(unix, test))]
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 #[cfg(any(unix, test))]
 use codex_hepta_fleet::AgentLifecycle;
 #[cfg(unix)]
@@ -143,6 +144,7 @@ struct DaemonState<D: ProcessDriver> {
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     production_revocation_frontier: Option<u64>,
+    production_compatibility_receipt_sha256: Option<Sha256Digest>,
     observed_faults: AtomicU64,
 }
 
@@ -157,7 +159,7 @@ pub async fn run_supervisord(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
 ) -> Result<(), SupervisorError> {
-    run_supervisord_inner(fleet_root, cancellation, None, None).await
+    run_supervisord_inner(fleet_root, cancellation, None, None, None).await
 }
 
 /// Production entry point for a daemon whose trust root was pinned by an
@@ -171,6 +173,7 @@ pub async fn run_supervisord_with_grant_verifier(
     cancellation: CancellationToken,
     verifier: H7H89ProductionGrantVerifier,
     revocation_frontier: u64,
+    compatibility_receipt_sha256: Sha256Digest,
 ) -> Result<(), SupervisorError> {
     if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
         return Err(SupervisorError::ProductionAuthorityFeatureDisabled);
@@ -185,6 +188,7 @@ pub async fn run_supervisord_with_grant_verifier(
         cancellation,
         Some(verifier),
         Some(revocation_frontier),
+        Some(compatibility_receipt_sha256),
     )
     .await
 }
@@ -195,10 +199,15 @@ async fn run_supervisord_inner(
     cancellation: CancellationToken,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     production_revocation_frontier: Option<u64>,
+    production_compatibility_receipt_sha256: Option<Sha256Digest>,
 ) -> Result<(), SupervisorError> {
-    if production_grant_verifier.is_some() != production_revocation_frontier.is_some() {
+    let production_configured = production_grant_verifier.is_some();
+    if production_configured != production_revocation_frontier.is_some()
+        || production_configured != production_compatibility_receipt_sha256.is_some()
+    {
         return Err(SupervisorError::Invalid(
-            "production verifier and revocation frontier must be configured together".to_string(),
+            "production verifier, revocation frontier and compatibility receipt must be configured together"
+                .to_string(),
         ));
     }
     let registry = FleetRegistry::open_existing(fleet_root)?;
@@ -222,12 +231,18 @@ async fn run_supervisord_inner(
     if let Some(revocation_frontier) = production_revocation_frontier {
         supervisor.set_production_revocation_frontier(revocation_frontier)?;
     }
+    if let Some(compatibility_receipt_sha256) =
+        production_compatibility_receipt_sha256.clone()
+    {
+        supervisor.set_production_compatibility_receipt(compatibility_receipt_sha256)?;
+    }
     let state = Arc::new(DaemonState {
         registry,
         supervisor: Mutex::new(supervisor),
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier,
         production_revocation_frontier,
+        production_compatibility_receipt_sha256,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
     });
     let server = SupervisordServer::bind(
@@ -263,6 +278,7 @@ async fn run_supervisord_inner(
     _cancellation: CancellationToken,
     _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     _production_revocation_frontier: Option<u64>,
+    _production_compatibility_receipt_sha256: Option<Sha256Digest>,
 ) -> Result<(), SupervisorError> {
     Err(std::io::Error::new(
         ErrorKind::Unsupported,
@@ -627,6 +643,15 @@ async fn handle_recovery_resolution<D: ProcessDriver>(
             /*actual*/ None,
         );
     };
+    let Some(compatibility_receipt_sha256) =
+        state.production_compatibility_receipt_sha256.clone()
+    else {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production recovery requires a pinned compatibility receipt",
+            /*actual*/ None,
+        );
+    };
     let agent_id = fence.agent_id.clone();
     let mut supervisor = state.supervisor.lock().await;
     let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
@@ -649,6 +674,7 @@ async fn handle_recovery_resolution<D: ProcessDriver>(
         &verifier,
         authority_epoch,
         revocation_frontier,
+        &compatibility_receipt_sha256,
         unix_seconds_now(),
     ) {
         Ok(receipt) => receipt,
@@ -695,6 +721,15 @@ async fn handle_signed_mutation<D: ProcessDriver>(
             /*actual*/ None,
         );
     };
+    let Some(compatibility_receipt_sha256) =
+        state.production_compatibility_receipt_sha256.clone()
+    else {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production mutations require a pinned compatibility receipt",
+            /*actual*/ None,
+        );
+    };
     if grant.transition != transition {
         return error_payload(
             "production_authority_rejected",
@@ -726,6 +761,7 @@ async fn handle_signed_mutation<D: ProcessDriver>(
         &verifier,
         authority_epoch,
         revocation_frontier,
+        &compatibility_receipt_sha256,
         unix_seconds_now(),
         Instant::now(),
     ) {
