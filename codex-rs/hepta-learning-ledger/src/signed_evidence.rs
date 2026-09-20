@@ -26,6 +26,7 @@ pub enum LearningEvidenceRoleV1 {
     Evaluator,
     Scorer,
     RandomSource,
+    RequestAttestor,
 }
 
 impl LearningEvidenceRoleV1 {
@@ -36,6 +37,7 @@ impl LearningEvidenceRoleV1 {
             Self::Evaluator => 2,
             Self::Scorer => 3,
             Self::RandomSource => 4,
+            Self::RequestAttestor => 5,
         }
     }
 }
