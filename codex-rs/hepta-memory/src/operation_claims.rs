@@ -43,7 +43,7 @@ impl ClaimState {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct DurableDispatchClaim {
+pub struct DurableDispatchClaim {
     pub operation_id: String,
     pub claim_sequence: u64,
     pub attempt: u32,
