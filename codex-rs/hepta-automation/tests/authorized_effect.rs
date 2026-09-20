@@ -739,10 +739,11 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
     let expected_digest = compensation.digest().expect("compensation intent digest");
     let (store, owner, compensation, expected) =
         prepared_effect_store_for(&fixture, compensation).await;
-    let (authority, signed, _authority_dir) =
-        final_use(expected.clone(), "compensation-crash");
-    let mut ambiguous =
-        RecordingDriver::receipt(AuthorizedEffectOutcome::Indeterminate, b"compensation-unknown");
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "compensation-crash");
+    let mut ambiguous = RecordingDriver::receipt(
+        AuthorizedEffectOutcome::Indeterminate,
+        b"compensation-unknown",
+    );
 
     let first = store
         .execute_authorized_taskflow_effect(
