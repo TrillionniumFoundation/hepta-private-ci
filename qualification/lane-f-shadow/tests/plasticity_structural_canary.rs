@@ -75,7 +75,11 @@ fn generation(value: u64) -> Generation {
     Generation::new(value).expect("valid generation")
 }
 
-fn canary_observer() -> (LearningEvidenceVerifierV1, SigningKey, AuthenticatedPrincipalV1) {
+fn canary_observer() -> (
+    LearningEvidenceVerifierV1,
+    SigningKey,
+    AuthenticatedPrincipalV1,
+) {
     let key = SigningKey::from_bytes(&[23_u8; 32]);
     let scope = digest("canary:scope");
     let objective = digest("canary:objective");
