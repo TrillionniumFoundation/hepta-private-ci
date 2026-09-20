@@ -21,6 +21,7 @@ pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ROWS;
+pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AuthBusClaimRequest;
 pub use authbus_outbox_record::AuthBusDelivery;
 pub use authbus_outbox_record::AuthBusDeliveryState;

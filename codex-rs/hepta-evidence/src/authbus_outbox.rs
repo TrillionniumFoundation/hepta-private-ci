@@ -73,6 +73,17 @@ impl HeptaEvidenceStore {
         }
         advance_replay(&mut tx, &authenticated).await?;
         maintain(&mut tx, now).await?;
+        let active_for_issuer: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_outbox
+             WHERE issuer_id = ? AND state IN ('queued', 'leased')",
+        )
+        .bind(c.issuer_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if active_for_issuer >= AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER {
+            return Err(AuthBusOutboxError::Capacity);
+        }
         let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox")
             .fetch_one(&mut *tx)
             .await
