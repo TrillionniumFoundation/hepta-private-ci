@@ -61,6 +61,16 @@ jobs:
         run: cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets -- -D warnings
       - name: Run policy and frozen-data qualification tests
         run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
+      - name: Capture source-host profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "source_sha=$(git rev-parse HEAD)"
+            uname -a
+            rustc -Vv
+            if command -v lscpu >/dev/null 2>&1; then lscpu; fi
+          } | tee ../intuition-source-host-profile.txt
       - name: Run kernel fast-policy gate
         shell: bash
         run: |
@@ -81,6 +91,7 @@ jobs:
           path: |
             intuition-kernel-fast-gate.csv
             intuition-authenticated-fast-gate.csv
+            intuition-source-host-profile.txt
           if-no-files-found: error
           retention-days: 30
 
