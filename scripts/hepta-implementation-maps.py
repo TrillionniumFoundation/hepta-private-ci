@@ -360,7 +360,24 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            recorded_commit = source_base["commit"]
+            recorded_tree = source_base["tree"]
+            source_bases.add((recorded_commit, recorded_tree))
+            try:
+                observed_tree = git("rev-parse", f"{recorded_commit}^{{tree}}")
+            except subprocess.CalledProcessError as exc:
+                failures.append(f"{mid}: source base commit unavailable ({exc})")
+            else:
+                if observed_tree != recorded_tree:
+                    failures.append(f"{mid}: source base tree mismatch")
+                ancestry = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", recorded_commit, "HEAD"],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                )
+                if ancestry.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
