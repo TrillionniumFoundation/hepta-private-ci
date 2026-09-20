@@ -372,7 +372,7 @@
     },
     {
       "operation": "runtime_topology_execution",
-      "nativeSymbol": "apply_governed_topology / recover_governed_topology",
+      "nativeSymbol": "apply_governed_topology",
       "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
       "state": "source_implemented_distinct_final_use_authorized_live_cns_replacement_and_stopped_quarantined_recovery_not_target_host_qualified",
       "authority": "external_final_use_required",
@@ -389,8 +389,25 @@
       ]
     },
     {
+      "operation": "runtime_topology_recovery",
+      "nativeSymbol": "recover_governed_topology",
+      "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
+      "state": "source_implemented_distinct_final_use_stopped_quarantined_exact_successor_recovery_not_target_host_qualified",
+      "authority": "external_recovery_final_use_required",
+      "tests": [
+        "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "runtime_topology_recovery",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "kernel.authority",
+        "control.runtime"
+      ]
+    },
+    {
       "operation": "runtime_structural_canary_fault_rollback",
-      "nativeSymbol": "apply_governed_topology / recover_governed_topology",
+      "nativeSymbol": "recover_governed_topology",
       "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
       "state": "qualification_composed_live_apply_forced_stopped_host_fault_distinct_recovery_final_use_rollforward_and_authenticated_observer_receipt_not_target_host_qualified",
       "authority": "external_final_use_required_for_apply_and_rollback",
