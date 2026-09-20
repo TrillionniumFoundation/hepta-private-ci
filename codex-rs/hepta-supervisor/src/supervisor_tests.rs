@@ -2032,6 +2032,16 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
         "unresolved production intent remains quarantined until independent recovery"
     );
     recovered.set_production_revocation_frontier(7)?;
+    let compatibility_receipt = Sha256Digest::for_bytes(b"compatibility-receipt");
+    recovered.set_production_compatibility_receipt(compatibility_receipt.clone())?;
+    recovered.set_production_compatibility_receipt(compatibility_receipt.clone())?;
+    assert!(matches!(
+        recovered.set_production_compatibility_receipt(
+            Sha256Digest::for_bytes(b"different-compatibility-receipt")
+        ),
+        Err(SupervisorError::ProductionAuthority(message))
+            if message.contains("immutable")
+    ));
 
     let signer = crate::H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32])
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -2063,7 +2073,15 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
     assert!(matches!(
-        recovered.resolve_production_recovery(&fleet.first, &decision, &verifier, 23, 8, 150,),
+        recovered.resolve_production_recovery(
+            &fleet.first,
+            &decision,
+            &verifier,
+            23,
+            8,
+            &compatibility_receipt,
+            150,
+        ),
         Err(SupervisorError::ProductionAuthority(_))
     ));
     assert_eq!(
@@ -2074,8 +2092,31 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
         crate::ProductionMutationStatus::RecoveryRequired
     );
 
+    let stale_compatibility = Sha256Digest::for_bytes(b"stale-compatibility-receipt");
+    assert!(matches!(
+        recovered.resolve_production_recovery(
+            &fleet.first,
+            &decision,
+            &verifier,
+            23,
+            7,
+            &stale_compatibility,
+            150,
+        ),
+        Err(SupervisorError::ProductionAuthority(message))
+            if message.contains("compatibility")
+    ));
+
     let receipt =
-        recovered.resolve_production_recovery(&fleet.first, &decision, &verifier, 23, 7, 150)?;
+        recovered.resolve_production_recovery(
+            &fleet.first,
+            &decision,
+            &verifier,
+            23,
+            7,
+            &compatibility_receipt,
+            150,
+        )?;
     assert_eq!(receipt.status, crate::ProductionMutationStatus::Committed);
     assert_eq!(receipt.target_release, target_id.to_string());
     assert_eq!(receipt.control_revision, 2);
