@@ -102,9 +102,39 @@ impl NativeShellRuntime {
         })
     }
 
-    pub fn runtime_status(&mut self) -> Result<serde_json::Value, ShellError> {
-        self.require_session()?;
-        self.backend.runtime_status()
+    pub fn refresh_runtime_view(
+        &mut self,
+    ) -> Result<(PresentationState, serde_json::Value), ShellError> {
+        let session = self.require_session()?.clone();
+        let observed = self.backend.runtime_status()?;
+        validate_digest(&observed.body_digest, "backend.runtime_status_digest")?;
+        let observed_generation = observed
+            .value
+            .pointer("/state/runtime_snapshot_generation")
+            .and_then(serde_json::Value::as_u64)
+            .ok_or_else(|| {
+                ShellError::Backend(
+                    "authenticated runtime status lacks runtime_snapshot_generation".to_owned(),
+                )
+            })?;
+        let generation = observed_generation.max(1);
+        let revision = match &self.view {
+            Some(previous) if previous.generation == generation => previous
+                .revision
+                .checked_add(1)
+                .ok_or_else(|| ShellError::State("runtime view revision overflow".to_owned()))?,
+            _ => 1,
+        };
+        let view = RuntimeView {
+            session_id: session.session_id,
+            session_generation: session.generation,
+            generation,
+            revision,
+            digest: observed.body_digest,
+            modules: vec!["runtime.agentd".to_owned(), "ui.native".to_owned()],
+        };
+        let presentation = self.render_runtime_view(view)?;
+        Ok((presentation, observed.value))
     }
 
     pub fn request_platform_capability(
