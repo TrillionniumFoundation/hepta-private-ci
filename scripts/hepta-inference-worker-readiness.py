@@ -41,6 +41,7 @@ EVIDENCE_CLASSES = (
     "merge-candidate-tested",
 )
 REQUIRED_TEST_CHECKS = (
+    "codex-hepta-contracts-lib",
     "codex-hepta-infer-core-lib",
     "codex-hepta-infer-worker-host-lib",
     "codex-hepta-inferd-lib",
