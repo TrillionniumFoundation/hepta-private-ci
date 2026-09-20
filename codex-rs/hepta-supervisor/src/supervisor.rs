@@ -1154,14 +1154,54 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         slot.control_revision = selection.control_revision;
 
-        // A terminal authoritative selection is sufficient to repair a
-        // missing/stale intent after a crash between the two terminal writes.
+        // A terminal authoritative selection can repair a missing/stale
+        // intent only when the independently durable Fleet release state and
+        // immutable bytes prove the same terminal outcome. Journal status
+        // alone never manufactures a committed physical release.
         if selection.status.terminal() {
-            let terminal_intent_status = match selection.status {
-                ReleaseSelectionStatus::Committed => SignedIntentStatus::Committed,
-                ReleaseSelectionStatus::RolledBack => SignedIntentStatus::RolledBack,
-                _ => unreachable!(),
+            let (terminal_intent_status, expected_release, manifest, agentd, matrixd) =
+                match selection.status {
+                    ReleaseSelectionStatus::Committed => (
+                        SignedIntentStatus::Committed,
+                        selection.target_release.as_str(),
+                        selection.binding.target_manifest_sha256.as_str(),
+                        selection.binding.target_agentd_sha256.as_str(),
+                        selection
+                            .binding
+                            .target_matrixd_sha256
+                            .as_ref()
+                            .map(|digest| digest.as_str()),
+                    ),
+                    ReleaseSelectionStatus::RolledBack => (
+                        SignedIntentStatus::RolledBack,
+                        selection.source_release.as_str(),
+                        selection.binding.source_manifest_sha256.as_str(),
+                        selection.binding.source_agentd_sha256.as_str(),
+                        selection
+                            .binding
+                            .source_matrixd_sha256
+                            .as_ref()
+                            .map(|digest| digest.as_str()),
+                    ),
+                    _ => unreachable!(),
+                };
+            let current = self.record(agent_id)?.release_state.current;
+            let durable_release_matches = current
+                .as_ref()
+                .is_some_and(|release| release.as_str() == expected_release);
+            let bytes_match = if durable_release_matches {
+                let release_id = ReleaseId::parse(expected_release.to_string())?;
+                let provenance = self.registry.release_provenance(agent_id, &release_id)?;
+                provenance.manifest_sha256 == manifest
+                    && provenance.agentd_sha256 == agentd
+                    && provenance.matrixd_sha256.as_deref() == matrixd
+            } else {
+                false
             };
+            if !durable_release_matches || !bytes_match {
+                return self.quarantine_unresolved_selection(agent_id, slot, &selection);
+            }
+
             let expected =
                 Self::intent_from_release_selection(&selection, terminal_intent_status)?;
             let needs_repair = intent.as_ref().is_none_or(|actual| {
