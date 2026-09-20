@@ -2,20 +2,20 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "505817f4305b0a8b6b86d8d9ee2e1a9621d93b17",
+    "tree": "6d4cb22a9cd16d90474e6d30c9e3c110d4ba6213"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
-  "sourceMaturity": "native_composition_host",
+  "sourceMaturity": "native_composition_host_with_durable_prompt_runtime_source",
   "declaredRoots": [
     "codex-rs/hepta-agentd"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-agentd"
   ],
-  "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
-  "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
+  "stateOwnerDisposition": "Owns bounded run/composition state plus the durable prompt provider-attempt/terminal reconciliation projection; prompt factor/realization facts remain owned by prompt.registry.",
+  "terminalObserverDisposition": "Agentd durably claims the exact provider dispatch binding before send, persists missing/indeterminate terminal uncertainty across reopen, and accepts final terminal settlement only from the delegated runtime.codex provider owner.",
   "operations": [
     {
       "designOperation": "compose_runtime",
@@ -132,17 +132,89 @@
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "compose_prompt_pipeline",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "symbol": "pub struct AgentdPromptPipelineOwner",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+          "symbol": "pub fn compile_prompt_registry_v2(",
+          "buildTarget": "codex-hepta-intelligence",
+          "ownerModule": "intelligence.control"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-codex-adapter/src/runtime_prompt.rs",
+          "symbol": "pub struct PromptRuntimeHost",
+          "buildTarget": "codex-hepta-codex-adapter",
+          "ownerModule": "runtime.codex"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+          "kind": "durable_prompt_product_composition",
+          "command": "cargo test --locked -p codex-hepta-agentd prompt_runtime_tests -- --nocapture"
+        }
+      ],
+      "sourceSemantics": "Agentd opens the authoritative durable prompt registry and durable runtime attempt owner, derives candidate source from that registry, validates canonical optimizer exercise through context compilation, and stages exact realization bytes into the App Server prompt host.",
+      "operation": "compose_prompt_pipeline",
+      "nativeSymbol": "AgentdPromptPipelineOwner",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "record_prompt_provider_boundary",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "symbol": "AgentdPromptRuntimeOwner",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-codex-adapter/src/runtime_prompt.rs",
+          "symbol": "PromptRuntimeDispatchRecordV1",
+          "buildTarget": "codex-hepta-codex-adapter",
+          "ownerModule": "runtime.codex"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+          "kind": "crash_ack_loss_reconciliation",
+          "command": "cargo test --locked -p codex-hepta-agentd prompt_runtime_tests -- --nocapture"
+        }
+      ],
+      "sourceSemantics": "Persists the exact physical provider-request dispatch claim before send; crash/reopen with no terminal or indeterminate terminal blocks blind retry until monotonic reconciliation.",
+      "operation": "record_prompt_provider_boundary",
+      "nativeSymbol": "AgentdPromptRuntimeOwner",
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Execute AgentdPromptPipelineOwner through a real non-test turn ingress; source composition and App Server installation exist but product execution is not proved.",
+    "Complete current exact-head and deterministic synthetic-merge qualification for the modified Agentd/App Server/Codex path."
+  ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
-    "non-test caller through the full Codex turn path",
-    "target backpressure/restart measurements"
+    "real provider/target-host execution and backpressure/restart measurements",
+    "independent operator acceptance"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
-    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledDocumentationGapsClosed": false,
     "repositoryControlledMappingGapsClosed": true,
     "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
@@ -157,12 +229,13 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_composed_not_product_executed",
+  "productionWriterState": "durable_prompt_runtime_owner_source_implemented_not_runtime_activated",
   "owner": "agent-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-agentd"
-  ]
+  ],
+  "sourceBaseSemantics": "module_local_provenance_last_reviewed_source_commit_tree"
 }
