@@ -695,3 +695,15 @@ fn process_death_between_ledger_and_witness_reconciles_without_redispatch() {
     assert_eq!(receipt.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(writer.witness_frontier().unwrap().anchor.sequence, 1);
 }
+
+
+#[test]
+fn directory_durability_requires_an_actual_directory_handle() {
+    let fixture = Fixture::new();
+    let directory = fixture.directory();
+    sync_directory_handle(&directory).unwrap();
+    assert_eq!(
+        sync_directory_handle(&fixture.file("ledger")).err(),
+        Some(DurableLedgerError::NotDirectory)
+    );
+}
