@@ -2,7 +2,7 @@
 
 Parent: `docs/modules/intuition.policy/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
 
-Status: bounded calibrated decision, complete-request binding, canonical profile enforcement, per-decision learned-score provenance, four-role signed admission and split kernel/authenticated performance gates are source implemented on this candidate. Product composition, real production artifacts, independent acceptance and release remain separate gates.
+Status: bounded calibrated decision, complete-request binding, canonical profile enforcement, per-decision learned-score provenance, five-role signed admission and split kernel/authenticated performance gates are source implemented on this candidate. Product composition, real production artifacts, independent acceptance and release remain separate gates.
 
 ## 1. Source and work envelope
 
@@ -32,7 +32,8 @@ The source separates:
 - exact feature snapshot/schema;
 - calibration/OOD artifact and dataset identities;
 - candidate completeness;
-- learned outputs and randomized assignment probabilities;
+- learned score outputs;
+- exact request / assignment-distribution ownership;
 - random-stream/counter/draw ownership.
 
 No model digest is used as the policy digest by construction.
@@ -60,12 +61,13 @@ The current authenticated flow is:
 
 1. Generator signs candidate identity and completeness.
 2. Scorer signs `ScoringCommitmentV1` over model, feature snapshot/schema and exact output values.
-3. Evaluator signs the reusable canonical profile qualification.
-4. RandomSource signs exact stream + request sequence/counter + draw + assignment distribution for CounterBased requests.
-5. The host verifies all evidence through `LearningEvidenceVerifierV1`, including revocation/window/authority and signer/controller independence.
-6. The host computes the exact calibrated request digest.
-7. V3 validates profile and scoring correspondence, then delegates bounded selection to V2.
-8. The authenticated receipt binds exact request, all evidence payloads/signatures and V3 receipt.
+3. RequestAttestor signs the exact calibrated request digest, including decision-time risk classification.
+4. Evaluator signs the reusable canonical profile qualification.
+5. RandomSource signs exact stream + request sequence/counter + draw + assignment distribution for CounterBased requests.
+6. The host verifies all evidence through `LearningEvidenceVerifierV1`, including revocation/window/authority and pairwise signer/controller independence.
+7. The host accepts the exact calibrated request only after the RequestAttestor attestation verifies.
+8. V3 validates profile and scoring correspondence, then delegates bounded selection to V2.
+9. The authenticated receipt binds exact request, all evidence payloads/signatures and V3 receipt.
 
 Deterministic assignment has no RandomSource evidence. Randomized assignment without it fails closed.
 
@@ -76,7 +78,7 @@ Deterministic assignment has no RandomSource evidence. Randomized assignment wit
 - INT-03: request-local threshold or qualified artifact metadata drift fails before selection.
 - INT-04: model/policy/scorer identities are independent and explicitly bound.
 - INT-05: score mutation after `ScoringCommitmentV1` fails.
-- INT-06: missing/tampered scorer or RandomSource evidence fails.
+- INT-06: missing/tampered scorer, RequestAttestor exact-request or RandomSource evidence fails.
 - INT-07: frozen reference model/data derive ECE/OOD artifacts and exercise the complete signed chain.
 - INT-08: kernel and authenticated end-to-end gates both report 1/16/64/128-candidate p50/p95/p99 and throughput.
 
@@ -88,13 +90,13 @@ Kernel gate: `codex-rs/hepta-intuition/examples/fast_gate.rs`.
 
 Authenticated end-to-end gate: `codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs`.
 
-The second gate includes Ed25519 trust verification, role/controller independence, profile/scoring/RNG admission and the V3 decision. CI limits are regression ceilings, not product SLOs.
+The second gate includes Ed25519 trust verification, role/controller independence, RequestAttestor-authenticated exact-request admission, profile/scoring/RNG admission and the V3 decision. CI limits are regression ceilings, not product SLOs.
 
 ## 8. Current native implementation and remaining work
 
 - **Implemented entrypoints:** `decide_calibrated` in [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs); `decide_calibrated_v2` in [codex-rs/hepta-intuition/src/calibrated_binding.rs](../../../codex-rs/hepta-intuition/src/calibrated_binding.rs); `decide_calibrated_v3` and `scoring_commitment_for_request_v1` in [codex-rs/hepta-intuition/src/qualified.rs](../../../codex-rs/hepta-intuition/src/qualified.rs); `decide_authenticated_intuition_v1` in [codex-rs/hepta-intelligence/src/intuition_qualification.rs](../../../codex-rs/hepta-intelligence/src/intuition_qualification.rs).
 - **Trust extension:** `LearningEvidenceRoleV1::{Scorer, RandomSource}` and pairwise verified independence live in [codex-rs/hepta-learning-ledger/src/signed_evidence.rs](../../../codex-rs/hepta-learning-ledger/src/signed_evidence.rs).
-- **Source tests:** [qualified policy tests](../../../codex-rs/hepta-intuition/src/qualified_tests.rs), [frozen four-role qualification](../../../codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs), [authenticated end-to-end fast gate](../../../codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs), and [kernel fast gate](../../../codex-rs/hepta-intuition/examples/fast_gate.rs).
+- **Source tests:** [qualified policy tests](../../../codex-rs/hepta-intuition/src/qualified_tests.rs), [frozen five-role qualification](../../../codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs), [authenticated end-to-end fast gate](../../../codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs), and [kernel fast gate](../../../codex-rs/hepta-intuition/examples/fast_gate.rs).
 
 - **Remaining work:**
 
