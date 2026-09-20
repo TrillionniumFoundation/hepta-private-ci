@@ -39,7 +39,6 @@ pub struct KernelEvidenceVerifyV1 {
     pub candidate: KernelEvidenceCandidateV1,
     pub claim_class: String,
     pub required_roles: Vec<String>,
-    pub now_unix_ms: u64,
 }
 
 /// JSON is the canonical serde representation of the kernel.evidence native
