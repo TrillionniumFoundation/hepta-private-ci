@@ -4,42 +4,21 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
+use serde::Deserialize;
+use serde::Serialize;
+
+use crate::FleetResourceVectorV1;
+
 const MAX_HOSTS: usize = 256;
 const MAX_ACTIVE_GRANTS: usize = 16_384;
+const MAX_RETAINED_GRANTS: usize = 32_768;
+const MAX_CONSUMPTION_OBSERVATION_AGE_MS: u64 = 30_000;
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct Resources {
-    pub cpu_millis: u64,
-    pub memory_bytes: u64,
-    pub accelerator_millis: u64,
-}
+/// Compatibility name retained for existing lease-ledger callers.
+pub type Resources = FleetResourceVectorV1;
 
-impl Resources {
-    pub fn checked_add(self, other: Self) -> Result<Self, Error> {
-        Ok(Self {
-            cpu_millis: self
-                .cpu_millis
-                .checked_add(other.cpu_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-            memory_bytes: self
-                .memory_bytes
-                .checked_add(other.memory_bytes)
-                .ok_or(Error::ArithmeticOverflow)?,
-            accelerator_millis: self
-                .accelerator_millis
-                .checked_add(other.accelerator_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-        })
-    }
-
-    pub fn fits(self, capacity: Self) -> bool {
-        self.cpu_millis <= capacity.cpu_millis
-            && self.memory_bytes <= capacity.memory_bytes
-            && self.accelerator_millis <= capacity.accelerator_millis
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct HostObservation {
     pub host_id: String,
     pub failure_domain_id: String,
@@ -49,7 +28,8 @@ pub struct HostObservation {
     pub capacity: Resources,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct AllocationGrant {
     pub allocation_id: String,
     pub request_id: String,
@@ -63,6 +43,26 @@ pub struct AllocationGrant {
     pub resources: Resources,
     pub semantic_digest: String,
     pub revoked: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FleetConsumptionObservationV1 {
+    pub allocation_id: String,
+    pub lease_generation: u64,
+    pub authority_epoch: u64,
+    pub semantic_digest: String,
+    pub observed_at_ms: u64,
+    pub holder_present: bool,
+    pub resources_in_use: Resources,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum FleetReconciliationOutcomeV1 {
+    Confirmed,
+    Released,
+    Quarantined,
+    Unchanged,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -115,35 +115,29 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct LeaseLedger {
     hosts: BTreeMap<String, HostObservation>,
     grants: BTreeMap<String, AllocationGrant>,
+    holder_observations: BTreeMap<String, FleetConsumptionObservationV1>,
 }
 
-impl Default for LeaseLedger {
-    fn default() -> Self {
-        Self::new()
-    }
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct LeaseLedgerStateV1 {
+    hosts: BTreeMap<String, HostObservation>,
+    grants: BTreeMap<String, AllocationGrant>,
+    #[serde(default)]
+    holder_observations: BTreeMap<String, FleetConsumptionObservationV1>,
 }
 
 impl LeaseLedger {
     pub fn new() -> Self {
-        Self {
-            hosts: BTreeMap::new(),
-            grants: BTreeMap::new(),
-        }
+        Self::default()
     }
 
     pub fn admit_host(&mut self, observation: HostObservation) -> Result<(), Error> {
-        validate_identity(&observation.host_id, "host")?;
-        validate_identity(&observation.failure_domain_id, "failure domain")?;
-        if observation.generation == 0
-            || observation.observed_at_ms >= observation.valid_until_ms
-            || observation.capacity == Resources::default()
-        {
-            return Err(Error::HostCapacity);
-        }
+        validate_host(&observation)?;
         if let Some(current) = self.hosts.get(&observation.host_id) {
             if observation.generation < current.generation {
                 return Err(Error::InvalidGeneration);
@@ -153,6 +147,9 @@ impl LeaseLedger {
             }
             if observation == *current {
                 return Ok(());
+            }
+            if observation.generation > current.generation {
+                self.fence_host_generation(&observation.host_id)?;
             }
         } else if self.hosts.len() >= MAX_HOSTS {
             return Err(Error::CapacityExceeded);
@@ -167,7 +164,11 @@ impl LeaseLedger {
         mut grant: AllocationGrant,
     ) -> Result<LeaseReceipt, Error> {
         validate_grant(&grant)?;
-        let host = self.hosts.get(&grant.host_id).ok_or(Error::HostNotFound)?;
+        let host = self
+            .hosts
+            .get(&grant.host_id)
+            .cloned()
+            .ok_or(Error::HostNotFound)?;
         if now_ms < host.observed_at_ms || now_ms >= host.valid_until_ms {
             return Err(Error::StaleHost);
         }
@@ -185,11 +186,20 @@ impl LeaseLedger {
             }
             return Err(Error::Conflict);
         }
-        if self.grants.len() >= MAX_ACTIVE_GRANTS {
+        if self.active_grant_count(now_ms) >= MAX_ACTIVE_GRANTS {
             return Err(Error::GrantCapacityExceeded);
         }
-        let committed = self.committed_resources(&grant.host_id, now_ms)?;
-        if !committed.checked_add(grant.resources)?.fits(host.capacity) {
+        if self.grants.len() >= MAX_RETAINED_GRANTS {
+            self.prune_terminal(now_ms);
+            if self.grants.len() >= MAX_RETAINED_GRANTS {
+                return Err(Error::GrantCapacityExceeded);
+            }
+        }
+        let reserved = self.reserved_resources_for_placement(&grant.host_id, now_ms)?;
+        let total = reserved
+            .checked_add(grant.resources)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if !total.fits(host.capacity) {
             return Err(Error::CapacityExceeded);
         }
         grant.revoked = false;
@@ -252,34 +262,294 @@ impl LeaseLedger {
                 if expires_at_ms == current.expires_at_ms {
                     return Ok(receipt(&current, LeaseOutcome::Unchanged));
                 }
-                let grant = self
-                    .grants
-                    .get_mut(allocation_id)
-                    .ok_or(Error::AllocationNotFound)?;
-                grant.expires_at_ms = expires_at_ms;
-                grant.lease_generation = grant
-                    .lease_generation
-                    .checked_add(1)
-                    .ok_or(Error::ArithmeticOverflow)?;
-                Ok(receipt(grant, LeaseOutcome::Renewed))
+                let result = {
+                    let grant = self
+                        .grants
+                        .get_mut(allocation_id)
+                        .ok_or(Error::AllocationNotFound)?;
+                    grant.expires_at_ms = expires_at_ms;
+                    grant.lease_generation = grant
+                        .lease_generation
+                        .checked_add(1)
+                        .ok_or(Error::ArithmeticOverflow)?;
+                    receipt(grant, LeaseOutcome::Renewed)
+                };
+                // A release/holder observation for the predecessor lease fence
+                // cannot be reused to settle the renewed lease.
+                self.holder_observations.remove(allocation_id);
+                Ok(result)
             }
         }
+    }
+
+    pub fn reconcile_consumption(
+        &mut self,
+        now_ms: u64,
+        observation: FleetConsumptionObservationV1,
+    ) -> Result<FleetReconciliationOutcomeV1, Error> {
+        validate_identity(&observation.allocation_id, "allocation")?;
+        validate_digest(&observation.semantic_digest)?;
+        if observation.lease_generation == 0
+            || observation.authority_epoch == 0
+            || observation.observed_at_ms == 0
+            || observation.observed_at_ms > now_ms
+            || now_ms.saturating_sub(observation.observed_at_ms)
+                > MAX_CONSUMPTION_OBSERVATION_AGE_MS
+        {
+            return Err(Error::InvalidTime);
+        }
+        if observation.holder_present == observation.resources_in_use.is_zero() {
+            return Err(Error::HostCapacity);
+        }
+        let grant = self
+            .grants
+            .get(&observation.allocation_id)
+            .ok_or(Error::AllocationNotFound)?;
+        if grant.authority_epoch != observation.authority_epoch
+            || grant.semantic_digest != observation.semantic_digest
+        {
+            return Err(Error::Conflict);
+        }
+        if observation.lease_generation > grant.lease_generation {
+            return Err(Error::StaleLease);
+        }
+        if !observation.holder_present && !release_fence_matches(grant, &observation) {
+            return Err(Error::StaleLease);
+        }
+        if let Some(previous) = self.holder_observations.get(&observation.allocation_id) {
+            if previous == &observation {
+                return Ok(FleetReconciliationOutcomeV1::Unchanged);
+            }
+            if observation.observed_at_ms <= previous.observed_at_ms {
+                return Err(Error::Conflict);
+            }
+        }
+        let outcome = if !observation.holder_present {
+            FleetReconciliationOutcomeV1::Released
+        } else if observation.lease_generation != grant.lease_generation
+            || grant.revoked
+            || grant.expires_at_ms <= now_ms
+            || !observation.resources_in_use.fits(grant.resources)
+        {
+            FleetReconciliationOutcomeV1::Quarantined
+        } else {
+            FleetReconciliationOutcomeV1::Confirmed
+        };
+        self.holder_observations
+            .insert(observation.allocation_id.clone(), observation);
+        Ok(outcome)
     }
 
     pub fn get(&self, allocation_id: &str) -> Option<&AllocationGrant> {
         self.grants.get(allocation_id)
     }
 
-    fn committed_resources(&self, host_id: &str, now_ms: u64) -> Result<Resources, Error> {
+    pub fn last_consumption_observation(
+        &self,
+        allocation_id: &str,
+    ) -> Option<&FleetConsumptionObservationV1> {
+        self.holder_observations.get(allocation_id)
+    }
+
+    /// Remove terminal grants only after a release observation for the holder
+    /// fence that became terminal. Expiry or revocation alone never frees capacity.
+    pub fn prune_terminal(&mut self, now_ms: u64) -> usize {
+        let removable: Vec<_> = self
+            .grants
+            .values()
+            .filter(|grant| grant.revoked || grant.expires_at_ms <= now_ms)
+            .filter(|grant| {
+                self.holder_observations
+                    .get(&grant.allocation_id)
+                    .is_some_and(|observation| terminal_release_matches(grant, observation, now_ms))
+            })
+            .map(|grant| grant.allocation_id.clone())
+            .collect();
+        for allocation_id in &removable {
+            self.grants.remove(allocation_id);
+            self.holder_observations.remove(allocation_id);
+        }
+        removable.len()
+    }
+
+    pub(crate) fn snapshot_state(&self) -> LeaseLedgerStateV1 {
+        LeaseLedgerStateV1 {
+            hosts: self.hosts.clone(),
+            grants: self.grants.clone(),
+            holder_observations: self.holder_observations.clone(),
+        }
+    }
+
+    pub(crate) fn restore_state(state: LeaseLedgerStateV1, now_ms: u64) -> Result<Self, Error> {
+        let ledger = Self {
+            hosts: state.hosts,
+            grants: state.grants,
+            holder_observations: state.holder_observations,
+        };
+        ledger.validate_recovered(now_ms)?;
+        Ok(ledger)
+    }
+
+    pub(crate) fn validate_recovered(&self, now_ms: u64) -> Result<(), Error> {
+        if self.hosts.len() > MAX_HOSTS {
+            return Err(Error::CapacityExceeded);
+        }
+        if self.grants.len() > MAX_RETAINED_GRANTS {
+            return Err(Error::GrantCapacityExceeded);
+        }
+        for host in self.hosts.values() {
+            validate_host(host)?;
+        }
+        for grant in self.grants.values() {
+            validate_grant(grant)?;
+            let host = self.hosts.get(&grant.host_id).ok_or(Error::HostNotFound)?;
+            if grant.failure_domain_id != host.failure_domain_id
+                || grant.host_generation > host.generation
+            {
+                return Err(Error::StaleHost);
+            }
+            if !grant.revoked && grant.expires_at_ms > now_ms {
+                if grant.host_generation != host.generation
+                    || now_ms < host.observed_at_ms
+                    || now_ms >= host.valid_until_ms
+                    || grant.expires_at_ms > host.valid_until_ms
+                {
+                    return Err(Error::StaleHost);
+                }
+            }
+        }
+        for (allocation_id, observation) in &self.holder_observations {
+            if allocation_id != &observation.allocation_id {
+                return Err(Error::Conflict);
+            }
+            validate_digest(&observation.semantic_digest)?;
+            let grant = self.grants.get(allocation_id).ok_or(Error::AllocationNotFound)?;
+            if observation.authority_epoch != grant.authority_epoch
+                || observation.semantic_digest != grant.semantic_digest
+                || observation.lease_generation == 0
+                || observation.lease_generation > grant.lease_generation
+                || observation.observed_at_ms == 0
+                || observation.holder_present == observation.resources_in_use.is_zero()
+            {
+                return Err(Error::Conflict);
+            }
+            if !observation.holder_present && !release_fence_matches(grant, observation) {
+                return Err(Error::Conflict);
+            }
+        }
+        if self.active_grant_count(now_ms) > MAX_ACTIVE_GRANTS {
+            return Err(Error::GrantCapacityExceeded);
+        }
+        for host_id in self.hosts.keys() {
+            let reserved = self.reserved_resources_for_placement(host_id, now_ms)?;
+            let capacity = self.hosts.get(host_id).ok_or(Error::HostNotFound)?.capacity;
+            if !reserved.fits(capacity) {
+                return Err(Error::CapacityExceeded);
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn hosts(&self) -> &BTreeMap<String, HostObservation> {
+        &self.hosts
+    }
+
+    pub(crate) fn grants(&self) -> &BTreeMap<String, AllocationGrant> {
+        &self.grants
+    }
+
+    pub(crate) fn reserved_resources_for_placement(
+        &self,
+        host_id: &str,
+        now_ms: u64,
+    ) -> Result<Resources, Error> {
         self.grants
             .values()
-            .filter(|grant| {
-                grant.host_id == host_id && !grant.revoked && grant.expires_at_ms > now_ms
-            })
+            .filter(|grant| grant.host_id == host_id)
             .try_fold(Resources::default(), |sum, grant| {
+                let terminal = grant.revoked || grant.expires_at_ms <= now_ms;
+                let released = terminal
+                    && self
+                        .holder_observations
+                        .get(&grant.allocation_id)
+                        .is_some_and(|observation| {
+                            terminal_release_matches(grant, observation, now_ms)
+                        });
+                if released {
+                    return Ok(sum);
+                }
+                if let Some(observation) = self.holder_observations.get(&grant.allocation_id) {
+                    if observation.holder_present
+                        && !observation.resources_in_use.fits(grant.resources)
+                    {
+                        return Err(Error::CapacityExceeded);
+                    }
+                }
                 sum.checked_add(grant.resources)
+                    .ok_or(Error::ArithmeticOverflow)
             })
     }
+
+    fn fence_host_generation(&mut self, host_id: &str) -> Result<(), Error> {
+        if self.grants.values().any(|grant| {
+            grant.host_id == host_id && !grant.revoked && grant.lease_generation == u64::MAX
+        }) {
+            return Err(Error::ArithmeticOverflow);
+        }
+        for grant in self
+            .grants
+            .values_mut()
+            .filter(|grant| grant.host_id == host_id && !grant.revoked)
+        {
+            grant.revoked = true;
+            grant.lease_generation += 1;
+        }
+        Ok(())
+    }
+
+    fn active_grant_count(&self, now_ms: u64) -> usize {
+        self.grants
+            .values()
+            .filter(|grant| !grant.revoked && grant.expires_at_ms > now_ms)
+            .count()
+    }
+}
+
+fn release_fence_matches(
+    grant: &AllocationGrant,
+    observation: &FleetConsumptionObservationV1,
+) -> bool {
+    if observation.holder_present {
+        return false;
+    }
+    if grant.revoked {
+        return observation
+            .lease_generation
+            .checked_add(1)
+            .is_some_and(|generation| generation == grant.lease_generation);
+    }
+    observation.lease_generation == grant.lease_generation
+}
+
+fn terminal_release_matches(
+    grant: &AllocationGrant,
+    observation: &FleetConsumptionObservationV1,
+    now_ms: u64,
+) -> bool {
+    (grant.revoked || grant.expires_at_ms <= now_ms)
+        && release_fence_matches(grant, observation)
+}
+
+fn validate_host(observation: &HostObservation) -> Result<(), Error> {
+    validate_identity(&observation.host_id, "host")?;
+    validate_identity(&observation.failure_domain_id, "failure domain")?;
+    if observation.generation == 0
+        || observation.observed_at_ms >= observation.valid_until_ms
+        || observation.capacity.is_zero()
+    {
+        return Err(Error::HostCapacity);
+    }
+    Ok(())
 }
 
 fn validate_identity(value: &str, field: &'static str) -> Result<(), Error> {
@@ -320,7 +590,7 @@ fn validate_grant(grant: &AllocationGrant) -> Result<(), Error> {
     if grant.host_generation == 0 || grant.authority_epoch == 0 || grant.lease_generation == 0 {
         return Err(Error::InvalidGeneration);
     }
-    if grant.resources == Resources::default() {
+    if grant.resources.is_zero() {
         return Err(Error::HostCapacity);
     }
     Ok(())
