@@ -98,6 +98,39 @@ fn principal(name: &str) -> AuthenticatedPrincipalV1 {
         .principal
 }
 
+
+fn trust_root_key() -> SigningKey {
+    SigningKey::from_bytes(&[99; 32])
+}
+
+fn activated_trust() -> ActivatedLearningTrustV1 {
+    let root_key = trust_root_key();
+    let root = LearningTrustRootV1 {
+        root_id: id("learning-root"),
+        scope_digest: digest("scope"),
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 200,
+        revoked_at: None,
+    };
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("trust-distribution"),
+            generation: 1,
+            effective_at: 20,
+            trust: trust(),
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 15,
+        expires_at: 90,
+        signature: [0; 64],
+    };
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().unwrap())
+        .to_bytes();
+    activate_learning_trust(&root, signed, None, 50).unwrap()
+}
+
 fn seed(name: &str) -> u8 {
     match name {
         "generator" => 1,
@@ -162,17 +195,7 @@ impl Fixture {
     fn writer(&self) -> LedgerWriter {
         let ledger = DurableLedger::create(self.file("ledger"), binding(), 64).unwrap();
         let witness = LedgerWitnessStore::create(self.file("witness"), binding()).unwrap();
-        let trust = activate_learning_trust(
-            LearningTrustDistributionV1 {
-                distribution_id: id("trust-distribution"),
-                generation: 1,
-                effective_at: 20,
-                trust: trust(),
-            },
-            None,
-            50,
-        )
-        .unwrap();
+        let trust = activated_trust();
         LedgerWriter::from_durable(ledger, witness, trust).unwrap()
     }
 }

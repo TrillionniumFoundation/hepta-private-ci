@@ -331,17 +331,31 @@ impl Fixture {
     }
 
     pub fn trust_activation(&self) -> ActivatedLearningTrustV1 {
-        activate_learning_trust(
-            LearningTrustDistributionV1 {
+        let root_key = SigningKey::from_bytes(&[99; 32]);
+        let root = LearningTrustRootV1 {
+            root_id: id("evaluated-shadow-test-root"),
+            scope_digest: digest("scope"),
+            verifying_key: root_key.verifying_key().to_bytes(),
+            valid_from: 1,
+            expires_at: 200,
+            revoked_at: None,
+        };
+        let mut signed = SignedLearningTrustDistributionV1 {
+            distribution: LearningTrustDistributionV1 {
                 distribution_id: id("evaluated-shadow-test-trust"),
                 generation: 1,
                 effective_at: 20,
                 trust: self.trust.clone(),
             },
-            None,
-            50,
-        )
-        .unwrap()
+            root_id: root.root_id.clone(),
+            issued_at: 15,
+            expires_at: 90,
+            signature: [0; 64],
+        };
+        signed.signature = root_key
+            .sign(&signed.signing_bytes().unwrap())
+            .to_bytes();
+        activate_learning_trust(&root, signed, None, 50).unwrap()
     }
 
     pub fn decision_evidence_for(
