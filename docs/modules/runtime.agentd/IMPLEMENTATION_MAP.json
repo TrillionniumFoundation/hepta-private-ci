@@ -180,5 +180,26 @@
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-agentd"
-  ]
+  ],
+  "currentSourceEvidence": {
+    "commit": "6c2753e4eddd61f3d099007a3d8899fc4ab9268a",
+    "tree": "cd3d2bef1e6f229b913083d7dcccb213b0780bd3",
+    "meaning": "exact_module_local_source_and_test_anchor",
+    "evidencePaths": [
+      "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "codex-rs/hepta-agentd/src/client.rs",
+      "codex-rs/hepta-agentd/src/control.rs",
+      "codex-rs/hepta-agentd/src/error.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/lib.rs",
+      "codex-rs/hepta-agentd/src/runtime.rs",
+      "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/state.rs",
+      "codex-rs/hepta-agentd/src/state_control.rs",
+      "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "docs/modules/runtime.agentd/TECHNICAL.md",
+      "qualification/module-execution-dossiers/detail/runtime.agentd.md"
+    ]
+  }
 }
