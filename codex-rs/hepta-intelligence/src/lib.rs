@@ -23,6 +23,45 @@ pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
+mod contracts_v1;
+
+pub use contracts_v1::IntelligenceContractErrorV1;
+pub use contracts_v1::IntelligenceHostEnvelopeInputV1;
+pub use contracts_v1::IntelligenceHostEnvelopeV1;
+pub use contracts_v1::LegalActionCandidateSetInputV1;
+pub use contracts_v1::LegalActionCandidateSetV1;
+pub use contracts_v1::LegalActionCandidateV1;
+
+mod composition_v3;
+mod composition_v3_control;
+mod composition_v3_engine;
+mod composition_v3_runtime;
+mod composition_v3_validate;
+
+pub use composition_v3::CompositionDispositionV3;
+pub use composition_v3::CompositionErrorV3;
+pub use composition_v3::LaneFCompositionBudgetV3;
+pub use composition_v3::LaneFCompositionPortsV3;
+pub use composition_v3::LaneFCompositionReceiptV3;
+pub use composition_v3::LaneFCompositionRequestV3;
+pub use composition_v3::LaneFStageV3;
+pub use composition_v3::PortFailureV3;
+pub use composition_v3::PortInputV3;
+pub use composition_v3::PortReceiptV3;
+pub use composition_v3::StageOutcomeV3;
+pub use composition_v3::StageTraceV3;
+pub use composition_v3_control::CompositionCancellationV3;
+pub use composition_v3_control::CompositionClockV3;
+pub use composition_v3_control::NeverCancelledV3;
+pub use composition_v3_control::SystemCompositionClockV3;
+pub use composition_v3_runtime::run_composition_v3;
+
+mod observed_learning;
+
+pub use observed_learning::ObservedLearningErrorV1;
+pub use observed_learning::record_observed_credit_v1;
+pub use observed_learning::record_observed_outcome_v1;
+
 mod pipeline_v2;
 
 pub use pipeline_v2::LaneFRunRequestV2;
@@ -50,6 +89,7 @@ pub use pipeline::StageTraceV1;
 pub use pipeline::run_shadow_pipeline;
 
 mod vertical;
+mod vertical_outcome;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -65,6 +105,8 @@ pub use vertical::ReadOnlyVerticalError;
 pub use vertical::ReadOnlyVerticalReceipt;
 pub use vertical::ReadOnlyVerticalRequest;
 pub use vertical::run_read_only_vertical;
+pub use vertical_outcome::ReadOnlyVerticalOutcomeV1;
+pub use vertical_outcome::run_read_only_vertical_outcome_v1;
 
 const MAX_CANDIDATES: usize = 128;
 
