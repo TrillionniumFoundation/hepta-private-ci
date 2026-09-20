@@ -290,6 +290,7 @@ impl Fixture {
             generator_attestation,
             admission: self.admission.clone(),
             admission_attestation,
+            no_change_attestation: None,
             evaluations: vec![CandidateEvaluationAdmissionV1 {
                 bundle: self.bundle.clone(),
                 metric_roles: self.roles.clone(),
@@ -298,6 +299,52 @@ impl Fixture {
                     evaluator_bundle,
                 },
             }],
+            expected_registry_predecessor: Digest32::ZERO,
+        }
+    }
+
+    fn no_change_request(&self) -> ParameterPlasticityProductRequestV1 {
+        let mut profile = self.profile.clone();
+        // This exceeds the declared trust region, so deterministic generation
+        // retains only the explicit no-change candidate.
+        profile.signals[0].learning_rate = FixedQ32::ONE;
+        let generated = generate_parameter_candidates_v3(profile.clone()).expect("no-change set");
+        assert_eq!(generated.candidates.len(), 1);
+        assert_eq!(
+            generated.candidates[0].kind,
+            ParameterCandidateKindV2::NoChange
+        );
+
+        let mut admission = self.admission.clone();
+        admission.generator_digest = generated.generator_digest;
+        let generator_attestation = self.sign(
+            0,
+            LearningEvidenceRoleV1::Generator,
+            &parameter_generator_signing_payload_v3(&generated),
+        );
+        let admission_attestation = self.sign(
+            1,
+            LearningEvidenceRoleV1::Observer,
+            &plasticity_admission_signing_payload_v1(&admission),
+        );
+        let terminal_payload =
+            no_change_disposition_signing_payload_v1(&generated, &admission)
+                .expect("terminal payload");
+        let no_change_attestation = self.sign(
+            2,
+            LearningEvidenceRoleV1::Evaluator,
+            &terminal_payload,
+        );
+
+        ParameterPlasticityProductRequestV1 {
+            proposal_id: id("plasticity-proposal:no-change"),
+            generator_profile: profile,
+            generated,
+            generator_attestation,
+            admission,
+            admission_attestation,
+            no_change_attestation: Some(no_change_attestation),
+            evaluations: Vec::new(),
             expected_registry_predecessor: Digest32::ZERO,
         }
     }
@@ -363,12 +410,53 @@ fn authenticated_product_path_generates_evaluates_appends_and_commits_anchor() {
         fixture.principals[2].principal_id
     );
     assert!(!receipt.proposal.authority.grants_any());
+    assert_eq!(
+        receipt.disposition,
+        ParameterPlasticityDispositionV1::UpdateCandidates
+    );
     assert_eq!(writer.record_count().expect("count"), 1);
     assert_eq!(
         anchor_committer.scope,
         Some(digest("plasticity-registry-scope"))
     );
     assert_eq!(anchor_committer.fence, Some(17));
+    assert_eq!(
+        anchor_committer.anchor,
+        Some(receipt.committed_registry_anchor)
+    );
+}
+
+#[test]
+fn no_admissible_update_is_independently_attested_and_durably_recorded() {
+    let fixture = Fixture::new(false);
+    let mut writer = writer();
+    let mut anchor_committer = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let receipt = propose_authenticated_parameter_plasticity_v1(
+        fixture.no_change_request(),
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_committer,
+        50,
+    )
+    .expect("durable no-change disposition");
+
+    assert_eq!(
+        receipt.disposition,
+        ParameterPlasticityDispositionV1::NoAdmissibleUpdate
+    );
+    assert_eq!(receipt.proposal.candidates.len(), 1);
+    assert_eq!(
+        receipt.proposal.candidates[0].kind,
+        ParameterCandidateKindV2::NoChange
+    );
+    assert_eq!(
+        receipt.proposal.evaluator_id,
+        fixture.principals[2].principal_id
+    );
+    assert_eq!(writer.record_count().expect("count"), 1);
     assert_eq!(
         anchor_committer.anchor,
         Some(receipt.committed_registry_anchor)
