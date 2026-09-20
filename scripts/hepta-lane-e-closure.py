@@ -445,6 +445,41 @@ def verify_traceability(
                 )
 
 
+def verify_product_writer_exclusivity(findings: Findings) -> None:
+    """Prevent product crates from bypassing LedgerWriter with raw V1 appends."""
+
+    allowed_roots = {
+        "codex-rs/hepta-learning-ledger",
+        "codex-rs/hepta-shadow-qualification",
+    }
+    forbidden = {
+        "DurableLearningJournal": "legacy durable journal trait",
+        "LedgerEvent::Decision": "raw V1 Decision append",
+        "LedgerEvent::Outcome": "raw V1 Outcome append",
+        "LedgerEvent::Credit": "raw V1 Credit append",
+        "LedgerEvent::Revocation": "raw V1 Revocation append",
+    }
+
+    for path in (ROOT / "codex-rs").rglob("*.rs"):
+        relative = path.relative_to(ROOT).as_posix()
+        if any(relative == root or relative.startswith(f"{root}/") for root in allowed_roots):
+            continue
+        if (
+            "/tests/" in relative
+            or path.name.endswith("_tests.rs")
+            or path.name.endswith("_test_support.rs")
+        ):
+            continue
+
+        text = path.read_text(encoding="utf-8")
+        for token, description in forbidden.items():
+            findings.require(
+                token not in text,
+                "legacy_learning_writer_product_bypass",
+                f"{relative} uses {description}; product learning writes must use LedgerWriter",
+            )
+
+
 def verify_authority_posture(findings: Findings) -> None:
     sources = [
         ROOT / "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -582,6 +617,7 @@ def verify() -> Findings:
     trace = load_json(TRACE_PATH, findings)
     modules = verify_matrix(matrix, findings)
     verify_traceability(trace, modules, findings)
+    verify_product_writer_exclusivity(findings)
     verify_authority_posture(findings)
     verify_workflow(findings)
     return findings
