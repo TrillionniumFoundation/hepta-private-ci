@@ -20,5 +20,6 @@ codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-types = { path = "../hepta-types" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 tokio = { workspace = true, features = ["io-std", "io-util", "macros", "rt-multi-thread", "signal"] }
 tokio-util = { workspace = true }
