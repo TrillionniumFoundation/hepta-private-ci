@@ -19,8 +19,7 @@ CANONICAL_REGISTRY = """{
       "state": "source_implemented",
       "authorityDelta": "none",
       "developmentAfter": [
-        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
-        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+        "DOC-2-DEFAULT-BRANCH-SELECTION"
       ],
       "activationAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
       "owner": "developer-productivity",
@@ -106,8 +105,7 @@ class ProductGateTests(unittest.TestCase):
                 "sourceMutationAllowed": True,
                 "allowedWritePaths": ["tools/hepta-engineering-control/**"],
                 "developmentAfter": [
-                    "DOC-3C-MODULE-DOC-CLOSED-WORLD",
-                    "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+                    "DOC-2-DEFAULT-BRANCH-SELECTION",
                 ],
                 "activationAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
             },
@@ -192,8 +190,7 @@ class ProductGateTests(unittest.TestCase):
         self.assertEqual(
             receipt["canonicalWorkPackage"]["developmentAfter"],
             [
-                "DOC-3C-MODULE-DOC-CLOSED-WORLD",
-                "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+                "DOC-2-DEFAULT-BRANCH-SELECTION",
             ],
         )
         self.assertFalse(receipt["mergeAuthority"])
@@ -282,6 +279,25 @@ class ProductGateTests(unittest.TestCase):
                     pull_request_number=0,
                 ),
             )
+
+    def test_github_review_observation_binds_real_numeric_identity_without_acceptance(self):
+        reviews = [
+            {
+                "id": 42,
+                "user": {"id": 9001, "login": "reviewer-a"},
+                "state": "APPROVED",
+                "commit_id": SOURCE,
+                "submitted_at": "2026-09-20T00:00:00Z",
+            }
+        ]
+        observed = product_gate.bind_github_review_observations(
+            reviews,
+            expected_head_sha=SOURCE,
+        )
+        self.assertEqual(observed["observations"][0]["reviewerUserId"], 9001)
+        self.assertTrue(observed["observations"][0]["currentHead"])
+        self.assertFalse(observed["independentAcceptance"])
+        self.assertFalse(observed["mergeAuthority"])
 
     def test_missing_canonical_work_package_registry_fails_closed(self):
         source = "a" * 40

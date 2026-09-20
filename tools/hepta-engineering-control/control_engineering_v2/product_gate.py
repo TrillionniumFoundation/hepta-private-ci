@@ -19,7 +19,7 @@ import tempfile
 import time
 
 from .control_plane import DENIED_AUTHORITIES, EngineeringStore, WorkEnvelope
-from .evidence import HmacTrustStore
+from .evidence import SignatureTrustStore
 from .git_security import run_git, run_git_bytes
 from .orchestration import (
     EngineeringCapacity,
@@ -39,6 +39,23 @@ EXPECTED_WORKFLOW_SUFFIX = "/.github/workflows/hepta-consolidated-source.yml"
 CANONICAL_WORK_PACKAGE_PATH = Path("docs/delivery/WORK_PACKAGES.json")
 CANONICAL_ENGINEERING_PACKAGE = "ECP-1-ENGINEERING-CONTROL-PLANE"
 MAX_CANONICAL_REGISTRY_BYTES = 4 * 1024 * 1024
+MAX_REVIEW_OBSERVATIONS = 256
+
+
+class _RejectingTrustStore:
+    """Product caller never substitutes an in-process reference signer for CI identity."""
+
+    def sign(self, value: object, issuer: str, signing_identity: str) -> str:
+        raise RuntimeError("product_local_signing_forbidden")
+
+    def verify(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+        signature: str,
+    ) -> bool:
+        return False
 
 
 def _git(root: Path, *args: str) -> str:
@@ -102,10 +119,7 @@ def _canonical_engineering_package(root: Path) -> dict[str, object]:
         or package.get("allowedWritePaths")
         != ["tools/hepta-engineering-control/**"]
         or package.get("developmentAfter")
-        != [
-            "DOC-3C-MODULE-DOC-CLOSED-WORLD",
-            "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
-        ]
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
         or package.get("activationAfter")
         != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
     ):
@@ -246,7 +260,7 @@ def build_product_receipt(
                     ),
                 ),
                 (),
-                HmacTrustStore({}),
+                _RejectingTrustStore(),
                 EngineeringCapacity(1, (ReviewCapacity("architecture", 1),)),
                 generation_id=f"product-generation-{tested_sha[:20]}",
                 now_ns=now,
@@ -389,6 +403,95 @@ def _verify_product_receipt(
     return digest
 
 
+def bind_github_review_observations(
+    reviews: object,
+    *,
+    expected_head_sha: str,
+) -> dict[str, object]:
+    """Bind reviewer identities observed from GitHub's authenticated Reviews API.
+
+    This is an identity/freshness observation only. APPROVED is not converted into
+    independent acceptance, merge authority, or a role qualification.
+    """
+    expected_head_sha = _sha(expected_head_sha, "review_head_sha")
+    if not isinstance(reviews, list) or len(reviews) > MAX_REVIEW_OBSERVATIONS:
+        raise ValueError("github_review_observation_shape")
+    observations: list[dict[str, object]] = []
+    seen: set[int] = set()
+    for row in reviews:
+        if not isinstance(row, Mapping):
+            raise ValueError("github_review_observation_shape")
+        review_id = row.get("id")
+        user = row.get("user")
+        state = row.get("state")
+        commit_id = row.get("commit_id")
+        submitted_at = row.get("submitted_at")
+        if (
+            type(review_id) is not int
+            or review_id <= 0
+            or review_id in seen
+            or not isinstance(user, Mapping)
+            or type(user.get("id")) is not int
+            or int(user["id"]) <= 0
+            or not isinstance(user.get("login"), str)
+            or not user["login"]
+            or state not in {"APPROVED", "CHANGES_REQUESTED", "COMMENTED", "DISMISSED"}
+            or not isinstance(commit_id, str)
+            or _SHA1.fullmatch(commit_id) is None
+            or not isinstance(submitted_at, str)
+            or not submitted_at
+        ):
+            raise ValueError("github_review_observation_shape")
+        seen.add(review_id)
+        observations.append(
+            {
+                "reviewId": review_id,
+                "reviewerLogin": user["login"],
+                "reviewerUserId": int(user["id"]),
+                "state": state,
+                "commitId": commit_id,
+                "submittedAt": submitted_at,
+                "currentHead": commit_id == expected_head_sha,
+            }
+        )
+    observations.sort(key=lambda row: int(row["reviewId"]))
+    value: dict[str, object] = {
+        "schema": "hepta.github-review-observation.v1",
+        "expectedHeadSha": expected_head_sha,
+        "observations": observations,
+        "independentAcceptance": False,
+        "mergeAuthority": False,
+    }
+    value["observationDigest"] = hashlib.sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return value
+
+
+def _verify_github_review_observation(
+    value: Mapping[str, object],
+    *,
+    expected_head_sha: str,
+) -> None:
+    if (
+        value.get("schema") != "hepta.github-review-observation.v1"
+        or value.get("expectedHeadSha") != expected_head_sha
+        or value.get("independentAcceptance") is not False
+        or value.get("mergeAuthority") is not False
+    ):
+        raise ValueError("github_review_observation_identity")
+    digest = value.get("observationDigest")
+    if not isinstance(digest, str) or _SHA256.fullmatch(digest) is None:
+        raise ValueError("github_review_observation_digest")
+    unsigned = dict(value)
+    unsigned.pop("observationDigest", None)
+    expected = hashlib.sha256(
+        json.dumps(unsigned, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if digest != expected:
+        raise ValueError("github_review_observation_digest_mismatch")
+
+
 def verify_product_receipt_pair(
     source_head: Mapping[str, object],
     base_merge: Mapping[str, object],
@@ -400,6 +503,7 @@ def verify_product_receipt_pair(
     expected_source_sha: str,
     expected_base_sha: str,
     expected_pull_request_number: int,
+    github_review_observation: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     """Verify the two independently executed PR product-caller lanes."""
     expected_source_sha = _sha(expected_source_sha, "source_sha")
@@ -474,6 +578,12 @@ def verify_product_receipt_pair(
         if source_canonical.get(key) != merge_canonical.get(key):
             raise ValueError("product_receipt_pair_canonical_drift")
 
+    if github_review_observation is not None:
+        _verify_github_review_observation(
+            github_review_observation,
+            expected_head_sha=expected_source_sha,
+        )
+
     pair = {
         "schema": "hepta.control-engineering-product-receipt-pair.v1",
         "repository": expected_repository,
@@ -494,6 +604,8 @@ def verify_product_receipt_pair(
         "mergeAuthority": False,
         "releaseAuthority": False,
     }
+    if github_review_observation is not None:
+        pair["githubReviewObservation"] = dict(github_review_observation)
     expected_readiness_digest = hashlib.sha256(
         json.dumps(
             {
