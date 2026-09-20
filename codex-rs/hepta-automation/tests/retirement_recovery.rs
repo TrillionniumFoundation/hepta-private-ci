@@ -112,7 +112,7 @@ async fn unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry() -> TestRe
 enum ReleasePath {
     PreDispatchRetry,
     StaleGeneration,
-     NegativeObservation,
+    NegativeObservation,
 }
 
 #[tokio::test]
@@ -124,7 +124,6 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
         for release in [
             ReleasePath::PreDispatchRetry,
             ReleasePath::StaleGeneration,
-             ReleasePath::NegativeObservation,
         ] {
             let (_temp, layout, store, lease) = leased_store().await?;
             if matches!(release, ReleasePath::NegativeObservation) {
@@ -155,7 +154,7 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
                         1
                     );
                 }
-                 ReleasePath::NegativeObservation => {
+                ReleasePath::NegativeObservation => {
                     let proof = Sha256Digest::for_bytes(b"retirement-provider-absence");
                     store
                         .reconcile_uncertain_occurrence_absent(
@@ -219,7 +218,10 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
 }
 
 #[tokio::test]
-#[allow(deprecated, reason = "explicitly qualifies the read-only legacy receipt replay shim")]
+#[allow(
+    deprecated,
+    reason = "explicitly qualifies the read-only legacy receipt replay shim"
+)]
 async fn receipt_replay_retains_later_control_decisions_and_rejects_substitution() -> TestResult {
     let (_temp, layout, store, lease) = leased_store().await?;
     prepare_dispatch_intent(&store, &lease, /*observed_at_ms*/ 101).await?;
