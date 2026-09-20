@@ -22,6 +22,8 @@ use tokio::sync::watch;
 use tracing::instrument;
 
 use codex_agent_identity::ChatGptEnvironment;
+use codex_api::SharedAuthProvider;
+use codex_model_provider_info::ModelProviderInfo;
 use codex_protocol::auth::AuthMode;
 use codex_protocol::config_types::ForcedLoginMethod;
 use codex_protocol::config_types::ModelProviderAuthInfo;
@@ -71,6 +73,7 @@ use codex_protocol::auth::RefreshTokenFailedReason;
 use codex_protocol::protocol::SessionSource;
 use serde_json::Value;
 use thiserror::Error;
+use url::Url;
 
 /// Authentication mechanism used by the current user.
 #[derive(Debug, Clone)]
@@ -2022,6 +2025,110 @@ impl UnauthorizedRecovery {
     }
 }
 
+/// Host-installed provider authentication bound to one exact provider snapshot.
+///
+/// This is intentionally separate from user/external Codex authentication. The
+/// binding is immutable for the process generation and carries an opaque auth
+/// provider rather than credential bytes. If the runtime provider drifts from
+/// the enrolled snapshot, resolution fails closed instead of falling back to
+/// ambient auth.
+#[derive(Clone)]
+pub struct HostProviderAuthBinding {
+    expected_provider: ModelProviderInfo,
+    auth: SharedAuthProvider,
+}
+
+impl Debug for HostProviderAuthBinding {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("HostProviderAuthBinding")
+            .field("expected_provider", &self.expected_provider)
+            .field("auth", &"[HOST-OWNED AUTH]")
+            .finish()
+    }
+}
+
+impl PartialEq for HostProviderAuthBinding {
+    fn eq(&self, other: &Self) -> bool {
+        self.expected_provider == other.expected_provider && Arc::ptr_eq(&self.auth, &other.auth)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Error, Eq, PartialEq)]
+pub enum HostProviderAuthError {
+    #[error("host provider auth requires one explicit https provider endpoint")]
+    InvalidProvider,
+    #[error("runtime provider differs from the host-enrolled provider snapshot")]
+    ProviderMismatch,
+    #[error("host provider auth is already installed for this process generation")]
+    Conflict,
+    #[error("host provider auth state is unavailable")]
+    Unavailable,
+}
+
+impl HostProviderAuthBinding {
+    pub fn new(
+        expected_provider: ModelProviderInfo,
+        auth: SharedAuthProvider,
+    ) -> Result<Self, HostProviderAuthError> {
+        validate_host_provider_snapshot(&expected_provider)?;
+        Ok(Self {
+            expected_provider,
+            auth,
+        })
+    }
+
+    pub fn expected_provider(&self) -> &ModelProviderInfo {
+        &self.expected_provider
+    }
+
+    fn require_provider(
+        &self,
+        provider: &ModelProviderInfo,
+    ) -> Result<(), HostProviderAuthError> {
+        if provider != &self.expected_provider {
+            return Err(HostProviderAuthError::ProviderMismatch);
+        }
+        Ok(())
+    }
+}
+
+fn validate_host_provider_snapshot(
+    provider: &ModelProviderInfo,
+) -> Result<(), HostProviderAuthError> {
+    let endpoint = provider
+        .base_url
+        .as_deref()
+        .ok_or(HostProviderAuthError::InvalidProvider)?;
+    let endpoint = Url::parse(endpoint).map_err(|_| HostProviderAuthError::InvalidProvider)?;
+    let forbidden_header = |name: &str| name.eq_ignore_ascii_case(http::header::AUTHORIZATION.as_str());
+    let carries_ambient_authorization = provider
+        .http_headers
+        .as_ref()
+        .is_some_and(|headers| headers.keys().any(|name| forbidden_header(name)))
+        || provider
+            .env_http_headers
+            .as_ref()
+            .is_some_and(|headers| headers.keys().any(|name| forbidden_header(name)));
+    if endpoint.scheme() != "https"
+        || endpoint.host_str().is_none()
+        || !endpoint.username().is_empty()
+        || endpoint.password().is_some()
+        || endpoint.query().is_some()
+        || endpoint.fragment().is_some()
+        || provider.env_key.is_some()
+        || provider.experimental_bearer_token.is_some()
+        || provider.auth.is_some()
+        || provider.aws.is_some()
+        || provider.requires_openai_auth
+        || carries_ambient_authorization
+    {
+        return Err(HostProviderAuthError::InvalidProvider);
+    }
+    provider
+        .validate()
+        .map_err(|_| HostProviderAuthError::InvalidProvider)
+}
+
 /// Central manager providing a single source of truth for auth.json derived
 /// authentication data. It loads once (or on preference change) and then
 /// hands out cloned `CodexAuth` values so the rest of the program has a
@@ -2046,6 +2153,7 @@ pub struct AuthManager {
     agent_identity_lock: Semaphore,
     agent_identity_bootstrap_cooldown: Mutex<AgentIdentityBootstrapCooldown>,
     external_auth: RwLock<Option<Arc<dyn ExternalAuth>>>,
+    host_provider_auth: RwLock<Option<HostProviderAuthBinding>>,
     workload_identity_selected: bool,
     auth_route_config: AuthRouteConfig,
 }
@@ -2102,6 +2210,7 @@ impl Debug for AuthManager {
             .field("chatgpt_base_url", &self.chatgpt_base_url)
             .field("auth_route_config", &self.auth_route_config)
             .field("has_external_auth", &self.has_external_auth())
+            .field("has_host_provider_auth", &self.has_host_provider_auth())
             .field(
                 "workload_identity_selected",
                 &self.workload_identity_selected,
@@ -2182,6 +2291,7 @@ impl AuthManager {
             agent_identity_lock: Semaphore::new(/*permits*/ 1),
             agent_identity_bootstrap_cooldown: Mutex::default(),
             external_auth: RwLock::new(None),
+            host_provider_auth: RwLock::new(None),
             workload_identity_selected: false,
             auth_route_config,
         }
@@ -2216,6 +2326,7 @@ impl AuthManager {
             agent_identity_lock: Semaphore::new(/*permits*/ 1),
             agent_identity_bootstrap_cooldown: Mutex::default(),
             external_auth: RwLock::new(None),
+            host_provider_auth: RwLock::new(None),
             workload_identity_selected: false,
             auth_route_config: crate::test_support::transport_default_auth_route_config(),
         })
@@ -2244,6 +2355,7 @@ impl AuthManager {
             agent_identity_lock: Semaphore::new(/*permits*/ 1),
             agent_identity_bootstrap_cooldown: Mutex::default(),
             external_auth: RwLock::new(None),
+            host_provider_auth: RwLock::new(None),
             workload_identity_selected: false,
             auth_route_config: crate::test_support::transport_default_auth_route_config(),
         })
@@ -2280,6 +2392,7 @@ impl AuthManager {
             agent_identity_lock: Semaphore::new(/*permits*/ 1),
             agent_identity_bootstrap_cooldown: Mutex::default(),
             external_auth: RwLock::new(None),
+            host_provider_auth: RwLock::new(None),
             workload_identity_selected: false,
             auth_route_config: crate::test_support::transport_default_auth_route_config(),
         })
@@ -2665,6 +2778,56 @@ impl AuthManager {
 
     pub fn has_external_auth(&self) -> bool {
         self.external_auth_provider().is_some()
+    }
+
+    /// Installs one immutable host-owned provider auth binding.
+    ///
+    /// The caller must pass the already-resolved runtime provider snapshot so
+    /// startup fails immediately if managed/user configuration changed the
+    /// intended destination.
+    pub fn install_host_provider_auth(
+        &self,
+        binding: HostProviderAuthBinding,
+        runtime_provider: &ModelProviderInfo,
+    ) -> Result<(), HostProviderAuthError> {
+        binding.require_provider(runtime_provider)?;
+        let mut slot = self
+            .host_provider_auth
+            .write()
+            .map_err(|_| HostProviderAuthError::Unavailable)?;
+        match slot.as_ref() {
+            Some(existing) if existing == &binding => Ok(()),
+            Some(_) => Err(HostProviderAuthError::Conflict),
+            None => {
+                *slot = Some(binding);
+                Ok(())
+            }
+        }
+    }
+
+    /// Resolves host-owned request auth for an exact provider snapshot.
+    ///
+    /// Once a host binding exists, a mismatched provider is an error and never
+    /// falls back to user, environment, or static provider credentials.
+    pub fn host_provider_auth_for(
+        &self,
+        runtime_provider: &ModelProviderInfo,
+    ) -> Result<Option<SharedAuthProvider>, HostProviderAuthError> {
+        let slot = self
+            .host_provider_auth
+            .read()
+            .map_err(|_| HostProviderAuthError::Unavailable)?;
+        let Some(binding) = slot.as_ref() else {
+            return Ok(None);
+        };
+        binding.require_provider(runtime_provider)?;
+        Ok(Some(Arc::clone(&binding.auth)))
+    }
+
+    pub fn has_host_provider_auth(&self) -> bool {
+        self.host_provider_auth
+            .read()
+            .is_ok_and(|slot| slot.is_some())
     }
 
     pub fn is_workload_identity_selected(&self) -> bool {
