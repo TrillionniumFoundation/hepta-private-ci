@@ -7,7 +7,9 @@
 
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
+use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
+use codex_hepta_contracts::authority_lease::dispatch_authority_lease_with_witness;
 use sha2::Digest;
 use sha2::Sha256;
 use std::fmt;
@@ -40,15 +42,40 @@ impl FleetAuthorityPort {
         now_ms: u64,
         grant: AllocationGrant,
     ) -> Result<LeaseReceipt, FleetAuthorityError> {
+        self.issue_with_witness(
+            ledger,
+            lease_id,
+            expected_lease_revision,
+            now_ms,
+            grant,
+        )
+        .map(|(receipt, _witness)| receipt)
+    }
+
+    /// Same concrete owner mutation as `issue`, but returns the canonical
+    /// non-authorizing audit witness for durable evidence composition.
+    pub fn issue_with_witness(
+        &self,
+        ledger: &mut LeaseLedger,
+        lease_id: &str,
+        expected_lease_revision: u64,
+        now_ms: u64,
+        grant: AllocationGrant,
+    ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {
         let binding = allocation_binding(&grant)?;
         let token = self
             .verifier
             .verify_use(lease_id, expected_lease_revision, &binding)
             .map_err(FleetAuthorityError::Authority)?;
-        self.verifier
-            .with_verified_use(token, &binding, || ledger.issue(now_ms, grant))
-            .map_err(FleetAuthorityError::Authority)?
-            .map_err(FleetAuthorityError::Fleet)
+        let (result, witness) = dispatch_authority_lease_with_witness(
+            &self.verifier,
+            token,
+            &binding,
+            |_| ledger.issue(now_ms, grant),
+        )
+        .map_err(FleetAuthorityError::Authority)?;
+        let receipt = result.map_err(FleetAuthorityError::Fleet)?;
+        Ok((receipt, witness))
     }
 
     pub fn binding_for_issue(
