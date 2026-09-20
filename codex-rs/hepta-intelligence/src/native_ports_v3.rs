@@ -44,6 +44,7 @@ use codex_hepta_prompt_optimizer::OptimizationRequest;
 use codex_hepta_prompt_optimizer::optimize as optimize_prompt;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::IntelligenceHostEnvelopeV1;
@@ -125,6 +126,7 @@ pub struct NativeV3OwnerPorts<'a, H> {
     ledger: &'a mut dyn DurableLearningJournal,
     expected_ledger_head: Digest32,
     host: H,
+    objective_disposition: Option<CompileDisposition>,
     last_utility_digest: Option<Digest32>,
     last_intuition: Option<CalibratedIntuitionReceiptV1>,
     learning_append: Option<AppendReceipt>,
@@ -142,6 +144,7 @@ impl<'a, H> NativeV3OwnerPorts<'a, H> {
             ledger,
             expected_ledger_head,
             host,
+            objective_disposition: None,
             last_utility_digest: None,
             last_intuition: None,
             learning_append: None,
@@ -196,33 +199,55 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
             class: PortFailureClassV3::Rejected,
             evidence_digest: conflict.conflict_digest,
         })?;
-        if compiled.disposition != CompileDisposition::Compiled
-            || compiled.objective.semantic_digest != self.inputs.expected_objective_digest
-        {
+        if compiled.objective.semantic_digest != self.inputs.expected_objective_digest {
             return Err(failure(
                 input,
                 PortFailureClassV3::Rejected,
                 "objective-binding",
             ));
         }
+        let abstain = stable_id(ABSTAIN, input)?;
         let objective_candidates = compiled
             .objective
             .legal_actions
             .iter()
             .map(|action| action.id.clone())
             .collect::<BTreeSet<_>>();
+        if !objective_candidates.contains(&abstain) {
+            return Err(failure(
+                input,
+                PortFailureClassV3::Rejected,
+                "objective-missing-intrinsic-abstain",
+            ));
+        }
+        let objective_external = objective_candidates
+            .iter()
+            .filter(|candidate| *candidate != &abstain)
+            .cloned()
+            .collect::<BTreeSet<_>>();
         let declared_candidates = legal_candidate_ids(&self.inputs.legal_candidates);
-        if objective_candidates != declared_candidates {
+        if objective_external != declared_candidates
+            || (compiled.disposition == CompileDisposition::ExplicitAbstain
+                && !declared_candidates.is_empty())
+            || (compiled.disposition == CompileDisposition::Compiled
+                && declared_candidates.is_empty())
+        {
             return Err(failure(
                 input,
                 PortFailureClassV3::Rejected,
                 "legal-candidate-objective-binding",
             ));
         }
-        success(
+        self.objective_disposition = Some(compiled.disposition);
+        let decision = match compiled.disposition {
+            CompileDisposition::Compiled => PortDecisionV3::Continue,
+            CompileDisposition::ExplicitAbstain => PortDecisionV3::Abstain,
+        };
+        success_with_decision(
             input,
             "objective.compiler",
             compiled.objective.semantic_digest,
+            decision,
         )
     }
 
@@ -451,34 +476,49 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
 
     fn record_learning(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
         self.validate_common(input)?;
-        let intuition = self.last_intuition.as_ref().ok_or_else(|| {
-            failure(
-                input,
-                PortFailureClassV3::Rejected,
-                "missing-intuition-receipt",
-            )
-        })?;
         let abstain = stable_id(ABSTAIN, input)?;
-        let slow_path = stable_id(SLOW_PATH, input)?;
-        let (selected, propensity) = match &intuition.disposition {
-            CalibratedDispositionV1::Selected(candidate) => {
-                let propensity = intuition
-                    .propensities
+        let (selected, propensity, mut candidate_ids) =
+            if self.objective_disposition == Some(CompileDisposition::ExplicitAbstain) {
+                (abstain.clone(), ProbabilityQ32::ONE, vec![abstain.clone()])
+            } else {
+                let intuition = self.last_intuition.as_ref().ok_or_else(|| {
+                    failure(
+                        input,
+                        PortFailureClassV3::Rejected,
+                        "missing-intuition-receipt",
+                    )
+                })?;
+                let slow_path = stable_id(SLOW_PATH, input)?;
+                let (selected, propensity) = match &intuition.disposition {
+                    CalibratedDispositionV1::Selected(candidate) => {
+                        let propensity = intuition
+                            .propensities
+                            .iter()
+                            .find(|row| &row.candidate_id == candidate)
+                            .map(|row| row.probability)
+                            .ok_or_else(|| {
+                                failure(input, PortFailureClassV3::Rejected, "missing-propensity")
+                            })?;
+                        (candidate.clone(), propensity)
+                    }
+                    CalibratedDispositionV1::Abstained(_) => {
+                        (abstain.clone(), intuition.abstain_probability)
+                    }
+                    CalibratedDispositionV1::SlowPath(_) => {
+                        (slow_path.clone(), intuition.slow_path_probability)
+                    }
+                };
+                let mut candidates = self
+                    .inputs
+                    .legal_candidates
+                    .candidates
                     .iter()
-                    .find(|row| &row.candidate_id == candidate)
-                    .map(|row| row.probability)
-                    .ok_or_else(|| {
-                        failure(input, PortFailureClassV3::Rejected, "missing-propensity")
-                    })?;
-                (candidate.clone(), propensity)
-            }
-            CalibratedDispositionV1::Abstained(_) => {
-                (abstain.clone(), intuition.abstain_probability)
-            }
-            CalibratedDispositionV1::SlowPath(_) => {
-                (slow_path.clone(), intuition.slow_path_probability)
-            }
-        };
+                    .map(|candidate| candidate.candidate_id.clone())
+                    .collect::<Vec<_>>();
+                candidates.push(abstain.clone());
+                candidates.push(slow_path);
+                (selected, propensity, candidates)
+            };
         if propensity.raw() == 0 {
             return Err(failure(
                 input,
@@ -486,15 +526,6 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
                 "zero-propensity",
             ));
         }
-        let mut candidate_ids = self
-            .inputs
-            .legal_candidates
-            .candidates
-            .iter()
-            .map(|candidate| candidate.candidate_id.clone())
-            .collect::<Vec<_>>();
-        candidate_ids.push(abstain);
-        candidate_ids.push(slow_path);
         candidate_ids.sort();
         candidate_ids.dedup();
         let event = LedgerEvent::Decision(EpisodeDecision {
