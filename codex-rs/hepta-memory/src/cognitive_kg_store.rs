@@ -549,9 +549,10 @@ pub(crate) async fn graph_source_vector_digest_tx(
         .iter()
         .map(|value| value.to_be_bytes())
         .collect::<Vec<_>>();
+    let projection_key = scope.projection_key();
     let parts = [
         owner_agent_id.as_bytes(),
-        scope.projection_key().as_bytes(),
+        projection_key.as_bytes(),
         frontier_bytes[0].as_slice(),
         frontier_bytes[1].as_slice(),
         frontier_bytes[2].as_slice(),
