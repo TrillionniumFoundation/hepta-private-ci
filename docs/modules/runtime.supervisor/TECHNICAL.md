@@ -55,7 +55,7 @@ Direct dependencies:
 - `kernel.authority`
 - `kernel.operations`
 
-Native crate/runtime integrations used by the implementation are `codex-hepta-fleet` for the durable fleet/release catalog, `codex-hepta-agent-protocol` for generation-bound health/drain control, `codex-hepta-memory` for independently signed H7 qualification envelopes, and `codex-hepta-matrix-protocol` for the paired Matrix companion. These integrations do not transfer their owners' data authority into the supervisor.
+Native implementation coupling additionally uses `runtime.fleet` for the immutable release catalog and lifecycle/release-state CAS, `runtime.agentd`'s local control protocol for exact readiness/drain acknowledgement, and the H7 signed-artifact types from the memory qualification boundary. These are implementation dependencies, not transferred data authority: the supervisor remains the release-selection/lifecycle owner and does not become a memory, model, tool, or secret owner.
 
 Authoritative write domains:
 
@@ -145,7 +145,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md).
 
-The native supervisor now persists three supervisor-local recovery witnesses under the Agent run root: `supervisor-signed-intent.json`, `supervisor-release-selection.json`, and `supervisor-restart-budget.json`. Signed intent and release selection are written with same-directory synchronized replacement and must agree on grant, Agent, source/target release and status at recovery. A one-sided or non-terminal pair fails daemon recovery closed. The restart journal retains the bounded restart window across daemon restarts instead of resetting the attempt budget in memory.
+The current supervisor serializes one Agent mutation at the owner lock, generation-fences every managed process, and persists three crash-relevant control records below the Agent run root: the exact process lease, the bounded automatic-restart budget, and the independently authorized release-selection/signed-intent pair. In production-authority mode, unsigned upgrade/rollback RPCs are rejected; signed mutations bind source/target release manifest and executable digests, compatibility receipt, current pinned revocation frontier, control revision, lifecycle generation, authority epoch and H7 artifact. Agent drain uses an exact Agentd `Drain` RPC acknowledgement; the acknowledgement means new Agentd admission is closed, not that every user task succeeded. Unknown in-flight work retains its owner recovery semantics and is never relabelled terminal by the supervisor.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -153,9 +153,7 @@ The native supervisor now persists three supervisor-local recovery witnesses und
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
-Unexpected primary-Agent exit is retried with a durable exponential backoff and a fixed attempt budget; every retry re-resolves the current Fleet release allowance before launch. Explicit and automatic rollback also re-resolve the predecessor, so a removed allowance cannot be resurrected from an in-memory `previous_release`. Signed transitions terminalize as committed, rolled back, failed, or recovery-required and expose a read-only production-mutation status query.
-
-Unix drain is no longer process termination: the supervisor first transitions the generation to `Draining` and sends a generation-bound Agentd drain request that stops new session admission. That acknowledgement is not treated as proof that all in-flight work is terminal. Until a trusted in-flight reconciliation observer is wired, the Unix process observer does not manufacture `drained=true`; shutdown advances at the bounded drain deadline or a stronger observer.
+Unexpected Agent exits now use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. A process whose lease publication fails remains tracked and hard-kill quarantined until exit is observed; a failed first cleanup signal cannot discard the only process handle. Signed transition ambiguity becomes `recovery_required`; startup quarantines only the affected Agent, and an independently signed recovery decision must bind the observed release bytes, current lifecycle/control fences, authority epoch and current pinned revocation frontier before the durable selection/intent can become `committed` or `rolled_back`.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -177,7 +175,9 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Build hepta-supervisord from codex-hepta-supervisor; its native CLI requires --fleet-root with an absolute path. Grant and H7 verifier options are complete trust tuples, not request-supplied switches. The signer binaries require the production-authority build feature; lifecycle startup alone never enrolls effect authority. When the daemon is configured with the externally pinned production grant verifier, unsigned local `Upgrade` and `Rollback` requests are rejected; production release transition uses only the signed RPCs. The signed grant binds the current source/target release-manifest digests, target Agentd/Matrixd program digests, compatibility evidence digest, revocation-frontier digest, control/lifecycle fences, authority epoch, H7 artifact and validity window.
+Build hepta-supervisord from codex-hepta-supervisor; its native CLI requires --fleet-root with an absolute path. Grant and H7 verifier options are complete trust tuples, not request-supplied switches. The signer binaries require the production-authority build feature; lifecycle startup alone never enrolls effect authority.
+
+A daemon started with the production verifier/frontier tuple is the production release-transition mode: ordinary `Upgrade` and `Rollback` requests are rejected and only signed variants may enter release transition. The revocation frontier is host-pinned for one daemon incarnation; advancing the external revocation/compatibility frontier requires the owning host configuration/distributor to provide the new value (or restart/reconfigure the daemon). Repository source does not claim that external distribution is deployed.
 
 Current operating and state-format references:
 
@@ -191,13 +191,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-supervisor/src/supervisor_tests.rs](../../../codex-rs/hepta-supervisor/src/supervisor_tests.rs) — lifecycle fencing, bounded restart/recovery, matrix-only release changes, launch/lease cleanup quarantine, upgrade/rollback and independently signed recovery ceremony.
+- [codex-rs/hepta-supervisor/src/unix_tests.rs](../../../codex-rs/hepta-supervisor/src/unix_tests.rs) — exact process identity, readiness gates and generation-fenced Agentd drain acknowledgement.
+- [codex-rs/hepta-supervisor/src/release_selection.rs](../../../codex-rs/hepta-supervisor/src/release_selection.rs) — durable selection conflict, terminal replacement and tamper rejection.
+- [codex-rs/hepta-supervisor/src/signed_authority.rs](../../../codex-rs/hepta-supervisor/src/signed_authority.rs) — exact release-byte/frontier/CAS bindings and recovery-decision signature checks.
 - [codex-rs/hepta-supervisor/src/daemon_platform_tests.rs](../../../codex-rs/hepta-supervisor/src/daemon_platform_tests.rs); named case: `unsupported_host_rejects_daemon_before_accessing_fleet_state`.
 - [codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs](../../../codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs); named case: `cross_directory_publish_rejects_without_changing_either_file`.
-- [codex-rs/hepta-supervisor/src/supervisor_tests.rs](../../../codex-rs/hepta-supervisor/src/supervisor_tests.rs); catalog-bound upgrade/rollback, revoked predecessor rejection, recovery fencing and lifecycle faults.
-- [codex-rs/hepta-supervisor/src/signed_authority.rs](../../../codex-rs/hepta-supervisor/src/signed_authority.rs); signed release-byte and CAS binding.
-- [codex-rs/hepta-supervisor/src/release_selection.rs](../../../codex-rs/hepta-supervisor/src/release_selection.rs); durable selection binding/status transitions.
-- [codex-rs/hepta-supervisor/src/restart_budget.rs](../../../codex-rs/hepta-supervisor/src/restart_budget.rs); durable restart-budget exhaustion and recovery.
-- [codex-rs/hepta-supervisor/src/unix_tests.rs](../../../codex-rs/hepta-supervisor/src/unix_tests.rs); exact process/health identity and bounded native transport behavior.
 
 In `codex-rs`, run `just test -p codex-hepta-supervisor`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) separately labels target acceptance designs.
 
@@ -363,9 +362,9 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `start_instance` | `pub fn start(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
-| `observe_health` | `pub fn tick(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `supervisor_tests.rs`, `restart_budget.rs`, `unix_tests.rs` |
-| `drain` | `pub fn drain(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `supervisor_tests.rs`, `unix_tests.rs` |
-| `load_next` | `pub fn upgrade(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `supervisor_tests.rs`, `signed_authority.rs`, `release_selection.rs` |
+| `observe_health` | `pub fn tick(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
+| `drain` | `pub fn drain(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
+| `load_next` | `pub fn upgrade(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
