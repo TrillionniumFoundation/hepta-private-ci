@@ -160,6 +160,7 @@ pub enum CalibratedError {
     CandidateSetMismatch,
     CandidateOrderDigestMismatch,
     CandidateCountMismatch,
+    IncompleteCandidateSet,
     NonCanonicalCandidateOrder,
     ArtifactPolicyMismatch,
     ArtifactObjectiveMismatch,
