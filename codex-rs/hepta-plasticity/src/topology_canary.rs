@@ -187,6 +187,11 @@ impl StructuralCanaryControllerV1 {
         self.state
     }
 
+    #[must_use]
+    pub const fn plan_digest(&self) -> Digest32 {
+        self.plan_digest
+    }
+
     pub fn observe(
         &mut self,
         observation: StructuralCanaryObservationV1,
