@@ -35,8 +35,7 @@ pub(crate) async fn run_app_server(
     let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
     let production_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>> =
         production_writer_host.and_then(|host| host.production_mutation());
-    let cognitive_write_enabled =
-        COGNITIVE_WRITE_ENABLED || production_mutation.is_some();
+    let cognitive_write_enabled = COGNITIVE_WRITE_ENABLED || production_mutation.is_some();
     let config_overrides = app_server_config_overrides(cognitive_write_enabled);
     let runtime_options = app_server_runtime_options_for_agent(
         &identity,
@@ -98,8 +97,7 @@ pub(crate) fn app_server_runtime_options_for_agent(
     identity: &AgentdIdentity,
     state: Arc<AgentdState>,
     cognitive_runtime: CognitiveRuntime,
-    production_cognitive_mutation:
-        Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
+    production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);
     app_server_runtime_options_with_writer(
