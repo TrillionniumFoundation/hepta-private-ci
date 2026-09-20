@@ -42,7 +42,7 @@ Production terminal/rejection observations are created from the bounded `RemoteA
 
 ## Final-use boundary
 
-The worker obtains an independently signed exact-binding grant from the configured final-use authority port, verifies current revocation state, claims a non-constructible `VerifiedUseToken`, rechecks cancellation/deadline/owner ingress, consumes the token at final-use entry, and durably records the authority witness/request binding before the network await. The worker does not hold the issuer private key.
+The worker obtains an independently signed exact-binding grant from the configured final-use authority port, synchronizes the issuer-provided monotonic revocation head, claims a non-constructible `VerifiedUseToken`, rechecks cancellation/deadline/owner ingress, consumes the token at final-use entry, and durably records the authority witness/request binding before the network await. The worker does not hold the issuer private key. `VerifiedUseToken::enter()` rechecks expiry and the worker-local monotonic revocation head; a fresher head must arrive through the independently qualified target-host authority/revocation-distribution path.
 
 ## Required repository tests
 
