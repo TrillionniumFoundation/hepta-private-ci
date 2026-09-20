@@ -1,8 +1,11 @@
 use std::fmt::Debug;
 use std::fs;
 use std::fs::File;
+use std::io;
 use std::io::Write;
+use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
@@ -11,15 +14,62 @@ use std::os::unix::fs::symlink;
 
 use codex_hepta_types::Digest32;
 
+use super::FsProjectionPersistenceV1;
 use super::JOURNAL_FILE;
 use super::LOCK_FILE;
 use super::NduProjectionStoreError;
 use super::NduProjectionStoreV1;
+use super::ProjectionPersistenceV1;
 use super::TEMP_FILE;
 use crate::NduProjectionJournalError;
 use crate::NduProjectionKindV1;
 
 static NONCE: AtomicU64 = AtomicU64::new(1);
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum FaultStage {
+    Write,
+    FileSync,
+    Rename,
+    DirectorySync,
+}
+
+struct FaultPersistence {
+    stage: FaultStage,
+    real: FsProjectionPersistenceV1,
+}
+
+impl ProjectionPersistenceV1 for FaultPersistence {
+    fn write_temp(&self, path: &Path, bytes: &[u8]) -> io::Result<()> {
+        if self.stage == FaultStage::Write {
+            return Err(io::Error::other("injected NDU temp-write failure"));
+        }
+        self.real.write_temp(path, bytes)
+    }
+
+    fn sync_temp(&self, path: &Path) -> io::Result<()> {
+        if self.stage == FaultStage::FileSync {
+            return Err(io::Error::other("injected NDU file-sync failure"));
+        }
+        self.real.sync_temp(path)
+    }
+
+    fn rename(&self, from: &Path, to: &Path) -> io::Result<()> {
+        if self.stage == FaultStage::Rename {
+            return Err(io::Error::other("injected NDU rename failure"));
+        }
+        self.real.rename(from, to)
+    }
+
+    fn sync_parent(&self, root: &Path) -> io::Result<()> {
+        if self.stage == FaultStage::DirectorySync {
+            return Err(io::Error::other(
+                "injected NDU parent-directory-sync failure",
+            ));
+        }
+        self.real.sync_parent(root)
+    }
+}
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -198,35 +248,37 @@ fn concurrent_writer_is_rejected_while_owner_lock_is_live() {
 }
 
 #[test]
-fn indeterminate_handle_fails_closed_until_reopen() {
-    let root = TempRoot::new("indeterminate");
-    let objective = digest("objective");
-    let subject = digest("subject");
-    let projection = digest("projection");
-    let mut store = must(NduProjectionStoreV1::open(&root.0));
+fn persistence_failpoints_reconcile_at_real_durability_boundaries() {
+    for stage in [
+        FaultStage::Write,
+        FaultStage::FileSync,
+        FaultStage::Rename,
+        FaultStage::DirectorySync,
+    ] {
+        let root = TempRoot::new(match stage {
+            FaultStage::Write => "fail-write",
+            FaultStage::FileSync => "fail-file-sync",
+            FaultStage::Rename => "fail-rename",
+            FaultStage::DirectorySync => "fail-directory-sync",
+        });
+        {
+            let store = must(NduProjectionStoreV1::open(&root.0));
+            drop(store);
+        }
 
-    store.indeterminate = true;
-    assert!(store.is_indeterminate());
-    assert_eq!(
-        store
-            .entries()
-            .expect_err("poisoned entries must fail closed"),
-        NduProjectionStoreError::Indeterminate
-    );
-    assert_eq!(
-        store
-            .selected_projection_digest(objective, subject)
-            .expect_err("poisoned selection read must fail closed"),
-        NduProjectionStoreError::Indeterminate
-    );
-    assert_eq!(
-        store
-            .backup_bytes()
-            .expect_err("poisoned backup export must fail closed"),
-        NduProjectionStoreError::Indeterminate
-    );
-    assert_eq!(
-        store
+        let persistence = Arc::new(FaultPersistence {
+            stage,
+            real: FsProjectionPersistenceV1,
+        });
+        let mut store = must(NduProjectionStoreV1::open_with_persistence(
+            &root.0,
+            persistence,
+        ));
+        let objective = digest("objective");
+        let subject = digest("subject");
+        let projection = digest("projection");
+
+        let error = store
             .append_projection(
                 NduProjectionKindV1::Preference,
                 digest("projection-id"),
@@ -234,14 +286,32 @@ fn indeterminate_handle_fails_closed_until_reopen() {
                 subject,
                 projection,
             )
-            .expect_err("poisoned mutation must fail closed"),
-        NduProjectionStoreError::Indeterminate
-    );
+            .expect_err("injected persistence failure must surface");
 
-    drop(store);
-    let reopened = must(NduProjectionStoreV1::open(&root.0));
-    assert!(!reopened.is_indeterminate());
-    assert!(must(reopened.entries()).is_empty());
+        if stage == FaultStage::DirectorySync {
+            assert_eq!(error, NduProjectionStoreError::Indeterminate);
+            assert!(store.is_indeterminate());
+            assert_eq!(
+                store
+                    .entries()
+                    .expect_err("indeterminate handle must fail closed"),
+                NduProjectionStoreError::Indeterminate
+            );
+        } else {
+            assert_eq!(error, NduProjectionStoreError::Io(io::ErrorKind::Other));
+            assert!(!store.is_indeterminate());
+            assert!(must(store.entries()).is_empty());
+        }
+
+        drop(store);
+        let reopened = must(NduProjectionStoreV1::open(&root.0));
+        assert!(!reopened.is_indeterminate());
+        if stage == FaultStage::DirectorySync {
+            assert_eq!(must(reopened.entries()).len(), 1);
+        } else {
+            assert!(must(reopened.entries()).is_empty());
+        }
+    }
 }
 
 #[cfg(unix)]
