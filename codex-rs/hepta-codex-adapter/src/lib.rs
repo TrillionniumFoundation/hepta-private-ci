@@ -11,9 +11,13 @@ use std::fmt;
 
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerObservedEvent;
+use codex_app_server_client::RemoteAppServerObservedResponse;
 use codex_app_server_client::RemoteAppServerObservedServerError;
 use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::ThreadReadResponse;
+use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStatus;
 use codex_hepta_types::AuthorityPosture;
@@ -35,6 +39,7 @@ const MAX_APP_SERVER_VERSION_BYTES: usize = 128;
 pub const APP_SERVER_V2_PROTOCOL_ID: &str = "codex.app-server.v2";
 pub const TURN_START_METHOD_ID: &str = "turn.start";
 pub const TURN_START_RPC_METHOD: &str = "turn/start";
+pub const THREAD_READ_RPC_METHOD: &str = "thread/read";
 pub const OVERLOADED_ERROR_CODE: i64 = -32_001;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -194,6 +199,133 @@ pub fn adapt_observed_server_rejection(
         retry_posture,
         Some(response_digest),
     ))
+}
+
+pub fn adapt_observed_thread_read_reconciliation(
+    intent: &CodexOperationIntent,
+    expected_turn_start: &TurnStartParams,
+    observed: &RemoteAppServerObservedResponse<ThreadReadResponse>,
+) -> Result<Option<CodexAdapterReceipt>, Error> {
+    validate_intent_static(intent)?;
+    let binding = intent
+        .app_server_binding
+        .as_ref()
+        .ok_or(Error::ProductBindingRequired)?;
+    if observed.method() != THREAD_READ_RPC_METHOD {
+        return Err(Error::CorrelationMismatch("reconciliation method"));
+    }
+    if observed.connection_id() == 0 {
+        return Err(Error::InvalidObservationIdentity(
+            "reconciliation connection",
+        ));
+    }
+    if observed.server_version() != Some(binding.app_server_version.as_str()) {
+        return Err(Error::CorrelationMismatch(
+            "reconciliation app server version",
+        ));
+    }
+    let observed_home = observed
+        .codex_home()
+        .ok_or(Error::CorrelationMismatch("reconciliation codex home"))?;
+    if Digest32::of_bytes(observed_home.as_bytes()) != binding.codex_home_digest {
+        return Err(Error::CorrelationMismatch("reconciliation codex home"));
+    }
+
+    let encoded_turn_start = serde_json::to_vec(expected_turn_start)
+        .map_err(|_| Error::ObservationEncodingFailed)?;
+    if Digest32::of_bytes(&encoded_turn_start) != intent.payload_digest {
+        return Err(Error::CorrelationMismatch(
+            "reconciliation turn/start payload",
+        ));
+    }
+    if expected_turn_start.thread_id != intent.thread_id.as_str() {
+        return Err(Error::CorrelationMismatch("reconciliation thread"));
+    }
+    let expected_client_id = expected_turn_start
+        .client_user_message_id
+        .as_deref()
+        .filter(|value| !value.is_empty())
+        .ok_or(Error::CorrelationMismatch(
+            "reconciliation client user message id",
+        ))?;
+
+    let response = observed.response();
+    if response.thread.id != intent.thread_id.as_str() {
+        return Err(Error::CorrelationMismatch("reconciliation thread"));
+    }
+    if response.thread.session_id != binding.session_id.as_str() {
+        return Err(Error::CorrelationMismatch("reconciliation session"));
+    }
+
+    let mut matched_turn = None;
+    for turn in &response.thread.turns {
+        let mut saw_exact = false;
+        for item in &turn.items {
+            let ThreadItem::UserMessage {
+                client_id: Some(client_id),
+                content,
+                ..
+            } = item
+            else {
+                continue;
+            };
+            if client_id != expected_client_id {
+                continue;
+            }
+            if content != &expected_turn_start.input {
+                return Err(Error::CorrelationMismatch(
+                    "reconciliation user input",
+                ));
+            }
+            if saw_exact {
+                return Err(Error::CorrelationMismatch(
+                    "reconciliation duplicate user message",
+                ));
+            }
+            saw_exact = true;
+        }
+        if saw_exact {
+            if matched_turn.is_some() {
+                return Err(Error::CorrelationMismatch(
+                    "reconciliation duplicate turn",
+                ));
+            }
+            matched_turn = Some(turn);
+        }
+    }
+    let Some(turn) = matched_turn else {
+        return Ok(None);
+    };
+    let outcome = match turn.status {
+        TurnStatus::Completed => TerminalOutcome::Completed,
+        TurnStatus::Failed => TerminalOutcome::Failed,
+        TurnStatus::Interrupted => TerminalOutcome::Interrupted,
+        TurnStatus::InProgress => return Ok(None),
+    };
+    let turn_id = StableId::new(turn.id.clone())
+        .map_err(|_| Error::InvalidObservationIdentity("turn"))?;
+    let response_digest = reconciled_turn_response_digest(observed, turn)?;
+    let request_digest = request_digest(intent);
+    let correlation_digest =
+        terminal_correlation_digest(request_digest, &turn_id, outcome, response_digest);
+    let status = match outcome {
+        TerminalOutcome::Completed => AdapterStatus::Succeeded,
+        TerminalOutcome::Failed => AdapterStatus::Failed,
+        TerminalOutcome::Interrupted => AdapterStatus::Interrupted,
+    };
+    let retry_posture = match outcome {
+        TerminalOutcome::Interrupted => RetryPosture::ReconcileSameOperation,
+        TerminalOutcome::Completed | TerminalOutcome::Failed => RetryPosture::Never,
+    };
+    Ok(Some(receipt(
+        intent,
+        request_digest,
+        Some(turn_id),
+        Some(correlation_digest),
+        status,
+        retry_posture,
+        Some(response_digest),
+    )))
 }
 
 #[must_use]
@@ -372,6 +504,37 @@ fn terminal_correlation_digest(
     });
     bytes.extend_from_slice(response_digest.as_array());
     Digest32::of_bytes(&bytes)
+}
+
+fn reconciled_turn_response_digest(
+    observed: &RemoteAppServerObservedResponse<ThreadReadResponse>,
+    turn: &codex_app_server_protocol::Turn,
+) -> Result<Digest32, Error> {
+    let encoded_turn =
+        serde_json::to_vec(turn).map_err(|_| Error::ObservationEncodingFailed)?;
+    let encoded_request_id = serde_json::to_vec(observed.request_id())
+        .map_err(|_| Error::ObservationEncodingFailed)?;
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.codex.adapter.reconciled-turn.v1");
+    push_text(&mut bytes, observed.method());
+    push_bytes(&mut bytes, &encoded_request_id);
+    bytes.extend_from_slice(&observed.connection_id().to_be_bytes());
+    push_text(
+        &mut bytes,
+        observed
+            .server_version()
+            .ok_or(Error::CorrelationMismatch(
+                "reconciliation app server version",
+            ))?,
+    );
+    push_text(
+        &mut bytes,
+        observed
+            .codex_home()
+            .ok_or(Error::CorrelationMismatch("reconciliation codex home"))?,
+    );
+    push_bytes(&mut bytes, &encoded_turn);
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn server_error_digest(error: &JSONRPCErrorError) -> Digest32 {
