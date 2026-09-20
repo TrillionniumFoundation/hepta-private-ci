@@ -138,7 +138,7 @@
       "dossier": "qualification/module-execution-dossiers/detail/learning.operator.md",
       "nativeMapping": "codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md",
       "implementationState": "source_implemented_ci_pending",
-      "compatibility": "legacy_train_and_raw_fit_predict_retained; qualification uses verified DatasetSnapshotReceiptV3 binding, signed evaluator admission, and independently pinned loads",
+      "compatibility": "legacy train/build_targets remain readable; canonical qualification target/tabular/world-model training uses verified DatasetSnapshotReceiptV3 binding, replay-unique evidence, signed evaluator admission, and independently pinned loads",
       "operations": [
         {
           "operation": "build_targets",
@@ -237,6 +237,12 @@
           "status": "implemented"
         },
         {
+          "operation": "build_targets_bound_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::build_targets_bound_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "status": "implemented"
+        },
+        {
           "operation": "fit_tabular_operator_bound_v2",
           "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator_bound_v2",
           "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
@@ -303,7 +309,10 @@
         "op_06_signed_regularity_rejects_role_or_identity_drift",
         "op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows",
         "op_07_bound_fit_rejects_detached_digest_or_row_set",
-        "op_07_bound_world_model_takes_dataset_identity_from_receipt"
+        "op_07_bound_world_model_takes_dataset_identity_from_receipt",
+        "relabelled_support_evidence_fails",
+        "op_07_bound_target_builder_consumes_exact_v3_dataset_rows",
+        "op_07_bound_target_builder_rejects_detached_head_or_relabelled_evidence"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
