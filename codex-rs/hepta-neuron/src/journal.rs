@@ -333,8 +333,7 @@ impl SparseJournal {
         let Some(current) = self.current.as_ref() else {
             return Ok(None);
         };
-        let sequence =
-            u64::try_from(self.entries.len()).map_err(|_| JournalError::Capacity)?;
+        let sequence = u64::try_from(self.entries.len()).map_err(|_| JournalError::Capacity)?;
         Ok(Some(JournalAnchor {
             sequence,
             checkpoint_digest: current.digest(),
@@ -351,7 +350,8 @@ impl SparseJournal {
         if anchor.sequence == 0 || anchor.checkpoint_digest.is_zero() {
             return Ok(false);
         }
-        let index = usize::try_from(anchor.sequence - 1).map_err(|_| JournalError::InvalidAnchor)?;
+        let index =
+            usize::try_from(anchor.sequence - 1).map_err(|_| JournalError::InvalidAnchor)?;
         Ok(self
             .entries
             .get(index)
