@@ -1,5 +1,6 @@
 #![cfg(unix)]
 
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
 use std::sync::Arc;
@@ -11,6 +12,7 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdProductionWriterHost;
 use codex_hepta_cognitive_store::CognitiveAccess;
+use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
 use codex_hepta_cognitive_store::CognitiveScope;
 use codex_hepta_cognitive_store::DurableCognitiveStore;
@@ -202,6 +204,69 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     assert!(!written.provenance_event_id.is_empty());
     assert!(!written.provenance_outbox_id.is_empty());
     assert!(!written.provenance_commit_event_id.is_empty());
+
+    let canonical_event = MemoryEventV1 {
+        event_id: ContractIdV1::new("event:production-semantic-write:1")?,
+        episode_id: ContractIdV1::new("episode:production-semantic-write")?,
+        scope: MemoryScopeV1::AgentPrivate {
+            agent_id: ContractIdV1::new(owner.as_str())?,
+        },
+        observed_interval: ObservedIntervalV1 {
+            start_unix_ms: u64::try_from(now)?.saturating_mul(1000),
+            end_unix_ms: None,
+        },
+        modality_spans: vec![ModalitySpanRefV1 {
+            span_id: ContractIdV1::new("span:production-semantic-write:1")?,
+            modality: ModalityKindV1::Text,
+            asset_sha256: ContractDigestV1::parse(
+                Sha256Digest::for_bytes(content.as_bytes()).as_str(),
+            )?,
+            range: SpanRangeV1::ByteRange {
+                start: 0,
+                end: u64::try_from(content.len())?,
+            },
+            preprocessor_manifest_sha256: ContractDigestV1::parse(
+                Sha256Digest::for_bytes(b"production-semantic-preprocessor").as_str(),
+            )?,
+            feature_blob_sha256: None,
+            symbolic_projection_sha256: None,
+            uncertainty_ppm: 0,
+            privacy_class: PrivacyClassV1::AgentPrivate,
+            redaction_mask_sha256: None,
+        }],
+        cross_modal_bindings: Vec::new(),
+        semantic_keys: BTreeSet::from(["production-memory".to_string()]),
+        provenance: vec![ProvenanceRefV1 {
+            source_id: ContractIdV1::new(written.write.source.source_id.as_str())?,
+            source_revision: written.write.source.revision,
+            source_sha256: ContractDigestV1::parse(written.source_content_sha256.as_str())?,
+            observed_at_unix_ms: u64::try_from(written.source_observed_at_unix_seconds)?
+                .saturating_mul(1000),
+        }],
+        verification: MemoryVerificationStateV1::Verified,
+        retention_policy: RetentionPolicyV1::Persistent {
+            retain_until_unix_ms: None,
+        },
+        objective_digest: ContractDigestV1::parse(
+            Sha256Digest::for_bytes(b"production-objective").as_str(),
+        )?,
+        ndu_state_digest: ContractDigestV1::parse(
+            Sha256Digest::for_bytes(b"production-ndu").as_str(),
+        )?,
+        causal_parents: BTreeSet::new(),
+        temporal_neighbors: BTreeSet::new(),
+        behavior_propensity_ppm: None,
+        lifecycle: MemoryLifecycleV1::Active,
+    };
+    let canonical_binding =
+        bind_canonical_event_to_durable_receipt(&canonical_event, &written)?;
+    canonical_binding.validate()?;
+    assert_eq!(
+        canonical_binding.source_revision,
+        written.write.source.revision,
+        "canonical/durable bridge must carry the authoritative source revision"
+    );
+
     let written_occurrence = format!(
         "cognitive-mutation:{}",
         written.operation_digest.as_str()
