@@ -104,8 +104,13 @@ valid Ed25519 `hepta.browser.persisted-effect-observation.v2` receipt; absence,
 wrong observer, signature failure or binding drift remains indeterminate.
 
 The selected upstream Servo qualification candidate is
-`servo/servo@5cc5bd32d02619acdec5736055515e38c5840ce1`; promotion requirements are in
-`docs/modules/browser.servo/SERVO_PIN_AUDIT.md`.
+`servo/servo@b5a1f5e6ec6f8685d40cd389802ced7abe4980f6`, replacing `5cc5bd32d02619acdec5736055515e38c5840ce1` because upstream's
+WebView double-borrow hardening changes the `WebView::load()` path used by this
+worker. The dependency graph changed with that upstream window, so the existing
+committed lock is predecessor evidence only: exact-head worker qualification must
+generate the b5a1 candidate lock, that exact lock must be reviewed and committed,
+and only then may locked build/E2E/reproducibility evidence qualify the pin.
+Promotion requirements are in `docs/modules/browser.servo/SERVO_PIN_AUDIT.md`.
 
 
 The real qualification path also proves that one profile actually retains its
