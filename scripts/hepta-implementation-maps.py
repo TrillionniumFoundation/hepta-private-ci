@@ -35,6 +35,65 @@ def git(*args: str) -> str:
     return p.stdout.strip()
 
 
+def git_object_id(ref: str, path: str) -> str:
+    """Return the blob/tree object ID for one tracked path at one revision."""
+    return git("rev-parse", f"{ref}:{path}")
+
+
+def verify_implementation_head(
+    module_id: str, row: dict, declared_roots: list[str], failures: list[str]
+) -> None:
+    """Verify that an explicit source-only head still matches current source.
+
+    A tracked map cannot contain the SHA of the commit that contains the map
+    itself without creating a hash self-reference.  Modules that claim an
+    exact source closure therefore record a source-only implementationHead.
+    Verification compares Git object identities for every declared owner root
+    and every explicitly composed source path against current HEAD.  Any source
+    drift after that head fails closed even when documentation-only commits
+    followed it.
+    """
+    head = row.get("implementationHead")
+    if head is None:
+        return
+    if not isinstance(head, dict) or not head.get("commit"):
+        failures.append(f"{module_id}: implementation head")
+        return
+    commit = head["commit"]
+    try:
+        actual_tree = git("rev-parse", f"{commit}^{{tree}}")
+    except subprocess.CalledProcessError:
+        failures.append(f"{module_id}: implementation head commit is unavailable")
+        return
+    recorded_tree = head.get("tree")
+    if recorded_tree and recorded_tree != actual_tree:
+        failures.append(f"{module_id}: implementation head tree mismatch")
+    for root in declared_roots:
+        try:
+            if git_object_id(commit, root) != git_object_id("HEAD", root):
+                failures.append(f"{module_id}: source drift after implementation head: {root}")
+        except subprocess.CalledProcessError:
+            failures.append(f"{module_id}: implementation head cannot resolve root: {root}")
+    composition = row.get("sourceComposition")
+    if isinstance(composition, dict):
+        for name, binding in composition.items():
+            if not isinstance(binding, dict):
+                failures.append(f"{module_id}: invalid source composition {name}")
+                continue
+            source_path = binding.get("path")
+            if not source_path:
+                continue
+            try:
+                if git_object_id(commit, source_path) != git_object_id("HEAD", source_path):
+                    failures.append(
+                        f"{module_id}: composed source drift after implementation head: {source_path}"
+                    )
+            except subprocess.CalledProcessError:
+                failures.append(
+                    f"{module_id}: implementation head cannot resolve composed source: {source_path}"
+                )
+
+
 def lane_by_module():
     return {
         m: lane["id"]
@@ -323,6 +382,7 @@ def verify():
             declared = [declared]
         if declared != roots:
             failures.append(f"{mid}: declared roots")
+        verify_implementation_head(mid, row, declared, failures)
         try:
             if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
                 failures.append(f"{mid}: resolved source roots")
