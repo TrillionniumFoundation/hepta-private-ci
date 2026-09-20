@@ -61,7 +61,8 @@
           "operation": "activate_learning_trust",
           "nativeSymbol": "codex_hepta_learning_ledger::activate_learning_trust",
           "source": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
-          "status": "implemented"
+          "status": "implemented_root_authenticated_distribution_transport_external",
+          "notes": "Requires host-pinned LearningTrustRootV1 and verifies SignedLearningTrustDistributionV1 before activation."
         },
         {
           "operation": "canonical_protocol_adapters",
@@ -99,7 +100,7 @@
       ],
       "remainingExternalEvidence": [
         "named_live_product_caller_and_exclusive_physical_writer",
-        "production_trust_distribution_transport_key_custody_and_witness_placement",
+        "production_root_provisioning_rotation_trust_distribution_transport_key_custody_and_witness_placement",
         "live_independent_outcomes_and_target_host_measurements",
         "physical_erasure_backup_and_model_unlearning_evidence_where_claimed"
       ],

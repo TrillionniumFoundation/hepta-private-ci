@@ -59,15 +59,17 @@
       "operation": "activate_learning_trust",
       "nativeSymbol": "activate_learning_trust",
       "sourcePath": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
-      "state": "source_implemented_distribution_transport_external",
+      "state": "source_implemented_root_authenticated_distribution_transport_external",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "versioned_signer_distribution_activation",
+      "designOperation": "root_authenticated_versioned_signer_distribution_activation",
       "mappingClass": "owner_native",
       "delegatedCallees": [
+        "LearningTrustRootV1",
+        "SignedLearningTrustDistributionV1",
         "LearningEvidenceVerifierV1"
       ]
     },
@@ -92,7 +94,7 @@
   ],
   "externalEvidenceGates": [
     "named live product caller and exclusive physical writer/directory ownership",
-    "production trust-distribution transport, key custody, independent witness placement and target-host qualification",
+    "production root provisioning/rotation ceremony, trust-distribution transport, key custody, independent witness placement and target-host qualification",
     "live independent outcomes and longitudinal evaluation",
     "independent semantic review, operator acceptance, canary, promotion and release"
   ],

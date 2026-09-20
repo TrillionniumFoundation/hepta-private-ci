@@ -13,7 +13,7 @@ replay, migrations and focused durability tests; there is no automatic V1-to-V2
 reinterpretation.
 
 New product composition uses `LedgerWriter`. It consumes the underlying durable
-backend, an activated signer distribution and an independently durable witness,
+backend, a pinned-root-authenticated signer distribution and an independently durable witness,
 so a caller using the owned writer cannot bypass V2 admission through the same
 file handle.
 
@@ -33,7 +33,7 @@ Owned logical domains remain:
 | durable append and anchored reopen | `DurableLedger`, `LedgerAnchor`, `LedgerRecovery` | `src/durable.rs` | retained backend |
 | segmented append/rotation/recovery | `SegmentedLedger` | `src/segments.rs` | implemented backend |
 | unique product admission writer | `LedgerWriter` | `src/production.rs` | implemented/source-composed in evaluated shadow |
-| activate versioned signer distribution | `activate_learning_trust` | `src/trust_distribution.rs` | implemented |
+| authenticate pinned root + versioned signer distribution | `LearningTrustRootV1`, `SignedLearningTrustDistributionV1`, `activate_learning_trust` | `src/trust_distribution.rs` | implemented |
 | independently witness acknowledgements | `LedgerWitnessStore` | `src/witness.rs` | implemented |
 | append authenticated decision | `LedgerWriter::append_decision` | `src/production.rs` | implemented |
 | append authenticated/corrected outcome | `LedgerWriter::append_outcome` | `src/production.rs` | implemented |
@@ -115,8 +115,10 @@ backup deletion or proof of model unlearning.
 `LearningEvidenceVerifierV1` verifies Ed25519 signatures, scope/objective/epoch,
 validity windows, role assignment, signer revocation and controller separation.
 
-Product construction additionally requires `ActivatedLearningTrustV1`, created
-from `LearningTrustDistributionV1` by `activate_learning_trust`. Distribution
+Product construction additionally requires `ActivatedLearningTrustV1`, created only after `activate_learning_trust` verifies a
+`SignedLearningTrustDistributionV1` against a host-pinned `LearningTrustRootV1`.
+The signed distribution binds scope, objective, authority epoch, signer/controller
+identities, roles, key material, validity and revocation state. Distribution
 generation advances exactly one step, effective time is monotonic and authority
 epoch cannot roll back. The activated distribution has a content digest binding
 its generation and verifier context.
@@ -128,7 +130,8 @@ one exact record during lost-acknowledgement reconciliation. Segmented rotation
 is performed through `LedgerWriter::rotate_segment`, which witnesses the new
 segment topology before reporting success.
 
-The host still owns trusted file opening, directory synchronization, witness
+The host still owns pinned-root provisioning/rotation ceremony, distribution transport,
+trusted file opening, directory synchronization, witness
 placement/isolation, key-distribution transport, encryption and physical
 durability qualification.
 

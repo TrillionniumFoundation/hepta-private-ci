@@ -207,7 +207,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use `LedgerWriter` for composed writes. The writer combines the native durable backend, activated signer distribution and independently retained `LedgerWitnessStore`. Inspect and reopen existing state before admitting new records; failure of anchored recovery is not permission to fall back to unanchored opening. Segment rotation, retention and backup must preserve both record and topology frontiers. Host directory synchronization, witness isolation, encryption and physical durability remain deployment-owner obligations.
+Use `LedgerWriter` for composed writes. The writer combines the native durable backend, pinned-root-authenticated signer distribution and independently retained `LedgerWitnessStore`. Inspect and reopen existing state before admitting new records; failure of anchored recovery is not permission to fall back to unanchored opening. Segment rotation, retention and backup must preserve both record and topology frontiers. Host directory synchronization, witness isolation, encryption and physical durability remain deployment-owner obligations.
 
 `LedgerIndexCheckpointV1` is rebuildable acceleration state. It binds the exact ledger anchor, record index, active projection, correction heads and revocation/unlearning frontier and is verified by full deterministic regeneration before use.
 
@@ -260,7 +260,7 @@ Documentation completion requires this guide, exact registry references and clos
 
 At the source level, the module now contains the production-facing writer, authenticated durable decision/outcome/credit/unlearning facts, ledger-derived dataset freeze, versioned trust activation, independent witness, canonical protocol adapters and verifiable index checkpoint. The existing evaluated-shadow qualification consumer is source-composed through `LedgerWriter`.
 
-This does **not** establish a live product caller or production writer deployment. The selected host must still provide current trust-distribution transport/key custody, exclusive physical file/directory ownership, independent witness placement, live outcome observers and target-host measurements. Exact-candidate CI is qualification evidence only when the corresponding run passes; independent acceptance, activation, canary, selection, promotion and release remain externally governed.
+This does **not** establish a live product caller or production writer deployment. The selected host must still provide current pinned-root provisioning/rotation ceremony and trust-distribution transport/key custody, exclusive physical file/directory ownership, independent witness placement, live outcome observers and target-host measurements. Exact-candidate CI is qualification evidence only when the corresponding run passes; independent acceptance, activation, canary, selection, promotion and release remain externally governed.
 
 For `learning.ledger`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -449,4 +449,4 @@ The bootstrap source-location obligation for `learning.ledger` is implemented by
 
 - `codex-rs/hepta-learning-ledger`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and the ledger/Lane-E/Lane-F workflows, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The native source now includes `LedgerWriter`, `LedgerWitnessStore`, `ActivatedLearningTrustV1`, registered protocol adapters and `LedgerIndexCheckpointV1`. This receipt is source implementation evidence only; the exact PR head must still pass current CI before source qualification is claimed. It grants no live product-writer deployment, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and the ledger/Lane-E/Lane-F workflows, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The native source now includes `LedgerWriter`, `LedgerWitnessStore`, `LearningTrustRootV1`, root-signed `ActivatedLearningTrustV1`, registered protocol adapters and `LedgerIndexCheckpointV1`. This receipt is source implementation evidence only; the exact PR head must still pass current CI before source qualification is claimed. It grants no live product-writer deployment, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

@@ -68,7 +68,7 @@ fn signed_distribution(
 }
 
 #[test]
-fn trust_distribution_rotation_is_root_authenticated_monotonic_and_content_addressed() {
+fn trust_distribution_rotation_is_monotonic_and_content_addressed() {
     let root_key = SigningKey::from_bytes(&[99; 32]);
     let root = root(&root_key);
     let first = activate_learning_trust(

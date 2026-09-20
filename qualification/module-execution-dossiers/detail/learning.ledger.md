@@ -106,7 +106,7 @@ scope/objective/epoch, validity windows, signer role, revocation, principal,
 credential chain, key and controller separation.
 
 Product writer construction requires `ActivatedLearningTrustV1`, created by
-`activate_learning_trust(LearningTrustDistributionV1, previous, now)`.
+`activate_learning_trust(&LearningTrustRootV1, SignedLearningTrustDistributionV1, previous, now)`.
 Distribution generation must advance exactly one step; effective time is
 monotonic; authority epoch cannot roll back; the activated state is
 content-addressed. The host remains responsible for distribution transport,
@@ -198,8 +198,9 @@ or future-time efficacy.
   [src/segments.rs](../../../codex-rs/hepta-learning-ledger/src/segments.rs).
 - **Independent acknowledgement:** `LedgerWitnessStore` in
   [src/witness.rs](../../../codex-rs/hepta-learning-ledger/src/witness.rs).
-- **Trust distribution:** `LearningTrustDistributionV1`,
-  `ActivatedLearningTrustV1`, `activate_learning_trust` in
+- **Trust distribution:** pinned `LearningTrustRootV1`, root-signed
+  `SignedLearningTrustDistributionV1`, `ActivatedLearningTrustV1`, and
+  `activate_learning_trust` in
   [src/trust_distribution.rs](../../../codex-rs/hepta-learning-ledger/src/trust_distribution.rs).
 - **Cryptographic evidence admission:** `LearningEvidenceVerifierV1` in
   [src/signed_evidence.rs](../../../codex-rs/hepta-learning-ledger/src/signed_evidence.rs).
@@ -222,7 +223,7 @@ The repository cannot self-issue the remaining external/product evidence:
 
 - a named live product process/callsite using `LedgerWriter`;
 - actual deployment directory ownership and physical durability;
-- production trust-distribution transport/key custody;
+- production root-public-key provisioning/rotation ceremony and trust-distribution transport/key custody;
 - live independent outcomes;
 - target-host latency/storage/recovery measurements;
 - physical deletion/backups or model-unlearning proof;
