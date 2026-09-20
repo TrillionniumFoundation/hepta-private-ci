@@ -69,7 +69,7 @@ impl NativeShellRuntime {
         Ok(session)
     }
 
-    pub fn render_runtime_view(
+    fn accept_runtime_view(
         &mut self,
         view: RuntimeView,
     ) -> Result<PresentationState, ShellError> {
@@ -135,7 +135,7 @@ impl NativeShellRuntime {
             digest: observed.body_digest,
             modules: vec!["runtime.agentd".to_owned(), "ui.native".to_owned()],
         };
-        let presentation = self.render_runtime_view(view)?;
+        let presentation = self.accept_runtime_view(view)?;
         Ok((presentation, observed.value))
     }
 
@@ -179,12 +179,20 @@ impl NativeShellRuntime {
             request.displayed_revision,
             &request.payload,
         )?;
+        let binding_digest = crate::model::sha256_hex(serde_json::to_vec(&binding)?);
+        let grant_digest = crate::model::sha256_hex(serde_json::to_vec(&request.grant)?);
         let key = OperationKey::new(&session, &request.operation_id)?;
 
         if let Some(existing) = self.journal.find(&key).cloned() {
-            if existing.action != action || existing.payload_digest != payload_digest {
+            if existing.subject_id != request.subject_id
+                || existing.displayed_revision != request.displayed_revision
+                || existing.action != action
+                || existing.payload_digest != payload_digest
+                || existing.binding_digest != binding_digest
+                || existing.grant_digest != grant_digest
+            {
                 return Err(ShellError::State(
-                    "operation identity was reused with changed payload".to_owned(),
+                    "operation identity was reused with changed semantics".to_owned(),
                 ));
             }
             match existing.phase {
@@ -202,8 +210,12 @@ impl NativeShellRuntime {
             let record = OperationRecord {
                 endpoint_id: session.endpoint_id,
                 key,
+                subject_id: request.subject_id.clone(),
+                displayed_revision: request.displayed_revision,
                 action,
                 payload_digest,
+                binding_digest: binding_digest.clone(),
+                grant_digest: grant_digest.clone(),
                 phase: OperationPhase::Terminal,
                 terminal_status: Some(TerminalStatus::Rejected),
                 outcome_digest: Some(permission.outcome_digest),
@@ -216,8 +228,12 @@ impl NativeShellRuntime {
         let prepared = OperationRecord {
             endpoint_id: session.endpoint_id.clone(),
             key: key.clone(),
+            subject_id: request.subject_id.clone(),
+            displayed_revision: request.displayed_revision,
             action,
             payload_digest: payload_digest.clone(),
+            binding_digest: binding_digest.clone(),
+            grant_digest: grant_digest.clone(),
             phase: OperationPhase::Prepared,
             terminal_status: None,
             outcome_digest: None,
@@ -240,8 +256,12 @@ impl NativeShellRuntime {
         let invoking = OperationRecord {
             endpoint_id: session.endpoint_id,
             key: key.clone(),
+            subject_id: request.subject_id,
+            displayed_revision: request.displayed_revision,
             action,
             payload_digest: payload_digest.clone(),
+            binding_digest,
+            grant_digest,
             phase: OperationPhase::Invoking,
             terminal_status: None,
             outcome_digest: None,
