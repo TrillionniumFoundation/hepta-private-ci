@@ -6,6 +6,8 @@
 use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
+use std::pin::Pin;
+use std::sync::Arc;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -43,7 +45,11 @@ use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
 use codex_hepta_codex_adapter::adapt_observed_event;
 use codex_hepta_codex_adapter::adapt_observed_server_rejection;
 use codex_hepta_codex_adapter::adapt_request;
+use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::EnteredUseToken;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 pub use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
@@ -76,6 +82,15 @@ const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
+pub type TurnStartAuthorityFuture<'a> =
+    Pin<Box<dyn Future<Output = Result<VerifiedUseToken>> + Send + 'a>>;
+
+/// Host-owned final-use port. runtime.codex can request a claim for the exact
+/// final binding, but it cannot construct a VerifiedUseToken itself.
+pub trait TurnStartAuthorizer: Send + Sync {
+    fn claim<'a>(&'a self, binding: FinalUseBinding) -> TurnStartAuthorityFuture<'a>;
+}
+
 /// Local operator-selected connection, fenced by the existing Agent identity.
 pub struct NativeWorkerConfig {
     pub agentd_socket: PathBuf,
@@ -90,6 +105,7 @@ pub struct NativeWorkerConfig {
 /// local slot admission and settlement; duplicate requests never start a turn.
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
+    turn_start_authorizer: Option<Arc<dyn TurnStartAuthorizer>>,
 }
 
 #[derive(Clone)]
@@ -109,7 +125,17 @@ impl AppServerModelDriver {
         {
             return Err("invalid native worker configuration".into());
         }
-        Ok(Self { config })
+        Ok(Self {
+            config,
+            turn_start_authorizer: None,
+        })
+    }
+
+    /// Attach the trusted-host final-use port. The production CLI requires this
+    /// port and never owns an issuer private key.
+    pub fn with_turn_start_authorizer(mut self, authorizer: Arc<dyn TurnStartAuthorizer>) -> Self {
+        self.turn_start_authorizer = Some(authorizer);
+        self
     }
 
     /// Execute once. Transport loss after turn/start remains indeterminate and
@@ -157,7 +183,8 @@ impl AppServerModelDriver {
             })
             .transpose()?;
         let ingress = owner.session_ingress().await?;
-        let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
+        let ingress_socket_path = ingress.socket_path;
+        let socket_path = AbsolutePathBuf::from_absolute_path(ingress_socket_path.clone())?;
         let mut client = timeout(
             RPC_TIMEOUT,
             RemoteAppServerClient::connect_with_bounded_events(
@@ -251,6 +278,7 @@ impl AppServerModelDriver {
             app_server_binding: Some(AppServerRequestBinding {
                 source_admission_digest,
                 agent_generation: Generation::new(self.config.generation)?,
+                session_id: StableId::new(started.thread.session_id.clone())?,
                 protocol_id: StableId::new(APP_SERVER_V2_PROTOCOL_ID)?,
                 app_server_version: app_server_version.clone(),
                 codex_home_digest,
@@ -258,7 +286,24 @@ impl AppServerModelDriver {
             }),
         };
         let request_receipt = adapt_request(adapted_at_ms, adapter_intent.clone())?;
-        control.dispatch_native(
+        let authority_binding = final_use_binding(
+            &self.config.agent_id,
+            &adapter_intent,
+            &started.model,
+            &started.model_provider,
+        )?;
+        let authorizer = self
+            .turn_start_authorizer
+            .as_ref()
+            .ok_or("runtime.codex turn/start final-use authorizer is required")?;
+        let claim_budget = remaining_before(adapter_intent.deadline_ms)?;
+        let verified_use = timeout(claim_budget, authorizer.claim(authority_binding.clone()))
+            .await
+            .map_err(|_| "final-use authority request exceeded runtime.codex deadline")??;
+        let authority_witness =
+            Digest32::from_array(verified_use.witness_sha256()).to_string();
+
+        let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
@@ -273,6 +318,9 @@ impl AppServerModelDriver {
                 codex_source_admission_digest: Some(source_admission_digest.to_string()),
                 codex_home_digest: Some(codex_home_digest.to_string()),
                 codex_connection_id: Some(connection_id),
+                codex_session_id: Some(started.thread.session_id.clone()),
+                codex_deadline_ms: Some(adapter_intent.deadline_ms),
+                codex_authority_witness_sha256: Some(authority_witness.clone()),
             },
         )?;
         verify_persisted_dispatch_binding(
@@ -283,14 +331,65 @@ impl AppServerModelDriver {
             source_admission_digest,
             codex_home_digest,
             connection_id,
+            &started.thread.session_id,
+            adapter_intent.deadline_ms,
+            &authority_witness,
             &app_server_version,
         )?;
+
+        let post_health = match owner.health().await {
+            Ok(health) => health,
+            Err(error) => {
+                let reason = format!("owner health failed before final-use entry: {error}");
+                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(reason.into());
+            }
+        };
+        let current_ingress = match owner.session_ingress().await {
+            Ok(ingress) => ingress,
+            Err(error) => {
+                let reason = format!("owner ingress failed before final-use entry: {error}");
+                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(reason.into());
+            }
+        };
+        if let Err(error) = validate_post_authority_fence(
+            &post_health,
+            &ingress_socket_path,
+            &current_ingress.socket_path,
+            cancellation.is_cancelled(),
+            unix_time_ms()?,
+            adapter_intent.deadline_ms,
+        ) {
+            let reason: String = error.to_string().chars().take(1024).collect();
+            control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(reason.into());
+        }
+        let send_budget = remaining_before(adapter_intent.deadline_ms)?.min(RPC_TIMEOUT);
+        let entered_use = match verified_use.enter(&authority_binding) {
+            Ok(entered) if entered.matches(&authority_binding) => entered,
+            Ok(_) => {
+                let reason = "kernel.authority final-use binding mismatch at entry".to_string();
+                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(reason.into());
+            }
+            Err(error) => {
+                let reason = format!("kernel.authority final-use entry denied: {error}");
+                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(reason.into());
+            }
+        };
+        // From here on, a missing acknowledgement is reconcile-only. Recovery
+        // cannot recreate the local pre-effect proof that is deliberately lost.
+        drop(pre_effect_abort);
         let response = timeout(
-            RPC_TIMEOUT,
-            client.request_typed_observed::<TurnStartResponse>(ClientRequest::TurnStart {
-                request_id: RequestId::Integer(2),
-                params: turn_params,
-            }),
+            send_budget,
+            send_authorized_turn_start(&mut client, entered_use, turn_params),
         )
         .await;
         let turn = match response {
@@ -491,6 +590,82 @@ impl AppServerModelDriver {
     }
 }
 
+fn final_use_binding(
+    agent_id: &AgentId,
+    intent: &CodexOperationIntent,
+    model: &str,
+    model_provider: &str,
+) -> Result<FinalUseBinding> {
+    let binding = intent
+        .app_server_binding
+        .as_ref()
+        .ok_or("runtime.codex product binding is required for final-use authority")?;
+    let scope = serde_json::to_vec(&(
+        "hepta.runtime.codex.turn-start.scope.v2",
+        agent_id.to_string(),
+        binding.session_id.as_str(),
+        intent.thread_id.as_str(),
+        model,
+        model_provider,
+        binding.agent_generation.get(),
+        binding.protocol_id.as_str(),
+        binding.app_server_version.as_str(),
+        binding.codex_home_digest.to_string(),
+        binding.connection_id,
+    ))?;
+    Ok(FinalUseBinding {
+        subject_id: agent_id.to_string(),
+        destination_id: format!("codex-app-server:{}", binding.connection_id),
+        request_sha256: codex_request_digest(intent).into_array(),
+        scope_sha256: Digest32::of_bytes(&scope).into_array(),
+        payload_sha256: intent.payload_digest.into_array(),
+    })
+}
+
+fn remaining_before(deadline_ms: u64) -> Result<Duration> {
+    let now_ms = unix_time_ms()?;
+    if now_ms >= deadline_ms {
+        return Err("runtime.codex request deadline elapsed before effect entry".into());
+    }
+    Ok(Duration::from_millis(deadline_ms - now_ms))
+}
+
+fn validate_post_authority_fence(
+    health: &HealthSnapshot,
+    expected_ingress: &std::path::Path,
+    current_ingress: &std::path::Path,
+    cancelled: bool,
+    now_ms: u64,
+    deadline_ms: u64,
+) -> Result<()> {
+    if !health.ready || health.fenced {
+        return Err("Agent owner is not ready at final-use entry".into());
+    }
+    if expected_ingress != current_ingress {
+        return Err("Agent App Server ingress changed before final-use entry".into());
+    }
+    if cancelled {
+        return Err("cancelled before final-use entry".into());
+    }
+    if now_ms >= deadline_ms {
+        return Err("runtime.codex deadline elapsed before final-use entry".into());
+    }
+    Ok(())
+}
+
+async fn send_authorized_turn_start(
+    client: &mut RemoteAppServerClient,
+    _entered: EnteredUseToken,
+    params: TurnStartParams,
+) -> std::result::Result<TurnStartResponse, RemoteObservedTypedRequestError> {
+    client
+        .request_typed_observed(ClientRequest::TurnStart {
+            request_id: RequestId::Integer(2),
+            params,
+        })
+        .await
+}
+
 fn verify_persisted_dispatch_binding(
     control: &DurableInferenceControl,
     request_id: &str,
@@ -499,6 +674,9 @@ fn verify_persisted_dispatch_binding(
     source_admission_digest: Digest32,
     codex_home_digest: Digest32,
     connection_id: u64,
+    session_id: &str,
+    deadline_ms: u64,
+    authority_witness: &str,
     app_server_version: &str,
 ) -> Result<()> {
     let dispatch = control
@@ -515,6 +693,9 @@ fn verify_persisted_dispatch_binding(
             == Some(source_admission_digest.as_str())
         && dispatch.codex_home_digest.as_deref() == Some(codex_home_digest.as_str())
         && dispatch.codex_connection_id == Some(connection_id)
+        && dispatch.codex_session_id.as_deref() == Some(session_id)
+        && dispatch.codex_deadline_ms == Some(deadline_ms)
+        && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
         && dispatch.app_server_version.as_deref() == Some(app_server_version)
         && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
     if !exact {
