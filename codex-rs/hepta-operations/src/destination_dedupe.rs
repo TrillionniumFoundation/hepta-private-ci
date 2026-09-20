@@ -152,7 +152,19 @@ impl DestinationDedupeStore {
         .fetch_optional(&self.pool)
         .await
         .map_err(sqlx_error)?;
-        row.map(|row| decode_receipt(&row)).transpose()
+        let Some(row) = row else {
+            return Ok(None);
+        };
+        let receipt = decode_receipt(&row)?;
+        // Reconciliation must bind the same semantic request as first apply.
+        // A reused operation ID with different bytes is a conflict, never an
+        // observation that those new bytes already produced an effect.
+        if receipt.identity != *identity || receipt.semantic_digest != identity.semantic_digest() {
+            return Err(DurableOperationError::Conflict(
+                identity.operation_id.clone(),
+            ));
+        }
+        Ok(Some(receipt))
     }
 }
 
@@ -273,7 +285,7 @@ fn decode_receipt(
     let scope_id = parse_id(row.try_get("scope_id").map_err(sqlx_error)?)?;
     let operation_id = parse_id(row.try_get("operation_id").map_err(sqlx_error)?)?;
     let payload_digest = decode_digest(row.try_get("payload_digest").map_err(sqlx_error)?)?;
-    Ok(DestinationApplyReceipt {
+    let receipt = DestinationApplyReceipt {
         identity: DestinationOperationIdentity {
             destination,
             scope_id,
@@ -283,7 +295,19 @@ fn decode_receipt(
         semantic_digest: decode_digest(row.try_get("semantic_digest").map_err(sqlx_error)?)?,
         outcome_digest: decode_digest(row.try_get("outcome_digest").map_err(sqlx_error)?)?,
         applied_at_unix_ms: to_u64(row.try_get("applied_at_ms").map_err(sqlx_error)?)?,
-    })
+    };
+    // SQLite width checks and quick_check do not validate owner semantics.
+    // Reapply write-time invariants on every read, including after recovery.
+    receipt.identity.validate().map_err(|_| {
+        DurableOperationError::Corrupt("invalid destination receipt identity".to_owned())
+    })?;
+    if receipt.semantic_digest != receipt.identity.semantic_digest() || receipt.outcome_digest.is_zero()
+    {
+        return Err(DurableOperationError::Corrupt(
+            "destination receipt semantic binding or outcome is invalid".to_owned(),
+        ));
+    }
+    Ok(receipt)
 }
 
 fn decode_digest(value: Vec<u8>) -> Result<Digest32, DurableOperationError> {
