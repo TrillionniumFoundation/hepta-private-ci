@@ -48,10 +48,13 @@ fn pin(model: &TabularWorldModelV1, bytes: &[u8]) -> WorldModelPayloadPinV1 {
 #[test]
 fn pinned_world_model_roundtrips_and_predicts_from_private_state() {
     let model = fitted();
-    let bytes = encode_world_model_payload_v1(&model).unwrap_or_else(|error| panic!("encode: {error:?}"));
+    let bytes =
+        encode_world_model_payload_v1(&model).unwrap_or_else(|error| panic!("encode: {error:?}"));
     let loaded = LoadedTabularWorldModelV1::from_pinned_payload(&bytes, &pin(&model, &bytes))
         .unwrap_or_else(|error| panic!("pinned load: {error:?}"));
-    let prediction = loaded.predict(&id("state"), &id("read")).unwrap_or_else(|error| panic!("predict: {error:?}"));
+    let prediction = loaded
+        .predict(&id("state"), &id("read"))
+        .unwrap_or_else(|error| panic!("predict: {error:?}"));
     assert_eq!(prediction.mean_outcome, FixedQ32::from_raw(6));
     assert_eq!(prediction.branches.len(), 2);
     assert!(prediction.synthetic);
@@ -65,7 +68,8 @@ fn pinned_world_model_roundtrips_and_predicts_from_private_state() {
 #[test]
 fn payload_tampering_and_stale_pins_fail_closed() {
     let model = fitted();
-    let bytes = encode_world_model_payload_v1(&model).unwrap_or_else(|error| panic!("encode: {error:?}"));
+    let bytes =
+        encode_world_model_payload_v1(&model).unwrap_or_else(|error| panic!("encode: {error:?}"));
     let original = pin(&model, &bytes);
 
     let mut tampered = bytes.clone();

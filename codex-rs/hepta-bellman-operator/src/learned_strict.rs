@@ -122,7 +122,8 @@ mod tests {
         TabularOperatorPlanV1 {
             artifact_id: id("artifact"),
             producer_id: id("producer"),
-            generation: Generation::new(1).unwrap_or_else(|error| panic!("valid generation: {error:?}")),
+            generation: Generation::new(1)
+                .unwrap_or_else(|error| panic!("valid generation: {error:?}")),
             objective_digest: digest("objective"),
             dataset_digest: digest("dataset"),
             sensor_core_digest: digest("sensor-core"),
@@ -168,7 +169,8 @@ mod tests {
     #[test]
     #[allow(deprecated)]
     fn op_05_indexed_prediction_uses_canonical_grid() {
-        let artifact = fit_tabular_operator_strict_v2(plan()).unwrap_or_else(|error| panic!("strict fit succeeds: {error:?}"));
+        let artifact = fit_tabular_operator_strict_v2(plan())
+            .unwrap_or_else(|error| panic!("strict fit succeeds: {error:?}"));
         let prediction =
             predict_tabular_operator_indexed_v2(&artifact, &id("sensor-b"), &id("action-a"))
                 .unwrap_or_else(|error| panic!("supported cell: {error:?}"));

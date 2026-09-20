@@ -85,7 +85,6 @@ fn duplicate_sample_fails() {
     assert!(matches!(train(value), Err(Error::DuplicateSample(_))));
 }
 
-
 #[test]
 fn relabelled_support_evidence_fails() {
     let mut value = request();

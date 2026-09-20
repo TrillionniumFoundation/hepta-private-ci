@@ -20,9 +20,9 @@ use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularWorldModelV1;
+use crate::TrainingRequest;
 use crate::WorldModelError;
 use crate::WorldModelSampleV1;
-use crate::TrainingRequest;
 use crate::build_targets;
 use crate::fit_tabular_operator;
 use crate::fit_transition_model;
@@ -239,7 +239,8 @@ mod tests {
     use crate::Transition;
 
     fn id(value: &str) -> StableId {
-        StableId::new(value.to_owned()).unwrap_or_else(|error| panic!("valid fixture id: {error:?}"))
+        StableId::new(value.to_owned())
+            .unwrap_or_else(|error| panic!("valid fixture id: {error:?}"))
     }
 
     fn digest(value: &str) -> Digest32 {
@@ -350,7 +351,8 @@ mod tests {
 
         let mut replayed = target_request(&receipt);
         replayed.dataset.transitions[1].sample_id = id("row-b-relabelled");
-        replayed.dataset.transitions[1].support_digest = replayed.dataset.transitions[0].support_digest;
+        replayed.dataset.transitions[1].support_digest =
+            replayed.dataset.transitions[0].support_digest;
         assert_eq!(
             build_targets_bound_v2(&bound, replayed),
             Err(OperatorDatasetBindingError::DuplicateEvidence)
@@ -360,13 +362,15 @@ mod tests {
     #[test]
     fn op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows() {
         let receipt = receipt();
-        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).unwrap_or_else(|error| panic!("verified: {error:?}"));
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50)
+            .unwrap_or_else(|error| panic!("verified: {error:?}"));
         let artifact = fit_tabular_operator_bound_v2(
             &bound,
             TabularOperatorPlanV1 {
                 artifact_id: id("artifact"),
                 producer_id: id("trainer"),
-                generation: Generation::new(1).unwrap_or_else(|error| panic!("generation: {error:?}")),
+                generation: Generation::new(1)
+                    .unwrap_or_else(|error| panic!("generation: {error:?}")),
                 objective_digest: receipt.snapshot.objective_digest,
                 dataset_digest: receipt.snapshot.dataset_digest,
                 sensor_core_digest: digest("sensor-core"),
@@ -387,7 +391,8 @@ mod tests {
     #[test]
     fn op_07_bound_fit_rejects_detached_digest_or_row_set() {
         let receipt = receipt();
-        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).unwrap_or_else(|error| panic!("verified: {error:?}"));
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50)
+            .unwrap_or_else(|error| panic!("verified: {error:?}"));
         let mut plan = TabularOperatorPlanV1 {
             artifact_id: id("artifact"),
             producer_id: id("trainer"),
@@ -419,7 +424,8 @@ mod tests {
     #[test]
     fn op_07_bound_world_model_takes_dataset_identity_from_receipt() {
         let receipt = receipt();
-        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50).unwrap_or_else(|error| panic!("verified: {error:?}"));
+        let bound = VerifiedOperatorDatasetV2::from_receipt(&receipt, 50)
+            .unwrap_or_else(|error| panic!("verified: {error:?}"));
         let model = fit_transition_model_bound_v2(
             &bound,
             id("world-model"),
