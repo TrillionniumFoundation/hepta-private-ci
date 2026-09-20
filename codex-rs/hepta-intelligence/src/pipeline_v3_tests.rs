@@ -179,6 +179,9 @@ impl Ports {
             producer: id(producer),
             snapshot_digest: input.snapshot_digest,
             predecessor_digest: input.predecessor_digest,
+            capability_id: input.capability_id.clone(),
+            implementation_digest: input.implementation_digest,
+            capability_generation: input.capability_generation,
             output_digest,
             decision: if input.stage == LaneFStageV3::IntuitionDecided {
                 self.intuition

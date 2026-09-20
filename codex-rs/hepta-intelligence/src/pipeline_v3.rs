@@ -16,6 +16,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::CapabilitySnapshotV2;
@@ -140,6 +141,9 @@ pub struct PortInputV3 {
     pub run_id: StableId,
     pub snapshot_digest: Digest32,
     pub predecessor_digest: Digest32,
+    pub capability_id: StableId,
+    pub implementation_digest: Digest32,
+    pub capability_generation: Generation,
     pub budget_micros: u64,
     pub deadline_unix_micros: u64,
     pub stage: LaneFStageV3,
@@ -151,6 +155,9 @@ pub struct PortReceiptV3 {
     pub producer: StableId,
     pub snapshot_digest: Digest32,
     pub predecessor_digest: Digest32,
+    pub capability_id: StableId,
+    pub implementation_digest: Digest32,
+    pub capability_generation: Generation,
     pub output_digest: Digest32,
     pub decision: PortDecisionV3,
     pub authority: AuthorityPosture,
@@ -874,7 +881,7 @@ where
         predecessor,
         stage,
         control.now_unix_micros(),
-    );
+    )?;
     match timed_call(
         request,
         snapshot_digest,
@@ -958,7 +965,7 @@ where
         predecessor,
         stage,
         control.now_unix_micros(),
-    );
+    )?;
     match timed_call(
         request,
         snapshot_digest,
@@ -1188,17 +1195,26 @@ fn port_input(
     predecessor_digest: Digest32,
     stage: LaneFStageV3,
     now_unix_micros: u64,
-) -> PortInputV3 {
+) -> Result<PortInputV3, PipelineErrorV3> {
+    let capability = capability_for_stage(stage)
+        .ok_or(PipelineErrorV3::InvalidReceipt("internal stage has no port"))?;
+    let binding = request
+        .snapshot
+        .bound_binding(capability)
+        .ok_or(PipelineErrorV3::MissingCapability(capability))?;
     let budget_micros = request.budget.for_stage(stage);
     let stage_deadline = now_unix_micros.saturating_add(budget_micros);
-    PortInputV3 {
+    Ok(PortInputV3 {
         run_id: request.run_id.clone(),
         snapshot_digest,
         predecessor_digest,
+        capability_id: binding.capability_id.clone(),
+        implementation_digest: binding.implementation_digest,
+        capability_generation: binding.generation,
         budget_micros,
         deadline_unix_micros: stage_deadline.min(request.deadline_unix_micros),
         stage,
-    }
+    })
 }
 
 fn validate_receipt(
@@ -1217,6 +1233,12 @@ fn validate_receipt(
     }
     if receipt.predecessor_digest != input.predecessor_digest {
         return Err(PipelineErrorV3::PredecessorMismatch);
+    }
+    if receipt.capability_id != input.capability_id
+        || receipt.implementation_digest != input.implementation_digest
+        || receipt.capability_generation != input.capability_generation
+    {
+        return Err(PipelineErrorV3::InvalidReceipt("capability binding"));
     }
     if receipt.output_digest.is_zero() {
         return Err(PipelineErrorV3::EmptyDigest("port output"));
@@ -1293,6 +1315,21 @@ fn valid_transition(
                 )
         ),
         StageOutcomeV3::Failed(_) => false,
+    }
+}
+
+fn capability_for_stage(stage: LaneFStageV3) -> Option<&'static str> {
+    match stage {
+        LaneFStageV3::ObjectiveValidated => Some("objective.validation"),
+        LaneFStageV3::LegalSetBuilt | LaneFStageV3::HostEnvelopeBuilt => None,
+        LaneFStageV3::UtilityEvaluated => Some("utility.evaluation"),
+        LaneFStageV3::EvaluationAdmitted => Some("learning.evaluation"),
+        LaneFStageV3::NeuralSignalCollected => Some("neural.signal"),
+        LaneFStageV3::PromptPortfolioBuilt => Some("prompt.portfolio"),
+        LaneFStageV3::IntuitionDecided => Some("intuition.decision"),
+        LaneFStageV3::ContextCompiled => Some("context.compilation"),
+        LaneFStageV3::HostHandoffAccepted => Some("host.handoff"),
+        LaneFStageV3::LearningRecorded => Some("learning.record"),
     }
 }
 
