@@ -52,6 +52,7 @@ function startInput(overrides = {}) {
     manifestDigest: D1,
     grantDigest: D1,
     generation: 1,
+    expiresAtMs: Date.now() + 60_000,
     allowedOrigins: ["https://example.com"],
     ...overrides,
   };
@@ -577,6 +578,41 @@ test("subprocess persisted reconciler rejects a mismatched observation binding",
     }),
     /did not bind the exact durable operation/,
   );
+});
+
+test("profile expiry asynchronously contains the worker and egress lease", async () => {
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-expiry-"));
+  const workerPath = join(root, "worker.bin");
+  const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
+  const capture = {};
+  await writeFile(workerPath, workerBytes, { mode: 0o700 });
+  const driver = new SubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(workerBytes),
+    profileRoot: join(root, "profiles"),
+    launcher: fakeLauncher({ capture }),
+  });
+  const started = await driver.start(
+    startInput({ expiresAtMs: Date.now() + 40 }),
+  );
+  assert.equal(capture.child.killed, false);
+  await new Promise((resolve) => setTimeout(resolve, 120));
+  assert.equal(capture.child.killed, true);
+  await assert.rejects(
+    driver.observe({
+      profileId: "profile.1",
+      processId: started.processId,
+      generation: 1,
+      observationBudget: 128,
+    }),
+    /not started/,
+  );
+  const stopped = await driver.stop({
+    profileId: "profile.1",
+    generation: 1,
+  });
+  assert.equal(stopped.stopped, true);
+  await rm(root, { recursive: true, force: true });
 });
 
 test("subprocess driver containment kills the quarantined worker and still permits cleanup", async () => {
