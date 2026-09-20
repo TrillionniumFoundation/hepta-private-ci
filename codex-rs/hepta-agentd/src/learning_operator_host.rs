@@ -751,16 +751,9 @@ impl AgentdOfflineOperatorHostV1 {
                 "evaluation does not identify the trained candidate",
             ));
         }
-        let evaluation = decide_with_signed_evidence_v2(
-            request.evaluation,
-            request.metric_roles,
-            request.evaluation_evidence,
-            verifier,
-            request.now,
-        )?;
-        let evaluation_digest = digest_evaluation_decision(&evaluation);
         if request.evaluator_actor.role != LifecycleActorRoleV2::Evaluator
-            || request.evaluator_actor.actor_id != request.evaluation_evidence.evaluator_bundle.principal_id
+            || request.evaluator_actor.actor_id
+                != request.evaluation_evidence.evaluator_bundle.principal_id
             || request.evaluator_actor.actor_id == model.producer_id
             || request.evaluator_actor.actor_id != request.evaluation.evaluator.principal_id
             || request.evaluator_actor.credential_digest
@@ -772,6 +765,14 @@ impl AgentdOfflineOperatorHostV1 {
                 "evaluator lifecycle actor does not match signed evaluator",
             ));
         }
+        let evaluation = decide_with_signed_evidence_v2(
+            request.evaluation,
+            request.metric_roles,
+            request.evaluation_evidence,
+            verifier,
+            request.now,
+        )?;
+        let evaluation_digest = digest_evaluation_decision(&evaluation);
         let evaluated_lifecycle = lifecycle.append(
             lifecycle.head_digest(),
             &model.producer_id,
