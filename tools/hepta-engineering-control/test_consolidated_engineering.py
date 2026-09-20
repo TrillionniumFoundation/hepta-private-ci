@@ -107,7 +107,7 @@ class OwnerTransactionTests(unittest.TestCase):
                 EngineeringStore(path)
             self.assertEqual(path.read_bytes(), before)
 
-    def test_schema_v5_adds_current_owner_tables_through_v8(self):
+    def test_schema_v5_adds_current_owner_tables_through_v9(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "owner.sqlite3"
             with EngineeringStore(path):
@@ -115,6 +115,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with sqlite3.connect(path) as connection:
                 connection.execute("DROP TABLE integration_queue_items")
                 connection.execute("DROP TABLE integration_queue_generations")
+                connection.execute("DROP TABLE worker_completion_observations")
                 connection.execute("DROP TABLE worker_claims")
                 connection.execute("DROP TABLE worker_registrations")
                 connection.execute("DROP TABLE orchestration_generations")
@@ -127,7 +128,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(
                     store.connection.execute("PRAGMA user_version").fetchone()[0],
-                    8,
+                    9,
                 )
                 for table in (
                     "distributed_cluster_frontiers",
@@ -135,6 +136,7 @@ class OwnerTransactionTests(unittest.TestCase):
                     "orchestration_generations",
                     "worker_registrations",
                     "worker_claims",
+                    "worker_completion_observations",
                     "integration_queue_generations",
                     "integration_queue_items",
                 ):
@@ -163,7 +165,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(store.audit_projection(), before)
                 self.assertEqual(
-                    store.connection.execute("PRAGMA user_version").fetchone()[0], 8
+                    store.connection.execute("PRAGMA user_version").fetchone()[0], 9
                 )
                 self.assertEqual(
                     store.connection.execute(
