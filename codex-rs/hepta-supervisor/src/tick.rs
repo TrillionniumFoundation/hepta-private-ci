@@ -14,14 +14,14 @@ use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::read_lease;
 use crate::lease::remove_lease;
+use crate::restart_budget::RestartBudgetRecord;
+use crate::restart_budget::unix_millis_now;
+use crate::restart_budget::write_restart_budget;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
-use crate::restart_budget::RestartBudgetRecord;
-use crate::restart_budget::unix_millis_now;
-use crate::restart_budget::write_restart_budget;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn tick_slot(
@@ -321,7 +321,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_some()
             || slot.release_change.is_some()
             || !slot.restart_pending
-            || slot.restart_not_before.is_some_and(|deadline| now < deadline)
+            || slot
+                .restart_not_before
+                .is_some_and(|deadline| now < deadline)
         {
             return Ok(());
         }

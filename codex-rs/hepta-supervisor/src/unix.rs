@@ -647,11 +647,8 @@ fn query_agent_health_once(
         });
     }
     let readiness_request_id = request_id.wrapping_add(1).max(1);
-    let readiness = query_agent_readiness_once(
-        identity,
-        readiness_request_id,
-        response.current_generation,
-    )?;
+    let readiness =
+        query_agent_readiness_once(identity, readiness_request_id, response.current_generation)?;
     let readiness_gates = readiness.critical_stores_ready
         && readiness.revocation_ready
         && readiness.required_ports_ready;

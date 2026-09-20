@@ -271,8 +271,7 @@ fn health_probe_requires_exact_agent_generation_pid_and_roots() {
 fn agent_drain_requires_exact_draining_generation_ack() {
     let temp = tempfile::tempdir().expect("temporary directory");
     let socket = temp.path().join("agentd-drain.sock");
-    let agent_id =
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("valid agent id");
+    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("valid agent id");
     let identity = AgentDrainRequestIdentity {
         agent_id: agent_id.clone(),
         spawn_generation: 7,
@@ -483,7 +482,10 @@ fn serve_and_probe(
                 .expect("read readiness request");
             let request: AgentdRequest =
                 serde_json::from_slice(&request_bytes).expect("typed readiness request");
-            assert!(matches!(request.method, codex_hepta_agent_protocol::AgentdMethod::Readiness));
+            assert!(matches!(
+                request.method,
+                codex_hepta_agent_protocol::AgentdMethod::Readiness
+            ));
             let readiness = AgentdResponse {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
                 request_id: request.request_id,
@@ -499,7 +501,9 @@ fn serve_and_probe(
             };
             let mut stream = reader.into_inner();
             serde_json::to_writer(&mut stream, &readiness).expect("write readiness response");
-            stream.write_all(b"\n").expect("terminate readiness response");
+            stream
+                .write_all(b"\n")
+                .expect("terminate readiness response");
         }
     });
     let result = query_agent_health_once(identity, request_id)

@@ -22,7 +22,9 @@ async fn main() -> anyhow::Result<()> {
         (None, None) => {
             codex_hepta_supervisor::run_supervisord(options.fleet_root, cancellation).await?
         }
-        _ => anyhow::bail!("production verifier and revocation frontier must be configured together"),
+        _ => {
+            anyhow::bail!("production verifier and revocation frontier must be configured together")
+        }
     }
     Ok(())
 }
@@ -92,10 +94,7 @@ fn parse_options() -> anyhow::Result<Options> {
                 .map_err(|_| anyhow::anyhow!("H7 signer id is not UTF-8"))?;
             let h7_key = load_public_key(PathBuf::from(h7_key_path), "H7 verifier key")?;
             let h7_verifier = H7ArtifactVerifier::from_bytes(h7_signer_id, h7_epoch, h7_key)?;
-            let revocation_frontier = parse_epoch(
-                revocation_frontier,
-                "revocation frontier",
-            )?;
+            let revocation_frontier = parse_epoch(revocation_frontier, "revocation frontier")?;
             (
                 Some(load_grant_verifier(
                     PathBuf::from(key_path),

@@ -614,8 +614,8 @@ fn hung_agent_is_stopped_and_killed_without_blocking_peer() -> Result<(), Superv
 }
 
 #[test]
-fn automatic_restart_uses_exponential_budget_and_stops_after_three_flaps(
-) -> Result<(), SupervisorError> {
+fn automatic_restart_uses_exponential_budget_and_stops_after_three_flaps()
+-> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
     let now = Instant::now();
@@ -630,7 +630,9 @@ fn automatic_restart_uses_exponential_budget_and_stops_after_three_flaps(
         control.set_exit(&fleet.first);
         tick += Duration::from_millis(1);
         assert_eq!(supervisor.tick(tick), TickReport::default());
-        let scheduled = supervisor.snapshot(&fleet.first).expect("scheduled snapshot");
+        let scheduled = supervisor
+            .snapshot(&fleet.first)
+            .expect("scheduled snapshot");
         assert!(!scheduled.active);
         assert_eq!(scheduled.restart_attempts, attempt);
         assert!(scheduled.automatic_restart);
@@ -657,7 +659,9 @@ fn automatic_restart_uses_exponential_budget_and_stops_after_three_flaps(
     control.set_exit(&fleet.first);
     tick += Duration::from_millis(1);
     assert_eq!(supervisor.tick(tick), TickReport::default());
-    let exhausted = supervisor.snapshot(&fleet.first).expect("exhausted snapshot");
+    let exhausted = supervisor
+        .snapshot(&fleet.first)
+        .expect("exhausted snapshot");
     assert!(!exhausted.active);
     assert!(!exhausted.restart_pending);
     assert_eq!(exhausted.restart_attempts, 3);
@@ -691,8 +695,12 @@ fn restart_budget_survives_supervisor_recovery() -> Result<(), SupervisorError> 
     drop(supervisor);
 
     let recovery_now = now + Duration::from_millis(20);
-    let (mut recovered, report) =
-        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), recovery_now)?;
+    let (mut recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        control.driver(),
+        config(),
+        recovery_now,
+    )?;
     assert_eq!(report, TickReport::default());
     let restored = recovered.snapshot(&fleet.first).expect("restored snapshot");
     assert_eq!(restored.restart_attempts, 1);
@@ -1524,7 +1532,9 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     assert!(
         report.faults.iter().any(|fault| {
             fault.agent_id == fleet.first
-                && fault.message.contains("unresolved signed supervisor intent")
+                && fault
+                    .message
+                    .contains("unresolved signed supervisor intent")
         }),
         "matching target must be quarantined instead of inferred committed"
     );
@@ -1550,8 +1560,8 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
 }
 
 #[test]
-fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_bytes(
-) -> Result<(), SupervisorError> {
+fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_bytes()
+-> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let source_id = ReleaseId::parse("recovery-source")?;
     let target_id = ReleaseId::parse("recovery-target")?;
@@ -1567,8 +1577,7 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
     fleet.registry.allow_release(&fleet.first, &target_id)?;
 
     let parse_digest = |value: String| {
-        Sha256Digest::parse(value)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))
+        Sha256Digest::parse(value).map_err(|error| SupervisorError::Invalid(error.to_string()))
     };
     let source_provenance = fleet
         .registry
@@ -1664,12 +1673,9 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     crate::signed_intent::write_intent(record.layout.run_root(), &intent)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let selection = crate::release_selection::ReleaseSelectionRecord::prepared(
-        &grant,
-        1,
-        running.generation,
-    )?
-    .with_status(crate::release_selection::ReleaseSelectionStatus::RecoveryRequired)?;
+    let selection =
+        crate::release_selection::ReleaseSelectionRecord::prepared(&grant, 1, running.generation)?
+            .with_status(crate::release_selection::ReleaseSelectionStatus::RecoveryRequired)?;
     crate::release_selection::write_release_selection(record.layout.run_root(), &selection)?;
 
     let (mut recovered, report) = Supervisor::recover(
@@ -1689,12 +1695,8 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
 
     let signer = crate::H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32])
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let verifier = crate::H7H89ProductionGrantVerifier::new(
-        "operator",
-        4,
-        signer.verifying_key(),
-    )
-    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let verifier = crate::H7H89ProductionGrantVerifier::new("operator", 4, signer.verifying_key())
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let target_manifest = parse_digest(target_provenance.manifest_sha256)?;
     let target_agentd = parse_digest(target_provenance.agentd_sha256)?;
     let target_matrixd = target_provenance
@@ -1721,14 +1723,7 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
     assert!(matches!(
-        recovered.resolve_production_recovery(
-            &fleet.first,
-            &decision,
-            &verifier,
-            23,
-            8,
-            150,
-        ),
+        recovered.resolve_production_recovery(&fleet.first, &decision, &verifier, 23, 8, 150,),
         Err(SupervisorError::ProductionAuthority(_))
     ));
     assert_eq!(
@@ -1739,14 +1734,8 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
         crate::ProductionMutationStatus::RecoveryRequired
     );
 
-    let receipt = recovered.resolve_production_recovery(
-        &fleet.first,
-        &decision,
-        &verifier,
-        23,
-        7,
-        150,
-    )?;
+    let receipt =
+        recovered.resolve_production_recovery(&fleet.first, &decision, &verifier, 23, 7, 150)?;
     assert_eq!(receipt.status, crate::ProductionMutationStatus::Committed);
     assert_eq!(receipt.target_release, target_id.to_string());
     assert_eq!(receipt.control_revision, 2);
@@ -1775,7 +1764,6 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
     );
     Ok(())
 }
-
 
 fn write_matrix_binding(
     registry: &FleetRegistry,

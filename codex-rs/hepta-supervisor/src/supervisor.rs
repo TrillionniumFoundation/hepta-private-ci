@@ -23,6 +23,11 @@ use crate::SupervisorConfig;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
 use crate::TickReport;
+use crate::release_selection::ReleaseSelectionRecord;
+use crate::release_selection::ReleaseSelectionSnapshot;
+use crate::release_selection::ReleaseSelectionStatus;
+use crate::release_selection::read_release_selection;
+use crate::release_selection::write_release_selection;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::bounded_message;
@@ -32,15 +37,11 @@ use crate::signed_authority::H7H89ProductionTransition;
 use crate::signed_authority::ProductionMutationReceipt;
 use crate::signed_authority::ProductionRecoveryDecision;
 use crate::signed_authority::ProductionRecoveryOutcome;
+use crate::signed_authority::ReleaseSelectionBinding;
 use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
 use crate::signed_intent::write_intent;
-use crate::release_selection::ReleaseSelectionRecord;
-use crate::release_selection::ReleaseSelectionSnapshot;
-use crate::release_selection::ReleaseSelectionStatus;
-use crate::release_selection::read_release_selection;
-use crate::release_selection::write_release_selection;
 
 /// Lifecycle-only controller with one process handle and bounded buffers per agent.
 pub struct Supervisor<D: ProcessDriver> {
@@ -756,9 +757,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         write_intent(record.layout.run_root(), &committed)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let selection = read_release_selection(record.layout.run_root())?
-            .ok_or_else(|| {
-                SupervisorError::SignedIntentRecoveryRequired(agent_id.clone())
-            })?;
+            .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
         if selection.grant_sha256 != committed.grant_sha256 {
             return Err(SupervisorError::SignedIntentRecoveryRequired(
                 agent_id.clone(),
@@ -791,9 +790,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         write_intent(record.layout.run_root(), &rolled_back)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let selection = read_release_selection(record.layout.run_root())?
-            .ok_or_else(|| {
-                SupervisorError::SignedIntentRecoveryRequired(agent_id.clone())
-            })?;
+            .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
         if selection.grant_sha256 != rolled_back.grant_sha256 {
             return Err(SupervisorError::SignedIntentRecoveryRequired(
                 agent_id.clone(),
@@ -843,10 +840,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
     ) -> Result<Option<ReleaseSelectionSnapshot>, SupervisorError> {
         let record = self.record(agent_id)?;
-        Ok(
-            read_release_selection(record.layout.run_root())?
-                .map(|selection| selection.snapshot()),
-        )
+        Ok(read_release_selection(record.layout.run_root())?.map(|selection| selection.snapshot()))
     }
 
     pub fn production_mutation_receipt(
@@ -1070,8 +1064,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 SignedIntentStatus::RolledBack => ReleaseSelectionStatus::RolledBack,
                 _ => unreachable!(),
             };
-            if selection.grant_sha256 != intent.grant_sha256
-                || selection.status != expected_status
+            if selection.grant_sha256 != intent.grant_sha256 || selection.status != expected_status
             {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),

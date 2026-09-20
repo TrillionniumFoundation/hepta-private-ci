@@ -458,10 +458,7 @@ impl H7H89ProductionGrantSigner {
         if let Some(digest) = observed_matrixd_sha256.as_ref() {
             parse_digest(digest, "recovery observed matrixd")?;
         }
-        if expected_lifecycle_generation == 0
-            || authority_epoch == 0
-            || revocation_frontier == 0
-        {
+        if expected_lifecycle_generation == 0 || authority_epoch == 0 || revocation_frontier == 0 {
             return Err(ProductionAuthorityError::RecoveryBinding);
         }
         validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
@@ -810,12 +807,30 @@ impl H7H89ProductionGrant {
             self.transition.as_str().as_bytes(),
             self.h7_envelope_sha256.as_str().as_bytes(),
             self.artifact_sha256.as_str().as_bytes(),
-            self.release_selection.source_manifest_sha256.as_str().as_bytes(),
-            self.release_selection.source_agentd_sha256.as_str().as_bytes(),
-            self.release_selection.target_manifest_sha256.as_str().as_bytes(),
-            self.release_selection.target_agentd_sha256.as_str().as_bytes(),
-            self.release_selection.compatibility_receipt_sha256.as_str().as_bytes(),
-            self.release_selection.compatibility_sha256.as_str().as_bytes(),
+            self.release_selection
+                .source_manifest_sha256
+                .as_str()
+                .as_bytes(),
+            self.release_selection
+                .source_agentd_sha256
+                .as_str()
+                .as_bytes(),
+            self.release_selection
+                .target_manifest_sha256
+                .as_str()
+                .as_bytes(),
+            self.release_selection
+                .target_agentd_sha256
+                .as_str()
+                .as_bytes(),
+            self.release_selection
+                .compatibility_receipt_sha256
+                .as_str()
+                .as_bytes(),
+            self.release_selection
+                .compatibility_sha256
+                .as_str()
+                .as_bytes(),
             self.signer_id.as_bytes(),
         ] {
             frame(&mut hasher, value);
@@ -1130,10 +1145,8 @@ mod tests {
 
     #[test]
     fn recovery_decision_binds_current_release_bytes_and_fences() {
-        let agent =
-            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
-        let signer =
-            H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32]).expect("signer");
+        let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
+        let signer = H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32]).expect("signer");
         let verifier = H7H89ProductionGrantVerifier::new_with_h7_verifier(
             "operator",
             4,
