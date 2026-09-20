@@ -322,6 +322,41 @@ impl SparseJournal {
             Ok(self.current.as_ref())
         }
     }
+
+    /// Return the current durable checkpoint frontier. This is an observation,
+    /// not an external acknowledgement; hosts still retain JournalAnchor in an
+    /// independent rollback domain before treating the frontier as acknowledged.
+    pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        let Some(current) = self.current.as_ref() else {
+            return Ok(None);
+        };
+        let sequence =
+            u64::try_from(self.entries.len()).map_err(|_| JournalError::Capacity)?;
+        Ok(Some(JournalAnchor {
+            sequence,
+            checkpoint_digest: current.digest(),
+        }))
+    }
+
+    /// Prove that an independently retained acknowledged prefix is still
+    /// present in this live journal. Later valid frames are allowed; a rolled
+    /// back/replaced prefix is not.
+    pub fn contains_anchor(&self, anchor: JournalAnchor) -> Result<bool, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        if anchor.sequence == 0 || anchor.checkpoint_digest.is_zero() {
+            return Ok(false);
+        }
+        let index = usize::try_from(anchor.sequence - 1).map_err(|_| JournalError::InvalidAnchor)?;
+        Ok(self
+            .entries
+            .get(index)
+            .is_some_and(|(_, receipt)| receipt.checkpoint_after == anchor.checkpoint_digest))
+    }
 }
 
 fn encode_tick(tick: &SparseTick) -> Vec<u8> {
