@@ -3,6 +3,8 @@ use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
+use codex_hepta_types::PromptDeliveryObservationV1 as RuntimePromptDeliveryObservationV1;
+use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
 
 use crate::AppendDisposition;
@@ -16,6 +18,8 @@ use crate::LedgerRecord;
 use crate::LedgerSnapshot;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
+use crate::PromptDeliveryLineageV1;
+use crate::PromptDeliveryObservation;
 use crate::Revocation;
 
 const MAX_RECORDS: usize = 1_000_000;
@@ -51,6 +55,7 @@ pub struct LearningLedger {
     record_kinds: BTreeMap<StableId, u8>,
     decisions: BTreeMap<StableId, DecisionIndex>,
     outcomes: BTreeMap<StableId, OutcomeIndex>,
+    deliveries: BTreeMap<StableId, StableId>,
     credit_ids: BTreeSet<StableId>,
     credit_keys: BTreeSet<(StableId, StableId, StableId)>,
     revoked: BTreeSet<StableId>,
@@ -65,6 +70,54 @@ impl LearningLedger {
     pub fn append(&mut self, event: LedgerEvent) -> Result<AppendReceipt, LedgerError> {
         let prepared = self.prepare(event)?;
         self.apply(prepared)
+    }
+
+    /// Consume the canonical runtime.codex prompt-delivery protocol and append
+    /// the learning-owned causal lineage in one validated operation.
+    ///
+    /// The runtime observation owns physical-delivery facts. The ledger adds
+    /// only its own episode/portfolio lineage and never lets the evaluated
+    /// policy certify delivery on its own behalf.
+    pub fn append_runtime_prompt_delivery_v1(
+        &mut self,
+        lineage: PromptDeliveryLineageV1,
+        observation: RuntimePromptDeliveryObservationV1,
+    ) -> Result<AppendReceipt, LedgerError> {
+        observation
+            .validate()
+            .map_err(|_| LedgerError::InvalidDeliveryObservation)?;
+        if lineage.portfolio_receipt_digest.is_zero() {
+            return Err(LedgerError::EmptyDigest("prompt portfolio"));
+        }
+        if lineage.support_digest.is_zero() {
+            return Err(LedgerError::EmptyDigest("prompt delivery support"));
+        }
+
+        let context_delivery_observation_digest = observation
+            .semantic_digest()
+            .map_err(|_| LedgerError::InvalidDeliveryObservation)?;
+        let rejected_reason_digest = observation.rejected_reason.as_ref().map(rejection_digest);
+        let observed_token_positions_digest = observation
+            .observed_token_positions
+            .as_deref()
+            .map(token_positions_digest);
+        let observer_id =
+            StableId::new("runtime.codex").map_err(|_| LedgerError::InternalInvariant)?;
+
+        self.append(LedgerEvent::PromptDelivery(PromptDeliveryObservation {
+            record_id: lineage.record_id,
+            episode_id: lineage.episode_id,
+            compilation_id: observation.compilation_id,
+            observer_id,
+            portfolio_receipt_digest: lineage.portfolio_receipt_digest,
+            provider_request_digest: observation.provider_request_digest,
+            delivered: observation.delivered,
+            rejected_reason_digest,
+            observed_token_positions_digest,
+            truncation_observed: observation.truncation_observed,
+            context_delivery_observation_digest,
+            support_digest: lineage.support_digest,
+        }))
     }
 
     pub(crate) fn prepare(&self, mut event: LedgerEvent) -> Result<PreparedAppend, LedgerError> {
@@ -193,6 +246,7 @@ impl LearningLedger {
             LedgerEvent::Decision(value) => self.validate_decision(value),
             LedgerEvent::Outcome(value) => self.validate_outcome(value),
             LedgerEvent::Credit(value) => self.validate_credit(value),
+            LedgerEvent::PromptDelivery(value) => self.validate_prompt_delivery(value),
             LedgerEvent::Revocation(value) => self.validate_revocation(value),
         }
     }
@@ -248,6 +302,33 @@ impl LearningLedger {
         }
         if decision.policy_id == outcome.observer_id {
             return Err(LedgerError::PolicySelfLabelsOutcome);
+        }
+        Ok(())
+    }
+
+    fn validate_prompt_delivery(
+        &self,
+        delivery: &PromptDeliveryObservation,
+    ) -> Result<(), LedgerError> {
+        if self.deliveries.contains_key(&delivery.episode_id) {
+            return Err(LedgerError::DeliveryAlreadyExists(
+                delivery.episode_id.to_string(),
+            ));
+        }
+        let decision = self
+            .decisions
+            .get(&delivery.episode_id)
+            .ok_or_else(|| LedgerError::EpisodeNotFound(delivery.episode_id.to_string()))?;
+        if self.revoked.contains(&decision.record_id) {
+            return Err(LedgerError::EpisodeRevoked(delivery.episode_id.to_string()));
+        }
+        if decision.policy_id == delivery.observer_id {
+            return Err(LedgerError::PolicySelfObservesDelivery);
+        }
+        if (delivery.delivered && delivery.rejected_reason_digest.is_some())
+            || (!delivery.delivered && delivery.rejected_reason_digest.is_none())
+        {
+            return Err(LedgerError::InvalidDeliveryObservation);
         }
         Ok(())
     }
@@ -340,6 +421,10 @@ impl LearningLedger {
                     value.target_artifact_id.clone(),
                 ));
             }
+            LedgerEvent::PromptDelivery(value) => {
+                self.deliveries
+                    .insert(value.episode_id.clone(), value.record_id.clone());
+            }
             LedgerEvent::Revocation(value) => {
                 self.revoked.insert(value.target_record_id.clone());
             }
@@ -368,9 +453,32 @@ impl LearningLedger {
                     .is_some_and(|outcome| !self.revoked.contains(&outcome.record_id));
                 decision_active && outcome_active
             }
+            LedgerEvent::PromptDelivery(delivery) => self
+                .decisions
+                .get(&delivery.episode_id)
+                .is_some_and(|decision| !self.revoked.contains(&decision.record_id)),
             LedgerEvent::Revocation(_) => true,
         }
     }
+}
+
+fn rejection_digest(reason: &PromptDeliveryRejectReasonV1) -> Digest32 {
+    let mut bytes = b"hepta.learning-ledger.prompt-delivery-rejection.v1".to_vec();
+    bytes.extend_from_slice(reason.as_str().as_bytes());
+    Digest32::of_bytes(&bytes)
+}
+
+fn token_positions_digest(positions: &[u32]) -> Digest32 {
+    let mut bytes = b"hepta.learning-ledger.prompt-token-positions.v1".to_vec();
+    bytes.extend_from_slice(
+        &u32::try_from(positions.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
+    for position in positions {
+        bytes.extend_from_slice(&position.to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
 }
 
 fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
@@ -391,6 +499,32 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
         LedgerEvent::Credit(value) => {
             if value.support_digest.is_zero() {
                 return Err(LedgerError::EmptyDigest("credit support"));
+            }
+        }
+        LedgerEvent::PromptDelivery(value) => {
+            for (name, digest) in [
+                ("prompt portfolio", value.portfolio_receipt_digest),
+                ("provider request", value.provider_request_digest),
+                (
+                    "context delivery observation",
+                    value.context_delivery_observation_digest,
+                ),
+                ("prompt delivery support", value.support_digest),
+            ] {
+                if digest.is_zero() {
+                    return Err(LedgerError::EmptyDigest(name));
+                }
+            }
+            for (name, digest) in [
+                ("prompt delivery rejection", value.rejected_reason_digest),
+                (
+                    "prompt token positions",
+                    value.observed_token_positions_digest,
+                ),
+            ] {
+                if digest.is_some_and(Digest32::is_zero) {
+                    return Err(LedgerError::EmptyDigest(name));
+                }
             }
         }
         LedgerEvent::Revocation(value) => {
@@ -433,6 +567,7 @@ enum EventKind {
     Outcome,
     Credit,
     Revocation,
+    PromptDelivery,
 }
 
 const fn event_kind_code(kind: EventKind) -> u8 {
@@ -441,6 +576,7 @@ const fn event_kind_code(kind: EventKind) -> u8 {
         EventKind::Outcome => 1,
         EventKind::Credit => 2,
         EventKind::Revocation => 3,
+        EventKind::PromptDelivery => 4,
     }
 }
 
@@ -449,6 +585,7 @@ fn event_kind(event: &LedgerEvent) -> u8 {
         LedgerEvent::Decision(_) => EventKind::Decision,
         LedgerEvent::Outcome(_) => EventKind::Outcome,
         LedgerEvent::Credit(_) => EventKind::Credit,
+        LedgerEvent::PromptDelivery(_) => EventKind::PromptDelivery,
         LedgerEvent::Revocation(_) => EventKind::Revocation,
     };
     event_kind_code(kind)
@@ -466,6 +603,7 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
         LedgerEvent::Decision(value) => push_decision(&mut bytes, value),
         LedgerEvent::Outcome(value) => push_outcome(&mut bytes, value),
         LedgerEvent::Credit(value) => push_credit(&mut bytes, value),
+        LedgerEvent::PromptDelivery(value) => push_prompt_delivery(&mut bytes, value),
         LedgerEvent::Revocation(value) => push_revocation(&mut bytes, value),
     }
     bytes
@@ -517,6 +655,21 @@ fn push_credit(bytes: &mut Vec<u8>, value: &CreditAssignment) {
     push_digest(bytes, value.support_digest);
 }
 
+fn push_prompt_delivery(bytes: &mut Vec<u8>, value: &PromptDeliveryObservation) {
+    push_id(bytes, &value.record_id);
+    push_id(bytes, &value.episode_id);
+    push_id(bytes, &value.compilation_id);
+    push_id(bytes, &value.observer_id);
+    push_digest(bytes, value.portfolio_receipt_digest);
+    push_digest(bytes, value.provider_request_digest);
+    bytes.push(u8::from(value.delivered));
+    push_optional_digest(bytes, value.rejected_reason_digest);
+    push_optional_digest(bytes, value.observed_token_positions_digest);
+    bytes.push(u8::from(value.truncation_observed));
+    push_digest(bytes, value.context_delivery_observation_digest);
+    push_digest(bytes, value.support_digest);
+}
+
 fn push_revocation(bytes: &mut Vec<u8>, value: &Revocation) {
     push_id(bytes, &value.record_id);
     push_id(bytes, &value.target_record_id);
@@ -539,6 +692,16 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 
 fn push_digest(bytes: &mut Vec<u8>, value: Digest32) {
     bytes.extend_from_slice(value.as_array());
+}
+
+fn push_optional_digest(bytes: &mut Vec<u8>, value: Option<Digest32>) {
+    match value {
+        Some(digest) => {
+            bytes.push(1);
+            push_digest(bytes, digest);
+        }
+        None => bytes.push(0),
+    }
 }
 
 fn push_len(bytes: &mut Vec<u8>, value: usize) {
