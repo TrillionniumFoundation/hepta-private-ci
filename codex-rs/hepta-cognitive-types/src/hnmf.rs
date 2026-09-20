@@ -187,6 +187,20 @@ impl ModalityKindV1 {
         Self::StructuredData,
         Self::Sensor,
     ];
+
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Text => "text",
+            Self::Image => "image",
+            Self::Audio => "audio",
+            Self::Video => "video",
+            Self::CodeAst => "code_ast",
+            Self::GuiState => "gui_state",
+            Self::ToolTrajectory => "tool_trajectory",
+            Self::StructuredData => "structured_data",
+            Self::Sensor => "sensor",
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
