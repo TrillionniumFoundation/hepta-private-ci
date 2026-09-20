@@ -151,6 +151,67 @@ test("explicit compaction preserves latest immutable operations", async () => {
   assert.equal((await reopened.getOperation("profile.1", 1, "operation.0")).status, "succeeded");
 });
 
+test("compaction crash cuts retain a reopenable validated operation", async () => {
+  for (const point of [
+    "compact_temp_fsynced_before_rename",
+    "compact_renamed_before_parent_fsync",
+  ]) {
+    const { path } = await journalFixture();
+    const journal = new FileBrowserOperationJournal(path, {
+      faultInjector(name) {
+        if (name === point) throw new Error(`qualification crash at ${name}`);
+      },
+    });
+    await journal.recordDispatch(record());
+    await assert.rejects(journal.compact(), /qualification crash/);
+
+    const reopened = new FileBrowserOperationJournal(path);
+    const stored = await reopened.getOperation("profile.1", 1, "operation.1");
+    assert.equal(stored.status, "indeterminate", point);
+    assert.equal(stored.terminalObserved, false, point);
+  }
+});
+
+test("retirement crash cuts never resurrect a terminal profile generation", async () => {
+  for (const point of [
+    "retired_temp_fsynced_before_rename",
+    "retired_renamed_before_parent_fsync",
+    "retired_high_water_committed_before_journal_rewrite",
+  ]) {
+    const { path, journal } = await journalFixture();
+    await journal.recordDispatch(record());
+    await journal.recordObservation(record({
+      status: "succeeded",
+      outcomeDigest: D1,
+      terminalEvidenceDigest: null,
+      terminalObserved: true,
+      observationReason: "terminal_observed",
+    }));
+
+    const crashing = new FileBrowserOperationJournal(path, {
+      faultInjector(name) {
+        if (name === point) throw new Error(`qualification crash at ${name}`);
+      },
+    });
+    await assert.rejects(
+      crashing.retireProfile("profile.1", 1),
+      /qualification crash/,
+    );
+
+    const reopened = new FileBrowserOperationJournal(path);
+    await assert.rejects(
+      reopened.assertProfileGenerationAvailable("profile.1", 1),
+      /durable operation history|already been retired/,
+      point,
+    );
+    assert.notEqual(
+      await reopened.getOperation("profile.1", 1, "operation.1"),
+      null,
+      point,
+    );
+  }
+});
+
 test("durable history blocks generation resurrection and unresolved cross-generation advance", async () => {
   const { journal } = await journalFixture();
   await journal.recordDispatch(record({ operationId: "operation.unknown" }));
