@@ -50,13 +50,22 @@ used as a substitute signing preimage.
 
 The external authority must independently pin both public keys, verify the H7
 envelope, resolve compatibility, and capture the current revocation frontier
-before authorizing a production grant. After signing, the runtime owner verifies
-the envelope/grant with the pinned public keys, exact CAS fences, current
-authority epoch, and current Fleet release manifest/program bytes. The
-compatibility and revocation-frontier digests are evidence bindings rather than
-a supervisor-owned policy engine; their issuing owners remain responsible for
-freshness and semantics. A successful local verification does not transfer trust-root
-ownership. Never copy the private key into the repository, daemon, Mac,
+before authorizing a production grant. The production host separately pins that
+same current compatibility-receipt SHA-256 and revocation frontier when starting
+`hepta-supervisord`; a signed grant cannot nominate its own current compatibility
+receipt. After signing, the runtime owner verifies the envelope/grant with the
+pinned public keys, exact CAS fences, current authority epoch, current host
+compatibility/revocation pins, and current Fleet release manifest/program bytes.
+The compatibility and revocation-frontier values remain evidence bindings rather
+than a supervisor-owned policy engine; their issuing owners remain responsible
+for freshness and semantics. A successful local verification does not transfer trust-root
+ownership.
+
+A production daemon configuration therefore supplies all of these together:
+`--grant-verifier-key`, `--grant-signer-id`, `--grant-signer-epoch`,
+`--h7-verifier-key`, `--h7-signer-id`, `--h7-signer-epoch`,
+`--revocation-frontier`, and `--compatibility-receipt-sha256`. Omitting any
+member leaves production release-transition authority disabled. Never copy the private key into the repository, daemon, Mac,
 small-host filesystem, or Dropbox.
 
 ## Separate final-use grant signer
