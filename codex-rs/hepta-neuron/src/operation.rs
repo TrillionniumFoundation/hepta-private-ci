@@ -309,6 +309,12 @@ impl FileRuntimeOperationJournal {
             .any(|record| record.state == RuntimeOperationStateV1::Prepared)
     }
 
+    pub(crate) fn has_committed(&self) -> bool {
+        self.records
+            .values()
+            .any(|record| record.state == RuntimeOperationStateV1::Committed)
+    }
+
     pub(crate) fn prepare(
         &mut self,
         prepared: PreparedRuntimeOperationV1,
