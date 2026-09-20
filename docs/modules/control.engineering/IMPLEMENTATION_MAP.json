@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
-    "tree": "789fa2ea88e8a6e787a0fb838a8dda3cf2e20701"
+    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "laneId": "LANE-G-ENGINEERING",
   "module": "control.engineering",
@@ -19,7 +19,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "repository_product_caller_dual_lane_defined_execution_pending",
-  "productionWriterState": "not_established",
+  "productionWriterState": "named_product_owner_composed_execution_pending",
   "operations": [
     {
       "operation": "issue_repository_work_envelope",
@@ -202,6 +202,67 @@
         "plan_engineering_work",
         "issue_repository_work_envelope"
       ]
+    },
+    {
+      "operation": "claim_assignment",
+      "designOperation": "durable_worker_assignment_lifecycle",
+      "nativeSymbol": "claim_assignment",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_worker_lifecycle.py"
+        }
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "orchestration_generations",
+        "path_leases",
+        "worker_registrations",
+        "worker_claims"
+      ]
+    },
+    {
+      "operation": "EngineeringControlProduct",
+      "designOperation": "named_product_owner_composition",
+      "nativeSymbol": "EngineeringControlProduct",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+      "state": "source_implemented_product_execution_pending",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_runtime.py"
+        },
+        {
+          "path": "tools/hepta-engineering-control/test_product_gate.py"
+        }
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "EngineeringStore",
+        "plan_engineering_work",
+        "claim_assignment",
+        "observe_claim_completion"
+      ]
+    },
+    {
+      "operation": "bind_github_review_observations",
+      "designOperation": "github_reviewer_identity_observation",
+      "nativeSymbol": "bind_github_review_observations",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
+      "state": "source_implemented_live_ci_execution_pending",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_gate.py"
+        }
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [

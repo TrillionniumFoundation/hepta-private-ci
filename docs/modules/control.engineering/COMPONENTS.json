@@ -496,7 +496,7 @@
         "authorityMinted": 0
       },
       "rollback": "production admission remains blocked until fresh externally authenticated, role-separated custody and control receipts exist",
-      "physicalState": "SQLite v6 distributed_fence_frontiers high-water mark plus externally signed revocation/fence receipts, owner-state audit snapshot binding and subject-bound HSM/KMS custody receipts"
+      "physicalState": "SQLite v7 distributed_fence_frontiers high-water mark plus externally signed revocation/fence receipts, owner-state audit snapshot binding and subject-bound HSM/KMS custody receipts"
     },
     {
       "id": "repository-product-caller",
@@ -522,6 +522,67 @@
         "releaseAuthority": 0
       },
       "rollback": "discard the lane receipts/pair receipt; no product transition is authorized"
+    },
+    {
+      "id": "durable-worker-lifecycle",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+      "symbols": [
+        "WorkerRegistrationReceipt",
+        "WorkerClaim",
+        "claim_assignment",
+        "heartbeat_claim",
+        "submit_worker_result",
+        "observe_claim_completion",
+        "expire_stale_claims"
+      ],
+      "state": "source_implemented",
+      "physicalState": "SQLite v7 orchestration_generations, worker_registrations and worker_claims",
+      "failureModel": [
+        "worker_profile_drift",
+        "claim_lease_invalid",
+        "worker_heartbeat_stale",
+        "worker_result_signature",
+        "claim_attempts_exhausted"
+      ],
+      "resourceBounds": {
+        "maximumClaimAttempts": 3,
+        "maximumHeartbeatSeconds": 300
+      },
+      "rollback": "timeout or infrastructure failure may enter bounded retryable state; semantic failure is terminal and worker-reported success requires independent CI completion observation"
+    },
+    {
+      "id": "named-product-owner",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+      "symbols": [
+        "EngineeringControlProduct"
+      ],
+      "state": "source_implemented_product_execution_pending",
+      "physicalState": "One named owner composes repository identity, SQLite v7 EngineeringStore, trust verifier, planner and worker lifecycle",
+      "failureModel": [
+        "source_identity_mismatch",
+        "repository_mismatch",
+        "orchestration_generation_conflict"
+      ],
+      "resourceBounds": {
+        "ambientAuthority": 0
+      },
+      "rollback": "close the owner and reopen a schema-compatible predecessor; committed owner facts are never rewritten"
+    },
+    {
+      "id": "github-review-identity-observer",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
+      "symbols": [
+        "bind_github_review_observations"
+      ],
+      "state": "source_implemented_live_ci_execution_pending",
+      "failureModel": [
+        "github_review_observation_shape",
+        "github_review_observation_digest_mismatch"
+      ],
+      "resourceBounds": {
+        "maximumReviewObservations": 256
+      },
+      "rollback": "discard the observation; reviewer state never becomes merge or independent-acceptance authority"
     }
   ],
   "externalGates": {

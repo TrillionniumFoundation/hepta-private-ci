@@ -70,10 +70,13 @@
       "ownerSymbol": "evidence.verify_integration_evidence",
       "tests": [
         "EvidenceTests.test_exact_objects_and_independent_roles_pass_for_review_only",
-        "EvidenceTests.test_tamper_and_role_collision_fail_closed"
+        "EvidenceTests.test_tamper_and_role_collision_fail_closed",
+        "EvidenceTests.test_wrong_base_parent_rejects_even_with_fresh_signatures",
+        "EvidenceTests.test_wrong_base_tree_and_merge_tree_reject",
+        "EvidenceTests.test_git_replace_ref_cannot_change_verified_source_identity"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "eligible_for_independent_review at most"
+      "capabilityCeiling": "exact base/source/ordered synthetic-merge identity plus independent-review eligibility at most"
     },
     {
       "designOperation": "request_independent_review",
@@ -279,6 +282,41 @@
       ],
       "state": "source_implemented",
       "capabilityCeiling": "dual-lane exact-source/base-merge product evidence binding only; no merge or release authority"
+    },
+    {
+      "designOperation": "durable_worker_assignment_lifecycle",
+      "nativeModule": "control_engineering_v2.worker_lifecycle",
+      "nativeSymbol": "claim_assignment",
+      "ownerSymbol": "worker_lifecycle claim/heartbeat/result/observe",
+      "tests": [
+        "WorkerLifecycleTests.test_claim_heartbeat_worker_result_and_independent_completion",
+        "WorkerLifecycleTests.test_timeout_requeues_but_semantic_failure_never_retries",
+        "WorkerLifecycleTests.test_claim_requires_registered_assigned_worker_and_fenced_lease"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "durable worker claim lifecycle; worker success is not completion until independent CI observation"
+    },
+    {
+      "designOperation": "named_product_owner_composition",
+      "nativeModule": "control_engineering_v2.product_runtime",
+      "nativeSymbol": "EngineeringControlProduct",
+      "ownerSymbol": "EngineeringControlProduct",
+      "tests": [
+        "EngineeringControlProductTests.test_named_product_owner_composes_repository_store_and_plan"
+      ],
+      "state": "source_implemented_product_execution_pending",
+      "capabilityCeiling": "named durable product owner composition without merge/release/deployment authority"
+    },
+    {
+      "designOperation": "github_reviewer_identity_observation",
+      "nativeModule": "control_engineering_v2.product_gate",
+      "nativeSymbol": "bind_github_review_observations",
+      "ownerSymbol": "engineering-product-evidence GitHub Reviews API step",
+      "tests": [
+        "ProductGateTests.test_github_review_observation_binds_real_numeric_identity_without_acceptance"
+      ],
+      "state": "source_implemented_live_ci_execution_pending",
+      "capabilityCeiling": "real GitHub reviewer identity observation only; never independent acceptance"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -305,6 +343,8 @@
     "tools/hepta-engineering-control/test_sandbox_control.py",
     "tools/hepta-engineering-control/test_mutation_testing.py",
     "tools/hepta-engineering-control/test_external_controls.py",
-    "tools/hepta-engineering-control/test_product_gate.py"
+    "tools/hepta-engineering-control/test_product_gate.py",
+    "tools/hepta-engineering-control/test_worker_lifecycle.py",
+    "tools/hepta-engineering-control/test_product_runtime.py"
   ]
 }
