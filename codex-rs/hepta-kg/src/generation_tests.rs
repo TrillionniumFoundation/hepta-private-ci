@@ -333,3 +333,118 @@ fn invalid_temporal_support_window_is_rejected() {
         Err(KnowledgeGenerationErrorV2::InvalidValidityWindow)
     );
 }
+
+
+#[test]
+fn duplicate_incremental_upserts_are_rejected_before_last_write_wins() {
+    let first = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a-v1"), node("b", "b-v1")],
+            vec![edge("a", "b", KnowledgeRelationKindV2::Supports, "edge-ab")],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid predecessor: {error}"));
+
+    let duplicate_node = KnowledgeProjectionDeltaV2 {
+        expected_predecessor_digest: first.generation_digest,
+        source_snapshot_digest: digest("snapshot:2"),
+        generation_vector_digest: digest("vector:2"),
+        graph_profile_digest: digest("profile:1"),
+        remove_node_ids: Vec::new(),
+        upsert_nodes: vec![node("a", "a-v2"), node("a", "a-v3")],
+        remove_edge_identities: Vec::new(),
+        upsert_edges: Vec::new(),
+    };
+    assert_eq!(
+        apply_incremental_delta(&first, generation(2), duplicate_node),
+        Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity)
+    );
+
+    let duplicate_edge_value = edge(
+        "a",
+        "b",
+        KnowledgeRelationKindV2::Supports,
+        "edge-ab-v2",
+    );
+    let duplicate_edge = KnowledgeProjectionDeltaV2 {
+        expected_predecessor_digest: first.generation_digest,
+        source_snapshot_digest: digest("snapshot:2"),
+        generation_vector_digest: digest("vector:2"),
+        graph_profile_digest: digest("profile:1"),
+        remove_node_ids: Vec::new(),
+        upsert_nodes: Vec::new(),
+        remove_edge_identities: Vec::new(),
+        upsert_edges: vec![duplicate_edge_value.clone(), duplicate_edge_value],
+    };
+    assert_eq!(
+        apply_incremental_delta(&first, generation(2), duplicate_edge),
+        Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity)
+    );
+}
+
+#[test]
+fn adversarial_mixed_delta_matches_full_rebuild_canonically() {
+    let first = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("c", "c-v1"), node("a", "a-v1"), node("b", "b-v1")],
+            vec![
+                edge("b", "c", KnowledgeRelationKindV2::Causes, "edge-bc-v1"),
+                edge("a", "b", KnowledgeRelationKindV2::Supports, "edge-ab-v1"),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid predecessor: {error}"));
+
+    let removed_ab = KnowledgeEdgeIdentityV2 {
+        source_node_id: id("node:a"),
+        relation: KnowledgeRelationKindV2::Supports,
+        target_node_id: id("node:b"),
+    };
+    let mut tombstoned = edge(
+        "a",
+        "c",
+        KnowledgeRelationKindV2::Contradicts,
+        "edge-ac-deleted",
+    );
+    tombstoned.supports[0].tombstoned = true;
+    let replacement = edge(
+        "c",
+        "a",
+        KnowledgeRelationKindV2::Custom(id("relation-kind:references")),
+        "edge-ca-v2",
+    );
+
+    let incremental = apply_incremental_delta(
+        &first,
+        generation(2),
+        KnowledgeProjectionDeltaV2 {
+            expected_predecessor_digest: first.generation_digest,
+            source_snapshot_digest: digest("snapshot:adversarial:2"),
+            generation_vector_digest: digest("vector:adversarial:2"),
+            graph_profile_digest: digest("profile:1"),
+            remove_node_ids: vec![id("node:b")],
+            upsert_nodes: vec![node("c", "c-v2"), node("a", "a-v1")],
+            remove_edge_identities: vec![removed_ab],
+            upsert_edges: vec![tombstoned, replacement.clone()],
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid mixed delta: {error}"));
+
+    let full = build_complete_generation(
+        generation(2),
+        KnowledgeProjectionInputV2 {
+            source_snapshot_digest: digest("snapshot:adversarial:2"),
+            generation_vector_digest: digest("vector:adversarial:2"),
+            graph_profile_digest: digest("profile:1"),
+            complete_source_cut: true,
+            nodes: vec![node("a", "a-v1"), node("c", "c-v2")],
+            edges: vec![replacement],
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid full rebuild: {error}"));
+
+    assert_eq!(incremental, full);
+    assert_eq!(incremental.generation_digest, full.generation_digest);
+}
