@@ -151,8 +151,14 @@ pub struct RegisteredRelease {
     pub matrixd: Option<RegisteredProgram>,
 }
 
+/// Immutable byte provenance for one allowed release.
+///
+/// The supervisor uses this record when admitting a production release
+/// transition.  It is derived from the same immutable catalog and per-Agent
+/// allowance checks as `resolve_release`; callers must never infer these
+/// digests from a release id alone.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ReleaseBinding {
+pub struct ReleaseProvenance {
     pub release_id: ReleaseId,
     pub manifest_sha256: String,
     pub agentd_sha256: String,
@@ -330,37 +336,6 @@ impl FleetRegistry {
         sync_directory(record.layout.releases_root())
     }
 
-    /// Revoke one Agent's permission to select a release.
-    ///
-    /// Existing processes keep their frozen executable bytes, but every future
-    /// start/upgrade/rollback must resolve the current allowance again and
-    /// therefore fails closed after this durable removal.
-    pub fn revoke_release(
-        &self,
-        agent_id: &AgentId,
-        release_id: &ReleaseId,
-    ) -> Result<(), FleetRegistryError> {
-        let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
-            FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
-        })?;
-        let path = allowance_path(record.layout.releases_root(), release_id);
-        let allowance: ReleaseAllowance =
-            read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
-        if !matches!(
-            allowance.schema_version,
-            1 | RELEASE_METADATA_SCHEMA_VERSION
-        ) || allowance.agent_id != *agent_id
-            || allowance.release_id != *release_id
-            || !is_sha256(&allowance.manifest_sha256)
-        {
-            return Err(FleetRegistryError::Corrupt(format!(
-                "invalid release allowance for agent {agent_id} release {release_id}"
-            )));
-        }
-        std::fs::remove_file(&path)?;
-        sync_directory(record.layout.releases_root())
-    }
-
     pub fn resolve_release(
         &self,
         agent_id: &AgentId,
@@ -401,47 +376,24 @@ impl FleetRegistry {
         resolve_catalog_release(self.layout().releases_root(), release_id)
     }
 
-    /// Resolve the exact immutable bytes admitted for one Agent release.
-    ///
-    /// Target selection uses this method so a revoked allowance cannot be
-    /// reintroduced by a signed request.
-    pub fn release_binding(
+    /// Resolve the exact immutable byte provenance for one release after
+    /// re-checking the current per-Agent allowance and catalog integrity.
+    pub fn release_provenance(
         &self,
         agent_id: &AgentId,
         release_id: &ReleaseId,
-    ) -> Result<ReleaseBinding, FleetRegistryError> {
-        let _ = self.resolve_release(agent_id, release_id)?;
-        self.installed_release_binding(release_id)
-    }
-
-    /// Resolve exact immutable catalog bytes without requiring a current Agent
-    /// allowance. This is used only to bind the source release that is already
-    /// running: revoking an unsafe current release must not prevent selecting a
-    /// safe allowed target to leave it.
-    pub fn installed_release_binding(
-        &self,
-        release_id: &ReleaseId,
-    ) -> Result<ReleaseBinding, FleetRegistryError> {
-        let _ = resolve_catalog_release(self.layout().releases_root(), release_id)?;
-        let manifest_path = release_manifest_path(self.layout().releases_root(), release_id);
-        let manifest_sha256 = sha256_file(&manifest_path)?;
-        let metadata: CatalogReleaseMetadata =
-            read_bounded_json(&manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
-        let (agentd_sha256, matrixd_sha256) = match metadata {
-            CatalogReleaseMetadata::V2(metadata) => {
-                validate_metadata(&metadata, release_id)?;
-                (
-                    metadata.agentd.program_sha256,
-                    metadata.matrixd.map(|program| program.program_sha256),
-                )
-            }
-            CatalogReleaseMetadata::V1(metadata) => {
-                validate_legacy_metadata(&metadata, release_id)?;
-                (metadata.program_sha256, None)
-            }
-        };
-        Ok(ReleaseBinding {
-            release_id: release_id.clone(),
+    ) -> Result<ReleaseProvenance, FleetRegistryError> {
+        let release = self.resolve_release(agent_id, release_id)?;
+        let manifest = release_manifest_path(self.layout().releases_root(), release_id);
+        let manifest_sha256 = sha256_file(&manifest)?;
+        let agentd_sha256 = sha256_file(&release.program)?;
+        let matrixd_sha256 = release
+            .matrixd
+            .as_ref()
+            .map(|program| sha256_file(&program.program))
+            .transpose()?;
+        Ok(ReleaseProvenance {
+            release_id: release.release_id,
             manifest_sha256,
             agentd_sha256,
             matrixd_sha256,
@@ -1066,43 +1018,6 @@ mod tests {
             fixture.registry.allowed_releases(&fixture.first)?,
             vec![release_id]
         );
-        Ok(())
-    }
-
-    #[test]
-    fn release_binding_is_exact_and_revocation_blocks_future_resolution()
-    -> Result<(), FleetRegistryError> {
-        let fixture = Fixture::new()?;
-        let release_id = ReleaseId::parse("bound-v1")?;
-        fixture
-            .registry
-            .install_release(release_id.clone(), &fixture.source, vec!["--bound".to_string()])?;
-        fixture
-            .registry
-            .allow_release(&fixture.first, &release_id)?;
-        let binding = fixture
-            .registry
-            .release_binding(&fixture.first, &release_id)?;
-        assert_eq!(binding.release_id, release_id);
-        assert!(is_sha256(&binding.manifest_sha256));
-        assert!(is_sha256(&binding.agentd_sha256));
-        assert_eq!(binding.matrixd_sha256, None);
-
-        fixture
-            .registry
-            .revoke_release(&fixture.first, &binding.release_id)?;
-        assert!(matches!(
-            fixture
-                .registry
-                .resolve_release(&fixture.first, &binding.release_id),
-            Err(FleetRegistryError::ReleaseNotAllowed { .. })
-                | Err(FleetRegistryError::Io(_))
-        ));
-        let installed = fixture
-            .registry
-            .installed_release_binding(&binding.release_id)?;
-        assert_eq!(installed.manifest_sha256, binding.manifest_sha256);
-        assert_eq!(installed.agentd_sha256, binding.agentd_sha256);
         Ok(())
     }
 
