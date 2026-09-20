@@ -10,7 +10,6 @@ use std::sync::Arc;
 
 use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
-use codex_hepta_cognitive_store::CognitiveWriteReceipt;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_cognitive_store::ForgetMemoryDraft;
 use codex_hepta_cognitive_store::KgFactSetDraft;
@@ -20,6 +19,7 @@ use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
 use codex_hepta_cognitive_store::ProductionCognitiveMutation;
 use codex_hepta_cognitive_store::ProductionCognitiveMutationCapability;
+use codex_hepta_cognitive_store::ProductionCognitiveMutationReceiptV1;
 use codex_hepta_cognitive_store::ProductionDispatchReceipt;
 use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::ProductionOutboxDispatcher;
@@ -163,7 +163,7 @@ impl AgentdProductionWriterHost {
         source: &SourceDraft,
         draft: &MemoryDraft,
         facts: &KgFactSetDraft,
-    ) -> Result<CognitiveWriteReceipt, AgentdError> {
+    ) -> Result<ProductionCognitiveMutationReceiptV1, AgentdError> {
         let mutation = self.production_mutation().ok_or_else(|| {
             AgentdError::Protocol(
                 "production cognitive mutation capability is not attached".to_string(),
@@ -182,7 +182,7 @@ impl AgentdProductionWriterHost {
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
-    ) -> Result<CognitiveWriteReceipt, AgentdError> {
+    ) -> Result<ProductionCognitiveMutationReceiptV1, AgentdError> {
         let mutation = self.production_mutation().ok_or_else(|| {
             AgentdError::Protocol(
                 "production cognitive mutation capability is not attached".to_string(),
@@ -200,7 +200,7 @@ impl AgentdProductionWriterHost {
         expected_revision: u64,
         source: &SourceDraft,
         draft: &ForgetMemoryDraft,
-    ) -> Result<CognitiveWriteReceipt, AgentdError> {
+    ) -> Result<ProductionCognitiveMutationReceiptV1, AgentdError> {
         let mutation = self.production_mutation().ok_or_else(|| {
             AgentdError::Protocol(
                 "production cognitive mutation capability is not attached".to_string(),
