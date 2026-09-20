@@ -400,6 +400,7 @@ fn native_v3_traverses_admitted_owner_apis_and_real_durable_ledger() {
             .objective
             .legal_actions
             .iter()
+            .filter(|action| action.id.as_str() != ABSTAIN)
             .map(|action| LegalActionCandidateV1 {
                 candidate_id: action.id.clone(),
                 action_digest: digest(&format!("action:{}", action.id.as_str())),
