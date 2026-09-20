@@ -19,6 +19,7 @@ use sha2::Digest;
 use sha2::Sha256;
 
 use crate::H7H89ProductionGrant;
+use crate::H7H89ProductionTransition;
 use crate::ReleaseSelectionBinding;
 use crate::SupervisorError;
 
@@ -58,6 +59,8 @@ pub struct ReleaseSelectionSnapshot {
     pub promotion: bool,
     pub source_release: String,
     pub target_release: String,
+    pub transition: H7H89ProductionTransition,
+    pub authority_epoch: u64,
     pub binding: ReleaseSelectionBinding,
     pub control_revision: u64,
     pub lifecycle_generation: u64,
@@ -81,6 +84,8 @@ impl ReleaseSelectionSnapshot {
             promotion: self.promotion,
             source_release: self.source_release.clone(),
             target_release: self.target_release.clone(),
+            transition: self.transition,
+            authority_epoch: self.authority_epoch,
             binding: self.binding.clone(),
             control_revision: self.control_revision,
             lifecycle_generation: self.lifecycle_generation,
@@ -155,6 +160,8 @@ impl ReleaseSelectionRecord {
             promotion: grant.promotion,
             source_release: grant.source_release.clone(),
             target_release: grant.target_release.clone(),
+            transition: grant.transition,
+            authority_epoch: grant.authority_epoch,
             binding: grant.release_selection.clone(),
             control_revision,
             lifecycle_generation,
@@ -220,6 +227,8 @@ impl ReleaseSelectionRecord {
             || self.source_release.trim().is_empty()
             || self.target_release.trim().is_empty()
             || self.source_release == self.target_release
+            || self.authority_epoch == 0
+            || self.control_revision == 0
             || self.lifecycle_generation == 0
         {
             return Err(SupervisorError::Invalid(
@@ -274,6 +283,8 @@ impl ReleaseSelectionRecord {
             self.promotion,
             &self.source_release,
             &self.target_release,
+            self.transition,
+            self.authority_epoch,
             &self.binding,
             self.control_revision,
             self.lifecycle_generation,
