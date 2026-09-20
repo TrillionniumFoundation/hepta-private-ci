@@ -146,9 +146,9 @@ Required product qualification additionally includes Agentd composition, owner c
 
 ## 9. Frontier semantics and remaining external gates
 
-The in-process product adapter acquires the exact-scope memory frontier from the **same SQLite read snapshot** that produces the candidate set. `RemoteFederatedResponseV2.observed_frontier` therefore describes owner memory state rather than capability state. An actually empty scope may report frontier `0`; a non-empty response may not fabricate a zero frontier. Capability generation/revision remains independently bound through the query/lease and live authority observations.
+The in-process product adapter acquires `observed_frontier` from the **same SQLite read snapshot** that produces the candidate set. In the current local adapter this value is the exact-scope count of immutable `memory_revisions` rows. Because those rows are append-only under the owner schema, the count is a bounded local monotone observation and correctly permits `0` for an actually empty scope; a non-empty response may not fabricate a zero frontier. It is **not** an exact equality cut digest, an independently retained rollback witness, or remote-host authentication. Capability generation/revision remains independently bound through the query/lease and live authority observations.
 
-A future multi-process or multi-host transport must authenticate this real owner data frontier/snapshot witness across the transport boundary rather than deriving or substituting it locally.
+For cross-process or multi-host federation, transport qualification must carry and authenticate a canonical owner cut witness (for example the existing Lane-C cut-digest semantics or an explicitly registered successor) together with remote peer identity. The local revision count must not be promoted into that role.
 
 This hardening wave does not by itself establish:
 
