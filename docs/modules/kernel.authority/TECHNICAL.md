@@ -101,6 +101,7 @@ Produced contracts:
 - `ModulePort::kernel.authority::runtime.fleet`
 - `ModulePort::kernel.authority::runtime.supervisor`
 - `ModulePort::kernel.authority::secrets.heptabao`
+- `ModulePort::kernel.authority::ui.native`
 - `VerifiedUseTokenWitnessV1`
 
 Consumed contracts:
