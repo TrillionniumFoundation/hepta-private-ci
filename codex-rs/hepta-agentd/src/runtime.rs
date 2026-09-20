@@ -20,6 +20,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::AgentdConfig;
 use crate::AgentdControlServer;
+use crate::CognitiveRetrievalMode;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
@@ -44,8 +45,13 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let retrieval_mode = config.cognitive_retrieval_mode();
     let retrieval_context = config.cognitive_retrieval_context();
     let retrieval_learning = config.cognitive_retrieval_learning();
+    require_cognitive_retrieval_context_for_mode(
+        retrieval_mode,
+        retrieval_context.is_some(),
+    )?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -193,6 +199,19 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     )
     .await;
     outcome
+}
+
+fn require_cognitive_retrieval_context_for_mode(
+    mode: CognitiveRetrievalMode,
+    configured: bool,
+) -> Result<(), AgentdError> {
+    if mode.requires_current_context() && !configured {
+        return Err(AgentdError::Invalid(
+            "HNMF-required retrieval profile requires a current authenticated retrieval context"
+                .to_string(),
+        ));
+    }
+    Ok(())
 }
 
 #[cfg(feature = "qualification-cognitive-write")]
