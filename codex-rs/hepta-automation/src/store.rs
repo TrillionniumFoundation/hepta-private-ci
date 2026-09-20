@@ -475,21 +475,22 @@ impl AutomationStore {
 
         let (task_id, occurrence, schedule_revision, scheduled_for_ms, client_id) =
             if let Some(row) = reclaim {
-            let task_id =
-                AutomationTaskId::parse(&row.try_get::<String, _>("task_id").map_err(unavailable)?)
-                    .map_err(|_| AutomationError::Corrupt)?;
-            (
-                task_id,
-                to_u64(row.try_get("occurrence").map_err(unavailable)?)?,
-                to_u64(
-                    row.try_get::<Option<i64>, _>("schedule_revision")
-                        .map_err(unavailable)?
-                        .ok_or(AutomationError::Corrupt)?,
-                )?,
-                to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?,
-                row.try_get("client_user_message_id").map_err(unavailable)?,
-            )
-        } else {
+                let task_id = AutomationTaskId::parse(
+                    &row.try_get::<String, _>("task_id").map_err(unavailable)?,
+                )
+                .map_err(|_| AutomationError::Corrupt)?;
+                (
+                    task_id,
+                    to_u64(row.try_get("occurrence").map_err(unavailable)?)?,
+                    to_u64(
+                        row.try_get::<Option<i64>, _>("schedule_revision")
+                            .map_err(unavailable)?
+                            .ok_or(AutomationError::Corrupt)?,
+                    )?,
+                    to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?,
+                    row.try_get("client_user_message_id").map_err(unavailable)?,
+                )
+            } else {
             let row = sqlx::query(
                 "SELECT t.task_id, t.next_occurrence, t.next_run_at_ms,
                         m.revision AS schedule_revision
@@ -547,14 +548,14 @@ impl AutomationStore {
             if advanced.rows_affected() != 1 {
                 return Err(AutomationError::Conflict);
             }
-            (
-                task_id,
-                occurrence,
-                schedule_revision,
-                scheduled_for_ms,
-                client_id,
-            )
-        };
+                (
+                    task_id,
+                    occurrence,
+                    schedule_revision,
+                    scheduled_for_ms,
+                    client_id,
+                )
+            };
 
         let lease_token = uuid::Uuid::now_v7().to_string();
         let leased = sqlx::query(
