@@ -44,6 +44,7 @@ codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
 codex-hepta-memory = { workspace = true }
 codex-hepta-memory-extension = { workspace = true }
+codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-paths = { workspace = true }
 codex-protocol = { workspace = true }
 codex-uds = { workspace = true }
@@ -67,6 +68,7 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
