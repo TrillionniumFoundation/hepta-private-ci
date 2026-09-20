@@ -111,7 +111,7 @@ mod tests {
     use crate::TabularOperatorSampleV1;
 
     fn id(value: &str) -> StableId {
-        StableId::new(value.to_owned()).expect("valid test id")
+        StableId::new(value.to_owned()).unwrap_or_else(|error| panic!("valid test id: {error:?}"))
     }
 
     fn digest(value: &str) -> Digest32 {
@@ -122,7 +122,7 @@ mod tests {
         TabularOperatorPlanV1 {
             artifact_id: id("artifact"),
             producer_id: id("producer"),
-            generation: Generation::new(1).expect("valid generation"),
+            generation: Generation::new(1).unwrap_or_else(|error| panic!("valid generation: {error:?}")),
             objective_digest: digest("objective"),
             dataset_digest: digest("dataset"),
             sensor_core_digest: digest("sensor-core"),
@@ -168,10 +168,10 @@ mod tests {
     #[test]
     #[allow(deprecated)]
     fn op_05_indexed_prediction_uses_canonical_grid() {
-        let artifact = fit_tabular_operator_strict_v2(plan()).expect("strict fit succeeds");
+        let artifact = fit_tabular_operator_strict_v2(plan()).unwrap_or_else(|error| panic!("strict fit succeeds: {error:?}"));
         let prediction =
             predict_tabular_operator_indexed_v2(&artifact, &id("sensor-b"), &id("action-a"))
-                .expect("supported cell");
+                .unwrap_or_else(|error| panic!("supported cell: {error:?}"));
         assert_eq!(prediction.value, FixedQ32::from_raw(30));
         assert!(prediction.synthetic);
         assert!(!prediction.authority.grants_any());
