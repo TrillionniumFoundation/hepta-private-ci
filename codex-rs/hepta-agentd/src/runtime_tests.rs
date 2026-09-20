@@ -50,6 +50,7 @@ use super::AgentdIdentity;
 use super::AgentdState;
 use super::CompletedRuntimeTask;
 use super::EVENT_CAPACITY;
+use super::attach_automation_operations_after_generation_fence;
 use super::cleanup_runtime_tasks;
 use super::monitor_runtime;
 use super::open_automation_store_after_generation_fence;
@@ -182,6 +183,143 @@ async fn duplicate_automation_attachment_does_not_replace_the_live_store() {
         response.payload,
         AgentdPayload::Error { ref code, .. } if code == "automation_unavailable"
     ));
+}
+
+#[cfg(unix)]
+struct RuntimeSigningGrantProvider {
+    issuer: ed25519_dalek::SigningKey,
+    authority_epoch: u64,
+}
+
+#[cfg(unix)]
+impl crate::AutomationGrantProvider for RuntimeSigningGrantProvider {
+    fn signed_grant(
+        &self,
+        intent: &codex_hepta_operations::OperationIntentV1,
+    ) -> Result<codex_hepta_contracts::SignedFinalUseGrant, crate::AgentdOperationsError> {
+        use ed25519_dalek::Signer as _;
+
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(|error| crate::AgentdOperationsError::Grant(error.to_string()))?
+            .as_millis() as u64;
+        let grant = codex_hepta_contracts::FinalUseGrant {
+            schema_version: 1,
+            signer_id: "runtime-automation-security-owner".to_string(),
+            authority_epoch: self.authority_epoch,
+            grant_id: format!("runtime-grant:{}", intent.operation_id),
+            nonce: intent.semantic_digest().into_array(),
+            binding: intent.final_use_binding(),
+            not_before_unix_ms: now.saturating_sub(1_000),
+            expires_at_unix_ms: now.saturating_add(30_000),
+        };
+        let signature = self
+            .issuer
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .map_err(|error| crate::AgentdOperationsError::Grant(error.to_string()))?,
+            )
+            .to_bytes()
+            .to_vec();
+        Ok(codex_hepta_contracts::SignedFinalUseGrant { grant, signature })
+    }
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn configured_runtime_routes_automation_create_through_durable_operations()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::collections::BTreeSet;
+    use std::os::unix::fs::PermissionsExt;
+
+    use codex_hepta_automation::AutomationSchedule;
+    use codex_hepta_automation::AutomationTaskDraft;
+    use codex_hepta_automation::automation_task_operation_intent;
+    use codex_hepta_contracts::FinalUseAuthority;
+    use codex_hepta_contracts::FinalUseRevocations;
+    use codex_hepta_types::Generation;
+    use ed25519_dalek::SigningKey;
+
+    let fixture = runtime_fixture();
+    fixture
+        .registry
+        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+        .expect("running generation");
+    fixture.state.refresh_generation().expect("refresh running");
+    fixture
+        .state
+        .mark_app_server_ready()
+        .expect("mark App Server ready");
+
+    let automation = AutomationStore::open(&fixture.identity.layout).await?;
+    fixture
+        .state
+        .attach_automation_store(automation.clone())
+        .expect("attach automation store");
+
+    let issuer = SigningKey::from_bytes(&[107; 32]);
+    let authority_dir = fixture
+        .identity
+        .layout
+        .agent_root()
+        .join("runtime-automation-final-use");
+    std::fs::create_dir(&authority_dir)?;
+    std::fs::set_permissions(&authority_dir, std::fs::Permissions::from_mode(0o700))?;
+    let authority = FinalUseAuthority::open_state_dir(
+        &authority_dir,
+        "runtime-automation-security-owner".to_string(),
+        issuer.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 13,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )?;
+    let grants = Arc::new(RuntimeSigningGrantProvider {
+        issuer,
+        authority_epoch: 13,
+    });
+    attach_automation_operations_after_generation_fence(
+        &fixture.state,
+        &fixture.identity,
+        Some(&automation),
+        Some(crate::config::AutomationOperationsConfig { authority, grants }),
+    )
+    .await?;
+
+    let draft = AutomationTaskDraft::new(
+        "019153a4-3088-7e03-a56a-9b1964f75ddd",
+        "runtime control path uses durable kernel operations",
+        AutomationSchedule::FixedInterval { interval_ms: 5_000 },
+        20_000,
+        10_000,
+    );
+    let generation = Generation::new(fixture.identity.spawn_generation)?;
+    let intent =
+        automation_task_operation_intent(automation.owner_agent_id(), &draft, generation)?;
+    let response = fixture
+        .state
+        .response(17, 1, AgentdMethod::AutomationCreate { draft })
+        .await?;
+    assert!(matches!(response.payload, AgentdPayload::AutomationTask(_)));
+
+    let host = fixture
+        .state
+        .automation_operations()?
+        .expect("runtime durable operations host");
+    let record = host
+        .source_store()
+        .operation(&intent.scope_id, &intent.operation_id)
+        .await?
+        .expect("durable operation record");
+    assert!(record.state.is_terminal());
+    assert_eq!(record.intent.owner_generation, generation);
+    assert!(
+        host.source_store().path().ends_with("kernel-operations/automation.sqlite3"),
+        "runtime must use the per-Agent durable kernel.operations database",
+    );
+    Ok(())
 }
 
 #[tokio::test]
