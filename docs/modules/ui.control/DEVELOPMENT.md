@@ -254,6 +254,8 @@ Current codes are:
 - `RECONCILIATION_MISMATCH`
 - `CAPACITY_EXHAUSTED`
 - `VIEW_TOO_LARGE`
+- `PERSISTENCE_UNAVAILABLE`
+- `TRANSPORT_SECURITY_VIOLATION`
 
 Browser UX should branch on `code`, not parse error-message text. Message text
 is for diagnostics and may be refined without changing recovery semantics.
