@@ -92,7 +92,7 @@ impl FileAnchorWitnessStore {
             file.sync_all()
                 .map_err(|_| WitnessStoreError::Indeterminate)?;
         } else {
-            if length < HEADER as u64 || (length - HEADER as u64) % RECORD as u64 != 0 {
+            if length < HEADER as u64 || !(length - HEADER as u64).is_multiple_of(RECORD as u64) {
                 return Err(WitnessStoreError::Corrupt);
             }
             let records = ((length - HEADER as u64) / RECORD as u64) as usize;

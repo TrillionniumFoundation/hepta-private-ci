@@ -136,7 +136,7 @@ fn wrong_scope_generation_and_corruption_never_reinitialize_history() {
         .err(),
         Some(WitnessStoreError::ContextMismatch)
     );
-    let mut corrupt = original.clone();
+    let mut corrupt = original;
     let last = corrupt.len() - 1;
     corrupt[last] ^= 1;
     checked(fs::write(fixture.path(), &corrupt));

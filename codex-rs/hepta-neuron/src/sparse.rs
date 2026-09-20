@@ -190,7 +190,7 @@ impl SparseCheckpoint {
         ]
         .into_iter()
         .sum::<usize>()
-        * std::mem::size_of::<i64>();
+            * std::mem::size_of::<i64>();
         fixed + vector_headers + vector_values
     }
 
