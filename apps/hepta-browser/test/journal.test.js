@@ -36,6 +36,7 @@ function record(overrides = {}) {
     verifiedUseTokenWitnessDigest: D1,
     status: "indeterminate",
     outcomeDigest: null,
+    terminalEvidenceDigest: null,
     terminalObserved: false,
     observationReason: "dispatching",
     ...overrides,
