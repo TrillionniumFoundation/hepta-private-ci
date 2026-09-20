@@ -2759,6 +2759,54 @@ fn signed_final_use(
     }
 
     #[tokio::test]
+    async fn durable_dispatch_claim_is_idempotent_and_renewable_before_entry() {
+        let temp = TempDir::new().expect("temp");
+        let store = store(&temp).await;
+        let owner = store.owner_agent_id().clone();
+        let writer = ProductionDurableWriter::open(
+            store,
+            production_authority(owner.clone()),
+            &FinalUseVerifier,
+            "production:h4:claim-lease",
+            1,
+        )
+        .await
+        .expect("writer");
+        let payload = "{\"fact\":\"claim-lease\"}";
+        let queued = writer
+            .prepare_operation(
+                bound_operation(
+                    &owner,
+                    "occurrence:claim-lease",
+                    "destination:cognitive-store",
+                    payload,
+                ),
+                "memory.write",
+                payload,
+            )
+            .await
+            .expect("queued");
+
+        let first = writer
+            .claim_dispatch_lease(&queued, 1_000)
+            .await
+            .expect("first claim");
+        let replay = writer
+            .claim_dispatch_lease(&queued, 1_000)
+            .await
+            .expect("same-owner claim replay");
+        assert_eq!(replay, first);
+
+        let renewed = writer
+            .renew_dispatch_claim(&first, 2_000)
+            .await
+            .expect("renewed claim");
+        assert_eq!(renewed.attempt, 1);
+        assert!(renewed.lease_expires_at_unix_ms > first.lease_expires_at_unix_ms);
+        assert_ne!(renewed.claim_sha256, first.claim_sha256);
+    }
+
+    #[tokio::test]
     async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use() {
         let temp = TempDir::new().expect("temp");
         let store = store(&temp).await;
@@ -2787,12 +2835,18 @@ fn signed_final_use(
             .await
             .expect("queued");
         assert_eq!(queued.inherited_from_generation, None);
+        let old_claim = old
+            .claim_dispatch_lease(&queued, 1)
+            .await
+            .expect("old generation claim");
+        assert_eq!(old_claim.attempt, 1);
         let expiry = old.authority().lease_expires_at_unix_seconds;
         old.lease
             .expire_lease_at_unix_seconds(expiry)
             .await
             .expect("explicit timeout terminalization");
         drop(old);
+        tokio::time::sleep(std::time::Duration::from_millis(60)).await;
 
         let next_authority = ProductionAuthorityLease::from_verified_parts(
             owner.clone(),
@@ -2867,6 +2921,17 @@ fn signed_final_use(
         assert_eq!(
             counts.outbox_rows, 1,
             "handoff reuses one durable outbox identity"
+        );
+        let max_attempt: i64 = sqlx::query_scalar(
+            "SELECT MAX(attempt) FROM cognitive_operation_dispatch_claims
+             WHERE operation_id = 'occurrence:queued-handoff'",
+        )
+        .fetch_one(&successor.store.pool)
+        .await
+        .expect("claim attempt");
+        assert_eq!(
+            max_attempt, 2,
+            "successor takeover must advance the durable dispatch attempt"
         );
     }
 }
