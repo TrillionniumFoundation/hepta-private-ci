@@ -314,23 +314,22 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_commit = source_base["commit"]
-            if True:
-                try:
-                    actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
-                except subprocess.CalledProcessError:
-                    failures.append(f"{mid}: source base commit is unavailable")
-                else:
-                    if actual_tree != source_base["tree"]:
-                        failures.append(f"{mid}: source base tree mismatch")
-                    ancestor = subprocess.run(
-                        ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
-                        cwd=ROOT,
-                        capture_output=True,
-                        text=True,
-                        check=False,
-                    )
-                    if ancestor.returncode != 0:
-                        failures.append(f"{mid}: source base is not an ancestor of HEAD")
+            try:
+                actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base commit is unavailable")
+            else:
+                if actual_tree != source_base["tree"]:
+                    failures.append(f"{mid}: source base tree mismatch")
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
