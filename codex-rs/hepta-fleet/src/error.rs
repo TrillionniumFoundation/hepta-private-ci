@@ -18,6 +18,11 @@ pub enum FleetRegistryError {
         agent_id: AgentId,
         release_id: String,
     },
+    #[error("release {release_id} is revoked for agent {agent_id}")]
+    ReleaseRevoked {
+        agent_id: AgentId,
+        release_id: String,
+    },
     #[error("workspace for agent {agent_id} overlaps registered agent {registered_agent_id}")]
     WorkspaceConflict {
         agent_id: AgentId,
