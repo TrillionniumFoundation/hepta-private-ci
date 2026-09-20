@@ -49,15 +49,7 @@
         "symbol": "pub fn start_run(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-          "symbol": "pub(crate) async fn turn_start(",
-          "buildTarget": "codex-app-server",
-          "ownerModule": "runtime.codex"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
@@ -65,7 +57,7 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity.",
+      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity; it does not itself dispatch a Codex turn.",
       "operation": "start_run",
       "nativeSymbol": "pub fn start_run(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -80,15 +72,7 @@
         "symbol": "pub fn cancel_run(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-          "symbol": "pub(crate) async fn turn_interrupt(",
-          "buildTarget": "codex-app-server",
-          "ownerModule": "runtime.codex"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
@@ -96,7 +80,7 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Distinguishes provable pre-dispatch cancellation from post-dispatch cancelling or indeterminate state.",
+      "sourceSemantics": "Transitions only Agentd-owned lifecycle state. Pre-dispatch cancellation is locally terminal; post-dispatch cancellation remains pending/indeterminate until the execution owner is invoked and observed by a separately composed caller.",
       "operation": "cancel_run",
       "nativeSymbol": "pub fn cancel_run(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -111,15 +95,7 @@
         "symbol": "pub fn attach_context(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/core/src/codex_thread.rs",
-          "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
-          "buildTarget": "codex-core",
-          "ownerModule": "runtime.codex"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
@@ -127,7 +103,7 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple.",
+      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple; it does not itself submit the context to Codex.",
       "operation": "attach_context",
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -172,6 +148,7 @@
   ],
   "repositoryControlledGaps": [
     "Compose a canonical non-test caller that supplies authenticated request/objective/body/artifact/authority identities to run.lifecycle without synthetic hashes.",
+    "Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.",
     "Bind process-restart recovery to that caller's durable exact-operation record; Agentd only rehydrates externally proven prior work as Indeterminate and never redispatches it."
   ],
   "externalEvidenceGates": [
