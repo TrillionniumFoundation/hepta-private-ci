@@ -99,6 +99,7 @@ pub use plasticity_host::rollover_agentd_plasticity_writer_v1;
 pub use plasticity_host::verify_agentd_plasticity_owner_evidence_v1;
 pub use plasticity_owner_evidence::ConcretePlasticityOwnerEvidenceResolverV1;
 pub use plasticity_owner_evidence::PlasticityArtifactOwnerBindingV1;
+pub use plasticity_runtime::PlasticityRuntimeBootstrapV1;
 pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
 pub use plasticity_runtime::PlasticityRuntimeOwnerV1;
