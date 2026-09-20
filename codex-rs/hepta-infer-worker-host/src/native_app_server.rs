@@ -637,26 +637,50 @@ impl AppServerModelDriver {
             Ok(Ok(response)) => response.turn,
             Ok(Err(RemoteObservedTypedRequestError::Server { observed })) => {
                 let receipt = adapt_observed_server_rejection(&adapter_intent, &observed)?;
-                let (status, retry_safe_before_admission) = match receipt.status {
-                    AdapterStatus::Overloaded => (NativeDispatchRejectionStatus::Overloaded, true),
-                    AdapterStatus::Rejected => (NativeDispatchRejectionStatus::Rejected, false),
-                    _ => return Err("unexpected adapter rejection status".into()),
-                };
-                let response_digest = receipt
-                    .response_digest
-                    .ok_or("server rejection receipt omitted response digest")?;
                 let reason: String = observed.error().message.chars().take(1024).collect();
-                control.reject_native_before_start(
-                    request_id,
-                    NativeDispatchRejection {
-                        status,
-                        reason: reason.clone(),
-                        response_digest: response_digest.to_string(),
-                        retry_safe_before_admission,
-                    },
-                )?;
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Err(format!("turn/start rejected by App Server: {reason}").into());
+                match receipt.status {
+                    AdapterStatus::Overloaded | AdapterStatus::Rejected => {
+                        let (status, retry_safe_before_admission) = match receipt.status {
+                            AdapterStatus::Overloaded => {
+                                (NativeDispatchRejectionStatus::Overloaded, true)
+                            }
+                            AdapterStatus::Rejected => {
+                                (NativeDispatchRejectionStatus::Rejected, false)
+                            }
+                            _ => unreachable!("matched above"),
+                        };
+                        let response_digest = receipt
+                            .response_digest
+                            .ok_or("server rejection receipt omitted response digest")?;
+                        control.reject_native_before_start(
+                            request_id,
+                            NativeDispatchRejection {
+                                status,
+                                reason: reason.clone(),
+                                response_digest: response_digest.to_string(),
+                                retry_safe_before_admission,
+                            },
+                        )?;
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Err(format!("turn/start rejected by App Server: {reason}").into());
+                    }
+                    AdapterStatus::Indeterminate => {
+                        if let Some(turn) =
+                            reconcile_turn_start(&mut client, &started.thread.id).await?
+                        {
+                            turn
+                        } else {
+                            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                            return Ok(indeterminate_start_output(
+                                started,
+                                format!(
+                                    "turn/start returned an accepted-or-unknown JSON-RPC error ({reason}); reconciliation found no exact turn; do not replay"
+                                ),
+                            ));
+                        }
+                    }
+                    _ => return Err("unexpected adapter server-error status".into()),
+                }
             }
             Ok(Err(error)) => {
                 if let Some(turn) = reconcile_turn_start(&mut client, &started.thread.id).await? {
