@@ -104,6 +104,10 @@ fn sign(
 
 #[test]
 fn authenticated_fast_policy_latency_gate() {
+    if cfg!(debug_assertions) {
+        eprintln!("authenticated fast-policy timing gate is enforced only in release profile");
+        return;
+    }
     eprintln!("mode,candidates,iterations,p50_us,p95_us,p99_us,throughput_per_s");
     for gate in GATES {
         run_gate(gate);
