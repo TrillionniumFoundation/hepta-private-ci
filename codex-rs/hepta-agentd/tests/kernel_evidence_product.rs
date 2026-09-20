@@ -10,16 +10,21 @@ use anyhow::Result;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::EvidenceRecoveryFrontierV1;
+use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
 use codex_hepta_agentd::KernelEvidenceAppendIngress;
 use codex_hepta_agentd::KernelEvidenceCandidateV1;
 use codex_hepta_agentd::KernelEvidenceQueryV1;
 use codex_hepta_agentd::KernelEvidenceVerifyV1;
 use codex_hepta_agentd::kernel_evidence_claims;
+use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::SignedMessage;
 use codex_hepta_evidence::EvidenceCandidateV1;
 use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceDispositionV1;
 use codex_hepta_evidence::EvidenceId;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
+use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_evidence::EvidenceReceiptKindV1;
 use codex_hepta_evidence::IndependentDecisionReceiptV1;
 use codex_hepta_evidence::IndependentDecisionRoleV1;
@@ -28,6 +33,10 @@ use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;
 use codex_hepta_evidence::evidence_set_digest;
 use codex_hepta_evidence::qualification_envelope_bytes;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use serde_json::json;
@@ -37,6 +46,9 @@ mod support;
 use support::fleet::FleetHarness;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c30";
+const RECOVERY_OK_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c31";
+const RECOVERY_OLD_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c32";
+const RECOVERY_SIGNER: &str = "issuer:evidence-recovery-frontier";
 const ARCHITECTURE_ISSUER: &str = "issuer:evidence-architecture";
 const SECURITY_ISSUER: &str = "issuer:evidence-security";
 const TERMINAL_ISSUER: &str = "issuer:evidence-terminal";
@@ -494,6 +506,173 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
     Ok(())
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> {
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(RECOVERY_OK_AGENT_ID, "kernel-evidence-recovery-ok")?;
+    let model = core_test_support::responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    std::fs::set_permissions(
+        agent.layout.home_root(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+
+    let architecture_key = SigningKey::from_bytes(&[61; 32]);
+    let trust_file = agent.layout.home_root().join("evidence-trust.json");
+    write_trust(
+        &trust_file,
+        &agent.agent_id.to_string(),
+        &[TrustEntry {
+            issuer_id: ARCHITECTURE_ISSUER,
+            key: &architecture_key,
+            revoked: false,
+            roles: &["architecture"],
+        }],
+    )?;
+
+    let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
+        agent.layout.home_root(),
+    )?);
+    let store = HeptaEvidenceStore::open(&sqlite).await?;
+    let candidate = EvidenceCandidateV1 {
+        candidate_id: "candidate:kernel-evidence-recovery-ok".to_string(),
+        source_commit: "a".repeat(40),
+        source_tree: "b".repeat(40),
+    };
+    let envelope = base_evidence(
+        "evidence:recovery-current",
+        candidate.clone(),
+        EvidenceClaimClassV1::ExactSource,
+        EvidenceIssuerRoleV1::Architecture,
+        now_ms()?,
+        None,
+        json!({"frontier": "current"}),
+    );
+    append_direct_evidence(
+        &store,
+        ARCHITECTURE_ISSUER,
+        &architecture_key,
+        1,
+        &envelope,
+    )
+    .await?;
+    let snapshot = store.recovery_snapshot().await?;
+    store.close().await;
+
+    let external = tempfile::tempdir()?;
+    let (frontier_file, frontier_trust_file) = write_recovery_frontier(
+        external.path(),
+        "store:kernel-evidence-recovery-ok",
+        snapshot,
+    )?;
+    fleet.start_with_evidence_recovery(
+        &agent,
+        &trust_file,
+        &frontier_file,
+        &frontier_trust_file,
+    )?;
+    let (control, _) = fleet.wait_ready(&agent, 1).await?;
+    ensure!(
+        matches!(
+            control
+                .verify_kernel_evidence(KernelEvidenceVerifyV1 {
+                    candidate: wire_candidate(&candidate),
+                    claim_class: EvidenceClaimClassV1::ExactSource.as_str().to_string(),
+                    required_roles: vec!["architecture".to_string()],
+                })
+                .await?,
+            EvidenceDispositionV1::Supported { .. }
+        ),
+        "signed recovery frontier did not admit the exact current evidence database"
+    );
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result<()> {
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(RECOVERY_OLD_AGENT_ID, "kernel-evidence-recovery-old")?;
+    let model = core_test_support::responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    std::fs::set_permissions(
+        agent.layout.home_root(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+
+    let architecture_key = SigningKey::from_bytes(&[62; 32]);
+    let trust_file = agent.layout.home_root().join("evidence-trust.json");
+    write_trust(
+        &trust_file,
+        &agent.agent_id.to_string(),
+        &[TrustEntry {
+            issuer_id: ARCHITECTURE_ISSUER,
+            key: &architecture_key,
+            revoked: false,
+            roles: &["architecture"],
+        }],
+    )?;
+
+    let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
+        agent.layout.home_root(),
+    )?);
+    let old_store = HeptaEvidenceStore::open(&sqlite).await?;
+    let database_path = old_store.path().to_path_buf();
+    old_store.close().await;
+
+    let external = tempfile::tempdir()?;
+    let old_image = external.path().join("hepta-evidence-old.sqlite");
+    std::fs::copy(&database_path, &old_image)?;
+
+    let current_store = HeptaEvidenceStore::open(&sqlite).await?;
+    let envelope = base_evidence(
+        "evidence:recovery-newer",
+        EvidenceCandidateV1 {
+            candidate_id: "candidate:kernel-evidence-recovery-old".to_string(),
+            source_commit: "c".repeat(40),
+            source_tree: "d".repeat(40),
+        },
+        EvidenceClaimClassV1::ExactSource,
+        EvidenceIssuerRoleV1::Architecture,
+        now_ms()?,
+        None,
+        json!({"frontier": "newer"}),
+    );
+    append_direct_evidence(
+        &current_store,
+        ARCHITECTURE_ISSUER,
+        &architecture_key,
+        1,
+        &envelope,
+    )
+    .await?;
+    let current_snapshot = current_store.recovery_snapshot().await?;
+    current_store.close().await;
+
+    let (frontier_file, frontier_trust_file) = write_recovery_frontier(
+        external.path(),
+        "store:kernel-evidence-recovery-old",
+        current_snapshot,
+    )?;
+
+    std::fs::copy(&old_image, &database_path)?;
+    fleet.start_with_evidence_recovery(
+        &agent,
+        &trust_file,
+        &frontier_file,
+        &frontier_trust_file,
+    )?;
+    let failure = fleet
+        .wait_ready(&agent, 1)
+        .await
+        .err()
+        .context("older evidence database unexpectedly reached readiness")?;
+    ensure!(
+        format!("{failure:#}").contains("recovery_required"),
+        "older database failed without the recovery-required oracle: {failure:#}"
+    );
+    Ok(())
+}
+
 fn base_evidence(
     id: &str,
     candidate: EvidenceCandidateV1,
@@ -593,6 +772,90 @@ fn signed_request_with_expiry(
         signature_hex: hex(&key.sign(&claims.signing_bytes()).to_bytes()),
         envelope_json: String::from_utf8(qualification_envelope_bytes(envelope)?)?,
     })
+}
+
+async fn append_direct_evidence(
+    store: &HeptaEvidenceStore,
+    issuer_id: &str,
+    key: &SigningKey,
+    sequence: u64,
+    envelope: &QualificationEvidenceEnvelopeV1,
+) -> Result<()> {
+    let claims = kernel_evidence_claims(
+        issuer_id,
+        1,
+        &format!("message:recovery:{issuer_id}:{sequence}"),
+        sequence,
+        now_ms()?.saturating_add(120_000),
+        envelope,
+    )?;
+    let message = SignedMessage {
+        signature: key.sign(&claims.signing_bytes()).to_bytes(),
+        claims,
+    };
+    let issuer = IssuerRegistration {
+        issuer_id: StableId::new(issuer_id.to_string()).map_err(anyhow::Error::msg)?,
+        key_epoch: Generation::new(1).map_err(anyhow::Error::msg)?,
+        verifying_key: key.verifying_key(),
+        revoked: false,
+    };
+    store
+        .qualification()
+        .append_receipt(&issuer, &message, envelope)
+        .await?;
+    Ok(())
+}
+
+fn write_recovery_frontier(
+    directory: &Path,
+    store_id: &str,
+    snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV1,
+) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
+    let signer_key = SigningKey::from_bytes(&[63; 32]);
+    let mut frontier = EvidenceRecoveryFrontierV1 {
+        schema_version: 1,
+        store_id: store_id.to_string(),
+        frontier_generation: 1,
+        snapshot,
+        source_commit: "e".repeat(40),
+        source_tree: "f".repeat(40),
+        created_at_unix_ms: now_ms()?,
+        signer_principal_id: RECOVERY_SIGNER.to_string(),
+        signer_key_epoch: 1,
+        signature_hex: "00".repeat(64),
+    };
+    frontier.signature_hex = hex(
+        &signer_key
+            .sign(&evidence_recovery_frontier_signing_bytes(&frontier)?)
+            .to_bytes(),
+    );
+
+    let frontier_file = directory.join("evidence-recovery-frontier.json");
+    write_private_json(&frontier_file, &frontier)?;
+    let trust_file = directory.join("evidence-recovery-frontier-trust.json");
+    write_private_json(
+        &trust_file,
+        &json!({
+            "schemaVersion": 1,
+            "signerPrincipalId": RECOVERY_SIGNER,
+            "signerKeyEpoch": 1,
+            "publicKeyHex": hex(signer_key.verifying_key().as_bytes()),
+            "revoked": false
+        }),
+    )?;
+    Ok((frontier_file, trust_file))
+}
+
+fn write_private_json<T: serde::Serialize>(path: &Path, value: &T) -> Result<()> {
+    let mut temporary =
+        tempfile::NamedTempFile::new_in(path.parent().context("JSON parent missing")?)?;
+    temporary
+        .as_file()
+        .set_permissions(std::fs::Permissions::from_mode(0o600))?;
+    serde_json::to_writer(temporary.as_file_mut(), value)?;
+    temporary.as_file().sync_all()?;
+    temporary.persist(path)?;
+    Ok(())
 }
 
 fn wire_candidate(candidate: &EvidenceCandidateV1) -> KernelEvidenceCandidateV1 {
