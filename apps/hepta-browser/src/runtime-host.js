@@ -522,6 +522,48 @@ export class BrowserProfileHost {
           observed,
         );
         entry.phase = entry.receipt.terminalObserved ? "terminal" : "indeterminate";
+
+        // The final-use fence ends at the worker admission boundary, not at
+        // remote/browser terminality. Production subprocess drivers advertise
+        // supportsTerminalDrain so the owner immediately observes the worker's
+        // stored terminal result *after* authority has been released and writes
+        // that result durably before returning to the caller. A genuinely
+        // unknown outcome remains indeterminate and is handled by the ordinary
+        // reconciliation path.
+        if (
+          entry.receipt.terminalObserved !== true &&
+          this.#driver.supportsTerminalDrain === true
+        ) {
+          try {
+            const terminalObservation = requireRecord(
+              await this.#callDriver(
+                "reconcile",
+                entry.semantics,
+                this.#clock() + this.#driverCallTimeoutMs,
+              ),
+              "driver terminal drain observation",
+            );
+            entry.receipt = this.#effectReceipt(
+              state.profileId,
+              operationId,
+              entry.semanticDigest,
+              terminalObservation,
+            );
+            entry.phase = entry.receipt.terminalObserved
+              ? "terminal"
+              : "indeterminate";
+          } catch (error) {
+            entry.phase = "indeterminate";
+            entry.receipt = indeterminateReceipt(
+              state.profileId,
+              operationId,
+              entry.semanticDigest,
+              error?.name === "BrowserDriverTimeoutError"
+                ? "terminal_drain_timeout"
+                : "terminal_drain_error",
+            );
+          }
+        }
       } catch (error) {
         if (!entry) throw error;
         if (
