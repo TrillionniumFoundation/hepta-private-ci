@@ -136,6 +136,16 @@ pub struct NativeDispatch {
     pub codex_home_digest: Option<String>,
     #[serde(default)]
     pub codex_connection_id: Option<u64>,
+    /// Exact App Server session returned by thread/start.
+    #[serde(default)]
+    pub codex_session_id: Option<String>,
+    /// Absolute wall-clock deadline used for final-use and turn/start.
+    #[serde(default)]
+    pub codex_deadline_ms: Option<u64>,
+    /// Digest of the independently signed final-use grant witness claimed for
+    /// this exact dispatch before physical turn/start.
+    #[serde(default)]
+    pub codex_authority_witness_sha256: Option<String>,
 }
 
 /// In-memory proof that this live process has durably prepared one dispatch but
@@ -554,6 +564,9 @@ impl NativeJournal {
                     dispatch.codex_source_admission_digest.is_some(),
                     dispatch.codex_home_digest.is_some(),
                     dispatch.codex_connection_id.is_some(),
+                    dispatch.codex_session_id.is_some(),
+                    dispatch.codex_deadline_ms.is_some(),
+                    dispatch.codex_authority_witness_sha256.is_some(),
                 ];
                 if extended_codex_fields.iter().any(|present| *present)
                     && (!codex_fields.iter().all(|present| *present)
@@ -587,6 +600,15 @@ impl NativeJournal {
                 }
                 if dispatch.codex_connection_id == Some(0) {
                     return Err(Error::InvalidIdentity("native codex connection"));
+                }
+                if let Some(session_id) = &dispatch.codex_session_id {
+                    validate_identity(session_id, "native codex session")?;
+                }
+                if dispatch.codex_deadline_ms == Some(0) {
+                    return Err(Error::InvalidIdentity("native codex deadline"));
+                }
+                if let Some(digest) = &dispatch.codex_authority_witness_sha256 {
+                    validate_digest(digest, "native codex authority witness")?;
                 }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
