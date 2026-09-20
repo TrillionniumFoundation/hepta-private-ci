@@ -489,6 +489,94 @@ fn restart_reconciles_old_indeterminate_without_reinvoke() {
 }
 
 #[test]
+fn repeated_indeterminate_reconciliation_never_reinvokes() {
+    let temp = TempDir::new().unwrap();
+    let (final_use, signing, _) = authority_fixture(&temp);
+    let platform_state = Arc::new(Mutex::new(PlatformState {
+        invoke_indeterminate: true,
+        reconcile_terminal: false,
+        ..Default::default()
+    }));
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.indeterminate".to_owned(),
+        generation: 1,
+    };
+    let mut runtime =
+        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    runtime.connect_runtime(&manifest()).unwrap();
+    render(&mut runtime, 1);
+    let session = runtime.session().unwrap().clone();
+    let payload = PlatformPayload::CopyText {
+        text: "never replay".to_owned(),
+    };
+    let request = request(
+        &signing,
+        &session,
+        "operation.indeterminate",
+        1,
+        payload,
+        11,
+    );
+
+    let first = runtime.request_platform_capability(request.clone()).unwrap();
+    let second = runtime.request_platform_capability(request.clone()).unwrap();
+    let third = runtime.request_platform_capability(request).unwrap();
+    assert!(!first.terminal_observed);
+    assert!(!second.terminal_observed);
+    assert!(!third.terminal_observed);
+    let state = platform_state.lock().unwrap();
+    assert_eq!(state.invoke_calls, 1);
+    assert_eq!(state.reconcile_calls, 2);
+}
+
+#[test]
+fn reused_operation_with_changed_resource_payload_fails_closed() {
+    let temp = TempDir::new().unwrap();
+    let (final_use, signing, _) = authority_fixture(&temp);
+    let platform_state = Arc::new(Mutex::new(PlatformState::default()));
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.resource".to_owned(),
+        generation: 1,
+    };
+    let mut runtime =
+        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    runtime.connect_runtime(&manifest()).unwrap();
+    render(&mut runtime, 1);
+    let session = runtime.session().unwrap().clone();
+
+    let first_payload = PlatformPayload::OpenPath {
+        path: temp.path().join("first"),
+    };
+    let second_payload = PlatformPayload::OpenPath {
+        path: temp.path().join("second"),
+    };
+    runtime
+        .request_platform_capability(request(
+            &signing,
+            &session,
+            "operation.resource",
+            1,
+            first_payload,
+            12,
+        ))
+        .unwrap();
+    let error = runtime
+        .request_platform_capability(request(
+            &signing,
+            &session,
+            "operation.resource",
+            1,
+            second_payload,
+            13,
+        ))
+        .unwrap_err();
+    assert!(error.to_string().contains("changed semantics"));
+    assert_eq!(platform_state.lock().unwrap().invoke_calls, 1);
+}
+
+#[test]
 fn close_does_not_erase_unobserved_effects() {
     let temp = TempDir::new().unwrap();
     let (final_use, signing, _) = authority_fixture(&temp);
