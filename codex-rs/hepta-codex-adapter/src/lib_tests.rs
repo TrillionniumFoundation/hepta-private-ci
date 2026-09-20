@@ -4,10 +4,10 @@ use codex_app_server_client::RemoteAppServerObservedServerError;
 use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerNotification;
-use codex_app_server_protocol::Turn;
-use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::ThreadReadResponse;
+use codex_app_server_protocol::Turn;
+use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use serde_json::json;
 
@@ -83,12 +83,7 @@ fn recovery_input(text: &str) -> Vec<codex_app_server_protocol::UserInput> {
     }]
 }
 
-fn recovery_turn(
-    id: &str,
-    client_id: &str,
-    text: &str,
-    status: TurnStatus,
-) -> Turn {
+fn recovery_turn(id: &str, client_id: &str, text: &str, status: TurnStatus) -> Turn {
     Turn {
         id: id.to_string(),
         items: vec![
@@ -249,7 +244,11 @@ fn request_digest_binds_source_generation_and_transport_connection() {
     assert_ne!(baseline, request_digest(&changed));
 
     let mut changed = intent.clone();
-    changed.app_server_binding.as_mut().unwrap().user_input_digest = digest(b"other-input");
+    changed
+        .app_server_binding
+        .as_mut()
+        .unwrap()
+        .user_input_digest = digest(b"other-input");
     assert_ne!(baseline, request_digest(&changed));
 
     let mut changed = intent;
@@ -327,18 +326,8 @@ fn thread_read_recovery_rejects_session_drift_and_duplicate_turns() {
     let duplicate = reconciliation_response(
         "session:test",
         vec![
-            recovery_turn(
-                "turn:one",
-                "request:test",
-                "hello",
-                TurnStatus::Completed,
-            ),
-            recovery_turn(
-                "turn:two",
-                "request:test",
-                "hello",
-                TurnStatus::Completed,
-            ),
+            recovery_turn("turn:one", "request:test", "hello", TurnStatus::Completed),
+            recovery_turn("turn:two", "request:test", "hello", TurnStatus::Completed),
         ],
     );
     assert_eq!(
