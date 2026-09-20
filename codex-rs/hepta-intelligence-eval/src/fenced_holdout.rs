@@ -45,7 +45,7 @@ pub struct FinalHoldoutCasRecordV1 {
 }
 
 impl FinalHoldoutCasRecordV1 {
-    fn new(
+    pub(crate) fn new(
         binding: Digest32,
         fence: HoldoutWriterFenceV1,
         journal: FinalHoldoutJournalSnapshotV1,
@@ -63,7 +63,7 @@ impl FinalHoldoutCasRecordV1 {
         })
     }
 
-    fn validate(&self, binding: Digest32) -> Result<(), FencedHoldoutError> {
+    pub(crate) fn validate(&self, binding: Digest32) -> Result<(), FencedHoldoutError> {
         if self.binding != binding
             || self.state_digest != digest_state(self.binding, &self.fence, &self.journal)?
         {
@@ -108,6 +108,58 @@ pub trait FinalHoldoutCasStoreV1 {
         expected: Option<Digest32>,
         next: &FinalHoldoutCasRecordV1,
     ) -> Result<(), FinalHoldoutCasStoreError>;
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FinalHoldoutCasAnchorV1 {
+    pub fence_generation: u64,
+    pub record_count: u64,
+    pub state_digest: Digest32,
+}
+
+#[derive(Clone, Debug)]
+pub struct HoldoutFenceIssuerV1 {
+    owner_id: StableId,
+    authority_digest: Digest32,
+    next_generation: u64,
+}
+
+impl HoldoutFenceIssuerV1 {
+    pub fn resume(
+        owner_id: StableId,
+        authority_digest: Digest32,
+        minimum: Option<FinalHoldoutCasAnchorV1>,
+    ) -> Result<Self, FencedHoldoutError> {
+        if authority_digest.is_zero() {
+            return Err(FencedHoldoutError::Binding);
+        }
+        let next_generation = minimum
+            .map(|anchor| anchor.fence_generation.checked_add(1))
+            .unwrap_or(Some(1))
+            .ok_or(FencedHoldoutError::Binding)?;
+        Ok(Self {
+            owner_id,
+            authority_digest,
+            next_generation,
+        })
+    }
+
+    pub fn issue(&mut self, lease_digest: Digest32) -> Result<HoldoutWriterFenceV1, FencedHoldoutError> {
+        if lease_digest.is_zero() {
+            return Err(FencedHoldoutError::Binding);
+        }
+        let generation = self.next_generation;
+        self.next_generation = generation.checked_add(1).ok_or(FencedHoldoutError::Binding)?;
+        let mut bytes = b"hepta.intelligence-eval.holdout-fence-lease.v1".to_vec();
+        bytes.extend_from_slice(self.authority_digest.as_array());
+        bytes.extend_from_slice(lease_digest.as_array());
+        bytes.extend_from_slice(&generation.to_be_bytes());
+        Ok(HoldoutWriterFenceV1 {
+            owner_id: self.owner_id.clone(),
+            generation,
+            lease_digest: Digest32::of_bytes(&bytes),
+        })
+    }
 }
 
 pub struct FencedFinalHoldoutOwnerV1<S> {
@@ -232,6 +284,15 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
     #[must_use]
     pub fn state_digest(&self) -> Digest32 {
         self.state_digest
+    }
+
+    #[must_use]
+    pub fn anchor(&self) -> FinalHoldoutCasAnchorV1 {
+        FinalHoldoutCasAnchorV1 {
+            fence_generation: self.fence.generation,
+            record_count: self.journal.records().len() as u64,
+            state_digest: self.state_digest,
+        }
     }
 
     #[must_use]

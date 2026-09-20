@@ -326,6 +326,11 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         self.holdout.state_digest()
     }
 
+    #[must_use]
+    pub fn holdout_anchor(&self) -> crate::FinalHoldoutCasAnchorV1 {
+        self.holdout.anchor()
+    }
+
     pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>(
         &mut self,
         product_plan: &ProductFrozenEvaluationPlanV1,

@@ -336,7 +336,7 @@ jobs:
             printf 'iteration=%s\n' "${iteration}" | tee -a .hepta-evidence/learning-eval/fenced-holdout-stress.log
             (
               cd codex-rs
-              cargo test --locked -p codex-hepta-intelligence-eval fenced_holdout::tests -- --test-threads=1
+              cargo test --locked -p codex-hepta-intelligence-eval fenced_holdout -- --test-threads=1
             ) 2>&1 | tee -a .hepta-evidence/learning-eval/fenced-holdout-stress.log
           done
 

@@ -72,10 +72,20 @@ its next consume must conflict. A store write whose commit status is unknown
 must return `Indeterminate`; the owner poisons the handle and requires reload
 and reconciliation before any further use.
 
-The host remains responsible for issuing fence generations/leases, authenticating
-the store namespace, retention, backup/restore anti-rollback and physical
-durability. A backup must not be able to manufacture a newer fence or current
-authoritative state.
+The repository provides `LockedFileFinalHoldoutCasStoreV1` as a concrete
+single-filesystem CAS backend. It holds an exclusive OS lock, appends checksummed
+fence/plan events, fsyncs each committed transition, replays on recovery and
+requires an independently retained `FinalHoldoutCasAnchorV1` minimum to reject
+backup rollback. `HoldoutFenceIssuerV1` resumes generation from that retained
+anchor and binds issued leases to a host authority digest. The backend provides
+cross-process semantics directly; cross-host use additionally requires a shared
+filesystem whose locks and fsync are documented as linearizable across those
+hosts.
+
+The host remains responsible for authenticating the store namespace, retaining
+the minimum anchor independently of the journal backup, containing-directory
+durability, retention and physical storage policy. A backup must not be able to
+manufacture a newer fence or current authoritative state.
 
 ## Canonical product evaluation chain
 
