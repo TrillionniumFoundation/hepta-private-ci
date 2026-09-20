@@ -182,6 +182,7 @@ pub struct PlasticityDynamicOwnerEvidenceResolverV1 {
     ndu_owner_id: StableId,
     neuron_owner_id: StableId,
     ndu_journal: Arc<RwLock<NduProjectionJournalV1>>,
+    ndu_prefix: Vec<Digest32>,
     modulator_values: Vec<FixedQ32>,
     neuron_journal: Arc<Mutex<SparseJournal>>,
     acknowledged_neuron_anchor: JournalAnchor,
@@ -261,7 +262,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
 
         let modulator_digest =
             plasticity_modulator_digest_v1(objective_digest, ndu_subject_digest, &modulator_values)?;
-        {
+        let ndu_prefix = {
             let journal = ndu_journal
                 .read()
                 .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
@@ -271,7 +272,12 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
             {
                 return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
             }
-        }
+            journal
+                .entries()
+                .iter()
+                .map(|entry| entry.entry_digest)
+                .collect::<Vec<_>>()
+        };
 
         let broadcast_digest =
             plasticity_modulator_broadcast_digest_v1(binding_map.values())?;
@@ -292,6 +298,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
             ndu_owner_id,
             neuron_owner_id,
             ndu_journal,
+            ndu_prefix,
             modulator_values,
             neuron_journal,
             acknowledged_neuron_anchor,
@@ -315,8 +322,14 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
             .ndu_journal
             .read()
             .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
-        if journal.selected_projection_digest(self.objective_digest, self.ndu_subject_digest)
-            != Some(digest)
+        if journal.entries().len() < self.ndu_prefix.len()
+            || !journal
+                .entries()
+                .iter()
+                .zip(&self.ndu_prefix)
+                .all(|(entry, expected)| entry.entry_digest == *expected)
+            || journal.selected_projection_digest(self.objective_digest, self.ndu_subject_digest)
+                != Some(digest)
         {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
@@ -339,7 +352,11 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
             .current()
             .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
             .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
-        if checkpoint.digest().is_zero() {
+        if checkpoint.digest().is_zero()
+            || !journal
+                .contains_anchor(self.acknowledged_neuron_anchor)
+                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
+        {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
         let digest = plasticity_eligibility_digest_v1(checkpoint)?;
