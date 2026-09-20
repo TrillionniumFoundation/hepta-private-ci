@@ -17,7 +17,9 @@ def evidence():
     check = {"id": 1, "name": GATE, "head_sha": HEAD, "status": "completed",
              "conclusion": "success", "app": {"slug": "github-actions", "id": APP},
              "check_suite": {"id": 42}}
-    run = {"head_sha": HEAD, "check_suite_id": 42, "status": "completed",
+    run = {"id": 100, "run_attempt": 1, "head_branch": "main", "event": "push",
+           "repository": {"full_name": "TrillionniumFoundation/hepta-private-ci"},
+           "head_sha": HEAD, "check_suite_id": 42, "status": "completed",
            "conclusion": "success", "path": ".github/workflows/" + WORKFLOW}
     return [check], [run]
 
@@ -28,6 +30,10 @@ class FakeAPI:
         self.ruleset = None
         self.writes = []
         self.checks, self.runs = evidence()
+        self.jobs = [{"id": 1, "run_id": 100, "run_attempt": 1, "head_sha": HEAD,
+                      "name": GATE, "status": "completed", "conclusion": "success",
+                      "check_run_url": "https://api.github.com/repos/"
+                      "TrillionniumFoundation/hepta-private-ci/check-runs/1"}]
 
     def call(self, method, path, body=None):
         if method == "GET" and path == "branches/main":
@@ -45,7 +51,9 @@ class FakeAPI:
             return [] if self.ruleset is None else [{"id": 7, "name": RULESET_NAME}]
         if path.startswith("commits/"):
             return copy.deepcopy(self.checks)
-        if path.startswith("actions/"):
+        if path.startswith("actions/runs/") and path.endswith("/jobs"):
+            return copy.deepcopy(self.jobs)
+        if path.startswith("actions/workflows/"):
             return copy.deepcopy(self.runs)
         raise AssertionError(path)
 
