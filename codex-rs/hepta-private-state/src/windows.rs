@@ -45,6 +45,8 @@ use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
 use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::SECURITY_ATTRIBUTES;
 use windows_sys::Win32::Security::SECURITY_DESCRIPTOR;
+use windows_sys::Win32::Security::SE_DACL_PROTECTED;
+use windows_sys::Win32::Security::SetSecurityDescriptorControl;
 use windows_sys::Win32::Security::SetSecurityDescriptorDacl;
 use windows_sys::Win32::Security::TOKEN_QUERY;
 use windows_sys::Win32::Security::TOKEN_USER;
@@ -287,6 +289,16 @@ fn create_directory_if_missing(path: &Path, dacl: *mut ACL) -> io::Result<()> {
             1,
             dacl,
             0,
+        )
+    } == 0
+    {
+        return Err(io::Error::last_os_error());
+    }
+    if unsafe {
+        SetSecurityDescriptorControl(
+            (&mut descriptor as *mut SECURITY_DESCRIPTOR).cast(),
+            SE_DACL_PROTECTED,
+            SE_DACL_PROTECTED,
         )
     } == 0
     {
