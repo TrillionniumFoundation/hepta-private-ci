@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "b5266dce860955a71d3dca11aae66789a7529b79",
+    "tree": "c1ed66b23211ca472793fb10867ed2ab194e280f"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -17,19 +17,21 @@
     "codex-rs/hepta-compact-engine"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "agentd_internal_composed",
+  "productionWriterState": "cognitive_store_established",
   "operations": [
     {
-      "operation": "compact",
-      "nativeSymbol": "compact",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "plan_compaction",
+      "nativeSymbol": "plan_compaction",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
+      "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "compact",
+      "designOperation": "plan_compaction",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -37,9 +39,11 @@
       "operation": "build_qualified_candidate",
       "nativeSymbol": "build_qualified_candidate",
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
       "mappingClass": "owner_native",
@@ -49,9 +53,11 @@
       "operation": "prove_compaction",
       "nativeSymbol": "prove_compaction",
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
@@ -59,8 +65,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Retain exact-head and deterministic synthetic-merge execution receipts for this candidate.",
+    "Bind concrete production semantic-compactor and trusted-evaluator deployment identities before activation."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -70,7 +76,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -78,5 +84,21 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-compact-engine"
-  ]
+  ],
+  "integrationComposition": {
+    "durableOwner": {
+      "path": "codex-rs/hepta-memory/src/production_compact.rs",
+      "symbol": "CognitiveStore::publish_production_compact_checkpoint",
+      "state": "source_composed"
+    },
+    "productCaller": {
+      "path": "codex-rs/hepta-agentd/src/compact_checkpoint_host.rs",
+      "symbol": "AgentdCompactCheckpointHost",
+      "state": "runtime_composed"
+    },
+    "integrationTests": [
+      "codex-rs/hepta-memory/src/production_compact_tests.rs",
+      "codex-rs/hepta-agentd/src/runtime_tests.rs"
+    ]
+  }
 }
