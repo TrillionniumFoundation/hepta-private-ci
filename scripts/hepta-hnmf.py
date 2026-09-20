@@ -100,7 +100,6 @@ REQUIRED_FILES = [
     "codex-rs/hepta-cognitive-types/src/wire.rs",
     "codex-rs/hepta-cognitive-types/src/contract_tests.rs",
     "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
-    "codex-rs/hepta-cognitive-types/fuzz/README.md",
     "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs",
     "qualification/cognitive-types-v1/verify_vectors.py",
     "qualification/hnmf-reference/Cargo.toml",
