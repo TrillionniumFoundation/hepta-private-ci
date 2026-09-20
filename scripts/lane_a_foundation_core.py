@@ -60,6 +60,7 @@ MIGRATIONS = [
     "0008_provider_effect_ack_source.sql",
     "0009_authbus_replay.sql",
     "0010_authbus_outbox.sql",
+    "0011_authbus_recovery.sql",
 ]
 PACKAGES = [
     "codex-hepta-types",
@@ -155,8 +156,17 @@ def validate_capability_map(
             or row.get("activation") != state["activation"]
         ):
             raise VerificationError(f"{capability_id}: matrix state mismatch")
-        if row.get("productionCaller") is not None:
-            raise VerificationError(f"{capability_id}: unproven production caller")
+        caller = row.get("productionCaller")
+        if caller is not None:
+            if not isinstance(caller, str) or not caller:
+                raise VerificationError(f"{capability_id}: invalid production caller")
+            caller_evidence = row.get("callerEvidence")
+            if not isinstance(caller_evidence, list) or not caller_evidence:
+                raise VerificationError(
+                    f"{capability_id}: production caller requires callerEvidence"
+                )
+            for anchor in caller_evidence:
+                validate_anchor(f"{capability_id}/callerEvidence", anchor, root)
         if row.get("receiptStatus") != "native_workflow_required":
             raise VerificationError(f"{capability_id}: invalid receipt status")
         symbols = row.get("publicSymbols")
