@@ -334,9 +334,7 @@ def verify(expected_sha: str | None = None, expected_tree: str | None = None):
             failures.append(f"{mid}: identity")
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
-        role = row.get(
-            "sourceBaseRole", "historical_mapping_baseline_not_exact_head_receipt"
-        )
+        role = row.get("sourceBaseRole")
         if role != "historical_mapping_baseline_not_exact_head_receipt":
             failures.append(f"{mid}: unsupported sourceBaseRole {role!r}")
         source_base = row.get("sourceBase")
