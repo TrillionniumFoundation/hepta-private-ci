@@ -65,6 +65,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let runtime =
         NativeShellRuntime::new(Box::new(backend), Box::new(platform), final_use, journal);
     let updater = UpdateManager::new(trusted_keys.clone(), config.state_dir.join("updates"))?;
+    if updater.recover_interrupted_activation()? {
+        eprintln!(
+            "hepta-native: recovered an interrupted update to the admitted predecessor before UI startup"
+        );
+    }
     let pending_update_path = updater.pending_path();
     let activate_update_on_exit = Arc::new(AtomicBool::new(false));
     let app = HeptaNativeApp::new(
