@@ -33,6 +33,13 @@ pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
 pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
+pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_ID: &str = "run.lifecycle";
+pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR: u16 = 1;
+pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 0;
+pub const MAX_RUN_CANCEL_REASON_BYTES: usize = 512;
+pub const AGENTD_OVERLOAD_RETRY_AFTER_MS: u64 = 50;
+pub const AGENTD_CONTROL_OVERLOAD_FRAME: &[u8] =
+    b"{\"type\":\"overloaded\",\"retry_after_ms\":50}\n";
 const FEDERATION_CAPABILITY_ID_PREFIX: &str = "federation:v1:";
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -90,6 +97,83 @@ pub struct MemoryFederationCapabilitySnapshot {
     pub effective_at_unix_seconds: i64,
     pub expires_at_unix_seconds: i64,
     pub state: MemoryFederationCapabilityState,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AgentRunPhase {
+    Admitted,
+    ContextAttached,
+    Dispatched,
+    Cancelling,
+    Cancelled,
+    Succeeded,
+    Failed,
+    Indeterminate,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentRunSnapshot {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentContextAttachment {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+    pub context_digest: String,
+    pub compilation_receipt_digest: String,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AgentCancellationDisposition {
+    CancelledBeforeDispatch,
+    CancellingAfterDispatch,
+    AlreadyTerminal,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentRunReceipt {
+    pub run_id: String,
+    pub revision: u64,
+    pub phase: AgentRunPhase,
+    pub context_digest: Option<String>,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+    pub cancel_reason: Option<String>,
+    pub terminal_observed: bool,
+    pub idempotent: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentRunCancellation {
+    pub disposition: AgentCancellationDisposition,
+    pub receipt: AgentRunReceipt,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentRunRecovery {
+    pub snapshot: AgentRunSnapshot,
+    pub context_digest: String,
+    pub compilation_receipt_digest: String,
+    pub cancel_reason: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -257,6 +341,111 @@ impl AgentdRequest {
             method: AgentdMethod::MemoryFederationStatus { capability_id },
         }
     }
+
+    pub fn run_start(request_id: u64, spawn_generation: u64, snapshot: AgentRunSnapshot) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunStart { snapshot },
+        }
+    }
+
+    pub fn run_attach_context(
+        request_id: u64,
+        spawn_generation: u64,
+        expected_revision: u64,
+        attachment: AgentContextAttachment,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunAttachContext {
+                expected_revision,
+                attachment,
+            },
+        }
+    }
+
+    pub fn run_mark_dispatched(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunMarkDispatched {
+                run_id,
+                expected_revision,
+            },
+        }
+    }
+
+    pub fn run_cancel(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunCancel {
+                run_id,
+                expected_revision,
+                reason,
+            },
+        }
+    }
+
+    pub fn run_observe_terminal(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        phase: AgentRunPhase,
+        terminal_observed: bool,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunObserveTerminal {
+                run_id,
+                expected_revision,
+                phase,
+                terminal_observed,
+            },
+        }
+    }
+
+    pub fn run_status(request_id: u64, spawn_generation: u64, run_id: String) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunStatus { run_id },
+        }
+    }
+
+    pub fn run_recover_indeterminate(
+        request_id: u64,
+        spawn_generation: u64,
+        recovery: AgentRunRecovery,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunRecoverIndeterminate { recovery },
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -279,6 +468,34 @@ pub enum AgentdMethod {
     Events {
         after_cursor: u64,
         limit: u16,
+    },
+    RunStart {
+        snapshot: AgentRunSnapshot,
+    },
+    RunAttachContext {
+        expected_revision: u64,
+        attachment: AgentContextAttachment,
+    },
+    RunMarkDispatched {
+        run_id: String,
+        expected_revision: u64,
+    },
+    RunCancel {
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    },
+    RunObserveTerminal {
+        run_id: String,
+        expected_revision: u64,
+        phase: AgentRunPhase,
+        terminal_observed: bool,
+    },
+    RunStatus {
+        run_id: String,
+    },
+    RunRecoverIndeterminate {
+        recovery: AgentRunRecovery,
     },
     AutomationCreate {
         draft: AutomationTaskDraft,
@@ -331,6 +548,11 @@ pub enum AgentdPayload {
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
+    RunReceipt(AgentRunReceipt),
+    RunCancellation(AgentRunCancellation),
+    RunStatus {
+        run: Option<AgentRunReceipt>,
+    },
     AutomationTask(AutomationTask),
     AutomationTasks {
         tasks: Vec<AutomationTask>,
@@ -668,6 +890,73 @@ mod tests {
             .expect("utf8")
             .replace(&"a".repeat(64), "not-a-digest");
         assert!(serde_json::from_str::<AgentdRequest>(&malformed).is_err());
+    }
+
+    #[test]
+    fn run_lifecycle_wire_round_trip_is_strict_and_bounded() {
+        let snapshot = AgentRunSnapshot {
+            run_id: "run.1".to_string(),
+            request_digest: "1".repeat(64),
+            objective_digest: "2".repeat(64),
+            body_digest: "3".repeat(64),
+            artifact_set_digest: "4".repeat(64),
+            authority_epoch: 7,
+            deadline_ms: 9_999,
+        };
+        let start = AgentdRequest::run_start(12, 3, snapshot.clone());
+        let start_bytes = serde_json::to_vec(&start).expect("serialize run start");
+        assert!(start_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&start_bytes).expect("parse run start"),
+            start
+        );
+
+        let attachment = AgentContextAttachment {
+            run_id: snapshot.run_id.clone(),
+            request_digest: snapshot.request_digest.clone(),
+            objective_digest: snapshot.objective_digest.clone(),
+            body_digest: snapshot.body_digest.clone(),
+            artifact_set_digest: snapshot.artifact_set_digest.clone(),
+            authority_epoch: snapshot.authority_epoch,
+            deadline_ms: snapshot.deadline_ms,
+            context_digest: "5".repeat(64),
+            compilation_receipt_digest: "6".repeat(64),
+        };
+        let attach = AgentdRequest::run_attach_context(13, 3, 1, attachment);
+        let attach_bytes = serde_json::to_vec(&attach).expect("serialize attachment");
+        assert!(attach_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&attach_bytes).expect("parse attachment"),
+            attach
+        );
+
+        let cancel = AgentdRequest::run_cancel(
+            14,
+            3,
+            snapshot.run_id.clone(),
+            2,
+            "operator_request".to_string(),
+        );
+        let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
+        assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&cancel_bytes).expect("parse cancellation"),
+            cancel
+        );
+
+        let recovery = AgentRunRecovery {
+            snapshot,
+            context_digest: "5".repeat(64),
+            compilation_receipt_digest: "6".repeat(64),
+            cancel_reason: Some("process_restart".to_string()),
+        };
+        let recover = AgentdRequest::run_recover_indeterminate(15, 4, recovery);
+        let recover_bytes = serde_json::to_vec(&recover).expect("serialize recovery");
+        assert!(recover_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&recover_bytes).expect("parse recovery"),
+            recover
+        );
     }
 
     #[test]
