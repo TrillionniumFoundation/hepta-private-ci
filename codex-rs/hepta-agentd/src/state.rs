@@ -24,7 +24,6 @@ pub(crate) struct AgentdState {
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
     pub(crate) prompt_pipeline: Arc<crate::AgentdPromptPipelineOwner>,
-    pub(crate) prompt_runtime: Arc<crate::AgentdPromptRuntimeOwner>,
 }
 
 struct RuntimeState {
@@ -59,7 +58,6 @@ impl AgentdState {
             ))
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
-        let prompt_runtime = prompt_pipeline.runtime_owner();
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
@@ -75,7 +73,6 @@ impl AgentdState {
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
             prompt_pipeline,
-            prompt_runtime,
         })
     }
 
@@ -132,10 +129,6 @@ impl AgentdState {
 
     pub(crate) fn prompt_pipeline_owner(&self) -> Arc<crate::AgentdPromptPipelineOwner> {
         Arc::clone(&self.prompt_pipeline)
-    }
-
-    pub(crate) fn prompt_runtime_owner(&self) -> Arc<crate::AgentdPromptRuntimeOwner> {
-        Arc::clone(&self.prompt_runtime)
     }
 
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {
