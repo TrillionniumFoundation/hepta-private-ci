@@ -79,6 +79,7 @@ impl LocalWorkerHost {
         driver_config: LocalProcessDriverConfig,
     ) -> Result<Self, LocalWorkerHostError> {
         if driver_config.sandbox_launcher.is_none()
+            || driver_config.sandbox_launcher_digest.is_none()
             || driver_config.immutable_artifact_root.is_none()
         {
             return Err(LocalWorkerHostError::IsolationRequired);
