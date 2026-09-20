@@ -18,28 +18,37 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "composed_cognitive_read_and_qualification_write",
+  "productionWriterState": "not_established_qualification_only",
   "operations": [
     {
       "operation": "build_complete_generation",
       "nativeSymbol": "build_complete_generation",
       "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "product_composed_via_cognitive_sqlite_owner",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-kg/src/generation_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_complete_generation",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "mappingClass": "owner_native_with_cognitive_owner_adapter",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_kg_store.rs::canonical_generation_from_projection"
+      ]
     },
     {
       "operation": "apply_incremental_delta",
       "nativeSymbol": "apply_incremental_delta",
       "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_oracle_composed_not_runtime_selected",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-kg/src/generation_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "apply_incremental_delta",
       "mappingClass": "owner_native",
@@ -49,18 +58,43 @@
       "operation": "publish_generation",
       "nativeSymbol": "publish_generation",
       "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "product_composed_same_sqlite_transaction",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-kg/src/generation_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "publish_generation",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "mappingClass": "owner_native_with_cognitive_owner_adapter",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_kg_store.rs::refresh_scope_projection_tx"
+      ]
+    },
+    {
+      "operation": "query_relations",
+      "nativeSymbol": "query_relations",
+      "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
+      "state": "product_composed_cognitive_graph_one_hop",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-kg/src/generation_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "query_relations",
+      "mappingClass": "owner_native_with_cognitive_read_adapter",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_retrieval.rs::graph_channel_tx"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "The default Agentd product binary still keeps cognitive KG writes disabled; the durable SQLite writer path is composed only in the explicit qualification-cognitive-write profile.",
+    "The prompt-factor graph projection target is not yet composed through a durable owner and real prompt.registry consumer.",
+    "Current exact-head and deterministic synthetic-merge execution receipts must be green before productExecutionProved or the module-wide productionImplementation claim can change."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
