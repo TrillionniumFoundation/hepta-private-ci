@@ -1,7 +1,16 @@
+#![cfg(unix)]
+
 use std::collections::VecDeque;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use base64::Engine as _;
+use base64::engine::general_purpose::STANDARD;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use ed25519_dalek::Signer as _;
+use ed25519_dalek::SigningKey;
 use hepta_native::backend::BackendAdapter;
 use hepta_native::error::ShellError;
 use hepta_native::journal::OperationJournal;
@@ -11,17 +20,19 @@ use hepta_native::model::PlatformPayload;
 use hepta_native::model::PlatformRequest;
 use hepta_native::model::RuntimeView;
 use hepta_native::model::SessionIncarnation;
-use hepta_native::model::SignedPlatformGrantV1;
 use hepta_native::model::TerminalStatus;
 use hepta_native::platform::PermissionDecision;
 use hepta_native::platform::PlatformAdapter;
 use hepta_native::runtime::NativeShellRuntime;
-use hepta_native::security::GrantVerifier;
-use hepta_native::security::PlatformGrantContext;
+use hepta_native::security::KernelFinalUseGate;
+use hepta_native::security::now_unix_ms;
+use hepta_native::security::platform_final_use_binding;
 use tempfile::TempDir;
 
 const D1: &str = "1111111111111111111111111111111111111111111111111111111111111111";
 const D2: &str = "2222222222222222222222222222222222222222222222222222222222222222";
+const SUBJECT: &str = "principal.1";
+const SIGNER: &str = "authority.native";
 
 #[derive(Debug)]
 struct MockBackend {
@@ -112,19 +123,6 @@ impl PlatformAdapter for MockPlatform {
     }
 }
 
-#[derive(Debug)]
-struct AllowGrantVerifier;
-
-impl GrantVerifier for AllowGrantVerifier {
-    fn verify_platform_grant(
-        &self,
-        _grant: &SignedPlatformGrantV1,
-        _context: PlatformGrantContext<'_>,
-    ) -> Result<(), ShellError> {
-        Ok(())
-    }
-}
-
 fn manifest() -> EndpointManifest {
     EndpointManifest {
         endpoint_id: "runtime.1".to_owned(),
@@ -134,20 +132,92 @@ fn manifest() -> EndpointManifest {
     }
 }
 
-fn grant(
+fn write_authority_config(
+    temp: &TempDir,
+    signing: &SigningKey,
+    head: &FinalUseRevocations,
+) -> std::path::PathBuf {
+    let path = temp.path().join("final-use-authority.json");
+    let state_dir = temp.path().join("final-use-state");
+    std::fs::write(
+        &path,
+        serde_json::to_vec(&serde_json::json!({
+            "schema": "hepta.native-final-use-authority.v1",
+            "signer_id": SIGNER,
+            "verifying_key_base64": STANDARD.encode(signing.verifying_key().to_bytes()),
+            "state_dir": state_dir,
+            "head": head,
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+    path
+}
+
+fn authority_fixture(temp: &TempDir) -> (Arc<KernelFinalUseGate>, SigningKey, std::path::PathBuf) {
+    let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 1,
+        revision: 1,
+        revoked_grant_ids: Default::default(),
+    };
+    let config = write_authority_config(temp, &signing, &head);
+    let gate = Arc::new(KernelFinalUseGate::open(config.clone()).unwrap());
+    (gate, signing, config)
+}
+
+fn signed_grant(
+    signing: &SigningKey,
     session: &SessionIncarnation,
     operation_id: &str,
+    displayed_revision: u64,
     payload: &PlatformPayload,
-) -> SignedPlatformGrantV1 {
-    SignedPlatformGrantV1 {
-        key_id: "test.key".to_owned(),
-        session_id: session.session_id.clone(),
-        session_generation: session.generation,
+    nonce_byte: u8,
+) -> SignedFinalUseGrant {
+    let binding = platform_final_use_binding(
+        SUBJECT,
+        session,
+        operation_id,
+        displayed_revision,
+        payload,
+    )
+    .unwrap();
+    let now = now_unix_ms().unwrap();
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: SIGNER.to_owned(),
+        authority_epoch: 1,
+        grant_id: format!("grant.{nonce_byte}"),
+        nonce: [nonce_byte; 32],
+        binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 60_000,
+    };
+    let signature = signing.sign(&grant.signing_bytes().unwrap()).to_bytes().to_vec();
+    SignedFinalUseGrant { grant, signature }
+}
+
+fn request(
+    signing: &SigningKey,
+    session: &SessionIncarnation,
+    operation_id: &str,
+    displayed_revision: u64,
+    payload: PlatformPayload,
+    nonce_byte: u8,
+) -> PlatformRequest {
+    PlatformRequest {
+        subject_id: SUBJECT.to_owned(),
         operation_id: operation_id.to_owned(),
-        action: payload.action(),
-        payload_digest: payload.digest().unwrap(),
-        expires_unix_ms: u64::MAX,
-        signature_base64: "ignored".to_owned(),
+        displayed_revision,
+        grant: signed_grant(
+            signing,
+            session,
+            operation_id,
+            displayed_revision,
+            &payload,
+            nonce_byte,
+        ),
+        payload,
     }
 }
 
@@ -169,6 +239,7 @@ fn runtime_fixture(
     temp: &TempDir,
     sessions: Vec<SessionIncarnation>,
     platform_state: Arc<Mutex<PlatformState>>,
+    final_use: Arc<KernelFinalUseGate>,
 ) -> NativeShellRuntime {
     NativeShellRuntime::new(
         Box::new(MockBackend {
@@ -177,7 +248,7 @@ fn runtime_fixture(
         Box::new(MockPlatform {
             state: platform_state,
         }),
-        Arc::new(AllowGrantVerifier),
+        Some(final_use),
         OperationJournal::open(temp.path().join("operations.json")).unwrap(),
     )
 }
@@ -185,6 +256,7 @@ fn runtime_fixture(
 #[test]
 fn operation_identity_is_fenced_by_session_incarnation() {
     let temp = TempDir::new().unwrap();
+    let (final_use, signing, _) = authority_fixture(&temp);
     let platform_state = Arc::new(Mutex::new(PlatformState::default()));
     let session1 = SessionIncarnation {
         endpoint_id: "runtime.1".to_owned(),
@@ -196,7 +268,12 @@ fn operation_identity_is_fenced_by_session_incarnation() {
         session_id: "session.2".to_owned(),
         generation: 2,
     };
-    let mut runtime = runtime_fixture(&temp, vec![session1, session2], platform_state.clone());
+    let mut runtime = runtime_fixture(
+        &temp,
+        vec![session1, session2],
+        platform_state.clone(),
+        final_use,
+    );
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let payload = PlatformPayload::CopyText {
@@ -204,12 +281,14 @@ fn operation_identity_is_fenced_by_session_incarnation() {
     };
     let first_session = runtime.session().unwrap().clone();
     let first = runtime
-        .request_platform_capability(PlatformRequest {
-            operation_id: "operation.1".to_owned(),
-            displayed_revision: 1,
-            grant: grant(&first_session, "operation.1", &payload),
-            payload: payload.clone(),
-        })
+        .request_platform_capability(request(
+            &signing,
+            &first_session,
+            "operation.1",
+            1,
+            payload.clone(),
+            1,
+        ))
         .unwrap();
     assert!(first.terminal_observed);
 
@@ -218,12 +297,14 @@ fn operation_identity_is_fenced_by_session_incarnation() {
     render(&mut runtime, 1);
     let second_session = runtime.session().unwrap().clone();
     let second = runtime
-        .request_platform_capability(PlatformRequest {
-            operation_id: "operation.1".to_owned(),
-            displayed_revision: 1,
-            grant: grant(&second_session, "operation.1", &payload),
+        .request_platform_capability(request(
+            &signing,
+            &second_session,
+            "operation.1",
+            1,
             payload,
-        })
+            2,
+        ))
         .unwrap();
     assert!(second.terminal_observed);
     assert_ne!(first.key.session_id, second.key.session_id);
@@ -232,8 +313,9 @@ fn operation_identity_is_fenced_by_session_incarnation() {
 }
 
 #[test]
-fn indeterminate_retry_reconciles_instead_of_replaying() {
+fn indeterminate_retry_reconciles_instead_of_replaying_or_reclaiming() {
     let temp = TempDir::new().unwrap();
+    let (final_use, signing, _) = authority_fixture(&temp);
     let platform_state = Arc::new(Mutex::new(PlatformState {
         invoke_indeterminate: true,
         ..Default::default()
@@ -243,24 +325,29 @@ fn indeterminate_retry_reconciles_instead_of_replaying() {
         session_id: "session.1".to_owned(),
         generation: 1,
     };
-    let mut runtime = runtime_fixture(&temp, vec![session], platform_state.clone());
+    let mut runtime =
+        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let session = runtime.session().unwrap().clone();
     let payload = PlatformPayload::CopyText {
         text: "payload".to_owned(),
     };
-    let request = || PlatformRequest {
-        operation_id: "operation.2".to_owned(),
-        displayed_revision: 1,
-        grant: grant(&session, "operation.2", &payload),
-        payload: payload.clone(),
-    };
-    let first = runtime.request_platform_capability(request()).unwrap();
+    let original = request(
+        &signing,
+        &session,
+        "operation.2",
+        1,
+        payload,
+        3,
+    );
+    let first = runtime
+        .request_platform_capability(original.clone())
+        .unwrap();
     assert!(!first.terminal_observed);
 
     platform_state.lock().unwrap().reconcile_terminal = true;
-    let second = runtime.request_platform_capability(request()).unwrap();
+    let second = runtime.request_platform_capability(original).unwrap();
     assert!(second.terminal_observed);
     let state = platform_state.lock().unwrap();
     assert_eq!(state.invoke_calls, 1);
@@ -270,6 +357,13 @@ fn indeterminate_retry_reconciles_instead_of_replaying() {
 #[test]
 fn restart_reconciles_old_indeterminate_without_reinvoke() {
     let temp = TempDir::new().unwrap();
+    let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 1,
+        revision: 1,
+        revoked_grant_ids: Default::default(),
+    };
+    let config = write_authority_config(&temp, &signing, &head);
     let first_state = Arc::new(Mutex::new(PlatformState {
         invoke_indeterminate: true,
         ..Default::default()
@@ -280,7 +374,8 @@ fn restart_reconciles_old_indeterminate_without_reinvoke() {
         generation: 1,
     };
     {
-        let mut runtime = runtime_fixture(&temp, vec![session1], first_state.clone());
+        let gate = Arc::new(KernelFinalUseGate::open(config.clone()).unwrap());
+        let mut runtime = runtime_fixture(&temp, vec![session1], first_state.clone(), gate);
         runtime.connect_runtime(&manifest()).unwrap();
         render(&mut runtime, 1);
         let session = runtime.session().unwrap().clone();
@@ -288,12 +383,14 @@ fn restart_reconciles_old_indeterminate_without_reinvoke() {
             text: "uncertain".to_owned(),
         };
         let receipt = runtime
-            .request_platform_capability(PlatformRequest {
-                operation_id: "operation.restart".to_owned(),
-                displayed_revision: 1,
-                grant: grant(&session, "operation.restart", &payload),
+            .request_platform_capability(request(
+                &signing,
+                &session,
+                "operation.restart",
+                1,
                 payload,
-            })
+                4,
+            ))
             .unwrap();
         assert!(!receipt.terminal_observed);
     }
@@ -307,7 +404,8 @@ fn restart_reconciles_old_indeterminate_without_reinvoke() {
         session_id: "session.2".to_owned(),
         generation: 2,
     };
-    let mut restarted = runtime_fixture(&temp, vec![session2], second_state.clone());
+    let gate = Arc::new(KernelFinalUseGate::open(config).unwrap());
+    let mut restarted = runtime_fixture(&temp, vec![session2], second_state.clone(), gate);
     restarted.connect_runtime(&manifest()).unwrap();
     let history = restarted.operation_history();
     assert_eq!(history.len(), 1);
@@ -320,6 +418,7 @@ fn restart_reconciles_old_indeterminate_without_reinvoke() {
 #[test]
 fn close_does_not_erase_unobserved_effects() {
     let temp = TempDir::new().unwrap();
+    let (final_use, signing, _) = authority_fixture(&temp);
     let platform_state = Arc::new(Mutex::new(PlatformState {
         invoke_indeterminate: true,
         ..Default::default()
@@ -329,7 +428,7 @@ fn close_does_not_erase_unobserved_effects() {
         session_id: "session.1".to_owned(),
         generation: 1,
     };
-    let mut runtime = runtime_fixture(&temp, vec![session], platform_state);
+    let mut runtime = runtime_fixture(&temp, vec![session], platform_state, final_use);
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let session = runtime.session().unwrap().clone();
@@ -337,20 +436,23 @@ fn close_does_not_erase_unobserved_effects() {
         text: "uncertain".to_owned(),
     };
     runtime
-        .request_platform_capability(PlatformRequest {
-            operation_id: "operation.close".to_owned(),
-            displayed_revision: 1,
-            grant: grant(&session, "operation.close", &payload),
+        .request_platform_capability(request(
+            &signing,
+            &session,
+            "operation.close",
+            1,
             payload,
-        })
+            5,
+        ))
         .unwrap();
     runtime.close().unwrap();
     assert_eq!(runtime.pending_operations().len(), 1);
 }
 
 #[test]
-fn permission_denial_is_terminal_and_never_invokes_platform() {
+fn permission_denial_is_terminal_and_never_claims_or_invokes() {
     let temp = TempDir::new().unwrap();
+    let (final_use, signing, _) = authority_fixture(&temp);
     let platform_state = Arc::new(Mutex::new(PlatformState {
         permission_allowed: false,
         ..Default::default()
@@ -360,7 +462,8 @@ fn permission_denial_is_terminal_and_never_invokes_platform() {
         session_id: "session.permission".to_owned(),
         generation: 1,
     };
-    let mut runtime = runtime_fixture(&temp, vec![session], platform_state.clone());
+    let mut runtime =
+        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let session = runtime.session().unwrap().clone();
@@ -368,14 +471,55 @@ fn permission_denial_is_terminal_and_never_invokes_platform() {
         text: "denied".to_owned(),
     };
     let receipt = runtime
-        .request_platform_capability(PlatformRequest {
-            operation_id: "operation.denied".to_owned(),
-            displayed_revision: 1,
-            grant: grant(&session, "operation.denied", &payload),
+        .request_platform_capability(request(
+            &signing,
+            &session,
+            "operation.denied",
+            1,
             payload,
-        })
+            6,
+        ))
         .unwrap();
     assert!(receipt.terminal_observed);
+    assert_eq!(receipt.terminal_status, Some(TerminalStatus::Rejected));
+    assert_eq!(platform_state.lock().unwrap().invoke_calls, 0);
+}
+
+#[test]
+fn missing_kernel_authority_fails_closed_before_adapter_entry() {
+    let temp = TempDir::new().unwrap();
+    let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    let platform_state = Arc::new(Mutex::new(PlatformState::default()));
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.no-authority".to_owned(),
+        generation: 1,
+    };
+    let mut runtime = NativeShellRuntime::new(
+        Box::new(MockBackend {
+            sessions: vec![session].into(),
+        }),
+        Box::new(MockPlatform {
+            state: platform_state.clone(),
+        }),
+        None,
+        OperationJournal::open(temp.path().join("operations.json")).unwrap(),
+    );
+    runtime.connect_runtime(&manifest()).unwrap();
+    render(&mut runtime, 1);
+    let session = runtime.session().unwrap().clone();
+    let receipt = runtime
+        .request_platform_capability(request(
+            &signing,
+            &session,
+            "operation.no-authority",
+            1,
+            PlatformPayload::CopyText {
+                text: "blocked".to_owned(),
+            },
+            7,
+        ))
+        .unwrap();
     assert_eq!(receipt.terminal_status, Some(TerminalStatus::Rejected));
     assert_eq!(platform_state.lock().unwrap().invoke_calls, 0);
 }
