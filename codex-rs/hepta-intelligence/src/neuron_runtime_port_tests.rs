@@ -23,13 +23,13 @@ use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_neuron::NeuronTickReceiptV1;
 use codex_hepta_neuron::NeuronTopKPolicyV1;
 use codex_hepta_neuron::RuntimeScopeBindingV1;
-use codex_hepta_neuron::RuntimeTickObservationV1;
 use codex_hepta_neuron::SparseSignalReceipt;
 use codex_hepta_neuron::TopKTieBreakV1;
 use codex_hepta_neuron::inhibition_digest;
 use codex_hepta_neuron::open_file_witness;
 use codex_hepta_neuron::q24_feature_digest;
-use codex_hepta_neuron::runtime_profile_digest;
+use codex_hepta_neuron::SelectedNeuronModelManifestV1;
+use codex_hepta_neuron::bound_runtime_profile_digest;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Generation;
 
@@ -255,14 +255,31 @@ fn named_product_consumer_executes_the_owner_runtime_boundary() {
         output_digest: Digest32::ZERO,
     };
     execution.output_digest = execution.calculate_output_digest().expect("model digest");
-    let profile_digest = runtime_profile_digest(&config, &native).expect("profile digest");
+    let manifest = SelectedNeuronModelManifestV1 {
+        encoder_digest: execution.runtime_receipt.weights_digest,
+        head_digest: execution.head_digest,
+        tokenizer_digest: execution.runtime_receipt.tokenizer_digest,
+        preprocessor_digest: execution.runtime_receipt.preprocessor_digest,
+        quantization_id: execution.runtime_receipt.quantization_id.clone(),
+        backend_id: execution.runtime_receipt.backend_id.clone(),
+        device_identity_digest: execution.runtime_receipt.device_identity_digest,
+        runtime_binary_digest: execution.runtime_binary_digest,
+        sbom_digest: execution.sbom_digest,
+        license_digest: execution.license_digest,
+        ood_detector_digest: execution.ood_detector_digest,
+    };
+    let profile_digest =
+        bound_runtime_profile_digest(&config, &native, &manifest).expect("profile digest");
     let journal = tempfile::tempfile().expect("journal");
+    let operations = tempfile::tempfile().expect("operations");
     let witness_file = tempfile::tempfile().expect("witness");
     let witness = open_file_witness(witness_file, profile_digest, &scope).expect("witness");
     let mut runtime = NeuronRuntimeHost::open(
         journal,
+        operations,
         config,
         native,
+        manifest,
         scope.clone(),
         8,
         ProductExecutor { execution },
