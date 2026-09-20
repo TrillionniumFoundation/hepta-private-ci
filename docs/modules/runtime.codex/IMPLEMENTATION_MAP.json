@@ -132,9 +132,12 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "named deployed Agentd caller identity",
-    "real model/provider stream observation",
-    "real tool terminal observation and acknowledgement-loss qualification"
+    "independently operated final-use authority endpoint, signer-key custody, pathname plus connected-peer socket identity, trusted time/revocation distribution, and external anti-rollback recovery for replay/epoch state",
+    "authenticated target-host Agentd/App Server execution receipt",
+    "real model/provider terminal stream observation under the target deployment",
+    "delegated external tool terminal and acknowledgement-loss qualification",
+    "independent policy/evidence for resolving or quarantining indeterminate effects when ephemeral App Server history is unavailable; no unauthenticated manual release",
+    "independent acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -153,13 +156,97 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "composed_authority_external_qualification_pending",
+  "productionWriterState": "existing_app_server_owner",
   "owner": "codex-integration",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
+  ],
+  "productionCallerBindings": [
+    {
+      "role": "production_caller",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "pub(super) async fn run_once(",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Sends real v2 thread/start and the actual wire method turn/start; requires an independently signed kernel.authority final-use capability for the exact final TurnStartParams binding; after authority acquisition rechecks cancellation, the same absolute deadline, exact Agent generation/readiness and ingress identity; consumes the one-entry token; durably records the witness/request binding before the turn/start network await; routes typed errors and matching TurnCompleted notifications through hepta-codex-adapter; spends only the remaining absolute deadline on initial terminal observation; and never replays an unknown acknowledgement. Target-host issuer/provider qualification remains external evidence."
+    },
+    {
+      "role": "final_use_authority_port",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "symbol": "impl TurnStartAuthorizer for UnixFinalUseAuthorizer",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Uses a protected Unix endpoint to obtain an independently signed exact-binding grant and trusted revocation head, locally verifies/claims it through FinalUseAuthority, and exposes only the non-constructible VerifiedUseToken to the native caller; the worker owns no issuer private key."
+    },
+    {
+      "role": "durable_reconciler",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "pub(super) async fn reconcile_existing(",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Uses thread/read with includeTurns against the original Agentd/App Server generation and accepts recovery only when the stable client_user_message_id and original UserMessage content both match, without submitting a new turn. Same-id/different-input or multiple exact matches are hard conflicts; missing ephemeral history stays indeterminate."
+    },
+    {
+      "role": "durable_owner",
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "symbol": "pub struct NativeRunRecord",
+      "buildTarget": "codex-hepta-infer-core",
+      "semantics": "Persists exact session/thread/request-digest correlation, unknown-outcome slot retention, reconciled turn identity, and typed terminal/request-level outcomes."
+    }
+  ],
+  "compositionTests": [
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+      "command": "just test -p codex-hepta-codex-adapter",
+      "covers": [
+        "terminal status correctness",
+        "thread/turn correlation",
+        "overload vs unknown outcome",
+        "late terminal observation",
+        "actual v2 turn/start method binding"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "command": "just test -p codex-hepta-infer-core",
+      "covers": [
+        "durable replay fencing",
+        "rejection release",
+        "unknown-outcome capacity hold",
+        "Codex request-digest reconciliation",
+        "live-process one-shot abort of durably journaled but definitely unsent effects",
+        "recovery cannot downgrade a journaled dispatch when the in-memory abort proof is lost"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "duplicate no-replay",
+        "pre-dispatch failure",
+        "durable reopen"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "independently signed exact-binding grant",
+        "forged grant rejection",
+        "explicit authority denial",
+        "revocation-head rollback rejection"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "post-authority deadline, cancellation, owner-readiness and ingress fencing",
+        "one absolute runtime.codex deadline across authority/send/initial observation",
+        "terminal status and owner-authority success conjunction",
+        "recovery client-id plus original-input binding"
+      ]
+    }
   ]
 }
