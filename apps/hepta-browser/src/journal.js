@@ -10,7 +10,7 @@ import {
 } from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
 
-const SCHEMA = "hepta.browser.operation-journal.v1";
+const SCHEMA = "hepta.browser.operation-journal.v2";
 const RETIRED_SCHEMA = "hepta.browser.retired-profile-generations.v1";
 const MAX_LINE_BYTES = 262_144;
 const MAX_RETIRED_BYTES = 8 * 1024 * 1024;
@@ -268,7 +268,7 @@ function envelopeLine(type, record) {
     record,
     type === "snapshot" ? "snapshot" : type,
   );
-  const unsigned = { schema: SCHEMA, version: 1, type, record: validated };
+  const unsigned = { schema: SCHEMA, version: 2, type, record: validated };
   const line = `${canonical({ ...unsigned, checksum: checksum(unsigned) })}\n`;
   if (UTF8.encode(line).byteLength > MAX_LINE_BYTES) {
     throw new TypeError("browser journal record exceeds line limit");
@@ -505,7 +505,7 @@ export class FileBrowserOperationJournal {
     );
     if (
       object.schema !== RETIRED_SCHEMA ||
-      object.version !== 1 ||
+      object.version !== 2 ||
       typeof object.checksum !== "string" ||
       !DIGEST.test(object.checksum)
     ) {
@@ -673,7 +673,7 @@ export class FileBrowserOperationJournal {
       );
       if (
         object.schema !== SCHEMA ||
-        object.version !== 1 ||
+        object.version !== 2 ||
         typeof object.checksum !== "string"
       ) {
         throw new TypeError("browser journal envelope is unsupported");
