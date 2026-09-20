@@ -30,6 +30,8 @@ type Quarantine = Box<dyn FnOnce() -> Result<(), AgentdError> + Send>;
 struct TaskEntry {
     name: String,
     quarantine: Option<Quarantine>,
+    retirement: Option<(CancellationToken, Quarantine)>,
+    retiring: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -48,6 +50,7 @@ pub struct RuntimeTasks {
     tasks: JoinSet<Result<(), AgentdError>>,
     entries: HashMap<Id, TaskEntry>,
     admitted_names: BTreeSet<String>,
+    retired_names: BTreeSet<String>,
     failures: VecDeque<RuntimeTaskFailure>,
     cancellation: CancellationToken,
     shutdown_grace: Duration,
@@ -65,6 +68,7 @@ impl RuntimeTasks {
             tasks: JoinSet::new(),
             entries: HashMap::new(),
             admitted_names: BTreeSet::new(),
+            retired_names: BTreeSet::new(),
             failures: VecDeque::new(),
             cancellation,
             shutdown_grace,
@@ -76,7 +80,7 @@ impl RuntimeTasks {
     where
         F: Future<Output = Result<(), AgentdError>> + Send + 'static,
     {
-        self.spawn(name, future, None)
+        self.spawn(name, future, /*quarantine*/ None, /*retirement*/ None)
     }
 
     /// Optional means failure-isolated, not permission to ignore owner errors.
@@ -92,7 +96,87 @@ impl RuntimeTasks {
         F: Future<Output = Result<(), AgentdError>> + Send + 'static,
         Q: FnOnce() -> Result<(), AgentdError> + Send + 'static,
     {
-        self.spawn(name, future, Some(Box::new(quarantine)))
+        self.spawn(
+            name,
+            future,
+            Some(Box::new(quarantine)),
+            /*retirement*/ None,
+        )
+    }
+
+    /// Register a cooperatively removable, already-admitted optional service.
+    ///
+    /// The factory runs only after admission and receives a CHILD cancellation
+    /// token, so retiring this service cannot stop its siblings or the host.
+    /// The service must drain its owner work before returning Ok. The retirement
+    /// callback must unpublish its routes and reject unresolved effects; it is
+    /// not a writer-handoff, topology-selection or external-effect receipt.
+    /// Replacement remains a separately admitted generation, never a blind retry.
+    pub fn spawn_optional_service<F, S, Q, R>(
+        &mut self,
+        name: &str,
+        start: S,
+        quarantine: Q,
+        retire: R,
+    ) -> Result<(), AgentdError>
+    where
+        F: Future<Output = Result<(), AgentdError>> + Send + 'static,
+        S: FnOnce(CancellationToken) -> F + Send + 'static,
+        Q: FnOnce() -> Result<(), AgentdError> + Send + 'static,
+        R: FnOnce() -> Result<(), AgentdError> + Send + 'static,
+    {
+        let cancellation = self.cancellation.child_token();
+        let service_cancellation = cancellation.clone();
+        self.spawn(
+            name,
+            async move { start(service_cancellation).await },
+            Some(Box::new(quarantine)),
+            Some((cancellation, Box::new(retire))),
+        )
+    }
+
+    /// Stop one optional service without cancelling the host or its siblings.
+    ///
+    /// A timeout is NOT retirement success: the service remains draining and its
+    /// name remains reserved. The caller must continue supervision/reconciliation
+    /// or shut down; it must not publish a replacement from an unacknowledged stop.
+    /// Repeating an acknowledged retirement is idempotent within this generation.
+    pub async fn retire_optional(&mut self, name: &str) -> Result<(), AgentdError> {
+        if self.retired_names.contains(name) {
+            return Ok(());
+        }
+        if self.stopped || self.cancellation.is_cancelled() {
+            return Err(AgentdError::Protocol("runtime host is stopping".to_string()));
+        }
+        let entry = self
+            .entries
+            .values_mut()
+            .find(|entry| entry.name == name)
+            .ok_or_else(|| AgentdError::Protocol("runtime service is not active".to_string()))?;
+        let (cancellation, _) = entry.retirement.as_ref().ok_or_else(|| {
+            AgentdError::Protocol("service has no optional retirement contract".to_string())
+        })?;
+        entry.retiring = true;
+        cancellation.cancel();
+        let grace = self.shutdown_grace;
+        timeout(grace, async {
+            while self.entries.values().any(|entry| entry.name == name) {
+                // Do not lose other task completions while draining this one.
+                // Shared fences and failed owner callbacks still propagate.
+                self.observe_next().await?;
+            }
+            if self.retired_names.contains(name) {
+                Ok(())
+            } else {
+                Err(AgentdError::Protocol(
+                    "service failed or was quarantined, not retired".to_string(),
+                ))
+            }
+        })
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("service retirement remains unacknowledged".to_string())
+        })?
     }
 
     fn spawn<F>(
@@ -100,6 +184,7 @@ impl RuntimeTasks {
         name: &str,
         future: F,
         quarantine: Option<Quarantine>,
+        retirement: Option<(CancellationToken, Quarantine)>,
     ) -> Result<(), AgentdError>
     where
         F: Future<Output = Result<(), AgentdError>> + Send + 'static,
@@ -126,6 +211,8 @@ impl RuntimeTasks {
             TaskEntry {
                 name: name.to_string(),
                 quarantine,
+                retirement,
+                retiring: false,
             },
         );
         Ok(())
@@ -163,6 +250,19 @@ impl RuntimeTasks {
         let entry = self.entries.remove(&id).ok_or_else(|| {
             AgentdError::Protocol("runtime completion identity was not registered".to_string())
         })?;
+        if entry.retiring && result.is_ok() {
+            let (_, retire) = entry.retirement.ok_or_else(|| {
+                AgentdError::Protocol("runtime retirement contract was lost".to_string())
+            })?;
+            // A success marker is published only AFTER the owner callback.
+            // A panic/rejection cannot create a reusable retirement receipt.
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(retire))
+                .map_err(|_| {
+                    AgentdError::Protocol("runtime retirement callback panicked".to_string())
+                })??;
+            self.retired_names.insert(entry.name);
+            return Ok(());
+        }
         let error = match result {
             Ok(()) => {
                 AgentdError::Protocol(format!("{} exited before agentd shutdown", entry.name))
@@ -252,3 +352,7 @@ impl Drop for RuntimeTasks {
 #[cfg(test)]
 #[path = "runtime_tasks_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "runtime_service_retirement_tests.rs"]
+mod retirement_tests;
