@@ -364,12 +364,8 @@ impl FinalUseAuthority {
         }
         clock.now_unix_ms().map_err(map_trust_error)?;
         let (issuer_keys, issuer_trust_sha256) = pin_issuer_keys(issuer_keys)?;
-        let (store, state) = store::Store::open_key_ring_exact(
-            directory,
-            &signer_id,
-            issuer_trust_sha256,
-            head,
-        )?;
+        let (store, state) =
+            store::Store::open_key_ring_exact(directory, &signer_id, issuer_trust_sha256, head)?;
         let observed = frontier_for_state(&state);
         let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
         if trusted != observed {
@@ -699,9 +695,7 @@ pub fn dispatch_final_use_with_witness<T>(
     authority.with_dispatch_boundary_witness(token, expected, dispatch_boundary)
 }
 
-fn final_use_binding_witness_sha256(
-    binding: &FinalUseBinding,
-) -> Result<[u8; 32], FinalUseError> {
+fn final_use_binding_witness_sha256(binding: &FinalUseBinding) -> Result<[u8; 32], FinalUseError> {
     let encoded = serde_json::to_vec(binding).map_err(|_| FinalUseError::InvalidGrant)?;
     let mut hash = Sha256::new();
     hash.update(b"hepta.kernel.authority.verified-use-binding.final-use.v1\0");
