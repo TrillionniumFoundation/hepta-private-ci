@@ -121,7 +121,8 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
     let terminal = NativeRunOutput {
         turn_id: "turn-1".to_string(),
         status: NativeRunStatus::Failed,
-        boundary_status: codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Failed,
+        boundary_status:
+            codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Failed,
         terminal_observed: true,
         observed_output_tokens: Some(17),
         stop_reason: Some("observed terminal failure".to_string()),
