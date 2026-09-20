@@ -177,7 +177,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Offline/reference learning library. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
+Offline/reference learning library. Qualification fitting now binds a self-verifying `DatasetSnapshotReceiptV3` to the exact training-row evidence set through `VerifiedOperatorDatasetV2`; detached dataset digests remain legacy compatibility inputs. Applicability and regularity claims have signed V2 admission that reuses the host-owned `LearningEvidenceVerifierV1` rather than treating an evaluator ID/digest or approval boolean as authentication. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
 
 Current operating and state-format references:
 
@@ -191,6 +191,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs); named case: `op_05_tabular_operator_fits_complete_grid_deterministically`.
 - [codex-rs/hepta-bellman-operator/src/lib_tests.rs](../../../codex-rs/hepta-bellman-operator/src/lib_tests.rs); named case: `deterministic_and_canonical`.
+- [codex-rs/hepta-bellman-operator/src/authenticated.rs](../../../codex-rs/hepta-bellman-operator/src/authenticated.rs); OP-06 signed evaluator role/identity/payload regressions.
+- [codex-rs/hepta-bellman-operator/src/dataset_binding.rs](../../../codex-rs/hepta-bellman-operator/src/dataset_binding.rs); OP-07 V3 dataset receipt/row-binding regressions.
 
 In `codex-rs`, run `just test -p codex-hepta-bellman-operator`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.operator.md) separately labels target acceptance designs.
 
@@ -212,7 +214,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. `runtime.agentd::PinnedCognitiveRanker` is already an explicit read-only consumer of selected pinned tabular operators with per-read current-registry/revocation revalidation; this establishes a bounded consumer composition fact, not the default automatic learning loop or production activation. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
