@@ -1352,14 +1352,38 @@ pub enum ProductionTargetDisposition {
 pub type ProductionDispatchFuture<'a> =
     Pin<Box<dyn Future<Output = ProductionTargetOutcome> + Send + 'a>>;
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ProductionTerminalObservation {
+    Applied { receipt: String },
+    NotApplied { reason: String },
+    Quarantined { reason: String },
+    Indeterminate { reason: String },
+    Unavailable { reason: String },
+}
+
+pub type ProductionTerminalObservationFuture<'a> =
+    Pin<Box<dyn Future<Output = ProductionTerminalObservation> + Send + 'a>>;
+
 pub trait ProductionOutboxTarget: Send + Sync {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a>;
 }
 
-/// Production target with a stable destination identity that can be bound into
-/// a `FinalUseBinding`.
+/// Production target with a stable destination identity and an independent
+/// terminal observer. The default observer is deliberately unavailable so a
+/// target cannot accidentally turn transport acknowledgement into terminality.
 pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     fn destination_id(&self) -> &str;
+
+    fn observe_terminal<'a>(
+        &'a self,
+        _request: &'a ProductionDispatchRequest,
+    ) -> ProductionTerminalObservationFuture<'a> {
+        Box::pin(async {
+            ProductionTerminalObservation::Unavailable {
+                reason: "target does not provide a terminal observer".to_string(),
+            }
+        })
+    }
 }
 
 /// Legacy direct dispatcher retained only for in-crate qualification tests.
@@ -1416,6 +1440,10 @@ impl ProductionFinalUseOutboxDispatcher {
         Self { final_use, target }
     }
 
+    pub fn destination_id(&self) -> &str {
+        self.target.destination_id()
+    }
+
     pub async fn dispatch(
         &self,
         writer: &ProductionDurableWriter,
@@ -1431,6 +1459,18 @@ impl ProductionFinalUseOutboxDispatcher {
                 expected,
                 receipt,
             )
+            .await
+    }
+
+    /// Reconcile a bounded batch of already-indeterminate operations through
+    /// the destination-owned observer. This path never calls dispatch.
+    pub async fn reconcile(
+        &self,
+        writer: &ProductionDurableWriter,
+        limit: usize,
+    ) -> Result<usize, ProductionWriterError> {
+        writer
+            .reconcile_target_batch(self.target.as_ref(), limit)
             .await
     }
 }
