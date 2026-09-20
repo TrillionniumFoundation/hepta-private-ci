@@ -22,6 +22,7 @@ import time
 
 from .control_plane import DENIED_AUTHORITIES, WorkEnvelope
 from .evidence import HmacTrustStore
+from .integration_controller import IntegrationStageReceipt
 from .git_security import run_git, run_git_bytes
 from .product_runtime import EngineeringControlProduct
 from .orchestration import (
@@ -255,6 +256,9 @@ def build_product_receipt(
             ("engineering_worker_identity", "product-worker-registry-key"): b"product-worker-registry",
             ("github-actions-product-worker", "product-worker-key"): b"product-worker",
             ("ci_executor", "product-ci-completion-key"): b"product-ci-completion",
+            ("engineering_evidence_binder", "product-candidate-observer-key"): b"product-candidate-observer",
+            ("github_review_observer", "product-review-observer-key"): b"product-review-observer",
+            ("ci_executor", "product-integration-ci-key"): b"product-integration-ci",
         }
     )
     worker_id = "github-actions-product-worker"
@@ -408,24 +412,86 @@ def build_product_receipt(
                 base_tree=integration_base_tree,
                 now_ns=now + 7,
             )
-            candidate_observation_digest = hashlib.sha256(
-                ("candidate:" + tested_sha).encode("ascii")
-            ).hexdigest()
-            review_observation_digest = hashlib.sha256(
-                ("review-observation:" + tested_sha).encode("ascii")
-            ).hexdigest()
-            ci_observation_digest = hashlib.sha256(
-                ("ci-observation:" + tested_sha).encode("ascii")
-            ).hexdigest()
+            candidate_observation = IntegrationStageReceipt(
+                queue.queue_generation_id,
+                package.package_id,
+                "candidate",
+                hashlib.sha256(
+                    ("candidate:" + tested_sha).encode("ascii")
+                ).hexdigest(),
+                True,
+                "engineering_evidence_binder",
+                "product-candidate-observer-key",
+                now + 8,
+                now + 120_000_000_000,
+            )
+            candidate_observation = _signed_fixture(
+                candidate_observation,
+                lifecycle_trust,
+                candidate_observation.issuer,
+                candidate_observation.signing_identity,
+            )
+            review_observation = IntegrationStageReceipt(
+                queue.queue_generation_id,
+                package.package_id,
+                "review",
+                hashlib.sha256(
+                    ("review-observation:" + tested_sha).encode("ascii")
+                ).hexdigest(),
+                True,
+                "github_review_observer",
+                "product-review-observer-key",
+                now + 9,
+                now + 120_000_000_000,
+            )
+            review_observation = _signed_fixture(
+                review_observation,
+                lifecycle_trust,
+                review_observation.issuer,
+                review_observation.signing_identity,
+            )
+            ci_observation = IntegrationStageReceipt(
+                queue.queue_generation_id,
+                package.package_id,
+                "ci",
+                hashlib.sha256(
+                    ("ci-observation:" + tested_sha).encode("ascii")
+                ).hexdigest(),
+                True,
+                "ci_executor",
+                "product-integration-ci-key",
+                now + 10,
+                now + 120_000_000_000,
+            )
+            ci_observation = _signed_fixture(
+                ci_observation,
+                lifecycle_trust,
+                ci_observation.issuer,
+                ci_observation.signing_identity,
+            )
+            product.reconcile_integration(
+                queue.queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=candidate_observation,
+                now_ns=now + 8,
+            )
+            product.reconcile_integration(
+                queue.queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=review_observation,
+                now_ns=now + 9,
+            )
             integration = product.reconcile_integration(
                 queue.queue_generation_id,
                 package.package_id,
                 current_base_commit=integration_base_commit,
                 current_base_tree=integration_base_tree,
-                candidate_digest=candidate_observation_digest,
-                review_digest=review_observation_digest,
-                ci_digest=ci_observation_digest,
-                now_ns=now + 8,
+                stage_receipt=ci_observation,
+                now_ns=now + 10,
             )
             anchor = product.audit_anchor()
             completed_claim_id = completed.claim_id
@@ -474,15 +540,29 @@ def build_product_receipt(
                 completion,
                 now_ns=now + 9,
             )
+            reopened.reconcile_integration(
+                queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=candidate_observation,
+                now_ns=now + 11,
+            )
+            reopened.reconcile_integration(
+                queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=review_observation,
+                now_ns=now + 11,
+            )
             replayed_integration = reopened.reconcile_integration(
                 queue_generation_id,
                 package.package_id,
                 current_base_commit=integration_base_commit,
                 current_base_tree=integration_base_tree,
-                candidate_digest=candidate_observation_digest,
-                review_digest=review_observation_digest,
-                ci_digest=ci_observation_digest,
-                now_ns=now + 9,
+                stage_receipt=ci_observation,
+                now_ns=now + 11,
             )
             reopened_claim_state = replayed_completion.state
             reopened_completion_observation_digest = (
