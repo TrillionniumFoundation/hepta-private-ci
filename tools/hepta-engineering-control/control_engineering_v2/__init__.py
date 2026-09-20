@@ -73,7 +73,6 @@ from .integration_controller import (
     integration_queue_item,
     observe_integration_stage,
     publish_integration_queue,
-    reconcile_integration_item,
 )
 from .facade import (
     ReviewRequest,
@@ -246,7 +245,6 @@ __all__ = [
     "integration_queue_item",
     "observe_integration_stage",
     "publish_integration_queue",
-    "reconcile_integration_item",
     "plan_engineering_work",
     "claim_assignment",
     "expire_stale_claims",
