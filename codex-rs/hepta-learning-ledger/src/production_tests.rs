@@ -12,6 +12,7 @@ use codex_hepta_types::ProbabilityQ32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+use crate::AppendDisposition;
 use crate::CreditAllocationV1;
 use crate::LearningEvidenceTrustV1;
 use crate::LearningTrustDistributionV1;
@@ -470,7 +471,6 @@ fn production_writer_recovers_against_independent_witness() {
     assert_eq!(recovered.snapshot().unwrap().records().len(), 1);
 }
 
-
 #[test]
 fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
     let fixture = Fixture::new();
@@ -485,12 +485,7 @@ fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
     );
     let verified = trust
         .verifier()
-        .verify(
-            LearningEvidenceRoleV1::Generator,
-            &evidence,
-            &payload,
-            50,
-        )
+        .verify(LearningEvidenceRoleV1::Generator, &evidence, &payload, 50)
         .unwrap();
     let principal = verified.principal().clone();
     let event = LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
@@ -516,11 +511,7 @@ fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
     let mut raw = DurableLedger::create(fixture.file("ledger"), binding(), 64).unwrap();
     let committed = raw.append(Digest32::ZERO, event).unwrap();
     drop(raw);
-    drop(LedgerWitnessStore::create(
-        fixture.file("witness"),
-        binding(),
-    )
-    .unwrap());
+    drop(LedgerWitnessStore::create(fixture.file("witness"), binding()).unwrap());
 
     let ledger = DurableLedger::recover(
         fixture.file("ledger"),
@@ -579,18 +570,13 @@ fn corrupt_or_missing_witness_history_never_falls_back_to_reinitialization() {
     );
 
     let missing = Fixture::new();
-    drop(LedgerWitnessStore::create(
-        missing.file("witness"),
-        binding(),
-    )
-    .unwrap());
+    drop(LedgerWitnessStore::create(missing.file("witness"), binding()).unwrap());
     missing.file("witness").set_len(0).unwrap();
     assert_eq!(
         LedgerWitnessStore::recover(missing.file("witness"), binding()).err(),
         Some(DurableLedgerError::MissingHeader)
     );
 }
-
 
 #[test]
 fn crash_after_ledger_sync_before_witness_child() {
@@ -617,12 +603,7 @@ fn crash_after_ledger_sync_before_witness_child() {
     );
     let verified = trust
         .verifier()
-        .verify(
-            LearningEvidenceRoleV1::Generator,
-            &evidence,
-            &payload,
-            50,
-        )
+        .verify(LearningEvidenceRoleV1::Generator, &evidence, &payload, 50)
         .unwrap();
     let principal = verified.principal().clone();
     let event = LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
@@ -705,7 +686,6 @@ fn process_death_between_ledger_and_witness_reconciles_without_redispatch() {
     assert_eq!(receipt.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(writer.witness_frontier().unwrap().anchor.sequence, 1);
 }
-
 
 #[test]
 fn directory_durability_requires_an_actual_directory_handle() {
