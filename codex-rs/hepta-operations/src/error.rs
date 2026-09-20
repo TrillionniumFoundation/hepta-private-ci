@@ -21,6 +21,8 @@ pub enum OperationError {
     StaleGeneration,
     Terminal,
     NotClaimed,
+    StorageUnavailable,
+    CorruptStore(&'static str),
 }
 
 impl fmt::Display for OperationError {
@@ -50,6 +52,10 @@ impl fmt::Display for OperationError {
             Self::StaleGeneration => formatter.write_str("operation generation fence is stale"),
             Self::Terminal => formatter.write_str("operation is already terminal"),
             Self::NotClaimed => formatter.write_str("outbox intent is not claimed"),
+            Self::StorageUnavailable => formatter.write_str("operation durable store is unavailable"),
+            Self::CorruptStore(field) => {
+                write!(formatter, "operation durable store is corrupt: {field}")
+            }
         }
     }
 }
