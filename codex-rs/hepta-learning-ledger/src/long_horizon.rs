@@ -47,6 +47,11 @@ use crate::ledger::digest_chain;
 use crate::ledger::digest_event;
 use crate::segment_codec;
 
+#[path = "long_horizon_catalog_io.rs"]
+mod catalog_io;
+
+use catalog_io::read_catalog_file;
+
 const PROFILE_FILE: &str = "long-horizon-profile.v1";
 const PROFILE_MAGIC: &[u8; 8] = b"HEPTLH01";
 const RECORD_LOCATION_DIR: &str = "archive-record";
@@ -727,8 +732,10 @@ fn verify_profile(
     binding: Digest32,
     limits: LedgerSegmentLimits,
 ) -> Result<(), LongHorizonLedgerErrorV1> {
-    let bytes = fs::read(root.join(PROFILE_FILE)).map_err(PersistentIndexErrorV1::from)?;
-    if bytes != profile_bytes(binding, limits) {
+    let expected = profile_bytes(binding, limits);
+    let bytes = read_catalog_file(&root.join(PROFILE_FILE), expected.len())?
+        .ok_or(LongHorizonLedgerErrorV1::CatalogCorrupt)?;
+    if bytes != expected {
         return Err(LongHorizonLedgerErrorV1::CatalogCorrupt);
     }
     for directory in [RECORD_LOCATION_DIR, ARCHIVE_RANGE_DIR] {
@@ -793,8 +800,8 @@ fn persist_archive_catalog(
 }
 
 fn write_immutable(path: &Path, bytes: &[u8]) -> Result<(), LongHorizonLedgerErrorV1> {
-    if path.exists() {
-        if fs::read(path).map_err(PersistentIndexErrorV1::from)? == bytes {
+    if let Some(existing) = read_catalog_file(path, bytes.len())? {
+        if existing == bytes {
             return Ok(());
         }
         return Err(LongHorizonLedgerErrorV1::CatalogCorrupt);
@@ -851,10 +858,9 @@ fn read_record_location(
     record_id: &StableId,
 ) -> Result<Option<usize>, LongHorizonLedgerErrorV1> {
     let path = record_location_path(&root.join(RECORD_LOCATION_DIR), record_id);
-    let bytes = match fs::read(path) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(PersistentIndexErrorV1::from(error).into()),
+    let expected_len = 2 + record_id.as_str().len() + 8 + 32;
+    let Some(bytes) = read_catalog_file(&path, expected_len)? else {
+        return Ok(None);
     };
     if bytes.len() < 2 + 1 + 8 + 32 {
         return Err(LongHorizonLedgerErrorV1::CatalogCorrupt);
@@ -920,10 +926,8 @@ fn read_archive_range(
     segment: usize,
 ) -> Result<Option<LongHorizonArchiveRangeV1>, LongHorizonLedgerErrorV1> {
     let path = archive_range_path(&root.join(ARCHIVE_RANGE_DIR), segment);
-    let bytes = match fs::read(path) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(PersistentIndexErrorV1::from(error).into()),
+    let Some(bytes) = read_catalog_file(&path, 8 + 8 + 32 + 8 + 32 + 32)? else {
+        return Ok(None);
     };
     if bytes.len() != 8 + 8 + 32 + 8 + 32 + 32 {
         return Err(LongHorizonLedgerErrorV1::CatalogCorrupt);
@@ -997,3 +1001,11 @@ fn hex(bytes: &[u8]) -> String {
 #[cfg(test)]
 #[path = "long_horizon_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "long_horizon_catalog_tests.rs"]
+mod catalog_tests;
+
+#[cfg(test)]
+#[path = "long_horizon_catalog_test_support.rs"]
+mod catalog_test_support;
