@@ -20,6 +20,7 @@ use codex_hepta_memory::execute_owner_observation;
 use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
@@ -251,22 +252,29 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         });
     }
 
+    let mut downstream_policy_digest = None;
+    let mut delivery_propensity = ProbabilityQ32::ONE;
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         let rank_owner = owner.clone();
         let rank_query = query.to_string();
-        admitted_items = tokio::task::spawn_blocking(move || {
-            ranker.rank(
+        let (ranked_items, rank_observation) = tokio::task::spawn_blocking(move || {
+            let observation = ranker.rank(
                 &rank_owner,
                 body_generation,
                 &rank_query,
                 &mut admitted_items,
             )?;
-            Ok::<_, String>(admitted_items)
+            Ok::<_, String>((admitted_items, observation))
         })
         .await
         .map_err(|_| CognitiveContextError::RankerUnavailable)?
         .map_err(|_| CognitiveContextError::RankerUnavailable)?;
+        admitted_items = ranked_items;
+        if rank_observation.applied {
+            downstream_policy_digest = Some(rank_observation.policy_digest);
+            delivery_propensity = rank_observation.propensity;
+        }
     }
 
     let ordered_bindings = admitted_items
@@ -416,13 +424,15 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         let sink = std::sync::Arc::clone(sink);
         let owner = owner.clone();
         tokio::task::spawn_blocking(move || {
-            sink.append_with_delivery(
+            sink.append_with_delivery_policy(
                 &owner,
                 body_generation,
                 request_id,
                 &assignment,
                 &delivered_candidates,
                 context_exposed,
+                downstream_policy_digest,
+                delivery_propensity,
             )
         })
         .await
