@@ -365,7 +365,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let signal = NeuronSignalReceiptV1 {
             signal_set_id: input.tick_id,
             model_runtime_digest,
-            temporal_state_digest: sparse_receipt.checkpoint_after,
+            temporal_state_digest: checkpoint.temporal_state_digest(),
             signals_q24: sparse_receipt.activation_q24.clone(),
             activation_sparsity_ppm: sparse_receipt.active_fraction_ppm,
             ood_ppm,
