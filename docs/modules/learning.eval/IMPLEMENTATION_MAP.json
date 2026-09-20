@@ -18,36 +18,199 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "product_runner_source_composed_evaluated_shadow_migration_pending",
+  "productionWriterState": "qualification_evidence_sink_contract_composed_target_host_binding_unproved",
   "operations": [
+    {
+      "operation": "estimate_ope",
+      "nativeSymbol": "estimate_ope",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/ope_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "estimate_ope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "estimate_cluster_intervals",
+      "nativeSymbol": "estimate_cluster_intervals",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+      "state": "source_implemented_sealed_receipt",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "estimate_cluster_intervals",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "estimate_ope"
+      ]
+    },
+    {
+      "operation": "estimate_sequential",
+      "nativeSymbol": "estimate_sequential",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "estimate_sequential",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
     {
       "operation": "evaluate_temporal_holdout",
       "nativeSymbol": "evaluate_temporal_holdout",
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "source_implemented_sealed_receipt",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "evaluate_temporal_holdout",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "fit_temporal_fold",
+        "estimate_cluster_intervals"
+      ]
+    },
+    {
+      "operation": "freeze_product_evaluation_plan_v1",
+      "nativeSymbol": "freeze_product_evaluation_plan_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "state": "source_product_composition_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "freeze_product_evaluation_plan_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "freeze_cross_fold_plan_v2"
+      ]
+    },
+    {
+      "operation": "ProductEvaluationRunnerV1::evaluate_temporal_comparison",
+      "nativeSymbol": "ProductEvaluationRunnerV1::evaluate_temporal_comparison",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "state": "source_product_composition_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "product_temporal_comparison",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "FencedFinalHoldoutOwnerV1::consume",
+        "FinalHoldoutProviderV1::release_after_consumption",
+        "evaluate_temporal_holdout"
+      ]
+    },
+    {
+      "operation": "ProductEvaluationRunnerV1::qualify_and_persist",
+      "nativeSymbol": "ProductEvaluationRunnerV1::qualify_and_persist",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "state": "source_product_composition_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "product_signed_qualification",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "decide_with_signed_evidence_v2",
+        "decide_with_signed_longitudinal_evidence_v3",
+        "ProductQualificationEvidenceSinkV1::persist"
+      ]
+    },
+    {
+      "operation": "FencedFinalHoldoutOwnerV1::consume",
+      "nativeSymbol": "FencedFinalHoldoutOwnerV1::consume",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "fenced_final_holdout_consume",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "FinalHoldoutCasStoreV1::compare_and_swap"
+      ]
+    },
+    {
+      "operation": "LockedFileFinalHoldoutCasStoreV1",
+      "nativeSymbol": "LockedFileFinalHoldoutCasStoreV1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "state": "source_concrete_cas_backend_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "locked_file_final_holdout_cas_store",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_with_signed_evidence_v2",
+      "nativeSymbol": "decide_with_signed_evidence_v2",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+      "state": "source_implemented_low_level_signed_admission",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/closure_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "signed_v2_admission",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_with_signed_longitudinal_evidence_v3",
+      "nativeSymbol": "decide_with_signed_longitudinal_evidence_v3",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+      "state": "source_implemented_pairwise_actor_separation",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/longitudinal_time_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "signed_v3_longitudinal_admission",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Migrate the existing evaluated-shadow consumer from low-level signed admission to ProductQualificationReceiptV1 so the product runner becomes the only product qualification composition.",
+    "Obtain passing exact-head and ordered-parent synthetic-merge learning.eval qualification artifacts for the final immutable candidate."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "target-host authentication and durable binding for ProductQualificationEvidenceSinkV1 and final-holdout namespace",
+    "real future-calendar windows, independent snapshots, retention/change-point/privacy/power and unlearning evidence",
+    "cross-host storage qualification when LockedFileFinalHoldoutCasStoreV1 is used on a shared filesystem",
+    "independent semantic/operator acceptance, selection, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "productAdapterComposed": true,
+    "concreteLocalCasBackend": true,
     "productionImplementation": false,
     "productExecutionProved": false,
+    "targetHostQualified": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false
@@ -55,12 +218,21 @@
   "sourceRoot": [
     "codex-rs/hepta-intelligence-eval"
   ],
-  "sourceBaseStatus": "historical_repository_snapshot_not_current_candidate",
+  "sourceBaseStatus": "historical_registry_generation_baseline_not_current_candidate_identity",
   "currentQualificationTruth": {
     "productionContract": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
     "laneEMatrix": "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
     "traceability": "qualification/lane-e/TEST_TRACEABILITY.json",
     "workflow": ".github/workflows/hepta-lane-e-gap-closure.yml",
     "artifactSchema": "hepta.learning-eval.qualification-evidence.v1"
+  },
+  "sourceBaseSemantics": "sourceBase identifies the registry generation baseline only; exact candidate commit/tree identity is emitted and attested by the Lane E qualification workflow and must not be inferred from sourceBase.",
+  "exactCandidateIdentitySource": {
+    "workflow": ".github/workflows/hepta-lane-e-gap-closure.yml",
+    "artifactSchema": "hepta.learning-eval.qualification-evidence.v1",
+    "requiredStates": [
+      "exact_head_pass",
+      "ordered_parent_synthetic_merge_pass"
+    ]
   }
 }

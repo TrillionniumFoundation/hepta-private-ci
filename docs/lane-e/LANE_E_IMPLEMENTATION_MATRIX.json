@@ -225,8 +225,8 @@
       "stableGuide": "docs/modules/learning.eval/TECHNICAL.md",
       "dossier": "qualification/module-execution-dossiers/detail/learning.eval.md",
       "nativeMapping": "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
-      "implementationState": "source_implemented_ci_pending",
-      "compatibility": "existing_estimators_retained_v2_plan_roles_signed_admission_trusted_direct_feature_gated_and_fenced_holdout_additive",
+      "implementationState": "source_product_composed_ci_pending",
+      "compatibility": "sealed_estimator_receipts_v2_metric_roles_signed_v2_v3_admission_fenced_holdout_locked_file_cas_and_trusted_direct_feature_gate",
       "operations": [
         {
           "operation": "estimate_ope",
@@ -235,21 +235,33 @@
           "status": "implemented_existing"
         },
         {
+          "operation": "estimate_cluster_intervals",
+          "nativeSymbol": "codex_hepta_intelligence_eval::estimate_cluster_intervals",
+          "source": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+          "status": "implemented_sealed_receipt"
+        },
+        {
           "operation": "estimate_sequential",
           "nativeSymbol": "codex_hepta_intelligence_eval::estimate_sequential",
           "source": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
           "status": "implemented_existing"
         },
         {
-          "operation": "freeze_cross_fold_plan_v2",
-          "nativeSymbol": "codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2",
-          "source": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+          "operation": "freeze_product_evaluation_plan_v1",
+          "nativeSymbol": "codex_hepta_intelligence_eval::freeze_product_evaluation_plan_v1",
+          "source": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
           "status": "implemented"
         },
         {
-          "operation": "FinalHoldoutRegistry::consume",
-          "nativeSymbol": "codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume",
-          "source": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+          "operation": "ProductEvaluationRunnerV1::evaluate_temporal_comparison",
+          "nativeSymbol": "codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::evaluate_temporal_comparison",
+          "source": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ProductEvaluationRunnerV1::qualify_and_persist",
+          "nativeSymbol": "codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::qualify_and_persist",
+          "source": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
           "status": "implemented"
         },
         {
@@ -259,32 +271,33 @@
           "status": "implemented"
         },
         {
+          "operation": "LockedFileFinalHoldoutCasStoreV1",
+          "nativeSymbol": "codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1",
+          "source": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+          "status": "implemented"
+        },
+        {
           "operation": "decide_with_signed_evidence_v2",
           "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_evidence_v2",
           "source": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
-          "status": "implemented"
+          "status": "implemented_low_level"
         },
         {
           "operation": "decide_with_signed_longitudinal_evidence_v3",
           "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3",
           "source": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
-          "status": "implemented"
+          "status": "implemented_pairwise_independence"
         }
       ],
       "tests": [
-        "eval_03_intersects_superiority_safety_retention_and_unlearning",
-        "eval_04_rejects_role_collision_and_missing_future_windows",
-        "evaluation_fails_candidate_when_interval_or_floor_does_not_pass",
-        "eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout",
-        "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse",
-        "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth",
-        "independent_decision_consumes_bound_holdout_receipt",
-        "op_03_high_fit_without_retention_is_insufficient",
+        "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+        "product_runner_never_releases_holdout_before_fenced_consumption",
+        "locked_file_store_replays_takeover_and_rejects_backup_rollback",
+        "child_process_observes_lock_then_recovers_after_owner_exit",
+        "evaluator_and_observer_cannot_share_identity_key_credential_or_controller",
         "signed_evaluation_binds_metrics_roles_and_host_identities",
         "newer_generation_fences_out_the_old_writer",
-        "stale_or_same_generation_different_fence_cannot_take_over",
-        "indeterminate_write_poison_requires_recovery_and_preserves_history",
-        "state_digest_changes_on_fence_takeover_without_rewriting_journal_head"
+        "indeterminate_write_poison_requires_recovery_and_preserves_history"
       ],
       "stageResourceBounds": {
         "pointOpeRows": 1000000,
@@ -294,12 +307,16 @@
         "sequentialSteps": 65536,
         "sequentialHorizon": 128
       },
-      "remainingRepositoryGaps": [],
+      "remainingRepositoryGaps": [
+        "migrate_evaluated_shadow_to_product_qualification_receipt",
+        "exact_head_and_synthetic_merge_ci_receipts_for_final_candidate"
+      ],
       "remainingExternalEvidence": [
-        "authenticated_live_input_adapters_and_durable_product_scheduler",
-        "real_future_calendar_windows_and_independent_snapshots",
-        "retention_change_point_privacy_power_and_unlearning_receipts",
-        "separate_selector_operator_canary_promotion_and_release_decisions"
+        "target_host_evidence_sink_and_namespace_authentication",
+        "real_future_calendar_and_live_authenticated_outcomes",
+        "retention_change_point_privacy_power_and_unlearning",
+        "cross_host_shared_storage_lock_fsync_qualification_if_applicable",
+        "independent_operator_acceptance_selection_canary_promotion_release"
       ]
     }
   ],

@@ -32,7 +32,9 @@ The normative API classification is in
 |---|---|---|---|
 | freeze complete V2 cross-fold + metric-role plan | `freeze_cross_fold_plan_v2` | `src/metric_roles.rs` | production plan-freeze surface |
 | single-host durable holdout owner | `DurableFinalHoldoutJournalV1` | `src/durable_holdout.rs` | implemented; cooperative/single-host only |
-| multi-writer fenced holdout owner | `FencedFinalHoldoutOwnerV1` / `FinalHoldoutCasStoreV1` | `src/fenced_holdout.rs` | implemented host CAS contract |
+| multi-writer fenced holdout owner | `FencedFinalHoldoutOwnerV1` / `FinalHoldoutCasStoreV1` | `src/fenced_holdout.rs` | implemented canonical owner |
+| concrete locked-file CAS + anti-rollback recovery | `LockedFileFinalHoldoutCasStoreV1` / `FinalHoldoutCasAnchorV1` / `HoldoutFenceIssuerV1` | `src/fenced_holdout_file.rs`, `src/fenced_holdout.rs` | implemented cross-process backend |
+| product preregistration/evaluation/qualification | `freeze_product_evaluation_plan_v1` / `ProductEvaluationRunnerV1` | `src/product_runner.rs` | implemented source product composition |
 | signed independent qualification | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | production-required ordinary qualification |
 | signed observed-time longitudinal qualification | `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | production-required for `SystemLongitudinal` |
 | trusted direct compatibility | `trusted_inprocess::decide_independently{,_v2}` | `src/lib.rs` | feature-gated; not production ingress |
@@ -49,9 +51,11 @@ authorized regular file, file lock, synchronous writes and an independently
 retained anchor. It is suitable only when the host guarantees one authoritative
 namespace and cooperating local writers.
 
-`FencedFinalHoldoutOwnerV1` is the stronger production boundary for contended
-ownership. A host implementation of `FinalHoldoutCasStoreV1` supplies
-linearizable CAS. `HoldoutWriterFenceV1` binds owner, monotonic generation and
+`FencedFinalHoldoutOwnerV1` is the canonical production boundary for contended
+ownership. `LockedFileFinalHoldoutCasStoreV1` supplies a concrete locked-file
+CAS/replay backend with a separately retained minimum anchor; alternate target
+hosts may implement `FinalHoldoutCasStoreV1` with an equivalent linearizable
+store. `HoldoutWriterFenceV1` binds owner, monotonic generation and
 lease digest. A newer generation takes over only by CAS without rewriting
 journal history; a stale owner then conflicts on its next write. An
 accepted-or-unknown store commit returns `Indeterminate`, poisons the handle
@@ -86,10 +90,7 @@ consistency, support, correct propensity, appropriate cluster independence and
 absence or bounded treatment of confounding. Unsupported assumptions produce
 insufficient evidence; an outcome model cannot repair zero support.
 
-Intervals and point estimates do not by themselves implement family-wide alpha
-allocation, privacy review, change-point admission or future-window scheduling.
-The independent decision requires their receipt digests, while the responsible
-owners must provide the actual evidence.
+Cluster and temporal estimator receipts now carry private integrity seals. `ProductEvaluationRunnerV1` derives each final `MetricGateV1` from the sealed candidate/baseline interval selected by the preregistered product metric-source contract; caller-supplied intervals are not part of this product path. Privacy review, change-point admission and real future-window collection remain external evidence obligations.
 
 ## Product integration obligations
 
@@ -117,8 +118,8 @@ Focused tests live in:
 - `src/sequential_tests.rs`;
 - `src/temporal_fold_tests.rs` and `src/temporal_evaluation_tests.rs`;
 - `src/closure_tests.rs`;
-- `src/durable_holdout_tests.rs` and `src/fenced_holdout_tests.rs`;
-- `src/longitudinal_time_tests.rs`.
+- `src/durable_holdout_tests.rs`, `src/fenced_holdout_tests.rs` and `src/fenced_holdout_file_tests.rs`;
+- `src/product_runner_tests.rs` and `src/longitudinal_time_tests.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,

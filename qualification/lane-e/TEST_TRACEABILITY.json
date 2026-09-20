@@ -309,6 +309,50 @@
         }
       ],
       "status": "native_test_mapped"
+    },
+    {
+      "id": "EVAL-05",
+      "module": "learning.eval",
+      "requirement": "The product runner must durably consume the fenced final holdout before release, derive MetricGate intervals only from sealed candidate/baseline estimator receipts, build the signed bundle internally and require durable evidence publication.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+          "function": "product_runner_binds_estimator_receipts_and_persists_signed_decision"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+          "function": "product_runner_never_releases_holdout_before_fenced_consumption"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "EVAL-06",
+      "module": "learning.eval",
+      "requirement": "The concrete locked-file CAS owner must replay committed history, fence failover, expose cross-process exclusion and reject restoring a backup older than the independently retained minimum anchor.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+          "function": "locked_file_store_replays_takeover_and_rejects_backup_rollback"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+          "function": "child_process_observes_lock_then_recovers_after_owner_exit"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "EVAL-07",
+      "module": "learning.eval",
+      "requirement": "SystemLongitudinal admission requires generator, evaluator and observer to be pairwise independent by principal, credential chain, signing key and controller.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/longitudinal_time_tests.rs",
+          "function": "evaluator_and_observer_cannot_share_identity_key_credential_or_controller"
+        }
+      ],
+      "status": "native_test_mapped"
     }
   ],
   "crossCrateCases": [
