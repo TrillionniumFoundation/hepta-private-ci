@@ -87,6 +87,8 @@ or validity-time change rejects the continuation rather than mixing cuts.
 Authoritative immutable history is retained; paging is bounded materialization,
 not destructive pruning.
 
+Production semantic writes use the existing `cognitive_local_events` / `cognitive_local_outbox` append-only journal as their provenance ledger rather than introducing another table or database. `ProductionCognitiveMutationCapability` inserts the admitted intent, applies the authoritative source/Memory/fact/projection mutation, and appends the committed outcome under the same `BEGIN IMMEDIATE` transaction. The production receipt binds the external grant and epochs, writer generation, semantic input digest, expected predecessor, committed source revision and final write digest. A failed semantic mutation therefore leaves neither a domain change nor an orphan provenance admission.
+
 `lane_c_snapshot_tests.rs` exercises actual owner writes, correction ancestry,
 proof-bound paging, committed deletions, scope and verification/time filters,
 context binding, and restoration of an older valid SQLite backup.
