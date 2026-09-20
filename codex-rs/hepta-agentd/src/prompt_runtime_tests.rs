@@ -260,13 +260,14 @@ fn final_delivered_terminal_releases_staged_turn() {
 
 #[test]
 fn not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
     let root = temporary.path().join("prompt-runtime");
     let value = attachment();
     let first_digest = digest("provider-request-not-dispatched");
     let second_digest = digest("provider-request-retry-final");
     {
-        let owner = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("open owner");
+        let owner = AgentdPromptRuntimeOwner::open_state_dir(&root)
+            .unwrap_or_else(|error| panic!("open owner: {error}"));
         stage_raw(&owner, "thread:one", "turn:one", value.clone());
         owner
             .record_dispatch(dispatch(
@@ -315,22 +316,23 @@ fn not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirem
                 11,
             ))
             .unwrap_or_else(|error| panic!("delivered record: {error}"));
-        assert_eq!(owner.staged_count().expect("staged count"), 0);
+        assert_eq!(owner.staged_count().unwrap_or_else(|error| panic!("staged count: {error}")), 0);
     }
 
-    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("reopen owner");
-    assert_eq!(reopened.staged_count().expect("staged count"), 0);
+    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root)
+        .unwrap_or_else(|error| panic!("reopen owner: {error}"));
+    assert_eq!(reopened.staged_count().unwrap_or_else(|error| panic!("staged count: {error}")), 0);
     assert_eq!(
         reopened
             .terminal_record("attempt:first")
-            .expect("first terminal")
+            .unwrap_or_else(|error| panic!("first terminal: {error}"))
             .map(|record| record.outcome),
         Some(PromptRuntimeTerminalOutcomeV1::NotDispatched)
     );
     assert_eq!(
         reopened
             .terminal_record("attempt:second")
-            .expect("second terminal")
+            .unwrap_or_else(|error| panic!("second terminal: {error}"))
             .map(|record| record.outcome),
         Some(PromptRuntimeTerminalOutcomeV1::Delivered)
     );
@@ -338,11 +340,12 @@ fn not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirem
 
 #[test]
 fn dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
     let root = temporary.path().join("prompt-runtime");
     let value = attachment();
     {
-        let owner = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("open owner");
+        let owner = AgentdPromptRuntimeOwner::open_state_dir(&root)
+            .unwrap_or_else(|error| panic!("open owner: {error}"));
         stage_raw(&owner, "thread:one", "turn:one", value.clone());
         owner
             .record_dispatch(dispatch(
@@ -356,7 +359,8 @@ fn dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry() {
             .unwrap_or_else(|error| panic!("dispatch: {error}"));
     }
 
-    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("reopen owner");
+    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root)
+        .unwrap_or_else(|error| panic!("reopen owner: {error}"));
     assert!(
         reopened
             .prepare(PromptRuntimePrepareRequest {
@@ -369,25 +373,26 @@ fn dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry() {
     assert!(
         reopened
             .dispatch_record("attempt:unknown")
-            .expect("dispatch lookup")
+            .unwrap_or_else(|error| panic!("dispatch lookup: {error}"))
             .is_some()
     );
     assert!(
         reopened
             .terminal_record("attempt:unknown")
-            .expect("terminal lookup")
+            .unwrap_or_else(|error| panic!("terminal lookup: {error}"))
             .is_none()
     );
 }
 
 #[test]
 fn indeterminate_terminal_reopens_blocked_and_reconciles_monotonically() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
     let root = temporary.path().join("prompt-runtime");
     let value = attachment();
     let provider_request_digest = digest("provider-request-indeterminate");
     {
-        let owner = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("open owner");
+        let owner = AgentdPromptRuntimeOwner::open_state_dir(&root)
+            .unwrap_or_else(|error| panic!("open owner: {error}"));
         stage_raw(&owner, "thread:one", "turn:one", value.clone());
         owner
             .record_dispatch(dispatch(
@@ -419,7 +424,8 @@ fn indeterminate_terminal_reopens_blocked_and_reconciles_monotonically() {
             .unwrap_or_else(|error| panic!("indeterminate record: {error}"));
     }
 
-    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("reopen owner");
+    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root)
+        .unwrap_or_else(|error| panic!("reopen owner: {error}"));
     assert!(
         reopened
             .prepare(PromptRuntimePrepareRequest {
@@ -438,11 +444,11 @@ fn indeterminate_terminal_reopens_blocked_and_reconciles_monotonically() {
             11,
         ))
         .unwrap_or_else(|error| panic!("reconcile delivered: {error}"));
-    assert_eq!(reopened.staged_count().expect("staged count"), 0);
+    assert_eq!(reopened.staged_count().unwrap_or_else(|error| panic!("staged count: {error}")), 0);
     assert_eq!(
         reopened
             .terminal_record("attempt:indeterminate")
-            .expect("terminal")
+            .unwrap_or_else(|error| panic!("terminal: {error}"))
             .map(|record| record.outcome),
         Some(PromptRuntimeTerminalOutcomeV1::Delivered)
     );
@@ -450,11 +456,12 @@ fn indeterminate_terminal_reopens_blocked_and_reconciles_monotonically() {
 
 #[test]
 fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
     let root = temporary.path().join("prompt-runtime");
     let value = attachment();
     {
-        let owner = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("open owner");
+        let owner = AgentdPromptRuntimeOwner::open_state_dir(&root)
+            .unwrap_or_else(|error| panic!("open owner: {error}"));
         stage_raw(&owner, "thread:one", "turn:one", value.clone());
         owner.fail_directory_sync_after_rename_once();
         assert!(
@@ -472,11 +479,12 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
         assert!(owner.requires_reopen());
     }
 
-    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("reopen owner");
+    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root)
+        .unwrap_or_else(|error| panic!("reopen owner: {error}"));
     assert!(
         reopened
             .dispatch_record("attempt:ack-loss")
-            .expect("dispatch lookup")
+            .unwrap_or_else(|error| panic!("dispatch lookup: {error}"))
             .is_some()
     );
     assert!(
