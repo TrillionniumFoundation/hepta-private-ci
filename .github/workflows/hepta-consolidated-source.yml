@@ -311,8 +311,8 @@ jobs:
 
   engineering-product-gate:
     name: control.engineering product caller (${{ matrix.lane }})
-    needs: [workspace-regression, engineering-sandbox, qualification]
-    if: ${{ always() && needs.workspace-regression.result == 'success' && needs.engineering-sandbox.result == 'success' && needs.qualification.result == 'success' }}
+    needs: [engineering-sandbox]
+    if: ${{ always() && needs.engineering-sandbox.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
@@ -337,6 +337,15 @@ jobs:
           author-name: Hepta Docs CI
           author-email: hepta-docs-ci@users.noreply.github.com
           message: Synthetic merge
+      - name: Verify exact engineering product lane
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-gap-closure.py verify
+          python3 -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
       - name: Invoke v2 engineering product caller
         shell: bash
         run: |
