@@ -13,6 +13,12 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use sha2::Digest;
+use sha2::Sha256;
+
 #[path = "native_control.rs"]
 pub mod native;
 
@@ -146,6 +152,14 @@ pub struct RequestRecord {
     pub consumed_tokens: u32,
     pub usage_units: u64,
     pub usage_observed: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct UsageSettlement {
+    pub request_id: String,
+    pub consumed_tokens: u32,
+    pub usage_units: u64,
+    pub evidence_digest: String,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -475,6 +489,126 @@ impl DurableInferenceControl {
         })
     }
 
+    /// Exact final-use binding for economic/token settlement after a terminal
+    /// worker observation. The worker cannot create this authority.
+    pub fn usage_settlement_binding(
+        &self,
+        settlement: &UsageSettlement,
+    ) -> Result<FinalUseBinding, Error> {
+        validate_identity(&settlement.request_id, "request")?;
+        validate_digest(&settlement.evidence_digest, "usage evidence")?;
+        let record = self
+            .records
+            .get(&settlement.request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != RequestState::AwaitingSettlement {
+            return Err(Error::InvalidTransition);
+        }
+        let execution = record
+            .execution_observation
+            .as_ref()
+            .ok_or(Error::TerminalObservationMissing)?;
+        let reservation = record
+            .reservation
+            .as_ref()
+            .ok_or(Error::ReservationMismatch)?;
+        let assignment = record
+            .assignment
+            .as_ref()
+            .ok_or(Error::AssignmentMismatch)?;
+        if settlement.consumed_tokens > reservation.maximum_tokens
+            || settlement.usage_units > reservation.quota_units
+            || execution
+                .consumed_tokens
+                .is_some_and(|tokens| tokens != settlement.consumed_tokens)
+        {
+            return Err(Error::UsageExceeded);
+        }
+        Ok(FinalUseBinding {
+            subject_id: record.request.principal_id.clone(),
+            destination_id: "inference:usage-settlement".to_string(),
+            request_sha256: digest_json_array(&(
+                "hepta.inference.usage-settlement.request.v1",
+                &record.request.request_id,
+                &reservation.reservation_id,
+                &assignment.worker_id,
+                assignment.worker_generation,
+                &record.request.model_digest,
+                &record.request.payload_digest,
+                execution.terminal_status.as_str(),
+                &execution.output_digest,
+            ))?,
+            scope_sha256: digest_json_array(&(
+                "hepta.inference.usage-settlement.scope.v1",
+                reservation.authority_epoch,
+                reservation.quota_units,
+                reservation.maximum_tokens,
+                &assignment.assignment_digest,
+            ))?,
+            payload_sha256: digest_json_array(&(
+                "hepta.inference.usage-settlement.payload.v1",
+                settlement.consumed_tokens,
+                settlement.usage_units,
+                &settlement.evidence_digest,
+            ))?,
+        })
+    }
+
+    /// Consume independent settlement authority and finalize the canonical
+    /// request without allowing the execution worker to invent usage units.
+    pub fn settle_usage_authorized(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        settlement: UsageSettlement,
+    ) -> Result<ControlReceipt, Error> {
+        let binding = self.usage_settlement_binding(&settlement)?;
+        let token = authority
+            .claim(signed, &binding)
+            .map_err(|_| Error::AuthorityDenied)?;
+        let record = self
+            .records
+            .get(&settlement.request_id)
+            .cloned()
+            .ok_or(Error::RequestNotFound)?;
+        let execution = record
+            .execution_observation
+            .clone()
+            .ok_or(Error::TerminalObservationMissing)?;
+        let observation = TerminalObservation {
+            request_id: execution.request_id,
+            reservation_id: execution.reservation_id,
+            worker_id: execution.worker_id,
+            worker_generation: execution.worker_generation,
+            model_digest: execution.model_digest,
+            payload_digest: execution.payload_digest,
+            terminal_observed: true,
+            terminal_status: Some(execution.terminal_status),
+            output_digest: execution.output_digest,
+            consumed_tokens: settlement.consumed_tokens,
+            usage_units: settlement.usage_units,
+        };
+        let observation_digest = digest_json_hex(&(
+            "hepta.inference.authoritative-settlement.v1",
+            &settlement.request_id,
+            &settlement.evidence_digest,
+            settlement.consumed_tokens,
+            settlement.usage_units,
+            &observation.output_digest,
+            observation.terminal_status.map(RequestState::as_str),
+        ))?;
+        authority
+            .with_verified_use(token, &binding, || {
+                self.settle(
+                    &settlement.request_id,
+                    record.revision,
+                    observation_digest,
+                    observation,
+                )
+            })
+            .map_err(|_| Error::AuthorityDenied)?
+    }
+
     pub fn settle(
         &mut self,
         request_id: &str,
@@ -512,7 +646,9 @@ impl DurableInferenceControl {
         {
             return Err(Error::AssignmentMismatch);
         }
-        if observation.consumed_tokens > reservation.maximum_tokens {
+        if observation.consumed_tokens > reservation.maximum_tokens
+            || observation.usage_units > reservation.quota_units
+        {
             return Err(Error::UsageExceeded);
         }
         if let Some(execution) = &record.execution_observation {
@@ -1208,6 +1344,19 @@ fn decode_event(line: &str) -> Result<Event, Error> {
         }),
         _ => Err(Error::CorruptJournal("event shape")),
     }
+}
+
+fn digest_json_array(value: &impl serde::Serialize) -> Result<[u8; 32], Error> {
+    let bytes =
+        serde_json::to_vec(value).map_err(|_| Error::InvalidDigest("usage settlement binding"))?;
+    Ok(Sha256::digest(bytes).into())
+}
+
+fn digest_json_hex(value: &impl serde::Serialize) -> Result<String, Error> {
+    Ok(format!("{:x}", Sha256::digest(
+        serde_json::to_vec(value)
+            .map_err(|_| Error::InvalidDigest("usage settlement digest"))?
+    )))
 }
 
 fn parse_u64(value: &str) -> Result<u64, Error> {
