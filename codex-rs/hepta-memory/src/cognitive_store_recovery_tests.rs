@@ -198,6 +198,51 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
 }
 
 #[tokio::test]
+async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(78);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current cut");
+    let authority = recovery_authority(&owner);
+    let fence = authority
+        .fencing_token_digest()
+        .expect("recovery fence digest");
+    let root = store
+        .path()
+        .parent()
+        .expect("cognitive root")
+        .to_path_buf();
+    let candidate = root.join(recovered_database_filename(&anchor, &fence));
+    std::fs::copy(store.path(), &candidate).expect("candidate file");
+    protect_database_file(&candidate).expect("private candidate");
+    publish_active_database(&root, &candidate).expect("pointer rename");
+
+    let error = reconcile_failed_recovery_candidate(
+        &root,
+        &candidate,
+        CognitiveRecoveryError::Unavailable(
+            "injected directory fsync failure after pointer rename".to_string(),
+        ),
+    );
+    assert!(
+        matches!(
+            error,
+            CognitiveRecoveryError::Indeterminate(ref message)
+                if message.contains("pointer rename")
+        ),
+        "post-rename publication uncertainty must remain indeterminate: {error:?}"
+    );
+    assert_eq!(
+        resolve_active_database_path(&root).expect("active pointer"),
+        candidate
+    );
+    assert!(
+        candidate.exists(),
+        "a possibly active recovered generation must not be cleaned up"
+    );
+}
+
+#[tokio::test]
 async fn writable_recovery_requires_exclusive_store_fence() {
     let temp = TempDir::new().expect("temp dir");
     let owner = agent_id(90);
