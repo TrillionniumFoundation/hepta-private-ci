@@ -35,6 +35,14 @@ pub(super) fn product_intent() -> CodexOperationIntent {
             source_admission_digest: digest(b"durable-source-admission"),
             agent_generation: Generation::new(7).expect("generation"),
             session_id: id("session:test"),
+            client_user_message_id: id("request:test"),
+            user_input_digest: digest(
+                &serde_json::to_vec(&vec![codex_app_server_protocol::UserInput::Text {
+                    text: "hello".to_string(),
+                    text_elements: Vec::new(),
+                }])
+                .unwrap(),
+            ),
             protocol_id: id(APP_SERVER_V2_PROTOCOL_ID),
             app_server_version: SERVER_VERSION.to_string(),
             codex_home_digest: digest(CODEX_HOME.as_bytes()),
@@ -157,6 +165,18 @@ fn request_digest_binds_source_generation_and_transport_connection() {
 
     let mut changed = intent.clone();
     changed.app_server_binding.as_mut().unwrap().session_id = id("session:other");
+    assert_ne!(baseline, request_digest(&changed));
+
+    let mut changed = intent.clone();
+    changed
+        .app_server_binding
+        .as_mut()
+        .unwrap()
+        .client_user_message_id = id("request:other");
+    assert_ne!(baseline, request_digest(&changed));
+
+    let mut changed = intent.clone();
+    changed.app_server_binding.as_mut().unwrap().user_input_digest = digest(b"other-input");
     assert_ne!(baseline, request_digest(&changed));
 
     let mut changed = intent;
