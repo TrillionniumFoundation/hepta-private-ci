@@ -302,6 +302,135 @@ async fn evid_01_distinct_authenticated_principals_satisfy_independence() {
 }
 
 #[tokio::test]
+async fn evid_01_distinct_principals_sharing_one_signing_identity_are_not_independent() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let candidate = candidate('b');
+    let observed = now_ms();
+    let shared_key = SigningKey::from_bytes(&[41; 32]);
+    let generator_issuer = issuer_with_key("principal:generator-shared-key", &shared_key);
+    let evaluator_issuer = issuer_with_key("principal:evaluator-shared-key", &shared_key);
+
+    let generator = evidence(
+        "evidence:generator-shared-key",
+        candidate.clone(),
+        EvidenceClaimClassV1::MandatoryTests,
+        EvidenceIssuerRoleV1::Generator,
+        observed,
+        None,
+        json!({"passed": true}),
+    );
+    append(&store, &generator_issuer, &shared_key, &generator, 1)
+        .await
+        .expect("append generator");
+
+    let evaluator = evidence(
+        "evidence:evaluator-shared-key",
+        candidate.clone(),
+        EvidenceClaimClassV1::MandatoryTests,
+        EvidenceIssuerRoleV1::Evaluator,
+        observed,
+        None,
+        json!({"passed": true}),
+    );
+    append(&store, &evaluator_issuer, &shared_key, &evaluator, 1)
+        .await
+        .expect("append evaluator");
+
+    let disposition = store
+        .qualification()
+        .verify_chain(
+            &VerifyChainRequestV1 {
+                candidate,
+                claim_class: EvidenceClaimClassV1::MandatoryTests,
+                required_roles: vec![
+                    EvidenceIssuerRoleV1::Generator,
+                    EvidenceIssuerRoleV1::Evaluator,
+                ],
+                now_unix_ms: observed,
+            },
+            &[
+                trust_binding(&generator_issuer, EvidenceIssuerRoleV1::Generator),
+                trust_binding(&evaluator_issuer, EvidenceIssuerRoleV1::Evaluator),
+            ],
+        )
+        .await
+        .expect("verify");
+    assert!(matches!(
+        disposition,
+        EvidenceDispositionV1::Conflicting { .. }
+    ));
+}
+
+#[tokio::test]
+async fn current_trust_rotation_or_revocation_invalidates_positive_verification() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let candidate = candidate('b');
+    let observed = now_ms();
+    let (issuer, key) = issuer("principal:current-trust", 42);
+    let receipt = evidence(
+        "evidence:current-trust",
+        candidate.clone(),
+        EvidenceClaimClassV1::ExactSource,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        None,
+        json!({"exact_head": true}),
+    );
+    append(&store, &issuer, &key, &receipt, 1)
+        .await
+        .expect("append evidence");
+
+    let request = VerifyChainRequestV1 {
+        candidate,
+        claim_class: EvidenceClaimClassV1::ExactSource,
+        required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+        now_unix_ms: observed,
+    };
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(
+                &request,
+                &[trust_binding(&issuer, EvidenceIssuerRoleV1::Architecture)],
+            )
+            .await
+            .expect("verify current trust"),
+        EvidenceDispositionV1::Supported { .. }
+    ));
+
+    let rotated_key = SigningKey::from_bytes(&[43; 32]);
+    let rotated = issuer_with_key("principal:current-trust", &rotated_key);
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(
+                &request,
+                &[trust_binding(
+                    &rotated,
+                    EvidenceIssuerRoleV1::Architecture,
+                )],
+            )
+            .await
+            .expect("verify rotated trust"),
+        EvidenceDispositionV1::Conflicting { .. }
+    ));
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(&request, &[])
+            .await
+            .expect("verify revoked trust"),
+        EvidenceDispositionV1::Conflicting { .. }
+    ));
+}
+
+#[tokio::test]
 async fn evid_02_wrong_tree_and_expired_candidate_are_unavailable() {
     let temp = TempDir::new().expect("temp");
     let store = HeptaEvidenceStore::open(&config(&temp))
