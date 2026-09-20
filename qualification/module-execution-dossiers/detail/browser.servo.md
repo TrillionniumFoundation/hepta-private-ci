@@ -8,7 +8,7 @@ Status: durable Browser effect owner, current-pin Servo worker source, bounded s
 Roots: `apps/hepta-browser`, `third_party/servo-patches`.
 Package: `BROWSER-WEB-C1`.
 Current Servo pin: `5cc5bd32d02619acdec5736055515e38c5840ce1`.
-Exact mapped source snapshot: `44cdb5e35649efd4c1ac3158fddb10c9270d2947` / tree `87dce666e364741193b12f68dcb5ebdf93278d0d`; later map/verifier/document-only successors are accepted only when strict source-drift verification remains clean.
+Exact mapped source snapshot: `44cdb5e35649efd4c1ac3158fddb10c9270d2947` / tree `2de770e678de936de42dfb9e19730804a5a013e7`; later map/verifier/document-only successors are accepted only when strict source-drift verification remains clean.
 
 Cross-owner Agentd composition is source-present in `codex-rs/hepta-agentd` and remains owned/reviewed by `runtime.agentd`. The long-running Agentd process can retain the private Browser port for its generation; Browser ownership is not widened by the caller.
 
