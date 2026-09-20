@@ -24,6 +24,7 @@ pub use codex_hepta_memory::ProductionAuthorityLease;
 pub use codex_hepta_memory::ProductionAuthorityToken;
 pub use codex_hepta_memory::ProductionAuthorityVerifier;
 pub use codex_hepta_memory::ProductionCognitiveMutation;
+pub use codex_hepta_memory::ProductionCognitiveMutationCapability;
 pub use codex_hepta_memory::ProductionCognitiveMutationError;
 pub use codex_hepta_memory::ProductionCognitiveMutationFuture;
 pub use codex_hepta_memory::ProductionDispatchFuture;
