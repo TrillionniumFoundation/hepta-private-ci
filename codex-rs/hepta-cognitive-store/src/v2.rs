@@ -20,7 +20,6 @@ use codex_hepta_cognitive_types::build_snapshot;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
 use codex_hepta_cognitive_types::hnmf::MemoryVerificationStateV1;
-use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCContractError;
 use codex_hepta_cognitive_types::lane_c::MemoryAdmissionCandidateV1;
@@ -29,6 +28,7 @@ use codex_hepta_cognitive_types::lane_c::MemoryVerificationState;
 use codex_hepta_cognitive_types::lane_c::MemoryWriteDisposition;
 use codex_hepta_cognitive_types::lane_c::MemoryWriteIntentV1;
 use codex_hepta_cognitive_types::lane_c::MemoryWriteReceiptV1;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -47,8 +47,7 @@ pub const MAX_V2_SNAPSHOT_PAGE_RECORDS: usize = 512;
 const FORGET_DOMAIN: &[u8] = b"hepta.cognitive-store.forget-intent.v2";
 const STORE_SNAPSHOT_DOMAIN: &[u8] = b"hepta.cognitive-store.snapshot.v2";
 const STORE_IMAGE_DOMAIN: &[u8] = b"hepta.cognitive-store.image.v2";
-const CANONICAL_EVENT_SHADOW_DOMAIN: &[u8] =
-    b"hepta.cognitive-store.canonical-event-shadow.v1";
+const CANONICAL_EVENT_SHADOW_DOMAIN: &[u8] = b"hepta.cognitive-store.canonical-event-shadow.v1";
 
 /// Product hosts must verify the authorization against the current authority
 /// owner. A digest alone never grants a write.
@@ -1438,10 +1437,19 @@ fn validate_canonical_event_candidate_binding(
 ) -> Result<(), CognitiveStoreV2Error> {
     let verification_matches = matches!(
         (candidate.verification, event.verification),
-        (MemoryVerificationState::Unverified, MemoryVerificationStateV1::Unverified)
-            | (MemoryVerificationState::Verified, MemoryVerificationStateV1::Verified)
-            | (MemoryVerificationState::Contradicted, MemoryVerificationStateV1::Contradicted)
-            | (MemoryVerificationState::Revoked, MemoryVerificationStateV1::Revoked)
+        (
+            MemoryVerificationState::Unverified,
+            MemoryVerificationStateV1::Unverified
+        ) | (
+            MemoryVerificationState::Verified,
+            MemoryVerificationStateV1::Verified
+        ) | (
+            MemoryVerificationState::Contradicted,
+            MemoryVerificationStateV1::Contradicted
+        ) | (
+            MemoryVerificationState::Revoked,
+            MemoryVerificationStateV1::Revoked
+        )
     );
     if !verification_matches {
         return Err(CognitiveStoreV2Error::CanonicalVerificationMismatch);
@@ -1467,7 +1475,10 @@ fn validate_canonical_event_candidate_binding(
         if event_sources
             .insert(
                 provenance.source_id.to_string(),
-                (provenance.source_sha256.digest(), provenance.observed_at_unix_ms),
+                (
+                    provenance.source_sha256.digest(),
+                    provenance.observed_at_unix_ms,
+                ),
             )
             .is_some()
         {
