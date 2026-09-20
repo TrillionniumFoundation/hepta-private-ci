@@ -53,6 +53,8 @@ pub struct RunSnapshot {
     pub body_digest: String,
     pub artifact_set_digest: String,
     pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
     pub deadline_ms: u64,
 }
 
@@ -64,6 +66,8 @@ pub struct ContextAttachment {
     pub body_digest: String,
     pub artifact_set_digest: String,
     pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
     pub deadline_ms: u64,
     pub context_digest: String,
     pub compilation_receipt_digest: String,
@@ -85,6 +89,8 @@ pub struct RunReceipt {
     pub phase: RunPhase,
     pub context_digest: Option<String>,
     pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
     pub deadline_ms: u64,
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
@@ -224,6 +230,8 @@ impl AgentRunCoordinator {
             || attachment.body_digest != record.snapshot.body_digest
             || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
             || attachment.authority_epoch != record.snapshot.authority_epoch
+            || attachment.generation != record.snapshot.generation
+            || attachment.fence_digest != record.snapshot.fence_digest
             || attachment.deadline_ms != record.snapshot.deadline_ms
         {
             return Err(AgentRunError::MixedSnapshot);
@@ -515,10 +523,11 @@ fn validate_snapshot_fields(value: &RunSnapshot) -> Result<(), AgentRunError> {
         (&value.objective_digest, "objective"),
         (&value.body_digest, "body"),
         (&value.artifact_set_digest, "artifact set"),
+        (&value.fence_digest, "fence"),
     ] {
         validate_digest(digest, field)?;
     }
-    if value.authority_epoch == 0 {
+    if value.authority_epoch == 0 || value.generation == 0 {
         return Err(AgentRunError::InvalidGeneration);
     }
     if value.deadline_ms == 0 {
@@ -534,12 +543,13 @@ fn validate_attachment(value: &ContextAttachment) -> Result<(), AgentRunError> {
         (&value.objective_digest, "objective"),
         (&value.body_digest, "body"),
         (&value.artifact_set_digest, "artifact set"),
+        (&value.fence_digest, "fence"),
         (&value.context_digest, "context"),
         (&value.compilation_receipt_digest, "compilation receipt"),
     ] {
         validate_digest(digest, field)?;
     }
-    if value.authority_epoch == 0 {
+    if value.authority_epoch == 0 || value.generation == 0 {
         return Err(AgentRunError::InvalidGeneration);
     }
     if value.deadline_ms == 0 {
@@ -667,6 +677,8 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         phase: record.phase,
         context_digest: record.context_digest.clone(),
         authority_epoch: record.snapshot.authority_epoch,
+        generation: record.snapshot.generation,
+        fence_digest: record.snapshot.fence_digest.clone(),
         deadline_ms: record.snapshot.deadline_ms,
         cancel_reason: record.cancel_reason.clone(),
         cancel_ack_deadline_ms: record.cancel_ack_deadline_ms,
