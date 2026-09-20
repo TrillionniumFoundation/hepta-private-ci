@@ -56,9 +56,9 @@ jobs:
       - name: Format qualified policy surfaces
         run: cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence --package codex-hepta-learning-ledger -- --check
       - name: Compile all qualified policy targets
-        run: cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets
+        run: cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-learning-ledger --all-targets
       - name: Run policy and frozen-data qualification tests
-        run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
+        run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-learning-ledger
       - name: Run kernel fast-policy gate
         shell: bash
         run: |
@@ -118,7 +118,7 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Test qualified policy on merge candidate
-        run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
+        run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence -p codex-hepta-learning-ledger
       - name: Gate kernel fast policy on merge candidate
         run: cargo run --locked --release -p codex-hepta-intuition --example fast_gate
       - name: Gate authenticated fast policy on merge candidate
