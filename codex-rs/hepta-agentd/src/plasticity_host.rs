@@ -824,6 +824,7 @@ pub fn reopen_agentd_plasticity_writer_v1(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::{Read, Seek, SeekFrom, Write};
     use tempfile::tempfile;
 
     fn digest(value: &[u8]) -> Digest32 {
@@ -1078,6 +1079,108 @@ mod tests {
             ),
             Err(PlasticityOwnerEvidenceErrorV1::Unauthorized)
         );
+    }
+
+
+    fn durable_no_change_proposal() -> codex_hepta_plasticity::ParameterProposalV2 {
+        let selected = digest(b"rollback-artifact");
+        codex_hepta_plasticity::propose_v2(
+            codex_hepta_plasticity::ParameterProposalRequestV2 {
+                proposal_id: StableId::new("proposal:rollback-domain").expect("id"),
+                proposer_id: StableId::new("generator:rollback-domain").expect("id"),
+                evaluator_id: StableId::new("evaluator:rollback-domain").expect("id"),
+                selected_artifact_digest: selected,
+                window: ProposalWindowV2 {
+                    window_id: StableId::new("window:rollback-domain").expect("id"),
+                    window_digest: digest(b"rollback-window"),
+                },
+                baseline_generation: Generation::new(1).expect("generation"),
+                candidate_generation: Generation::new(2).expect("generation"),
+                dataset_digest: digest(b"rollback-dataset"),
+                update_rule_digest: digest(b"rollback-update-rule"),
+                modulator_digest: digest(b"rollback-modulator"),
+                modulator_broadcast_digest: digest(b"rollback-broadcast"),
+                eligibility_digest: digest(b"rollback-eligibility"),
+                evaluation_digest: digest(b"rollback-evaluation"),
+                rollback_predecessor_digest: selected,
+                norm_layers: vec![codex_hepta_plasticity::LayerNormDenominatorV2 {
+                    layer_id: StableId::new("layer:rollback-domain").expect("id"),
+                    baseline_squared_l2_raw_q64: 1_u128 << 64,
+                }],
+                candidates: vec![codex_hepta_plasticity::ParameterCandidateRequestV2 {
+                    candidate_id: StableId::new("candidate:rollback-no-change").expect("id"),
+                    kind: codex_hepta_plasticity::ParameterCandidateKindV2::NoChange,
+                    parameter_deltas: Vec::new(),
+                }],
+            },
+        )
+        .expect("proposal")
+    }
+
+    #[test]
+    fn real_append_ack_crash_then_registry_rollback_is_rejected_on_restart() {
+        let registry_file = tempfile().expect("registry file");
+        let anchor_file = tempfile().expect("anchor file");
+        let scope = digest(b"real-rollback-domain-scope");
+
+        let mut anchor_store =
+            AgentdPlasticityAnchorStoreV1::open(anchor_file.try_clone().expect("anchor clone"), scope)
+                .expect("open anchor store");
+        let fence = anchor_store.issue_next_fence().expect("issue fence");
+        assert_eq!(fence, 1);
+
+        let mut registry = codex_hepta_plasticity::DurableProposalRegistry::open_bootstrap_empty(
+            registry_file.try_clone().expect("registry clone"),
+            scope,
+            fence,
+            8,
+        )
+        .expect("bootstrap registry");
+
+        let mut header_reader = registry_file.try_clone().expect("header reader");
+        header_reader.seek(SeekFrom::Start(0)).expect("seek header");
+        let mut header_only = Vec::new();
+        header_reader.read_to_end(&mut header_only).expect("read header");
+        assert!(!header_only.is_empty());
+
+        let append = registry
+            .append_v2(Digest32::ZERO, durable_no_change_proposal())
+            .expect("durable append");
+        assert_eq!(append.sequence, 1);
+        let acknowledged = registry
+            .current_anchor()
+            .expect("current anchor")
+            .expect("acknowledgeable anchor");
+        assert!(anchor_store.persist_anchor(scope, fence, acknowledged));
+
+        // Crash boundary: all in-process handles disappear after the proposal
+        // frame and independent acknowledgement are durable.
+        drop(registry);
+        drop(anchor_store);
+
+        // Roll back only the proposal-registry domain to its previously valid
+        // header while retaining the independent anchor/fence journal.
+        let mut rollback = registry_file.try_clone().expect("rollback writer");
+        rollback.set_len(0).expect("truncate registry");
+        rollback.seek(SeekFrom::Start(0)).expect("seek rollback");
+        rollback.write_all(&header_only).expect("restore old registry");
+        rollback.sync_all().expect("sync rollback");
+        drop(rollback);
+
+        let result = reopen_agentd_plasticity_writer_v1(
+            registry_file,
+            anchor_file,
+            scope,
+            8,
+        );
+        assert!(matches!(
+            result,
+            Err(AgentdPlasticityHostErrorV1::Writer(
+                AnchoredPlasticityWriterErrorV1::Registry(
+                    codex_hepta_plasticity::DurableProposalRegistryError::AcknowledgedHistoryMissing
+                )
+            ))
+        ));
     }
 
     #[test]
