@@ -17,6 +17,7 @@ use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 use codex_hepta_intuition::canonical_completeness_evidence_payload_v1;
+use codex_hepta_intuition::canonical_exact_request_evidence_payload_v1;
 use codex_hepta_intuition::canonical_profile_qualification_evidence_payload_v1;
 use codex_hepta_intuition::canonical_random_assignment_evidence_payload_v1;
 use codex_hepta_intuition::canonical_scoring_evidence_payload_v1;
@@ -103,11 +104,8 @@ fn sign(
 }
 
 #[test]
+#[ignore = "release-only performance gate; invoked explicitly by intuition qualification CI"]
 fn authenticated_fast_policy_latency_gate() {
-    if cfg!(debug_assertions) {
-        eprintln!("authenticated fast-policy timing gate is enforced only in release profile");
-        return;
-    }
     eprintln!("mode,candidates,iterations,p50_us,p95_us,p99_us,throughput_per_s");
     for gate in GATES {
         run_gate(gate);
@@ -238,20 +236,23 @@ fn run_gate(gate: Gate) {
         SigningKey::from_bytes(&[13; 32]),
         SigningKey::from_bytes(&[17; 32]),
         SigningKey::from_bytes(&[19; 32]),
+        SigningKey::from_bytes(&[23; 32]),
     ];
     let roles = [
         LearningEvidenceRoleV1::Generator,
         LearningEvidenceRoleV1::Scorer,
+        LearningEvidenceRoleV1::RequestAttestor,
         LearningEvidenceRoleV1::Evaluator,
         LearningEvidenceRoleV1::RandomSource,
     ];
     let principal_names = [
         "benchmark:generator",
         "benchmark:scorer",
+        "benchmark:request-attestor",
         "benchmark:evaluator",
         "benchmark:random-source",
     ];
-    let principals = (0..4)
+    let principals = (0..5)
         .map(|index| AuthenticatedPrincipalV1 {
             principal_id: id(principal_names[index]),
             credential_chain_digest: digest(&format!("benchmark:credential:{index}")),
@@ -266,7 +267,7 @@ fn run_gate(gate: Gate) {
         scope_digest: digest("benchmark:scope"),
         objective_digest,
         authority_epoch: 3,
-        signers: (0..4)
+        signers: (0..5)
             .map(|index| TrustedLearningSignerV1 {
                 principal: principals[index].clone(),
                 controller_id: id(&format!("benchmark:controller:{index}")),
@@ -280,6 +281,7 @@ fn run_gate(gate: Gate) {
 
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request).unwrap();
     let scoring_payload = canonical_scoring_evidence_payload_v1(&scoring).unwrap();
+    let exact_request_payload = canonical_exact_request_evidence_payload_v1(&request).unwrap();
     let profile_payload = canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
     let assignment_payload = canonical_random_assignment_evidence_payload_v1(&request)
         .unwrap()
@@ -309,15 +311,24 @@ fn run_gate(gate: Gate) {
             &principals[2],
             &keys[2],
             roles[2],
-            "benchmark:evidence:evaluator",
+            "benchmark:evidence:request-attestor",
             objective_digest,
-            &profile_payload,
+            &exact_request_payload,
         ),
         sign(
             &verifier,
             &principals[3],
             &keys[3],
             roles[3],
+            "benchmark:evidence:evaluator",
+            objective_digest,
+            &profile_payload,
+        ),
+        sign(
+            &verifier,
+            &principals[4],
+            &keys[4],
+            roles[4],
             "benchmark:evidence:random-source",
             objective_digest,
             &assignment_payload,
@@ -333,8 +344,9 @@ fn run_gate(gate: Gate) {
                 IntuitionQualificationEvidenceV1 {
                     completeness: &signed[0],
                     scoring: &signed[1],
-                    profile_qualification: &signed[2],
-                    assignment: Some(&signed[3]),
+                    exact_request: &signed[2],
+                    profile_qualification: &signed[3],
+                    assignment: Some(&signed[4]),
                 },
                 &verifier,
                 150,
@@ -354,8 +366,9 @@ fn run_gate(gate: Gate) {
             IntuitionQualificationEvidenceV1 {
                 completeness: &signed[0],
                 scoring: &signed[1],
-                profile_qualification: &signed[2],
-                assignment: Some(&signed[3]),
+                exact_request: &signed[2],
+                profile_qualification: &signed[3],
+                assignment: Some(&signed[4]),
             },
             &verifier,
             150,
