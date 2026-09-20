@@ -52,6 +52,7 @@ use crate::VerifiedLearningEvidenceV1;
 use crate::finalize_credit_batch;
 use crate::freeze_dataset_receipt_v3;
 use crate::validate_candidate_set_completeness;
+use crate::verify_dataset_snapshot_receipt_v3;
 
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
@@ -472,6 +473,38 @@ impl LedgerWriter {
             artifact_id: request.artifact_id,
             append,
         })
+    }
+
+    /// Revalidate a frozen dataset immediately before final artifact use.
+    ///
+    /// The receipt first verifies its own immutable identity, then every frozen
+    /// source event must still be present in the current canonical active
+    /// projection. A later correction, revocation or unlearning event therefore
+    /// invalidates stale datasets without rewriting their historical receipts.
+    pub fn revalidate_dataset_snapshot(
+        &self,
+        receipt: &DatasetSnapshotReceiptV3,
+        now: u64,
+    ) -> Result<(), ProductionLedgerError> {
+        verify_dataset_snapshot_receipt_v3(receipt, now)?;
+        let snapshot = self.backend.snapshot()?;
+        let ledger = LearningLedger::from_snapshot(snapshot)?;
+        let active_digests = ledger
+            .active_records()
+            .into_iter()
+            .map(|record| record.event_digest)
+            .collect::<BTreeSet<_>>();
+        if receipt
+            .snapshot
+            .source_record_digests
+            .iter()
+            .any(|digest| !active_digests.contains(digest))
+        {
+            return Err(ProductionLedgerError::Binding(
+                "dataset source revoked, corrected or unavailable",
+            ));
+        }
+        Ok(())
     }
 
     /// Build a dataset receipt from the current anchored ledger. Source records,
