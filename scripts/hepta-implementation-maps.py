@@ -41,6 +41,30 @@ def lane_by_module():
     }
 
 
+def rust_crate_root_callable_exports(rel: str) -> set[str]:
+    """Return public callable symbols exposed from a Rust crate root.
+
+    This intentionally checks the crate-root API, not every public function in
+    private implementation modules. A new callable re-exported from lib.rs
+    therefore cannot silently bypass the module implementation map.
+    """
+    path = ROOT / rel
+    text = path.read_text(encoding="utf-8")
+    exported = set(
+        re.findall(
+            r"(?m)^pub use [^;\n]+::([a-z][A-Za-z0-9_]*)\s*;",
+            text,
+        )
+    )
+    exported.update(
+        re.findall(
+            r"(?m)^pub\s+(?:const\s+)?fn\s+([a-z][A-Za-z0-9_]*)\s*\(",
+            text,
+        )
+    )
+    return exported
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
@@ -347,6 +371,21 @@ def verify():
             continue
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
+        if mid == "intelligence.control":
+            callable_exports = rust_crate_root_callable_exports(
+                "codex-rs/hepta-intelligence/src/lib.rs"
+            )
+            mapped_symbols = {
+                op.get("nativeSymbol")
+                for op in ops
+                if isinstance(op.get("nativeSymbol"), str)
+            }
+            missing_exports = sorted(callable_exports - mapped_symbols)
+            if missing_exports:
+                failures.append(
+                    f"{mid}: unmapped public Rust callable exports "
+                    + ",".join(missing_exports)
+                )
         for op in ops:
             if not op.get("operation"):
                 failures.append(f"{mid}: operation id")
