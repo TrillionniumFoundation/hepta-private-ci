@@ -18,9 +18,13 @@ mod final_use_host;
 mod https_consumer;
 mod lease_client;
 mod lease_store;
+mod provider_auth;
 mod secret_boundary_v1;
 
 pub use final_use_host::BaoConsumerCallback;
+pub use final_use_host::BaoLeaseConsumerCallback;
+pub use final_use_host::BaoLeaseUseGuard;
+pub use final_use_host::BaoLeaseUseWitness;
 pub use final_use_host::BaoFinalUseHost;
 pub use final_use_host::BaoFinalUseHostError;
 pub use final_use_host::RegisteredBaoConsumer;
@@ -45,6 +49,8 @@ pub use lease_store::SecretLeaseOperationV1;
 pub use lease_store::SecretLeaseStateV1;
 pub use lease_store::SecretLeaseStore;
 pub use lease_store::SecretLeaseStoreError;
+pub use provider_auth::BaoLeasedProviderAuth;
+pub use provider_auth::BaoLeasedProviderAuthError;
 
 pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
 pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;
