@@ -253,7 +253,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target bytes, compatibility evidence, control/lifecycle/authority fences and current pinned revocation frontier. The authoritative release-selection journal is fsynced before the execution intent so the earliest crash cut remains reconstructible.",
+      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target bytes, control/lifecycle/authority fences, current host-pinned revocation frontier and a separately host-pinned current compatibility receipt. A signed grant cannot self-assert compatibility currentness. The authoritative release-selection journal is fsynced before the execution intent so the earliest crash cut remains reconstructible.",
       "operation": "signed_upgrade",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -286,7 +286,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Admits a production rollback only with a signed exact predecessor selection and fresh current release provenance/frontier checks; cached predecessor identity alone is insufficient.",
+      "sourceSemantics": "Admits a production rollback only with a signed exact predecessor selection, fresh current release provenance, the current host-pinned revocation frontier and the current host-pinned compatibility receipt; cached predecessor identity or a stale signed compatibility digest is insufficient.",
       "operation": "signed_rollback",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -319,7 +319,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Uses the authoritative release-selection journal to classify crash cuts, repairs terminal intent only when Fleet durable current release and immutable bytes prove the same outcome, otherwise normalizes to recovery_required. The new status RPC exposes the durable intent digest needed for an independently signed recovery decision bound to observed release bytes and current lifecycle/control/authority/revocation fences.",
+      "sourceSemantics": "Uses the authoritative release-selection journal to classify crash cuts, repairs terminal intent only when Fleet durable current release and immutable bytes prove the same outcome, otherwise normalizes to recovery_required. The new status RPC exposes the durable intent digest needed for an independently signed recovery decision bound to observed release bytes, current lifecycle/control/authority fences, current revocation frontier and the current host-pinned compatibility receipt.",
       "operation": "reconcile_signed_intent",
       "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
