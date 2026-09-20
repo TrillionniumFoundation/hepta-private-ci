@@ -624,3 +624,7 @@ const fn stage_code(stage: LaneFStageV3) -> u8 {
         LaneFStageV3::LearningRecorded => 10,
     }
 }
+
+#[cfg(test)]
+#[path = "native_ports_v3_tests.rs"]
+mod tests;

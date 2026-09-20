@@ -315,7 +315,7 @@ fn utility_contribution(candidate: &str, value: FixedQ32) -> ReadOnlyUtilityCont
     }
 }
 
-fn vertical_request() -> ReadOnlyVerticalRequest {
+pub(crate) fn vertical_request() -> ReadOnlyVerticalRequest {
     let profile = objective_profile();
     let envelope = objective_envelope();
     let objective_context = objective_context(&profile, &envelope);
