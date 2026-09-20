@@ -646,13 +646,6 @@ fn restore_v2(
             return Err(DurableRegistryError::Corrupt);
         }
     }
-    lifecycle_events.sort_by(|left, right| {
-        left.revision
-            .get()
-            .cmp(&right.revision.get())
-            .then_with(|| left.factor_id.cmp(&right.factor_id))
-    });
-
     let mut realizations = BTreeMap::new();
     for stored_realization in stored.realizations {
         let realization = decode_realization(stored_realization)?;
@@ -784,6 +777,12 @@ fn migrate_v1(
             return Err(DurableRegistryError::Corrupt);
         }
     }
+    lifecycle_events.sort_by(|left, right| {
+        left.revision
+            .get()
+            .cmp(&right.revision.get())
+            .then_with(|| left.factor_id.cmp(&right.factor_id))
+    });
 
     let mut realizations = BTreeMap::new();
     for stored_realization in stored.realizations {
