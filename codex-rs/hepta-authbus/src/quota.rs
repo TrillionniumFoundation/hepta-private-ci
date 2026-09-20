@@ -9,6 +9,7 @@ pub enum ReservationState {
     Settled,
     Released,
     Expired,
+    Cancelled,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
