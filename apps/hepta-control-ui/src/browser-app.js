@@ -111,7 +111,9 @@ export class ControlPlaneApp {
   }) {
     this.#root = requireRoot(root);
     this.#document = root.ownerDocument;
-    requireRecord(client, "client");
+    if (client === null || (typeof client !== "object" && typeof client !== "function")) {
+      fail(ERROR_CODES.INVALID_INPUT, "client must be an object");
+    }
     for (const method of ["readView", "submitRequest", "requestStop"]) {
       if (typeof client[method] !== "function") {
         fail(ERROR_CODES.INVALID_INPUT, `client.${method} must be a function`);
