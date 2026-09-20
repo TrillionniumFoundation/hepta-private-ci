@@ -22,9 +22,11 @@ The V3 predecessor chain is:
 11. learning.ledger — durable decision/exposure owner boundary.
 
 Every external stage consumes one PortInputV3 containing the exact run,
-capability-snapshot digest, predecessor digest, stage budget and absolute stage deadline. Every successful
-receipt must echo the stage, snapshot and predecessor, identify the registered
-producer, return a non-zero output digest and retain AuthorityPosture::DENY_ALL.
+capability-snapshot digest, predecessor digest, selected capability ID,
+implementation digest, implementation generation, stage budget and absolute stage
+deadline. Every successful receipt must echo that exact frozen capability binding,
+the stage, snapshot and predecessor, identify the registered producer, return a
+non-zero output digest and retain AuthorityPosture::DENY_ALL.
 Required-stage failure is terminal. Only neuron and prompt may use
 FallbackUsed. Intuition alone may return abstain or slow path.
 
@@ -44,6 +46,15 @@ required and owner-checked before any owner callback:
 
 neural.signal and prompt.portfolio are optional. If absent, the graph records a
 deterministic unavailable fallback without calling a fabricated adapter.
+
+For the registered Agentd native product callsite, the frozen snapshot is not the
+last check. `CurrentCapabilitySnapshotProviderV3` is invoked immediately before
+`HostHandoffAccepted`; Agentd requires the freshly admitted snapshot digest to
+equal the frozen snapshot exactly. This covers authority epoch, body generation,
+configuration, revocation frontier and every capability owner/contract/
+implementation/generation binding. The provider must acquire and authenticate
+those current facts from their registered owners/trust surfaces; intelligence.control
+does not self-authenticate or mint that evidence.
 
 ## Native contracts
 
@@ -102,9 +113,11 @@ after anchored reopen is idempotent.
 ## Compatibility and remaining gates
 
 V1/V2 receipt meanings are unchanged. run_read_only_vertical remains the concrete
-objective/cognitive/context/NDU read-only slice. run_evaluated_shadow_v1 remains
-the signed evaluation + durable Decision qualification path. They must not be
-reported as product execution merely because V3 exists.
+objective/cognitive/context/NDU read-only slice, while
+run_read_only_vertical_outcome_v1 preserves explicit objective abstention as a
+successful control outcome without changing the legacy ABI. run_evaluated_shadow_v1
+remains the signed evaluation + durable Decision qualification path. They must not
+be reported as product execution merely because V3 exists.
 
 Source completion for V3 requires package/workspace tests, strict lint and
 synthetic-merge qualification on the exact candidate. Agentd now provides the named
