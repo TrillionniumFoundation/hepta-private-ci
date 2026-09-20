@@ -46,6 +46,14 @@ fn wire_v2_is_admitted_before_existing_runtime_codex_adapter_logic(
     assert_eq!(receipt.status, AdapterStatus::Succeeded);
     assert!(!receipt.model_authority);
     assert!(!receipt.provider_authority);
+    assert!(matches!(
+        encode_codex_operation_intent_wire_v2(
+            &intent,
+            id("context.compiler"),
+            Generation::new(4)?,
+        ),
+        Err(WireAdapterError::UnexpectedProducer(_))
+    ));
     Ok(())
 }
 
@@ -84,6 +92,20 @@ fn wire_v2_rejects_unknown_fields_and_payload_binding_drift(
         Err(WireAdapterError::Payload(SchemaCodecError::Rejected(
             "payload binding mismatch"
         )))
+    ));
+
+    let wrong_producer = WireEnvelopeV2::new(
+        id(CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2),
+        id("context.compiler"),
+        Generation::new(3)?,
+        format!(
+            "{{\"operation_id\":\"operation.1\",\"thread_id\":\"thread.1\",\"method_id\":\"turn.start\",\"payload_digest\":\"{digest}\",\"lease_payload_digest\":\"{digest}\",\"deadline_ms\":100}}"
+        )
+        .into_bytes(),
+    )?;
+    assert!(matches!(
+        adapt_wire_v2(1, &wrong_producer, None),
+        Err(WireAdapterError::UnexpectedProducer(_))
     ));
     Ok(())
 }
