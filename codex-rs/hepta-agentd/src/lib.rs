@@ -39,6 +39,7 @@ pub use codex_hepta_agent_protocol::AuthBusTextStatus;
 pub use codex_hepta_agent_protocol::CognitiveContextItem;
 pub use codex_hepta_agent_protocol::CognitiveContextPlan;
 pub use codex_hepta_agent_protocol::CognitiveContextSnapshot;
+pub use codex_hepta_agent_protocol::DrainSnapshot;
 pub use codex_hepta_agent_protocol::EventBatch;
 pub use codex_hepta_agent_protocol::HealthSnapshot;
 pub use codex_hepta_agent_protocol::LifecycleSnapshot;
