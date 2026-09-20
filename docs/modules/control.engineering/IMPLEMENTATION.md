@@ -44,6 +44,8 @@ must provide the separate owner authorization required by its own contract.
 | `path_policy.py` | Canonical POSIX paths and cross-platform alias rejection | Store, candidate generator and sandbox |
 | `control_plane.py` | SQLite schema, transactions, envelopes, leases, base scheduling and audit anchor head | Public facade, orchestrator and CLI |
 | `orchestration.py` | Exact source admission, signed completion receipts, skills/capacity scheduling, integration order and merge-queue proposals | Product caller and public package |
+| `worker_lifecycle.py` | Durable worker registration, fenced claims, signed heartbeats/results, bounded requeue and independently observed completion | Named product owner |
+| `product_runtime.py` | Named `EngineeringControlProduct` composition over repository identity, SQLite owner, verifier port, planner and worker lifecycle | Repository product caller / production composition target |
 | `candidate.py` | Deterministic single/multi-file/rename grammar, exact Git materialization and immutable oracle paths | Public facade and CLI |
 | `sandbox_control.py` | <=8 host-wide POSIX sandbox admission (process-local fallback on non-POSIX fixtures) and <=2 infrastructure-only retries | Mutation testing and production qualification |
 | `mutation_testing.py` | Baseline-pass / mutant-kill evaluator gate | Qualification |
@@ -69,7 +71,7 @@ caller that can directly rewrite its connection, modules or database.
 
 `EngineeringStore` uses SQLite foreign keys, WAL, `synchronous=FULL` and one outer
 `BEGIN IMMEDIATE` per mutation. Nested owner operations share that transaction.
-`SCHEMA.sql` is the single schema source, currently version 6. Tables are:
+`SCHEMA.sql` is the single schema source, currently version 7. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;
 - `path_leases`: state, revision, authority epoch, monotonically increasing fence and expiry;
@@ -85,10 +87,10 @@ caller that can directly rewrite its connection, modules or database.
 
 An owner mutation, its binding/frontier and audit event either commit together or
 roll back together. Equal identity and semantics replay idempotently; different
-semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5 stores migrate
-transactionally to v6; historical generations without a bound frontier remain
+semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5/v6 stores migrate
+transactionally to v7; historical generations without a bound frontier remain
 unusable and require a new generation. A future version is rejected before any
-schema or journal-mode write. A database claiming v5 but missing a required table
+schema or journal-mode write. A database claiming v7 but missing a required table
 is rejected. A corrupted store must be quarantined and restored from a verified
 backup; startup does not silently reconstruct acceptance or change owner facts.
 
@@ -132,7 +134,7 @@ packages with an eligible worker, remaining worker/CI/reviewer capacity and no p
 conflict. Infeasible work does not consume the assignment limit. The exact final
 assigned/blocked set—not a coarser preliminary schedule—is written to
 `assignment_generations` in the same transaction as its frontier and audit event.
-The generation semantic digest binds normalized package/worker/capacity inputs,
+The generation semantic digest binds normalized package/worker/capacity inputs and is persisted in `orchestration_generations`. Worker execution then uses `worker_registrations` and `worker_claims`: a claim must match the scheduler-selected worker and an active fenced path lease; signed heartbeat expiry can enter bounded retry, semantic failure cannot; a worker `success` result is non-terminal until an independent CI completion receipt is observed. The generation semantic digest binds normalized package/worker/capacity inputs,
 completion frontier, assignments, integration order and merge queue. A changed
 frontier or planning input requires a new generation ID. An assignment is still
 a proposal; workers must acquire the exact local lease, and multi-host production

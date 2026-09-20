@@ -24,7 +24,7 @@ The primary owner `developer-productivity` controls changes inside the declared 
 
 Plane `engineering`, kind `orchestrator`, state model `stateful_projection` and architecture role `engineering_control` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
 
-The concrete Python owner, SQLite v6 schema, authenticated public API, CLI,
+The concrete Python owner, SQLite v7 schema, authenticated public API, CLI,
 resource limits, failure recovery and behavioral verification are documented in
 [IMPLEMENTATION.md](IMPLEMENTATION.md). The candidate isolation contract is in
 [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md). These implementation companions replace
@@ -160,7 +160,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Run the control_engineering_v2 CLI and SQLite v6 owner documented in IMPLEMENTATION.md. Keep one connection per execution thread; writers serialize with BEGIN IMMEDIATE. Strong candidate isolation requires a successful Bubblewrap probe. WAL capacity, backup, external audit anchoring, retention and availability are operational responsibilities, not properties of the in-file hash chain.
+Run the control_engineering_v2 CLI and SQLite v7 owner documented in IMPLEMENTATION.md. Keep one connection per execution thread; writers serialize with BEGIN IMMEDIATE. Strong candidate isolation requires a successful Bubblewrap probe. WAL capacity, backup, external audit anchoring, retention and availability are operational responsibilities, not properties of the in-file hash chain.
 
 Current operating and state-format references:
 
@@ -175,6 +175,8 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [tools/hepta-engineering-control/test_orchestration.py](../../../tools/hepta-engineering-control/test_orchestration.py) — signed completion/source admission and multidimensional scheduling.
+- [tools/hepta-engineering-control/test_worker_lifecycle.py](../../../tools/hepta-engineering-control/test_worker_lifecycle.py) — durable claim/heartbeat/requeue/result/independent-completion lifecycle.
+- [tools/hepta-engineering-control/test_product_runtime.py](../../../tools/hepta-engineering-control/test_product_runtime.py) — named product writer composition.
 - [tools/hepta-engineering-control/test_candidate_changeset.py](../../../tools/hepta-engineering-control/test_candidate_changeset.py) and [test_candidate_policy.py](../../../tools/hepta-engineering-control/test_candidate_policy.py) — atomic multi-file/rename grammar and immutable oracle paths.
 - [tools/hepta-engineering-control/test_sandbox_control.py](../../../tools/hepta-engineering-control/test_sandbox_control.py) and [test_mutation_testing.py](../../../tools/hepta-engineering-control/test_mutation_testing.py) — sandbox concurrency/retry and mutant-kill gates.
 - [tools/hepta-engineering-control/test_external_controls.py](../../../tools/hepta-engineering-control/test_external_controls.py) — distributed fence, external audit anchor and HSM/KMS custody contracts.
