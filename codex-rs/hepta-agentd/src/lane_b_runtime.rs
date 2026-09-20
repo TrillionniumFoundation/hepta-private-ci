@@ -225,6 +225,9 @@ impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
             || proposal.producer.as_str() != "runtime.agentd"
             || proposal.snapshot_digest != input.snapshot_digest
             || proposal.predecessor_digest != input.predecessor_digest
+            || proposal.capability_id != input.capability_id
+            || proposal.implementation_digest != input.implementation_digest
+            || proposal.capability_generation != input.capability_generation
             || proposal.output_digest.is_zero()
             || proposal.decision != PortDecisionV3::Continue
             || proposal.authority.grants_any()
@@ -254,6 +257,9 @@ impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
             producer,
             snapshot_digest: input.snapshot_digest,
             predecessor_digest: input.predecessor_digest,
+            capability_id: input.capability_id.clone(),
+            implementation_digest: input.implementation_digest,
+            capability_generation: input.capability_generation,
             output_digest: Digest32::of_bytes(&bytes),
             decision: PortDecisionV3::Continue,
             authority: AuthorityPosture::DENY_ALL,

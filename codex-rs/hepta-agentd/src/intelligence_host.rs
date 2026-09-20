@@ -100,6 +100,11 @@ impl AgentdIntelligenceHostV1 {
         {
             return Err(rejection());
         }
+        if input.capability_id.as_str() != "host.handoff"
+            || input.implementation_digest.is_zero()
+        {
+            return Err(rejection());
+        }
         let acceptance = self.accept(envelope).map_err(|_| rejection())?;
         let producer = StableId::new("runtime.agentd").map_err(|_| rejection())?;
         Ok(PortReceiptV3 {
@@ -107,6 +112,9 @@ impl AgentdIntelligenceHostV1 {
             producer,
             snapshot_digest: input.snapshot_digest,
             predecessor_digest: input.predecessor_digest,
+            capability_id: input.capability_id.clone(),
+            implementation_digest: input.implementation_digest,
+            capability_generation: input.capability_generation,
             output_digest: acceptance.acceptance_digest,
             decision: PortDecisionV3::Continue,
             authority: AuthorityPosture::DENY_ALL,
@@ -183,6 +191,9 @@ mod tests {
             run_id: envelope.run_id.clone(),
             snapshot_digest: envelope.snapshot_digest,
             predecessor_digest: envelope.envelope_digest,
+            capability_id: id("host.handoff"),
+            implementation_digest: digest("agentd-intelligence-host"),
+            capability_generation: codex_hepta_types::Generation::new(1).expect("generation"),
             budget_micros: 1_000,
             deadline_unix_micros: 10_000_000,
             stage: LaneFStageV3::HostHandoffAccepted,
