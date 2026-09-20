@@ -14,6 +14,7 @@ use crate::model::PlatformRequest;
 use crate::runtime::NativeShellRuntime;
 use crate::security::now_unix_ms;
 use crate::session_store::SessionReferenceStore;
+use crate::updater::PendingUpdateStatus;
 use crate::updater::SignedUpdateManifestV1;
 use crate::updater::UpdateManager;
 
@@ -446,12 +447,13 @@ impl HeptaNativeApp {
                     self.locale.text("Package digest", "包摘要"),
                     pending.manifest.package_digest
                 ));
-                if ui
-                    .button(
-                        self.locale
-                            .text("Activate on restart & close", "关闭并在重启时激活"),
-                    )
-                    .clicked()
+                if pending.status == PendingUpdateStatus::Staged
+                    && ui
+                        .button(
+                            self.locale
+                                .text("Activate on restart & close", "关闭并在重启时激活"),
+                        )
+                        .clicked()
                 {
                     self.activate_update_on_exit.store(true, Ordering::SeqCst);
                     self.update_message = Some(
