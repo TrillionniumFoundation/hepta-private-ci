@@ -1,7 +1,7 @@
 # Lane B source contracts and implementation gaps
 
 **Lane:** `LANE-B-RUNTIME`
-**Immutable source base:** `446aff8c6c5b38c5a0df0bf4358bfed9d72e7772` / tree `1953e473ff4c398644ce1fd5dc2bb65ae4d9f2c2`
+**Immutable source base:** `9bb2309a5329c56557c0838a00e127554b7a2230` / tree `988a7bf3723f99c99cd3fbb7df087be064a3b6b9`
 **Exact candidate:** derived from Git at verification time; never hard-coded
 **Repository-controlled scope:** documentation, operation inventory and source mapping verified; implementation gaps are reported per module
 **External scope:** product execution, deployment, real effects and independent acceptance remain open
@@ -173,11 +173,18 @@ A homeserver event observation settles send terminality; App Server turn complet
 | `prepare_send` | `owner_native` | `codex-rs/hepta-matrix-sdk/src/outbound.rs` — `pub async fn dispatch_outbox_once` |
 | `observe_send` | `owner_native` | `codex-rs/hepta-matrix-sdk/src/sync.rs` — `pub async fn commit_response(` |
 
+Remaining repository implementation gaps:
+
+- Run exact-head and deterministic synthetic-merge Matrix source, implementation-map, final-use authority, crash/reopen, and terminal-reconciliation tests for the current candidate.
+- Run the main-only exact-SHA real Synapse/E2EE qualification including fresh final-use grants across the ACK-loss same-transaction retry.
+- Independently qualify the production grant broker/trust root and live revocation distribution, including stale/revoked/wrong-signer/rollback/broker-death/revocation-race cases, before activation.
+
 External evidence gates:
 
+- independently operated production final-use grant broker/trust root and live monotonic revocation distribution
 - real enrolled homeserver/user/device/encryption identity
-- live sync and send transport callsites
 - rate-limit/reconnect/redaction/restore target qualification
+- independent operator acceptance, activation, promotion, and release
 
 ## 10. `browser.servo`
 
