@@ -1,6 +1,7 @@
 use std::collections::BTreeSet;
 
 use codex_hepta_contracts::Sha256Digest;
+use serde::Serialize;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqliteConnection;
@@ -508,7 +509,7 @@ pub(crate) async fn decode_revision(
     })
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct ForgetMemoryDraft {
     pub scope: CognitiveScope,
     pub reason: String,
