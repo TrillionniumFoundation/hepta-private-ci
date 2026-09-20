@@ -317,6 +317,22 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
+        provenance = row.get("exactCandidateProvenance")
+        if provenance is not None:
+            expected = {
+                "mode": "verification_derived_from_checkout",
+                "commitCommand": "git rev-parse HEAD",
+                "treeCommand": "git rev-parse HEAD^{tree}",
+                "verifier": "scripts/hepta-lane-b-truth.py verify",
+                "receiptFields": ["exactHead", "exactTree"],
+                "hardCodedInMap": False,
+            }
+            if not isinstance(provenance, dict) or any(
+                provenance.get(key) != value for key, value in expected.items()
+            ):
+                failures.append(f"{mid}: exact candidate provenance")
+            if row.get("sourceBaseSemantics") != "historical_provenance_only":
+                failures.append(f"{mid}: source base semantics")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
