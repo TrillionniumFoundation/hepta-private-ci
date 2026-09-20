@@ -35,6 +35,9 @@ fn dispatch() -> NativeDispatch {
         codex_connection_id: Some(7),
         codex_session_id: Some("session-1".to_string()),
         codex_deadline_ms: Some(10_000),
+        codex_authority_epoch: Some(9),
+        codex_revocation_revision: Some(3),
+        codex_revocation_head_sha256: Some("3".repeat(64)),
         codex_authority_witness_sha256: Some("2".repeat(64)),
     }
 }
