@@ -23,11 +23,11 @@ caller_markers = ["ProductionDurableWriter::open", "verifier"]
 
 [[boundary]]
 id = "agentd_production_writer_host"
-symbol = "AgentdProductionWriterHost::open_with_store"
+symbol = "AgentdProductionOperationRuntimeConfig::open"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-definition_markers = ["pub struct AgentdProductionWriterHost", "pub async fn open_with_store", "ProductionAuthorityVerifier"]
-product_callers = []
-caller_markers = []
+definition_markers = ["pub struct AgentdProductionOperationRuntimeConfig", "pub(crate) async fn open", "ProductionAuthorityVerifier", "AgentdFinalUseGrantProvider"]
+product_callers = ["codex-rs/hepta-agentd/src/runtime.rs"]
+caller_markers = ["AgentdProductionOperationRuntimeConfig::open", "attach_production_operations", "run_production_operation_reconciler"]
 
 [[boundary]]
 id = "provider_effect_coordinator"
