@@ -19,6 +19,8 @@ use crate::RuntimeComposition;
 
 #[path = "state_control.rs"]
 mod control;
+#[path = "state_intelligence.rs"]
+mod intelligence;
 
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
