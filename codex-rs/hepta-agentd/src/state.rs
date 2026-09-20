@@ -45,6 +45,13 @@ impl AgentdState {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
+        let prompt_runtime_root = identity.run_root.join("prompt-runtime");
+        let prompt_runtime = crate::AgentdPromptRuntimeOwner::open_state_dir(&prompt_runtime_root)
+            .map_err(|error| {
+                AgentdError::Protocol(format!(
+                    "prompt runtime durable owner failed to open: {error}"
+                ))
+            })?;
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
@@ -59,7 +66,7 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
-            prompt_runtime: Arc::new(crate::AgentdPromptRuntimeOwner::new()),
+            prompt_runtime: Arc::new(prompt_runtime),
         })
     }
 
