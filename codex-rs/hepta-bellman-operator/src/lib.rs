@@ -17,6 +17,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod dataset_bound;
 mod learned;
 mod loaded;
 pub use loaded::LoadedTabularOperatorV1;
@@ -27,6 +28,13 @@ mod learned_strict;
 mod reference;
 mod world_model;
 
+pub use dataset_bound::OperatorDatasetBindingError;
+pub use dataset_bound::VerifiedTabularOperatorPlanV2;
+pub use dataset_bound::VerifiedWorldModelDatasetV2;
+pub use dataset_bound::fit_tabular_operator_verified_v2;
+pub use dataset_bound::fit_transition_model_verified_v2;
+pub use dataset_bound::verify_tabular_operator_plan_v2;
+pub use dataset_bound::verify_world_model_dataset_v2;
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
 pub use learned::TabularOperatorCellV1;
