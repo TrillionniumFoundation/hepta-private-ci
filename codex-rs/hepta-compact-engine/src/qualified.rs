@@ -293,7 +293,7 @@ pub fn bind_canonical_replay_outcome_shadow_v1(
     candidate: &QualifiedCompactionCandidateV2,
     replay_receipt: ReplaySelectionReceiptV1,
     outcome_signal: OutcomeSignalV1,
-    bindings: Vec<CanonicalReplayRecordBindingV1>,
+    mut bindings: Vec<CanonicalReplayRecordBindingV1>,
 ) -> Result<CanonicalReplayCompactionShadowV1, QualifiedCompactionError> {
     candidate.validate()?;
     replay_receipt
@@ -302,6 +302,7 @@ pub fn bind_canonical_replay_outcome_shadow_v1(
     outcome_signal
         .validate()
         .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
+    bindings.sort_by(|left, right| left.event_id.cmp(&right.event_id));
     validate_canonical_replay_bindings(candidate, &replay_receipt, &bindings)?;
     let replay_receipt_digest = canonical_contract_digest_v1(&replay_receipt)
         .map_err(|error| QualifiedCompactionError::CanonicalContract(error.to_string()))?;
@@ -330,16 +331,20 @@ fn validate_canonical_replay_bindings(
     if bindings.len() != replay_receipt.selected_event_ids.len() {
         return Err(QualifiedCompactionError::CanonicalReplayBindingMismatch);
     }
-    let mut used = vec![false; bindings.len()];
-    for event_id in &replay_receipt.selected_event_ids {
-        let Some((index, binding)) = bindings
-            .iter()
-            .enumerate()
-            .find(|(index, binding)| !used[*index] && &binding.event_id == event_id)
-        else {
+    let mut legacy_identities = BTreeSet::new();
+    for (event_id, binding) in replay_receipt
+        .selected_event_ids
+        .iter()
+        .zip(bindings.iter())
+    {
+        if &binding.event_id != event_id
+            || !legacy_identities.insert((
+                binding.legacy_record_id.clone(),
+                binding.legacy_record_revision,
+            ))
+        {
             return Err(QualifiedCompactionError::CanonicalReplayBindingMismatch);
-        };
-        used[index] = true;
+        }
         let retained = candidate.retained_records.iter().any(|record| {
             record.record_id == binding.legacy_record_id
                 && record.revision == binding.legacy_record_revision
@@ -348,9 +353,6 @@ fn validate_canonical_replay_bindings(
         if !retained {
             return Err(QualifiedCompactionError::CanonicalReplayBindingMismatch);
         }
-    }
-    if used.iter().any(|used| !*used) {
-        return Err(QualifiedCompactionError::CanonicalReplayBindingMismatch);
     }
     Ok(())
 }
