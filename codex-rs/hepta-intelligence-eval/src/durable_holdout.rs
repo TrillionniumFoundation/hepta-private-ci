@@ -36,9 +36,11 @@ pub struct HoldoutAnchorV1 {
 /// Host-owned monotonic authority for multi-process or multi-host holdout use.
 ///
 /// Implementations must provide a linearizable compare-and-swap over the
-/// independently retained anchor. The CAS is reserved before the local journal
-/// append; a subsequent local write failure therefore fails closed and requires
-/// operator reconciliation rather than permitting a second consumer.
+/// independently retained anchor. `Ok(false)` must mean the swap definitely did
+/// not commit. Any error may represent an outcome-unknown reservation and is
+/// therefore treated as indeterminate by the caller. The CAS is reserved before
+/// the local journal append; a subsequent local write failure fails closed and
+/// requires operator reconciliation rather than permitting a second consumer.
 pub trait HoldoutAnchorAuthorityV1 {
     fn current_anchor(&mut self, binding: Digest32)
     -> Result<HoldoutAnchorV1, DurableHoldoutError>;
@@ -273,23 +275,38 @@ impl DurableFinalHoldoutJournalV1 {
         if staged.disposition == HoldoutUseDispositionV1::IdempotentReplay {
             return Ok(staged);
         }
+        // Finish all deterministic local admission/capacity work before
+        // reserving the external anchor. Once the CAS commits, every local
+        // failure is outcome-indeterminate and requires reconciliation.
+        let payload = encode_holdout_plan(plan).map_err(|_| DurableHoldoutError::Semantic)?;
+        let next_length = self
+            .length
+            .checked_add(4)
+            .and_then(|value| value.checked_add(payload.len() as u64))
+            .and_then(|value| value.checked_add(32))
+            .ok_or(DurableHoldoutError::Capacity)?;
+        if payload.len() > MAX_FRAME || next_length > MAX_BYTES {
+            return Err(DurableHoldoutError::Capacity);
+        }
+
         let next = HoldoutAnchorV1 {
             sequence: candidate.records().len() as u64,
             head: candidate.head_digest(),
         };
-        if !authority.compare_and_swap_anchor(self.binding, expected, next)? {
-            return Err(DurableHoldoutError::Conflict);
+        match authority.compare_and_swap_anchor(self.binding, expected, next) {
+            Ok(true) => {}
+            Ok(false) => return Err(DurableHoldoutError::Conflict),
+            Err(_) => {
+                self.poisoned = true;
+                return Err(DurableHoldoutError::Indeterminate);
+            }
         }
 
         match self.consume_single_host_trusted(expected, plan) {
             Ok(receipt) if self.anchor() == next => Ok(receipt),
-            Ok(_) => {
+            Ok(_) | Err(_) => {
                 self.poisoned = true;
                 Err(DurableHoldoutError::Indeterminate)
-            }
-            Err(error) => {
-                self.poisoned = true;
-                Err(error)
             }
         }
     }

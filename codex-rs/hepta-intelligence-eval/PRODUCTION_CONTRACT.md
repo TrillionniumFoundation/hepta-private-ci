@@ -70,15 +70,18 @@ The ordering is fail-closed:
 1. validate the caller's expected anchor against both the external authority and
    local journal;
 2. stage the semantic holdout transition without mutating storage;
-3. reserve the next semantic anchor through external compare-and-swap;
-4. append and sync the local journal;
-5. expose the receipt only when the local anchor equals the reserved anchor.
+3. complete deterministic local encoding/capacity admission;
+4. reserve the next semantic anchor through external compare-and-swap;
+5. append and sync the local journal;
+6. expose the receipt only when the local anchor equals the reserved anchor.
 
-If step 4 becomes indeterminate after the external reservation, the local handle
-is poisoned. Availability is sacrificed: the advanced external anchor prevents a
-second owner from consuming the same holdout, and operator reconciliation is
-required. Production adapters must not reset the external anchor from a stale
-journal copy.
+`Ok(false)` from the authority CAS must mean that no reservation committed.
+Any CAS error is treated as outcome-unknown: the local handle is poisoned and the
+operation returns `Indeterminate`. Any local failure after a successful
+reservation is also `Indeterminate`. Availability is sacrificed: an advanced
+external anchor prevents a second owner from consuming the same holdout, and
+operator reconciliation is required. Production adapters must not reset the
+external anchor from a stale journal copy.
 
 The host implementation of `HoldoutAnchorAuthorityV1` should additionally bind
 the authority record to authenticated storage, owner/fencing identity and an

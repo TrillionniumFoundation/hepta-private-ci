@@ -107,10 +107,13 @@ The adapter takes an exclusive file lock, replays bounded frames and checks the
 acknowledged chain prefix. `consume_single_host_trusted` is restricted to one
 cooperative host. Multi-process or multi-host owners use `consume_fenced` with a
 host-owned `HoldoutAnchorAuthorityV1` whose compare-and-swap is linearizable.
-The fenced path reserves the next semantic anchor before appending local bytes;
-an uncertain local write after reservation poisons the handle and leaves the
-advanced external anchor in place, failing closed until reconciliation. Exact
-retries do not append duplicates.
+The fenced path completes deterministic local encoding/capacity admission before
+reserving the next semantic anchor. `Ok(false)` from the authority CAS means no
+reservation occurred; any CAS error is treated as outcome-unknown, poisons the
+local handle and returns `Indeterminate`. After a successful reservation, any
+local append failure is likewise `Indeterminate` and leaves the advanced external
+anchor in place, failing closed until reconciliation. Exact retries do not append
+duplicates.
 
 Host-owned format `HEPTHO01` is distinct from cross-owner protocols: an eight-byte
 magic, 32-byte binding and 32-byte header checksum precede length-prefixed sealed

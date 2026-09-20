@@ -276,6 +276,39 @@ impl HoldoutAnchorAuthorityV1 for TestAnchorAuthority {
     }
 }
 
+#[derive(Clone, Copy)]
+struct CommitThenFailAnchorAuthority {
+    binding: Digest32,
+    anchor: HoldoutAnchorV1,
+}
+impl HoldoutAnchorAuthorityV1 for CommitThenFailAnchorAuthority {
+    fn current_anchor(
+        &mut self,
+        binding: Digest32,
+    ) -> Result<HoldoutAnchorV1, DurableHoldoutError> {
+        if binding != self.binding {
+            return Err(DurableHoldoutError::Binding);
+        }
+        Ok(self.anchor)
+    }
+
+    fn compare_and_swap_anchor(
+        &mut self,
+        binding: Digest32,
+        expected: HoldoutAnchorV1,
+        next: HoldoutAnchorV1,
+    ) -> Result<bool, DurableHoldoutError> {
+        if binding != self.binding {
+            return Err(DurableHoldoutError::Binding);
+        }
+        if self.anchor != expected {
+            return Ok(false);
+        }
+        self.anchor = next;
+        Err(DurableHoldoutError::Indeterminate)
+    }
+}
+
 #[test]
 fn fenced_anchor_cas_rejects_stale_replicas_without_mutation() {
     let primary_directory = Directory::new();
@@ -311,6 +344,51 @@ fn fenced_anchor_cas_rejects_stale_replicas_without_mutation() {
     }
     assert_eq!(stale.anchor(), start);
     assert_eq!(fs::read(replica_directory.path()).unwrap(), before);
+}
+
+#[test]
+fn fenced_anchor_error_after_commit_poisoned_without_local_append() {
+    let directory = Directory::new();
+    let mut store = directory.create();
+    let start = store.anchor();
+    let before = fs::read(directory.path()).unwrap();
+    let mut authority = CommitThenFailAnchorAuthority {
+        binding: digest("binding"),
+        anchor: start,
+    };
+
+    assert_eq!(
+        store.consume_fenced(&mut authority, start, &plan("plan-1")),
+        Err(DurableHoldoutError::Indeterminate)
+    );
+    assert_eq!(authority.anchor.sequence, 1);
+    assert_eq!(store.anchor(), start);
+    assert_eq!(fs::read(directory.path()).unwrap(), before);
+    assert_eq!(
+        store.consume_fenced(&mut authority, authority.anchor, &plan("plan-1")),
+        Err(DurableHoldoutError::Poisoned)
+    );
+}
+
+#[test]
+fn fenced_capacity_rejects_before_external_reservation() {
+    let directory = Directory::new();
+    let mut store = directory.create();
+    let start = store.anchor();
+    store.file.set_len(MAX_BYTES).unwrap();
+    store.length = MAX_BYTES;
+    let mut authority = TestAnchorAuthority {
+        binding: digest("binding"),
+        anchor: start,
+    };
+
+    assert_eq!(
+        store.consume_fenced(&mut authority, start, &plan("plan-1")),
+        Err(DurableHoldoutError::Capacity)
+    );
+    assert_eq!(authority.anchor, start);
+    assert_eq!(store.anchor(), start);
+    assert!(!store.poisoned);
 }
 
 #[cfg(unix)]
