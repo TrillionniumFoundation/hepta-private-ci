@@ -1,8 +1,9 @@
 # Acknowledged-history recovery anchor
 
-This bounded NEU-2 hardening extends `SparseJournal`; it is not a new journal,
-wire protocol, model, or production caller. The on-disk HPTNSJ01 format and the
-existing successful-commit byte vectors are unchanged.
+This bounded NEU-2 hardening composes `SparseJournal`, the canonical operation
+result journal and an independent witness. The HPTNSJ01 sparse format remains
+unchanged; HPTNOP01 supplies the terminal-result evidence that a checkpoint digest
+alone cannot reconstruct.
 
 ## Failure being closed
 
@@ -27,10 +28,14 @@ all complete frames and reconstructs their checkpoint/receipt chain. The exact
 checkpoint at the anchor sequence must match the external witness.
 
 Only after that comparison may a later incomplete frame be truncated and synced.
-A valid later complete frame is preserved and synced before exposure. The owner
-host enumerates that bounded complete suffix and advances the independent witness
-one sequence at a time before it accepts a new tick. Failure to reconcile the
-witness fails open; it cannot create another journal commit on top of a stale
+A valid later complete sparse frame is preserved and synced before exposure. The
+canonical owner first reconciles every durable operation record against the exact
+checkpoint sequence, requires every exposed sparse successor to have one matching
+committed operation record, and revalidates that operation's complete lineage.
+Only then may it advance the independent witness one sequence at a time. This also
+covers the first-commit cut where sparse state and a committed operation exist but
+the witness is still empty. Failure to reconcile the operation or witness fails
+open; it cannot create another journal commit on top of an untracked or stale
 anchor. An earlier anchor is a minimum retained-history requirement, not an
 instruction to roll back later valid commits. Corruption after the anchor still
 rejects the entire open.
@@ -53,10 +58,13 @@ state. Reopen selects the highest valid adjacent sequence and ignores one torn
 slot; if neither slot validates, recovery fails closed. The caller still owns
 authentication, directory protection, freshness policy and external scope.
 
-The host transaction order is: durably commit the journal, durably retain its
-acknowledgement witness, then acknowledge externally. If witness publication is
-uncertain, reconcile the already committed tick before retrying. An anchor cannot
-protect acknowledgements that the host failed to retain. Continuation rotation
+The canonical host transaction order is: durably prepare the exact operation
+result, durably commit the sparse checkpoint, durably mark the operation committed,
+revalidate current lineage, durably retain the acknowledgement witness, then
+acknowledge externally. If terminal or witness publication is uncertain, recovery
+reconciles the original operation by operation ID/request digest/checkpoint before
+any retry; it never re-executes a committed model call merely because the reply was
+lost. An anchor cannot protect acknowledgements that the host failed to retain. Continuation rotation
 and live-lineage rebuild are implemented source mechanisms; backup erasure,
 physical power loss, target latency, multi-host witness coordination and empirical
 unlearning qualification remain separate evidence or integration work.
