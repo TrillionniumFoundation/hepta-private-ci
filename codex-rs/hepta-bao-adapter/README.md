@@ -86,8 +86,7 @@ five minutes. Signing material remains outside the adapter and normal runtime.
 `FinalUseAuthority::update_revocations` accepts only monotonic trusted host
 updates. Within one epoch, revoked IDs cannot be removed. `open_state_dir`
 requires a Unix owner-only state directory (0700), creates private regular
-files (0600), and holds an operating-system process lock until exit. Claims
-and revocation updates are synced and atomically replaced before success.
+files (0600), and holds an operating-system process lock until exit. Claims are appended to a fixed-width fsynced replay journal; revocation updates use an atomic snapshot replacement before success.
 The example automatically reopens this state: used nonces remain rejected
 after restart without a manual epoch change. Corrupt, missing previously
 initialized state, unsafe permissions, or a concurrent owner cause denial.
@@ -95,16 +94,14 @@ Storage errors fence that authority instance until recovery. Preserve this
 state across deployments; deleting or restoring it from an old backup is an
 authority reset and requires an independently changed issuer trust/epoch.
 Other platforms fail closed until an equivalent owner ACL store exists.
-The 16,384-entry registry never evicts claims silently; exhaustion rejects new
-dispatch until a trusted epoch transition. A failed/timeout request does not
+The replay journal never evicts claims silently. Claims are bounded independently at 1,048,576 per authority epoch; revoked grant IDs retain the separate 16,384-entry bound. Exhaustion rejects new dispatch until a trusted epoch transition. A failed/timeout request does not
 refund its nonce or retry automatically. A new grant requires owner action.
 
 Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
 malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+`lease_lifecycle.rs` now provides a durable metadata-only lifecycle owner for issue/renew/revoke intents and observations. It enforces operation-id idempotency, semantic-conflict rejection, explicit Unknown states, restart recovery and provider-observation reconciliation. It deliberately does not dispatch provider mutation APIs: the OpenBao compatibility registry still marks dynamic lease issuance/renew/revoke as a blocking partial surface, so provider-native mutation remains fail-closed until that endpoint contract is qualified.
 
 ## Verification
 
