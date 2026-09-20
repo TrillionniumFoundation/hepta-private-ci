@@ -194,7 +194,7 @@ impl AgentdConfig {
             ));
         }
         let writer = host.writer();
-        if writer.store().owner_agent_id() != &self.identity.agent_id {
+        if writer.owner_agent_id() != &self.identity.agent_id {
             return Err(AgentdError::GenerationFenced(
                 "production cognitive writer owner does not match Agentd identity".to_string(),
             ));
