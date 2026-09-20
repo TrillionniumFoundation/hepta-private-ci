@@ -306,3 +306,53 @@ test("runtime stop lock survives polling rerenders while acknowledgement is in f
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(stopCalls, 1);
 });
+
+
+test("ControlPlaneApp accepts class clients but never invokes accessor-shaped client methods", () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+
+  class ClassClient {
+    readView() {
+      return {
+        sessionId: "session.1",
+        connectionGeneration: 1,
+        generation: 1,
+        revision: 1,
+        digest: "1".repeat(64),
+        modules: [],
+        pending: 0,
+        indeterminate: 0,
+        recoveryRequired: 0,
+      };
+    }
+    async submitRequest() {
+      return { accepted: true };
+    }
+    async requestStop() {
+      return { accepted: true };
+    }
+  }
+
+  assert.doesNotThrow(() => new ControlPlaneApp({ root, client: new ClassClient() }));
+
+  let getterCalls = 0;
+  const hostile = {
+    readView() {
+      return {};
+    },
+    get submitRequest() {
+      getterCalls += 1;
+      return async () => ({ accepted: true });
+    },
+    async requestStop() {
+      return { accepted: true };
+    },
+  };
+
+  assert.throws(
+    () => new ControlPlaneApp({ root, client: hostile }),
+    (error) => error?.code === "INVALID_INPUT",
+  );
+  assert.equal(getterCalls, 0);
+});
