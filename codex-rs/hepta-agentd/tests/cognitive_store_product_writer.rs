@@ -149,8 +149,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             if lease.agent_id != *expected_owner {
                 return Err("authority owner mismatch".to_string());
             }
-            if lease.grant_digest
-                != Sha256Digest::for_bytes(b"agentd-product-recovery-test-grant")
+            if lease.grant_digest != Sha256Digest::for_bytes(b"agentd-product-recovery-test-grant")
             {
                 return Err("unexpected recovery grant digest".to_string());
             }
@@ -252,10 +251,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         )
         .await?;
     assert_eq!(forgotten.memory.id.revision, 3);
-    assert_eq!(
-        forgotten.memory.lifecycle,
-        MemoryLifecycleState::Tombstoned
-    );
+    assert_eq!(forgotten.memory.lifecycle, MemoryLifecycleState::Tombstoned);
 
     let cut_before_revoked_write = host.writer().recovery_anchor().await?;
     authority_live.store(false, Ordering::SeqCst);
