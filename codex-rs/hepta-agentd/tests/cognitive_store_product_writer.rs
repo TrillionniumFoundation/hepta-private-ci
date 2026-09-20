@@ -195,8 +195,12 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     let written = host
         .remember_with_kg(&access, &source, &draft, &KgFactSetDraft::default())
         .await?;
-    assert_eq!(written.memory.id.revision, 1);
-    assert_eq!(written.source.revision, 1);
+    written.validate()?;
+    assert_eq!(written.write.memory.id.revision, 1);
+    assert_eq!(written.write.source.revision, 1);
+    assert!(!written.provenance_event_id.is_empty());
+    assert!(!written.provenance_outbox_id.is_empty());
+    assert!(!written.provenance_commit_event_id.is_empty());
 
     let corrected_content = "Production semantic memory remains current after correction.";
     let correction_source = SourceDraft {
@@ -218,14 +222,15 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     let corrected = host
         .correct_with_kg(
             &access,
-            &written.memory.id.memory_id,
+            &written.write.memory.id.memory_id,
             1,
             &correction_source,
             &correction,
             &KgFactSetDraft::default(),
         )
         .await?;
-    assert_eq!(corrected.memory.id.revision, 2);
+    corrected.validate()?;
+    assert_eq!(corrected.write.memory.id.revision, 2);
 
     let forget_reason = "Production semantic memory is explicitly forgotten.";
     let forget_source = SourceDraft {
@@ -244,14 +249,15 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     let forgotten = host
         .forget_with_kg(
             &access,
-            &written.memory.id.memory_id,
+            &written.write.memory.id.memory_id,
             2,
             &forget_source,
             &forget,
         )
         .await?;
-    assert_eq!(forgotten.memory.id.revision, 3);
-    assert_eq!(forgotten.memory.lifecycle, MemoryLifecycleState::Tombstoned);
+    forgotten.validate()?;
+    assert_eq!(forgotten.write.memory.id.revision, 3);
+    assert_eq!(forgotten.write.memory.lifecycle, MemoryLifecycleState::Tombstoned);
 
     let cut_before_revoked_write = host.writer().recovery_anchor().await?;
     authority_live.store(false, Ordering::SeqCst);
