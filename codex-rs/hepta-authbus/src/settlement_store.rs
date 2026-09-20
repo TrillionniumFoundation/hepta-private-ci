@@ -107,6 +107,37 @@ impl AuthBusAuthorityStore {
         Ok(reservation)
     }
 
+    pub async fn cancel_reservation(
+        &self,
+        reservation_id: &StableId,
+        expected_revision: u64,
+        time: TrustedTimeSample,
+    ) -> Result<QuotaReservation, AuthBusAuthorityError> {
+        self.observe_time(time.clone()).await?;
+        let mut tx = begin(&self.pool).await?;
+        advance_time(&mut tx, &time).await?;
+        let mut reservation = load_reservation(&mut tx, reservation_id).await?;
+        if reservation.state == ReservationState::Cancelled {
+            tx.commit().await.map_err(storage)?;
+            return Ok(reservation);
+        }
+        if reservation.revision != expected_revision {
+            return Err(AuthBusAuthorityError::RevisionConflict);
+        }
+        if reservation.state != ReservationState::Held {
+            return Err(AuthBusAuthorityError::InvalidTransition);
+        }
+        let mut quota = load_quota(&mut tx, &reservation.quota_key).await?;
+        release_reserved(&mut quota, reservation.amount)?;
+        persist_quota(&mut tx, &quota).await?;
+        reservation.state = ReservationState::Cancelled;
+        reservation.revision = next_revision(reservation.revision)?;
+        reservation.updated_at_ms = time.wall_time_ms;
+        update_reservation_state(&mut tx, &reservation, "cancelled").await?;
+        tx.commit().await.map_err(storage)?;
+        Ok(reservation)
+    }
+
     pub async fn reconcile_expired_reservation(
         &self,
         reservation_id: &StableId,
@@ -142,7 +173,8 @@ impl AuthBusAuthorityStore {
             ReservationState::Indeterminate
             | ReservationState::Settled
             | ReservationState::Released
-            | ReservationState::Expired => {}
+            | ReservationState::Expired
+            | ReservationState::Cancelled => {}
         }
         tx.commit().await.map_err(storage)?;
         Ok(reservation)
