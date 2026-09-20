@@ -14,6 +14,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use qualified::CanonicalReplayCompactionShadowV1;
+pub use qualified::CanonicalReplayRecordBindingV1;
 pub use qualified::CompactionInputRecordV2;
 pub use qualified::CompactionLossReportV2;
 pub use qualified::CompactionPolicyV2;
@@ -22,6 +24,7 @@ pub use qualified::MAX_PROTECTED_COMPACTION_REFS;
 pub use qualified::MAX_QUALIFIED_COMPACTION_INPUTS;
 pub use qualified::QualifiedCompactionCandidateV2;
 pub use qualified::QualifiedCompactionError;
+pub use qualified::bind_canonical_replay_outcome_shadow_v1;
 pub use qualified::build_qualified_candidate;
 pub use qualified::prove_compaction;
 
