@@ -303,6 +303,8 @@ use codex_hepta_intelligence::CapabilityNecessityV2;
 use codex_hepta_intelligence::CapabilityRequirementV2;
 use codex_hepta_intelligence::CapabilitySnapshotRequestV2;
 use codex_hepta_intelligence::CapabilitySnapshotV2;
+use codex_hepta_intelligence::CurrentCapabilitySnapshotErrorV3;
+use codex_hepta_intelligence::CurrentCapabilitySnapshotProviderV3;
 use codex_hepta_intelligence::LaneFBudgetV3;
 use codex_hepta_intelligence::LegalActionCandidateV1;
 use codex_hepta_intelligence::build_legal_candidates_v1;
@@ -316,7 +318,7 @@ fn v3_digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn v3_request() -> LaneFRunRequestV3 {
+fn v3_snapshot(revocation_frontier: &str) -> CapabilitySnapshotV2 {
     let pairs = [
         ("objective.validation", "objective.compiler"),
         ("legal.actions", "intelligence.control"),
@@ -354,11 +356,16 @@ fn v3_request() -> LaneFRunRequestV3 {
         authority_epoch: 1,
         body_generation: Generation::new(1).expect("generation"),
         configuration_digest: v3_digest("configuration"),
-        revocation_frontier_digest: v3_digest("revocations"),
+        revocation_frontier_digest: v3_digest(revocation_frontier),
         requirements,
         bindings,
     })
     .expect("capability snapshot");
+    snapshot
+}
+
+fn v3_request() -> LaneFRunRequestV3 {
+    let snapshot = v3_snapshot("revocations");
     let legal_candidates = build_legal_candidates_v1(
         v3_id("candidate-set"),
         snapshot.digest(),
@@ -394,6 +401,21 @@ fn v3_request() -> LaneFRunRequestV3 {
             ledger_micros: 1_000_000,
         },
         deadline_unix_micros: 4_000_000_000_000_000,
+    }
+}
+
+
+struct StaticCurrentSnapshotProvider {
+    snapshot: CapabilitySnapshotV2,
+    calls: usize,
+}
+
+impl CurrentCapabilitySnapshotProviderV3 for StaticCurrentSnapshotProvider {
+    fn current_snapshot(
+        &mut self,
+    ) -> Result<CapabilitySnapshotV2, CurrentCapabilitySnapshotErrorV3> {
+        self.calls += 1;
+        Ok(self.snapshot.clone())
     }
 }
 
@@ -473,6 +495,90 @@ impl LaneFV3Ports for RuntimeV3Ports {
     fn record_learning(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
         self.receipt(input, "learning.ledger")
     }
+}
+
+
+#[test]
+fn final_use_capability_snapshot_is_revalidated_before_agentd_handoff() {
+    let mut coordinator =
+        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
+    let request = v3_request();
+    coordinator
+        .start_run(
+            100,
+            RunSnapshot {
+                run_id: request.run_id.to_string(),
+                request_digest: request.request_digest.to_string(),
+                objective_digest: v3_digest("objective-v3").to_string(),
+                body_digest: request.body_digest.to_string(),
+                artifact_set_digest: request.artifact_set_digest.to_string(),
+                authority_epoch: 1,
+                deadline_ms: request.deadline_unix_micros / 1_000,
+            },
+        )
+        .expect("start run");
+    let mut provider = StaticCurrentSnapshotProvider {
+        snapshot: request.snapshot.clone(),
+        calls: 0,
+    };
+    let mut ports = RuntimeV3Ports::default();
+    let receipt = coordinator
+        .run_intelligence_v3_with_control_and_currentness(
+            1,
+            request,
+            &mut ports,
+            &NeverCancelledV3,
+            Some(&mut provider),
+        )
+        .expect("fresh composition");
+    assert_eq!(provider.calls, 1);
+    assert_eq!(
+        receipt.runtime.as_ref().map(|runtime| runtime.phase),
+        Some(RunPhase::ContextAttached)
+    );
+}
+
+#[test]
+fn stale_final_use_capability_snapshot_fails_before_handoff_and_learning() {
+    let mut coordinator =
+        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
+    let request = v3_request();
+    coordinator
+        .start_run(
+            100,
+            RunSnapshot {
+                run_id: request.run_id.to_string(),
+                request_digest: request.request_digest.to_string(),
+                objective_digest: v3_digest("objective-v3").to_string(),
+                body_digest: request.body_digest.to_string(),
+                artifact_set_digest: request.artifact_set_digest.to_string(),
+                authority_epoch: 1,
+                deadline_ms: request.deadline_unix_micros / 1_000,
+            },
+        )
+        .expect("start run");
+    let mut provider = StaticCurrentSnapshotProvider {
+        snapshot: v3_snapshot("revocations:advanced"),
+        calls: 0,
+    };
+    let mut ports = RuntimeV3Ports::default();
+    let receipt = coordinator
+        .run_intelligence_v3_with_control_and_currentness(
+            1,
+            request,
+            &mut ports,
+            &NeverCancelledV3,
+            Some(&mut provider),
+        )
+        .expect("terminal stale receipt");
+    assert_eq!(provider.calls, 1);
+    assert_eq!(
+        receipt.composition.disposition,
+        codex_hepta_intelligence::PipelineDispositionV3::Failed(PortFailureClassV3::Rejected)
+    );
+    assert!(receipt.runtime.is_none());
+    assert!(!ports.calls.contains(&LaneFStageV3::HostHandoffAccepted));
+    assert!(!ports.calls.contains(&LaneFStageV3::LearningRecorded));
 }
 
 #[test]
