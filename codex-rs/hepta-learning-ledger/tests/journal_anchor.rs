@@ -288,7 +288,9 @@ mod long_horizon {
         change_file_length(&files.open("0")?)?;
         assert!(matches!(
             journal.append(prefix.chain_digest, decision(1)?),
-            Err(LongHorizonLedgerErrorV1::Durable(DurableLedgerError::Corrupt))
+            Err(LongHorizonLedgerErrorV1::Durable(
+                DurableLedgerError::Corrupt
+            ))
         ));
         assert!(matches!(
             journal.checkpoint(),
@@ -346,14 +348,18 @@ mod long_horizon {
         let prefix = journal.checkpoint()?.head_anchor;
         assert!(matches!(
             journal.append(Digest32::ZERO, decision(1)?),
-            Err(LongHorizonLedgerErrorV1::Durable(DurableLedgerError::Conflict))
+            Err(LongHorizonLedgerErrorV1::Durable(
+                DurableLedgerError::Conflict
+            ))
         ));
         check_frontiers(&journal, prefix, prefix)?;
         journal.append(prefix.chain_digest, decision(1)?)?;
         let head = journal.checkpoint()?.head_anchor;
         assert!(matches!(
             journal.append(head.chain_digest, decision(2)?),
-            Err(LongHorizonLedgerErrorV1::Durable(DurableLedgerError::Capacity))
+            Err(LongHorizonLedgerErrorV1::Durable(
+                DurableLedgerError::Capacity
+            ))
         ));
         check_frontiers(&journal, prefix, head)?;
         journal.rotate(files.create("1")?, head)?;

@@ -158,7 +158,9 @@ fn main() -> io::Result<()> {
         ))?;
         let warm_reopen_ns = start.elapsed().as_nanos();
         if checked(ledger.checkpoint())? != checkpoint {
-            return Err(io::Error::other("reopen changed the acknowledged checkpoint"));
+            return Err(io::Error::other(
+                "reopen changed the acknowledged checkpoint",
+            ));
         }
         let retry = decision(0)?;
         let start = Instant::now();
@@ -176,7 +178,9 @@ fn main() -> io::Result<()> {
             || metrics.historical_cache_entries > CACHE_ENTRIES
             || ledger.head_anchor() != checkpoint.head_anchor
         {
-            return Err(io::Error::other("resident bounds or retry identity changed"));
+            return Err(io::Error::other(
+                "resident bounds or retry identity changed",
+            ));
         }
         let first = id("record-0")?;
         if checked(ledger.archive_segment_for_record(&first))? != Some(0) {
@@ -185,7 +189,9 @@ fn main() -> io::Result<()> {
         let archived = checked(ledger.archived_record(File::open(segment(&root, 0))?, &first))?
             .ok_or_else(|| io::Error::other("oldest archived record is missing"))?;
         if archived.event != retry {
-            return Err(io::Error::other("archive returned different record content"));
+            return Err(io::Error::other(
+                "archive returned different record content",
+            ));
         }
         println!(
             "{{\"schema\":\"hepta.long-horizon-scale.v1\",\"records\":{size},\"appended_since_previous\":{},\"append_ns\":{append_ns},\"warm_reopen_ns\":{warm_reopen_ns},\"retry_1000_ns\":{retry_ns},\"active_segment\":{},\"active_segment_bytes\":{},\"resident_records\":{},\"historical_cache_entries\":{},\"record_limit\":{SEGMENT_RECORDS},\"cache_limit\":{CACHE_ENTRIES},\"rss_before_reopen_kib\":{rss_before_reopen},\"rss_after_reopen_and_retry_kib\":{},\"peak_rss_kib\":{},\"persistence_measured\":true,\"power_loss_tested\":false,\"independent_witness_retention\":false}}",
