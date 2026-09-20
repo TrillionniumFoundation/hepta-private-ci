@@ -232,7 +232,10 @@ async fn qualification_knowledge_graph_capacity_receipt() {
             "p95": percentile_ns(&mutation_ns, 95),
             "p99": percentile_ns(&mutation_ns, 99),
             "total": total_write_ns,
-            "throughputOpsPerSecond": (writes as f64) * 1_000_000_000_f64 / total_write_ns.max(1) as f64,
+            "throughputMilliOpsPerSecond": u64::try_from(writes)
+                .unwrap_or(u64::MAX)
+                .saturating_mul(1_000_000_000_000)
+                / total_write_ns.max(1),
         },
         "queryNs": {
             "p50": percentile_ns(&query_ns, 50),
