@@ -43,16 +43,46 @@ jobs:
           ref: ${{ matrix.candidate == 'source-head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Bind exact catalog candidate
+      - name: Bind exact catalog and lifecycle candidate
         env:
           EXPECTED_SHA: ${{ matrix.candidate == 'source-head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           git rev-parse HEAD HEAD^{tree}
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-fleet -- --check
-      - name: Reject unknown state and conflicting writers before host compilation
-        run: cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet --lib module_catalog
+      - name: Check owner formatting before compilation
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-fleet --package codex-hepta-control-plane -- --check
+      - name: Execute catalog and component lifecycle regressions
+        id: native
+        run: cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet -p codex-hepta-control-plane --lib
+      - name: Retain offline lock-resolution diagnostics without testing modified source
+        if: failure() && steps.native.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-lock-diagnostics"
+          trap 'git restore --source=HEAD --worktree -- codex-rs/Cargo.lock' EXIT
+          set +e
+          cargo generate-lockfile --offline --manifest-path codex-rs/Cargo.toml >"$RUNNER_TEMP/hepta-lock-diagnostics/resolver.log" 2>&1
+          resolver_status=$?
+          set -e
+          printf 'offline_resolution_exit=%s\n' "$resolver_status"
+          cat "$RUNNER_TEMP/hepta-lock-diagnostics/resolver.log"
+          git diff -- codex-rs/Cargo.lock >"$RUNNER_TEMP/hepta-lock-diagnostics/Cargo.lock.patch"
+          cat "$RUNNER_TEMP/hepta-lock-diagnostics/Cargo.lock.patch"
+          if [ "$resolver_status" -eq 0 ]; then
+            cp codex-rs/Cargo.lock "$RUNNER_TEMP/hepta-lock-diagnostics/Cargo.lock.proposed"
+          fi
+          # The native step remains failed. These bytes are only a repair
+          # proposal and are never compiled, tested, selected or pushed here.
+      - name: Retain failed-resolution evidence
+        if: failure() && steps.native.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lock-diagnostic-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-lock-diagnostics/
+          if-no-files-found: error
+          retention-days: 14
       - name: Verify source remained unchanged
         if: always()
         run: |
@@ -60,8 +90,8 @@ jobs:
           git diff --exit-code
 
   process-qualification:
-    # The small registry gate fails before paying for V8 and full host builds.
-    # It does not replace the native process, recovery, or lint suites below.
+    # Small owner checks fail before V8 and full host builds. These do not
+    # replace the process, recovery, writer, retirement or lint suites below.
     needs: catalog-admission
     strategy:
       fail-fast: false
@@ -72,10 +102,8 @@ jobs:
     env:
       RUST_BACKTRACE: "1"
       RUST_LOG: "info"
-      # macOS hosted runners expose a deeply nested TMPDIR. Agentd's real
-      # process fixtures use pathname AF_UNIX sockets, whose Darwin limit is
-      # 103 bytes, so bind test-owned temporary state below the canonical
-      # short private root rather than weakening the production layout.
+      # Darwin pathname AF_UNIX sockets require a short test-owned temp root.
+      # This does not weaken the production layout or its permission checks.
       TMPDIR: /tmp
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -139,9 +167,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Keep the selected package at -D warnings. --no-deps prevents this
-          # package gate from failing on stale lint expectations in unrelated
-          # dependency crates, which remain covered by their owning gates.
+          # Other dependency crates retain their own lint gates.
           cargo clippy --locked -p codex-hepta-agentd --no-deps \
             --all-targets --features qualification-cognitive-write -- -D warnings
 
