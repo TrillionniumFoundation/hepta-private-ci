@@ -1,0 +1,128 @@
+name: Hepta intuition qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-intuition/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "docs/modules/intuition.policy/**"
+      - "qualification/module-execution-dossiers/detail/intuition.policy.md"
+      - ".github/workflows/hepta-intuition-qualification.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-intuition/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "docs/modules/intuition.policy/**"
+      - "qualification/module-execution-dossiers/detail/intuition.policy.md"
+      - ".github/workflows/hepta-intuition-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-intuition-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-head:
+    name: Intuition exact source qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Verify exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Format qualified policy surfaces
+        run: cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence --package codex-hepta-learning-ledger -- --check
+      - name: Compile all qualified policy targets
+        run: cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets
+      - name: Run policy and frozen-data qualification tests
+        run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
+      - name: Run kernel fast-policy gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo run --locked --release -p codex-hepta-intuition --example fast_gate | tee ../intuition-fast-kernel.csv
+      - name: Run authenticated end-to-end fast-policy gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --release -p codex-hepta-intelligence --test intuition_authenticated_fast_gate -- --nocapture 2>&1 | tee ../intuition-fast-authenticated.txt
+          grep -q "authenticated_e2e,128" ../intuition-fast-authenticated.txt
+      - name: Verify patch hygiene
+        working-directory: ${{ github.workspace }}
+        run: git diff --check
+      - name: Retain fast-policy measurements
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-fast-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            intuition-fast-kernel.csv
+            intuition-fast-authenticated.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  merge-candidate:
+    name: Intuition exact merge qualification
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Check out exact source for merge construction
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Construct deterministic synthetic merge
+        id: synthetic
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Intuition CI
+          author-email: hepta-intuition-ci@users.noreply.github.com
+          message: Synthetic merge
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+      - name: Verify exact merge identity
+        env:
+          EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Test qualified policy on merge candidate
+        run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
+      - name: Gate kernel fast policy on merge candidate
+        run: cargo run --locked --release -p codex-hepta-intuition --example fast_gate
+      - name: Gate authenticated fast policy on merge candidate
+        run: cargo test --locked --release -p codex-hepta-intelligence --test intuition_authenticated_fast_gate -- --nocapture
+      - name: Verify patch hygiene
+        working-directory: ${{ github.workspace }}
+        run: git diff --check

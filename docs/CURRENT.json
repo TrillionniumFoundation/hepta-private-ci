@@ -64,5 +64,11 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
+  },
+  "claimInterpretationPolicy": {
+    "sourceImplementationDoesNotAdvanceBaselineClaim": true,
+    "sourcePresenceDoesNotProveProductExecution": true,
+    "capabilityAdvanceRequiresEvidenceLadder": true,
+    "queuedOrPassingSourceCiDoesNotProveCapability": true
   }
 }
