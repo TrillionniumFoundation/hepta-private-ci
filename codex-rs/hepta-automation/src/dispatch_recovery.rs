@@ -32,7 +32,7 @@ impl AutomationStore {
         observed_at_ms: u64,
     ) -> Result<AutomationOccurrence, AutomationError> {
         let row = sqlx::query(
-            "SELECT r.scheduled_for_ms, r.client_user_message_id,
+            "SELECT r.schedule_revision, r.scheduled_for_ms, r.client_user_message_id,
                     r.lease_generation, r.lease_token, r.lease_expires_at_ms
              FROM automation_runs r
              JOIN automation_dispatch_outcomes d
@@ -58,9 +58,21 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
         let task = self.task(task_id).await?.ok_or(AutomationError::Corrupt)?;
+        // v14 freezes the schedule revision in the claim transaction. A NULL
+        // revision is an intentionally preserved pre-v14 ambiguity: never
+        // relabel it with the current schedule revision after the provider has
+        // already been contacted. Keep it quarantined for explicit legacy
+        // recovery instead of fabricating a qualified TaskFlow occurrence.
+        let schedule_revision = row
+            .try_get::<Option<i64>, _>("schedule_revision")
+            .map_err(|_| AutomationError::Corrupt)?
+            .map(to_u64)
+            .transpose()?
+            .ok_or(AutomationError::DispatchUnknown)?;
         let lease = AutomationLease {
             task,
             occurrence,
+            schedule_revision,
             scheduled_for_ms: to_u64(
                 row.try_get("scheduled_for_ms")
                     .map_err(|_| AutomationError::Corrupt)?,
