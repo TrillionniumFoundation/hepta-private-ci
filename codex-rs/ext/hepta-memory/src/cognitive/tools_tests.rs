@@ -53,6 +53,8 @@ fn tool(
         thread_id: THREAD_ID.to_string(),
         witness,
         operation,
+        qualification_write_enabled: true,
+        production_mutation: None,
     }
 }
 
