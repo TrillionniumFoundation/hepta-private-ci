@@ -18,9 +18,9 @@ from control_engineering_v2 import (
     observe_integration_stage,
     plan_engineering_work,
     publish_integration_queue,
-    reconcile_integration_item,
 )
 from control_engineering_v2.control_plane import DENIED_AUTHORITIES
+from control_engineering_v2.integration_controller import reconcile_integration_item
 
 
 class IntegrationControllerTests(unittest.TestCase):
