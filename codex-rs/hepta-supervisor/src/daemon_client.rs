@@ -5,6 +5,7 @@ use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::ReleaseId;
+use codex_hepta_memory::H7SignedArtifactEnvelope;
 use codex_uds::UnixStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
@@ -12,6 +13,7 @@ use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::time::timeout;
 
+use crate::H7H89ProductionGrant;
 use crate::ProductionMutationReceipt;
 use crate::ProductionRecoveryDecision;
 use crate::ReleaseSelectionSnapshot;
@@ -158,6 +160,8 @@ impl SupervisordClient {
         self.mutation(SupervisordMethod::Restart { fence }).await
     }
 
+    /// Compatibility surface only. The daemon rejects unsigned release
+    /// transitions; callers must use signed_upgrade/signed_rollback.
     pub async fn upgrade(
         &self,
         fence: SupervisordControlFence,
@@ -167,11 +171,41 @@ impl SupervisordClient {
             .await
     }
 
+    /// Compatibility surface only. The daemon rejects unsigned release
+    /// transitions; callers must use signed_upgrade/signed_rollback.
     pub async fn rollback(
         &self,
         fence: SupervisordControlFence,
     ) -> Result<SupervisordMutationAccepted, SupervisorError> {
         self.mutation(SupervisordMethod::Rollback { fence }).await
+    }
+
+    pub async fn signed_upgrade(
+        &self,
+        fence: SupervisordControlFence,
+        grant: H7H89ProductionGrant,
+        h7_envelope: H7SignedArtifactEnvelope,
+    ) -> Result<SupervisordMutationAccepted, SupervisorError> {
+        self.mutation(SupervisordMethod::SignedUpgrade {
+            fence,
+            grant,
+            h7_envelope,
+        })
+        .await
+    }
+
+    pub async fn signed_rollback(
+        &self,
+        fence: SupervisordControlFence,
+        grant: H7H89ProductionGrant,
+        h7_envelope: H7SignedArtifactEnvelope,
+    ) -> Result<SupervisordMutationAccepted, SupervisorError> {
+        self.mutation(SupervisordMethod::SignedRollback {
+            fence,
+            grant,
+            h7_envelope,
+        })
+        .await
     }
 
     async fn agent(

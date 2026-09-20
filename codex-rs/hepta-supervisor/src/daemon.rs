@@ -552,45 +552,20 @@ async fn handle_request<D: ProcessDriver>(
             )
             .await
         }
-        SupervisordMethod::Upgrade { fence, release_id } => {
-            if state.production_grant_verifier.is_some() {
-                return error_payload(
-                    "production_authority_required",
-                    "production-mode release changes require signed_upgrade",
-                    /*actual*/ None,
-                );
-            }
-            let target = match resolve_release_outside_lock(
-                Arc::clone(&state),
-                fence.agent_id.clone(),
-                release_id,
-            )
-            .await
-            {
-                Ok(target) => target,
-                Err(error) => {
-                    let actual = agent_status(&state, &fence.agent_id).await.ok();
-                    return safe_rejection(error, actual, /*mutation_started*/ false);
-                }
-            };
-            handle_mutation(state, SupervisordMutation::Upgrade, fence, Some(target)).await
-        }
-        SupervisordMethod::Rollback { fence } => {
-            if state.production_grant_verifier.is_some() {
-                return error_payload(
-                    "production_authority_required",
-                    "production-mode release changes require signed_rollback",
-                    /*actual*/ None,
-                );
-            }
-            handle_mutation(
-                state,
-                SupervisordMutation::Rollback,
-                fence,
-                /*target*/ None,
-            )
-            .await
-        }
+        // Keep the legacy wire variants decode-compatible, but never execute a
+        // release transition without the durable signed selection/intent path.
+        // Library-level Supervisor::upgrade/rollback remain qualification APIs;
+        // the daemon product has exactly one release-transaction authority model.
+        SupervisordMethod::Upgrade { .. } => error_payload(
+            "production_authority_required",
+            "daemon release changes require signed_upgrade",
+            /*actual*/ None,
+        ),
+        SupervisordMethod::Rollback { .. } => error_payload(
+            "production_authority_required",
+            "daemon release changes require signed_rollback",
+            /*actual*/ None,
+        ),
         SupervisordMethod::SignedUpgrade {
             fence,
             grant,

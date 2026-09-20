@@ -270,26 +270,21 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         wait_for_release(&client, &agents[0], &release_v1, None, &mut process_guard).await?;
     assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
 
-    let accepted = client
+    let unsigned_upgrade = client
         .upgrade(restarted_a.control_fence.clone(), release_v2.clone())
-        .await?;
-    assert_mutation_accepted(
-        SupervisordMutation::Upgrade,
-        &restarted_a.control_fence,
-        &accepted,
-    )?;
-    let upgraded_a = wait_for_release(
-        &client,
-        &agents[0],
-        &release_v2,
-        Some(&release_v1),
-        &mut process_guard,
-    )
-    .await?;
+        .await
+        .expect_err("daemon must reject unsigned release changes");
     ensure!(
-        require_pid(&upgraded_a)? != require_pid(&restarted_a)?,
-        "Agent A upgrade did not replace its process"
+        unsigned_upgrade
+            .to_string()
+            .contains("(production_authority_required)"),
+        "unsigned daemon upgrade returned the wrong rejection: {unsigned_upgrade}"
     );
+    assert_exact_status(
+        &restarted_a,
+        &client.snapshot(agents[0].agent_id.clone()).await?,
+        "unsigned daemon upgrade changed Agent A",
+    )?;
     assert_peers_unchanged(&client, &agents[1..], &peer_status_baseline).await?;
 
     let before_daemon_restart = snapshot_all(&client, &agents).await?;
@@ -329,26 +324,23 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     let before_rollback = restarted_client
         .snapshot(agents[0].agent_id.clone())
         .await?;
-    let accepted = restarted_client
+    let unsigned_rollback = restarted_client
         .rollback(before_rollback.control_fence.clone())
-        .await?;
-    assert_mutation_accepted(
-        SupervisordMutation::Rollback,
-        &before_rollback.control_fence,
-        &accepted,
-    )?;
-    let rolled_back_a = wait_for_release(
-        &restarted_client,
-        &agents[0],
-        &release_v1,
-        Some(&release_v2),
-        &mut process_guard,
-    )
-    .await?;
+        .await
+        .expect_err("daemon must reject unsigned rollback");
     ensure!(
-        require_pid(&rolled_back_a)? != require_pid(&upgraded_a)?,
-        "Agent A rollback did not replace its process"
+        unsigned_rollback
+            .to_string()
+            .contains("(production_authority_required)"),
+        "unsigned daemon rollback returned the wrong rejection: {unsigned_rollback}"
     );
+    assert_exact_status(
+        &before_rollback,
+        &restarted_client
+            .snapshot(agents[0].agent_id.clone())
+            .await?,
+        "unsigned daemon rollback changed Agent A",
+    )?;
     assert_peers_unchanged(&restarted_client, &agents[1..], &peer_status_baseline).await?;
 
     for agent in &agents {
