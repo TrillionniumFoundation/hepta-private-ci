@@ -451,3 +451,51 @@ fn protected_set_cannot_exceed_checkpoint_record_capacity() {
         Err(QualifiedCompactionError::ProtectedReferencesExceedCapacity)
     );
 }
+
+
+#[test]
+fn large_bounded_plan_remains_deterministic() {
+    let mut inputs = (0_u32..4_096)
+        .map(|index| {
+            input_with_footprint(
+                record(
+                    &format!("memory:scale:{index:04}"),
+                    1,
+                    None,
+                    RecordState::Live,
+                ),
+                index % 17,
+                32,
+                8,
+            )
+        })
+        .collect::<Vec<_>>();
+    let mut reversed = inputs.clone();
+    reversed.reverse();
+
+    let mut profile = policy(4_096, Vec::new());
+    profile.maximum_retained_bytes = 4_096 * 32;
+    profile.maximum_retained_tokens = 4_096 * 8;
+
+    let left = plan_compaction(
+        snapshot_key(),
+        generation(2),
+        None,
+        &profile,
+        std::mem::take(&mut inputs),
+    )
+    .expect("large plan");
+    let right = plan_compaction(
+        snapshot_key(),
+        generation(2),
+        None,
+        &profile,
+        reversed,
+    )
+    .expect("reversed large plan");
+
+    assert_eq!(left.plan_digest, right.plan_digest);
+    assert_eq!(left.retained_inputs.len(), 4_096);
+    assert_eq!(left.loss_report.retained_bytes, 4_096 * 32);
+    assert_eq!(left.loss_report.retained_tokens, 4_096 * 8);
+}
