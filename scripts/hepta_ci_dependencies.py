@@ -84,7 +84,52 @@ def presentation_input(path: str) -> bool:
     ) or path.startswith("qualification/module-execution-dossiers/detail/") and path.endswith(".md")
 
 
-def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
+def cargo_source_inputs(manifests: dict[str, dict], owners: dict[str, str]):
+    """Bind explicit Cargo source paths before classifying presentation inputs.
+
+    Cargo targets and build scripts may live outside their package directory or
+    use a non-.rs suffix. The manifest, not the filename, determines ownership.
+    No target or build script is executed while discovering these dependencies.
+    """
+    inputs: set[tuple[str, str]] = set()
+
+    def add(folder: str, relative: object) -> None:
+        if (not isinstance(relative, str) or not relative or "\\" in relative
+                or any(ord(char) < 32 for char in relative)
+                or posixpath.isabs(relative)):
+            raise ValueError("invalid Cargo source path")
+        target = posixpath.normpath(posixpath.join(folder, relative))
+        if target in {".", ".."} or target.startswith("../"):
+            raise ValueError("Cargo source path leaves the exact repository")
+        inputs.add((target, owners[folder]))
+
+    for folder, document in manifests.items():
+        library = document.get("lib", {})
+        if not isinstance(library, dict):
+            raise ValueError("invalid Cargo library declaration")
+        targets = [library]
+        for kind in ("bin", "example", "test", "bench"):
+            declarations = document.get(kind, [])
+            if not isinstance(declarations, list):
+                raise ValueError(f"invalid Cargo {kind} declarations")
+            targets.extend(declarations)
+        for target in targets:
+            if not isinstance(target, dict):
+                raise ValueError("invalid Cargo target declaration")
+            if "path" in target:
+                add(folder, target["path"])
+        build = document["package"].get("build")
+        if isinstance(build, str):
+            add(folder, build)
+        elif build is not None and type(build) is not bool:
+            raise ValueError("invalid Cargo build-script declaration")
+    return frozenset(inputs)
+
+
+def embedded_inputs(
+    root: Path, revision: str, owners: dict[str, str],
+    source_inputs: frozenset[tuple[str, str]] = frozenset(),
+):
     """Read exact-tree includes without executing candidate build scripts.
 
     Literal includes give precise edges. Computed paths conservatively select
@@ -101,7 +146,9 @@ def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
     if result.returncode not in (0, 1):
         raise subprocess.CalledProcessError(result.returncode, result.args,
                                             result.stdout, result.stderr)
-    pending = []
+    # Explicit target paths are source entrypoints even when git grep's .rs
+    # filter cannot find them or they are outside a conventional Cargo root.
+    pending = list(source_inputs)
     prefix = revision + ":"
     for record in result.stdout.split(b"\0"):
         if not record:
@@ -151,7 +198,7 @@ def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
                     rust_sources.add(target)
         return targets, rust_sources, opaque
 
-    inputs, opaque, visited = set(), set(), set()
+    inputs, opaque, visited = set(source_inputs), set(), set()
     while pending:
         path, owner = pending.pop()
         if (path, owner) in visited:
@@ -251,7 +298,8 @@ def graph(root: Path, revision: str) -> Graph:
     # Deprecated version-qualified replacements have different resolver
     # semantics. Keep the conservative escape hatch instead of guessing.
     conservative = bool(root_manifest.get("replace"))
-    inputs, opaque = embedded_inputs(root, revision, owners)
+    source_inputs = cargo_source_inputs(manifests, owners)
+    inputs, opaque = embedded_inputs(root, revision, owners, source_inputs)
     return Graph(owners, edges, frozenset(owners[p] for p in members), conservative,
                  inputs, opaque)
 
