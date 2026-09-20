@@ -2472,7 +2472,9 @@ mod tests {
             source: FactorSource::GovernedInternal,
             lifecycle: Lifecycle::Draft,
         };
-        durable.register_factor(first.clone()).must("persist predecessor");
+        durable
+            .register_factor(first.clone())
+            .must("persist predecessor");
         let failed = PromptFactor {
             factor_id: id("factor:storage-failed"),
             content_digest: digest("factor:storage-failed"),
@@ -2483,21 +2485,25 @@ mod tests {
             durable.register_factor(failed.clone()),
             Err(DurableRegistryError::StorageFull)
         ));
-        assert!(durable
-            .registry()
-            .must("live predecessor")
-            .factor(&failed.factor_id)
-            .is_none());
+        assert!(
+            durable
+                .registry()
+                .must("live predecessor")
+                .factor(&failed.factor_id)
+                .is_none()
+        );
         assert!(!durable.requires_reopen());
         drop(durable);
 
         let reopened =
             DurablePromptRegistry::open_state_dir(&root, 64).must("reopen predecessor");
-        assert!(reopened
-            .registry()
-            .must("registry")
-            .factor(&failed.factor_id)
-            .is_none());
+        assert!(
+            reopened
+                .registry()
+                .must("registry")
+                .factor(&failed.factor_id)
+                .is_none()
+        );
     }
 
     #[test]
@@ -2595,7 +2601,9 @@ mod tests {
         let expected_digest = {
             let mut durable =
                 DurablePromptRegistry::open_state_dir(&source_root, 64).must("source owner");
-            durable.register_factor(factor.clone()).must("persist factor");
+            durable
+                .register_factor(factor.clone())
+                .must("persist factor");
             durable
                 .revoke_factor(
                     &factor.factor_id,
@@ -2621,7 +2629,9 @@ mod tests {
         let registry = restored.registry().must("registry");
         assert_eq!(registry.snapshot_digest(), expected_digest);
         assert_eq!(
-            registry.factor(&factor.factor_id).map(|record| record.lifecycle),
+            registry
+                .factor(&factor.factor_id)
+                .map(|record| record.lifecycle),
             Some(Lifecycle::Revoked)
         );
         assert_ne!(registry.revocation_frontier(), 0);
