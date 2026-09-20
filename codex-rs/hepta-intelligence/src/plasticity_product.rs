@@ -404,10 +404,8 @@ pub fn propose_authenticated_parameter_plasticity_v1(
             .no_change_attestation
             .as_ref()
             .ok_or(E::MissingNoChangeAttestation)?;
-        let payload = no_change_disposition_signing_payload_v1(
-            &request.generated,
-            &request.admission,
-        )?;
+        let payload =
+            no_change_disposition_signing_payload_v1(&request.generated, &request.admission)?;
         let evaluator = verifier
             .verify(
                 LearningEvidenceRoleV1::Evaluator,
