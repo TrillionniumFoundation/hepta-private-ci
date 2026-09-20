@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     env:
-      SOURCE_SHA: b11be3411eb7cddf14a20466380c088c8f34a763
+      SOURCE_SHA: 1ff22b776ae0ef2192c83b7704c525bea5cae8a1
+      BASE_SHA: b11be3411eb7cddf14a20466380c088c8f34a763
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -29,9 +30,10 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
           OUT="$RUNNER_TEMP/hepta-source"
           mkdir -p "$OUT"
-          git bundle create "$OUT/source.bundle" HEAD
+          git bundle create "$OUT/source.bundle" HEAD "^$BASE_SHA"
           git bundle verify "$OUT/source.bundle"
           git rev-parse HEAD HEAD^{tree} > "$OUT/identity.txt"
           (cd "$OUT" && sha256sum source.bundle > SHA256SUMS)
