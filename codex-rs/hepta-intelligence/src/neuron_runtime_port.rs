@@ -7,13 +7,14 @@
 
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Mutex;
 
 use codex_hepta_neuron::FrozenModelExecutor;
 use codex_hepta_neuron::LineagePolicy;
 use codex_hepta_neuron::NeuronRuntimeHost;
-use codex_hepta_neuron::NeuronTickInputV1;
+pub use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_neuron::RecoveryWitnessStore;
-use codex_hepta_neuron::RuntimeTickObservationV1;
+pub use codex_hepta_neuron::RuntimeTickObservationV1;
 use codex_hepta_neuron::RuntimeTickResultV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -51,6 +52,55 @@ impl fmt::Display for NeuronConsumerErrorV1 {
 }
 
 impl StdError for NeuronConsumerErrorV1 {}
+
+pub trait NeuronRuntimeProductPort: Send + Sync {
+    fn consume(
+        &self,
+        input: NeuronTickInputV1,
+        observation: RuntimeTickObservationV1,
+    ) -> Result<NeuronConsumerReceiptV1, NeuronConsumerErrorV1>;
+}
+
+pub struct OwnedNeuronRuntimePort<E, W, L>
+where
+    E: FrozenModelExecutor,
+    W: RecoveryWitnessStore,
+    L: LineagePolicy,
+{
+    runtime: Mutex<NeuronRuntimeHost<E, W, L>>,
+}
+
+impl<E, W, L> OwnedNeuronRuntimePort<E, W, L>
+where
+    E: FrozenModelExecutor,
+    W: RecoveryWitnessStore,
+    L: LineagePolicy,
+{
+    pub fn new(runtime: NeuronRuntimeHost<E, W, L>) -> Self {
+        Self {
+            runtime: Mutex::new(runtime),
+        }
+    }
+}
+
+impl<E, W, L> NeuronRuntimeProductPort for OwnedNeuronRuntimePort<E, W, L>
+where
+    E: FrozenModelExecutor + Send,
+    W: RecoveryWitnessStore + Send,
+    L: LineagePolicy + Send,
+{
+    fn consume(
+        &self,
+        input: NeuronTickInputV1,
+        observation: RuntimeTickObservationV1,
+    ) -> Result<NeuronConsumerReceiptV1, NeuronConsumerErrorV1> {
+        let mut runtime = self
+            .runtime
+            .lock()
+            .map_err(|_| NeuronConsumerErrorV1::Runtime("neuron owner mutex poisoned".to_string()))?;
+        consume_neuron_tick(&mut runtime, input, observation)
+    }
+}
 
 pub fn consume_neuron_tick<E, W, L>(
     runtime: &mut NeuronRuntimeHost<E, W, L>,
