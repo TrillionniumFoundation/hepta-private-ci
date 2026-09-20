@@ -200,3 +200,26 @@ fn snapshot_binds_core_freshness_and_bounded_unique_requirements() {
         Err(CapabilitySnapshotErrorV2::CapacityExceeded)
     );
 }
+
+#[test]
+fn final_use_revalidation_rejects_revocation_or_generation_drift() {
+    let frozen = CapabilitySnapshotV2::admit(request()).expect("frozen");
+    let same = CapabilitySnapshotV2::admit(request()).expect("same");
+    assert_eq!(frozen.revalidate_current(&same), Ok(()));
+
+    let mut revoked = request();
+    revoked.revocation_frontier_digest = Digest32::of_bytes(b"advanced-revocations");
+    let revoked = CapabilitySnapshotV2::admit(revoked).expect("revoked");
+    assert_eq!(
+        frozen.revalidate_current(&revoked),
+        Err(CapabilitySnapshotErrorV2::StaleSnapshot)
+    );
+
+    let mut generation = request();
+    generation.bindings[0].generation = Generation::new(2).expect("generation");
+    let generation = CapabilitySnapshotV2::admit(generation).expect("generation");
+    assert_eq!(
+        frozen.revalidate_current(&generation),
+        Err(CapabilitySnapshotErrorV2::StaleSnapshot)
+    );
+}
