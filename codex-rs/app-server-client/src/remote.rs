@@ -185,6 +185,69 @@ impl RemoteAppServerObservedEvent {
     }
 }
 
+/// Process-local proof that a successful typed response was read from one
+/// initialized remote App Server connection. Private provenance fields prevent
+/// an arbitrary protocol DTO from being promoted into reconciliation evidence.
+#[derive(Debug)]
+pub struct RemoteAppServerObservedResponse<T> {
+    response: T,
+    method: String,
+    request_id: RequestId,
+    connection_id: u64,
+    server_version: Option<String>,
+    codex_home: Option<String>,
+}
+
+impl<T> RemoteAppServerObservedResponse<T> {
+    pub fn response(&self) -> &T {
+        &self.response
+    }
+
+    pub fn into_response(self) -> T {
+        self.response
+    }
+
+    pub fn method(&self) -> &str {
+        &self.method
+    }
+
+    pub fn request_id(&self) -> &RequestId {
+        &self.request_id
+    }
+
+    pub const fn connection_id(&self) -> u64 {
+        self.connection_id
+    }
+
+    pub fn server_version(&self) -> Option<&str> {
+        self.server_version.as_deref()
+    }
+
+    pub fn codex_home(&self) -> Option<&str> {
+        self.codex_home.as_deref()
+    }
+
+    #[cfg(feature = "test-support")]
+    #[doc(hidden)]
+    pub fn from_test_response(
+        response: T,
+        method: String,
+        request_id: RequestId,
+        connection_id: u64,
+        server_version: Option<String>,
+        codex_home: Option<String>,
+    ) -> Self {
+        Self {
+            response,
+            method,
+            request_id,
+            connection_id,
+            server_version,
+            codex_home,
+        }
+    }
+}
+
 /// Process-local proof that an explicit JSON-RPC error was returned by the
 /// initialized remote request path.
 #[derive(Debug)]
@@ -829,6 +892,18 @@ impl RemoteAppServerClient {
     where
         T: DeserializeOwned,
     {
+        self.request_typed_observed_response(request)
+            .await
+            .map(|observed| observed.into_response())
+    }
+
+    pub async fn request_typed_observed_response<T>(
+        &self,
+        request: ClientRequest,
+    ) -> Result<RemoteAppServerObservedResponse<T>, RemoteObservedTypedRequestError>
+    where
+        T: DeserializeOwned,
+    {
         let method = request.method_name().to_string();
         let request_id = request.id().clone();
         let response = self.request(request).await.map_err(|source| {
@@ -840,15 +915,26 @@ impl RemoteAppServerClient {
         let result = response.map_err(|error| RemoteObservedTypedRequestError::Server {
             observed: RemoteAppServerObservedServerError {
                 method: method.clone(),
-                request_id,
+                request_id: request_id.clone(),
                 error,
                 connection_id: self.connection_id,
                 server_version: self.server_version.clone(),
                 codex_home: self.codex_home.clone(),
             },
         })?;
-        serde_json::from_value(result)
-            .map_err(|source| RemoteObservedTypedRequestError::Deserialize { method, source })
+        let response = serde_json::from_value(result)
+            .map_err(|source| RemoteObservedTypedRequestError::Deserialize {
+                method: method.clone(),
+                source,
+            })?;
+        Ok(RemoteAppServerObservedResponse {
+            response,
+            method,
+            request_id,
+            connection_id: self.connection_id,
+            server_version: self.server_version.clone(),
+            codex_home: self.codex_home.clone(),
+        })
     }
 
     pub async fn notify(&self, notification: ClientNotification) -> IoResult<()> {
