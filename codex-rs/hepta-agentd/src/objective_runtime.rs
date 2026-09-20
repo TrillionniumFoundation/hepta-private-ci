@@ -227,7 +227,24 @@ impl ObjectiveRuntimeHost {
             &mut state.journal,
         ) {
             Ok(published) => published,
-            Err(ObjectiveRunError::Conflict(conflict)) => {
+            Err(ObjectiveRunError::Conflict {
+                conflict,
+                publication: _,
+            }) => {
+                let record = state
+                    .journal
+                    .get_conflict(&run_id)
+                    .map_err(store_error)?
+                    .ok_or_else(|| invalid("durable objective conflict publication disappeared"))?;
+                let key = (
+                    record.authentication.issuer_id.to_string(),
+                    record.authentication.key_epoch,
+                );
+                state
+                    .highest_sequences
+                    .entry(key)
+                    .and_modify(|value| *value = (*value).max(record.authentication.sequence))
+                    .or_insert(record.authentication.sequence);
                 return Ok(ObjectiveStartResult::Conflict {
                     run_id: request.body.run_id,
                     conflict_digest: conflict.conflict_digest.to_string(),
@@ -448,15 +465,15 @@ fn replay_frontier(
     journal: &DurableRunStartJournal,
 ) -> Result<BTreeMap<(String, u64), u64>, AgentdError> {
     let mut highest: BTreeMap<(String, u64), u64> = BTreeMap::new();
-    for record in journal.records().map_err(store_error)? {
+    for (authentication, _) in journal.authentication_records().map_err(store_error)? {
         let key = (
-            record.authentication.issuer_id.to_string(),
-            record.authentication.key_epoch,
+            authentication.issuer_id.to_string(),
+            authentication.key_epoch,
         );
         highest
             .entry(key)
-            .and_modify(|value| *value = (*value).max(record.authentication.sequence))
-            .or_insert(record.authentication.sequence);
+            .and_modify(|value| *value = (*value).max(authentication.sequence))
+            .or_insert(authentication.sequence);
     }
     Ok(highest)
 }
@@ -478,11 +495,11 @@ fn require_replay_admission(
     }
     let exact = state
         .journal
-        .records()
+        .authentication_records()
         .map_err(store_error)?
         .into_iter()
-        .any(|record| {
-            record.authentication == *authentication && record.snapshot.run_id == *run_id
+        .any(|(record_authentication, record_run_id)| {
+            record_authentication == authentication && record_run_id == run_id
         });
     if exact {
         Ok(())
