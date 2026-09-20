@@ -318,8 +318,18 @@ and independent final-use admission.
 scope digest part of the candidate before preparation. Effectful candidates without
 that binding fail closed, and `GrantRequestV1::request_digest` seals it together
 with the exact payload, plan, objective, snapshot, revocation frontier and expiry.
-This closes the caller-substitution hole in the request contract. The next product
-step is a named authenticated global caller that maps those already-sealed fields
-to `kernel.authority::FinalUseBinding` and consumes a signed `VerifiedUseToken`
-immediately before the effect boundary. The request set itself remains
-`AuthorityPosture::DENY_ALL`.
+This closes the caller-substitution hole in the request contract.
+`AgentdControlRuntimeAuthorityHost` is the explicit host adapter: it derives
+`FinalUseBinding` only from the sealed request, rejects request-digest drift,
+and delegates claim/revalidation to the existing `FinalUseAuthority`. It is not
+attached by default Agentd startup and therefore does not itself create an effect
+path. The request set remains `AuthorityPosture::DENY_ALL`.
+
+The remaining global composition blocker is upstream owner truth, not authority
+plumbing. In particular, `runtime.fleet` registers
+`DomainRead::fleet_allocation_grantV1`, but its current local allocation
+calculator explicitly denies both an authenticated fleet view and a canonical
+allocation grant. Control must not reinterpret caller-supplied local capacities
+as that authoritative owner port. The named global caller can be composed only
+after that port and the remaining owner observations (including qualification
+evidence) are materialized with current provenance/freshness.

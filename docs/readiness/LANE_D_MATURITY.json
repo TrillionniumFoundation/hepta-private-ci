@@ -227,10 +227,11 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "request_local_established_global_not_established",
+          "state": "request_local_established_global_blocked_on_owner_ports",
           "evidence": [
             "codex-rs/hepta-agentd/src/cognitive_context.rs",
-            "plan_observed_context"
+            "plan_observed_context",
+            "codex-rs/hepta-agentd/src/control_runtime_authority.rs"
           ]
         },
         "productionWriter": {
@@ -281,11 +282,19 @@
           ]
         },
         "finalUseAuthorityBinding": {
-          "state": "request_contract_sealed_authority_composition_pending",
+          "state": "sealed_request_and_explicit_agentd_authority_adapter_implemented",
           "evidence": [
             "ExecutionGrantBindingV1",
             "GrantRequestV1::request_digest",
-            "effect_candidate_requires_execution_binding"
+            "AgentdControlRuntimeAuthorityHost",
+            "request_field_drift_is_rejected_before_authority_claim"
+          ]
+        },
+        "globalOwnerComposition": {
+          "state": "blocked_on_registered_runtime_fleet_authoritative_read_and_remaining_owner_adapters",
+          "evidence": [
+            "DomainRead::fleet_allocation_grantV1 is registered",
+            "runtime.fleet LocalAllocationClaimV1 denies AuthenticatedFleetView and CanonicalAllocationGrant"
           ]
         }
       }
