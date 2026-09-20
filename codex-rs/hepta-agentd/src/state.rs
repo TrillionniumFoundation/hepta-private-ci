@@ -1,15 +1,21 @@
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_memory::CognitiveStore;
 
 use crate::AgentdError;
 use crate::AgentdEventKind;
+use crate::AgentRunCoordinator;
+use crate::AgentRunError;
 use crate::AgentdIdentity;
 use crate::EventBuffer;
+use crate::RuntimeComposition;
 
 #[path = "state_control.rs"]
 mod control;
@@ -23,6 +29,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    runs: Mutex<AgentRunCoordinator>,
 }
 
 struct RuntimeState {
@@ -44,6 +51,33 @@ impl AgentdState {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
+        let configuration_material = format!(
+            "{}|{}|{}|{}|{}",
+            identity.agent_id,
+            identity.spawn_generation,
+            identity.workspace.display(),
+            identity.home_root.display(),
+            identity.run_root.display()
+        );
+        let ports_material = format!(
+            "{}|{}|{}",
+            identity.control_socket.display(),
+            identity.app_server_socket.display(),
+            crate::AGENTD_CONTROL_SCHEMA_VERSION
+        );
+        let run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+            agent_id: identity.agent_id.as_str().to_string(),
+            supervisor_generation: identity.spawn_generation,
+            agentd_generation: identity.spawn_generation,
+            configuration_digest: Sha256Digest::for_bytes(configuration_material.as_bytes())
+                .as_str()
+                .to_string(),
+            ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
+                .as_str()
+                .to_string(),
+        })
+        .map_err(run_error)?;
+
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
@@ -58,6 +92,7 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
+            runs: Mutex::new(run_coordinator),
         })
     }
 
@@ -173,6 +208,13 @@ impl AgentdState {
                     lifecycle: record.lifecycle.lifecycle,
                     generation: record.lifecycle.generation,
                 });
+            if runtime.lifecycle == AgentLifecycle::Draining {
+                self.runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .begin_drain(unix_now_ms()?, "supervisor_draining")
+                    .map_err(run_error)?;
+            }
         }
         Ok(())
     }
@@ -216,6 +258,12 @@ impl AgentdState {
             .lock()
             .map_err(poisoned_state)?
             .push(AgentdEventKind::Draining);
+        drop(runtime);
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .begin_drain(unix_now_ms()?, "agentd_shutdown")
+            .map_err(run_error)?;
         Ok(())
     }
 
@@ -226,6 +274,13 @@ impl AgentdState {
         }
         if let Ok(mut events) = self.events.lock() {
             events.push(AgentdEventKind::GenerationFenced);
+        }
+        if let Ok(mut runs) = self.runs.lock() {
+            runs.close_admissions();
+            if let Ok(now_ms) = unix_now_ms() {
+                let _ = runs.begin_drain(now_ms, "generation_fenced");
+            }
+            let _ = runs.mark_unresolved_indeterminate("generation_fenced");
         }
     }
 
@@ -240,6 +295,54 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+
+    pub(crate) fn expire_run_deadlines(&self) -> Result<usize, AgentdError> {
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .expire_deadlines(unix_now_ms()?)
+            .map_err(run_error)
+    }
+
+    pub(crate) fn active_run_count(&self) -> Result<usize, AgentdError> {
+        Ok(self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .active_run_count())
+    }
+
+    pub(crate) fn unresolved_run_count(&self) -> Result<usize, AgentdError> {
+        Ok(self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .unresolved_run_count())
+    }
+
+    pub(crate) fn mark_unresolved_runs_indeterminate(
+        &self,
+        reason: &str,
+    ) -> Result<usize, AgentdError> {
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .mark_unresolved_indeterminate(reason)
+            .map_err(run_error)
+    }
+}
+
+pub(super) fn run_error(error: AgentRunError) -> AgentdError {
+    AgentdError::Protocol(format!("agent run lifecycle rejected: {error:?}"))
+}
+
+fn unix_now_ms() -> Result<u64, AgentdError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| AgentdError::Protocol("system clock precedes Unix epoch".to_string()))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|_| AgentdError::Protocol("system clock exceeds u64 milliseconds".to_string()))
 }
 
 fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
