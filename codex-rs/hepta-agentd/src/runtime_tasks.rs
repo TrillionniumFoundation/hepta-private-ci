@@ -55,6 +55,10 @@ pub struct RuntimeTasks {
     cancellation: CancellationToken,
     shutdown_grace: Duration,
     stopped: bool,
+    // Preserve the outcome as well as the cancellation fence. A caller may
+    // observe an error while retiring a service, then delegate final cleanup to
+    // run_until. That cleanup must not relabel the cancelled host as successful.
+    failed: bool,
 }
 
 impl RuntimeTasks {
@@ -73,6 +77,7 @@ impl RuntimeTasks {
             cancellation,
             shutdown_grace,
             stopped: false,
+            failed: false,
         })
     }
 
@@ -239,6 +244,7 @@ impl RuntimeTasks {
             // run_until, observes it and its caller handles the returned error.
             // Successful optional quarantine and an unfinished drain timeout
             // do not reach this branch and remain locally isolated.
+            self.failed = true;
             self.stopped = true;
             self.cancellation.cancel();
         }
@@ -311,6 +317,12 @@ impl RuntimeTasks {
     where
         S: Future<Output = Result<(), AgentdError>>,
     {
+        if self.failed {
+            self.shutdown().await;
+            return Err(AgentdError::Protocol(
+                "runtime host previously failed; cleanup cannot certify success".to_string(),
+            ));
+        }
         tokio::pin!(shutdown);
         let cancellation = self.cancellation.clone();
         let result = loop {
@@ -325,6 +337,9 @@ impl RuntimeTasks {
                 }
             }
         };
+        if result.is_err() {
+            self.failed = true;
+        }
         self.shutdown().await;
         result
     }
@@ -367,3 +382,7 @@ mod retirement_tests;
 #[cfg(test)]
 #[path = "runtime_task_fence_tests.rs"]
 mod failure_latch_tests;
+
+#[cfg(test)]
+#[path = "runtime_task_outcome_tests.rs"]
+mod outcome_tests;
