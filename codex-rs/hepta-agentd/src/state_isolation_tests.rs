@@ -1,6 +1,8 @@
 use std::fs;
 
 use super::*;
+use crate::AgentdPayload;
+use crate::LifecycleSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::ResourceBudget;
