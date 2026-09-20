@@ -1673,10 +1673,18 @@ test("failed persistence-domain switch keeps the old lease recoverable and relea
 
   const beforeResumeConnect = connectCalls;
   pageShow({ persisted: true });
-  for (let index = 0; index < 40 && (held.size !== 1 || connectCalls === beforeResumeConnect); index += 1) {
-    await new Promise((resolve) => setImmediate(resolve));
+  const resumeDeadline = Date.now() + 2_000;
+  while (
+    Date.now() < resumeDeadline &&
+    (held.size !== 1 || connectCalls === beforeResumeConnect)
+  ) {
+    await new Promise((resolve) => setTimeout(resolve, 10));
   }
-  assert.equal(held.size, 1);
+  assert.equal(
+    held.size,
+    1,
+    `expected resumed writer lease; held=${JSON.stringify([...held])} connectCalls=${connectCalls} before=${beforeResumeConnect}`,
+  );
   assert.equal([...held][0], domainBLeaseName);
   assert.ok(connectCalls > beforeResumeConnect);
   assert.equal(requestCalls, 1);
