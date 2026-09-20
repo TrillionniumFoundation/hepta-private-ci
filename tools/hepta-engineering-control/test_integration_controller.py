@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path
 import tempfile
 import unittest
@@ -7,6 +8,7 @@ from control_engineering_v2 import (
     EngineeringStore,
     EngineeringWorkPackage,
     HmacTrustStore,
+    IntegrationTerminalReceipt,
     ReviewCapacity,
     WorkerProfile,
     WorkEnvelope,
@@ -36,6 +38,30 @@ class IntegrationControllerTests(unittest.TestCase):
         )
         self.base_commit = "e" * 40
         self.base_tree = "f" * 40
+        self.trust = HmacTrustStore(
+            {("integration_terminal_observer", "terminal-key"): b"terminal"}
+        )
+
+    def terminal_receipt(self, *, outcome="merged_observed", observed=None):
+        observed = self.now + 5 if observed is None else observed
+        value = IntegrationTerminalReceipt(
+            "queue-a",
+            "package-a",
+            "1" * 64,
+            "2" * 64,
+            "3" * 64,
+            outcome,
+            "integration_terminal_observer",
+            "terminal-key",
+            observed,
+            observed + 1_000_000,
+        )
+        return replace(
+            value,
+            signature=self.trust.sign(
+                value, value.issuer, value.signing_identity
+            ),
+        )
 
     def plan(self, store):
         store.issue_work_envelope(self.envelope, now_ns=self.now)
@@ -118,6 +144,8 @@ class IntegrationControllerTests(unittest.TestCase):
                     current_base_commit=self.base_commit,
                     current_base_tree=self.base_tree,
                     terminal_outcome="merged_observed",
+                    terminal_receipt=self.terminal_receipt(),
+                    trust_store=self.trust,
                     now_ns=self.now + 5,
                 )
                 self.assertEqual(terminal.state, "terminal_merged")
@@ -182,6 +210,34 @@ class IntegrationControllerTests(unittest.TestCase):
                 self.assertEqual(invalid.state, "invalidated")
                 self.assertEqual(invalid.reason, "candidate_drift")
 
+    def test_terminal_requires_authenticated_observer_receipt(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
+                self.publish(store)
+                reconcile_integration_item(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit=self.base_commit,
+                    current_base_tree=self.base_tree,
+                    candidate_digest="1" * 64,
+                    review_digest="2" * 64,
+                    ci_digest="3" * 64,
+                    now_ns=self.now + 2,
+                )
+                with self.assertRaisesRegex(
+                    ValueError, "authenticated_terminal_receipt_required"
+                ):
+                    reconcile_integration_item(
+                        store,
+                        "queue-a",
+                        "package-a",
+                        current_base_commit=self.base_commit,
+                        current_base_tree=self.base_tree,
+                        terminal_outcome="merged_observed",
+                        now_ns=self.now + 3,
+                    )
+
     def test_terminal_outcome_cannot_skip_review_or_ci(self):
         with tempfile.TemporaryDirectory() as temporary:
             with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
@@ -197,6 +253,8 @@ class IntegrationControllerTests(unittest.TestCase):
                         current_base_tree=self.base_tree,
                         candidate_digest="1" * 64,
                         terminal_outcome="merged_observed",
+                        terminal_receipt=self.terminal_receipt(),
+                        trust_store=self.trust,
                         now_ns=self.now + 2,
                     )
 
@@ -311,6 +369,8 @@ class IntegrationControllerTests(unittest.TestCase):
                     current_base_commit=self.base_commit,
                     current_base_tree=self.base_tree,
                     terminal_outcome="merged_observed",
+                    terminal_receipt=self.terminal_receipt(),
+                    trust_store=self.trust,
                     now_ns=self.now + 3,
                 )
                 generation = integration_queue_generation(store, "queue-a")
@@ -322,6 +382,8 @@ class IntegrationControllerTests(unittest.TestCase):
                     current_base_commit="9" * 40,
                     current_base_tree="8" * 40,
                     terminal_outcome="merged_observed",
+                    terminal_receipt=self.terminal_receipt(),
+                    trust_store=self.trust,
                     now_ns=self.now + 4,
                 )
                 self.assertEqual(replay, terminal)
@@ -338,6 +400,10 @@ class IntegrationControllerTests(unittest.TestCase):
                         current_base_commit=self.base_commit,
                         current_base_tree=self.base_tree,
                         terminal_outcome="terminal_failure",
+                        terminal_receipt=self.terminal_receipt(
+                            outcome="terminal_failure", observed=self.now + 5
+                        ),
+                        trust_store=self.trust,
                         now_ns=self.now + 5,
                     )
 
