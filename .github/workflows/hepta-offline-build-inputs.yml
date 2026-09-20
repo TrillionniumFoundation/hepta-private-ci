@@ -22,7 +22,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-          fetch-depth: 1
+          fetch-depth: 0
       - name: Resolve the exact locked dependency sources
         working-directory: codex-rs
         env:
@@ -53,7 +53,7 @@ jobs:
           tar -xOzf nextest.tar.gz cargo-nextest > bin/cargo-nextest
           chmod 0755 bin/just bin/cargo-nextest
           tar -C "$RUNNER_TEMP/hepta-offline-inputs" -czf "$RUNNER_TEMP/hepta-offline-inputs/test-tools.tar.gz" bin
-      - name: Export exact reviewed source without Git metadata or credentials
+      - name: Export exact source and credential-free Git objects
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
@@ -61,12 +61,16 @@ jobs:
           git diff --cached --quiet
           git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-offline-inputs/source.tar.gz" "$GITHUB_SHA"
           git rev-parse "$GITHUB_SHA^{tree}" > "$RUNNER_TEMP/hepta-offline-inputs/source-tree.txt"
+          # Exact-revision CI planning needs commit/tree ancestry, not .git/config.
+          # A bundle contains Git objects/refs, never hooks or checkout credentials.
+          git bundle create "$RUNNER_TEMP/hepta-offline-inputs/source.bundle" HEAD
+          git bundle verify "$RUNNER_TEMP/hepta-offline-inputs/source.bundle"
       - name: Package source inputs only, never credentials or mutable Cargo configuration
         run: |
           set -euo pipefail
           cd "$RUNNER_TEMP/hepta-offline-inputs"
           tar -czf dependencies.tar.gz vendor offline-config.toml lock.sha256 source-sha.txt
-          sha256sum compiler.tar.gz dependencies.tar.gz source.tar.gz test-tools.tar.gz > SHA256SUMS
+          sha256sum compiler.tar.gz dependencies.tar.gz source.tar.gz source.bundle test-tools.tar.gz > SHA256SUMS
           git -C "$GITHUB_WORKSPACE" diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -75,6 +79,7 @@ jobs:
             ${{ runner.temp }}/hepta-offline-inputs/compiler.tar.gz
             ${{ runner.temp }}/hepta-offline-inputs/dependencies.tar.gz
             ${{ runner.temp }}/hepta-offline-inputs/source.tar.gz
+            ${{ runner.temp }}/hepta-offline-inputs/source.bundle
             ${{ runner.temp }}/hepta-offline-inputs/source-sha.txt
             ${{ runner.temp }}/hepta-offline-inputs/source-tree.txt
             ${{ runner.temp }}/hepta-offline-inputs/test-tools.tar.gz
