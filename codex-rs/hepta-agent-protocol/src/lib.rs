@@ -171,6 +171,7 @@ pub struct AgentRunCancellation {
 #[serde(deny_unknown_fields)]
 pub struct AgentRunRecovery {
     pub snapshot: AgentRunSnapshot,
+    pub revision: u64,
     pub context_digest: String,
     pub compilation_receipt_digest: String,
     pub cancel_reason: Option<String>,
@@ -946,6 +947,7 @@ mod tests {
 
         let recovery = AgentRunRecovery {
             snapshot,
+            revision: 4,
             context_digest: "5".repeat(64),
             compilation_receipt_digest: "6".repeat(64),
             cancel_reason: Some("process_restart".to_string()),
