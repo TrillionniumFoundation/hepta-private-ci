@@ -17,6 +17,7 @@ mod release;
 mod release_transaction;
 mod robrix_projection;
 mod robrix_protocol;
+mod restart_budget;
 mod runtime;
 mod signed_authority;
 mod signed_intent;
