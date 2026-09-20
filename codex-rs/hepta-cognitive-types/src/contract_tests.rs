@@ -645,7 +645,7 @@ fn bounded_arbitrary_byte_decoder_smoke_covers_all_registered_contracts() {
             seed ^= seed << 13;
             seed ^= seed >> 7;
             seed ^= seed << 17;
-            *byte = seed as u8;
+            *byte = seed.to_le_bytes()[0];
         }
 
         let _ = decode_wire_v1::<ModalitySpanRefV1>(&bytes);
