@@ -7,12 +7,7 @@ on:
       - "docs/contracts/CONTRACTS.json"
       - "docs/contracts/PROTOCOL_SCHEMAS.json"
       - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
-      - "codex-rs/hepta-cognitive-types/**"
-      - "docs/contracts/CONTRACTS.json"
-      - "docs/contracts/PROTOCOL_SCHEMAS.json"
-      - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
       - "docs/hnmf/**"
-      - "qualification/cognitive-types-v1/**"
       - "qualification/cognitive-types-v1/**"
       - "qualification/hnmf-reference/**"
       - "qualification/hnmf-contract-reference/**"
@@ -24,7 +19,12 @@ on:
     branches:
       - main
     paths:
+      - "codex-rs/hepta-cognitive-types/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
       - "docs/hnmf/**"
+      - "qualification/cognitive-types-v1/**"
       - "qualification/hnmf-reference/**"
       - "qualification/hnmf-contract-reference/**"
       - "qualification/hnmf-adversarial-reference/**"
