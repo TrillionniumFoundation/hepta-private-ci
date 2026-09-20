@@ -12,6 +12,8 @@ use serde::de::Error as _;
 
 use crate::H7H89ProductionGrant;
 use crate::ProductionMutationReceipt;
+use crate::ProductionRecoveryDecision;
+use crate::ReleaseSelectionSnapshot;
 
 pub const SUPERVISORD_CONTROL_SCHEMA_VERSION: u32 = 2;
 pub const MAX_SUPERVISORD_CONTROL_FRAME_BYTES: u64 = 65_536;
@@ -44,6 +46,7 @@ impl SupervisordRequest {
         match &self.method {
             SupervisordMethod::Health
             | SupervisordMethod::Snapshot { .. }
+            | SupervisordMethod::ReleaseSelection { .. }
             | SupervisordMethod::ProductionMutationStatus { .. } => Ok(()),
             SupervisordMethod::Roster { limit } => {
                 if (1..=MAX_SUPERVISORD_ROSTER).contains(limit) {
@@ -60,7 +63,8 @@ impl SupervisordRequest {
             | SupervisordMethod::Upgrade { fence, .. }
             | SupervisordMethod::Rollback { fence }
             | SupervisordMethod::SignedUpgrade { fence, .. }
-            | SupervisordMethod::SignedRollback { fence, .. } => fence.validate(),
+            | SupervisordMethod::SignedRollback { fence, .. }
+            | SupervisordMethod::ResolveProductionRecovery { fence, .. } => fence.validate(),
         }
     }
 }
@@ -85,6 +89,12 @@ pub enum SupervisordMethod {
     Snapshot {
         agent_id: AgentId,
     },
+    /// Authoritative digest-bound projection for DomainRead::release_selectionV1.
+    ReleaseSelection {
+        agent_id: AgentId,
+    },
+    /// Read-only terminal/admission status for the last signed production
+    /// release transition for one Agent.
     ProductionMutationStatus {
         agent_id: AgentId,
     },
@@ -123,6 +133,10 @@ pub enum SupervisordMethod {
         fence: SupervisordControlFence,
         grant: H7H89ProductionGrant,
         h7_envelope: H7SignedArtifactEnvelope,
+    },
+    ResolveProductionRecovery {
+        fence: SupervisordControlFence,
+        decision: ProductionRecoveryDecision,
     },
 }
 
@@ -318,6 +332,9 @@ pub enum SupervisordPayload {
         agents: Vec<SupervisordAgentStatus>,
     },
     Agent(SupervisordAgentStatus),
+    ReleaseSelection {
+        selection: Option<ReleaseSelectionSnapshot>,
+    },
     ProductionMutationStatus {
         receipt: Option<ProductionMutationReceipt>,
     },
