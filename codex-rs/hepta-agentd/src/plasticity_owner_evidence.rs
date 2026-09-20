@@ -231,3 +231,255 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use codex_hepta_learning_artifacts::{ArtifactEvent, ArtifactManifest};
+    use codex_hepta_learning_ledger::{
+        AuthenticatedPrincipalV1, DatasetFreezeRequestV1, freeze_dataset_receipt_v3,
+    };
+    use codex_hepta_plasticity::ProposalWindowV2;
+    use codex_hepta_types::Generation;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("stable id")
+    }
+
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+
+    struct UnavailableDynamic;
+    impl PlasticityOwnerEvidenceResolverV1 for UnavailableDynamic {
+        fn resolve(
+            &self,
+            _query: &PlasticityOwnerEvidenceQueryV1,
+        ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+            Err(PlasticityOwnerEvidenceErrorV1::Unavailable)
+        }
+    }
+
+    fn policy_manifest(
+        artifact_id: &str,
+        producer: &str,
+        content: Digest32,
+        objective: Digest32,
+    ) -> ArtifactManifest {
+        ArtifactManifest {
+            artifact_id: id(artifact_id),
+            kind: ArtifactKind::Policy,
+            generation: Generation::new(1).expect("generation"),
+            predecessor_id: None,
+            content_digest: content,
+            objective_digest: objective,
+            support_digest: digest(&format!("{artifact_id}:support")),
+            producer_id: id(producer),
+            compatibility_digest: digest(&format!("{artifact_id}:compatibility")),
+            encoded_size_bytes: 32,
+        }
+    }
+
+    fn fixture() -> (
+        ConcretePlasticityOwnerEvidenceResolverV1,
+        Digest32,
+        Digest32,
+        Digest32,
+    ) {
+        let objective = digest("objective");
+        let ledger_head = digest("ledger-head");
+        let producer = AuthenticatedPrincipalV1 {
+            principal_id: id("owner:dataset"),
+            credential_chain_digest: digest("dataset:credential"),
+            signing_key_digest: digest("dataset:key"),
+            scope_digest: digest("dataset:scope"),
+            authority_epoch: 1,
+            authenticated_at: 10,
+            expires_at: 100,
+        };
+        let dataset = freeze_dataset_receipt_v3(
+            DatasetFreezeRequestV1 {
+                snapshot_id: id("dataset:snapshot"),
+                producer,
+                ledger_head_digest: ledger_head,
+                objective_digest: objective,
+                eligible_frontier: 7,
+                outcome_watermark: 7,
+                correction_cut_digest: digest("dataset:correction"),
+                revocation_cut_digest: digest("dataset:revocation"),
+                inclusion_policy_digest: digest("dataset:policy"),
+                source_record_digests: vec![digest("dataset:record")],
+                pending_outcomes: 0,
+                censored_outcomes: 0,
+            },
+            50,
+        )
+        .expect("dataset receipt");
+        let dataset_digest = dataset.snapshot.dataset_digest;
+
+        let update_digest = digest("update-rule");
+        let mutation_digest = digest("mutation-policy");
+        let mut artifacts = ArtifactRegistry::new();
+        for (event_id, manifest) in [
+            (
+                "event:update-rule",
+                policy_manifest(
+                    "policy:update-rule",
+                    "owner:update-rule",
+                    update_digest,
+                    objective,
+                ),
+            ),
+            (
+                "event:mutation-policy",
+                policy_manifest(
+                    "policy:mutation-policy",
+                    "owner:mutation-policy",
+                    mutation_digest,
+                    objective,
+                ),
+            ),
+        ] {
+            artifacts
+                .append(ArtifactEvent::Register {
+                    event_id: id(event_id),
+                    manifest,
+                })
+                .expect("artifact append");
+        }
+        let artifact_head = artifacts.snapshot().head_digest;
+        let resolver = ConcretePlasticityOwnerEvidenceResolverV1::new(
+            dataset,
+            artifacts,
+            40,
+            60,
+            vec![
+                PlasticityArtifactOwnerBindingV1 {
+                    kind: PlasticityOwnerEvidenceKindV1::UpdateRule,
+                    artifact_id: id("policy:update-rule"),
+                },
+                PlasticityArtifactOwnerBindingV1 {
+                    kind: PlasticityOwnerEvidenceKindV1::MutationPolicy,
+                    artifact_id: id("policy:mutation-policy"),
+                },
+            ],
+            Box::new(UnavailableDynamic),
+        )
+        .expect("resolver");
+        (resolver, artifact_head, ledger_head, dataset_digest)
+    }
+
+    fn query(
+        kind: PlasticityOwnerEvidenceKindV1,
+        evidence_digest: Digest32,
+        artifact_head: Digest32,
+        ledger_head: Digest32,
+        dataset_digest: Digest32,
+    ) -> PlasticityOwnerEvidenceQueryV1 {
+        PlasticityOwnerEvidenceQueryV1 {
+            kind,
+            evidence_digest,
+            objective_digest: digest("objective"),
+            selected_artifact_digest: digest("selected-artifact"),
+            artifact_registry_head_digest: artifact_head,
+            qualification_evidence_head_digest: ledger_head,
+            window: ProposalWindowV2 {
+                window_id: id("window:1"),
+                window_digest: digest("window"),
+            },
+            dataset_digest,
+            baseline_generation: Generation::new(1).expect("generation"),
+            layer_id: None,
+            parameter_id: None,
+            signal_eligibility: None,
+            signal_modulator: None,
+            signal_learning_rate: None,
+            signal_lower_bound: None,
+            signal_upper_bound: None,
+            now: 50,
+        }
+    }
+
+    #[test]
+    fn concrete_dataset_and_policy_adapters_bind_live_frontiers() {
+        let (resolver, artifact_head, ledger_head, dataset_digest) = fixture();
+
+        let dataset = resolver
+            .resolve(&query(
+                PlasticityOwnerEvidenceKindV1::Dataset,
+                dataset_digest,
+                artifact_head,
+                ledger_head,
+                dataset_digest,
+            ))
+            .expect("dataset owner");
+        assert_eq!(dataset.owner_id, id("owner:dataset"));
+        assert_eq!(dataset.owner_store_head_digest, ledger_head);
+
+        let update = resolver
+            .resolve(&query(
+                PlasticityOwnerEvidenceKindV1::UpdateRule,
+                digest("update-rule"),
+                artifact_head,
+                ledger_head,
+                dataset_digest,
+            ))
+            .expect("update owner");
+        assert_eq!(update.owner_id, id("owner:update-rule"));
+        assert_eq!(update.owner_store_head_digest, artifact_head);
+
+        let mutation = resolver
+            .resolve(&query(
+                PlasticityOwnerEvidenceKindV1::MutationPolicy,
+                digest("mutation-policy"),
+                artifact_head,
+                ledger_head,
+                dataset_digest,
+            ))
+            .expect("mutation owner");
+        assert_eq!(mutation.owner_id, id("owner:mutation-policy"));
+    }
+
+    #[test]
+    fn concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner() {
+        let (resolver, artifact_head, ledger_head, dataset_digest) = fixture();
+
+        let mut stale_dataset = query(
+            PlasticityOwnerEvidenceKindV1::Dataset,
+            dataset_digest,
+            artifact_head,
+            ledger_head,
+            dataset_digest,
+        );
+        stale_dataset.qualification_evidence_head_digest = digest("rolled-back-ledger");
+        assert_eq!(
+            resolver.resolve(&stale_dataset),
+            Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch)
+        );
+
+        let mut stale_policy = query(
+            PlasticityOwnerEvidenceKindV1::UpdateRule,
+            digest("update-rule"),
+            artifact_head,
+            ledger_head,
+            dataset_digest,
+        );
+        stale_policy.artifact_registry_head_digest = digest("rolled-back-artifacts");
+        assert_eq!(
+            resolver.resolve(&stale_policy),
+            Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch)
+        );
+
+        assert_eq!(
+            resolver.resolve(&query(
+                PlasticityOwnerEvidenceKindV1::Modulator,
+                digest("modulator"),
+                artifact_head,
+                ledger_head,
+                dataset_digest,
+            )),
+            Err(PlasticityOwnerEvidenceErrorV1::Unavailable)
+        );
+    }
+}
