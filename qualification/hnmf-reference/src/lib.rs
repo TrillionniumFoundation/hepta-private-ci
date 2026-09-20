@@ -22,7 +22,8 @@ pub use codex_hepta_cognitive_types::hnmf_learning::{
 use codex_hepta_cognitive_types::hnmf_learning::{
     MAX_ACTIVATION_PATHS, MAX_ACTIVE_NODES, MAX_ACTIVE_PER_POPULATION, MAX_CANDIDATE_EVENTS,
     MAX_CUE_SEEDS as CANONICAL_MAX_CUE_SEEDS, MAX_NODES, MAX_RECALL_EVENTS,
-    MAX_RECURRENT_STEPS, MAX_SYNAPSES, MAX_WEIGHT_DELTA_PPM,
+    MAX_RECURRENT_STEPS, MAX_REPLAY_CANDIDATES, MAX_REPLAY_SELECTION, MAX_SYNAPSES,
+    MAX_WEIGHT_DELTA_PPM,
 };
 
 pub const PPM: i64 = codex_hepta_cognitive_types::hnmf::PPM as i64;
@@ -1274,9 +1275,9 @@ pub fn select_replay(
     maximum_selected: usize,
     maximum_per_source_bucket: usize,
 ) -> Result<ReferenceReplaySelection, ReferenceFabricError> {
-    if candidates.len() > 4096
+    if candidates.len() > MAX_REPLAY_CANDIDATES
         || maximum_selected == 0
-        || maximum_selected > 256
+        || maximum_selected > MAX_REPLAY_SELECTION
         || maximum_per_source_bucket == 0
         || maximum_per_source_bucket > maximum_selected
     {
