@@ -84,3 +84,12 @@ fn duplicate_sample_fails() {
         .push(value.dataset.transitions[0].clone());
     assert!(matches!(train(value), Err(Error::DuplicateSample(_))));
 }
+
+
+#[test]
+fn relabelled_support_evidence_fails() {
+    let mut value = request();
+    value.dataset.transitions[1].sample_id = id("relabelled-row");
+    value.dataset.transitions[1].support_digest = value.dataset.transitions[0].support_digest;
+    assert_eq!(build_targets(value), Err(Error::DuplicateEvidence));
+}
