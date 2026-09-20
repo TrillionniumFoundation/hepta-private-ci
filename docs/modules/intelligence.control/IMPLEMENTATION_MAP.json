@@ -113,13 +113,15 @@
       "state": "source_implemented_terminal_learning_closure_execution_pending",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-intelligence/src/outcome_credit.rs"
+        "codex-rs/hepta-intelligence/src/outcome_credit.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "post_execution_outcome_credit_closure",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "learning.ledger"
+        "codex-rs/hepta-learning-ledger/src/lib.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime.rs"
       ]
     },
     {
