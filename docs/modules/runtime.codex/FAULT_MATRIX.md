@@ -54,6 +54,7 @@ The focused source matrix includes:
 - `codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs`: real caller status/owner/cancel/deadline behavior.
 - `codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs`: reopen/no-replay and explicit pre-start rejection.
 - `codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs`: signed exact-binding grant, peer identity, revocation rollback, and denial.
+- `codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs`: real Agentd + real App Server + named runtime.codex caller + signed final-use authority, with a mock Responses provider; asserts exactly one physical model request and durable terminal correlation.
 
 These source tests do not replace a target-host Agentd + App Server + provider fault run.
 
