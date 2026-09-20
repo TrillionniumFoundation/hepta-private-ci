@@ -5,6 +5,8 @@
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
+  "sourceBaseSemantics": "shared_compatibility_baseline_not_exact_candidate_identity",
+  "sourceIdentityMode": "exact_non_recursive_source_objects_v1",
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "prompt.optimizer",
   "owner": "intelligence-platform",
@@ -18,16 +20,88 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_pre_dispatch",
   "productionWriterState": "not_established",
+  "status": {
+    "implemented": true,
+    "composed": true,
+    "qualified": false
+  },
   "operations": [
+    {
+      "operation": "enumerate_factors",
+      "nativeSymbol": "canonical::enumerate_factors_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "state": "source_implemented_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "enumerate_factors",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-prompt-registry/src/v2.rs"
+      ]
+    },
+    {
+      "operation": "price_factors",
+      "nativeSymbol": "canonical::price_factors_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "state": "source_implemented_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "price_factors",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-learning-ledger/src/ledger.rs"
+      ]
+    },
+    {
+      "operation": "select_portfolio",
+      "nativeSymbol": "canonical::select_portfolio_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "state": "source_implemented_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "select_portfolio",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-kg/src/generation.rs",
+        "codex-rs/hepta-learning-ledger/src/ledger.rs"
+      ]
+    },
+    {
+      "operation": "exercise",
+      "nativeSymbol": "canonical::exercise_v1",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "state": "source_implemented_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "exercise",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-prompt-registry/src/v2.rs"
+      ]
+    },
     {
       "operation": "optimize",
       "nativeSymbol": "optimize",
       "sourcePath": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "compatibility_only_not_product",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "optimize",
       "mappingClass": "owner_native",
@@ -37,22 +111,115 @@
       "operation": "calculate_local_shadow",
       "nativeSymbol": "calculate_local_shadow",
       "sourcePath": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "qualification_only_not_product",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "calculate_local_shadow",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-prompt-optimizer/src/local_shadow_digest.rs",
+        "codex-rs/hepta-prompt-optimizer/src/local_shadow_validation.rs"
+      ]
+    }
+  ],
+  "productCallers": [
+    {
+      "id": "prompt_pipeline_v1",
+      "module": "intelligence.control",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "state": "source_composed_pre_dispatch",
+      "tests": [
+        "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+        "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
+        "codex-rs/hepta-learning-ledger/src/durable_tests.rs"
+      ],
+      "delegatedCallees": [
+        "codex-rs/hepta-codex-adapter/src/lib.rs",
+        "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+        "codex-rs/hepta-learning-ledger/src/ledger.rs"
+      ]
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+      "object": "9cd1596f204f26f1c0ab44d465be57ac4e6b603b"
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+      "object": "fb3c332ef517d5d8bf8e7609f08ddeab38bb9fd4"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "object": "fc98eabd00e17bd812f9fb3aaf1da6374db13d7b"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
+      "object": "b28a8c9dc571c74549bc080930af8b5306cefb94"
+    },
+    {
+      "path": "codex-rs/hepta-kg/src/generation.rs",
+      "object": "42721581ccc373e340b8d58044369b9655dd4349"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+      "object": "639da4551290b387e2cd2d9cda45b45f4cf9de01"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
+      "object": "43a3f09fc03bdede124537f4722fae7f45eb1403"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "object": "7ed0854269d5a1d8cb36a80a27f1ae48841f052a"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "object": "71b6907555a2ff90d02ac1fdd5f87d4ce0f9e5fe"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+      "object": "abde47a13c9b36c55815905d6f7c2200f83bd831"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+      "object": "15276af27a19a2202bd0fad4de42e8d078c5f171"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs",
+      "object": "7a61264c37f9941b8ca0d057b48daef236cece88"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs",
+      "object": "0f75e0589c066df5287465ab38868db63d97e3c7"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_digest.rs",
+      "object": "449223590ded07d2f9ced6e7962b6be2e1a13173"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs",
+      "object": "9ff91efc880f331648c0363d605c41e92e8fd532"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/local_shadow_validation.rs",
+      "object": "52154aca63828c5aec7879cc056beae77914762e"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/v2.rs",
+      "object": "d963b1fbc027a4742c416523e7d1ac20e2e0341f"
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Wire PreparedPromptDeliveryV1 into the named real Codex model/provider dispatch crossing and bind terminal observation to the exact submitted bytes.",
+    "Run prompt.optimizer exact-head and deterministic synthetic-merge qualification plus crash/fault and capacity gates before changing production/activation claims."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent causal semantic review",
+    "target-host product execution and capacity qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
