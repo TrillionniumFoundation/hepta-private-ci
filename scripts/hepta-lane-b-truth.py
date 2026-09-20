@@ -114,18 +114,24 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
     Both must nevertheless identify real, exact trees in the current history.
     """
     need(
-        isinstance(value, dict) and set(value) == {"commit", "tree"},
+        isinstance(value, dict)
+        and set(value) in ({"commit"}, {"commit", "tree"}),
         f"{label}: source base",
     )
-    commit, tree = value["commit"], value["tree"]
+    commit = value["commit"]
     need(
-        isinstance(commit, str)
-        and bool(HEX40.fullmatch(commit))
-        and isinstance(tree, str)
-        and bool(HEX40.fullmatch(tree)),
+        isinstance(commit, str) and bool(HEX40.fullmatch(commit)),
         f"{label}: source identity",
     )
-    need(git("rev-parse", f"{commit}^{{tree}}") == tree, f"{label}: source tree")
+    tree = git("rev-parse", f"{commit}^{{tree}}")
+    recorded_tree = value.get("tree")
+    if recorded_tree is not None:
+        need(
+            isinstance(recorded_tree, str)
+            and bool(HEX40.fullmatch(recorded_tree))
+            and recorded_tree == tree,
+            f"{label}: source tree",
+        )
     git("merge-base", "--is-ancestor", commit, "HEAD")
     return commit, tree
 
@@ -145,15 +151,8 @@ def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
         row = load(ROOT / path)
         need(row.get("module") == module, f"{module}: map identity")
         base = row.get("sourceBase")
-        # Cache only fully validated identities; malformed/unhashable values
-        # still go through the rejecting validator instead of the fast path.
-        if (
-            not isinstance(base, dict)
-            or set(base) != {"commit", "tree"}
-            or not all(isinstance(value, str) for value in base.values())
-            or (base["commit"], base["tree"]) not in verified
-        ):
-            verified.add(verify_source_base(base, module))
+        normalized = verify_source_base(base, module)
+        verified.add(normalized)
         ids = [
             item.get("designOperation") or item.get("operation")
             for item in row.get("operations", [])
