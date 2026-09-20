@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-control-plane/src/planner_ndu.rs"
+      - "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
+      - "codex-rs/hepta-control-plane/src/planner_context.rs"
+      - "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
       - "docs/modules/utility.ndu/**"
       - "docs/readiness/LANE_D_MATURITY.json"
       - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
@@ -17,6 +21,10 @@ on:
       - main
     paths:
       - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-control-plane/src/planner_ndu.rs"
+      - "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
+      - "codex-rs/hepta-control-plane/src/planner_context.rs"
+      - "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
       - "docs/modules/utility.ndu/**"
       - "docs/readiness/LANE_D_MATURITY.json"
       - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
@@ -89,6 +97,12 @@ jobs:
       - name: Regression tests
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-ndu
+
+      - name: Control NDU caller regressions
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-control-plane --lib planner_context
+          cargo test --locked -p codex-hepta-control-plane --lib planner_ndu
 
       - name: Strict lint
         working-directory: codex-rs
