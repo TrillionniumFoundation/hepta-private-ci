@@ -52,7 +52,7 @@ fn checkpoint_is_content_addressed_and_supports_binary_lookup() {
         2049
     );
 
-    let mut tampered = checkpoint.clone();
+    let mut tampered = checkpoint;
     tampered.entries[0].active = false;
     assert_eq!(
         verify_ledger_index_checkpoint(&snapshot, &tampered),
