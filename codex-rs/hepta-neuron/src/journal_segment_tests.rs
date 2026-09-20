@@ -115,10 +115,7 @@ fn successor_segment_preserves_state_and_allows_exact_retry() {
     let second = checked(root.commit(first.checkpoint_after, &tick(2)));
     assert_eq!(checked(root.remaining_capacity()), 0);
 
-    let mut successor = checked(root.start_successor(
-        fixture.file("successor"),
-        /*max_records*/ 2,
-    ));
+    let mut successor = checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
     let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
     let fourth = checked(successor.commit(third.checkpoint_after, &tick(4)));
     let before = fixture.bytes("successor");
@@ -145,10 +142,8 @@ fn successor_reopen_requires_exact_predecessor_seed_and_acknowledged_suffix() {
         ));
         let first = checked(root.commit(Digest32::ZERO, &tick(1)));
         let second = checked(root.commit(first.checkpoint_after, &tick(2)));
-        let mut successor = checked(root.start_successor(
-            fixture.file("successor"),
-            /*max_records*/ 2,
-        ));
+        let mut successor =
+            checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
         let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
         let fourth = checked(successor.commit(third.checkpoint_after, &tick(4)));
         JournalAnchor {
@@ -201,10 +196,8 @@ fn missing_acknowledged_successor_frame_is_rejected_without_repair() {
         ));
         let first = checked(root.commit(Digest32::ZERO, &tick(1)));
         let second = checked(root.commit(first.checkpoint_after, &tick(2)));
-        let mut successor = checked(root.start_successor(
-            fixture.file("successor"),
-            /*max_records*/ 2,
-        ));
+        let mut successor =
+            checked(root.start_successor(fixture.file("successor"), /*max_records*/ 2));
         let third = checked(successor.commit(second.checkpoint_after, &tick(3)));
         let fourth = checked(successor.commit(third.checkpoint_after, &tick(4)));
         JournalAnchor {
@@ -225,12 +218,8 @@ fn missing_acknowledged_successor_frame_is_rejected_without_repair() {
         /*max_records*/ 2,
     ));
     assert_eq!(
-        root.recover_successor(
-            fixture.file("successor"),
-            /*max_records*/ 2,
-            anchor,
-        )
-        .err(),
+        root.recover_successor(fixture.file("successor"), /*max_records*/ 2, anchor,)
+            .err(),
         Some(JournalError::AcknowledgedHistoryMissing)
     );
     assert_eq!(fixture.bytes("successor"), truncated);

@@ -85,12 +85,7 @@ fn implicit_broadcast_and_overweight_rows_are_rejected() {
     };
     let wrong_dimension = vec![group("group:a", vec![Q, 0], vec![Q, 0])];
     assert!(matches!(
-        accumulate_plasticity(
-            &history(),
-            &modulator,
-            &wrong_dimension,
-            trust_region(),
-        ),
+        accumulate_plasticity(&history(), &modulator, &wrong_dimension, trust_region(),),
         Err(PlasticityError::ProjectionDimensionMismatch(_))
     ));
     let overweight = vec![group("group:a", vec![Q, 1, 0], vec![Q, 0])];

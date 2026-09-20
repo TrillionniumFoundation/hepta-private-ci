@@ -214,10 +214,13 @@ fn aggregate_eligibility(
         {
             return Err(PlasticityError::EligibilityNormExceeded);
         }
-        let l1 = sample.eligibility_q24.iter().try_fold(0_i64, |sum, value| {
-            sum.checked_add(value.abs())
-                .ok_or(PlasticityError::Arithmetic)
-        })?;
+        let l1 = sample
+            .eligibility_q24
+            .iter()
+            .try_fold(0_i64, |sum, value| {
+                sum.checked_add(value.abs())
+                    .ok_or(PlasticityError::Arithmetic)
+            })?;
         if l1 > ELIGIBILITY_L1 {
             return Err(PlasticityError::EligibilityNormExceeded);
         }
@@ -238,11 +241,7 @@ fn validate_modulator(value: &IndependentModulatorV1) -> Result<(), PlasticityEr
     if !(1..=MAX_MODULATORS).contains(&value.values_q24.len()) {
         return Err(PlasticityError::ModulatorDimensionOutOfRange);
     }
-    if value
-        .values_q24
-        .iter()
-        .any(|item| !(-Q..=Q).contains(item))
-    {
+    if value.values_q24.iter().any(|item| !(-Q..=Q).contains(item)) {
         return Err(PlasticityError::InvalidModulator);
     }
     Ok(())
@@ -309,11 +308,7 @@ fn round_q24(product: i128) -> Result<i64, PlasticityError> {
     i64::try_from(rounded).map_err(|_| PlasticityError::Arithmetic)
 }
 
-fn scale_toward_zero(
-    value: i64,
-    numerator: i64,
-    denominator: i64,
-) -> Result<i64, PlasticityError> {
+fn scale_toward_zero(value: i64, numerator: i64, denominator: i64) -> Result<i64, PlasticityError> {
     let scaled = i128::from(value)
         .checked_mul(i128::from(numerator))
         .ok_or(PlasticityError::Arithmetic)?

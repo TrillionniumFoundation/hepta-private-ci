@@ -68,7 +68,10 @@ pub fn validate_deletion_rebuild(
     }
     for (name, digest) in [
         ("predecessor checkpoint", plan.predecessor_checkpoint_digest),
-        ("withdrawal registry head", plan.withdrawal_registry_head_digest),
+        (
+            "withdrawal registry head",
+            plan.withdrawal_registry_head_digest,
+        ),
         ("withdrawal event", plan.withdrawal_event_digest),
         ("retained dataset set", plan.retained_dataset_set_digest),
         ("source event set", plan.source_event_set_digest),

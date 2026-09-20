@@ -154,17 +154,9 @@ impl SparseJournal {
                 .map_err(|_| JournalError::Indeterminate)?;
             file.sync_all().map_err(|_| JournalError::Indeterminate)?;
         } else {
-            validate_exact_header(&mut file, &header, HEADER, MAGIC)?;
+            validate_exact_header(&mut file, &header, HEADER, *MAGIC)?;
         }
-        Self::recover_frames(
-            file,
-            config,
-            scope,
-            max_records,
-            policy,
-            None,
-            HEADER,
-        )
+        Self::recover_frames(file, config, scope, max_records, policy, None, HEADER)
     }
 
     /// Open or create a successor segment seeded from the exact final checkpoint
@@ -220,7 +212,8 @@ impl SparseJournal {
         validate_limit(max_records)?;
         validate_scope(scope)?;
         let config_digest = config.digest().map_err(JournalError::Mechanism)?;
-        if !seed.matches_segment_context(config_digest, scope.scope_digest, scope.objective_digest) {
+        if !seed.matches_segment_context(config_digest, scope.scope_digest, scope.objective_digest)
+        {
             return Err(JournalError::ContextMismatch);
         }
         let seed_anchor = JournalAnchor {
@@ -230,10 +223,7 @@ impl SparseJournal {
         if let RecoveryPolicy::Require(anchor) = policy {
             if anchor.sequence == 0
                 || anchor.sequence < seed_anchor.sequence
-                || anchor.sequence
-                    > seed_anchor
-                        .sequence
-                        .saturating_add(max_records as u64)
+                || anchor.sequence > seed_anchor.sequence.saturating_add(max_records as u64)
                 || anchor.checkpoint_digest.is_zero()
             {
                 return Err(JournalError::InvalidAnchor);
@@ -259,12 +249,7 @@ impl SparseJournal {
                 .map_err(|_| JournalError::Indeterminate)?;
             file.sync_all().map_err(|_| JournalError::Indeterminate)?;
         } else {
-            validate_exact_header(
-                &mut file,
-                &header,
-                SUCCESSOR_HEADER,
-                SUCCESSOR_MAGIC,
-            )?;
+            validate_exact_header(&mut file, &header, SUCCESSOR_HEADER, SUCCESSOR_MAGIC)?;
         }
         Self::recover_frames(
             file,
@@ -278,7 +263,7 @@ impl SparseJournal {
     }
 
     fn recover_frames(
-        mut file: LockedFile,
+        file: LockedFile,
         config: SparseConfig,
         scope: JournalScope,
         max_records: usize,
@@ -289,8 +274,7 @@ impl SparseJournal {
         let frame_len = 304 + 16 * config.width;
         let length = file.metadata()?.len();
         if length < data_offset as u64
-            || length
-                > (data_offset + max_records * frame_len + frame_len - 1) as u64
+            || length > (data_offset + max_records * frame_len + frame_len - 1) as u64
         {
             return Err(JournalError::Capacity);
         }
@@ -320,9 +304,7 @@ impl SparseJournal {
         let mut frame = vec![0; frame_len];
         for _ in 0..complete {
             journal.file.read_exact(&mut frame)?;
-            if Digest32::of_bytes(&frame[..frame_len - 32]).as_array()
-                != &frame[frame_len - 32..]
-            {
+            if Digest32::of_bytes(&frame[..frame_len - 32]).as_array() != &frame[frame_len - 32..] {
                 return Err(JournalError::Corrupt);
             }
             let tick = decode_tick(&frame[..frame_len - 128], journal.config.width)?;
@@ -331,9 +313,8 @@ impl SparseJournal {
             {
                 return Err(JournalError::Corrupt);
             }
-            let (state, receipt) =
-                sparse_tick(&journal.config, &tick, journal.current.as_ref())
-                    .map_err(|_| JournalError::Corrupt)?;
+            let (state, receipt) = sparse_tick(&journal.config, &tick, journal.current.as_ref())
+                .map_err(|_| JournalError::Corrupt)?;
             if encode_frame(&tick, &receipt) != frame {
                 return Err(JournalError::Corrupt);
             }
@@ -372,22 +353,12 @@ impl SparseJournal {
     }
 
     /// Start the next bounded segment from the exact current checkpoint.
-    pub fn start_successor(
-        &self,
-        file: File,
-        max_records: usize,
-    ) -> Result<Self, JournalError> {
+    pub fn start_successor(&self, file: File, max_records: usize) -> Result<Self, JournalError> {
         if self.poisoned {
             return Err(JournalError::Poisoned);
         }
         let seed = self.current.as_ref().ok_or(JournalError::InvalidAnchor)?;
-        Self::open_successor(
-            file,
-            self.config.clone(),
-            self.scope,
-            max_records,
-            seed,
-        )
+        Self::open_successor(file, self.config.clone(), self.scope, max_records, seed)
     }
 
     /// Recover a successor segment using this journal's exact current checkpoint
@@ -536,11 +507,7 @@ fn root_header(config_digest: Digest32, scope: JournalScope) -> Vec<u8> {
     header
 }
 
-fn successor_header(
-    config_digest: Digest32,
-    scope: JournalScope,
-    seed: JournalAnchor,
-) -> Vec<u8> {
+fn successor_header(config_digest: Digest32, scope: JournalScope, seed: JournalAnchor) -> Vec<u8> {
     let mut header = SUCCESSOR_MAGIC.to_vec();
     for digest in [config_digest, scope.scope_digest, scope.objective_digest] {
         header.extend_from_slice(digest.as_array());
@@ -556,7 +523,7 @@ fn validate_exact_header(
     file: &mut LockedFile,
     expected: &[u8],
     header_len: usize,
-    magic: &[u8; 8],
+    magic: [u8; 8],
 ) -> Result<(), JournalError> {
     let length = file.metadata()?.len();
     if length < header_len as u64 {
@@ -564,9 +531,8 @@ fn validate_exact_header(
     }
     let mut actual = vec![0_u8; header_len];
     file.read_exact(&mut actual)?;
-    if &actual[..8] != magic
-        || Digest32::of_bytes(&actual[..header_len - 32]).as_array()
-            != &actual[header_len - 32..]
+    if &actual[..8] != magic.as_slice()
+        || Digest32::of_bytes(&actual[..header_len - 32]).as_array() != &actual[header_len - 32..]
     {
         return Err(JournalError::Corrupt);
     }

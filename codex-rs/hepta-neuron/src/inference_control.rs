@@ -58,8 +58,7 @@ impl<P: NeuronInferenceControlPort> NeuronModelPort for InferenceControlModelPor
             NeuronFeatureTerminalStatusV1::Indeterminate => {
                 return Err(NeuronModelError::Indeterminate);
             }
-            NeuronFeatureTerminalStatusV1::Failed
-            | NeuronFeatureTerminalStatusV1::Cancelled => {
+            NeuronFeatureTerminalStatusV1::Failed | NeuronFeatureTerminalStatusV1::Cancelled => {
                 return Err(NeuronModelError::Rejected);
             }
         }
@@ -96,7 +95,10 @@ impl<P: NeuronInferenceControlPort> NeuronModelPort for InferenceControlModelPor
     }
 }
 
-fn digest_id(prefix: &str, digest: codex_hepta_types::Digest32) -> Result<StableId, NeuronModelError> {
+fn digest_id(
+    prefix: &str,
+    digest: codex_hepta_types::Digest32,
+) -> Result<StableId, NeuronModelError> {
     StableId::new(format!("{prefix}:{digest}")).map_err(|_| NeuronModelError::Rejected)
 }
 
