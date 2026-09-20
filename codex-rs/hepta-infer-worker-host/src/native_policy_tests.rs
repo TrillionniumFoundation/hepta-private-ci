@@ -69,13 +69,35 @@ fn resource(now: u64, quota: &QuotaReservation) -> ResourceAdvertisement {
     }
 }
 
+fn test_policy_from(
+    now: u64,
+    quota: QuotaReservation,
+    resource: ResourceAdvertisement,
+) -> NativeExecutionPolicy {
+    NativeExecutionPolicy {
+        quota,
+        resource,
+        authentication: NativePolicyAuthentication {
+            issuer_id: "issuer:inference-platform".to_string(),
+            key_epoch: 1,
+            message_id: "policy-proof:inference".to_string(),
+            sequence: 1,
+            expires_at_ms: now.saturating_add(60).saturating_mul(1000),
+            envelope_digest: digest("policy-envelope:inference").to_string(),
+        },
+    }
+}
+
+fn test_policy(now: u64) -> NativeExecutionPolicy {
+    let quota = quota(now);
+    let resource = resource(now, &quota);
+    test_policy_from(now, quota, resource)
+}
+
 #[test]
 fn admission_binding_binds_quota_resource_and_generation() {
     let now = 2_000_000_000;
-    let policy = NativeExecutionPolicy {
-        quota: quota(now),
-        resource: resource(now, &quota(now)),
-    };
+    let policy = test_policy(now);
 
     let binding = policy
         .admission_binding(now, "agent-inference", 7, "gpt-test", 512, 100)
@@ -94,10 +116,7 @@ fn admission_binding_binds_quota_resource_and_generation() {
 #[test]
 fn admission_binding_rejects_token_budget_exhaustion() {
     let now = 2_000_000_000;
-    let policy = NativeExecutionPolicy {
-        quota: quota(now),
-        resource: resource(now, &quota(now)),
-    };
+    let policy = test_policy(now);
 
     assert!(matches!(
         policy.admission_binding(now, "agent-inference", 7, "gpt-test", 1025, 100),
@@ -113,7 +132,7 @@ fn admission_binding_rejects_provider_subject_drift() {
     let quota = quota(now);
     let mut resource = resource(now, &quota);
     resource.generation = 8;
-    let policy = NativeExecutionPolicy { quota, resource };
+    let policy = test_policy_from(now, quota, resource);
 
     assert!(matches!(
         policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512, 100),
@@ -127,7 +146,7 @@ fn admission_binding_rejects_missing_resource_subject() {
     let quota = quota(now);
     let mut resource = resource(now, &quota);
     resource.subject = None;
-    let policy = NativeExecutionPolicy { quota, resource };
+    let policy = test_policy_from(now, quota, resource);
 
     assert!(matches!(
         policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512, 100),
@@ -141,7 +160,7 @@ fn admission_binding_rejects_cross_contract_digest_drift() {
     let quota = quota(now);
     let mut resource = resource(now, &quota);
     resource.quota_sha256 = digest("different-quota");
-    let policy = NativeExecutionPolicy { quota, resource };
+    let policy = test_policy_from(now, quota, resource);
 
     assert!(matches!(
         policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512, 100),
@@ -154,7 +173,7 @@ fn admission_binding_rejects_economic_budget_exhaustion() {
     let now = 2_000_000_000;
     let quota = quota(now);
     let resource = resource(now, &quota);
-    let policy = NativeExecutionPolicy { quota, resource };
+    let policy = test_policy_from(now, quota, resource);
 
     assert!(matches!(
         policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512, 1025),
