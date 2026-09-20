@@ -2,6 +2,7 @@ use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::FleetRegistryError;
 
 use crate::AgentRelease;
 use crate::ProcessDriver;
@@ -13,6 +14,22 @@ use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
 
 impl<D: ProcessDriver> Supervisor<D> {
+    /// Re-admit a release at the final-use boundary. Product/catalog releases
+    /// must still exist, remain allowed, and not be revoked. Direct in-process
+    /// qualification fixtures historically use unregistered AgentRelease
+    /// values; only UnknownRelease falls back to that local value.
+    pub(crate) fn refresh_release_for_transition(
+        &self,
+        agent_id: &AgentId,
+        release: &AgentRelease,
+    ) -> Result<AgentRelease, SupervisorError> {
+        match self.registry.resolve_release(agent_id, release.release_id()) {
+            Ok(current) => AgentRelease::try_from(current),
+            Err(FleetRegistryError::UnknownRelease(_)) => Ok(release.clone()),
+            Err(error) => Err(error.into()),
+        }
+    }
+
     pub(crate) fn upgrade_slot(
         &mut self,
         agent_id: &AgentId,
@@ -24,6 +41,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.release_change.is_some() || slot.restart_pending {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
+        let target = self.refresh_release_for_transition(agent_id, &target)?;
         let current = slot.active_release.clone().ok_or_else(|| {
             SupervisorError::Invalid(format!(
                 "agent {agent_id} has no explicit active release identity"
@@ -161,7 +179,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         match change.phase {
             ReleaseChangePhase::WaitingForTargetExit => {
-                let target = change.target.clone();
+                let target = self.refresh_release_for_transition(agent_id, &change.target)?;
+                change.target = target.clone();
                 change.phase = ReleaseChangePhase::TargetStarting;
                 slot.release_change = Some(change);
                 slot.active_release = None;
@@ -206,7 +225,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 target: change.origin.identity().to_string(),
             },
         );
-        let rollback = change.origin.clone();
+        let rollback = self.refresh_release_for_transition(agent_id, &change.origin)?;
+        change.origin = rollback.clone();
         change.phase = ReleaseChangePhase::AutomaticRollbackStarting;
         slot.release_change = Some(change);
         slot.active_release = None;
