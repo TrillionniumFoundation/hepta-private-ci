@@ -27,7 +27,7 @@ Both roots are present. The selected upstream qualification candidate is `servo/
 
 The current repository-owned implementation includes `browser.js`, `action.js`, `bridge.js`, `runtime.js`, `runtime-host.js`, `runtime-contract.js`, `runtime-boundary.js`, the versioned durable `journal.js`, authenticated `persisted-reconciler.js`, `worker-protocol.js`, `worker-driver.js`, the Agentd parent protocol/service, and `servo-worker/`. Cross-owner product composition is present in `codex-rs/hepta-agentd/src/browser_servo.rs`, `browser_revocation_feed.rs`, `runtime.rs` and `state_control.rs`. The one-shot `hepta-agentd-browser` binary is diagnostic/qualification only.
 
-The strict implementation map binds the exact mapped source/evidence snapshot at `b5a022dbe7c69e5b2063429cd4dec52ccd9ca7a6` / tree `0a8d46bc0895d4bd581ae5aed5ef2dfa5f5a63d3`. Because a Git commit cannot embed its own future SHA/tree, later map/verifier/document-only commits are admissible only when the strict verifier proves zero drift under every mapped Browser root, test and Agentd callee.
+The strict implementation map binds the exact mapped source/evidence snapshot at `f1c54a5238409d6c078ab0315f77c1ec246baff3` / tree `161556cc80bbe9ab82aba8baa1b5aad4c785bae4`. Because a Git commit cannot embed its own future SHA/tree, later map/verifier/document-only commits are admissible only when the strict verifier proves zero drift under every mapped Browser root, test and Agentd callee.
 
 A worker source tree is not a qualified worker artifact. The candidate still requires exact-SHA build/SBOM receipts, target-host evidence and the independently governed activation/acceptance decisions.
 
@@ -180,7 +180,7 @@ Applicable work package:
 
 - `BROWSER-WEB-C1`
 
-Repository-side Browser/Servo worker source, private protocols, real final-use handoff, persistent Agentd ownership and the reviewed candidate `Cargo.lock` are present. Remaining sequence is evidence/platform oriented: execute the reproducible exact-head worker build/SBOM gate against that committed lock, execute real Linux sandbox/worker tests on the exact candidate, bind target measurements, add platform equivalents where targeted, then obtain independent activation/acceptance/promotion/release decisions.
+Repository-side Browser/Servo worker source, private protocols, real final-use handoff and persistent Agentd ownership are present. The b5a1 `Cargo.lock` is not yet committed: the first exact-head worker run must generate and retain the candidate lock, those exact bytes must be reviewed and committed, and a second exact-head locked run must then pass build/E2E/reproducibility/SBOM before target qualification can consume the artifact. After that, trusted Linux target qualification must execute the real sandboxed Servo public-DNS/certificate-validating HTTPS oracle and the remaining target measurements before independent activation/acceptance/promotion/release decisions.
 
 Credential/upload/download brokers remain separate follow-on capabilities and stay fail-closed until their authority and terminal observer are implemented.
 
@@ -255,7 +255,7 @@ retain that lock candidate; after review the exact bytes must be committed and a
 second exact-head locked run must pass build, real-E2E, reproducibility/SBOM
 before target qualification can consume the artifact.
 
-External gates still include target-host enforcement, retained cross-profile cookie/localStorage/cache
+External gates still include terminal-success real sandboxed-Servo public HTTPS target evidence, retained cross-profile cookie/localStorage/cache
 isolation evidence, target soak/resource measurements, platform equivalents where
 targeted, independently trusted remote business terminal observations, operator
 acceptance, promotion and release.
