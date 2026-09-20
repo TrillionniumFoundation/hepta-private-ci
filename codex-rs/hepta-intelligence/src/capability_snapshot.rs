@@ -77,6 +77,24 @@ pub enum CapabilitySnapshotErrorV2 {
     StaleSnapshot,
 }
 
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CurrentCapabilitySnapshotErrorV3 {
+    Unavailable,
+    Rejected,
+}
+
+/// Final-use provider for the current admitted capability snapshot.
+///
+/// Product implementations must acquire the returned snapshot from the current
+/// authenticated owner/trust surfaces. The facade deliberately cannot mint that
+/// authenticity itself.
+pub trait CurrentCapabilitySnapshotProviderV3 {
+    fn current_snapshot(
+        &mut self,
+    ) -> Result<CapabilitySnapshotV2, CurrentCapabilitySnapshotErrorV3>;
+}
+
 impl fmt::Display for CapabilitySnapshotErrorV2 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "{self:?}")
