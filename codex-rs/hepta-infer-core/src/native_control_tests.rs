@@ -33,6 +33,9 @@ fn dispatch() -> NativeDispatch {
         codex_source_admission_digest: Some("f".repeat(64)),
         codex_home_digest: Some("1".repeat(64)),
         codex_connection_id: Some(7),
+        codex_session_id: Some("session-1".to_string()),
+        codex_deadline_ms: Some(10_000),
+        codex_authority_witness_sha256: Some("2".repeat(64)),
     }
 }
 
