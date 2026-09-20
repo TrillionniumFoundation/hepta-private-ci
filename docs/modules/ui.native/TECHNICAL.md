@@ -150,7 +150,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The selected product shell is Rust `eframe 0.36.2` / `egui` with native `winit` integration and AccessKit. Product targets are Windows 11 x86_64, macOS 14+ arm64/x86_64 and Ubuntu 24.04 x86_64. The candidate includes a named application bootstrap, durable operation journal, authenticated loopback gateway adapter, OS keyring-backed opaque credentials, signed endpoint/grant verification, narrow platform adapters, signed stable-channel updater mechanics and unsigned development packaging. Production Authenticode/Apple Developer ID + notarization/Linux repository signing, installed-package notification identity/permission evidence and independent accessibility acceptance remain external deployment gates.
+The selected product shell is Rust `eframe 0.36.2` / `egui` with native `winit` integration and AccessKit. Product targets are Windows 11 x86_64, macOS 14+ arm64/x86_64 and Ubuntu 24.04 x86_64. The candidate includes a named application bootstrap, durable operation journal, authenticated loopback gateway adapter, OS keyring-backed opaque credentials, signed endpoint/update verification, kernel `FinalUseAuthority` admission with durable nonce/revocation semantics, narrow platform adapters, signed stable-channel updater mechanics and unsigned development packaging. Production Authenticode/Apple Developer ID + notarization/Linux repository signing, installed-package notification identity/permission evidence and independent accessibility acceptance remain external deployment gates.
 
 Current operating and state-format references:
 
@@ -163,7 +163,7 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [apps/hepta-native/tests/runtime.rs](../../../apps/hepta-native/tests/runtime.rs); session-incarnation fencing, indeterminate retry/reconciliation, restart recovery and permission denial.
-- [apps/hepta-native/tests/security_updater.rs](../../../apps/hepta-native/tests/security_updater.rs); signed grants, live key revocation, stable update-channel admission, predecessor fencing, unsigned update refusal and rollback.
+- [apps/hepta-native/tests/security_updater.rs](../../../apps/hepta-native/tests/security_updater.rs); kernel final-use binding and live revocation, stable update-channel admission, predecessor fencing, unsigned update refusal and rollback.
 - [.github/workflows/hepta-native-rust.yml](../../../.github/workflows/hepta-native-rust.yml); exact PR-head Linux execution plus Windows/macOS/Linux merge-candidate build/test/package/self-test and unsigned qualification receipts.
 
 From the repository root, run `cargo fmt --manifest-path apps/hepta-native/Cargo.toml --check`, `cargo clippy --manifest-path apps/hepta-native/Cargo.toml --all-targets --all-features -- -D warnings`, and `cargo test --manifest-path apps/hepta-native/Cargo.toml --all-targets`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
@@ -221,7 +221,7 @@ For `ui.native`, this document grants no runtime, production, model, provider, t
 
 #### `UI-V5`
 
-- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `independent_source_preparation`.
+- State: `source_implemented`; priority: `2`; parallel class: `independent_source_preparation`.
 - Owner/deputy: `ui-platform` / `accessibility`.
 - Allowed write paths:
 - `apps/hepta-control-ui/**`
@@ -282,10 +282,10 @@ Repository-controlled implementation includes:
 
 - `src/runtime.rs` + `src/journal.rs`: operation identity `(session_id, session_generation, operation_id)`, durable `Prepared -> Invoking -> Indeterminate/Terminal` transitions, close/reconnect fencing, and reconcile-before-retry semantics. Uncertain effects survive process restart without automatic replay.
 - `src/backend.rs` + `codex-rs/hepta-native-gateway`: signed endpoint manifests, loopback-only authenticated `keyring_bearer_v1` runtime status access and no fallback to the legacy unauthenticated gateway mode.
-- `src/security.rs` + `src/session_store.rs`: Ed25519 final-payload-bound grants, bounded expiry, per-effect trust-file reload for signing-key revocation, and OS-keyring storage for opaque session/gateway references rather than product-domain facts.
+- `src/security.rs` + `codex-rs/hepta-contracts/src/final_use.rs` + `src/session_store.rs`: exact native `FinalUseBinding` construction, kernel-owned durable nonce claim, live epoch/revocation revalidation through non-serializable `VerifiedUseToken`, and OS-keyring storage for opaque session/gateway references rather than product-domain facts. No native-local authority system exists.
 - `src/platform.rs`: root-scoped path policy and explicit clipboard/notification ceilings. Local policy denial is tested before OS entry; where an OS does not expose a trustworthy terminal query, success remains indeterminate instead of being invented.
-- `src/updater.rs` + `src/bin/hepta-native-updater.rs`: signed stable-channel manifests, exact package/platform/architecture/protocol/evidence binding, installed-predecessor digest admission, separate-process activation, backup/restore and confirmation before cleanup.
+- `src/updater.rs` + `src/bin/hepta-native-updater.rs` + `src/ui.rs`: signed stable-channel manifests, exact package/platform/architecture/protocol/evidence binding, UI staging, installed-predecessor digest admission, GUI-exit handoff to a separate updater process, bounded Windows executable-lock retry, backup/restore and confirmation before cleanup.
 - `src/ui.rs` + `src/main.rs`: real eframe/egui native window lifecycle, runtime/operations/updates/accessibility views, AccessKit, keyboard focus, per-monitor DPI through winit and English/Chinese shell copy.
 - `packaging/**` + `.github/workflows/hepta-native-rust.yml`: explicit Windows/macOS/Linux packaging metadata, packaged-binary self-test, Windows/macOS/Linux merge-candidate execution, an exact PR-head Linux gate and unsigned qualification receipts binding source/merge identity to binary SHA-256 values.
 
-Still external/deployment-gated: production signing-key custody, Authenticode, Apple Developer ID/notarization, Linux distribution signing/repository ownership, installed Windows AppUserModelID notification registration, real target-host OS permission/revocation observation where applicable, screen-reader/accessibility acceptance, operator acceptance, promotion and release. These facts remain false until independently observed.
+Still repository-controlled: no Agentd/gateway product endpoint currently delivers independently issued `SignedFinalUseGrant` values to the GUI, and the kernel final-use durable store intentionally rejects non-Unix hosts, so Windows platform effects remain fail-closed/read-only. Still external/deployment-gated: production signing-key custody, Authenticode, Apple Developer ID/notarization, Linux distribution signing/repository ownership, installed Windows AppUserModelID notification registration, real target-host OS permission/revocation observation where applicable, screen-reader/accessibility acceptance, operator acceptance, promotion and release. These facts remain false until independently observed.
