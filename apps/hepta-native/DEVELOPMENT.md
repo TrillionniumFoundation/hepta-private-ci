@@ -8,7 +8,7 @@ The product shell uses `eframe 0.36.2` / `egui` with the native `winit` integrat
 
 | Platform | Product build | Accessibility | DPI/windowing | Platform effects | Packaging status |
 | --- | --- | --- | --- | --- | --- |
-| Windows x86_64 | first-class | AccessKit | native winit | open/reveal/clipboard; notifications remain packaged-AppUserModelID gated | CI unsigned zip |
+| Windows x86_64 | first-class shell | AccessKit | native winit | effect adapters compile, but kernel final-use admission is fail-closed until a Windows durable authority store is qualified | CI unsigned zip |
 | macOS arm64/x86_64 | first-class | AccessKit | native winit | open/reveal/clipboard/notification launcher | CI unsigned archive; signing/notarization external |
 | Linux x86_64 | first-class | AccessKit | X11/Wayland via winit | open/reveal/clipboard/`notify-send` | CI unsigned archive |
 
@@ -18,7 +18,7 @@ The shell does not embed a browser and does not create a second Hepta execution 
 
 - `src/runtime.rs` — session/view state machine, operation admission and reconciliation.
 - `src/journal.rs` — bounded durable operation journal.
-- `src/security.rs` — trusted Ed25519 key set and final-payload-bound grant verification.
+- `src/security.rs` — signed endpoint/update trust plus the adapter from `kernel.authority::FinalUseAuthority` to the exact native platform binding.
 - `src/platform.rs` — narrow local policy and OS adapters.
 - `src/backend.rs` — authenticated loopback gateway client used for the native presentation state.
 - `src/session_store.rs` — opaque session-reference persistence in the OS keyring.
@@ -56,21 +56,29 @@ The journal writes and fsyncs `Invoking` **before** the adapter call. Therefore:
 
 For current local OS effects, open/reveal/notification launch success is intentionally not treated as observed terminal success. The underlying OS launch APIs do not provide a trustworthy transaction-observation query. Clipboard writes can become terminal only when an immediate readback matches. After process loss the payload body is deliberately absent from the journal, so uncertain local effects remain indeterminate instead of leaking content or replaying them.
 
-## 4. Trusted grant boundary
+## 4. Kernel final-use authority boundary
 
-`SignedPlatformGrantV1` binds:
+Platform mutation authority is not defined by `ui.native`. The shell consumes the existing kernel-owned `FinalUseAuthority` from `codex-rs/hepta-contracts`.
 
-- trusted key ID;
-- session ID and generation;
-- operation ID;
-- registered action;
-- SHA-256 of the final serialized `PlatformPayload` computed by Rust;
-- expiration time.
+For each effect the Rust shell computes a `FinalUseBinding` that binds the principal, session ID and generation, operation ID, displayed revision, registered action, destination and SHA-256 of the final serialized `PlatformPayload`. The execution order is:
 
-The shell verifies an Ed25519 signature from an explicit absolute trusted-key-set path immediately before effect admission. The product verifier reloads that trust file for every platform effect, so adding a key ID to `revoked_key_ids` takes effect without restarting the shell. A matching caller-supplied pair of digests is not sufficient. Grants are short-lived and cannot be carried to a new session incarnation.
+```text
+durable Prepared
+-> FinalUseAuthority::claim(signed_grant, exact_binding)
+   (signature/epoch/revocation/time checks + durable single-use nonce)
+-> durable Invoking
+-> FinalUseAuthority::with_verified_use(token, exact_binding)
+   (current epoch/revocation/time checked again)
+-> local platform policy check at adapter entry
+-> physical OS adapter
+-> durable observation/reconciliation
+```
+
+`VerifiedUseToken` is non-cloneable and non-serializable; the UI cannot mint one. A matching pair of caller-supplied digests is not authority. Revocation is loaded from the explicit absolute `--final-use-authority` host configuration before claim and again before physical adapter entry. Trust identity or state-directory changes in place fail closed.
+
+If no final-use authority is composed, the shell records a rejected no-dispatch terminal result. The kernel authority store currently has a strong Unix implementation (owner-only directory, process lock, no-follow opens, atomic rename and file/directory fsync) and intentionally rejects non-Unix storage. Therefore Windows platform effects remain fail-closed/read-only until kernel.authority gains an equivalent Windows durable store; the Windows UI/build/packaging path does not fall back to a weaker native-local grant system.
 
 The local platform policy is a second ceiling, not authority. Paths must be absolute, canonicalizable and underneath one of the explicitly configured roots. Clipboard/notification classes are disabled unless their local policy switches are present.
-
 ## 5. Session/keychain and loopback authentication boundary
 
 Only opaque `SessionIncarnation` references, the manifest digest, and a random loopback gateway bearer capability are persisted through `codex-keyring-store`, which uses the platform keyring backend. Domain facts, model/provider credentials and signing private keys are never stored by `ui.native`.
@@ -102,7 +110,9 @@ This is repository-controlled update mechanics. Production signing certificate c
 
 The selected shell has four views: runtime, operations, updates and accessibility. Pending/indeterminate status is visible instead of converted to success. Navigation uses standard focusable egui controls. AccessKit is compiled in; Tab/Shift+Tab and Enter/Space follow the native control focus order. Winit/eframe own per-monitor DPI scaling. Shell copy is localized for English and Chinese using `LC_ALL`, `LC_MESSAGES` or `LANG`.
 
-The UI currently consumes the existing read-only loopback gateway for runtime status. Mutating product workflows are added only when their owner exposes a registered grant/receipt contract; the shell does not invent a backend writer.
+The Updates view accepts absolute signed-manifest/package paths, performs signature/target/predecessor staging through `UpdateManager`, and can request activation. Activation first closes the GUI; only after `eframe::run_native` returns does `main` spawn the independent updater helper. The helper re-verifies the pending record and new binary, rolls back on failure, and uses a bounded Windows permission-denied retry to bridge the executable-file-lock handoff.
+
+The runtime view consumes the existing read-only loopback gateway. Platform mutation consumption is source-composed behind the kernel final-use boundary, but no Agentd/gateway product endpoint currently delivers `SignedFinalUseGrant` values to the GUI. That upstream grant-delivery integration remains a repository-controlled gap; the shell does not create a signer or backend writer to hide it.
 
 ## 8. Development configuration
 
@@ -111,6 +121,14 @@ Required inputs:
 - `--endpoint-manifest ABSOLUTE_JSON`
 - `--trusted-keys ABSOLUTE_JSON`
 - `--state-dir ABSOLUTE_PRIVATE_DIRECTORY`
+
+Required for platform mutations on a host with a qualified kernel authority store:
+
+- `--final-use-authority ABSOLUTE_JSON`
+
+Optional host/update configuration:
+
+- `--updater-helper ABSOLUTE_EXECUTABLE` (otherwise the packaged sibling/Helper location is resolved)
 
 Optional local ceilings:
 
@@ -158,6 +176,24 @@ Trusted public keys example:
 
 Private signing keys do not belong in this repository or in the native state directory.
 
+Kernel final-use host configuration example:
+
+```json
+{
+  "schema": "hepta.native-final-use-authority.v1",
+  "signer_id": "authority.native",
+  "verifying_key_base64": "<base64 32-byte Ed25519 public key>",
+  "state_dir": "/absolute/private/kernel-final-use-state",
+  "head": {
+    "authority_epoch": 1,
+    "revision": 1,
+    "revoked_grant_ids": []
+  }
+}
+```
+
+The final-use signer remains the independent supervisor-owned `hepta-final-use-signer`; its private seed never belongs in the GUI, keyring session store, or native state directory. On Windows this configuration currently fails closed because the kernel durable authority store is not yet implemented for that OS.
+
 ## 9. Qualification
 
 The native CI matrix must pass independently on Windows, macOS and Linux:
@@ -170,11 +206,13 @@ cargo run --bin hepta-native -- --self-test
 cargo build --release --bins
 ```
 
-The runtime tests explicitly cover same-ID/new-session fencing, indeterminate retry without replay, process-restart reconciliation from the durable journal and close-with-pending behavior. Security/update tests cover Ed25519 final-payload binding, live signing-key revocation, selector/generator separation, stable-channel admission, stage digest, installed-predecessor fencing, independent updater activation and new-binary confirmation. The merge-candidate matrix starts the release binary again from each packaged artifact and emits an unsigned qualification receipt with checked-out SHA, source-head SHA and binary digests. A separate Ubuntu job checks out the exact PR head and reruns format, Clippy, tests, gateway tests and the product self-test.
+The runtime tests explicitly cover same-ID/new-session fencing, indeterminate retry without replay, process-restart reconciliation from the durable journal, close-with-pending behavior and no-dispatch when kernel authority is unavailable. Security/update tests cover exact kernel final-use binding, live grant revocation before adapter entry, selector/generator separation, stable-channel admission, stage digest, installed-predecessor fencing, independent updater activation and new-binary confirmation. The merge-candidate matrix starts the release binary again from each packaged artifact and emits an unsigned qualification receipt with checked-out SHA, source-head SHA and binary digests. A separate Ubuntu job checks out the exact PR head and reruns format, Clippy, tests, gateway tests and the product self-test.
 
 CI output is not a production-release receipt. The generated artifacts are intentionally named `unsigned` until platform signing/notarization and independent acceptance are supplied.
 
 ## 10. Remaining external gates
+
+Repository-controlled gaps that remain open are the upstream product delivery of independently issued `SignedFinalUseGrant` values and an equivalent durable `kernel.authority` final-use store for Windows. Until those close, platform mutation product execution is not complete on all targets.
 
 Repository implementation cannot self-issue these facts:
 
