@@ -107,15 +107,11 @@ fn status_consumer_checks_the_complete_hierarchy_without_direct_adapter_fallback
     Ok(())
 }
 
-
 #[cfg(unix)]
 fn governed_topology_for_runtime(
     current: &crate::RuntimeTopologySnapshotV1,
     successor: &crate::RuntimeTopologySnapshotV1,
-) -> (
-    codex_hepta_plasticity::GovernedTopologyProposalV1,
-    StableId,
-) {
+) -> (codex_hepta_plasticity::GovernedTopologyProposalV1, StableId) {
     use codex_hepta_plasticity::{
         ProposalWindowV2, TopologyCandidateKindV2, TopologyChangeV2, TopologyOperationV2,
         TopologyProposalRequestV2, admit_governed_topology_v1, build_writer_handoff_plan_v1,
@@ -251,12 +247,10 @@ fn final_use_authority_and_grant(
 #[test]
 fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -> Result<()> {
     let calls = Arc::new(AtomicUsize::new(0));
-    let root = HeptaStateRoot::parse(std::env::temp_dir().join(format!(
-        "hepta-topology-execution-{}",
-        std::process::id()
-    )))?;
-    let state: Arc<dyn RuntimeStateAdapter> =
-        Arc::new(ObservedAdapter(Arc::clone(&calls)));
+    let root = HeptaStateRoot::parse(
+        std::env::temp_dir().join(format!("hepta-topology-execution-{}", std::process::id())),
+    )?;
+    let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&calls)));
     let organs = RuntimeOrgans::new(root.clone(), Arc::clone(&state));
     let current = organs
         .topology_snapshot()
@@ -266,8 +260,7 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
     let successor = RuntimeTopologySuccessorV1::new(next.host, next.route)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     let successor_snapshot = successor.snapshot();
-    let (governed, candidate_id) =
-        governed_topology_for_runtime(&current, &successor_snapshot);
+    let (governed, candidate_id) = governed_topology_for_runtime(&current, &successor_snapshot);
     let request = RuntimeTopologyApplyRequestV1 {
         governed,
         candidate_id,
@@ -310,12 +303,10 @@ fn revoked_final_use_never_mutates_the_live_topology() -> Result<()> {
     use std::collections::BTreeSet;
 
     let calls = Arc::new(AtomicUsize::new(0));
-    let root = HeptaStateRoot::parse(std::env::temp_dir().join(format!(
-        "hepta-topology-revoked-{}",
-        std::process::id()
-    )))?;
-    let state: Arc<dyn RuntimeStateAdapter> =
-        Arc::new(ObservedAdapter(Arc::clone(&calls)));
+    let root = HeptaStateRoot::parse(
+        std::env::temp_dir().join(format!("hepta-topology-revoked-{}", std::process::id())),
+    )?;
+    let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&calls)));
     let organs = RuntimeOrgans::new(root.clone(), Arc::clone(&state));
     let current = organs
         .topology_snapshot()
