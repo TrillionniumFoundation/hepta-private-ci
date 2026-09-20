@@ -92,6 +92,16 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle
             )));
         }
+        // Any explicit/manual start supersedes a previously scheduled automatic
+        // retry. Clear the durable pending deadline before acquiring a new
+        // process generation so a crash cannot later replay the old retry.
+        crate::restart_budget::clear_pending(
+            record.layout.run_root(),
+            &agent_id.to_string(),
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        slot.auto_restart_pending = false;
+        slot.restart_retry_at = None;
         let starting = self.registry.compare_and_transition(
             agent_id,
             record.lifecycle.generation,
@@ -175,6 +185,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     AgentLifecycle::Failed,
                 )?;
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
+                self.schedule_auto_restart(agent_id, slot, generation, now)?;
             }
             self.recover_matrix_companion(agent_id, slot, record, now)?;
             return Ok(());
@@ -272,6 +283,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation
                 };
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
+                if is_live_lifecycle(record.lifecycle.lifecycle) {
+                    self.schedule_auto_restart(agent_id, slot, generation, now)?;
+                }
             }
             Adoption::Rejected => {
                 remove_lease(record.layout.run_root(), &lease)?;
@@ -286,6 +300,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation
                 };
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
+                if is_live_lifecycle(record.lifecycle.lifecycle) {
+                    self.schedule_auto_restart(agent_id, slot, generation, now)?;
+                }
             }
         }
         self.recover_matrix_companion(agent_id, slot, record, now)?;
