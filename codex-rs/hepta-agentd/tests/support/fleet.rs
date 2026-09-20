@@ -175,6 +175,31 @@ impl FleetHarness {
     }
 
     #[allow(dead_code)]
+    pub(crate) fn start_with_evidence_recovery(
+        &mut self,
+        agent: &AgentFixture,
+        evidence_trust_file: &Path,
+        recovery_frontier_file: &Path,
+        recovery_frontier_trust_file: &Path,
+    ) -> Result<()> {
+        let command = AgentCommand::new(
+            agentd_binary()?,
+            vec![
+                "--evidence-trust-file".into(),
+                evidence_trust_file.as_os_str().to_owned(),
+                "--evidence-recovery-frontier-file".into(),
+                recovery_frontier_file.as_os_str().to_owned(),
+                "--evidence-recovery-frontier-trust-file".into(),
+                recovery_frontier_trust_file.as_os_str().to_owned(),
+            ],
+        )?;
+        self.supervisor
+            .start(&agent.agent_id, command, Instant::now())?;
+        self.started = true;
+        Ok(())
+    }
+
+    #[allow(dead_code)]
     pub(crate) fn start_release(
         &mut self,
         agent: &AgentFixture,
