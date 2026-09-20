@@ -84,12 +84,8 @@ pub fn verify_world_model_dataset_v2(
 pub fn fit_transition_model_verified_v2(
     verified: VerifiedWorldModelDatasetV2,
 ) -> Result<TabularWorldModelV1, OperatorDatasetBindingError> {
-    fit_transition_model(
-        verified.model_id,
-        verified.dataset_digest,
-        verified.samples,
-    )
-    .map_err(OperatorDatasetBindingError::WorldModel)
+    fit_transition_model(verified.model_id, verified.dataset_digest, verified.samples)
+        .map_err(OperatorDatasetBindingError::WorldModel)
 }
 
 fn verify_evidence_set(
