@@ -20,10 +20,10 @@ use tokio_util::sync::CancellationToken;
 
 use crate::AgentdConfig;
 use crate::AgentdControlServer;
-use crate::CognitiveRetrievalMode;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
+use crate::CognitiveRetrievalMode;
 use crate::app_runtime::run_app_server;
 use crate::automation::run_automation_scheduler;
 
@@ -48,10 +48,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let retrieval_mode = config.cognitive_retrieval_mode();
     let retrieval_context = config.cognitive_retrieval_context();
     let retrieval_learning = config.cognitive_retrieval_learning();
-    require_cognitive_retrieval_context_for_mode(
-        retrieval_mode,
-        retrieval_context.is_some(),
-    )?;
+    require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry

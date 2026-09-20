@@ -346,18 +346,8 @@ fn generator_batch_requires_one_exact_rank_per_candidate() {
     let duplicate_rank = batch(
         RetrievalGeneratorOwnerV1::CognitiveLexical,
         vec![
-            candidate(
-                record(1),
-                RetrievalChannelV1::Lexical,
-                1,
-                "rank-one-a",
-            ),
-            candidate(
-                record(2),
-                RetrievalChannelV1::Lexical,
-                1,
-                "rank-one-b",
-            ),
+            candidate(record(1), RetrievalChannelV1::Lexical, 1, "rank-one-a"),
+            candidate(record(2), RetrievalChannelV1::Lexical, 1, "rank-one-b"),
         ],
         RetrievalSourceCompletenessV1::Exhausted,
     );
@@ -511,17 +501,11 @@ fn next_permutation(values: &mut [usize]) -> bool {
     true
 }
 
-
 #[test]
 fn product_generation_construction_is_confined_to_owner_adapter() {
     use std::path::Path;
 
-    fn scan(
-        root: &Path,
-        retrieval_crate: &Path,
-        allowed: &[&str],
-        violations: &mut Vec<String>,
-    ) {
+    fn scan(root: &Path, retrieval_crate: &Path, allowed: &[&str], violations: &mut Vec<String>) {
         let Ok(entries) = std::fs::read_dir(root) else {
             return;
         };
@@ -555,7 +539,9 @@ fn product_generation_construction_is_confined_to_owner_adapter() {
                 "recall_generated_with_engram(",
             ] {
                 if source.contains(needle) {
-                    violations.push(format!("{normalized}: direct product generator use {needle}"));
+                    violations.push(format!(
+                        "{normalized}: direct product generator use {needle}"
+                    ));
                 }
             }
         }

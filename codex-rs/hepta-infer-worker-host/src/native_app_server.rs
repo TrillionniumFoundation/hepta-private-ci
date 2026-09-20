@@ -165,9 +165,7 @@ impl AppServerModelDriver {
         };
         let owner_context_digest = context
             .as_ref()
-            .map(|snapshot| -> Result<_> {
-                Ok(control::digest(&serde_json::to_vec(snapshot)?))
-            })
+            .map(|snapshot| -> Result<_> { Ok(control::digest(&serde_json::to_vec(snapshot)?)) })
             .transpose()?;
         let additional_context = context
             .map(|snapshot| -> Result<_> {

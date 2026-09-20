@@ -186,7 +186,11 @@ async fn typed_kg_relations_route_to_exact_owner_channels_without_generic_relabe
     store
         .remember_with_kg(
             &access,
-            &source(CognitiveScope::AgentPrivate, "typed-relations", &draft.content),
+            &source(
+                CognitiveScope::AgentPrivate,
+                "typed-relations",
+                &draft.content,
+            ),
             &MemoryDraft {
                 stable_key: "typed-relations".to_string(),
                 revision: draft,
@@ -225,9 +229,7 @@ async fn typed_kg_relations_route_to_exact_owner_channels_without_generic_relabe
                         key: "alpha-procedure-gamma".to_string(),
                         from_entity_key: "alpha".to_string(),
                         to_entity_key: "gamma".to_string(),
-                        relation: KgRelationSemanticV1::ProcedureStep
-                            .relation()
-                            .to_string(),
+                        relation: KgRelationSemanticV1::ProcedureStep.relation().to_string(),
                     },
                     KgRelationFactDraft {
                         key: "alpha-contradicts-delta".to_string(),

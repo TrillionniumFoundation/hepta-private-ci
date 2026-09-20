@@ -649,7 +649,8 @@ impl CognitiveStore {
         seeds: &[EntitySeed],
         now: i64,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
-        self.relation_channel_tx(transaction, seeds, now, None).await
+        self.relation_channel_tx(transaction, seeds, now, None)
+            .await
     }
 
     async fn typed_relation_channel_tx(

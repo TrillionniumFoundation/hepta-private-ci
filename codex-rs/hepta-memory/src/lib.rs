@@ -38,6 +38,7 @@ mod shadow_model_runtime;
 pub use lane_c_snapshot::CognitiveOwnerFrontiers;
 pub use lane_c_snapshot::DurableCognitiveSnapshot;
 
+pub use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_NAMESPACE;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION;
 pub use cognitive_compact::CognitiveCompactError;
@@ -114,7 +115,6 @@ pub use cognitive_retrieval::RevalidationDrift;
 pub use cognitive_retrieval::RevalidationStatus;
 pub use cognitive_retrieval::SourceCitationRecord;
 pub use cognitive_retrieval::SourceRevalidationBinding;
-pub use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 pub use cognitive_retrieval_adapter::OwnerRetrievalExecutionV1;
 pub use cognitive_retrieval_adapter::RetrievalExecutionContextV1;
 pub use cognitive_retrieval_adapter::execute_owner_observation;

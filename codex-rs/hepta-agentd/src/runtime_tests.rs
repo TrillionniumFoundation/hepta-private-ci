@@ -206,19 +206,14 @@ async fn unavailable_cognitive_store_degrades_without_leaking_open_error() {
 
 #[test]
 fn compatibility_retrieval_mode_does_not_require_hnmf_context() {
-    require_cognitive_retrieval_context_for_mode(
-        CognitiveRetrievalMode::Compatibility,
-        false,
-    )
-    .expect("compatibility mode may run without an HNMF context");
+    require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::Compatibility, false)
+        .expect("compatibility mode may run without an HNMF context");
 }
 
 #[test]
 fn compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile() {
-    let result = require_cognitive_retrieval_context_for_mode(
-        CognitiveRetrievalMode::Compatibility,
-        true,
-    );
+    let result =
+        require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::Compatibility, true);
     assert!(matches!(
         result,
         Err(crate::AgentdError::Invalid(message))
@@ -228,20 +223,15 @@ fn compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile() 
 
 #[test]
 fn hnmf_required_retrieval_mode_fails_closed_without_current_context() {
-    let result = require_cognitive_retrieval_context_for_mode(
-        CognitiveRetrievalMode::HnmfRequired,
-        false,
-    );
+    let result =
+        require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::HnmfRequired, false);
     assert!(matches!(
         result,
         Err(crate::AgentdError::Invalid(message))
             if message.contains("HNMF-required retrieval profile")
     ));
-    require_cognitive_retrieval_context_for_mode(
-        CognitiveRetrievalMode::HnmfRequired,
-        true,
-    )
-    .expect("HNMF-required mode accepts an explicitly configured current context");
+    require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::HnmfRequired, true)
+        .expect("HNMF-required mode accepts an explicitly configured current context");
 }
 
 #[cfg(feature = "qualification-cognitive-write")]
