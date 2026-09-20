@@ -254,6 +254,7 @@ pub struct KernelFinalUseGate {
     current_head: Mutex<FinalUseRevocations>,
 }
 
+#[derive(Debug)]
 pub struct KernelFinalUsePermit {
     token: VerifiedUseToken,
     binding: FinalUseBinding,
