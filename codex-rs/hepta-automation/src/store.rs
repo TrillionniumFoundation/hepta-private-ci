@@ -1112,6 +1112,34 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     if invalid_outcomes != 0 {
         return Err(AutomationError::Corrupt);
     }
+    let invalid_legacy_reconciliations: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM automation_legacy_dispatch_reconciliations l
+         LEFT JOIN automation_runs r
+           ON r.task_id = l.task_id AND r.occurrence = l.occurrence
+         LEFT JOIN automation_tasks t ON t.task_id = l.task_id
+         WHERE t.owner_agent_id IS NULL
+            OR t.owner_agent_id != ?
+            OR r.task_id IS NULL
+            OR r.schedule_revision IS NOT NULL
+            OR r.state != 'cancelled'
+            OR r.client_user_message_id != l.client_user_message_id
+            OR EXISTS (
+                SELECT 1 FROM automation_dispatch_outcomes d
+                WHERE d.task_id = l.task_id AND d.occurrence = l.occurrence
+            )
+            OR EXISTS (
+                SELECT 1 FROM automation_occurrence_lifecycle o
+                WHERE o.task_id = l.task_id AND o.occurrence = l.occurrence
+            )",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_legacy_reconciliations != 0 {
+        return Err(AutomationError::Corrupt);
+    }
     verify_taskflow_store(pool, owner_agent_id)
         .await
         .map_err(map_taskflow_verify_error)?;
