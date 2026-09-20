@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8a96fe521a0c0f65b7ccdda5d8c10e3505b1a3de",
-    "tree": "9fa6a16093999696a1f1168ef61eeefe80b09eec"
+    "commit": "f9bdf6a4d4576629eff021d453f73d53b40051dd",
+    "tree": "5aac552c6ee55b2f37d6fa6fd66411a99343965a"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -190,12 +190,13 @@
   ],
   "observedSourcePaths": [
     "codex-rs/hepta-automation",
-    "codex-rs/hepta-agentd"
+    "codex-rs/hepta-agentd",
+    "codex-rs/Cargo.lock"
   ],
   "observedAtHead": {
-    "commit": "8a96fe521a0c0f65b7ccdda5d8c10e3505b1a3de",
-    "tree": "9fa6a16093999696a1f1168ef61eeefe80b09eec",
-    "interpretation": "exact automation/Agentd owner-source observation after final-use provider integration coverage, strict-lint convergence, recovery fail-stop, dispatch-unknown semantics, and durable-receipt repair; later documentation/projection/verifier commits do not change the observed owner paths, and qualification results remain separate"
+    "commit": "f9bdf6a4d4576629eff021d453f73d53b40051dd",
+    "tree": "5aac552c6ee55b2f37d6fa6fd66411a99343965a",
+    "interpretation": "exact automation/Agentd/lockfile source observation after final-use provider integration coverage, exact rustfmt convergence, locked dependency update, recovery fail-stop, dispatch-unknown semantics, and durable-receipt repair; later documentation/projection/verifier commits do not change the observed source paths, and qualification results remain separate"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
