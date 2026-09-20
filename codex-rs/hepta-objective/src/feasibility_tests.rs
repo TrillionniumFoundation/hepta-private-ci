@@ -512,13 +512,9 @@ fn measurement_conflict_extraction_v1() {
         atom("a", "x", interval(0, 1)),
         atom("b", "x", interval(2, 3)),
     ];
-    atoms.extend((2..256).map(|index| {
-        atom(
-            &format!("irrelevant-{index:03}"),
-            "x",
-            interval(-5, 5),
-        )
-    }));
+    atoms.extend(
+        (2..256).map(|index| atom(&format!("irrelevant-{index:03}"), "x", interval(-5, 5))),
+    );
     let samples = std::env::var("HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES")
         .ok()
         .and_then(|value| value.parse::<usize>().ok())
