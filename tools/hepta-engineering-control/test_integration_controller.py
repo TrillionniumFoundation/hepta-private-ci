@@ -1,3 +1,4 @@
+import control_engineering_v2
 from dataclasses import replace
 from pathlib import Path
 import tempfile
@@ -140,6 +141,10 @@ class IntegrationControllerTests(unittest.TestCase):
             base_tree=self.base_tree,
             now_ns=self.now + 1,
         )
+
+    def test_raw_reconciliation_is_not_a_package_root_product_surface(self):
+        self.assertFalse(hasattr(control_engineering_v2, "reconcile_integration_item"))
+        self.assertTrue(hasattr(control_engineering_v2, "observe_integration_stage"))
 
     def test_authenticated_stage_observations_gate_product_readiness_projection(self):
         with tempfile.TemporaryDirectory() as temporary:
