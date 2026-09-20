@@ -83,6 +83,20 @@ impl AgentdState {
                 app_server_ready,
                 fenced,
             }),
+            crate::AgentdMethod::Drain => {
+                if lifecycle != AgentLifecycle::Draining || fenced {
+                    AgentdPayload::Error {
+                        code: "drain_not_admitted".to_string(),
+                        message: "drain requires the current generation to own Draining"
+                            .to_string(),
+                    }
+                } else {
+                    self.mark_draining()?;
+                    AgentdPayload::DrainAccepted {
+                        admission_stopped: true,
+                    }
+                }
+            }
             crate::AgentdMethod::SessionIngress => {
                 if lifecycle != AgentLifecycle::Running || !app_server_ready || fenced {
                     AgentdPayload::Error {
