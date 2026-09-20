@@ -200,9 +200,12 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
     }
     #[cfg(unix)]
     {
-        use std::os::unix::fs::PermissionsExt;
+        use std::os::unix::fs::{MetadataExt, PermissionsExt};
         if parent_metadata.permissions().mode() & 0o077 != 0 {
             return Err("Browser revocation feed parent permissions are too broad".into());
+        }
+        if parent_metadata.uid() != rustix::process::geteuid().as_raw() {
+            return Err("Browser revocation feed parent is not owned by the Agentd uid".into());
         }
     }
     let canonical_parent = fs::canonicalize(parent)
@@ -222,9 +225,12 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
     }
     #[cfg(unix)]
     {
-        use std::os::unix::fs::PermissionsExt;
+        use std::os::unix::fs::{MetadataExt, PermissionsExt};
         if before.permissions().mode() & 0o077 != 0 {
             return Err("Browser revocation feed permissions are too broad".into());
+        }
+        if before.uid() != rustix::process::geteuid().as_raw() || before.nlink() != 1 {
+            return Err("Browser revocation feed must be owner-owned with one hard link".into());
         }
     }
 
@@ -240,6 +246,13 @@ fn read_feed(path: &Path) -> Result<BrowserRevocationHead, String> {
         use std::os::unix::fs::MetadataExt;
         if opened.dev() != after.dev() || opened.ino() != after.ino() {
             return Err("Browser revocation feed changed during secure open".into());
+        }
+        if opened.uid() != rustix::process::geteuid().as_raw()
+            || after.uid() != rustix::process::geteuid().as_raw()
+            || opened.nlink() != 1
+            || after.nlink() != 1
+        {
+            return Err("Browser revocation feed ownership/link count changed during open".into());
         }
     }
     if !after.is_file() || after.file_type().is_symlink() {
