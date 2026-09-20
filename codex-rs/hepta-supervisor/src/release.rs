@@ -50,6 +50,46 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
     }
 
+    fn verify_release_binding_against_transaction(
+        &self,
+        agent_id: &AgentId,
+        slot: &AgentSlot<D::Process>,
+        release: &AgentRelease,
+        target: bool,
+    ) -> Result<(), SupervisorError> {
+        let Some(transaction) = slot.release_transaction.as_ref() else {
+            return Ok(());
+        };
+        let expected = if target {
+            transaction.target_binding.as_ref()
+        } else {
+            transaction.source_binding.as_ref()
+        };
+        let Some(expected) = expected else {
+            // Qualification-only unregistered fixtures intentionally carry no
+            // catalog binding and never acquire production authority.
+            return Ok(());
+        };
+        let actual = self
+            .registry
+            .resolve_release_binding(agent_id, release.release_id())?;
+        if expected.release_id != actual.release_id.to_string()
+            || expected.manifest_sha256.as_str() != actual.manifest_sha256.as_str()
+            || expected.agentd_program_sha256.as_str()
+                != actual.agentd_program_sha256.as_str()
+            || expected.matrixd_program_sha256.as_deref()
+                != actual.matrixd_program_sha256.as_deref()
+            || expected.admission_frontier_sha256.as_str()
+                != actual.admission_frontier_sha256.as_str()
+        {
+            return Err(SupervisorError::ProductionAuthority(
+                "release admission binding changed after durable transaction preparation"
+                    .to_string(),
+            ));
+        }
+        Ok(())
+    }
+
     fn prepare_release_transaction(
         &self,
         agent_id: &AgentId,
@@ -307,6 +347,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         match change.phase {
             ReleaseChangePhase::WaitingForTargetExit => {
                 let target = self.refresh_release_for_transition(agent_id, &change.target)?;
+                self.verify_release_binding_against_transaction(
+                    agent_id,
+                    slot,
+                    &target,
+                    /*target*/ true,
+                )?;
                 change.target = target.clone();
                 self.advance_release_transaction(
                     agent_id,
@@ -381,8 +427,20 @@ impl<D: ProcessDriver> Supervisor<D> {
         let target_id = codex_hepta_fleet::ReleaseId::parse(transaction.target_release.clone())?;
         let source =
             AgentRelease::try_from(self.registry.resolve_release(agent_id, &source_id)?)?;
+        self.verify_release_binding_against_transaction(
+            agent_id,
+            slot,
+            &source,
+            /*target*/ false,
+        )?;
         let target =
             AgentRelease::try_from(self.registry.resolve_release(agent_id, &target_id)?)?;
+        self.verify_release_binding_against_transaction(
+            agent_id,
+            slot,
+            &target,
+            /*target*/ true,
+        )?;
         let prior_previous = transaction
             .rollback_predecessor
             .as_ref()
@@ -475,6 +533,12 @@ impl<D: ProcessDriver> Supervisor<D> {
             },
         );
         let rollback = self.refresh_release_for_transition(agent_id, &change.origin)?;
+        self.verify_release_binding_against_transaction(
+            agent_id,
+            slot,
+            &rollback,
+            /*target*/ false,
+        )?;
         change.origin = rollback.clone();
         self.advance_release_transaction(
             agent_id,

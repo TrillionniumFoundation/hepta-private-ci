@@ -159,6 +159,9 @@ pub struct ReleaseBinding {
     pub manifest_sha256: String,
     pub agentd_program_sha256: String,
     pub matrixd_program_sha256: Option<String>,
+    /// Digest of the complete per-Agent allow/revoke marker set observed at
+    /// this admission boundary. Any later policy mutation changes the digest.
+    pub admission_frontier_sha256: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -388,6 +391,14 @@ impl FleetRegistry {
         release_id: &ReleaseId,
     ) -> Result<ReleaseBinding, FleetRegistryError> {
         let _ = self.resolve_release(agent_id, release_id)?;
+        let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
+            FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
+        })?;
+        let admission_frontier_sha256 =
+            release_admission_frontier_sha256(record.layout.releases_root())?;
+        // Re-admit after observing the frontier so a revocation racing the
+        // first lookup cannot be hidden behind a stale successful resolve.
+        let _ = self.resolve_release(agent_id, release_id)?;
         let manifest = release_manifest_path(self.layout().releases_root(), release_id);
         let manifest_sha256 = sha256_file(&manifest)?;
         let metadata: CatalogReleaseMetadata =
@@ -404,6 +415,7 @@ impl FleetRegistry {
             manifest_sha256,
             agentd_program_sha256,
             matrixd_program_sha256,
+            admission_frontier_sha256,
         })
     }
 
@@ -740,6 +752,62 @@ fn validate_source_program(path: &Path) -> Result<PathBuf, FleetRegistryError> {
         ));
     }
     Ok(path.to_path_buf())
+}
+
+fn release_admission_frontier_sha256(root: &Path) -> Result<String, FleetRegistryError> {
+    let mut markers = Vec::new();
+    for entry in std::fs::read_dir(root)? {
+        let entry = entry?;
+        let Some(name) = entry.file_name().to_str().map(str::to_owned) else {
+            return Err(FleetRegistryError::Corrupt(
+                "release admission marker filename is not UTF-8".to_string(),
+            ));
+        };
+        let is_allow = name.starts_with(RELEASE_ALLOW_PREFIX)
+            && name.ends_with(RELEASE_ALLOW_SUFFIX);
+        let is_revoke = name.starts_with(RELEASE_REVOKE_PREFIX)
+            && name.ends_with(RELEASE_REVOKE_SUFFIX);
+        if !is_allow && !is_revoke {
+            continue;
+        }
+        if markers.len() >= MAX_ALLOWED_RELEASES * 2 {
+            return Err(FleetRegistryError::Corrupt(
+                "release admission marker set exceeds its bound".to_string(),
+            ));
+        }
+        let metadata = std::fs::symlink_metadata(entry.path())?;
+        if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
+            return Err(FleetRegistryError::Corrupt(
+                "release admission marker must be a regular non-symlink file".to_string(),
+            ));
+        }
+        if metadata.len() > MAX_RELEASE_MANIFEST_BYTES {
+            return Err(FleetRegistryError::Corrupt(
+                "release admission marker exceeds its byte bound".to_string(),
+            ));
+        }
+        markers.push((name, std::fs::read(entry.path())?));
+    }
+    markers.sort_by(|left, right| left.0.cmp(&right.0));
+    let mut hasher = Sha256::new();
+    hasher.update(b"hepta-fleet:release-admission-frontier:v1\0");
+    for (name, bytes) in markers {
+        let name_len = u64::try_from(name.len()).map_err(|_| {
+            FleetRegistryError::Corrupt("release marker name length overflow".to_string())
+        })?;
+        let bytes_len = u64::try_from(bytes.len()).map_err(|_| {
+            FleetRegistryError::Corrupt("release marker byte length overflow".to_string())
+        })?;
+        hasher.update(name_len.to_be_bytes());
+        hasher.update(name.as_bytes());
+        hasher.update(bytes_len.to_be_bytes());
+        hasher.update(bytes);
+    }
+    Ok(hasher
+        .finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect())
 }
 
 fn allowance_path(root: &Path, release_id: &ReleaseId) -> PathBuf {

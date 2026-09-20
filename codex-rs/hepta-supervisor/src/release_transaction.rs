@@ -22,9 +22,10 @@ use sha2::Digest;
 use sha2::Sha256;
 use thiserror::Error;
 
-pub const RELEASE_TRANSACTION_SCHEMA_VERSION: u32 = 2;
+pub const RELEASE_TRANSACTION_SCHEMA_VERSION: u32 = 3;
 pub const RELEASE_TRANSACTION_FILE: &str = "supervisor-release-transaction.json";
-const TRANSACTION_DOMAIN: &[u8] = b"hepta-supervisor:release-transaction:v2";
+const TRANSACTION_DOMAIN: &[u8] = b"hepta-supervisor:release-transaction:v3";
+const COMPATIBILITY_DOMAIN: &[u8] = b"hepta-supervisor:release-compatibility-binding:v1";
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -66,6 +67,9 @@ pub struct DurableReleaseTransaction {
     pub rollback_predecessor: Option<String>,
     pub source_binding: Option<ReleaseBindingWire>,
     pub target_binding: Option<ReleaseBindingWire>,
+    /// Deterministic witness that both current source/target bindings were
+    /// admitted under the same release-policy frontier and supported schema.
+    pub compatibility_binding_sha256: Option<Sha256Digest>,
     pub expected_release_state_generation: u64,
     pub expected_lifecycle_generation: u64,
     pub grant_sha256: Option<Sha256Digest>,
@@ -83,6 +87,7 @@ pub struct ReleaseBindingWire {
     pub manifest_sha256: String,
     pub agentd_program_sha256: String,
     pub matrixd_program_sha256: Option<String>,
+    pub admission_frontier_sha256: String,
 }
 
 impl From<ReleaseBinding> for ReleaseBindingWire {
@@ -92,6 +97,7 @@ impl From<ReleaseBinding> for ReleaseBindingWire {
             manifest_sha256: value.manifest_sha256,
             agentd_program_sha256: value.agentd_program_sha256,
             matrixd_program_sha256: value.matrixd_program_sha256,
+            admission_frontier_sha256: value.admission_frontier_sha256,
         }
     }
 }
@@ -124,6 +130,10 @@ impl DurableReleaseTransaction {
         expected_release_state_generation: u64,
         expected_lifecycle_generation: u64,
     ) -> Result<Self, ReleaseTransactionError> {
+        let source_binding = source_binding.map(Into::into);
+        let target_binding = target_binding.map(Into::into);
+        let compatibility_binding_sha256 =
+            compatibility_binding_digest(source_binding.as_ref(), target_binding.as_ref())?;
         let mut value = Self {
             schema_version: RELEASE_TRANSACTION_SCHEMA_VERSION,
             agent_id: agent_id.into(),
@@ -131,8 +141,9 @@ impl DurableReleaseTransaction {
             source_release: source_release.into(),
             target_release: target_release.into(),
             rollback_predecessor,
-            source_binding: source_binding.map(Into::into),
-            target_binding: target_binding.map(Into::into),
+            source_binding,
+            target_binding,
+            compatibility_binding_sha256,
             expected_release_state_generation,
             expected_lifecycle_generation,
             grant_sha256: None,
@@ -246,6 +257,7 @@ impl DurableReleaseTransaction {
         {
             if !valid_sha256(&binding.manifest_sha256)
                 || !valid_sha256(&binding.agentd_program_sha256)
+                || !valid_sha256(&binding.admission_frontier_sha256)
                 || binding
                     .matrixd_program_sha256
                     .as_ref()
@@ -255,6 +267,13 @@ impl DurableReleaseTransaction {
                     "release binding contains a malformed digest".to_string(),
                 ));
             }
+        }
+        let expected_compatibility =
+            compatibility_binding_digest(self.source_binding.as_ref(), self.target_binding.as_ref())?;
+        if self.compatibility_binding_sha256 != expected_compatibility {
+            return Err(ReleaseTransactionError::Invalid(
+                "release compatibility binding digest mismatch".to_string(),
+            ));
         }
         if self.transaction_sha256 != self.compute_digest()? {
             return Err(ReleaseTransactionError::DigestMismatch);
@@ -272,6 +291,7 @@ impl DurableReleaseTransaction {
             &self.rollback_predecessor,
             &self.source_binding,
             &self.target_binding,
+            &self.compatibility_binding_sha256,
             self.expected_release_state_generation,
             self.expected_lifecycle_generation,
             &self.grant_sha256,
@@ -283,6 +303,24 @@ impl DurableReleaseTransaction {
             [TRANSACTION_DOMAIN, encoded.as_slice()].concat(),
         )))
     }
+}
+
+fn compatibility_binding_digest(
+    source: Option<&ReleaseBindingWire>,
+    target: Option<&ReleaseBindingWire>,
+) -> Result<Option<Sha256Digest>, ReleaseTransactionError> {
+    let (Some(source), Some(target)) = (source, target) else {
+        return Ok(None);
+    };
+    if source.admission_frontier_sha256 != target.admission_frontier_sha256 {
+        return Err(ReleaseTransactionError::Invalid(
+            "source and target were not admitted under the same release frontier".to_string(),
+        ));
+    }
+    let encoded = serde_json::to_vec(&(source, target))?;
+    Ok(Some(Sha256Digest::from_sha256_output(Sha256::digest(
+        [COMPATIBILITY_DOMAIN, encoded.as_slice()].concat(),
+    ))))
 }
 
 pub fn read_release_transaction(
