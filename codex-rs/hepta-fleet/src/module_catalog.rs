@@ -243,7 +243,11 @@ mod tests {
         assert_eq!(catalog.len(), source.modules.len());
         assert_eq!(
             catalog.module_ids().collect::<BTreeSet<_>>(),
-            source.modules.iter().map(|row| row.id.as_str()).collect::<BTreeSet<_>>()
+            source
+                .modules
+                .iter()
+                .map(|row| row.id.as_str())
+                .collect::<BTreeSet<_>>()
         );
         assert!(!catalog.digest().is_empty());
         assert!(catalog.module("runtime.agentd").is_some());
