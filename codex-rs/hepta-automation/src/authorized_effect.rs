@@ -33,8 +33,7 @@ use crate::effect_dispatch_ledger::EffectDispatchStart;
 const MAX_AUTHORIZED_EFFECT_DEPENDENCIES: usize = 128;
 const MAX_EFFECT_ID_BYTES: usize = 256;
 const MAX_FINAL_USE_ID_BYTES: usize = 128;
-const ZERO_DIGEST: &str =
-    "0000000000000000000000000000000000000000000000000000000000000000";
+const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -102,10 +101,7 @@ impl AuthorizedEffectIntent {
             MAX_FINAL_USE_ID_BYTES,
         )?;
         validate_nonzero_digest(&self.payload_digest, "payload_digest")?;
-        validate_nonzero_digest(
-            &self.final_use_scope_digest,
-            "final_use_scope_digest",
-        )?;
+        validate_nonzero_digest(&self.final_use_scope_digest, "final_use_scope_digest")?;
         if self.attempt == 0 || self.policy_generation == 0 {
             return Err(TaskFlowError::Invalid(
                 "effect attempt and policy generation must be nonzero".to_string(),
@@ -135,11 +131,7 @@ impl AuthorizedEffectIntent {
             previous = Some(&dependency.step_id);
         }
         if let Some(operation_id) = &self.compensation_for {
-            validate_effect_id(
-                operation_id,
-                "compensation_for",
-                MAX_EFFECT_ID_BYTES,
-            )?;
+            validate_effect_id(operation_id, "compensation_for", MAX_EFFECT_ID_BYTES)?;
             if operation_id == &self.operation_id {
                 return Err(TaskFlowError::Invalid(
                     "effect cannot compensate itself".to_string(),
@@ -492,8 +484,7 @@ impl AutomationStore {
         recovery: AuthorizedEffectRecovery,
         observed_at_ms: u64,
     ) -> Result<AuthorizedEffectRecoveryResult, AuthorizedEffectError> {
-        let durable = self
-            .effect_dispatch_attempt(run_id, step_id, attempt)
+        self.effect_dispatch_attempt(run_id, step_id, attempt)
             .await?
             .ok_or(AuthorizedEffectError::RecoveryRequired)?;
         let (kind, evidence) = match recovery {
@@ -590,7 +581,8 @@ impl AutomationStore {
                         || step.observation != Some(outcome.observation())
                     {
                         return Err(TaskFlowError::Conflict(
-                            "TaskFlow step is recorded with different provider evidence".to_string(),
+                            "TaskFlow step is recorded with different provider evidence"
+                                .to_string(),
                         )
                         .into());
                     }
@@ -734,12 +726,7 @@ impl AutomationStore {
         }
 
         let step = self
-            .read_taskflow_step(
-                &durable.run_id,
-                &durable.step_id,
-                durable.attempt,
-                fence,
-            )
+            .read_taskflow_step(&durable.run_id, &durable.step_id, durable.attempt, fence)
             .await?
             .ok_or_else(|| TaskFlowError::Conflict("effect TaskFlow step vanished".to_string()))?;
         match step.state {
@@ -807,26 +794,21 @@ impl AutomationStore {
     }
 }
 
-fn validate_effect_id(
-    value: &str,
-    field: &str,
-    maximum: usize,
-) -> Result<(), TaskFlowError> {
+fn validate_effect_id(value: &str, field: &str, maximum: usize) -> Result<(), TaskFlowError> {
     if value.is_empty()
         || value.len() > maximum
         || !value
             .bytes()
             .all(|byte| byte.is_ascii_alphanumeric() || b"_+-.:/".contains(&byte))
     {
-        return Err(TaskFlowError::Invalid(format!("invalid authorized effect {field}")));
+        return Err(TaskFlowError::Invalid(format!(
+            "invalid authorized effect {field}"
+        )));
     }
     Ok(())
 }
 
-fn validate_nonzero_digest(
-    digest: &Sha256Digest,
-    field: &str,
-) -> Result<(), TaskFlowError> {
+fn validate_nonzero_digest(digest: &Sha256Digest, field: &str) -> Result<(), TaskFlowError> {
     let value = digest.as_str();
     if value == ZERO_DIGEST
         || value.len() != 64
@@ -834,7 +816,9 @@ fn validate_nonzero_digest(
             .bytes()
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
     {
-        return Err(TaskFlowError::Invalid(format!("invalid authorized effect {field}")));
+        return Err(TaskFlowError::Invalid(format!(
+            "invalid authorized effect {field}"
+        )));
     }
     Ok(())
 }
@@ -940,7 +924,6 @@ fn validate_receipt_digest(digest: &Sha256Digest) -> Result<(), AuthorizedEffect
     Ok(())
 }
 
-
 #[cfg(test)]
 mod intent_tests {
     use super::*;
@@ -1016,10 +999,7 @@ mod intent_tests {
     #[test]
     fn canonical_effect_intent_rejects_noncanonical_dependencies() {
         let mut value = intent();
-        value.dependencies = vec![
-            dependency("step.1", b"one"),
-            dependency("step.0", b"zero"),
-        ];
+        value.dependencies = vec![dependency("step.1", b"one"), dependency("step.0", b"zero")];
         assert!(matches!(value.digest(), Err(TaskFlowError::Invalid(_))));
 
         let mut value = intent();
