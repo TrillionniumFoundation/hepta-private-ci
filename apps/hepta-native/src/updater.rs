@@ -324,6 +324,12 @@ pub fn activate_staged_update(
     }
     let mut pending: PendingUpdateV1 = serde_json::from_slice(&std::fs::read(pending_path)?)?;
     validate_pending(&pending)?;
+    if pending.status != PendingUpdateStatus::Staged {
+        return Err(ShellError::Update(format!(
+            "native update activation requires staged state, found {:?}",
+            pending.status
+        )));
+    }
     pending.manifest.validate(backend_protocol_version)?;
     trusted_keys.verify_message(
         &pending.manifest.key_id,
