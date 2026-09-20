@@ -275,7 +275,8 @@
     "workflows": [
       ".github/workflows/hepta-objective-admission.yml",
       ".github/workflows/hepta-lane-d-semantic-conformance.yml"
-    ]
+    ],
+    "productCompositionRule": "productCompositionSourceCandidate must equal the newest Git commit/tree touching the registered product-composition paths"
   },
   "productCallerEvidence": [
     {
@@ -305,5 +306,18 @@
   "canonicalProtocolContracts": [
     "ObjectiveFunctionV1",
     "RunStartSnapshotV1"
-  ]
+  ],
+  "productCompositionSourceCandidate": {
+    "commit": "e603e7ac675843e69f6cfd741e42180b2d5437ed",
+    "tree": "6de843d2ddf162869e4aff0ebb84642d4b2c26c3",
+    "paths": [
+      "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "codex-rs/hepta-intelligence/src/objective_run.rs",
+      "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_tests.rs"
+    ],
+    "role": "product_composition_source_identity"
+  }
 }

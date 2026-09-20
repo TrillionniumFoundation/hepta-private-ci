@@ -127,7 +127,8 @@
             "committed_record_reopens_and_ack_loss_retry_is_idempotent",
             "semantic_or_protocol_drift_after_reopen_conflicts",
             "generation_and_fence_drift_fail_closed_before_runtime_admission",
-            "durable_authentication_frontier_allows_only_exact_replay"
+            "durable_authentication_frontier_allows_only_exact_replay",
+            "recovered_authentication_rejects_revoked_and_stale_owner_trust"
           ]
         }
       }

@@ -43,6 +43,21 @@ def exact_source_candidate(roots: list[str]) -> dict[str, object]:
     }
 
 
+def exact_product_composition_candidate(paths: list[str]) -> dict[str, object]:
+    """Bind all cross-owner product-composition files to one Git snapshot."""
+    if not paths:
+        raise ValueError("product composition candidate requires source paths")
+    commit = git("log", "-1", "--format=%H", "--", *paths)
+    if not commit:
+        raise ValueError(f"no Git history for product composition paths: {paths!r}")
+    return {
+        "commit": commit,
+        "tree": git("rev-parse", f"{commit}^{{tree}}"),
+        "paths": paths,
+        "role": "product_composition_source_identity",
+    }
+
+
 def load(rel: str):
     return json.loads((ROOT / rel).read_text(encoding="utf-8"))
 
@@ -405,10 +420,28 @@ def verify(expected_sha: str | None = None, expected_tree: str | None = None):
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-        elif boundary.get("productSourceComposition") and exact_source is None:
-            failures.append(
-                f"{mid}: composed product source requires exactSourceCandidate"
-            )
+        elif boundary.get("productSourceComposition"):
+            if exact_source is None:
+                failures.append(
+                    f"{mid}: composed product source requires exactSourceCandidate"
+                )
+            product_source = row.get("productCompositionSourceCandidate")
+            if not isinstance(product_source, dict) or not product_source.get("paths"):
+                failures.append(
+                    f"{mid}: composed product source requires productCompositionSourceCandidate"
+                )
+            else:
+                try:
+                    expected_product_source = exact_product_composition_candidate(
+                        product_source["paths"]
+                    )
+                    if product_source != expected_product_source:
+                        failures.append(
+                            f"{mid}: stale product composition source "
+                            f"{product_source!r}; expected {expected_product_source!r}"
+                        )
+                except (ValueError, subprocess.CalledProcessError) as exc:
+                    failures.append(f"{mid}: product composition source: {exc}")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:

@@ -61,6 +61,7 @@ Latency claims require a named host, compiler, build profile, input class and ex
 - `OBJ-DETAIL-11`: canonical `ObjectiveFunctionV1` round-trips exact bytes and its protocol digest is distinct from the native semantic digest.
 - `OBJ-DETAIL-12`: partial tail recovers only to the last complete frame; acknowledgement loss replays idempotently; same-run protocol drift conflicts.
 - `OBJ-DETAIL-13`: generation/fence drift and legacy records without canonical protocol identity fail closed before runtime admission.
+- `OBJ-DETAIL-14`: recovered signed authentication is rechecked against owner trust; revocation and key-epoch rotation reject the retained record.
 
 Native test files and symbols are registered in the implementation map. A green fixture proves only the tested source boundary; it is not a production-caller or efficacy receipt.
 
