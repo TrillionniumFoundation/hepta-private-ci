@@ -74,7 +74,7 @@ External evidence gates:
 
 The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.
 
-The App Server observes admission and streaming state; external tool/provider terminality remains with its effect owner.
+The App Server/client path supplies typed process-local terminal and request-level observations; runtime.codex validates exact correlation. External tool/provider terminality remains with its effect owner and target-host trust is independently qualified.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -83,11 +83,18 @@ The App Server observes admission and streaming state; external tool/provider te
 | `dispatch_tool` | `owner_boundary` | `codex-rs/app-server/src/request_processors/turn_processor.rs` — `pub(crate) async fn turn_start(` |
 | `observe_delivery` | `owner_boundary` | `codex-rs/app-server/src/request_processors/turn_processor.rs` — `pub(crate) async fn turn_start(` |
 
+Remaining repository implementation gaps:
+
+- current runtime.codex exact-head, deterministic synthetic-merge, focused product fault-matrix, and product E2E evidence are pending for this composed candidate
+
 External evidence gates:
 
-- named deployed Agentd caller identity
-- real model/provider stream observation
-- real tool terminal observation and acknowledgement-loss qualification
+- independently operated final-use authority endpoint, signer-key custody, pathname plus connected-peer socket identity, trusted time/revocation distribution, and external anti-rollback recovery for replay/epoch state
+- authenticated target-host Agentd/App Server process, generation and socket identity
+- real model/provider terminal stream observation under the selected target deployment
+- delegated external-tool terminal observation and acknowledgement-loss qualification
+- independent policy/evidence for resolving or quarantining indeterminate effects when ephemeral App Server history is unavailable; no unauthenticated manual release
+- independent acceptance, activation/canary, promotion and release
 
 ## 6. `inference.control`
 
