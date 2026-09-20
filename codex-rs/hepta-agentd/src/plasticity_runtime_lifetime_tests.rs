@@ -5,7 +5,9 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, RwLock};
 
 use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::{AgentLifecycle, AgentManifest, FleetRegistry, ResourceBudget, WorkspaceBinding};
+use codex_hepta_fleet::{
+    AgentLifecycle, AgentManifest, FleetRegistry, ResourceBudget, WorkspaceBinding,
+};
 use codex_hepta_intelligence::{
     ParameterPlasticityDispositionV1, ParameterPlasticityProductRequestV1,
     no_change_disposition_signing_payload_v1, plasticity_admission_signing_payload_v1,
@@ -35,14 +37,14 @@ use tokio_util::sync::CancellationToken;
 
 use crate::{
     AgentdIdentity, AgentdPlasticityAnchorStoreV1, AgentdState,
-    PlasticityArtifactOwnerBindingV1, PlasticityDynamicOwnerEvidenceResolverV1,
-    PlasticityDynamicSignalBindingV1, PlasticityOwnerEvidenceKindV1,
-    PlasticityOwnerEvidencePolicyV1, PlasticityRuntimeBootstrapV1,
+    ConcretePlasticityOwnerEvidenceResolverV1, PlasticityArtifactOwnerBindingV1,
+    PlasticityDynamicOwnerEvidenceResolverV1, PlasticityDynamicSignalBindingV1,
+    PlasticityOwnerEvidenceKindV1, PlasticityOwnerEvidencePolicyV1, PlasticityRuntimeBootstrapV1,
     bootstrap_agentd_plasticity_writer_v1, bootstrap_agentd_topology_writer_v1,
     plasticity_eligibility_digest_v1, plasticity_modulator_broadcast_digest_v1,
     plasticity_modulator_digest_v1, plasticity_parameter_signal_digest_v1,
     reopen_agentd_plasticity_writer_v1, resolve_agentd_plasticity_admission_v1,
-    resume_agentd_topology_writer_v1, ConcretePlasticityOwnerEvidenceResolverV1,
+    resume_agentd_topology_writer_v1,
 };
 
 const Q24: i64 = 1_i64 << 24;
@@ -165,8 +167,7 @@ impl AgentdFixture {
         let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
         let workspace = root.join("workspace");
         fs::create_dir(&workspace).expect("workspace");
-        let agent_id =
-            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id");
+        let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id");
         let manifest = AgentManifest::new(
             agent_id.clone(),
             WorkspaceBinding::new(&workspace, &fleet_root).expect("workspace binding"),
@@ -322,12 +323,9 @@ fn build_owner_sources(
 
     let modulator_values = vec![FixedQ32::from_raw(FixedQ32::ONE.raw() / 2)];
     let ndu_subject_digest = digest("agent:plasticity-subject");
-    let modulator_digest = plasticity_modulator_digest_v1(
-        objective_digest,
-        ndu_subject_digest,
-        &modulator_values,
-    )
-    .expect("modulator digest");
+    let modulator_digest =
+        plasticity_modulator_digest_v1(objective_digest, ndu_subject_digest, &modulator_values)
+            .expect("modulator digest");
     let mut ndu_journal = NduProjectionJournalV1::new();
     ndu_journal
         .append_projection(
@@ -381,9 +379,8 @@ fn build_owner_sources(
         eligibility_index: 0,
         modulator_weights: vec![FixedQ32::ONE],
     };
-    let broadcast_digest =
-        plasticity_modulator_broadcast_digest_v1(std::iter::once(&binding))
-            .expect("broadcast digest");
+    let broadcast_digest = plasticity_modulator_broadcast_digest_v1(std::iter::once(&binding))
+        .expect("broadcast digest");
     let modulator = modulator_values[0];
     let learning_rate = FixedQ32::ONE;
     let lower_bound = FixedQ32::from_raw(-FixedQ32::ONE.raw());
@@ -712,7 +709,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     let mut ledger =
         DurableLedger::create(new_file(&files.ledger), ledger_binding, 32).expect("ledger create");
     ledger
-        .append(Digest32::ZERO, ledger_decision(digest("plasticity-objective")))
+        .append(
+            Digest32::ZERO,
+            ledger_decision(digest("plasticity-objective")),
+        )
         .expect("ledger append");
     let ledger_snapshot = ledger.snapshot().expect("ledger snapshot");
     let ledger_anchor = LedgerAnchor {
@@ -835,10 +835,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .expect("restarted named producer");
     let restarted_cancellation = CancellationToken::new();
     let restarted_task = tokio::spawn(
-        restarted_owner.run(
-            Arc::clone(&restarted_state),
-            restarted_cancellation.clone(),
-        ),
+        restarted_owner.run(Arc::clone(&restarted_state), restarted_cancellation.clone()),
     );
 
     let second = restarted_producer
