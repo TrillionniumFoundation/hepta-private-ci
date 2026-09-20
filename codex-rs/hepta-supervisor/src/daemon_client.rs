@@ -21,6 +21,7 @@ use crate::daemon_protocol::SupervisordHealth;
 use crate::daemon_protocol::SupervisordMethod;
 use crate::daemon_protocol::SupervisordMutationAccepted;
 use crate::daemon_protocol::SupervisordPayload;
+use crate::ProductionMutationReceipt;
 use crate::daemon_protocol::SupervisordRequest;
 use crate::daemon_protocol::SupervisordResponse;
 
@@ -63,6 +64,19 @@ impl SupervisordClient {
         agent_id: AgentId,
     ) -> Result<SupervisordAgentStatus, SupervisorError> {
         self.agent(SupervisordMethod::Snapshot { agent_id }).await
+    }
+
+    pub async fn production_mutation_status(
+        &self,
+        agent_id: AgentId,
+    ) -> Result<Option<ProductionMutationReceipt>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ProductionMutationStatus { agent_id })
+            .await?
+        {
+            SupervisordPayload::ProductionMutationStatus { receipt } => Ok(receipt),
+            payload => unexpected(payload),
+        }
     }
 
     pub async fn start(
