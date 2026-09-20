@@ -135,9 +135,13 @@ handoff, stale fencing, crash/reopen after dispatch admission, acknowledgement
 loss, explicit not-dispatched retry, terminal reconciliation,
 migration-checksum drift, database corruption and tombstone anti-resurrection.
 Destination tests prove that a domain mutation and dedupe receipt share one
-transaction and roll back together. Agentd tests cover generation-two reopen
-reconciliation without redispatch and the configured runtime/control
-`AutomationCreate` path through the durable operations host.
+transaction and roll back together. The child-process fault matrix kills the
+test process after atomic prepare, from inside the final-use effect callback,
+and after durable transport acknowledgement; reopen/handoff must preserve the
+appropriate prepared or indeterminate truth and forbid blind retry. Agentd
+tests cover generation-two reopen reconciliation without redispatch and the
+configured runtime/control `AutomationCreate` path through the durable
+operations host.
 
 The retained reference tests continue to exercise deterministic transition
 parity, idempotent replay, generation fencing and the distinction between
