@@ -121,6 +121,8 @@ pub struct AgentRunSnapshot {
     pub body_digest: String,
     pub artifact_set_digest: String,
     pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
     pub deadline_ms: u64,
 }
 
@@ -133,6 +135,8 @@ pub struct AgentContextAttachment {
     pub body_digest: String,
     pub artifact_set_digest: String,
     pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
     pub deadline_ms: u64,
     pub context_digest: String,
     pub compilation_receipt_digest: String,
@@ -154,6 +158,8 @@ pub struct AgentRunReceipt {
     pub phase: AgentRunPhase,
     pub context_digest: Option<String>,
     pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
     pub deadline_ms: u64,
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
@@ -898,6 +904,8 @@ mod tests {
             body_digest: "3".repeat(64),
             artifact_set_digest: "4".repeat(64),
             authority_epoch: 7,
+            generation: 4,
+            fence_digest: "7".repeat(64),
             deadline_ms: 9_999,
         };
         let start = AgentdRequest::run_start(12, 3, snapshot.clone());
@@ -915,6 +923,8 @@ mod tests {
             body_digest: snapshot.body_digest.clone(),
             artifact_set_digest: snapshot.artifact_set_digest.clone(),
             authority_epoch: snapshot.authority_epoch,
+            generation: snapshot.generation,
+            fence_digest: snapshot.fence_digest.clone(),
             deadline_ms: snapshot.deadline_ms,
             context_digest: "5".repeat(64),
             compilation_receipt_digest: "6".repeat(64),
