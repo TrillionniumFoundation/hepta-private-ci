@@ -144,6 +144,10 @@
       "requirement": "Relabeling underlying evidence cannot increase effective sample support, and persisted tabular/world-model inference must reject tampered or stale independently pinned payloads.",
       "tests": [
         {
+          "source": "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
+          "function": "relabelled_support_evidence_fails"
+        },
+        {
           "source": "codex-rs/hepta-bellman-operator/src/learned_tests.rs",
           "function": "op_05_tabular_operator_rejects_relabelled_duplicate_evidence"
         },
@@ -181,8 +185,16 @@
     {
       "id": "OP-07",
       "module": "learning.operator",
-      "requirement": "Qualification training consumes a verified DatasetSnapshotReceiptV3 and requires the exact frozen source-record evidence set; a detached dataset digest, omitted row or foreign row cannot be rebound to the snapshot.",
+      "requirement": "Target construction, tabular fitting and world-model fitting consume a verified DatasetSnapshotReceiptV3 and require the exact frozen snapshot/objective/ledger-head/source-record binding; detached identities, omitted rows, foreign rows or relabelled evidence fail closed.",
       "tests": [
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "function": "op_07_bound_target_builder_rejects_detached_head_or_relabelled_evidence"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "function": "op_07_bound_target_builder_consumes_exact_v3_dataset_rows"
+        },
         {
           "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
           "function": "op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows"
