@@ -64,6 +64,14 @@ from .evidence import (
     SignatureTrustStore,
     verify_integration_evidence,
 )
+from .integration_controller import (
+    IntegrationQueueGeneration,
+    IntegrationQueueItem,
+    integration_queue_generation,
+    integration_queue_item,
+    publish_integration_queue,
+    reconcile_integration_item,
+)
 from .facade import (
     ReviewRequest,
     execute_candidate_sandbox,
@@ -174,6 +182,8 @@ __all__ = [
     "HmacTrustStore",
     "SignatureTrustStore",
     "KeyCustodyReceipt",
+    "IntegrationQueueGeneration",
+    "IntegrationQueueItem",
     "LeaseReceipt",
     "MergeQueueProposal",
     "Mutation",
@@ -226,6 +236,10 @@ __all__ = [
     "hardened_sandbox_candidate",
     "issue_repository_work_envelope",
     "issue_signed_work_envelope",
+    "integration_queue_generation",
+    "integration_queue_item",
+    "publish_integration_queue",
+    "reconcile_integration_item",
     "plan_engineering_work",
     "claim_assignment",
     "expire_stale_claims",
