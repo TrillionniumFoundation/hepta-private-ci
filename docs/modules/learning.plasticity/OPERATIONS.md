@@ -13,10 +13,7 @@ installation, runtime-topology, promotion or release authority. `codex-rs/hepta-
 `PlasticityRuntimeOwnerV1` supervised from the real Agentd `runtime.rs` task set. It recomputes the current artifact and durable learning-ledger frontiers
 and requires context-bound owner evidence for dataset, update-rule, modulator,
 modulator-broadcast, eligibility, mutation-policy and per-parameter signals before
-invoking the adapter. Every owner query binds the live artifact/ledger heads; parameter
-signals additionally bind the exact eligibility, modulator, learning-rate and bound
-values used by deterministic generation. `DatasetSnapshotReceiptV3` and immutable
-Policy artifacts have concrete owner adapters; unresolved dynamic owners fail closed. A complete evidence-kind→owner allowlist is enforced
+invoking the adapter. Every owner query binds the live artifact/ledger heads; parameter signals additionally bind the exact eligibility, modulator, learning-rate and bound values used by deterministic generation. `DatasetSnapshotReceiptV3` and immutable Policy artifacts have concrete owner adapters; NDU projection state supplies the current modulator, the immutable broadcast-policy artifact binds projection weights, neuron.runtime supplies the anchored eligibility checkpoint, and exact ParameterSignal receipts recompute the consumed numeric values. All of these paths fail closed on stale, rolled-back, unavailable, wrong-owner or value-substituted state. A complete evidence-kind→owner allowlist is enforced
 separately from resolver authentication, so a valid receipt from the wrong owner
 cannot satisfy admission. The owner is attached explicitly through `AgentdConfig`, uses a bounded in-process
 queue and is fenced by the current Running/ready Agentd generation. No public plasticity
@@ -51,8 +48,7 @@ migration, rollback and acknowledgement-contract digests. The complete governed
 proposal is persisted in `DurableTopologyProposalRegistryV1`, with the same
 lock-before-bootstrap and external-anchor posture as parameter proposals.
 
-`StructuralCanaryControllerV1` is an observation-only bounded state machine. It
-cannot apply topology. `build_structural_canary_plan_v1` accepts the durable topology
+`StructuralCanaryControllerV1` remains an observation-only bounded state machine and cannot apply topology. The external `codex-hepta-runtime` owner now provides the separate execution boundary: it revalidates the governed proposal and exact writer handoff, claims a single-use FinalUse grant immediately before live CNS replacement, and returns a deny-all execution receipt. `build_structural_canary_plan_v1` accepts the durable topology
 registry plus proposal/candidate IDs and reads the stored governed proposal and original
 append receipt internally; `StructuralCanaryPlanV1` fields are not externally
 constructible. It rejects proposal/admission/frame/candidate/handoff/rollback drift.
@@ -163,6 +159,4 @@ history rejection, monotonic generation rollover, canonical mutation-grammar dig
 binding, evidence-kind wrong-owner denial, typed parameter-mutation-policy
 protected-surface denial, topology writer-handoff validation, topology anchored reopen,
 topology self-activation denial, authenticated structural-canary observation binding,
-and structural-canary abort semantics. A real bounded canary must additionally emit
-host telemetry and operator evidence. Until those receipts exist, product execution,
-activation and release remain false even when source compilation/tests pass.
+and structural-canary abort semantics. Repository qualification additionally performs an actual live CNS cutover, forces the serving host into a stopped/faulted state, executes a separately FinalUse-authorized rollback as the next generation, verifies serving recovery, and only then signs the canary observation through the independent Observer boundary. This proves repository source composition, not deployment. The selected target host must repeat the path with production telemetry, physically independent rollback domains and operator evidence. Until those receipts exist, product execution, independent acceptance, activation and release remain false even when source compilation/tests pass.
