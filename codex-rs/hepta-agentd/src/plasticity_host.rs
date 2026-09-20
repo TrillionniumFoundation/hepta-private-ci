@@ -990,16 +990,15 @@ mod tests {
         let resolver = RecordingResolver {
             seen: RefCell::new(Vec::new()),
         };
-        let set_digest =
-            resolve_agentd_plasticity_owner_evidence_set_v1(
-                &input,
-                &resolver,
-                &owner_policy(),
-                digest(b"artifact-head"),
-                digest(b"ledger-head"),
-                50,
-            )
-                .expect("owner evidence set");
+        let set_digest = resolve_agentd_plasticity_owner_evidence_set_v1(
+            &input,
+            &resolver,
+            &owner_policy(),
+            digest(b"artifact-head"),
+            digest(b"ledger-head"),
+            50,
+        )
+        .expect("owner evidence set");
         assert!(!set_digest.is_zero());
 
         let seen = resolver.seen.borrow();
