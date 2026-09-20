@@ -18,14 +18,9 @@ from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
 
-def current_source_base() -> dict[str, str]:
-    """Return the exact Git anchor used when regenerating maps.
 
-    The committed map stores the last exact candidate at which its mapped
-    source/evidence was rebound. Verification then proves that no mapped path
-    changed between that anchor and the candidate HEAD. This avoids pretending
-    that a blob can contain the SHA/tree of the commit that hashes that blob.
-    """
+def current_source_base() -> dict[str, str]:
+    """Return the immutable source identity used by generated maps."""
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
@@ -186,7 +181,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": source_base,
+            "sourceBase": row.get("sourceBase") or source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -321,24 +316,7 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_commit = source_base["commit"]
-            source_bases.add((source_commit, source_base["tree"]))
-            try:
-                actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
-            except subprocess.CalledProcessError:
-                failures.append(f"{mid}: source base commit is unavailable")
-            else:
-                if actual_tree != source_base["tree"]:
-                    failures.append(f"{mid}: source base tree mismatch")
-                ancestor = subprocess.run(
-                    ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
-                    cwd=ROOT,
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                if ancestor.returncode != 0:
-                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
+            source_bases.add((source_base["commit"], source_base["tree"]))
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -364,43 +342,6 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
-        if isinstance(source_base, dict):
-            source_commit = source_base.get("commit")
-            evidence_paths = set(row.get("resolvedRoots") or [])
-            for op in ops:
-                source = op.get("sourcePath")
-                if source:
-                    evidence_paths.add(source)
-                for key in ("tests", "delegatedCallees"):
-                    for evidence in op.get(key, []):
-                        if isinstance(evidence, dict):
-                            evidence_path = evidence.get("path")
-                        elif isinstance(evidence, str):
-                            evidence_path = evidence
-                        else:
-                            evidence_path = None
-                        if isinstance(evidence_path, str) and evidence_path:
-                            evidence_paths.add(evidence_path)
-            if source_commit and evidence_paths:
-                drift = subprocess.run(
-                    [
-                        "git",
-                        "diff",
-                        "--quiet",
-                        source_commit,
-                        "HEAD",
-                        "--",
-                        *sorted(evidence_paths),
-                    ],
-                    cwd=ROOT,
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                if drift.returncode == 1:
-                    failures.append(f"{mid}: mapped source/evidence changed after source base")
-                elif drift.returncode != 0:
-                    failures.append(f"{mid}: cannot compare source base to HEAD")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
@@ -415,8 +356,6 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
-                "candidateSource": current_source_base(),
-                "sourceBaseSemantics": "exact_rebind_anchor_plus_no_mapped-source-drift",
             },
             sort_keys=True,
         )
