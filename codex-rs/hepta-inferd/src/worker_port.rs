@@ -10,6 +10,8 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use sha2::Digest;
+use sha2::Sha256;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeRunOutput;
@@ -17,6 +19,16 @@ use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use tokio_util::sync::CancellationToken;
 
 pub type WorkerPortResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeUsageReconciliation {
+    pub request_id: String,
+    pub thread_id: String,
+    pub turn_id: String,
+    pub model_provider: String,
+    pub observed_output_tokens: u64,
+    pub evidence_digest: String,
+}
 
 /// Source-composed implementation of
 /// `ModulePort::inference.control::inference.worker`.
@@ -46,6 +58,85 @@ impl NativeWorkerPort {
         self.driver.provider_final_use_binding(request_id, prompt)
     }
 
+    /// Build the exact final-use binding for independently observed provider
+    /// usage. Terminal output alone is not billing/resource-settlement authority.
+    pub fn usage_reconciliation_binding(
+        &self,
+        control: &DurableInferenceControl,
+        usage: &NativeUsageReconciliation,
+    ) -> WorkerPortResult<FinalUseBinding> {
+        validate_digest(&usage.evidence_digest)?;
+        let record = control
+            .native_record(&usage.request_id)
+            .ok_or("native request not found")?;
+        let dispatch = record
+            .dispatch
+            .as_ref()
+            .ok_or("native request has no provider dispatch")?;
+        let output = record
+            .observation
+            .as_ref()
+            .ok_or("native request has no provider observation")?;
+        if !output.terminal_observed
+            || record.turn_id.as_deref() != Some(usage.turn_id.as_str())
+            || dispatch.thread_id != usage.thread_id
+            || dispatch.model_provider != usage.model_provider
+            || output.thread_id != usage.thread_id
+            || output.turn_id != usage.turn_id
+            || output.model_provider != usage.model_provider
+        {
+            return Err("usage reconciliation identity does not match terminal provider truth".into());
+        }
+        if output
+            .observed_output_tokens
+            .is_some_and(|observed| observed != usage.observed_output_tokens)
+        {
+            return Err("authoritative usage conflicts with provider-observed usage".into());
+        }
+        Ok(FinalUseBinding {
+            subject_id: record.request.principal_id.clone(),
+            destination_id: "inference:usage-reconciliation".to_string(),
+            request_sha256: digest_json(&(
+                "hepta.inference.usage-reconciliation.request.v1",
+                &usage.request_id,
+                &usage.thread_id,
+                &usage.turn_id,
+                &usage.model_provider,
+            ))?,
+            scope_sha256: digest_json(&(
+                "hepta.inference.usage-reconciliation.scope.v1",
+                record.request.worker_generation,
+                &record.request.model,
+            ))?,
+            payload_sha256: digest_json(&(
+                "hepta.inference.usage-reconciliation.payload.v1",
+                usage.observed_output_tokens,
+                &usage.evidence_digest,
+            ))?,
+        })
+    }
+
+    /// Consume independently signed final-use authority and durably refine
+    /// missing exact-turn usage in the canonical inference.control journal.
+    pub fn reconcile_usage(
+        &self,
+        control: &mut DurableInferenceControl,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        usage: NativeUsageReconciliation,
+    ) -> WorkerPortResult<()> {
+        let binding = self.usage_reconciliation_binding(control, &usage)?;
+        let token = authority.claim(signed, &binding)?;
+        authority.with_verified_use(token, &binding, || {
+            control.reconcile_native_usage(
+                &usage.request_id,
+                usage.observed_output_tokens,
+                usage.evidence_digest.clone(),
+            )
+        })??;
+        Ok(())
+    }
+
     /// Consume already-established authority and execute one exact request.
     ///
     /// The worker claims the signed final-use grant only for a fresh Reserved
@@ -64,6 +155,22 @@ impl NativeWorkerPort {
             .run_authorized(control, authority, signed, admission, prompt, cancellation)
             .await
     }
+}
+
+fn validate_digest(value: &str) -> WorkerPortResult<()> {
+    if value.len() != 64
+        || value.bytes().all(|byte| byte == b'0')
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        return Err("usage evidence digest must be canonical lowercase sha256".into());
+    }
+    Ok(())
+}
+
+fn digest_json(value: &impl serde::Serialize) -> WorkerPortResult<[u8; 32]> {
+    Ok(Sha256::digest(serde_json::to_vec(value)?).into())
 }
 
 #[cfg(test)]
