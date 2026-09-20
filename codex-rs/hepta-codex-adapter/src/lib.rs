@@ -41,6 +41,10 @@ pub const TURN_START_METHOD_ID: &str = "turn.start";
 pub const TURN_START_RPC_METHOD: &str = "turn/start";
 pub const THREAD_READ_RPC_METHOD: &str = "thread/read";
 pub const OVERLOADED_ERROR_CODE: i64 = -32_001;
+pub const INVALID_REQUEST_ERROR_CODE: i64 = -32_600;
+pub const METHOD_NOT_FOUND_ERROR_CODE: i64 = -32_601;
+pub const INVALID_PARAMS_ERROR_CODE: i64 = -32_602;
+pub const INTERNAL_ERROR_CODE: i64 = -32_603;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AppServerRequestBinding {
@@ -189,10 +193,18 @@ pub fn adapt_observed_server_rejection(
     }
     let request_digest = request_digest(intent);
     let response_digest = server_error_digest(observed.error());
-    let (status, retry_posture) = if observed.error().code == OVERLOADED_ERROR_CODE {
-        (AdapterStatus::Overloaded, RetryPosture::SafeBeforeAdmission)
-    } else {
-        (AdapterStatus::Rejected, RetryPosture::Never)
+    let (status, retry_posture) = match observed.error().code {
+        OVERLOADED_ERROR_CODE => (AdapterStatus::Overloaded, RetryPosture::SafeBeforeAdmission),
+        INVALID_REQUEST_ERROR_CODE | METHOD_NOT_FOUND_ERROR_CODE | INVALID_PARAMS_ERROR_CODE => {
+            (AdapterStatus::Rejected, RetryPosture::Never)
+        }
+        // App Server can synthesize an internal error after awaiting Core turn
+        // submission. Without a stronger admission-phase witness, that response
+        // is accepted-or-unknown and must be reconciled instead of released.
+        INTERNAL_ERROR_CODE | _ => (
+            AdapterStatus::Indeterminate,
+            RetryPosture::ReconcileSameOperation,
+        ),
     };
     Ok(receipt(
         intent,
