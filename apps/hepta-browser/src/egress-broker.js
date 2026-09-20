@@ -335,9 +335,10 @@ export class GrantScopedEgressBroker {
     if (!this.#allowedOrigins.has(url.origin)) {
       throw new TypeError("egress origin is outside the profile grant");
     }
+    const redirectKey = `${operationId}\u0000${url.href}`;
     if (frame.isRedirect === true) {
-      if (!this.#expectedRedirects.delete(url.href)) {
-        throw new TypeError("redirect target was not admitted by the previous response");
+      if (!this.#expectedRedirects.delete(redirectKey)) {
+        throw new TypeError("redirect target was not admitted for this operation");
       }
     } else if (frame.isRedirect !== false) {
       throw new TypeError("isRedirect must be boolean");
@@ -346,7 +347,9 @@ export class GrantScopedEgressBroker {
     const destination = await this.#resolveDestination(url);
     const observed = await this.#fetch(url, frame.method, requestHeaders, destination, authority);
     if (observed.redirectTarget !== null) {
-      this.#expectedRedirects.add(observed.redirectTarget);
+      this.#expectedRedirects.add(
+        `${operationId}\u0000${observed.redirectTarget}`,
+      );
       if (this.#expectedRedirects.size > 128) {
         const first = this.#expectedRedirects.values().next().value;
         this.#expectedRedirects.delete(first);
