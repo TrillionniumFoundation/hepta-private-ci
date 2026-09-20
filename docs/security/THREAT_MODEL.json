@@ -1,0 +1,851 @@
+{
+  "schema": "hepta.threat-model.v2",
+  "schemaVersion": 2,
+  "documentClass": "canonical_registry",
+  "authorityScope": "security_privacy_integrity_learning_and_control_threat_source",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "threats": [
+    {
+      "id": "prompt_instruction_confusion",
+      "owner": "prompt.registry",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "untrusted_content_role_escalation",
+      "owner": "context.compiler",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "objective_substitution",
+      "owner": "objective.compiler",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "success_predicate_downgrade",
+      "owner": "objective.compiler",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "preference_state_goal_drift",
+      "owner": "utility.ndu",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "recursive_utility_instability",
+      "owner": "utility.ndu",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "parent_child_NDU_oscillation",
+      "owner": "utility.ndu",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "local_model_identity_drift",
+      "owner": "neuron.runtime",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "model_tokenizer_mismatch",
+      "owner": "neuron.runtime",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "neuron_state_explosion",
+      "owner": "neuron.runtime",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "neuron_state_collapse",
+      "owner": "neuron.runtime",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "intuition_unsupported_action",
+      "owner": "intuition.policy",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "intuition_propensity_omission",
+      "owner": "intuition.policy",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "prompt_candidate_selection_bias",
+      "owner": "prompt.optimizer",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "prompt_delivery_misattribution",
+      "owner": "learning.ledger",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "prompt_position_truncation",
+      "owner": "context.compiler",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "prompt_factor_interference",
+      "owner": "prompt.optimizer",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "context_secret_leak",
+      "owner": "context.compiler",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "candidate_set_omission",
+      "owner": "learning.ledger",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "propensity_falsification",
+      "owner": "learning.ledger",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "policy_self_labels_outcome",
+      "owner": "learning.ledger",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "delayed_reward_misattribution",
+      "owner": "learning.ledger",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "credit_double_count",
+      "owner": "learning.ledger",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "replay_contamination",
+      "owner": "learning.operator",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "operator_sensor_clustering",
+      "owner": "learning.artifacts",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "Bellman_error_amplification",
+      "owner": "learning.operator",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "off_policy_residual_blowup",
+      "owner": "learning.operator",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "artifact_lineage_break",
+      "owner": "learning.artifacts",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "current_run_artifact_swap",
+      "owner": "learning.artifacts",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "deleted_data_resurrection",
+      "owner": "learning.eval",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "catastrophic_forgetting",
+      "owner": "learning.eval",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "topology_self_activation",
+      "owner": "learning.plasticity",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "self_review_or_self_merge",
+      "owner": "control.engineering",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "capability_self_mint",
+      "owner": "kernel.authority",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "cross_owner_direct_write",
+      "owner": "kernel.operations",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "blind_retry_after_unknown_effect",
+      "owner": "kernel.operations",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "stale_generation_callback",
+      "owner": "runtime.supervisor",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "provider_raw_escape",
+      "owner": "inference.control",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "secret_value_in_receipt",
+      "owner": "secrets.heptabao",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "browser_ungranted_network",
+      "owner": "browser.servo",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "matrix_self_issued_send",
+      "owner": "channel.matrix",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "central_RPC_hot_path_dependency",
+      "owner": "control.runtime",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    },
+    {
+      "id": "global_optimizer_local_optimum_claim",
+      "owner": "control.runtime",
+      "prevent": [
+        "typed_contract",
+        "least_authority",
+        "bounded_input"
+      ],
+      "detect": [
+        "receipt",
+        "negative_test",
+        "runtime_metric"
+      ],
+      "respond": [
+        "fail_closed",
+        "quarantine",
+        "rollback_or_revoke"
+      ]
+    }
+  ],
+  "rules": {
+    "everyThreatHasOwner": true,
+    "preventDetectRespondRequired": true,
+    "testFixtureIsNotProductionEvidence": true
+  },
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

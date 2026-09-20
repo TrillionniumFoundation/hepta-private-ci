@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "c511e129dfe3d68ba750117e03dfdb07c38dc330",
+    "tree": "5966baf2e3e16b17e594e640dc9d5ba237f499c5"
+  },
+  "laneId": "LANE-C-MEMORY",
+  "module": "context.compiler",
+  "owner": "intelligence-platform",
+  "deputy": "security-authority",
+  "technicalGuide": "docs/modules/context.compiler/TECHNICAL.md",
+  "declaredRoots": [
+    "codex-rs/hepta-context-compiler"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-context-compiler"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "operations": [
+    {
+      "operation": "compile",
+      "nativeSymbol": "compile",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/lib.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "compile",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compile_with_requirements",
+      "nativeSymbol": "compile_with_requirements",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/requirements.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "compile_with_requirements",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compile_candidate_bound",
+      "nativeSymbol": "compile_candidate_bound",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "compile_candidate_bound",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "sourceRoot": [
+    "codex-rs/hepta-context-compiler"
+  ]
+}

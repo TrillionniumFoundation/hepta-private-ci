@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "c511e129dfe3d68ba750117e03dfdb07c38dc330",
+    "tree": "5966baf2e3e16b17e594e640dc9d5ba237f499c5"
+  },
+  "laneId": "LANE-B-RUNTIME",
+  "module": "ui.control",
+  "sourceMaturity": "native_web_client_boundary",
+  "declaredRoots": [
+    "apps/hepta-control-ui"
+  ],
+  "resolvedRoots": [
+    "apps/hepta-control-ui"
+  ],
+  "stateOwnerDisposition": "Owns presentation/session state and pending request identities only; backend modules retain authority and durable facts.",
+  "terminalObserverDisposition": "The authenticated backend observation establishes terminal state; local acknowledgement or disconnect never does.",
+  "operations": [
+    {
+      "designOperation": "read_view",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-control-ui/src/runtime-client.js",
+        "symbol": "readView()",
+        "buildTarget": "hepta-control-ui"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/test/runtime-client.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
+        }
+      ],
+      "sourceSemantics": "Projects a coherent generation/revision snapshot and explicitly marks absent snapshots stale.",
+      "operation": "read_view",
+      "nativeSymbol": "readView()",
+      "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "submit_request",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-control-ui/src/runtime-client.js",
+        "symbol": "async submitRequest(",
+        "buildTarget": "hepta-control-ui"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/test/runtime-client.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
+        }
+      ],
+      "sourceSemantics": "Submits an authenticated request bound to displayed revision, operation identity, and semantic digest.",
+      "operation": "submit_request",
+      "nativeSymbol": "async submitRequest(",
+      "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "request_stop",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-control-ui/src/runtime-client.js",
+        "symbol": "async requestStop(",
+        "buildTarget": "hepta-control-ui"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-control-ui/test/runtime-client.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
+        }
+      ],
+      "sourceSemantics": "Uses the same authenticated identity/revision path for stop while preserving backend terminality.",
+      "operation": "request_stop",
+      "nativeSymbol": "async requestStop(",
+      "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
+      "sourcePathExists": true
+    }
+  ],
+  "repositoryControlledGaps": [],
+  "externalEvidenceGates": [
+    "selected Web framework/build artifact and browser support matrix",
+    "deployed authentication/CSP/CSRF/WebSocket topology",
+    "end-to-end accessibility and backend deployment qualification"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "owner": "ui-platform",
+  "deputy": "accessibility",
+  "technicalGuide": "docs/modules/ui.control/TECHNICAL.md",
+  "sourceRoot": [
+    "apps/hepta-control-ui"
+  ]
+}

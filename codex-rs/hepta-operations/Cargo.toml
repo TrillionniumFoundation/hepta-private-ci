@@ -1,0 +1,17 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-operations"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_operations"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-types = { workspace = true }

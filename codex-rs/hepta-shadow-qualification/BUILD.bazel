@@ -1,0 +1,87 @@
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+
+rust_library(
+    name = "hepta-shadow-qualification-lib",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = ["fixtures/live_product_oracle_v2_2f704.json"],
+    crate_name = "codex_hepta_shadow_qualification",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@crates//:libc",
+        "@crates//:rand",
+        "@crates//:serde",
+        "@crates//:serde_json",
+        "@crates//:sha2",
+        "@crates//:sqlx",
+        "@crates//:thiserror",
+        "@crates//:tokio",
+        "@crates//:toml",
+    ],
+)
+
+rust_test(
+    name = "hepta-shadow-qualification-tests",
+    compile_data = ["fixtures/live_product_oracle_v2_2f704.json"],
+    crate = ":hepta-shadow-qualification-lib",
+    deps = [
+        "//codex-rs/hepta-bellman-operator",
+        "//codex-rs/hepta-intelligence-eval",
+        "//codex-rs/hepta-learning-artifacts",
+        "//codex-rs/hepta-learning-ledger",
+        "//codex-rs/hepta-ndu",
+        "//codex-rs/hepta-objective",
+        "//codex-rs/hepta-types",
+        "@crates//:pretty_assertions",
+        "@crates//:tempfile",
+    ],
+)
+
+rust_binary(
+    name = "hepta-shadow-live-trial",
+    srcs = ["src/bin/hepta-shadow-live-trial.rs"],
+    crate_root = "src/bin/hepta-shadow-live-trial.rs",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+    deps = [
+        ":hepta-shadow-qualification-lib",
+        "@crates//:serde_json",
+        "@crates//:tokio",
+    ],
+)
+
+rust_test(
+    name = "durable-learning-roundtrip",
+    srcs = [
+        "tests/durable_learning_roundtrip.rs",
+        "tests/support/durable_process.rs",
+        "tests/support/tabular_reload.rs",
+    ],
+    crate_root = "tests/durable_learning_roundtrip.rs",
+    edition = "2024",
+    deps = [
+        "//codex-rs/hepta-bellman-operator",
+        "//codex-rs/hepta-learning-artifacts",
+        "//codex-rs/hepta-learning-ledger",
+        "//codex-rs/hepta-types",
+        "@crates//:pretty_assertions",
+        "@crates//:serde",
+        "@crates//:serde_json",
+        "@crates//:sha2",
+        "@crates//:tempfile",
+    ],
+)
+
+rust_test(
+    name = "lane-e-api-contract",
+    srcs = ["tests/lane_e_api_contract.rs"],
+    crate_root = "tests/lane_e_api_contract.rs",
+    edition = "2024",
+    deps = [
+        "//codex-rs/hepta-bellman-operator",
+        "//codex-rs/hepta-intelligence-eval",
+        "//codex-rs/hepta-learning-artifacts",
+        "//codex-rs/hepta-learning-ledger",
+    ],
+)

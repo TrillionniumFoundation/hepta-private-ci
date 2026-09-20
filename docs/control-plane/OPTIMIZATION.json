@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.optimization-registry.v1",
+  "schemaVersion": 1,
+  "documentClass": "canonical_registry",
+  "authorityScope": "global_and_local_optimizer_method_limit_and_receipt_source",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "globalOptimumDefinition": "best_feasible_plan_for_exact_snapshot_objective_constraints_candidates_horizon_solver_and_budget",
+  "moduleProtocol": {
+    "output": "bounded_pareto_candidate_set",
+    "singleLocalOptimumMayClaimGlobalTruth": false,
+    "externalitiesRequired": true,
+    "confidenceRequired": true,
+    "validityWindowRequired": true
+  },
+  "solverClasses": [
+    "exact_when_bounded",
+    "mixed_integer_or_dynamic_programming",
+    "ADMM_or_dual_decomposition",
+    "model_predictive_control",
+    "mean_field_approximation",
+    "declared_heuristic"
+  ],
+  "requiredDecisionReceipt": [
+    "snapshotDigest",
+    "objectiveRevision",
+    "constraintDigest",
+    "candidateSetDigest",
+    "solverId",
+    "solverVersion",
+    "horizon",
+    "timeBudget",
+    "selectedPlan",
+    "rejectedCandidates",
+    "hardVetoes",
+    "expectedUtility",
+    "optimalityGapOrBound",
+    "fallbackPlan"
+  ],
+  "stability": {
+    "planChurnPenalized": true,
+    "trustRegionOrDampingRequiredForAdaptivePlans": true,
+    "noConvergenceMeansReuseOldOrFallback": true
+  },
+  "authority": {
+    "selectPlan": true,
+    "mintCapability": false,
+    "executeEffect": false,
+    "selfAccept": false
+  },
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

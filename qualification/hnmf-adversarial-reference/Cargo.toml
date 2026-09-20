@@ -1,0 +1,18 @@
+[package]
+name = "hepta-hnmf-adversarial-reference"
+version = "0.2.0"
+edition = "2024"
+license = "Apache-2.0"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+doctest = false
+
+[workspace]
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[dependencies]
+hnmf-reference = { package = "hepta-hnmf-reference", path = "../hnmf-reference" }

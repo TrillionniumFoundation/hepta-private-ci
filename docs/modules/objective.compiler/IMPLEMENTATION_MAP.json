@@ -1,0 +1,233 @@
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "module": "objective.compiler",
+  "owner": "intelligence-platform",
+  "deputy": "kernel-contracts",
+  "technicalGuide": "docs/modules/objective.compiler/TECHNICAL.md",
+  "executionSpecification": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+  "canonicalErrorRegistry": "docs/contracts/OBJECTIVE_ERRORS.json",
+  "sourceRoot": [
+    "codex-rs/hepta-objective"
+  ],
+  "authorityDelta": "none",
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_applicable_stateless",
+  "operations": [
+    {
+      "operation": "decode_source_envelope_json_v1",
+      "nativeSymbol": "codex_hepta_objective::decode_source_envelope_json_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/source_envelope_json.rs",
+      "inputs": [
+        "bounded JSON bytes"
+      ],
+      "outputs": [
+        "ObjectiveSourceEnvelopeV1"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
+          "symbol": "decodes_all_fields_without_loss_or_semantic_admission"
+        }
+      ],
+      "designOperation": "decode_source_envelope_json_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "validate_structure",
+      "nativeSymbol": "ObjectiveSourceEnvelopeV1::validate_structure",
+      "sourcePath": "codex-rs/hepta-objective/src/source_envelope_validation.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1"
+      ],
+      "outputs": [
+        "validated owner-local structure"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+          "symbol": "text_limits_count_utf8_bytes_for_every_source_field"
+        }
+      ],
+      "designOperation": "validate_structure",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "canonical_objective_intent_digest_v1",
+      "nativeSymbol": "codex_hepta_objective::canonical_objective_intent_digest_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1"
+      ],
+      "outputs": [
+        "canonical intent digest"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "semantic_array_reordering_preserves_intent_digest"
+        }
+      ],
+      "designOperation": "canonical_objective_intent_digest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "admit_and_compile_objective_v1",
+      "nativeSymbol": "codex_hepta_objective::admit_and_compile_objective_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveAdmissionProfileV1",
+        "ObjectiveAdmissionContextV1"
+      ],
+      "outputs": [
+        "ObjectiveAdmissionReceiptV1",
+        "ObjectiveCompileReceipt",
+        "ObjectiveConflictReceipt"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "complete_profile_bound_envelope_compiles_without_dropping_fields"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "untrusted_evidence_reaches_native_authority_rejection"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "oversized_profile_mapping_set_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "risk_profile_ordering_is_monotone"
+        }
+      ],
+      "designOperation": "admit_and_compile_objective_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "check_feasibility_v1",
+      "nativeSymbol": "codex_hepta_objective::check_feasibility_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/feasibility.rs",
+      "inputs": [
+        "RegisteredGrammarV1",
+        "ConstraintAtomV1",
+        "OracleBudgetV1"
+      ],
+      "outputs": [
+        "FeasibilityReceiptV1"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "registered scalar, enum and action implication fixtures"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
+          "symbol": "bounded exhaustive feasibility fixtures"
+        }
+      ],
+      "designOperation": "check_feasibility_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "compile",
+      "nativeSymbol": "codex_hepta_objective::compile",
+      "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelope"
+      ],
+      "outputs": [
+        "ObjectiveCompileReceipt",
+        "ObjectiveConflictReceipt"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
+          "symbol": "maximum_caller_set_compiles_to_exactly_128_actions"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
+          "symbol": "intrinsic_abstain_cannot_be_forbidden"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
+          "symbol": "contradictory_hard_bounds_return_inclusion_minimal_pair"
+        }
+      ],
+      "designOperation": "compile",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    }
+  ],
+  "canonicalReadinessProtocols": [
+    "ObjectiveSourceEnvelopeV1",
+    "ObjectiveConstraintSetV1",
+    "ObjectiveConflictReceiptV1",
+    "ObjectiveCompileReceiptV1"
+  ],
+  "completion": {
+    "specification": "complete",
+    "source": "candidate_implemented",
+    "exactHeadQualification": "required",
+    "productComposition": "not_established",
+    "independentAcceptance": "not_established",
+    "activation": "not_established",
+    "release": "not_established"
+  },
+  "laneId": "LANE-D-OBJECTIVE-VALUE",
+  "declaredRoots": [
+    "codex-rs/hepta-objective"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-objective"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "sourceBase": {
+    "commit": "c511e129dfe3d68ba750117e03dfdb07c38dc330",
+    "tree": "5966baf2e3e16b17e594e640dc9d5ba237f499c5"
+  },
+  "repositoryControlledGaps": [
+    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+  ],
+  "externalEvidenceGates": [
+    "independent semantic review",
+    "product execution and target-host qualification",
+    "operator acceptance, canary, promotion and release"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.ndu-registry.v2",
+  "schemaVersion": 2,
+  "documentClass": "canonical_registry",
+  "authorityScope": "NDU_semantics_subjects_boundaries_timescales_and_claim_source",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "originalDefinitionBoundary": {
+    "forward": "endogenous_latent_preference_state",
+    "backward": "recursive_utility_or_utility_aggregator",
+    "neural": "parameterization_of_preference_dynamics_or_utility_aggregation",
+    "notEquivalentTo": [
+      "generic_forward_backward_module",
+      "individual_neuron",
+      "database_state_machine",
+      "fixed_reward_function"
+    ]
+  },
+  "allowedSubjectClasses": [
+    "system",
+    "domain",
+    "agent",
+    "episode"
+  ],
+  "subjects": [
+    {
+      "id": "system",
+      "resourceConstrained": true,
+      "parent": null,
+      "timeScale": "days_to_weeks"
+    },
+    {
+      "id": "domain",
+      "resourceConstrained": true,
+      "parent": "system",
+      "timeScale": "hours_to_days"
+    },
+    {
+      "id": "agent",
+      "resourceConstrained": true,
+      "parent": "domain",
+      "timeScale": "episodes_to_days"
+    },
+    {
+      "id": "episode",
+      "resourceConstrained": true,
+      "parent": "agent",
+      "timeScale": "steps_to_episode"
+    }
+  ],
+  "preferenceState": {
+    "observableDirectly": false,
+    "filterRequired": true,
+    "identifiabilityEvidenceRequired": true,
+    "correctionAndInspectionRequired": true,
+    "hardConstraintAxesAllowed": false
+  },
+  "recursiveUtility": {
+    "finiteOrRecedingHorizon": true,
+    "terminalBoundaryRequired": true,
+    "riskAndResourceTermsBounded": true,
+    "creditAssignmentIsDerivedNotDefinition": true
+  },
+  "hierarchicalExtension": {
+    "isHeptaExtension": true,
+    "typedBoundaryConditionsOnly": true,
+    "resourceAndRiskConservation": true,
+    "weakCouplingOrDampingRequired": true,
+    "parentChildSimultaneousUnfrozenLearningAllowed": false
+  },
+  "engineeringDiscretization": {
+    "eventSourced": true,
+    "continuousTheoryUsedForAnalysis": true,
+    "authorityAndTruthRemainDeterministic": true
+  },
+  "fallback": {
+    "required": true,
+    "mode": "last_valid_snapshot_or_deterministic_baseline",
+    "expiredOrIncompatibleSnapshot": "fail_closed"
+  },
+  "currentClaim": "D0_SPECIFIED_ONLY",
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

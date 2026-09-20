@@ -1,0 +1,105 @@
+name: Hepta audit remediation (read-only)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "qualification/cns-organ-reference/**"
+      - "tools/hepta-engineering-control/**"
+      - "scripts/hepta-cns.py"
+      - "scripts/hepta-module-docs.py"
+      - "scripts/hepta_module_doc_metadata.py"
+      - "scripts/test_hepta_module_doc_metadata.py"
+      - "scripts/hepta-gap-closure.py"
+      - "docs/cns/**"
+      - "docs/modules/**"
+      - "docs/STATUS.md"
+      - "docs/readiness/GAP_CLOSURE_IMPLEMENTATION.md"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - ".github/workflows/hepta-audit-remediation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-audit-remediation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-evaluation:
+    name: Rust evaluation (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","synthetic-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Construct separately identified synthetic merge
+        if: matrix.lane == 'synthetic-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Evaluation CI
+          author-email: qualification@invalid
+          message: Synthetic evaluator merge
+
+      - name: Verify Python and document changes at this exact Git identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s qualification/cns-organ-reference -v
+          python3 scripts/hepta-gap-closure.py verify
+
+      - name: Install pinned test runner and just
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Run selected package regressions
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-intelligence-eval
+
+      - name: Strict selected-package Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked --package codex-hepta-intelligence-eval --all-targets -- -D warnings
+
+      - name: Check selected formatting without modifying source
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-intelligence-eval -- --check
+
+      - name: Collect exact identity outside checkout
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/hepta-rust-evaluation"
+          mkdir -p "$OUT"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/identity.txt"
+          git show -s --format=%P HEAD >> "$OUT/identity.txt"
+          printf 'source=%s\nbase=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" '${{ matrix.lane }}' >> "$OUT/identity.txt"
+          git diff --exit-code
+
+      - name: Retain diagnostic artifacts, not acceptance receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-eval-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-rust-evaluation/
+          if-no-files-found: error
+          retention-days: 7

@@ -1,0 +1,20 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-learning-artifacts"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_learning_artifacts"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }

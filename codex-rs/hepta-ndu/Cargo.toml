@@ -1,0 +1,20 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-ndu"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_ndu"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }

@@ -1,0 +1,240 @@
+{
+  "schema": "hepta.cns-organ-protocol-registry.v1",
+  "schemaVersion": 1,
+  "planVersion": "8.1.0-cns-organ",
+  "protocols": [
+    {
+      "id": "OrganManifestV1",
+      "owner": "constitutional.kernel",
+      "requiredFields": [
+        "organ_id",
+        "version",
+        "organ_class",
+        "input_ports",
+        "output_ports",
+        "owned_domains",
+        "authority_class",
+        "resource_envelope",
+        "health_checks",
+        "rollback_predecessor",
+        "retirement_policy"
+      ]
+    },
+    {
+      "id": "BodyGraphSnapshotV1",
+      "owner": "brainstem.supervisor",
+      "requiredFields": [
+        "generation",
+        "organ_manifests",
+        "dependency_edges",
+        "fallback_edges",
+        "topological_order",
+        "digest"
+      ]
+    },
+    {
+      "id": "OrganProposalV1",
+      "owner": "control.engineering",
+      "requiredFields": [
+        "proposal_id",
+        "predecessor_generation",
+        "operation",
+        "typed_delta",
+        "compatibility_plan",
+        "resource_delta",
+        "evidence_plan",
+        "rollback_plan"
+      ]
+    },
+    {
+      "id": "OrganQualificationReceiptV1",
+      "owner": "kernel.evidence",
+      "requiredFields": [
+        "organ_id",
+        "artifact_digest",
+        "simulator_digest",
+        "mandatory_tests",
+        "resource_results",
+        "safety_results",
+        "evaluator_identity",
+        "decision"
+      ]
+    },
+    {
+      "id": "OrganLeaseV1",
+      "owner": "kernel.authority",
+      "requiredFields": [
+        "organ_id",
+        "principal_scope",
+        "allowed_operations",
+        "resource_ceiling",
+        "authority_epoch",
+        "expiry",
+        "revocation_digest"
+      ]
+    },
+    {
+      "id": "OrganHealthSnapshotV1",
+      "owner": "brainstem.supervisor",
+      "requiredFields": [
+        "organ_id",
+        "generation",
+        "readiness",
+        "liveness",
+        "saturation",
+        "integrity",
+        "fallback_available",
+        "observed_at"
+      ]
+    },
+    {
+      "id": "HomeostasisSnapshotV1",
+      "owner": "autonomic.homeostasis",
+      "requiredFields": [
+        "generation",
+        "resource_endowment",
+        "set_points",
+        "current_load",
+        "risk_state",
+        "allocation",
+        "degradation_mode"
+      ]
+    },
+    {
+      "id": "SensorObservationV1",
+      "owner": "peripheral.sensor-bus",
+      "requiredFields": [
+        "observation_id",
+        "sensor_id",
+        "monotonic_time",
+        "calibration_generation",
+        "body_generation",
+        "payload_digest",
+        "uncertainty",
+        "scope"
+      ]
+    },
+    {
+      "id": "BodyStateEstimateV1",
+      "owner": "body.schema",
+      "requiredFields": [
+        "generation",
+        "observed_through",
+        "pose",
+        "velocity",
+        "contacts",
+        "integrity",
+        "uncertainty",
+        "source_digest"
+      ]
+    },
+    {
+      "id": "WorldModelPredictionV1",
+      "owner": "cns.world-model",
+      "requiredFields": [
+        "model_generation",
+        "state_digest",
+        "candidate_action_digest",
+        "predicted_state",
+        "uncertainty",
+        "ood",
+        "validity_window"
+      ]
+    },
+    {
+      "id": "ActuationIntentV1",
+      "owner": "motor.plan",
+      "requiredFields": [
+        "intent_id",
+        "objective_digest",
+        "body_generation",
+        "actuator_id",
+        "final_payload_digest",
+        "safety_envelope",
+        "deadline",
+        "idempotency_key",
+        "authority_witness"
+      ]
+    },
+    {
+      "id": "ReflexVetoV1",
+      "owner": "spinal.reflex-safety",
+      "requiredFields": [
+        "intent_id",
+        "body_generation",
+        "rule_generation",
+        "veto",
+        "reason",
+        "observed_at"
+      ]
+    },
+    {
+      "id": "PhysicalOutcomeReceiptV1",
+      "owner": "actuator.gateway",
+      "requiredFields": [
+        "intent_id",
+        "dispatch_state",
+        "terminal_state",
+        "observed_effect",
+        "observer_identity",
+        "observed_at",
+        "reconciliation_state"
+      ]
+    },
+    {
+      "id": "ConsolidationArtifactV1",
+      "owner": "sleep.consolidation",
+      "requiredFields": [
+        "artifact_id",
+        "predecessor",
+        "dataset_digest",
+        "revocation_cutoff",
+        "candidate_delta",
+        "evaluation_plan",
+        "rollback_digest"
+      ]
+    },
+    {
+      "id": "HumanOverrideV1",
+      "owner": "human.override",
+      "requiredFields": [
+        "override_id",
+        "principal",
+        "operation",
+        "scope",
+        "reason",
+        "issued_at",
+        "expiry",
+        "authority_witness"
+      ]
+    }
+  ],
+  "rules": {
+    "denyUnknownCriticalFields": true,
+    "boundedEncodingRequired": true,
+    "semanticDigestRequired": true,
+    "singleWriterRequired": true,
+    "currentGenerationRequiredAtMutation": true,
+    "queueAckMayEqualTerminalSuccess": false,
+    "modelOutputMayMintAuthority": false
+  },
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

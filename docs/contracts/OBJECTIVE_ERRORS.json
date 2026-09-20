@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.objective-error-registry.v1",
+  "schemaVersion": 1,
+  "owner": "objective.compiler",
+  "authorityDelta": "none",
+  "errors": [
+    {
+      "code": "OBJ-E001",
+      "stableMeaning": "invalid bounded structure, numeric representation or deterministic arithmetic",
+      "outcomeClass": "rejected",
+      "retryable": false,
+      "rustVariants": [
+        "ObjectiveError::InvalidBound",
+        "ObjectiveError::DuplicateSemanticId",
+        "ObjectiveError::InvalidSoftWeight",
+        "ObjectiveError::Arithmetic",
+        "ObjectiveAdmissionError::Structure",
+        "ObjectiveAdmissionError::InvalidProfile",
+        "ObjectiveAdmissionError::InvalidTimestamp",
+        "ObjectiveAdmissionError::InvalidIdentifier",
+        "ObjectiveAdmissionError::ResourceOverflow"
+      ]
+    },
+    {
+      "code": "OBJ-E002",
+      "stableMeaning": "unknown, unsupported or unrepresentable objective semantics",
+      "outcomeClass": "rejected",
+      "retryable": false,
+      "rustVariants": [
+        "ObjectiveError::UnsupportedConstraintLanguage",
+        "ObjectiveAdmissionError::UnknownConstraint",
+        "ObjectiveAdmissionError::TerminalConstraintUnsupported",
+        "ObjectiveAdmissionError::UnknownPredicate",
+        "ObjectiveAdmissionError::UnsupportedComparator",
+        "ObjectiveAdmissionError::UnknownAction",
+        "ObjectiveAdmissionError::ConfirmationActionNotLegal",
+        "ObjectiveAdmissionError::UnknownSoftDimension",
+        "ObjectiveAdmissionError::UnknownEvidenceRequirement"
+      ]
+    },
+    {
+      "code": "OBJ-E003",
+      "stableMeaning": "principal, source trust or authenticated scope mismatch",
+      "outcomeClass": "authority_rejected",
+      "retryable": false,
+      "rustVariants": [
+        "ObjectiveError::EmptyPrincipalScope",
+        "ObjectiveAdmissionError::PrincipalScopeMismatch",
+        "ObjectiveAdmissionError::SourceTrustMismatch",
+        "ObjectiveAdmissionError::SourceAuthenticationMismatch"
+      ]
+    },
+    {
+      "code": "OBJ-E004",
+      "stableMeaning": "source, schema, normalization, profile or intent integrity mismatch",
+      "outcomeClass": "integrity_rejected",
+      "retryable": false,
+      "rustVariants": [
+        "ObjectiveError::EmptyDigest",
+        "ObjectiveAdmissionError::ProfileDigestMismatch",
+        "ObjectiveAdmissionError::InputSchemaMismatch",
+        "ObjectiveAdmissionError::NormalizationProfileMismatch",
+        "ObjectiveAdmissionError::SourceDigestMismatch",
+        "ObjectiveAdmissionError::IntentDigestMismatch"
+      ]
+    },
+    {
+      "code": "OBJ-E005",
+      "stableMeaning": "registered unit, direction or semantic profile mismatch",
+      "outcomeClass": "rejected",
+      "retryable": false,
+      "rustVariants": [
+        "ObjectiveAdmissionError::ConstraintUnitMismatch",
+        "ObjectiveAdmissionError::PredicateUnitMismatch",
+        "ObjectiveAdmissionError::SoftDimensionMismatch"
+      ]
+    },
+    {
+      "code": "OBJ-E006",
+      "stableMeaning": "intrinsic abstain is forbidden or requires confirmation",
+      "outcomeClass": "rejected",
+      "retryable": false,
+      "rustVariants": [
+        "ObjectiveError::AbstainUnavailable"
+      ]
+    },
+    {
+      "code": "OBJ-E007",
+      "stableMeaning": "freshness, deadline or bounded feasibility budget is unavailable",
+      "outcomeClass": "unavailable",
+      "retryable": true,
+      "rustVariants": [
+        "ObjectiveError::FeasibilityBudgetExhausted",
+        "ObjectiveAdmissionError::LocaleNotAllowed",
+        "ObjectiveAdmissionError::SourceFromFuture",
+        "ObjectiveAdmissionError::SourceStale",
+        "ObjectiveAdmissionError::DeadlineMissing",
+        "ObjectiveAdmissionError::DeadlineBeforeObservation",
+        "ObjectiveAdmissionError::DeadlineExpired"
+      ]
+    },
+    {
+      "code": "OBJ-E008",
+      "stableMeaning": "terminality or durable semantic identity conflicts with its frozen definition",
+      "outcomeClass": "conflict",
+      "retryable": false,
+      "rustVariants": [
+        "ObjectiveAdmissionError::InvalidTerminality"
+      ]
+    },
+    {
+      "code": "OBJ-E009",
+      "stableMeaning": "untrusted evidence attempts to create authority or privileged action scope",
+      "outcomeClass": "security_rejected",
+      "retryable": false,
+      "rustVariants": [
+        "ObjectiveError::UntrustedAuthorityEscalation"
+      ]
+    }
+  ],
+  "nonErrorOutcomes": [
+    {
+      "name": "ObjectiveConflictReceiptV1",
+      "meaning": "typed hard-constraint or requested-forbidden-action conflict",
+      "errorCode": null
+    },
+    {
+      "name": "CompileDisposition::ExplicitAbstain",
+      "meaning": "the only remaining legal action is the intrinsic abstain action",
+      "errorCode": null
+    }
+  ]
+}

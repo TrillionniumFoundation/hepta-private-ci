@@ -1,0 +1,77 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-agentd"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_agentd"
+path = "src/lib.rs"
+doctest = false
+
+[features]
+default = []
+# Qualification-only host profile. Default binaries keep the writer disabled.
+qualification-cognitive-write = []
+
+[[bin]]
+name = "codex-hepta-agentd"
+path = "src/main.rs"
+test = false
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+codex-app-server = { workspace = true }
+codex-app-server-client = { workspace = true }
+codex-app-server-protocol = { workspace = true }
+codex-arg0 = { workspace = true }
+codex-config = { workspace = true }
+codex-features = { workspace = true }
+codex-hepta-agent-protocol = { workspace = true }
+codex-hepta-automation = { workspace = true }
+codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
+codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
+codex-hepta-authbus = { path = "../hepta-authbus" }
+codex-hepta-evidence = { workspace = true }
+codex-hepta-contracts = { workspace = true }
+codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
+codex-hepta-cognitive-store = { path = "../hepta-cognitive-store" }
+codex-hepta-control-plane = { path = "../hepta-control-plane" }
+codex-hepta-types = { path = "../hepta-types" }
+codex-hepta-fleet = { workspace = true }
+codex-hepta-memory = { workspace = true }
+codex-hepta-memory-extension = { workspace = true }
+codex-hepta-paths = { workspace = true }
+codex-protocol = { workspace = true }
+codex-uds = { workspace = true }
+codex-utils-absolute-path = { workspace = true }
+codex-utils-cli = { workspace = true }
+codex-utils-home-dir = { workspace = true }
+codex-state = { workspace = true }
+ed25519-dalek = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = [
+    "fs",
+    "io-util",
+    "macros",
+    "rt-multi-thread",
+    "signal",
+    "sync",
+    "time",
+] }
+tokio-util = { workspace = true }
+
+[dev-dependencies]
+app_test_support = { workspace = true }
+codex-hepta-supervisor = { workspace = true }
+codex-utils-cargo-bin = { workspace = true }
+core_test_support = { workspace = true }
+sqlx = { workspace = true }
+tempfile = { workspace = true }
+wiremock = { workspace = true }

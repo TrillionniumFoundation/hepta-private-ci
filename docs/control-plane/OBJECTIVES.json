@@ -1,0 +1,231 @@
+{
+  "schema": "hepta.global-objective-registry.v2",
+  "schemaVersion": 2,
+  "documentClass": "canonical_registry",
+  "authorityScope": "objective_compilation_hard_constraints_and_baseline_utility_source",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "hardConstraints": [
+    {
+      "id": "authority_safety",
+      "scope": "all",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "single_writer",
+      "scope": "runtime",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "current_fence",
+      "scope": "runtime",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "resource_capacity",
+      "scope": "runtime",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "deadline_bound",
+      "scope": "runtime",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "version_compatibility",
+      "scope": "runtime",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "rollback_available",
+      "scope": "all",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "bounded_work_envelope",
+      "scope": "engineering",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "independent_gate_separation",
+      "scope": "all",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "objective_core_immutability",
+      "scope": "adaptive",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "privacy_and_deletion",
+      "scope": "all",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    },
+    {
+      "id": "truth_and_evidence_integrity",
+      "scope": "all",
+      "learnable": false,
+      "violationPolicy": "reject_plan"
+    }
+  ],
+  "objectiveFunctionContract": {
+    "schema": "ObjectiveFunctionV1",
+    "immutableCore": [
+      "principalScope",
+      "successPredicates",
+      "terminalConditions",
+      "hardConstraints",
+      "evidenceRequirements",
+      "allowedActionClasses",
+      "forbiddenActionClasses"
+    ],
+    "boundedAdaptiveSurface": [
+      "softUtilityDimensions",
+      "resourceAllocation",
+      "explorationBudget",
+      "evidenceEffort",
+      "abstentionThreshold"
+    ],
+    "ambiguityPolicy": "emit_bounded_interpretation_set_or_request_clarification",
+    "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success"
+  },
+  "baselineProfiles": [
+    {
+      "id": "runtime.default.v2",
+      "dimensions": [
+        {
+          "id": "task_success",
+          "direction": "maximize",
+          "baselineWeight": 0.3
+        },
+        {
+          "id": "quality",
+          "direction": "maximize",
+          "baselineWeight": 0.2
+        },
+        {
+          "id": "latency_p95",
+          "direction": "minimize",
+          "baselineWeight": 0.15
+        },
+        {
+          "id": "resource_cost",
+          "direction": "minimize",
+          "baselineWeight": 0.1
+        },
+        {
+          "id": "fairness",
+          "direction": "maximize",
+          "baselineWeight": 0.1
+        },
+        {
+          "id": "recovery_risk",
+          "direction": "minimize",
+          "baselineWeight": 0.1
+        },
+        {
+          "id": "plan_churn",
+          "direction": "minimize",
+          "baselineWeight": 0.05
+        }
+      ]
+    },
+    {
+      "id": "engineering.default.v2",
+      "dimensions": [
+        {
+          "id": "critical_path_reduction",
+          "direction": "maximize",
+          "baselineWeight": 0.25
+        },
+        {
+          "id": "delivered_value",
+          "direction": "maximize",
+          "baselineWeight": 0.2
+        },
+        {
+          "id": "merge_conflict_risk",
+          "direction": "minimize",
+          "baselineWeight": 0.15
+        },
+        {
+          "id": "ci_pressure",
+          "direction": "minimize",
+          "baselineWeight": 0.1
+        },
+        {
+          "id": "architecture_debt",
+          "direction": "minimize",
+          "baselineWeight": 0.1
+        },
+        {
+          "id": "rollback_cost",
+          "direction": "minimize",
+          "baselineWeight": 0.1
+        },
+        {
+          "id": "review_load_imbalance",
+          "direction": "minimize",
+          "baselineWeight": 0.1
+        }
+      ]
+    }
+  ],
+  "preferenceAdaptation": {
+    "hardConstraintWeightLearnable": false,
+    "objectiveCoreMutationAllowedWithinRun": false,
+    "boundsRequired": true,
+    "nextSnapshotOnly": true
+  },
+  "recursiveUtilityProfiles": [
+    {
+      "id": "finite_horizon_risk_sensitive",
+      "horizon": "finite_or_receding",
+      "terminalUtilityRequired": true,
+      "riskMeasure": "registered_coherent_or_entropic",
+      "deterministicFallbackRequired": true
+    }
+  ],
+  "proposalProtocol": {
+    "moduleOutput": "bounded_pareto_candidate_set",
+    "completeCandidateGeneratorRelative": true,
+    "globalDecisionReceiptRequired": true
+  },
+  "optimizerAuthority": {
+    "maySelectPlan": true,
+    "mayIssueCapability": false,
+    "mayExecutePhysicalEffect": false,
+    "maySelfAccept": false,
+    "mayPromoteOrRelease": false
+  },
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

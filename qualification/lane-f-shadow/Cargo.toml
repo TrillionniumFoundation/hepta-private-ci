@@ -1,0 +1,16 @@
+[package]
+name = "lane-f-shadow-qualification"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# This qualification harness is intentionally outside the product workspace.
+[workspace]
+
+[dependencies]
+codex-hepta-types = { path = "../../codex-rs/hepta-types" }
+codex-hepta-neuron = { path = "../../codex-rs/hepta-neuron" }
+codex-hepta-prompt-optimizer = { path = "../../codex-rs/hepta-prompt-optimizer" }
+codex-hepta-intuition = { path = "../../codex-rs/hepta-intuition" }
+codex-hepta-intelligence = { path = "../../codex-rs/hepta-intelligence" }
+codex-hepta-plasticity = { path = "../../codex-rs/hepta-plasticity" }
