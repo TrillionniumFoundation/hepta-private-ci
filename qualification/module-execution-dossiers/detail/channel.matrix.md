@@ -35,6 +35,9 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - MATRIX-03: lost acknowledgement preserves transaction identity and indeterminate state until observed.
 - MATRIX-04: deleted/redacted content does not re-enter context or replay after reconnect/restore.
 - MATRIX-05: a homeserver echo without a matching durable final-use claim becomes `ObservedUnqualified`, never qualified `Succeeded`.
+- MATRIX-06: nonce-consumed/pre-claim, claim-durable/pre-poll, ACK-loss, and sync-transaction rollback cuts preserve stable identity without fabricating terminal authority evidence.
+- MATRIX-07: stale/rollback revocation heads, wrong-signer grants, broker death, and revocation committed before adapter entry fail closed.
+- MATRIX-05: a homeserver echo without a matching durable final-use claim becomes `ObservedUnqualified`, never qualified `Succeeded`.
 - MATRIX-06: crash after final-use nonce consumption but before claim persistence, and crash after claim persistence but before network poll, cause no physical send; restart uses the same transaction identity and a fresh grant.
 - MATRIX-07: terminal homeserver observation and sync checkpoint are atomic; a later mutation failure rolls both back.
 
