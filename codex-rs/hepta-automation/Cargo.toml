@@ -22,7 +22,9 @@ workspace = true
 
 [dependencies]
 codex-hepta-contracts = { workspace = true }
+codex-hepta-operations = { workspace = true }
 codex-hepta-paths = { workspace = true }
+codex-hepta-types = { workspace = true }
 codex-state = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
