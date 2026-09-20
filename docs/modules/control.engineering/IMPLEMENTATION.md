@@ -30,7 +30,11 @@ state, zero authority delta, write scope and unresolved
 `DOC-2-DEFAULT-BRANCH-SELECTION` predecessors; the binding is emitted by digest
 and does not reinterpret that predecessor as satisfied.
 On pull requests the named product caller executes independently against source-head
-and the deterministic base-merge candidate. CI retains both lane receipts, then a
+and the deterministic base-merge candidate. Each lane first runs the exact repository
+gap/document verifier plus the complete engineering-control Python suite; source-head
+also depends on the separate real Bubblewrap strong-sandbox job. Unrelated Rust/workspace
+failures remain merge blockers in their own jobs but do not suppress this module's
+product-execution receipt. CI retains both lane receipts, then a
 separate aggregation job recomputes each receipt digest, checks common repository/run/source
 identity, ordered merge parents, canonical ECP blob/package identity and zero authority,
 and emits `hepta.control-engineering-product-receipt-pair.v2`. Production-readiness
