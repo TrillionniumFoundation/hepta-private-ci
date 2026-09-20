@@ -64,7 +64,13 @@
       "sourcePathExists": true,
       "designOperation": "contract_registry_v1_require",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "role": "canonical_definition_digest",
+          "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+          "symbol": "canonical_digest_v1"
+        }
+      ]
     },
     {
       "operation": "rescale_signal",
@@ -78,7 +84,13 @@
       "sourcePathExists": true,
       "designOperation": "rescale_signal",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "role": "canonical_signal_and_receipt_digest",
+          "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+          "symbol": "canonical_digest_v1"
+        }
+      ]
     },
     {
       "operation": "rescale_signal_registered",
@@ -92,7 +104,18 @@
       "sourcePathExists": true,
       "designOperation": "rescale_signal_registered",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "role": "normalization_resolution",
+          "path": "codex-rs/hepta-types/src/registry.rs",
+          "symbol": "ContractRegistryV1::require"
+        },
+        {
+          "role": "numeric_conversion",
+          "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+          "symbol": "rescale_signal"
+        }
+      ]
     }
   ],
   "repositoryControlledGaps": [
