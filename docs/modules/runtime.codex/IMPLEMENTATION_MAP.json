@@ -266,6 +266,14 @@
         "durable terminal observation and correlation witness"
       ],
       "evidenceBoundary": "controlled mock Responses provider only; real provider and target-host identity remain external qualification gates"
+    },
+    {
+      "path": "codex-rs/core/src/tools/spec_plan_tests.rs",
+      "command": "just test -p codex-core hepta_native_inference_client_has_no_model_visible_or_registered_tools",
+      "covers": [
+        "model-only native inference topology",
+        "no MCP/connector/dynamic/core tool exposure for hepta-infer-worker"
+      ]
     }
   ],
   "sourceBaseSemantics": "historical_provenance_only",
@@ -280,5 +288,14 @@
     ],
     "hardCodedInMap": false,
     "rationale": "A committed map cannot safely hard-code its own Git commit/tree identity without becoming self-referential. Exact candidate identity is derived and emitted from the checked-out candidate by the verifier; sourceBase remains historical provenance only."
+  },
+  "toolTopology": {
+    "nativeInferenceProfile": "model_only",
+    "denyOnlyGuard": {
+      "path": "codex-rs/core/src/tools/spec_plan.rs",
+      "symbol": "pub(crate) fn hepta_model_only_tool_router(",
+      "buildTarget": "codex-core"
+    },
+    "effectSemantics": "The hepta-infer-worker App Server profile exposes no model-visible or registered tools. dispatch_tool mappings are delegated source navigation only. Any external tool effect requires a separately authorized effect owner, final-use capability, durable operation identity, and terminal observer."
   }
 }
