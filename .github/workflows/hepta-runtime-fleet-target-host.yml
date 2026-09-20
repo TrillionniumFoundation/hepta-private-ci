@@ -87,6 +87,7 @@ jobs:
           cargo test --locked -p codex-hepta-supervisor --lib -- --nocapture --test-threads=1
 
       - name: Record target-host resource identity
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
