@@ -32,6 +32,7 @@ use windows_sys::Win32::Security::Authorization::TRUSTEE_IS_SID;
 use windows_sys::Win32::Security::Authorization::TRUSTEE_IS_UNKNOWN;
 use windows_sys::Win32::Security::Authorization::TRUSTEE_W;
 use windows_sys::Win32::Security::CopySid;
+use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
 use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::EqualSid;
 use windows_sys::Win32::Security::GetAce;
@@ -40,17 +41,15 @@ use windows_sys::Win32::Security::GetLengthSid;
 use windows_sys::Win32::Security::GetTokenInformation;
 use windows_sys::Win32::Security::InitializeSecurityDescriptor;
 use windows_sys::Win32::Security::IsValidSid;
+use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
 use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
-use windows_sys::Win32::Security::READ_CONTROL;
 use windows_sys::Win32::Security::SECURITY_ATTRIBUTES;
 use windows_sys::Win32::Security::SECURITY_DESCRIPTOR;
-use windows_sys::Win32::Security::SECURITY_DESCRIPTOR_REVISION;
 use windows_sys::Win32::Security::SetSecurityDescriptorDacl;
 use windows_sys::Win32::Security::TOKEN_QUERY;
 use windows_sys::Win32::Security::TOKEN_USER;
 use windows_sys::Win32::Security::TokenUser;
 use windows_sys::Win32::Storage::FileSystem::BY_HANDLE_FILE_INFORMATION;
-use windows_sys::Win32::Storage::FileSystem::CONTAINER_INHERIT_ACE;
 use windows_sys::Win32::Storage::FileSystem::CreateDirectoryW;
 use windows_sys::Win32::Storage::FileSystem::CreateFileW;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
@@ -67,12 +66,13 @@ use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandle;
 use windows_sys::Win32::Storage::FileSystem::MOVEFILE_REPLACE_EXISTING;
 use windows_sys::Win32::Storage::FileSystem::MOVEFILE_WRITE_THROUGH;
 use windows_sys::Win32::Storage::FileSystem::MoveFileExW;
-use windows_sys::Win32::Storage::FileSystem::OBJECT_INHERIT_ACE;
 use windows_sys::Win32::Storage::FileSystem::OPEN_ALWAYS;
 use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
+use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
 
 const SET_ACCESS: i32 = 2;
+const SECURITY_DESCRIPTOR_REVISION_VALUE: u32 = 1;
 
 #[derive(Debug)]
 pub struct PrivateStateDirectory {
@@ -275,7 +275,7 @@ fn create_directory_if_missing(path: &Path, dacl: *mut ACL) -> io::Result<()> {
     if unsafe {
         InitializeSecurityDescriptor(
             (&mut descriptor as *mut SECURITY_DESCRIPTOR).cast(),
-            SECURITY_DESCRIPTOR_REVISION,
+            SECURITY_DESCRIPTOR_REVISION_VALUE,
         )
     } == 0
     {
