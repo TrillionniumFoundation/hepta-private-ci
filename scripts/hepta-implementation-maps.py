@@ -340,10 +340,56 @@ def verify():
         if declared != roots:
             failures.append(f"{mid}: declared roots")
         try:
-            if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
+            resolved_roots = resolve_source_roots(ROOT, module)
+            if row.get("resolvedRoots") != resolved_roots:
                 failures.append(f"{mid}: resolved source roots")
         except (ValueError, OSError) as exc:
+            resolved_roots = []
             failures.append(f"{mid}: source alias: {exc}")
+        composition_roots = row.get("compositionRoots", [])
+        if (
+            not isinstance(composition_roots, list)
+            or any(not isinstance(value, str) or not value for value in composition_roots)
+            or len(composition_roots) != len(set(composition_roots))
+            or any(
+                Path(value).is_absolute() or ".." in Path(value).parts
+                for value in composition_roots
+                if isinstance(value, str)
+            )
+        ):
+            failures.append(f"{mid}: composition roots")
+            composition_roots = []
+        source_base_semantics = row.get("sourceBaseSemantics")
+        if source_base_semantics is not None and source_base_semantics != "module_source_snapshot_zero_diff_to_candidate":
+            failures.append(f"{mid}: source base semantics")
+        if (
+            source_base_semantics == "module_source_snapshot_zero_diff_to_candidate"
+            and isinstance(source_base, dict)
+            and isinstance(source_base.get("commit"), str)
+            and re.fullmatch(r"[0-9a-f]{40}", source_base["commit"]) is not None
+        ):
+            mapped_paths = list(dict.fromkeys([*roots, *resolved_roots, *composition_roots]))
+            drift = subprocess.run(
+                [
+                    "git",
+                    "diff",
+                    "--quiet",
+                    source_base["commit"],
+                    "HEAD",
+                    "--",
+                    *mapped_paths,
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            if drift.returncode == 1:
+                failures.append(
+                    f"{mid}: source base drift under declared/resolved/composition roots"
+                )
+            elif drift.returncode != 0:
+                failures.append(f"{mid}: source base drift check failed")
         ops = row.get("operations")
         if not isinstance(ops, list) or not ops:
             failures.append(f"{mid}: operations")
