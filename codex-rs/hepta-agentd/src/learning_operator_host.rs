@@ -39,6 +39,8 @@ use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
 use codex_hepta_learning_artifacts::ArtifactEvent;
 use codex_hepta_learning_artifacts::ArtifactKind;
+use codex_hepta_learning_artifacts::ArtifactLifecycleEventV1;
+use codex_hepta_learning_artifacts::ArtifactLifecycleJournalError;
 use codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2;
 use codex_hepta_learning_artifacts::ArtifactLifecycleStateV1;
 use codex_hepta_learning_artifacts::ArtifactManifest;
@@ -46,6 +48,7 @@ use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::ArtifactRegistryError;
 use codex_hepta_learning_artifacts::ArtifactStorageError;
 use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
+use codex_hepta_learning_artifacts::LifecycleActorEvidenceV2;
 use codex_hepta_learning_artifacts::LifecycleActorRoleV2;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
@@ -574,6 +577,10 @@ pub struct OfflineOperatorCandidateRequestV1<'a> {
     pub dataset: &'a DatasetSnapshotReceiptV3,
     pub plan: TabularOperatorPlanV1,
     pub register_event_id: StableId,
+    pub trained_lifecycle_event_id: StableId,
+    pub evaluated_lifecycle_event_id: StableId,
+    pub producer_actor: LifecycleActorEvidenceV2,
+    pub evaluator_actor: LifecycleActorEvidenceV2,
     pub manifest: ArtifactManifest,
     pub payload_target: CreateOnlyArtifactFile,
     pub registry_snapshot_target: CreateOnlyArtifactFile,
@@ -639,6 +646,7 @@ impl AgentdOfflineOperatorHostV1 {
     pub fn train_evaluate_publish(
         &mut self,
         registry: &mut ArtifactRegistry,
+        lifecycle: &mut ArtifactLifecycleJournalV2,
         verifier: &LearningEvidenceVerifierV1,
         request: OfflineOperatorCandidateRequestV1<'_>,
     ) -> Result<OfflineOperatorCandidateReceiptV1, LearningOperatorHostError> {
@@ -698,12 +706,41 @@ impl AgentdOfflineOperatorHostV1 {
             &snapshot_receipt,
             model_pin.payload_digest,
         );
+        if request.producer_actor.role != LifecycleActorRoleV2::Producer
+            || request.producer_actor.actor_id != model.producer_id
+        {
+            return Err(LearningOperatorHostError::Binding(
+                "producer lifecycle actor does not identify the trainer",
+            ));
+        }
+        let trained_lifecycle = lifecycle.append(
+            lifecycle.head_digest(),
+            &model.producer_id,
+            request.producer_actor.clone(),
+            ArtifactLifecycleEventV1 {
+                event_id: request.trained_lifecycle_event_id.clone(),
+                artifact_id: model.artifact_id.clone(),
+                prior_state: ArtifactLifecycleStateV1::Proposed,
+                next_state: ArtifactLifecycleStateV1::Trained,
+                actor_id: request.producer_actor.actor_id.clone(),
+                actor_credential_digest: request.producer_actor.credential_digest,
+                evidence_digest: publication_digest,
+                authority_epoch: request.producer_actor.authority_epoch,
+                occurred_at: request.now,
+            },
+            request.now,
+        )?;
         *registry = staged_registry;
+        let published_stage_digest = Digest32::of_parts(&[
+            publication_digest.as_array(),
+            trained_lifecycle.event_digest.as_array(),
+            trained_lifecycle.head_digest.as_array(),
+        ]);
         self.journal.advance(
             &request.operation_id,
             request_digest,
             OfflineOperatorPhaseV1::Published,
-            publication_digest,
+            published_stage_digest,
         )?;
 
         if request.evaluation.candidate_id != model.artifact_id
@@ -722,6 +759,41 @@ impl AgentdOfflineOperatorHostV1 {
             request.now,
         )?;
         let evaluation_digest = digest_evaluation_decision(&evaluation);
+        if request.evaluator_actor.role != LifecycleActorRoleV2::Evaluator
+            || request.evaluator_actor.actor_id != request.evaluation_evidence.evaluator_bundle.principal_id
+            || request.evaluator_actor.actor_id == model.producer_id
+            || request.evaluator_actor.actor_id != request.evaluation.evaluator.principal_id
+            || request.evaluator_actor.credential_digest
+                != request.evaluation.evaluator.credential_chain_digest
+            || request.evaluator_actor.authority_epoch
+                != request.evaluation.evaluator.authority_epoch
+        {
+            return Err(LearningOperatorHostError::Binding(
+                "evaluator lifecycle actor does not match signed evaluator",
+            ));
+        }
+        let evaluated_lifecycle = lifecycle.append(
+            lifecycle.head_digest(),
+            &model.producer_id,
+            request.evaluator_actor.clone(),
+            ArtifactLifecycleEventV1 {
+                event_id: request.evaluated_lifecycle_event_id.clone(),
+                artifact_id: model.artifact_id.clone(),
+                prior_state: ArtifactLifecycleStateV1::Trained,
+                next_state: ArtifactLifecycleStateV1::Evaluated,
+                actor_id: request.evaluator_actor.actor_id.clone(),
+                actor_credential_digest: request.evaluator_actor.credential_digest,
+                evidence_digest: evaluation.decision.evidence_digest,
+                authority_epoch: request.evaluator_actor.authority_epoch,
+                occurred_at: request.now,
+            },
+            request.now,
+        )?;
+        let evaluated_stage_digest = Digest32::of_parts(&[
+            evaluation_digest.as_array(),
+            evaluated_lifecycle.event_digest.as_array(),
+            evaluated_lifecycle.head_digest.as_array(),
+        ]);
         if evaluation.decision.disposition
             != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
@@ -729,7 +801,7 @@ impl AgentdOfflineOperatorHostV1 {
                 &request.operation_id,
                 request_digest,
                 OfflineOperatorPhaseV1::EvaluatedRejected,
-                evaluation_digest,
+                evaluated_stage_digest,
             )?;
             return Err(LearningOperatorHostError::EvaluationRejected(
                 evaluation.decision.disposition,
@@ -739,7 +811,7 @@ impl AgentdOfflineOperatorHostV1 {
             &request.operation_id,
             request_digest,
             OfflineOperatorPhaseV1::EvaluatedEligible,
-            evaluation_digest,
+            evaluated_stage_digest,
         )?;
 
         Ok(OfflineOperatorCandidateReceiptV1 {
@@ -875,6 +947,10 @@ fn digest_product_request(
         bytes.extend_from_slice(sample.evidence_digest.as_array());
     }
     push_id(&mut bytes, &request.register_event_id)?;
+    push_id(&mut bytes, &request.trained_lifecycle_event_id)?;
+    push_id(&mut bytes, &request.evaluated_lifecycle_event_id)?;
+    digest_lifecycle_actor(&mut bytes, &request.producer_actor)?;
+    digest_lifecycle_actor(&mut bytes, &request.evaluator_actor)?;
     push_id(&mut bytes, &request.manifest.artifact_id)?;
     bytes.push(match request.manifest.kind {
         ArtifactKind::Prompt => 0,
@@ -916,6 +992,29 @@ fn digest_product_request(
         Digest32::of_bytes(&request.candidate_evidence.signing_bytes()).as_array(),
     );
     Ok(Digest32::of_bytes(&bytes))
+}
+
+fn digest_lifecycle_actor(
+    bytes: &mut Vec<u8>,
+    actor: &LifecycleActorEvidenceV2,
+) -> Result<(), LearningOperatorHostError> {
+    push_id(bytes, &actor.actor_id)?;
+    bytes.extend_from_slice(actor.credential_digest.as_array());
+    bytes.push(match actor.role {
+        LifecycleActorRoleV2::Producer => 0,
+        LifecycleActorRoleV2::Evaluator => 1,
+        LifecycleActorRoleV2::ShadowOperator => 2,
+        LifecycleActorRoleV2::CanaryOperator => 3,
+        LifecycleActorRoleV2::HumanOperator => 4,
+        LifecycleActorRoleV2::Selector => 5,
+        LifecycleActorRoleV2::QuarantineAuthority => 6,
+        LifecycleActorRoleV2::RevocationAuthority => 7,
+        LifecycleActorRoleV2::RetirementAuthority => 8,
+    });
+    bytes.extend_from_slice(&actor.authority_epoch.to_be_bytes());
+    bytes.extend_from_slice(&actor.verified_at.to_be_bytes());
+    bytes.extend_from_slice(&actor.expires_at.to_be_bytes());
+    Ok(())
 }
 
 fn authenticate_candidate_bytes(
@@ -1016,6 +1115,7 @@ pub enum LearningOperatorHostError {
     Dataset(OperatorDatasetBindingError),
     ArtifactRegistry(ArtifactRegistryError),
     ArtifactStorage(ArtifactStorageError),
+    ArtifactLifecycle(ArtifactLifecycleJournalError),
     Evaluation(SignedEvaluationError),
     CandidateBinding(EvaluatedShadowError),
     Evidence(SignedEvidenceError),
@@ -1039,6 +1139,7 @@ impl StdError for LearningOperatorHostError {
             Self::Dataset(error) => Some(error),
             Self::ArtifactRegistry(error) => Some(error),
             Self::ArtifactStorage(error) => Some(error),
+            Self::ArtifactLifecycle(error) => Some(error),
             Self::Evaluation(error) => Some(error),
             Self::CandidateBinding(error) => Some(error),
             Self::Evidence(error) => Some(error),
@@ -1072,6 +1173,12 @@ impl From<ArtifactRegistryError> for LearningOperatorHostError {
 impl From<ArtifactStorageError> for LearningOperatorHostError {
     fn from(value: ArtifactStorageError) -> Self {
         Self::ArtifactStorage(value)
+    }
+}
+
+impl From<ArtifactLifecycleJournalError> for LearningOperatorHostError {
+    fn from(value: ArtifactLifecycleJournalError) -> Self {
+        Self::ArtifactLifecycle(value)
     }
 }
 
