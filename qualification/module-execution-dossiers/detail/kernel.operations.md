@@ -1,7 +1,7 @@
 # kernel.operations: implementation design
 
 Parent: `docs/modules/kernel.operations/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: durable source ledger/outbox, fencing, recovery, final-use entry and destination-dedupe primitives implemented in the module candidate; named product composition and independent acceptance remain separate gates. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable source ledger/outbox, fencing, recovery, higher-generation handoff, final-use entry, destination-dedupe primitives and one named Agentd Automation source composition are implemented in the module candidate; exact-candidate execution, activation and independent acceptance remain separate gates. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,7 +12,7 @@ The in-memory `OperationLedger`/`Outbox` types remain a deterministic reference 
 
 ## 2. Public operations and contract details
 
-`DurableOperationStore::prepare_intent(&OperationIntentV1) -> PreparedIntent`; `claim_next(destination, worker, owner_generation, lease) -> DispatchClaim`; `authorize_dispatch(authority, signed_grant, claim) -> AuthorizedDispatch`; `execute_authorized(authorized, effect) -> T`; `observe_terminal(scope, operation_id, observer_evidence) -> DurableOperationRecord`.
+`DurableOperationStore::prepare_intent(&OperationIntentV1) -> PreparedIntent`; `claim_next(destination, worker, owner_generation, lease) -> DispatchClaim`; `adopt_unsettled_generation(scope, operation_id, owner_generation) -> DurableOperationRecord`; `authorize_dispatch(authority, signed_grant, claim) -> AuthorizedDispatch`; `execute_authorized(authorized, effect) -> T`; `observe_terminal(scope, operation_id, observer_evidence) -> DurableOperationRecord`.
 
 The same scoped operation identity and semantic digest is idempotent; reuse with changed predecessor, destination or payload conflicts. Owner generation fences execution ownership but is deliberately excluded from logical semantic identity so a higher generation can take over a safe expired lease. Transport dispatched/acknowledged and independently observed applied/not-applied remain different states.
 
@@ -28,7 +28,7 @@ Destination dedupe remains destination-owned. `DestinationDedupeStore::from_migr
 
 Local source transaction -> durable intent/outbox -> fenced lease -> real final-use grant claim -> durable `dispatching` write-ahead state -> `with_verified_use` effect entry -> destination dedupe/domain transaction -> dispatch/ack classification -> independent terminal observation -> source settlement.
 
-A lease that expires while the operation is still `prepared` can be requeued and claimed by a current/higher owner generation. A lease that expires after `dispatching` or `dispatched` is converted to `indeterminate`; it is not resent. Missing acknowledgement also becomes `indeterminate`. Stale workers cannot renew or settle a newer fence.
+A lease that expires while the operation is still `prepared` can be requeued and claimed by a current/higher owner generation. A lease that expires after `dispatching` or `dispatched` is converted to `indeterminate`; it is not resent. On process-generation replacement, `adopt_unsettled_generation` advances the durable revision/fence and changes only execution ownership; logical semantic identity is unchanged. Any predecessor `dispatching`/`dispatched` state first converges to `indeterminate`, so the newer generation can reconcile from destination-owned evidence but cannot blindly redispatch. Missing acknowledgement also becomes `indeterminate`. Stale workers and stale terminal observers cannot renew or settle the newer fence.
 
 `NotDispatched` is the only effect classification eligible for automatic requeue. Compensation is always a new authorized operation.
 
@@ -48,6 +48,8 @@ These ceilings are enforcement values for the source implementation, not target-
 - OPS-06: concurrent exact prepare across independent handles is idempotent.
 - OPS-07: destination domain SQL and dedupe receipt commit atomically; rollback removes both; exact replay returns the receipt without repeating the domain mutation.
 - OPS-08: terminal GC writes a permanent semantic tombstone before deleting source rows, preventing identity resurrection.
+- OPS-09: a higher product generation adopts unresolved `dispatching`/`dispatched` work without changing semantic identity, advances the fence, rejects the predecessor observer and settles only from current-generation evidence.
+- OPS-10: configured Agentd runtime/control `AutomationCreate` selects the durable operations host; a generation-two reopen adopts and reconciles an already-applied destination receipt without redispatch.
 
 Source test identities are `src/durable_store_tests.rs` and `src/destination_dedupe_tests.rs`. These paths are not an exact-candidate pass receipt until the applicable CI reaches terminal success. Disk-exhaustion and target-host power-loss qualification remain required external/source qualification work where the CI host can provide the fault.
 
@@ -65,5 +67,6 @@ No source test, migration or documentation record grants activation, operator ac
 - **Durable contract/state types:** [codex-rs/hepta-operations/src/durable_model.rs](../../../codex-rs/hepta-operations/src/durable_model.rs).
 - **Destination dedupe transaction:** `DestinationDedupeStore` in [codex-rs/hepta-operations/src/destination_dedupe.rs](../../../codex-rs/hepta-operations/src/destination_dedupe.rs), with the owner-schema reference in [codex-rs/hepta-operations/destination_migrations/0001_operation_dedupe.sql](../../../codex-rs/hepta-operations/destination_migrations/0001_operation_dedupe.sql).
 - **Reference oracle retained:** `OperationLedger` in `src/ledger.rs`, `Outbox` in `src/outbox.rs`, and [REFERENCE_MODEL_V1.md](../../../docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md).
-- **Focused source tests:** [durable_store_tests.rs](../../../codex-rs/hepta-operations/src/durable_store_tests.rs), [destination_dedupe_tests.rs](../../../codex-rs/hepta-operations/src/destination_dedupe_tests.rs), plus the retained reference tests.
-- **Remaining product work:** compose at least one named product caller/destination owner, install the destination dedupe table in that owner's migration lineage, bind a trusted terminal observer, measure the selected host and complete independent activation/acceptance gates. Source implementation does not make those product gates true.
+- **Focused source tests:** [durable_store_tests.rs](../../../codex-rs/hepta-operations/src/durable_store_tests.rs), [destination_dedupe_tests.rs](../../../codex-rs/hepta-operations/src/destination_dedupe_tests.rs), [operations_host_tests.rs](../../../codex-rs/hepta-agentd/src/operations_host_tests.rs) and [runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs), plus the retained reference tests.
+- **Named source composition:** Agentd explicitly attaches `AgentdOperationsHost` when `with_automation_operations` supplies an independently configured `FinalUseAuthority` and grant provider; `AutomationCreate` routes through the durable source owner and the Automation destination-owned dedupe/apply transaction.
+- **Remaining product work:** obtain current exact-head and prospective-merge execution receipts, continuously provision the external authority/grant source, measure the selected host (including real power-loss/storage-exhaustion behavior), qualify any additional destination owners, and complete independent activation/acceptance gates. Source implementation does not make those product gates true.
