@@ -494,8 +494,7 @@ pub struct AppServerRuntimeOptions {
     /// Optional source-bound prompt runtime capability. Ordinary Codex keeps
     /// this absent; only an embedding that already owns an exercise-bound
     /// attachment may install the runtime.codex delivery bridge.
-    pub hepta_prompt_runtime_host:
-        Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
+    pub hepta_prompt_runtime_host: Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
     /// Embedding-owned feature states applied after ordinary config layers
     /// and per-request overrides. Empty for ordinary Codex runtimes; a local
     /// embedding can use this to keep a capability boundary fail-closed.
@@ -539,10 +538,7 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
                 "hepta_qualification_turn_writer",
                 &self.hepta_qualification_turn_writer,
             )
-            .field(
-                "hepta_prompt_runtime_host",
-                &self.hepta_prompt_runtime_host,
-            )
+            .field("hepta_prompt_runtime_host", &self.hepta_prompt_runtime_host)
             .field("required_feature_states", &self.required_feature_states)
             .finish()
     }
