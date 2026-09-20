@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs); observed identifiers include `CognitiveStore`, `append`, `get`, `snapshot_records`, `StoreReceipt`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs), with admission-gated V2 and the canonical MemoryEvent shadow-write receipt in [src/v2.rs](../../../codex-rs/hepta-cognitive-store/src/v2.rs); observed identifiers include `CognitiveStore`, `append`, `StoreReceipt`, `AdmittedCognitiveStoreV2`, and `append_admitted_with_canonical_shadow`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -170,6 +170,10 @@ The [module-specific implementation design](../../../qualification/module-execut
 ## 11. Observability and operations
 
 The physical writer remains hepta-memory::CognitiveStore and cognitive_1.sqlite3. The new crate supplies an in-memory semantic oracle and V2 types, not a replacement durable backend. Use the existing owner snapshot adapter and independent cut witness; descriptor-safe open_with_recovery still requires its unimplemented VFS/currentness prerequisites.
+
+### Canonical MemoryEvent shadow write
+
+`append_admitted_with_canonical_shadow` validates the canonical `MemoryEventV1`, legacy `MemoryAdmissionCandidateV1`, verification-state correspondence, and exact source ID/digest/observed-time set **before** invoking the existing admitted append. After commit it only constructs an infallible deny-all sidecar binding canonical event digest, legacy candidate digest, final record digest, snapshot-vector digest, and write disposition. The sidecar proves co-observation and the checked provenance overlap; it does not claim that `MemoryRecord` and `MemoryEventV1` are interchangeable encodings. In particular, legacy `MemoryAdmissionEvidenceV1` has no source-revision field, so source-revision equivalence remains unproven. This path does not create a second database or writer and does not change `productionImplementation=false` / `productionWriterState=not_established`.
 
 Current operating and state-format references:
 
