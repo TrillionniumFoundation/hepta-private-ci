@@ -194,7 +194,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let output = result?;
     println!("{}", serde_json::to_string(&output)?);
     if !output.terminal_observed {
-        return Err("provider outcome remains indeterminate; no replacement dispatch was issued".into());
+        return Err(
+            "provider outcome remains indeterminate; no replacement dispatch was issued".into(),
+        );
     }
     if !output.succeeded() {
         return Err("provider run did not complete under current owner authority".into());
@@ -202,7 +204,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     Ok(())
 }
 
-fn validate_host_config(config: &HostConfig) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+fn validate_host_config(
+    config: &HostConfig,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !config.agentd_socket.is_absolute()
         || !config.journal.is_absolute()
         || !config.authority_state_dir.is_absolute()
@@ -292,9 +296,7 @@ fn current_unix_ms() -> Result<u64, Box<dyn std::error::Error + Send + Sync>> {
         .try_into()?)
 }
 
-fn decode_hex_signature(
-    value: &str,
-) -> Result<[u8; 64], Box<dyn std::error::Error + Send + Sync>> {
+fn decode_hex_signature(value: &str) -> Result<[u8; 64], Box<dyn std::error::Error + Send + Sync>> {
     if value.len() != 128 {
         return Err("policy signature must be 128 hexadecimal characters".into());
     }

@@ -145,8 +145,7 @@ fn scheduler_rejects_duplicate_worker_identity() {
 #[test]
 fn eligible_snapshot_and_selection_digest_bind_capacity_and_lease() {
     let base = worker("worker:stable", 0, 1_024, 1);
-    let first =
-        schedule(1_000, schedule_request(vec![base.clone()])).expect("first assignment");
+    let first = schedule(1_000, schedule_request(vec![base.clone()])).expect("first assignment");
 
     let mut changed_capacity = base.clone();
     changed_capacity.available_tokens = 2_048;

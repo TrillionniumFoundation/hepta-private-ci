@@ -15,8 +15,7 @@ use codex_hepta_infer_worker_host::native_app_server::NativeRunOutput;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use tokio_util::sync::CancellationToken;
 
-pub type WorkerPortResult<T> =
-    Result<T, Box<dyn std::error::Error + Send + Sync>>;
+pub type WorkerPortResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 /// Source-composed implementation of
 /// `ModulePort::inference.control::inference.worker`.

@@ -123,7 +123,8 @@ impl AppServerModelDriver {
                     output_sha256: None,
                     output_retained: true,
                     stop_reason: Some(
-                        "reopened after possible dispatch; exact reconciliation pending".to_string(),
+                        "reopened after possible dispatch; exact reconciliation pending"
+                            .to_string(),
                     ),
                 })
             });

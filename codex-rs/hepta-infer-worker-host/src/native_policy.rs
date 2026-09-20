@@ -434,8 +434,7 @@ impl NativeExecutionPolicy {
             binding,
             witness,
         } = claimed;
-        let (result, receipt) =
-            authority.with_verified_use_receipt(token, &binding, consumer)?;
+        let (result, receipt) = authority.with_verified_use_receipt(token, &binding, consumer)?;
         Ok((
             result,
             AdmittedFinalUse {
