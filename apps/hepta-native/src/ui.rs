@@ -246,7 +246,10 @@ impl HeptaNativeApp {
         ui.text_edit_singleline(&mut self.update_manifest_path);
         ui.label(self.locale.text("Package path", "更新包路径"));
         ui.text_edit_singleline(&mut self.update_package_path);
-        if ui.button(self.locale.text("Verify & stage", "验证并暂存")).clicked() {
+        if ui
+            .button(self.locale.text("Verify & stage", "验证并暂存"))
+            .clicked()
+        {
             self.stage_update();
         }
         ui.separator();
@@ -268,10 +271,10 @@ impl HeptaNativeApp {
                     pending.manifest.package_digest
                 ));
                 if ui
-                    .button(self.locale.text(
-                        "Activate on restart & close",
-                        "关闭并在重启时激活",
-                    ))
+                    .button(
+                        self.locale
+                            .text("Activate on restart & close", "关闭并在重启时激活"),
+                    )
                     .clicked()
                 {
                     self.activate_update_on_exit.store(true, Ordering::SeqCst);
@@ -310,9 +313,11 @@ impl HeptaNativeApp {
             }
             let manifest: SignedUpdateManifestV1 =
                 serde_json::from_slice(&std::fs::read(&manifest_path)?)?;
-            let pending =
-                self.updater
-                    .verify_and_stage(manifest, &package_path, self.manifest.protocol_version)?;
+            let pending = self.updater.verify_and_stage(
+                manifest,
+                &package_path,
+                self.manifest.protocol_version,
+            )?;
             Ok(format!(
                 "staged {} for {}/{}",
                 pending.manifest.package_digest,
