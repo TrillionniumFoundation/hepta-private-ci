@@ -442,9 +442,9 @@ pub fn price_factors_v1(
             net_utility_q32: net,
         });
     }
-    if !evidence_rows.is_empty() {
+    if let Some(unknown_factor) = evidence_rows.keys().next() {
         return Err(CanonicalPromptError::UnknownFactor(
-            evidence_rows.keys().next().expect("nonempty").to_string(),
+            unknown_factor.to_string(),
         ));
     }
     let pricing_set_digest = digest_pricing_set(&rows, pricing_policy_digest);
