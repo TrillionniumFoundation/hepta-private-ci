@@ -436,3 +436,75 @@ fn proposal_contracts_cannot_self_activate() {
     invalid.typed_nodes_edges.nodes.clear();
     assert!(invalid.validate().is_err());
 }
+
+
+#[test]
+fn recall_receipts_bind_counts_and_population_limits() {
+    let mut mismatched = recall_packet();
+    mismatched.resource_receipt.active_node_count = 2;
+    assert!(mismatched.validate().is_err());
+
+    let mut overfull = recall_packet();
+    overfull.active_nodes = (0..=MAX_ACTIVE_PER_POPULATION)
+        .map(|index| ActiveNodeV1 {
+            node_id: id(&format!("node:{index:03}")),
+            population: EngramPopulationV1::SemanticConcept,
+            activation_ppm: 1,
+        })
+        .collect();
+    overfull.resource_receipt.node_count =
+        u16::try_from(overfull.active_nodes.len()).expect("bounded node count");
+    overfull.resource_receipt.active_node_count =
+        u16::try_from(overfull.active_nodes.len()).expect("bounded active count");
+    assert!(overfull.validate().is_err());
+}
+
+#[test]
+fn replay_receipts_bind_candidate_and_source_bucket_counts() {
+    let mut selected_without_candidate = replay_receipt();
+    selected_without_candidate.resource_receipt.candidate_count = 0;
+    assert!(selected_without_candidate.validate().is_err());
+
+    let mut bad_sum = replay_receipt();
+    bad_sum.source_bucket_counts[0].selected_count = 2;
+    assert!(bad_sum.validate().is_err());
+
+    let mut duplicate_bucket = replay_receipt();
+    duplicate_bucket.resource_receipt.selected_count = 2;
+    duplicate_bucket.resource_receipt.candidate_count = 2;
+    duplicate_bucket.selected_event_ids.push(id("event:2"));
+    duplicate_bucket.source_bucket_counts.push(SourceBucketCountV1 {
+        source_bucket: 1,
+        selected_count: 1,
+    });
+    assert!(duplicate_bucket.validate().is_err());
+}
+
+#[test]
+fn canonical_wire_roundtrip_property_holds_across_registered_contracts() {
+    macro_rules! roundtrip {
+        ($value:expr, $type:ty) => {{
+            let value: $type = $value;
+            let bytes = encode_wire_v1(&value).expect("canonical encode");
+            let decoded = decode_wire_v1::<$type>(&bytes).expect("canonical decode");
+            assert_eq!(decoded, value);
+            assert_eq!(
+                encode_wire_v1(&decoded).expect("canonical re-encode"),
+                bytes
+            );
+        }};
+    }
+
+    roundtrip!(text_span(), ModalitySpanRefV1);
+    roundtrip!(event(), MemoryEventV1);
+    roundtrip!(cross_binding(), CrossModalBindingV1);
+    roundtrip!(engram_node(), EngramNodeV1);
+    roundtrip!(synapse(), SynapseV1);
+    roundtrip!(cue(), MemoryCueV1);
+    roundtrip!(recall_packet(), RecallPacketV1);
+    roundtrip!(outcome(), OutcomeSignalV1);
+    roundtrip!(replay_receipt(), ReplaySelectionReceiptV1);
+    roundtrip!(plasticity(), PlasticityBatchV1);
+    roundtrip!(topology(), TopologyProposalV1);
+    roundtrip!(forget(), ForgetPropagationReceiptV1);
+}
