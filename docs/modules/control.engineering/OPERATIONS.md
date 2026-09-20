@@ -239,3 +239,9 @@ bundle that binds:
 
 Missing, malformed, stale, or identity-mismatched evidence leaves the corresponding
 readiness dimension open.
+
+## Durable worker execution lifecycle
+
+`orchestration_generations`, `worker_registrations` and `worker_claims` are owned by the same SQLite v7 writer. A claim is admissible only for the worker selected by the persisted plan and while its exact path lease is active. Signed heartbeats renew only the bounded claim window. Heartbeat timeout or infrastructure failure can enter `retryable` while the attempt budget remains; semantic failure is terminal. A worker `success` result is `result_submitted`, not completion, until a current `ci_executor` completion receipt is verified and the claim becomes `completed_observed`.
+
+The named source-level product composition is `EngineeringControlProduct`. Current repository CI executes that owner separately for exact source and deterministic base-merge identities. GitHub reviewer observations bind API reviewer IDs and commit SHAs but explicitly carry no independent-acceptance or merge authority.
