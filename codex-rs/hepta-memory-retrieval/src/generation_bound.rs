@@ -14,7 +14,6 @@ use std::fmt;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
-use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::HnmfContractError;
 use codex_hepta_cognitive_types::hnmf_learning::ActivationPathV1 as CanonicalActivationPathV1;
 use codex_hepta_cognitive_types::hnmf_learning::ActiveNodeV1 as CanonicalActiveNodeV1;
@@ -398,13 +397,30 @@ impl RecallPacketV1 {
     }
 }
 
+/// Exact identity bridge for one legacy retrieval selection during the
+/// side-by-side HNMF migration. The legacy record identity and the canonical
+/// event identity are deliberately distinct fields.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalRecallSelectionBindingV1 {
+    pub legacy_record_id: StableId,
+    pub legacy_record_revision: Revision,
+    pub legacy_record_digest: Digest32,
+    pub canonical_event: CanonicalSelectedEventRefV1,
+}
+
 /// Extra HNMF evidence needed to project the legacy generation-bound packet
 /// into the canonical cognitive.types RecallPacketV1 during shadow migration.
 ///
-/// The adapter deliberately does not fabricate graph/runtime evidence from the
-/// legacy score packet. The HNMF owner supplies those exact bounded values.
+/// Canonical cue/event/engram digests are supplied explicitly because the
+/// legacy binary digest domains are not interchangeable with canonical JSON
+/// contract digests.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CanonicalRecallShadowContextV1 {
+    pub legacy_cue_digest: Digest32,
+    pub legacy_candidate_union_digest: Digest32,
+    pub legacy_generation_vector_digest: Digest32,
+    pub canonical_cue_digest: ContractDigestV1,
+    pub selection_bindings: Vec<CanonicalRecallSelectionBindingV1>,
     pub event_snapshot_digest: ContractDigestV1,
     pub engram_snapshot_digest: ContractDigestV1,
     pub active_nodes: Vec<CanonicalActiveNodeV1>,
@@ -427,44 +443,77 @@ pub fn adapt_generation_bound_recall_to_canonical_shadow_v1(
     context: CanonicalRecallShadowContextV1,
 ) -> Result<CanonicalRecallPacketV1, RecallErrorV1> {
     legacy.validate()?;
-
-    let cue_digest =
-        ContractDigestV1::from_digest(legacy.cue_digest).map_err(RecallErrorV1::CanonicalContract)?;
+    if context.legacy_cue_digest != legacy.cue_digest
+        || context.legacy_candidate_union_digest != legacy.candidate_union_digest
+        || context.legacy_generation_vector_digest != legacy.generation_vector_digest
+    {
+        return Err(RecallErrorV1::CanonicalAdapter(
+            "canonical shadow context is bound to a different legacy packet",
+        ));
+    }
 
     let (mut selected_events, abstain) = match legacy.disposition {
         RecallDispositionV1::Recalled => {
+            if context.selection_bindings.len() != legacy.selections.len() {
+                return Err(RecallErrorV1::CanonicalAdapter(
+                    "canonical selection binding count mismatch",
+                ));
+            }
+            let mut used = vec![false; context.selection_bindings.len()];
             let mut selected = Vec::with_capacity(legacy.selections.len());
             for selection in &legacy.selections {
-                selected.push(CanonicalSelectedEventRefV1 {
-                    event_id: ContractIdV1::new(selection.record_id.to_string())
-                        .map_err(RecallErrorV1::CanonicalContract)?,
-                    revision: selection.record_revision.get(),
-                    event_digest: ContractDigestV1::from_digest(selection.record_digest)
-                        .map_err(RecallErrorV1::CanonicalContract)?,
-                });
+                let Some((index, binding)) = context
+                    .selection_bindings
+                    .iter()
+                    .enumerate()
+                    .find(|(index, binding)| {
+                        !used[*index]
+                            && binding.legacy_record_id == selection.record_id
+                            && binding.legacy_record_revision == selection.record_revision
+                            && binding.legacy_record_digest == selection.record_digest
+                    })
+                else {
+                    return Err(RecallErrorV1::CanonicalAdapter(
+                        "missing exact canonical binding for legacy selection",
+                    ));
+                };
+                used[index] = true;
+                selected.push(binding.canonical_event.clone());
+            }
+            if used.iter().any(|used| !used) {
+                return Err(RecallErrorV1::CanonicalAdapter(
+                    "unused canonical selection binding",
+                ));
             }
             (selected, None)
         }
-        RecallDispositionV1::Abstained(reason) => (
-            Vec::new(),
-            Some(match reason {
-                RecallAbstentionReasonV1::NoCandidate => {
-                    CanonicalRecallAbstainReasonV1::NoCandidate
-                }
-                RecallAbstentionReasonV1::InsufficientChannelCoverage => {
-                    CanonicalRecallAbstainReasonV1::InsufficientCoverage
-                }
-                RecallAbstentionReasonV1::ScoreBelowFloor => {
-                    CanonicalRecallAbstainReasonV1::LowConfidence
-                }
-                RecallAbstentionReasonV1::OutOfDistribution => {
-                    CanonicalRecallAbstainReasonV1::OutOfDistribution
-                }
-                RecallAbstentionReasonV1::ContradictoryEvidence => {
-                    CanonicalRecallAbstainReasonV1::UnresolvedContradiction
-                }
-            }),
-        ),
+        RecallDispositionV1::Abstained(reason) => {
+            if !context.selection_bindings.is_empty() {
+                return Err(RecallErrorV1::CanonicalAdapter(
+                    "abstained legacy packet cannot carry canonical selection bindings",
+                ));
+            }
+            (
+                Vec::new(),
+                Some(match reason {
+                    RecallAbstentionReasonV1::NoCandidate => {
+                        CanonicalRecallAbstainReasonV1::NoCandidate
+                    }
+                    RecallAbstentionReasonV1::InsufficientChannelCoverage => {
+                        CanonicalRecallAbstainReasonV1::InsufficientCoverage
+                    }
+                    RecallAbstentionReasonV1::ScoreBelowFloor => {
+                        CanonicalRecallAbstainReasonV1::LowConfidence
+                    }
+                    RecallAbstentionReasonV1::OutOfDistribution => {
+                        CanonicalRecallAbstainReasonV1::OutOfDistribution
+                    }
+                    RecallAbstentionReasonV1::ContradictoryEvidence => {
+                        CanonicalRecallAbstainReasonV1::UnresolvedContradiction
+                    }
+                }),
+            )
+        }
     };
     selected_events.sort();
 
@@ -479,7 +528,7 @@ pub fn adapt_generation_bound_recall_to_canonical_shadow_v1(
     }
 
     let canonical = CanonicalRecallPacketV1 {
-        cue_digest,
+        cue_digest: context.canonical_cue_digest,
         event_snapshot_digest: context.event_snapshot_digest,
         engram_snapshot_digest: context.engram_snapshot_digest,
         selected_events,
