@@ -303,10 +303,7 @@ impl AgentdClient {
         }
     }
 
-    pub async fn run_status(
-        &self,
-        run_id: String,
-    ) -> Result<Option<AgentRunReceipt>, AgentdError> {
+    pub async fn run_status(&self, run_id: String) -> Result<Option<AgentRunReceipt>, AgentdError> {
         match self
             .send(AgentdRequest::run_status(
                 self.request_id(),
