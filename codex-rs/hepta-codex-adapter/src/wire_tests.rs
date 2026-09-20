@@ -49,6 +49,7 @@ fn wire_v2_refuses_to_drop_product_binding() {
     intent.app_server_binding = Some(AppServerRequestBinding {
         source_admission_digest: Digest32::of_bytes(b"source"),
         agent_generation: Generation::new(3).unwrap(),
+        session_id: id("session.1"),
         protocol_id: id(crate::APP_SERVER_V2_PROTOCOL_ID),
         app_server_version: "1.0".to_string(),
         codex_home_digest: Digest32::of_bytes(b"/home/agent"),
