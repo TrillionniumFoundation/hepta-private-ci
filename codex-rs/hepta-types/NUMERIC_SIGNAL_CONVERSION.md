@@ -26,10 +26,12 @@ digest to resolve to the same immutable `Normalization` definition in an
 explicitly supplied `ContractRegistryV1`. The registry is caller-owned and
 contains no ambient mutable state.
 
-Both value digests bind profile ID, scale, rounding, overflow policy, unit,
-shape, range, normalization digest and actual raw values. The conversion receipt
-binds source/output digests and the exact maximum absolute conversion error as
-an integer fraction in the signal's unit:
+Signal and conversion-receipt commitments are produced through
+`canonical_digest_v1`, rather than a second ad-hoc byte-concatenation format.
+Signal digests bind profile ID, scale, rounding, overflow policy, unit, shape,
+range, normalization digest and actual raw values. The conversion receipt binds
+source/target profile IDs, source/output digests and the exact maximum absolute
+conversion error as an integer fraction in the signal's unit:
 
 `max(abs(source_raw * target_scale - output_raw * source_scale)) /
 (source_scale * target_scale)`.
