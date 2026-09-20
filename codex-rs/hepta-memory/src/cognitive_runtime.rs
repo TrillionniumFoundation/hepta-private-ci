@@ -308,17 +308,40 @@ impl CognitiveRuntime {
         binding: &FederatedMemoryRevalidationBinding,
         now_unix_seconds: i64,
     ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
+        self.revalidate_product_federated_batch(
+            access,
+            std::slice::from_ref(binding),
+            now_unix_seconds,
+        )
+        .await?
+        .pop()
+        .ok_or_else(|| {
+            CognitiveStoreError::Corrupt(
+                "single product federation revalidation returned no status".to_string(),
+            )
+        })
+    }
+
+    /// Revalidates the full prepared product attachment under one bounded
+    /// operation. Bindings from the same owner/capability share one SQLite read
+    /// snapshot; different owners remain independent federation snapshots.
+    pub async fn revalidate_product_federated_batch(
+        &self,
+        access: &FederationConsumerAccess,
+        bindings: &[FederatedMemoryRevalidationBinding],
+        now_unix_seconds: i64,
+    ) -> Result<Vec<FederatedRevalidationStatus>, CognitiveStoreError> {
         match self {
             Self::AvailableFederatedV2 {
                 consumer_agent_id,
                 owner_layouts,
                 ..
             } => {
-                revalidate_federated_product(
+                revalidate_federated_product_batch(
                     consumer_agent_id,
                     owner_layouts.as_slice(),
                     access,
-                    binding,
+                    bindings,
                     now_unix_seconds,
                 )
                 .await
@@ -649,38 +672,116 @@ async fn revalidate_federated_product(
     binding: &FederatedMemoryRevalidationBinding,
     now_unix_seconds: i64,
 ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
-    if access.agent_id() != consumer_agent_id {
-        return Ok(FederatedRevalidationStatus::Stale(
-            FederationRevalidationDrift::Consumer,
-        ));
+    revalidate_federated_product_batch(
+        consumer_agent_id,
+        owner_layouts,
+        access,
+        std::slice::from_ref(binding),
+        now_unix_seconds,
+    )
+    .await?
+    .pop()
+    .ok_or_else(|| {
+        CognitiveStoreError::Corrupt(
+            "single federated product revalidation returned no status".to_string(),
+        )
+    })
+}
+
+async fn revalidate_federated_product_batch(
+    consumer_agent_id: &AgentId,
+    owner_layouts: &[HeptaAgentLayout],
+    access: &FederationConsumerAccess,
+    bindings: &[FederatedMemoryRevalidationBinding],
+    now_unix_seconds: i64,
+) -> Result<Vec<FederatedRevalidationStatus>, CognitiveStoreError> {
+    if bindings.is_empty() {
+        return Ok(Vec::new());
     }
-    let Some(owner_layout) = owner_layouts
-        .iter()
-        .find(|layout| layout.agent_id() == &binding.source_agent_id)
-    else {
-        return Ok(FederatedRevalidationStatus::Stale(
-            FederationRevalidationDrift::CapabilityMissing,
-        ));
-    };
+    if access.agent_id() != consumer_agent_id {
+        return Ok(vec![
+            FederatedRevalidationStatus::Stale(FederationRevalidationDrift::Consumer);
+            bindings.len()
+        ]);
+    }
     let revalidation = async {
-        let readers =
-            FederatedMemoryReader::discover(owner_layout, consumer_agent_id, now_unix_seconds)
-                .await?;
-        let Some(reader) = readers
+        let mut statuses = std::iter::repeat_with(|| None)
+            .take(bindings.len())
+            .collect::<Vec<Option<FederatedRevalidationStatus>>>();
+
+        for owner_layout in owner_layouts {
+            let owner_indices = bindings
+                .iter()
+                .enumerate()
+                .filter_map(|(index, binding)| {
+                    (binding.source_agent_id == *owner_layout.agent_id()).then_some(index)
+                })
+                .collect::<Vec<_>>();
+            if owner_indices.is_empty() {
+                continue;
+            }
+
+            let readers =
+                FederatedMemoryReader::discover(owner_layout, consumer_agent_id, now_unix_seconds)
+                    .await?;
+            let capability_ids = owner_indices
+                .iter()
+                .map(|index| bindings[*index].capability.id().as_str().to_string())
+                .collect::<BTreeSet<_>>();
+
+            for capability_id in capability_ids {
+                let group_indices = owner_indices
+                    .iter()
+                    .copied()
+                    .filter(|index| {
+                        bindings[*index].capability.id().as_str() == capability_id.as_str()
+                    })
+                    .collect::<Vec<_>>();
+                let Some(reader) = readers
+                    .iter()
+                    .find(|reader| reader.capability().id().as_str() == capability_id.as_str())
+                else {
+                    for index in group_indices {
+                        statuses[index] = Some(FederatedRevalidationStatus::Stale(
+                            FederationRevalidationDrift::CapabilityMissing,
+                        ));
+                    }
+                    continue;
+                };
+                let group_bindings = group_indices
+                    .iter()
+                    .map(|index| bindings[*index].clone())
+                    .collect::<Vec<_>>();
+                let group_statuses = reader
+                    .revalidate_many(access, &group_bindings, now_unix_seconds)
+                    .await?;
+                if group_statuses.len() != group_indices.len() {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "product federation batch revalidation changed result cardinality"
+                            .to_string(),
+                    ));
+                }
+                for (index, status) in group_indices.into_iter().zip(group_statuses) {
+                    statuses[index] = Some(status);
+                }
+            }
+        }
+
+        Ok(statuses
             .into_iter()
-            .find(|reader| reader.capability().id() == binding.capability.id())
-        else {
-            return Ok(FederatedRevalidationStatus::Stale(
-                FederationRevalidationDrift::CapabilityMissing,
-            ));
-        };
-        reader.revalidate(access, binding, now_unix_seconds).await
+            .map(|status| {
+                status.unwrap_or(FederatedRevalidationStatus::Stale(
+                    FederationRevalidationDrift::CapabilityMissing,
+                ))
+            })
+            .collect::<Vec<_>>())
     };
+
     tokio::time::timeout(PRODUCT_FEDERATION_TOTAL_BUDGET, revalidation)
         .await
         .map_err(|_| {
             CognitiveStoreError::Unavailable(
-                "memory federation final revalidation timed out".to_string(),
+                "memory federation final batch revalidation timed out".to_string(),
             )
         })?
 }
