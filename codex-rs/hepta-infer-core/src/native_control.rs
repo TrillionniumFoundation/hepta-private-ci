@@ -899,7 +899,8 @@ fn validate_snapshot_record(
         {
             return Err(Error::CorruptJournal("native observation snapshot"));
         }
-        validate_output_payload(output).map_err(|_| Error::CorruptJournal("native output receipt"))?;
+        validate_output_payload(output)
+            .map_err(|_| Error::CorruptJournal("native output receipt"))?;
         validate_final_use_observation(record, output)?;
     }
     Ok(())

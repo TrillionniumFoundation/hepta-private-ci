@@ -668,7 +668,7 @@
         "entrypoints": [
           {
             "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-            "symbol": "InferenceWorker::load_model"
+            "symbol": "pub fn load_model("
           },
           {
             "path": "codex-rs/hepta-infer-worker-host/src/local_process_driver.rs",
@@ -676,15 +676,15 @@
           },
           {
             "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-            "symbol": "AppServerModelDriver::run"
+            "symbol": "pub async fn run("
           },
           {
             "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-            "symbol": "AppServerModelDriver::reconcile_once"
+            "symbol": "pub(super) async fn reconcile_once("
           },
           {
             "path": "codex-rs/hepta-inferd/src/worker_port.rs",
-            "symbol": "NativeWorkerPort::execute"
+            "symbol": "pub async fn execute("
           }
         ],
         "stateAndRecovery": "Local execution requires move-only VerifiedResourceGrant and aggregate remaining-memory accounting. Hosted execution uses quota/resource-aware DurableInferenceControl, exact runtime-binding grant resolution, revocation-fenced durable dispatch plus synchronous bounded queue admission, digest-only output receipts, and Core ReconcileOnly recovery. If provider history reproduces text after restart it remains live-only and is re-redacted before settlement. The named hepta-inference-runtime-host asks an independent issuer socket to sign only the frozen binding and verifies the response locally; it has no signing key. Missing authoritative usage remains None, and process-loss recovery cannot recreate live terminal authority.",

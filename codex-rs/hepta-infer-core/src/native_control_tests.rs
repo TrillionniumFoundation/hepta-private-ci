@@ -372,7 +372,12 @@ fn journal_compaction_preserves_exact_state_and_bounds_archives() {
             .windows(sensitive_text.len())
             .any(|window| window == sensitive_text.as_bytes())
     );
-    let compacted_observation = control.native_record("r1").unwrap().observation.as_ref().unwrap();
+    let compacted_observation = control
+        .native_record("r1")
+        .unwrap()
+        .observation
+        .as_ref()
+        .unwrap();
     assert!(!compacted_observation.output_retained);
     assert!(compacted_observation.output.is_empty());
     let expected_output_sha256 = Digest32::of_bytes(sensitive_text.as_bytes()).to_string();
@@ -389,14 +394,18 @@ fn journal_compaction_preserves_exact_state_and_bounds_archives() {
             .settle_native_receipt_only("r1", observed.clone())
             .unwrap();
     }
-    control.compact_native_journal(/*retain_archives*/ 2).unwrap();
+    control
+        .compact_native_journal(/*retain_archives*/ 2)
+        .unwrap();
     for tokens in 5..9 {
         observed.observed_output_tokens = Some(tokens);
         control
             .settle_native_receipt_only("r1", observed.clone())
             .unwrap();
     }
-    control.compact_native_journal(/*retain_archives*/ 2).unwrap();
+    control
+        .compact_native_journal(/*retain_archives*/ 2)
+        .unwrap();
     let expected = control.native_record("r1").unwrap().clone();
 
     let parent = path.parent().unwrap();
@@ -549,7 +558,6 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     std::fs::remove_file(path).unwrap();
 }
 
-
 #[test]
 fn exact_reconciliation_can_release_dispatch_intent_without_inventing_terminality() {
     let path = path("reconciled-missing");
@@ -608,7 +616,6 @@ fn recovered_turn_identity_is_idempotent_and_cannot_drift() {
     std::fs::remove_file(path).unwrap();
 }
 
-
 #[test]
 fn reconciled_no_admission_survives_compaction_and_reopen() {
     let path = path("no-admission-compact");
@@ -619,7 +626,9 @@ fn reconciled_no_admission_survives_compaction_and_reopen() {
         .reconcile_native_no_admission("r1", "exact queue proof: not admitted".to_string())
         .unwrap();
     assert_eq!(released.state, NativeReservationState::Released);
-    control.compact_native_journal(/*retain_archives*/ 1).unwrap();
+    control
+        .compact_native_journal(/*retain_archives*/ 1)
+        .unwrap();
     drop(control);
 
     let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
@@ -641,7 +650,6 @@ fn reconciled_no_admission_survives_compaction_and_reopen() {
     }
     std::fs::remove_file(path).unwrap();
 }
-
 
 #[test]
 fn receipt_only_settlement_never_persists_provider_text() {
@@ -705,10 +713,7 @@ fn redacted_observation_cannot_rehydrate_provider_text() {
     rehydrate.output = "partial private text plus more".to_string();
     rehydrate.output_retained = true;
     rehydrate.output_sha256 = None;
-    assert_eq!(
-        control.settle_native("r1", rehydrate),
-        Err(Error::Conflict)
-    );
+    assert_eq!(control.settle_native("r1", rehydrate), Err(Error::Conflict));
 
     drop(control);
     std::fs::remove_file(path).unwrap();

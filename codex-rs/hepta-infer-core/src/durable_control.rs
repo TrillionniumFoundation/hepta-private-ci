@@ -383,8 +383,7 @@ impl DurableInferenceControl {
             self.poisoned = true;
             return Err(error.into());
         }
-        if let Err(error) =
-            prune_native_archives(parent, file_name, retain_archives, &archive_path)
+        if let Err(error) = prune_native_archives(parent, file_name, retain_archives, &archive_path)
         {
             self.poisoned = true;
             return Err(error);
