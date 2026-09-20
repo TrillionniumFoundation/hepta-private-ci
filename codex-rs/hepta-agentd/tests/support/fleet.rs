@@ -141,12 +141,15 @@ impl FleetHarness {
         &mut self,
         agent: &AgentFixture,
         trust_file: &Path,
+        checkpoint_file: &Path,
     ) -> Result<()> {
         let command = AgentCommand::new(
             agentd_binary()?,
             vec![
                 "--authbus-trust-file".into(),
                 trust_file.as_os_str().to_owned(),
+                "--authbus-checkpoint-file".into(),
+                checkpoint_file.as_os_str().to_owned(),
             ],
         )?;
         self.supervisor
