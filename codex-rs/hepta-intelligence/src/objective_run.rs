@@ -108,11 +108,15 @@ pub fn compile_and_publish_objective_run_v1(
         .deadline_unix_micros
         .ok_or(ObjectiveRunError::DeadlineMissing)?;
     let admission = RunStartAdmissionBindingV1 {
+        profile_id: receipt.profile_id.clone(),
+        profile_revision: receipt.profile_revision.get(),
         profile_digest: receipt.profile_digest,
+        supplied_source_digest: receipt.supplied_source_digest,
         intent_digest: receipt.intent_digest,
         admitted_source_digest: receipt.admitted_source_digest,
         observed_at_unix_micros: receipt.observed_at_unix_micros,
         deadline_unix_micros,
+        authority: receipt.authority,
     };
     let objective = match outcome.compile_result {
         Ok(objective) => objective,
