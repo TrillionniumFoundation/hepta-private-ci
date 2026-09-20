@@ -217,9 +217,10 @@ impl AutomationStore {
              LIMIT ?",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
-        .bind(i64::try_from(limit).map_err(|_| {
-            TaskFlowError::Invalid("effect recovery scan limit".to_string())
-        })?)
+        .bind(
+            i64::try_from(limit)
+                .map_err(|_| TaskFlowError::Invalid("effect recovery scan limit".to_string()))?,
+        )
         .fetch_all(self.taskflow_pool())
         .await
         .map_err(|_| TaskFlowError::Unavailable)?;
@@ -287,12 +288,9 @@ impl AutomationStore {
                             "effect reconciliation conflicts with durable evidence".to_string(),
                         ));
                     };
-                    if observation.kind != kind
-                        || observation.evidence_digest != *evidence_digest
-                    {
+                    if observation.kind != kind || observation.evidence_digest != *evidence_digest {
                         return Err(TaskFlowError::Conflict(
-                            "effect reconciliation is already bound to different bytes"
-                                .to_string(),
+                            "effect reconciliation is already bound to different bytes".to_string(),
                         ));
                     }
                     Ok(refreshed)
@@ -321,7 +319,9 @@ impl AutomationStore {
             .effect_dispatch_attempt(run_id, step_id, attempt)
             .await?
             .ok_or_else(|| {
-                TaskFlowError::Corrupt("effect dispatch attempt vanished after observation".to_string())
+                TaskFlowError::Corrupt(
+                    "effect dispatch attempt vanished after observation".to_string(),
+                )
             })?;
         match inserted {
             Ok(_) => Ok(refreshed),
@@ -433,7 +433,6 @@ fn to_i64(value: u64) -> Result<i64, TaskFlowError> {
 fn is_constraint(error: &sqlx::Error) -> bool {
     matches!(error, sqlx::Error::Database(database) if database.is_unique_violation() || database.is_foreign_key_violation() || database.is_check_violation())
 }
-
 
 #[cfg(test)]
 mod tests {
