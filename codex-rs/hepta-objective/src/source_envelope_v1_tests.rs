@@ -284,10 +284,13 @@ fn predicate_families_share_the_native_aggregate_ceiling() {
         })
         .collect();
     let evidence = source.structured_intent.evidence_requirements[0].clone();
-    source.structured_intent.evidence_requirements = vec![evidence.clone(), ObjectiveEvidenceRequirementV1 {
-        requirement_id: "evidence-overflow".into(),
-        ..evidence
-    }];
+    source.structured_intent.evidence_requirements = vec![
+        evidence.clone(),
+        ObjectiveEvidenceRequirementV1 {
+            requirement_id: "evidence-overflow".into(),
+            ..evidence
+        },
+    ];
     assert_eq!(
         source.validate_structure(),
         Err(ObjectiveStructureError::CollectionCount {
