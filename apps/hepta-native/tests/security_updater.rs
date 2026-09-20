@@ -15,6 +15,7 @@ use hepta_native::security::SignedEndpointManifestV1;
 use hepta_native::security::TrustedKeySet;
 use hepta_native::security::now_unix_ms;
 use hepta_native::security::platform_final_use_binding;
+use hepta_native::updater::PendingUpdateStatus;
 use hepta_native::updater::SignedUpdateManifestV1;
 use hepta_native::updater::UpdateManager;
 use hepta_native::updater::activate_staged_update;
@@ -375,7 +376,54 @@ fn unconfirmed_activation_rolls_back_to_predecessor() {
     activate_staged_update(&manager.pending_path(), &keys, &target, 1).unwrap();
     assert!(manager.rollback_unconfirmed().unwrap());
     assert_eq!(digest_file(&target).unwrap(), predecessor_digest);
-    assert!(!manager.pending_path().exists());
+    let terminal = manager.load_pending().unwrap().unwrap();
+    assert_eq!(terminal.status, PendingUpdateStatus::RolledBack);
+    assert!(manager.pending_path().exists());
+}
+
+#[test]
+fn failed_rollback_is_durable_recovery_required() {
+    let temp = TempDir::new().unwrap();
+    let (signing, keys, key_path) = key_fixture(temp.path());
+    let package = temp.path().join("next-recovery.bin");
+    let target = temp.path().join("hepta-native-recovery.bin");
+    std::fs::write(&package, b"next recovery binary").unwrap();
+    std::fs::write(&target, b"recovery predecessor").unwrap();
+    let predecessor_digest = digest_file(&target).unwrap();
+    let now = now_unix_ms().unwrap();
+    let mut manifest = SignedUpdateManifestV1 {
+        schema: "hepta.native-update.v1".to_owned(),
+        package_digest: digest_file(&package).unwrap(),
+        predecessor_digest,
+        evidence_digest: sha256_hex(b"recovery-evidence"),
+        platform: std::env::consts::OS.to_owned(),
+        architecture: std::env::consts::ARCH.to_owned(),
+        backend_protocol_version: 1,
+        channel: "stable".to_owned(),
+        selected_by: "release.reviewer".to_owned(),
+        generator_principal: "release.builder".to_owned(),
+        issued_unix_ms: now.saturating_sub(1000),
+        expires_unix_ms: now + 60_000,
+        key_id: "release.key".to_owned(),
+        signature_base64: String::new(),
+    };
+    manifest.signature_base64 = STANDARD.encode(
+        signing
+            .sign(manifest.signing_message().as_bytes())
+            .to_bytes(),
+    );
+    let manager = UpdateManager::new(keys, temp.path().join("updates")).unwrap();
+    manager.verify_and_stage(manifest, &package, 1).unwrap();
+    let keys = TrustedKeySet::from_path(&key_path).unwrap();
+    activate_staged_update(&manager.pending_path(), &keys, &target, 1).unwrap();
+    let pending = manager.load_pending().unwrap().unwrap();
+    std::fs::remove_file(pending.backup_path.unwrap()).unwrap();
+
+    let error = manager.rollback_unconfirmed().unwrap_err();
+    assert!(error.to_string().contains("recovery_required"));
+    let recovery = manager.load_pending().unwrap().unwrap();
+    assert_eq!(recovery.status, PendingUpdateStatus::RecoveryRequired);
+    assert!(recovery.recovery_reason.is_some());
 }
 
 #[test]
