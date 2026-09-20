@@ -1,6 +1,7 @@
 use std::io::ErrorKind;
 
 use anyhow::Result;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaFleetRoot;
 use ed25519_dalek::SigningKey;
 use tokio_util::sync::CancellationToken;
@@ -40,6 +41,7 @@ async fn pinned_verifier_cannot_enable_daemon_on_unsupported_host() -> Result<()
         cancellation.clone(),
         verifier,
         /*revocation_frontier*/ 1,
+        Sha256Digest::for_bytes(b"unsupported-host-compatibility"),
     )
     .await;
     assert!(matches!(
