@@ -1,6 +1,8 @@
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use codex_app_server::AppServerDrainHandle;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
@@ -23,6 +25,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    app_server_drain: AppServerDrainHandle,
 }
 
 struct RuntimeState {
@@ -58,6 +61,7 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
+            app_server_drain: AppServerDrainHandle::new(),
         })
     }
 
@@ -212,11 +216,51 @@ impl AgentdState {
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.app_server_ready = false;
+        self.app_server_drain.request_drain();
         self.events
             .lock()
             .map_err(poisoned_state)?
             .push(AgentdEventKind::Draining);
         Ok(())
+    }
+
+    pub(crate) fn app_server_drain_handle(&self) -> AppServerDrainHandle {
+        self.app_server_drain.clone()
+    }
+
+    pub(crate) fn request_drain(&self) -> Result<DrainSnapshot, AgentdError> {
+        self.refresh_generation()?;
+        {
+            let runtime = self.runtime.lock().map_err(poisoned_state)?;
+            if runtime.lifecycle != AgentLifecycle::Draining || runtime.fenced {
+                return Err(AgentdError::GenerationFenced(
+                    "Agentd drain requires the current supervisor generation to be Draining"
+                        .to_string(),
+                ));
+            }
+        }
+        self.mark_draining()?;
+        self.drain_snapshot()
+    }
+
+    pub(crate) fn drain_snapshot(&self) -> Result<DrainSnapshot, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
+            AgentdError::Protocol("running assistant turn count exceeds u32".to_string())
+        })?;
+        Ok(DrainSnapshot {
+            admission_closed: runtime.lifecycle == AgentLifecycle::Draining
+                && !runtime.app_server_ready
+                && !runtime.fenced,
+            running_turns,
+            drained: runtime.lifecycle == AgentLifecycle::Draining
+                && !runtime.fenced
+                && self.app_server_drain.drained()
+                && running_turns == 0,
+            lifecycle: runtime.lifecycle,
+            fenced: runtime.fenced,
+        })
     }
 
     pub(crate) fn mark_fenced(&self) {
