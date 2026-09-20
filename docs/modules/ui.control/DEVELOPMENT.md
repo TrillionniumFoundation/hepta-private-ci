@@ -336,6 +336,14 @@ retain tests for:
 The repository CI runs these checks at source HEAD and at a deterministic
 synthetic merge candidate for pull requests.
 
+The dedicated qualification also runs `scripts/hepta-ui-control-source-base.py`.
+The map's `sourceBase` is the last reviewed commit/tree that changed
+`apps/hepta-control-ui`, not the map-containing HEAD itself. The verifier
+requires that anchor to exist, match its recorded tree, remain an ancestor of
+the candidate, and have zero tracked source-root drift through the candidate.
+Any later source change therefore requires an explicit map rebind while
+map/docs/workflow-only commits avoid the Git self-reference paradox.
+
 ## 12. Deployment qualification checklist
 
 Source completion is not deployment qualification. Before changing
