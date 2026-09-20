@@ -764,7 +764,9 @@ fn internal_context_attachment(value: crate::AgentContextAttachment) -> crate::C
     }
 }
 
-fn internal_run_recovery(value: crate::AgentRunRecovery) -> Result<crate::RunRecovery, AgentdError> {
+fn internal_run_recovery(
+    value: crate::AgentRunRecovery,
+) -> Result<crate::RunRecovery, AgentdError> {
     let learning_decision = value
         .learning_decision
         .map(internal_learning_decision_binding)
