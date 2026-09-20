@@ -19,6 +19,8 @@ mod model;
 mod outbox;
 
 pub use durable::DurableOperationBinding;
+pub use durable::DurableOutboxRecord;
+pub use durable::DurableOutboxState;
 pub use durable::DurableOperationLedger;
 pub use durable::DurableOperationRecord;
 pub use error::OperationError;
