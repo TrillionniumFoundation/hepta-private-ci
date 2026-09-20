@@ -10,7 +10,7 @@
 
 NDU is the typed preference and utility owner for supported feasible consequences. It compares only candidates bound to one immutable objective, legal-action set and generation. Authority, truth, privacy, deletion, writer ownership, emergency-stop state and hard risk/resource floors are constraints; they never become compensable utility dimensions.
 
-The source implementation contains a deterministic fixed-point baseline, policy-bound aggregation and Pareto logic, recursive utility, preference updates, conditional-moment/covariance kernels, a protocol-context adapter and an owner-local projection-journal reference. Stochastic learned coefficients remain shadow candidates. None of these operations executes an effect, selects an artifact for production, diagnoses a person, changes the current objective or issues a capability.
+The source implementation contains a deterministic fixed-point baseline, policy-bound aggregation and Pareto logic, recursive utility, preference updates, conditional-moment/covariance kernels, a protocol-context adapter, an append-only projection journal and a crash-bounded local durable-writer candidate. Stochastic learned coefficients remain shadow candidates. None of these operations executes an effect, selects an artifact for production, diagnoses a person, changes the current objective or issues a capability. Presence of the durable writer source is not production activation.
 
 ## 2. Cross-organ utility contract
 
@@ -95,11 +95,13 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
+`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. If the registered residual tolerance is not reached inside that bound, the solver returns `PreferenceSolverUnavailable`; the last bounded numerical state is not exposed as a successful terminal state.
+
+Parent/child staging is scoped by an explicit stable hierarchy identity. Different subject levels within the same hierarchy cannot select new artifacts in one generation. Unrelated hierarchy roots may advance in the same generation; a global subject-class ban is not the intended invariant.
 
 ## 5. Convergence, infeasibility and multiple solutions
 
-`NduSolverIterationReceipt` records one owner-local numerical step. `NduSolverTerminationReceipt` records:
+`NduSolverIterationReceipt` records one owner-local numerical step. A successful `NduSolverTerminationReceipt` records:
 
 - disposition;
 - iteration count;
@@ -122,7 +124,7 @@ The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It
 - predecessor/next revisions;
 - residual, projection count and state digest.
 
-The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context fails before publication.
+The adapter also rejects structurally impossible local receipts: iteration zero or above 64, negative residual, a non-successor next revision, or an empty state digest. The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context or malformed local state fails before publication.
 
 ## 6. State, persistence and scheduling
 
@@ -144,11 +146,11 @@ The full-rank pilot rejects singular or ill-conditioned covariance. A pseudoinve
 
 A numeric covariance fixture proves algebra only. It does not prove conditional identification, a complete FBSDE solution, adaptive efficacy or activation safety.
 
-### 6.2 Projection state and owner-local durability reference
+### 6.2 Projection journal semantic recovery
 
 Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist.
 
-`NduProjectionJournalV1` is an owner-local bounded reference implementation. Each entry binds:
+`NduProjectionJournalV1` is the bounded state-machine and serialization layer. Each entry binds:
 
 - monotone sequence;
 - preference, utility, selection or revocation kind;
@@ -157,9 +159,28 @@ Preference and utility projections are append-only revisions owned by `utility.n
 - projection payload digest;
 - predecessor-entry and entry digests.
 
-The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
+The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection. Recovery does not trust hash validity alone: every serialized selection and revocation is replayed through the same semantic transition checks as a live mutation. A hash-valid selection or revocation for a projection that was never recorded for that objective/subject is rejected.
 
-This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
+### 6.3 Crash-bounded durable writer candidate
+
+`NduProjectionStoreV1` is a native source candidate for the module-owned projection writer. It is intentionally separate from external activation. The host supplies an already-created private local directory; the store does not discover or create a broader filesystem root.
+
+The V1 writer provides:
+
+- one advisory writer lock held for the open store lifetime;
+- bounded reopen through the semantic journal parser;
+- stale uncommitted temporary-image removal only after lock acquisition;
+- copy-on-mutate so failed persistence does not advance the in-memory journal;
+- complete temporary-image write followed by `sync_all`;
+- atomic rename to the committed image;
+- parent-directory synchronization on the Unix qualification profile before success acknowledgement;
+- an `Indeterminate` result if rename may have committed but directory durability cannot be acknowledged;
+- exact backup export;
+- validated backup restore only when the current committed history is an exact prefix of the restored history, preventing an old valid backup from deleting a later revocation.
+
+The file image remains bounded to the 4096-record journal ceiling. The lock is advisory and assumes a host-private directory; a hostile process that ignores the lock is outside this mechanism's threat model.
+
+This source candidate does **not** establish production activation. Target-host filesystem behavior, non-Unix atomic-replace/directory-durability equivalence, host authentication and enrollment, retention policy, encrypted/off-host backup transport, restore drills, monitoring, independent acceptance, canary and release remain separately governed evidence. `productionWriterState` therefore remains fail-closed until those boundaries are qualified and selected.
 
 ## 7. Goodhart and wireheading controls
 
@@ -210,21 +231,25 @@ Reference-host p95/p99, transient memory and persistent projection targets remai
 - `NDU-SYS-GV-001`: deterministic zero-noise preference/utility vector reproduces exact Q32 values.
 - `NDU-SYS-GV-002`: a higher-utility privacy-violating candidate is filtered before Pareto analysis.
 - `NDU-SYS-GV-003`: multiple non-dominated candidates without scalarization return a Pareto slow path.
-- `NDU-SYS-GV-004`: simultaneous parent/child update rejects; staged damping converges in the fixture.
+- `NDU-SYS-GV-004`: simultaneous parent/child update inside one hierarchy rejects; unrelated hierarchy roots may advance in the same generation.
 - `NDU-SYS-GV-005`: resource cost above ceiling is infeasible, not negative utility.
 - `NDU-SYS-GV-006`: changed outcome-observer identity invalidates the evaluation chain.
 - `NDU-SYS-GV-007`: policy-specific maximum aggregation differs from summation and is digest-bound.
 - `NDU-SYS-GV-008`: `RequireEqual` detects contradictory organ values.
 - `NDU-SYS-GV-009`: Pareto tolerance changes the frontier and policy digest deterministically.
-- `NDU-SYS-GV-010`: termination receipt reports terminal and true maximum residual separately.
-- `NDU-SYS-GV-011`: canonical iteration publication rejects missing objective/event/coefficient context.
-- `NDU-SYS-GV-012`: projection-journal reopen, tamper, truncation and revocation non-resurrection fixtures pass.
+- `NDU-SYS-GV-010`: successful termination receipt reports terminal and true maximum residual separately.
+- `NDU-SYS-GV-011`: canonical iteration publication rejects missing objective/event/coefficient context and malformed local iteration receipts.
+- `NDU-SYS-GV-012`: projection-journal reopen rejects tamper, truncation, hash-valid impossible transitions and revocation resurrection.
+- `NDU-SYS-GV-013`: registered slow damping that cannot reach tolerance in 64 iterations returns unavailable.
+- `NDU-SYS-GV-014`: durable writer reopen preserves selected and revoked state under the single-writer lock.
+- `NDU-SYS-GV-015`: stale temporary images are discarded before recovery and a concurrent writer is rejected.
+- `NDU-SYS-GV-016`: backup restore validates the full journal and rejects rollback that would remove a later revocation.
 
 Exact native mappings are registered in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`. The same implementation cannot be the sole oracle for a critical numerical claim; analytic or independent scalar fixtures remain required.
 
 ## 10. Implementation sequence
 
-Implementation order is typed contributions, explicit aggregation policy, feasibility, tolerant Pareto, optional scalarization, fixed-point preference state, local solver receipts, canonical context adapter, recursive utility, covariance shadow kernel, owner-local durability reference, exact source tests and semantic conformance.
+Implementation order is typed contributions, explicit aggregation policy, feasibility, tolerant Pareto, optional scalarization, fixed-point preference state, local solver receipts, canonical context adapter, recursive utility, covariance shadow kernel, semantic projection journal, crash-bounded durable writer candidate, exact source tests and semantic conformance.
 
 Work-package ownership is narrowed by `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json`:
 
@@ -234,7 +259,7 @@ Work-package ownership is narrowed by `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY
 
 The legacy `NDU-2-AGENT-DOMAIN-HIERARCHY` identifier remains in historical DAGs but is superseded for new source mutation by this overlay. No package gains positive authority.
 
-Repository-controlled completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. Product caller, production writer, independent convergence decision, activation and release remain separately governed.
+Repository-controlled source completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. Existing control-plane and intelligence callsites establish bounded integration surfaces; authenticated production composition, selected production writer activation, independent convergence decision, target-host qualification and release remain separately governed.
 
 ## 11. Coding-entry checklist
 
@@ -242,8 +267,12 @@ Repository-controlled completion requires the implementation map, source tests, 
 - every utility axis has an explicit uncertainty value, never an omitted implicit zero;
 - candidate support digests bind organ identity and complete normalized contribution semantics;
 - aggregation, Pareto tolerance and optional scalarization profiles are digest-bound;
+- solver exhaustion returns unavailable and is never relabeled convergence;
+- hierarchy staging compares levels only inside one explicit hierarchy identity;
 - local termination receipts remain distinct from independent convergence certificates;
-- projection reopen, tamper and revocation non-resurrection fixtures pass;
+- protocol publication rejects structurally invalid local solver receipts;
+- projection reopen replays semantic transitions, not only hashes;
+- durable writer tests cover lock lifetime, crash-temp recovery, reopen, backup validation and non-resurrection;
 - exact-head and synthetic-merge checks pass before source completion is claimed.
 
 ## Appendix A. Closed gap and protocol mapping
@@ -254,7 +283,7 @@ Canonical readiness protocols:
 - `NduIterationReceiptV1` — owned by `utility.ndu`;
 - `NduConvergenceCertificateV1` — owned by `learning.eval`.
 
-Owner-local source types such as `EvaluationPolicyV1`, `NduEvaluationReceiptV2`, `NduSolverTerminationReceipt` and `NduProjectionJournalV1` do not become admitted external wire protocols by appearing in Rust. External protocol admission requires explicit registry and consumer changes.
+Owner-local source types such as `EvaluationPolicyV1`, `NduEvaluationReceiptV2`, `NduSolverTerminationReceipt`, `NduProjectionJournalV1` and `NduProjectionStoreV1` do not become admitted external wire protocols by appearing in Rust. External protocol admission requires explicit registry and consumer changes.
 
 Closed documentation gap identifiers remain:
 
