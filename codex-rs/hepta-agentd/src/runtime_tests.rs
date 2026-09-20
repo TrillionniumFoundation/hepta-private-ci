@@ -296,8 +296,7 @@ async fn configured_runtime_routes_automation_create_through_durable_operations(
         10_000,
     );
     let generation = Generation::new(fixture.identity.spawn_generation)?;
-    let intent =
-        automation_task_operation_intent(automation.owner_agent_id(), &draft, generation)?;
+    let intent = automation_task_operation_intent(automation.owner_agent_id(), &draft, generation)?;
     let response = fixture
         .state
         .response(17, 1, AgentdMethod::AutomationCreate { draft })
@@ -316,7 +315,9 @@ async fn configured_runtime_routes_automation_create_through_durable_operations(
     assert!(record.state.is_terminal());
     assert_eq!(record.intent.owner_generation, generation);
     assert!(
-        host.source_store().path().ends_with("kernel-operations/automation.sqlite3"),
+        host.source_store()
+            .path()
+            .ends_with("kernel-operations/automation.sqlite3"),
         "runtime must use the per-Agent durable kernel.operations database",
     );
     Ok(())
