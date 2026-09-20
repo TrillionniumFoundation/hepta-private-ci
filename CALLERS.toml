@@ -22,6 +22,14 @@ product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
 caller_markers = ["ProductionDurableWriter::open", "verifier"]
 
 [[boundary]]
+id = "cognitive_store_recovery_open"
+symbol = "CognitiveStore::open_with_recovery"
+definition_path = "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+definition_markers = ["pub async fn open_with_recovery", "ProductionAuthorityVerifier", "CognitiveStoreOpenGuard::acquire_exclusive"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier"]
+
+[[boundary]]
 id = "agentd_production_writer_host"
 symbol = "AgentdProductionWriterHost::open_with_store"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
@@ -52,8 +60,13 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
-forbidden = ["AllowVerifier", "permit_all"]
+required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "ProductionDurableWriter::open", "CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier"]
+forbidden = ["codex_hepta_memory::CognitiveStore", "AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "CognitiveStore::open"]
+forbidden = ["codex_hepta_memory::CognitiveStore"]
 
 [[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"
