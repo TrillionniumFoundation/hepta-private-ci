@@ -39,6 +39,7 @@ use codex_hepta_memory::MemoryLifecycleState;
 use codex_hepta_memory::MemoryRevalidationBinding;
 use codex_hepta_memory::MemoryRevisionRecord;
 use codex_hepta_memory::MemoryVerification;
+use codex_hepta_memory::ProductionCognitiveMutation;
 use codex_hepta_memory::RetrievalBatch;
 use codex_hepta_memory::RetrievalChannel;
 use codex_hepta_memory::RetrievalRequest;
@@ -231,14 +232,34 @@ impl CognitiveProposalMaterial {
 pub(crate) struct CognitiveExtension {
     runtime: CognitiveRuntime,
     recall: Option<Arc<dyn CognitiveRecallBackend>>,
+    production_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
+    qualification_write_enabled: bool,
 }
 
 impl CognitiveExtension {
     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+        Self::new_with_mutation(runtime, None, false)
+    }
+
+    pub(crate) fn new_with_mutation(
+        runtime: CognitiveRuntime,
+        production_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
+        qualification_write_enabled: bool,
+    ) -> Self {
         let recall = runtime
             .available_store()
             .map(|store| store.clone() as Arc<dyn CognitiveRecallBackend>);
-        Self { runtime, recall }
+        let production_mutation = production_mutation.filter(|mutation| {
+            runtime
+                .available_store()
+                .is_some_and(|store| mutation.owner_agent_id() == store.owner_agent_id())
+        });
+        Self {
+            runtime,
+            recall,
+            production_mutation,
+            qualification_write_enabled,
+        }
     }
 
     #[cfg(test)]
@@ -246,6 +267,8 @@ impl CognitiveExtension {
         Self {
             runtime: CognitiveRuntime::Available(store),
             recall: Some(recall),
+            production_mutation: None,
+            qualification_write_enabled: false,
         }
     }
 
@@ -618,7 +641,14 @@ impl ToolContributor for CognitiveExtension {
             thread_store.level_id().to_string(),
             step_store.level_id().to_string(),
             witnesses,
-            thread_state.write_enabled && self.store().is_some(),
+            thread_state.write_enabled
+                && self.qualification_write_enabled
+                && self.store().is_some(),
+            if thread_state.write_enabled {
+                self.production_mutation.clone()
+            } else {
+                None
+            },
         )
     }
 }

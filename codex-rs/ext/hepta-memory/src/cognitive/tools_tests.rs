@@ -563,6 +563,7 @@ async fn deferred_tools_are_visible_before_turn_input_and_fail_closed_without_ex
         TURN_ID.to_string(),
         witnesses.clone(),
         true,
+        None,
     );
     assert_eq!(tools.len(), 5);
 
@@ -643,6 +644,7 @@ async fn unavailable_deferred_runtime_keeps_only_read_tools_visible_without_a_wi
         TURN_ID.to_string(),
         Arc::new(CognitiveTurnWitnesses::default()),
         false,
+        None,
     );
     assert_eq!(tools.len(), 2);
     assert_eq!(
