@@ -48,6 +48,22 @@ ObjectiveSourceEnvelopeV1
 as `compile_prevalidated_legacy_objective_v1` under the explicit
 `qualification-legacy-compile` Cargo feature for historical qualification fixtures.
 
+## Canonical ObjectiveFunctionV1 publication
+
+After authenticated admission and deterministic compilation, product publication calls
+`encode_objective_function_v1`. It projects the admitted source, frozen profile,
+admission receipt and native compiled objective into the registered canonical JSON
+`ObjectiveFunctionV1`, validates that projection, re-decodes the exact bytes and
+computes a protocol-wire digest.
+
+The protocol-wire digest is intentionally **not** the native
+`ObjectiveFunction::semantic_digest`. The native digest identifies the compact compiler
+semantics used by `RunStartSnapshotV1.objectiveDigest`; the protocol digest identifies the
+registered JSON transport including explicit evidence requirements, legal/forbidden actions,
+resource endowment and deadline. The durable run-start v2 record binds both identities.
+Legacy v1 records may be decoded for migration/recovery inspection but cannot be admitted
+to Agentd runtime final use without the canonical protocol identity.
+
 ## Feasibility determinism
 
 The constraint solver is deterministic for a fixed validated grammar, canonical atom set and

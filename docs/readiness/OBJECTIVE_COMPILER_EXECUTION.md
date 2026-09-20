@@ -27,6 +27,12 @@ bounded JSON bytes
          -> check_feasibility_v1
 -> ObjectiveAdmissionReceiptV1
 -> ObjectiveCompileReceiptV1 | ObjectiveConflictReceiptV1
+-> for compiled/abstain: encode_objective_function_v1(...)
+   -> canonical ObjectiveFunctionV1 JSON bytes
+   -> ObjectiveFunctionV1 protocol-wire digest
+-> durable RunStart v2 record
+   -> native semantic bytes + native semantic digest
+   -> canonical ObjectiveFunctionV1 bytes + protocol-wire digest
 ```
 
 No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A represented Source-V1 operator without a lossless native mapping is rejected deterministically; see `docs/modules/objective.compiler/SEMANTIC_SUPPORT.md`. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
@@ -48,7 +54,7 @@ provenance: exact source and normalization-profile digests
 
 Free text is evidence for intent extraction, never the final authority representation. Every predicate has an identifier, unit, comparator, bound, evidence source and terminality. Arrays are stable-sorted by semantic identifier. Unicode uses the selected normalization profile; timestamps are UTC; durations are integer microseconds; numeric values use registered fixed-point profiles. Duplicate semantic keys are rejected.
 
-The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Bounds are enforced against the **final native aggregate**, not just each source array: Source V1 admits at most **246 source constraints** because admission deterministically adds six resource constraints and four risk/rollback/compensation/abstention constraints before the native 256-constraint ceiling. `successPredicates + terminalConditions + evidenceRequirements` share one aggregate ceiling of **128**. Source legal-action arrays may contain 128 entries only when the intrinsic `abstain` slot is explicit; when it is omitted the compiler reserves one slot and accepts at most 127 caller legal actions. Admission profiles remain bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and a 256 KiB encoded-profile guard; risk and rollback levels must be monotone.
+The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. The owner-native IR digest and registered `ObjectiveFunctionV1` wire digest are distinct identities: native execution never treats the wire digest as the compiler semantic digest, and durable publication never drops either binding. Bounds are enforced against the **final native aggregate**, not just each source array: Source V1 admits at most **246 source constraints** because admission deterministically adds six resource constraints and four risk/rollback/compensation/abstention constraints before the native 256-constraint ceiling. `successPredicates + terminalConditions + evidenceRequirements` share one aggregate ceiling of **128**. Source legal-action arrays may contain 128 entries only when the intrinsic `abstain` slot is explicit; when it is omitted the compiler reserves one slot and accepts at most 127 caller legal actions. Admission profiles remain bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and a 256 KiB encoded-profile guard; risk and rollback levels must be monotone.
 
 ## 3. Constraint precedence and conflict resolution
 
@@ -106,7 +112,7 @@ Compilation semantics are a pure function of the authenticated source envelope, 
 
 ## 5. State machine and persistence
 
-The compiler owns no domain-fact store. `ObjectiveAdmissionContextV1` is an owner-local trust carrier for the pure library boundary, not a standalone cryptographic authentication proof; a test or arbitrary downstream crate constructing that value does not establish a product caller. The canonical product-source caller is Agentd's signed objective ingress: current AuthBus trust produces an opaque `AuthenticatedMessage` for the exact signed body before Agentd decodes the embedded source and constructs the owner-local admission context. `compile_and_publish_objective_run_v1` then appends the signed-ingress authentication fields, admission binding, canonical objective semantics and `RunStartSnapshotV1` to the destination-owned durable run-start journal before a non-abstain run reaches `AgentRunCoordinator`. Exact replay is idempotent; same-run semantic drift or predecessor drift conflicts; restart recovery revalidates retained authentication against current trust. This is source composition, not deployment activation. Publication occurs only after source, intent, profile, constraint and objective digests agree.
+The compiler owns no domain-fact store. `ObjectiveAdmissionContextV1` is an owner-local trust carrier for the pure library boundary, not a standalone cryptographic authentication proof; a test or arbitrary downstream crate constructing that value does not establish a product caller. The canonical product-source caller is Agentd's signed objective ingress: current AuthBus trust authenticates the exact signed body before Agentd decodes the embedded source and constructs the owner-local admission context. `compile_and_publish_objective_run_v1` then creates the canonical `ObjectiveFunctionV1` projection and appends the signed-ingress authentication fields, admission binding, owner-native objective semantic bytes/digest, canonical `ObjectiveFunctionV1` bytes/protocol digest and `RunStartSnapshotV1` to the destination-owned durable run-start v2 journal before a non-abstain run reaches `AgentRunCoordinator`. Exact replay is idempotent; same-run native or protocol semantic drift and predecessor drift conflict; restart recovery revalidates retained authentication against current trust. Legacy v1 records are readable for recovery/migration inspection but fail closed at Agentd final use because they lack canonical protocol identity. This is source composition, not deployment activation. Publication occurs only after source, intent, profile, constraint, native-objective and protocol-wire digests agree.
 
 ```text
 received
@@ -120,7 +126,7 @@ received
 -> published by owning caller
 ```
 
-A crash before caller publication leaves no selected objective. A crash after durable publication is reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
+A crash before caller publication leaves no selected objective. A partial unacknowledged tail is truncated only to the last complete validated frame; acknowledged missing history is never repaired as success. A crash after a fully synchronized append but before the caller observes the receipt is handled as acknowledgement loss: reopening and replaying the exact record is idempotent. Reusing the run identity with changed native or canonical-protocol semantics conflicts. At runtime final use, current trust, generation, fence and canonical protocol identity are revalidated. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
 
 ## 6. Error taxonomy and fallback
 
