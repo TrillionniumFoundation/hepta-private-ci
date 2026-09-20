@@ -170,12 +170,21 @@ pub struct AgentRunCancellation {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct AgentLearningDecisionBinding {
+    pub episode_id: String,
+    pub event_digest: String,
+    pub chain_digest: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct AgentRunRecovery {
     pub snapshot: AgentRunSnapshot,
     pub revision: u64,
     pub context_digest: String,
     pub compilation_receipt_digest: String,
     pub cancel_reason: Option<String>,
+    pub learning_decision: Option<AgentLearningDecisionBinding>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -973,6 +982,11 @@ mod tests {
             context_digest: "5".repeat(64),
             compilation_receipt_digest: "6".repeat(64),
             cancel_reason: Some("process_restart".to_string()),
+            learning_decision: Some(AgentLearningDecisionBinding {
+                episode_id: "episode.1".to_string(),
+                event_digest: "7".repeat(64),
+                chain_digest: "8".repeat(64),
+            }),
         };
         let recover = AgentdRequest::run_recover_indeterminate(15, 4, recovery);
         let recover_bytes = serde_json::to_vec(&recover).expect("serialize recovery");
