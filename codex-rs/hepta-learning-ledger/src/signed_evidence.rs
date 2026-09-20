@@ -209,6 +209,21 @@ impl LearningEvidenceVerifierV1 {
         self.trust_digest
     }
 
+    #[must_use]
+    pub fn scope_digest(&self) -> Digest32 {
+        self.scope_digest
+    }
+
+    #[must_use]
+    pub fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+
+    #[must_use]
+    pub const fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
+    }
+
     pub fn verify(
         &self,
         expected_role: LearningEvidenceRoleV1,
