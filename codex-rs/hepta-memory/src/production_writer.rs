@@ -581,7 +581,9 @@ impl ProductionDurableWriter {
             payload_json: receipt.payload_json.clone(),
             payload_sha256: receipt.payload_sha256.clone(),
             idempotency_key: receipt.occurrence_key.clone(),
-            operation_digest: operation_digest(&self.authority, receipt),
+            operation_semantic_sha256: operation.operation_semantic_sha256.clone(),
+            expected_predecessor_sha256: operation.expected_predecessor_sha256.clone(),
+            operation_digest: operation_digest(&self.authority, receipt, &operation),
         };
         Ok(FinalUseBinding {
             subject_id: self.store.owner_agent_id().as_str().to_string(),
@@ -778,7 +780,9 @@ impl ProductionDurableWriter {
             payload_json: receipt.payload_json.clone(),
             payload_sha256: receipt.payload_sha256.clone(),
             idempotency_key: receipt.occurrence_key.clone(),
-            operation_digest: operation_digest(&self.authority, &receipt),
+            operation_semantic_sha256: receipt.payload_sha256.clone(),
+            expected_predecessor_sha256: None,
+            operation_digest: legacy_operation_digest(&self.authority, &receipt),
         };
         // Persist a single-consumer dispatch claim before crossing the target
         // boundary.  A crash after the target observes this request can no
@@ -839,17 +843,6 @@ impl ProductionDurableWriter {
                     other => ProductionWriterError::Local(other),
                 })?;
         }
-        let request = ProductionDispatchRequest {
-            schema_version: PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
-            namespace: PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
-            lease_id: receipt.lease_id.clone(),
-            occurrence_key: receipt.occurrence_key.clone(),
-            topic: receipt.topic.clone(),
-            payload_json: receipt.payload_json.clone(),
-            payload_sha256: receipt.payload_sha256.clone(),
-            idempotency_key: receipt.occurrence_key.clone(),
-            operation_digest: operation_digest(&self.authority, &receipt),
-        };
         let durable_operation = self
             .lease
             .verify_operation_dispatch_binding(&receipt.occurrence_key, target.destination_id())
@@ -860,6 +853,19 @@ impl ProductionDurableWriter {
                 | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
                 other => ProductionWriterError::Local(other),
             })?;
+        let request = ProductionDispatchRequest {
+            schema_version: PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
+            namespace: PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
+            lease_id: receipt.lease_id.clone(),
+            occurrence_key: receipt.occurrence_key.clone(),
+            topic: receipt.topic.clone(),
+            payload_json: receipt.payload_json.clone(),
+            payload_sha256: receipt.payload_sha256.clone(),
+            idempotency_key: receipt.occurrence_key.clone(),
+            operation_semantic_sha256: durable_operation.operation_semantic_sha256.clone(),
+            expected_predecessor_sha256: durable_operation.expected_predecessor_sha256.clone(),
+            operation_digest: operation_digest(&self.authority, &receipt, &durable_operation),
+        };
         verify_final_use_dispatch_binding(
             self.store.owner_agent_id(),
             target.destination_id(),
@@ -1163,6 +1169,13 @@ pub struct ProductionDispatchRequest {
     pub payload_json: String,
     pub payload_sha256: Sha256Digest,
     pub idempotency_key: String,
+    /// Canonical digest of the complete durable OperationIntent.
+    pub operation_semantic_sha256: Sha256Digest,
+    /// Destination-owned CAS expectation. The destination must compare this
+    /// against its authoritative predecessor inside the apply transaction.
+    pub expected_predecessor_sha256: Option<Sha256Digest>,
+    /// Final-use request identity. Product dispatch binds the semantic digest
+    /// and predecessor expectation in addition to the local outbox fields.
     pub operation_digest: Sha256Digest,
 }
 
@@ -1437,9 +1450,29 @@ fn decode_hex(byte: u8) -> Option<u8> {
     }
 }
 
+fn legacy_operation_digest(
+    authority: &ProductionAuthorityLease,
+    receipt: &ProductionQueuedReceipt,
+) -> Sha256Digest {
+    let mut bytes = Vec::new();
+    for part in [
+        b"hepta:production-outbox-operation:legacy-v1".as_slice(),
+        authority.grant_digest.as_str().as_bytes(),
+        receipt.lease_id.as_bytes(),
+        receipt.occurrence_key.as_bytes(),
+        receipt.topic.as_bytes(),
+        receipt.payload_sha256.as_str().as_bytes(),
+    ] {
+        bytes.extend_from_slice(&(part.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(part);
+    }
+    Sha256Digest::for_bytes(&bytes)
+}
+
 fn operation_digest(
     authority: &ProductionAuthorityLease,
     receipt: &ProductionQueuedReceipt,
+    operation: &crate::local_lease_outbox::DurableOperationDispatchBinding,
 ) -> Sha256Digest {
     dispatch_operation_digest(
         &authority.grant_digest,
@@ -1447,6 +1480,8 @@ fn operation_digest(
         &receipt.occurrence_key,
         &receipt.topic,
         &receipt.payload_sha256,
+        &operation.operation_semantic_sha256,
+        operation.expected_predecessor_sha256.as_ref(),
     )
 }
 
