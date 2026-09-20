@@ -721,10 +721,10 @@ async fn independent_decision_binds_candidate_principal_key_role_and_evidence_se
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate,
-                claim_class: EvidenceClaimClassV1::IndependentDecision,
-                required_roles: vec![EvidenceIssuerRoleV1::Architecture],
-                now_unix_ms: observed,
+                    candidate,
+                    claim_class: EvidenceClaimClassV1::IndependentDecision,
+                    required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+                    now_unix_ms: observed,
                 },
                 &[trust_binding(
                     &reviewer,
@@ -808,10 +808,10 @@ async fn independent_decision_validity_outlives_short_ingress_auth_ttl() {
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate,
-                claim_class: EvidenceClaimClassV1::IndependentDecision,
-                required_roles: vec![EvidenceIssuerRoleV1::Architecture],
-                now_unix_ms: observed.saturating_add(60_000),
+                    candidate,
+                    claim_class: EvidenceClaimClassV1::IndependentDecision,
+                    required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+                    now_unix_ms: observed.saturating_add(60_000),
                 },
                 &[trust_binding(
                     &reviewer,
@@ -883,10 +883,10 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate: candidate.clone(),
-                claim_class: EvidenceClaimClassV1::IndependentDecision,
-                required_roles: vec![EvidenceIssuerRoleV1::Architecture],
-                now_unix_ms: observed,
+                    candidate: candidate.clone(),
+                    claim_class: EvidenceClaimClassV1::IndependentDecision,
+                    required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+                    now_unix_ms: observed,
                 },
                 &[trust_binding(
                     &reviewer,
@@ -916,10 +916,10 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
             .qualification()
             .verify_chain(
                 &VerifyChainRequestV1 {
-                candidate,
-                claim_class: EvidenceClaimClassV1::IndependentDecision,
-                required_roles: vec![EvidenceIssuerRoleV1::Architecture],
-                now_unix_ms: observed,
+                    candidate,
+                    claim_class: EvidenceClaimClassV1::IndependentDecision,
+                    required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+                    now_unix_ms: observed,
                 },
                 &[trust_binding(
                     &reviewer,
