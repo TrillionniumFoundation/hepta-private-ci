@@ -45,10 +45,17 @@ There are two different authority objects and they must not be conflated.
    `hepta-inferd::plan` remains `DENY_ALL`.
 2. Local resource admission uses `VerifiedResourceGrant`. A raw
    `ResourceGrant` is data, not proof of authenticity. External callers must
-   pass it through a trusted `ResourceGrantVerifier` that returns an
-   authenticated authority identity and evidence digest. The
-   `TrustedInProcess` constructor is crate-private and only covers an
-   explicitly shared trusted process boundary.
+   pass it through a trusted `ResourceGrantVerifier` that checks current
+   authority/revocation state and returns an authenticated authority identity
+   plus evidence digest. `VerifiedResourceGrant` is intentionally non-cloneable
+   and records the exact trusted `now_ms` at verification; every local
+   `load_model`, `run` and `unload_model` consumes a newly verified token
+   for the same current timestamp. Reusing an older verification is rejected.
+   The authenticated authority identity may not change inside one worker
+   generation. The `TrustedInProcess` constructor is crate-private and only
+   covers an explicitly shared trusted process boundary; that owner is
+   responsible for surfacing current revocation before issuing each fresh
+   in-process token.
 
 Neither path grants fleet mutation, grant issuance, model installation or
 permission to widen another module's authority.
@@ -65,7 +72,11 @@ Repository source currently enforces:
 - one local runtime child per loaded handle, bounded protocol lines and output;
 - grant-bounded memory reservation handshake and observed-memory checks;
 - request concurrency/token/deadline validation in `InferenceWorker`;
-- forced child kill/wait when local runtime cleanup becomes uncertain.
+- fresh per-operation resource-grant verification at the exact admitted time;
+- a local runtime exchange watchdog covering both protocol write and response
+  read, bounded by the caller's remaining deadline and the configured hard cap;
+- forced child kill/wait when local runtime exchange or cleanup becomes
+  uncertain.
 
 These are execution ownership, identity and resource-contract guarantees. They
 are **not** proof of a host security sandbox.
@@ -124,9 +135,11 @@ Before load:
 3. verify every digest and reject symlink/non-regular terminal files;
 4. start the exact runtime process;
 5. send the model tuple plus maximum permitted memory;
-6. require an echoed model/runtime/device identity and nonzero
+6. bound the full protocol write/response exchange by the caller's remaining
+   admission deadline and the local driver operation-timeout cap;
+7. require an echoed model/runtime/device identity and nonzero
    `reserved_memory_bytes <= maximum_memory_bytes`;
-7. require `observed_memory_bytes <= reserved_memory_bytes`;
+8. require `observed_memory_bytes <= reserved_memory_bytes`;
 8. re-hash runtime/artifacts after the load handshake before publishing the
    handle.
 
@@ -156,6 +169,9 @@ Important hard bounds in source include:
 - local model input: 1 MiB;
 - local runtime protocol line: configurable, default 2 MiB, hard maximum 8 MiB;
 - local runtime output: 1 MiB;
+- local operation timeout: default 120 seconds, hard configurable maximum
+  3600 seconds, always further capped by the caller's remaining grant/request
+  deadline;
 - loaded models: 8;
 - active local requests: 256;
 - local token bound: 1,000,000.
@@ -181,8 +197,9 @@ for, at minimum:
 | worker kill before provider admission | exact reconciliation proves Missing/Cancelled |
 | worker kill after provider admission | same turn recovered; no replacement dispatch |
 | App Server restart/transport loss | original client ID/payload reconciled or remains indeterminate |
-| local runtime crash | nonterminal/indeterminate unless a trusted runtime receipt proves terminality |
-| authority revocation race | no post-revocation fresh dispatch admission |
+| local runtime crash/hang | child killed/waited; a run whose exchange may have begun remains nonterminal/indeterminate |
+| authority revocation race | provider final-use is revalidated at dispatch; local external grants require a fresh current-verifier token for every operation |
+| stale local grant token | rejected before model/runtime operation |
 | artifact mutation | digest mismatch before usable handle |
 | device reset | current handle fenced; no stale success |
 | rollback | predecessor tuple starts in a new generation with current authority |
@@ -198,7 +215,9 @@ of these are true:
 - exact source commit/tree and synthetic merge candidate are recorded;
 - package tests, all-target build and strict Clippy pass on that exact candidate;
 - the named non-test product caller reaches `NativeWorkerPort::execute`;
-- protected signer trust/revocation state is configured outside the worker;
+- protected signer trust/revocation state is configured outside the worker and
+  the production `ResourceGrantVerifier` proves current revocation/epoch state
+  on every local operation;
 - economic quota and hardware-capacity authority are composed;
 - real model/runtime/device qualification above is attached;
 - OS isolation controls required by the deployment are identified and measured;
