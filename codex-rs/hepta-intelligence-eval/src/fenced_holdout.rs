@@ -224,7 +224,10 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
                 self.state_digest = next.state_digest;
                 Ok(receipt)
             }
-            Err(FinalHoldoutCasStoreError::Conflict) => Err(FencedHoldoutError::Conflict),
+            Err(FinalHoldoutCasStoreError::Conflict) => {
+                self.poisoned = true;
+                Err(FencedHoldoutError::Conflict)
+            }
             Err(FinalHoldoutCasStoreError::Rejected) => Err(FencedHoldoutError::Rejected),
             Err(FinalHoldoutCasStoreError::Indeterminate) => {
                 self.poisoned = true;
@@ -253,6 +256,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         self.poisoned
     }
 
+    #[must_use]
     pub fn into_store(self) -> S {
         self.store
     }
