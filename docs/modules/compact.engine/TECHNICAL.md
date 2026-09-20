@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); observed identifiers include `CompactCheckpoint`, `compact`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs), with deletion-aware qualification and the canonical replay/outcome shadow bridge in [src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs); observed identifiers include `CompactCheckpoint`, `compact`, `QualifiedCompactionCandidateV2`, and `bind_canonical_replay_outcome_shadow_v1`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -152,6 +152,10 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 Checkpoint/projection library. Keep source lineage, omissions and deletion frontiers with every compact result and retain the prior complete generation on failed construction. A compact receipt does not implement the entire replay or learned-skill pipeline; lifecycle/storage publication belongs to the composed owner.
 
+### Canonical replay/outcome shadow evidence
+
+`bind_canonical_replay_outcome_shadow_v1` leaves the qualified compaction candidate unchanged and binds canonical `ReplaySelectionReceiptV1` plus `OutcomeSignalV1` as deny-all side evidence. Every selected canonical event requires an explicit one-to-one bridge to a retained live legacy record ID/revision/digest; mappings are canonicalized to replay event order and many canonical events may not collapse onto one legacy record. The wrapper retains the candidate, replay receipt and outcome signal themselves, so validation re-runs all three contracts and recomputes their canonical digests. `OutcomeSignalV1` is co-observed evidence only at this stage: the adapter does not claim that the outcome caused replay selection or compaction priority, and it does not change the candidate retention decision.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs).
@@ -164,7 +168,7 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs); named case: `latest_revision_and_tombstone_are_preserved`.
-- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs); named case: `protected_live_reference_is_retained_before_higher_priority_optional_record`.
+- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs); covers deletion-aware qualification plus canonical replay→retained-record binding, identity-collapse rejection and embedded-evidence tamper rejection.
 
 In `codex-rs`, run `just test -p codex-hepta-compact-engine`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) separately labels target acceptance designs.
 
