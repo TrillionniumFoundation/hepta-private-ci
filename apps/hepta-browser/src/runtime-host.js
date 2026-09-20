@@ -722,6 +722,17 @@ export class BrowserProfileHost {
             "persisted reconciliation observation did not bind the durable operation",
           );
         }
+        if (observed.terminalObserved === true) {
+          if (observed.observationReason !== "authenticated_persisted_receipt") {
+            throw new TypeError(
+              "persisted terminal observation requires authenticated observer evidence",
+            );
+          }
+          digest(
+            observed.evidenceDigest,
+            "persisted terminal observation evidenceDigest",
+          );
+        }
         receipt = this.#effectReceipt(
           profileId,
           operationId,
