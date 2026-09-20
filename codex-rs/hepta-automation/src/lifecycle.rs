@@ -759,9 +759,8 @@ impl AutomationStore {
         if run_state != expected_terminal {
             return Err(AutomationError::Conflict);
         }
-        let claimed_absence_cancel =
-            current.state == AutomationOccurrenceState::Claimed
-                && terminal == AutomationOccurrenceTerminalState::Cancelled;
+        let claimed_absence_cancel = current.state == AutomationOccurrenceState::Claimed
+            && terminal == AutomationOccurrenceTerminalState::Cancelled;
         if claimed_absence_cancel {
             let command_id = format!(
                 "automation:run:cancel-absent:{}:{}",
@@ -817,8 +816,7 @@ impl AutomationStore {
                 .map_err(|_| AutomationError::Corrupt)?;
             let terminal_step_matches = match step_event.as_str() {
                 "reconciled" => {
-                    step_outcome.as_deref() == Some(expected_terminal)
-                        && step_observation.is_none()
+                    step_outcome.as_deref() == Some(expected_terminal) && step_observation.is_none()
                 }
                 "recorded" => {
                     matches!(expected_terminal, "succeeded" | "failed")
