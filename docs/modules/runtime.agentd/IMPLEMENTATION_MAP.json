@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "413c08e913d3021e04557e5847810b39cbc631e6",
-    "tree": "b348fbfc1afc27889fe8a4cbf8f52d7fdc3778ad"
+    "commit": "672470a45b9b1605dd270911309b0e591917166e",
+    "tree": "d90b945361a2e7ed3daafb021ae7b52921fd13fc"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -132,9 +132,43 @@
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "cognitive_store_product_writer_host",
+      "mappingClass": "product_caller",
+      "ownerEntrypoint": {
+        "role": "product_caller",
+        "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+        "symbol": "pub async fn open_with_recovery(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-cognitive-store/src/durable.rs",
+          "symbol": "ProductionCognitiveMutationCapability",
+          "buildTarget": "codex-hepta-cognitive-store",
+          "ownerModule": "cognitive.store"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+          "kind": "product_recovery_and_atomic_provenance",
+          "command": "cargo test -p codex-hepta-agentd --features qualification-cognitive-write --test cognitive_store_product_writer"
+        }
+      ],
+      "sourceSemantics": "Accepts only a host-supplied exact current-cut witness and externally verified live authority, then exposes the sealed cognitive.store mutation capability with same-transaction provenance.",
+      "operation": "cognitive_store_product_writer_host",
+      "nativeSymbol": "AgentdProductionWriterHost",
+      "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "The cognitive.store product writer host is source-composed but still requires exact-candidate execution and trusted external bootstrap evidence before activation.",
+    "runtime.agentd run-lifecycle composition truth remains governed by its own module closure and is not upgraded by the cognitive.store writer host."
+  ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
     "non-test caller through the full Codex turn path",
@@ -164,5 +198,6 @@
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-agentd"
-  ]
+  ],
+  "sourceBaseSemantics": "exact_non_projection_source_snapshot"
 }
