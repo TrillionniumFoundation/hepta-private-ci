@@ -99,7 +99,7 @@ impl ReferenceEventFeatures {
             valid_to_unix_ms,
             utility_ppm,
             risk_ppm,
-            tombstoned: matches!(event.lifecycle, MemoryLifecycleV1::Tombstoned { .. }),
+            tombstoned: matches!(&event.lifecycle, MemoryLifecycleV1::Tombstoned { .. }),
         };
         value.validate()?;
         Ok(value)
