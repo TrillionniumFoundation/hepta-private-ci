@@ -336,6 +336,26 @@ impl AgentdClient {
         }
     }
 
+    pub async fn run_release_closed(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_release_closed(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn automation_create(
         &self,
         draft: AutomationTaskDraft,
