@@ -398,4 +398,36 @@ fn only_observed_overload_is_retry_safe() {
     let receipt = adapt_observed_server_rejection(&product_intent(), &generic).unwrap();
     assert_eq!(receipt.status, AdapterStatus::Rejected);
     assert_eq!(receipt.retry_posture, RetryPosture::Never);
+
+    let internal = RemoteAppServerObservedServerError::from_test_error(
+        TURN_START_RPC_METHOD.to_string(),
+        RequestId::Integer(2),
+        JSONRPCErrorError {
+            code: INTERNAL_ERROR_CODE,
+            message: "failed after Core submission was awaited".to_string(),
+            data: None,
+        },
+        CONNECTION_ID,
+        Some(SERVER_VERSION.to_string()),
+        Some(CODEX_HOME.to_string()),
+    );
+    let receipt = adapt_observed_server_rejection(&product_intent(), &internal).unwrap();
+    assert_eq!(receipt.status, AdapterStatus::Indeterminate);
+    assert_eq!(receipt.retry_posture, RetryPosture::ReconcileSameOperation);
+
+    let unknown = RemoteAppServerObservedServerError::from_test_error(
+        TURN_START_RPC_METHOD.to_string(),
+        RequestId::Integer(2),
+        JSONRPCErrorError {
+            code: -32_099,
+            message: "unknown server failure".to_string(),
+            data: None,
+        },
+        CONNECTION_ID,
+        Some(SERVER_VERSION.to_string()),
+        Some(CODEX_HOME.to_string()),
+    );
+    let receipt = adapt_observed_server_rejection(&product_intent(), &unknown).unwrap();
+    assert_eq!(receipt.status, AdapterStatus::Indeterminate);
+    assert_eq!(receipt.retry_posture, RetryPosture::ReconcileSameOperation);
 }
