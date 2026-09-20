@@ -42,6 +42,7 @@ use crate::LocalReplayFinalization;
 use crate::QueuedReceipt;
 use crate::local_lease_outbox::InheritedQueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
+use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
@@ -1610,19 +1611,13 @@ fn legacy_operation_digest(
     authority: &ProductionAuthorityLease,
     receipt: &ProductionQueuedReceipt,
 ) -> Sha256Digest {
-    let mut bytes = Vec::new();
-    for part in [
-        b"hepta:production-outbox-operation:legacy-v1".as_slice(),
-        authority.grant_digest.as_str().as_bytes(),
-        receipt.lease_id.as_bytes(),
-        receipt.occurrence_key.as_bytes(),
-        receipt.topic.as_bytes(),
-        receipt.payload_sha256.as_str().as_bytes(),
-    ] {
-        bytes.extend_from_slice(&(part.len() as u64).to_be_bytes());
-        bytes.extend_from_slice(part);
-    }
-    Sha256Digest::for_bytes(&bytes)
+    legacy_dispatch_operation_digest(
+        &authority.grant_digest,
+        &receipt.lease_id,
+        &receipt.occurrence_key,
+        &receipt.topic,
+        &receipt.payload_sha256,
+    )
 }
 
 fn operation_digest(
@@ -2032,7 +2027,7 @@ mod tests {
             LocalOutcomeState::Queued
         );
 
-        let expected = operation_digest(&writer.authority, &queued);
+        let expected = legacy_operation_digest(&writer.authority, &queued);
         let claim = writer
             .lease
             .claim_dispatch(
