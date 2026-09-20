@@ -3,22 +3,27 @@
 //! authority-bearing action; it proves that mapped symbols are public and
 //! available to a real cross-crate consumer.
 
+use codex_hepta_intelligence_eval::FinalHoldoutCasRecordV1;
+use codex_hepta_intelligence_eval::FinalHoldoutCasStoreError;
+use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
+use codex_hepta_types::Digest32;
+
 struct NoCasStore;
 
-impl codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1 for NoCasStore {
+impl FinalHoldoutCasStoreV1 for NoCasStore {
     fn load(
         &mut self,
-        _binding: codex_hepta_types::Digest32,
-    ) -> Result<Option<codex_hepta_intelligence_eval::FinalHoldoutCasRecordV1>, codex_hepta_intelligence_eval::FinalHoldoutCasStoreError> {
+        _binding: Digest32,
+    ) -> Result<Option<FinalHoldoutCasRecordV1>, FinalHoldoutCasStoreError> {
         Ok(None)
     }
 
     fn compare_and_swap(
         &mut self,
-        _binding: codex_hepta_types::Digest32,
-        _expected: Option<codex_hepta_types::Digest32>,
-        _next: &codex_hepta_intelligence_eval::FinalHoldoutCasRecordV1,
-    ) -> Result<(), codex_hepta_intelligence_eval::FinalHoldoutCasStoreError> {
+        _binding: Digest32,
+        _expected: Option<Digest32>,
+        _next: &FinalHoldoutCasRecordV1,
+    ) -> Result<(), FinalHoldoutCasStoreError> {
         Ok(())
     }
 }
