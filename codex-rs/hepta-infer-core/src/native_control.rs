@@ -31,6 +31,14 @@ pub enum NativeRunStatus {
     Completed,
     Failed,
     Interrupted,
+    /// App Server definitively rejected turn/start before admission.
+    Rejected,
+    /// App Server ingress was saturated and definitively rejected turn/start.
+    Overloaded,
+    /// The caller deadline elapsed after dispatch; acknowledgement is unknown.
+    TimedOut,
+    /// The transport was lost after dispatch; acknowledgement is unknown.
+    Unavailable,
     Indeterminate,
 }
 
@@ -61,6 +69,12 @@ pub struct NativeRunOutput {
     pub output: String,
     pub observed_output_tokens: Option<u64>,
     pub terminal_observed: bool,
+    /// Exact runtime.codex request/receipt digests, when the native caller was
+    /// composed through the Codex adapter. Historical records may omit them.
+    #[serde(default)]
+    pub codex_request_digest: Option<String>,
+    #[serde(default)]
+    pub codex_receipt_digest: Option<String>,
     pub stop_reason: Option<String>,
     #[serde(default)]
     pub owner_authority: NativeOwnerAuthority,
@@ -94,6 +108,39 @@ pub struct NativeDispatch {
     pub model_provider: String,
     /// Exact serialized additional context, including its owner snapshot.
     pub context_digest: String,
+    /// runtime.codex correlation persisted before turn/start. Historical
+    /// records may omit these fields and remain fail-closed for reconciliation.
+    #[serde(default)]
+    pub codex_session_id: Option<String>,
+    #[serde(default)]
+    pub codex_deadline_ms: Option<u64>,
+    /// SHA-256 of the exact serialized v2 `TurnStartParams` submitted to the
+    /// owning App Server. Historical records may omit it.
+    #[serde(default)]
+    pub codex_payload_digest: Option<String>,
+    /// Digest of the independently signed final-use grant witness that was
+    /// successfully claimed before this dispatch record was committed.
+    #[serde(default)]
+    pub codex_authority_witness_sha256: Option<String>,
+    #[serde(default)]
+    pub codex_request_digest: Option<String>,
+}
+
+/// In-memory proof that the current process has durably written one dispatch
+/// intent but has not yet crossed the external App Server effect boundary.
+///
+/// The token is deliberately non-cloneable and non-serializable. A recovered
+/// process cannot recreate it from the journal, so it can never downgrade an
+/// uncertain historical dispatch into a definitive pre-effect stop.
+pub struct NativePreEffectAbortToken {
+    request_id: String,
+    dispatch_revision: u64,
+}
+
+impl std::fmt::Debug for NativePreEffectAbortToken {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str("NativePreEffectAbortToken([LOCAL ONLY])")
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -136,6 +183,10 @@ enum Event {
         request_id: String,
     },
     Stop {
+        request_id: String,
+        reason: String,
+    },
+    AbortBeforeEffect {
         request_id: String,
         reason: String,
     },
@@ -204,6 +255,53 @@ impl DurableInferenceControl {
             Event::Dispatch {
                 request_id: request_id.to_string(),
                 dispatch,
+            },
+        )
+    }
+
+    /// Commit the same write-ahead dispatch while issuing a non-serializable
+    /// proof that only this live process may still abort before external effect
+    /// entry. Losing the process loses the proof; recovery must reconcile.
+    pub fn dispatch_native_with_pre_effect_abort(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+    ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        let record = self.dispatch_native(request_id, dispatch)?;
+        Ok((
+            record.clone(),
+            NativePreEffectAbortToken {
+                request_id: request_id.to_string(),
+                dispatch_revision: record.revision,
+            },
+        ))
+    }
+
+    /// Release a write-ahead dispatch only when the same live process still
+    /// holds the exact one-shot proof that no external effect has been entered.
+    pub fn abort_native_before_effect(
+        &mut self,
+        token: NativePreEffectAbortToken,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(&token.request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != NativeReservationState::Dispatching
+            || record.revision != token.dispatch_revision
+            || record.turn_id.is_some()
+            || record.observation.is_some()
+            || record.cancel_requested
+        {
+            return Err(Error::InvalidTransition);
+        }
+        self.commit_native(
+            &token.request_id,
+            Event::AbortBeforeEffect {
+                request_id: token.request_id.clone(),
+                reason,
             },
         )
     }
@@ -372,6 +470,7 @@ impl NativeJournal {
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
+            | Event::AbortBeforeEffect { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -384,6 +483,31 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                match (
+                    dispatch.codex_session_id.as_deref(),
+                    dispatch.codex_deadline_ms,
+                    dispatch.codex_payload_digest.as_deref(),
+                    dispatch.codex_authority_witness_sha256.as_deref(),
+                    dispatch.codex_request_digest.as_deref(),
+                ) {
+                    (
+                        Some(session_id),
+                        Some(deadline_ms),
+                        Some(payload_digest),
+                        Some(authority_witness),
+                        Some(request_digest),
+                    ) => {
+                        validate_identity(session_id, "Codex session")?;
+                        if deadline_ms == 0 {
+                            return Err(Error::InvalidIdentity("Codex deadline"));
+                        }
+                        validate_digest(payload_digest, "Codex payload digest")?;
+                        validate_digest(authority_witness, "Codex authority witness")?;
+                        validate_digest(request_digest, "Codex request digest")?;
+                    }
+                    (None, None, None, None, None) => {}
+                    _ => return Err(Error::InvalidIdentity("incomplete Codex dispatch binding")),
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -414,6 +538,19 @@ impl NativeJournal {
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
             }
+            Event::AbortBeforeEffect { reason, .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || record.cancel_requested
+                    || reason.is_empty()
+                    || reason.len() > 4096
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                record.pre_dispatch_stop = Some(reason);
+                record.state = NativeReservationState::Released;
+            }
             Event::Observe { output, .. } => {
                 apply_observation(record, output)?;
             }
@@ -435,8 +572,19 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
             .turn_id
             .as_ref()
             .is_some_and(|turn| turn != &output.turn_id)
+        || matches!(
+            (
+                dispatch.codex_request_digest.as_deref(),
+                output.codex_request_digest.as_deref(),
+            ),
+            (Some(expected), Some(actual)) if expected != actual
+        )
     {
         return Err(Error::AssignmentMismatch);
+    }
+    if record.turn_id.is_none() && !output.turn_id.is_empty() {
+        validate_identity(&output.turn_id, "reconciled native turn")?;
+        record.turn_id = Some(output.turn_id.clone());
     }
     if output.output.len() > 1024 * 1024
         || output
@@ -451,13 +599,33 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::InvalidIdentity("owner authority loss reason"));
     }
-    if output.terminal_observed == (output.status == NativeRunStatus::Indeterminate)
+    let terminal_status = matches!(
+        output.status,
+        NativeRunStatus::Completed | NativeRunStatus::Failed | NativeRunStatus::Interrupted
+    );
+    let definitive_rejection = matches!(
+        output.status,
+        NativeRunStatus::Rejected | NativeRunStatus::Overloaded
+    );
+    if output.terminal_observed != terminal_status
         || (output.turn_id.is_empty()
-            && (output.terminal_observed
+            && (terminal_status
                 || output.observed_output_tokens.is_some()
                 || !output.output.is_empty()))
+        || (definitive_rejection && !output.turn_id.is_empty())
     {
         return Err(Error::TerminalObservationMissing);
+    }
+    match (
+        output.codex_request_digest.as_deref(),
+        output.codex_receipt_digest.as_deref(),
+    ) {
+        (Some(request_digest), Some(receipt_digest)) => {
+            validate_digest(request_digest, "Codex request digest")?;
+            validate_digest(receipt_digest, "Codex receipt digest")?;
+        }
+        (None, None) => {}
+        _ => return Err(Error::InvalidIdentity("incomplete Codex receipt binding")),
     }
     if let Some(previous) = &record.observation {
         // A late provider completion or usage refinement cannot erase a lost
@@ -477,6 +645,11 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         {
             return Err(Error::Conflict);
         }
+        if previous.codex_request_digest.is_some()
+            && previous.codex_request_digest != output.codex_request_digest
+        {
+            return Err(Error::Conflict);
+        }
         if previous.observed_output_tokens.is_some_and(|tokens| {
             output
                 .observed_output_tokens
@@ -489,7 +662,7 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         validate_identity(&output.turn_id, "native turn")?;
         record.turn_id = Some(output.turn_id.clone());
     }
-    record.state = if output.terminal_observed {
+    record.state = if output.terminal_observed || definitive_rejection {
         NativeReservationState::Released
     } else {
         NativeReservationState::Indeterminate
