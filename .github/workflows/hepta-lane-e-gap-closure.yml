@@ -18,6 +18,8 @@ on:
 
 permissions:
   contents: read
+  id-token: write
+  attestations: write
 
 concurrency:
   group: hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}
@@ -25,7 +27,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   rust-closure:
@@ -129,6 +131,10 @@ jobs:
   synthetic-merge:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+    outputs:
+      base: ${{ steps.merge.outputs.base }}
+      merge-commit: ${{ steps.merge.outputs.commit }}
+      merge-tree: ${{ steps.merge.outputs.tree }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -148,13 +154,15 @@ jobs:
           components: rustfmt
 
       - name: Materialize ordered-parent synthetic merge
+        id: merge
         shell: bash
         run: |
           set -euo pipefail
           SOURCE_COMMIT="$(git rev-parse HEAD)"
           test "${SOURCE_COMMIT}" = "${SOURCE_SHA}"
-          test -n "${BASE_SHA}"
-          git cat-file -e "${BASE_SHA}^{commit}"
+          if [[ -z "${BASE_SHA}" ]] || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            BASE_SHA="$(git rev-parse "${SOURCE_COMMIT}^1")"
+          fi
           BASE_COMMIT="${BASE_SHA}"
           git checkout --detach "${BASE_COMMIT}"
           git -c user.name=hepta-lane-e-ci \
@@ -174,6 +182,11 @@ jobs:
             printf 'MERGE_TREE=%s\n' "${MERGE_TREE}"
             printf 'MERGE_COMMIT=%s\n' "${MERGE_COMMIT}"
           } >> "${GITHUB_ENV}"
+          {
+            printf 'base=%s\n' "${BASE_COMMIT}"
+            printf 'commit=%s\n' "${MERGE_COMMIT}"
+            printf 'tree=%s\n' "${MERGE_TREE}"
+          } >> "${GITHUB_OUTPUT}"
           git diff --cached --check
           git diff --exit-code
 
@@ -234,3 +247,186 @@ jobs:
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+
+  learning-eval-qualification:
+    needs:
+      - rust-closure
+      - synthetic-merge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Install qualification tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.1
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: llvm-tools-preview
+
+      - name: Bind exact source and production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          ! grep -Eq '^pub fn evaluate\\(' codex-rs/hepta-intelligence-eval/src/lib.rs
+          ! grep -Eq '^pub use closure::decide_independently' codex-rs/hepta-intelligence-eval/src/lib.rs
+          grep -Fq 'trusted-inprocess-eval = []' codex-rs/hepta-intelligence-eval/Cargo.toml
+          grep -Fq 'decide_with_signed_evidence_v2' codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md
+          grep -Fq 'FencedFinalHoldoutOwnerV1' codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md
+
+      - name: Default public API contract
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-shadow-qualification
+          --test lane_e_api_contract
+          -- --test-threads=1
+
+      - name: Explicit trusted compatibility surface
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          --features trusted-inprocess-eval
+          --test operator_claim
+          -- --test-threads=1
+
+      - name: Signed cross-crate evaluation E2E
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-shadow-qualification
+          lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
+          -- --exact --test-threads=1
+
+      - name: Fenced holdout stress
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval
+          : > .hepta-evidence/learning-eval/fenced-holdout-stress.log
+          for iteration in $(seq 1 16); do
+            printf 'iteration=%s\n' "${iteration}" | tee -a .hepta-evidence/learning-eval/fenced-holdout-stress.log
+            (
+              cd codex-rs
+              cargo test --locked -p codex-hepta-intelligence-eval fenced_holdout::tests -- --test-threads=1
+            ) 2>&1 | tee -a .hepta-evidence/learning-eval/fenced-holdout-stress.log
+          done
+
+      - name: Learning eval coverage
+        working-directory: codex-rs
+        run: >-
+          cargo llvm-cov --locked
+          -p codex-hepta-intelligence-eval
+          --all-targets
+          --json
+          --output-path ../.hepta-evidence/learning-eval/coverage.json
+
+      - name: Build qualification manifest
+        shell: bash
+        env:
+          MERGE_BASE: ${{ needs.synthetic-merge.outputs.base }}
+          MERGE_COMMIT: ${{ needs.synthetic-merge.outputs.merge-commit }}
+          MERGE_TREE: ${{ needs.synthetic-merge.outputs.merge-tree }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime as dt
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          root = Path.cwd()
+          evidence = root / ".hepta-evidence" / "learning-eval"
+          coverage_path = evidence / "coverage.json"
+          coverage = json.loads(coverage_path.read_text())
+          totals = coverage["data"][0]["totals"]
+          line_percent = float(totals["lines"]["percent"])
+          if line_percent <= 0.0:
+              raise SystemExit("coverage report contains no measured lines")
+
+          def sha256(path: str) -> str:
+              return hashlib.sha256((root / path).read_bytes()).hexdigest()
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          now = dt.datetime.now(dt.timezone.utc)
+          manifest = {
+              "schema": "hepta.learning-eval.qualification-evidence.v1",
+              "source": {
+                  "commit": git("rev-parse", "HEAD"),
+                  "tree": git("rev-parse", "HEAD^{tree}"),
+                  "baseCommit": os.environ["MERGE_BASE"],
+                  "syntheticMergeCommit": os.environ["MERGE_COMMIT"],
+                  "syntheticMergeTree": os.environ["MERGE_TREE"],
+              },
+              "build": {
+                  "repository": os.environ["GITHUB_REPOSITORY"],
+                  "workflow": os.environ["GITHUB_WORKFLOW"],
+                  "runId": os.environ["GITHUB_RUN_ID"],
+                  "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                  "job": os.environ["GITHUB_JOB"],
+                  "actor": os.environ["GITHUB_ACTOR"],
+              },
+              "inputs": {
+                  "cargoLockSha256": sha256("codex-rs/Cargo.lock"),
+                  "productionContractSha256": sha256("codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"),
+                  "nativeMappingSha256": sha256("codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md"),
+                  "traceabilitySha256": sha256("qualification/lane-e/TEST_TRACEABILITY.json"),
+              },
+              "coverage": {
+                  "report": ".hepta-evidence/learning-eval/coverage.json",
+                  "sha256": hashlib.sha256(coverage_path.read_bytes()).hexdigest(),
+                  "linePercent": line_percent,
+                  "linesCount": totals["lines"]["count"],
+                  "linesCovered": totals["lines"]["covered"],
+              },
+              "stress": {
+                  "fencedHoldoutIterations": 16,
+                  "logSha256": hashlib.sha256(
+                      (evidence / "fenced-holdout-stress.log").read_bytes()
+                  ).hexdigest(),
+              },
+              "e2e": {
+                  "test": "lane_e_causal_candidate_chain_is_digest_bound_and_deny_all",
+                  "admission": "signed_v2",
+                  "claimScope": "Qualification",
+              },
+              "createdAt": now.isoformat().replace("+00:00", "Z"),
+              "expiresAt": (now + dt.timedelta(days=30)).isoformat().replace("+00:00", "Z"),
+              "authority": "DENY_ALL",
+              "externalEvidenceSatisfied": False,
+          }
+          if manifest["source"]["commit"] != os.environ["SOURCE_SHA"]:
+              raise SystemExit("source SHA drift")
+          (evidence / "qualification.json").write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+          cat .hepta-evidence/learning-eval/qualification.json
+
+      - name: Attest qualification manifest provenance
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+        with:
+          subject-path: .hepta-evidence/learning-eval/qualification.json
+
+      - name: Retain learning eval qualification evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-qualification-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/learning-eval/
+          if-no-files-found: error
+          retention-days: 30
+
