@@ -96,12 +96,7 @@ impl RuntimeTasks {
         F: Future<Output = Result<(), AgentdError>> + Send + 'static,
         Q: FnOnce() -> Result<(), AgentdError> + Send + 'static,
     {
-        self.spawn(
-            name,
-            future,
-            Some(Box::new(quarantine)),
-            /*retirement*/ None,
-        )
+        self.spawn(name, future, Some(Box::new(quarantine)), /*retirement*/ None)
     }
 
     /// Register a cooperatively removable, already-admitted optional service.
@@ -278,9 +273,7 @@ impl RuntimeTasks {
             return Ok(());
         }
         let error = match result {
-            Ok(()) => {
-                AgentdError::Protocol(format!("{} exited before agentd shutdown", entry.name))
-            }
+            Ok(()) => AgentdError::Protocol(format!("{} exited before agentd shutdown", entry.name)),
             Err(error) => error,
         };
         // Optional availability never suppresses a shared generation/writer fence.
