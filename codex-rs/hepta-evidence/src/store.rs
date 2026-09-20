@@ -126,6 +126,13 @@ impl HeptaEvidenceStore {
         &self.path
     }
 
+    /// Close all SQLite connections so backup/restore tooling can take or
+    /// replace a transactionally quiescent image without relying on Drop
+    /// timing.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     pub async fn append_decision(
         &self,
         record: &GovernanceDecisionRecord,
