@@ -15,6 +15,7 @@ use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 use codex_hepta_intuition::canonical_completeness_evidence_payload_v1;
+use codex_hepta_intuition::canonical_exact_request_evidence_payload_v1;
 use codex_hepta_intuition::canonical_profile_qualification_evidence_payload_v1;
 use codex_hepta_intuition::canonical_random_assignment_evidence_payload_v1;
 use codex_hepta_intuition::canonical_scoring_evidence_payload_v1;
@@ -190,7 +191,7 @@ fn sign(
 }
 
 #[test]
-fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
+fn frozen_model_and_data_produce_five_role_authenticated_policy_decision() {
     let model = parse_model();
     let model_artifact_digest = Digest32::of_bytes(MODEL_BYTES);
     let policy_digest = digest("policy:intuition-qualified-v3");
@@ -358,12 +359,14 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
     let keys = [
         SigningKey::from_bytes(&[31; 32]),
         SigningKey::from_bytes(&[37; 32]),
+        SigningKey::from_bytes(&[43; 32]),
         SigningKey::from_bytes(&[47; 32]),
         SigningKey::from_bytes(&[53; 32]),
     ];
     let principals = [
         ("intuition-candidate-generator", "generator-credentials"),
         ("intuition-learned-scorer", "scorer-credentials"),
+        ("intuition-request-attestor", "request-attestor-credentials"),
         ("intuition-independent-evaluator", "evaluator-credentials"),
         ("intuition-random-source", "random-source-credentials"),
     ]
@@ -403,15 +406,22 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
             },
             TrustedLearningSignerV1 {
                 principal: principals[2].clone(),
-                controller_id: id("independent-evaluator-controller"),
+                controller_id: id("request-attestor-controller"),
                 verifying_key: keys[2].verifying_key().to_bytes(),
-                roles: vec![LearningEvidenceRoleV1::Evaluator],
+                roles: vec![LearningEvidenceRoleV1::RequestAttestor],
                 revoked_at: None,
             },
             TrustedLearningSignerV1 {
                 principal: principals[3].clone(),
-                controller_id: id("random-source-controller"),
+                controller_id: id("independent-evaluator-controller"),
                 verifying_key: keys[3].verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Evaluator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: principals[4].clone(),
+                controller_id: id("random-source-controller"),
+                verifying_key: keys[4].verifying_key().to_bytes(),
                 roles: vec![LearningEvidenceRoleV1::RandomSource],
                 revoked_at: None,
             },
@@ -421,6 +431,7 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
 
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request).unwrap();
     let scoring_payload = canonical_scoring_evidence_payload_v1(&scoring).unwrap();
+    let exact_request_payload = canonical_exact_request_evidence_payload_v1(&request).unwrap();
     let profile_payload = canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
     let assignment_payload = canonical_random_assignment_evidence_payload_v1(&request)
         .unwrap()
@@ -444,10 +455,19 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
         objective_digest,
         &scoring_payload,
     );
-    let profile_evidence = sign(
+    let exact_request_evidence = sign(
         &verifier,
         &principals[2],
         &keys[2],
+        LearningEvidenceRoleV1::RequestAttestor,
+        "evidence:intuition-exact-request",
+        objective_digest,
+        &exact_request_payload,
+    );
+    let profile_evidence = sign(
+        &verifier,
+        &principals[3],
+        &keys[3],
         LearningEvidenceRoleV1::Evaluator,
         "evidence:intuition-profile-qualification",
         objective_digest,
@@ -455,8 +475,8 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
     );
     let assignment_evidence = sign(
         &verifier,
-        &principals[3],
-        &keys[3],
+        &principals[4],
+        &keys[4],
         LearningEvidenceRoleV1::RandomSource,
         "evidence:intuition-random-assignment",
         objective_digest,
@@ -473,6 +493,7 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
             IntuitionQualificationEvidenceV1 {
                 completeness: &completeness_evidence,
                 scoring: &tampered_scoring,
+                exact_request: &exact_request_evidence,
                 profile_qualification: &profile_evidence,
                 assignment: Some(&assignment_evidence),
             },
@@ -490,6 +511,7 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
             IntuitionQualificationEvidenceV1 {
                 completeness: &completeness_evidence,
                 scoring: &scoring_evidence,
+                exact_request: &exact_request_evidence,
                 profile_qualification: &profile_evidence,
                 assignment: None,
             },
@@ -497,6 +519,51 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
             150,
         ),
         Err(IntuitionQualificationError::MissingRandomSourceEvidence)
+    );
+
+    let mut tampered_risk = request.clone();
+    tampered_risk.risk_class = RiskClass::High;
+    assert!(
+        decide_authenticated_intuition_v1(
+            tampered_risk,
+            profile.clone(),
+            scoring.clone(),
+            IntuitionQualificationEvidenceV1 {
+                completeness: &completeness_evidence,
+                scoring: &scoring_evidence,
+                exact_request: &exact_request_evidence,
+                profile_qualification: &profile_evidence,
+                assignment: Some(&assignment_evidence),
+            },
+            &verifier,
+            150,
+        )
+        .is_err()
+    );
+
+    let mut tampered_distribution = request.clone();
+    tampered_distribution.candidates[0].assignment_probability =
+        ProbabilityQ32::from_raw(half.raw() - 1).unwrap();
+    tampered_distribution.candidates[1].assignment_probability =
+        ProbabilityQ32::from_raw(half.raw() + 1).unwrap();
+    tampered_distribution.completeness.candidate_set_digest =
+        canonical_candidate_set_digest_v1(&tampered_distribution.candidates).unwrap();
+    assert!(
+        decide_authenticated_intuition_v1(
+            tampered_distribution,
+            profile.clone(),
+            scoring.clone(),
+            IntuitionQualificationEvidenceV1 {
+                completeness: &completeness_evidence,
+                scoring: &scoring_evidence,
+                exact_request: &exact_request_evidence,
+                profile_qualification: &profile_evidence,
+                assignment: Some(&assignment_evidence),
+            },
+            &verifier,
+            150,
+        )
+        .is_err()
     );
 
     let mut tampered_draw = request.clone();
@@ -513,6 +580,7 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
             IntuitionQualificationEvidenceV1 {
                 completeness: &completeness_evidence,
                 scoring: &scoring_evidence,
+                exact_request: &exact_request_evidence,
                 profile_qualification: &profile_evidence,
                 assignment: Some(&assignment_evidence),
             },
@@ -529,6 +597,7 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
         IntuitionQualificationEvidenceV1 {
             completeness: &completeness_evidence,
             scoring: &scoring_evidence,
+            exact_request: &exact_request_evidence,
             profile_qualification: &profile_evidence,
             assignment: Some(&assignment_evidence),
         },
@@ -543,6 +612,7 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
     assert!(!receipt.authentication_digest.is_zero());
     assert!(!receipt.profile_digest.is_zero());
     assert!(!receipt.exact_request_digest.is_zero());
+    assert!(!receipt.exact_request_payload_digest.is_zero());
     assert!(!receipt.scoring_payload_digest.is_zero());
     assert!(!receipt.assignment_payload_digest.is_zero());
 }
