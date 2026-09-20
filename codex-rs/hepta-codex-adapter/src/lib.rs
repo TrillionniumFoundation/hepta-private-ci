@@ -17,7 +17,7 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::ThreadReadResponse;
-use codex_app_server_protocol::TurnStartParams;
+use codex_app_server_protocol::UserInput;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStatus;
 use codex_hepta_types::AuthorityPosture;
@@ -49,6 +49,10 @@ pub struct AppServerRequestBinding {
     /// App Server session identity returned by thread/start and bound into the
     /// exact request receipt before turn/start can cross the effect boundary.
     pub session_id: StableId,
+    /// Stable product-provided user-message identity used for crash recovery.
+    pub client_user_message_id: StableId,
+    /// Digest of the exact user input submitted with turn/start.
+    pub user_input_digest: Digest32,
     pub protocol_id: StableId,
     pub app_server_version: String,
     pub codex_home_digest: Digest32,
@@ -203,7 +207,8 @@ pub fn adapt_observed_server_rejection(
 
 pub fn adapt_observed_thread_read_reconciliation(
     intent: &CodexOperationIntent,
-    expected_turn_start: &TurnStartParams,
+    expected_client_user_message_id: &str,
+    expected_input: &[UserInput],
     observed: &RemoteAppServerObservedResponse<ThreadReadResponse>,
 ) -> Result<Option<CodexAdapterReceipt>, Error> {
     validate_intent_static(intent)?;
@@ -231,23 +236,20 @@ pub fn adapt_observed_thread_read_reconciliation(
         return Err(Error::CorrelationMismatch("reconciliation codex home"));
     }
 
-    let encoded_turn_start = serde_json::to_vec(expected_turn_start)
-        .map_err(|_| Error::ObservationEncodingFailed)?;
-    if Digest32::of_bytes(&encoded_turn_start) != intent.payload_digest {
-        return Err(Error::CorrelationMismatch(
-            "reconciliation turn/start payload",
-        ));
-    }
-    if expected_turn_start.thread_id != intent.thread_id.as_str() {
-        return Err(Error::CorrelationMismatch("reconciliation thread"));
-    }
-    let expected_client_id = expected_turn_start
-        .client_user_message_id
-        .as_deref()
-        .filter(|value| !value.is_empty())
-        .ok_or(Error::CorrelationMismatch(
+    let expected_client_id = StableId::new(expected_client_user_message_id.to_string())
+        .map_err(|_| Error::InvalidObservationIdentity(
             "reconciliation client user message id",
         ))?;
+    if expected_client_id != binding.client_user_message_id {
+        return Err(Error::CorrelationMismatch(
+            "reconciliation client user message id",
+        ));
+    }
+    let encoded_input =
+        serde_json::to_vec(expected_input).map_err(|_| Error::ObservationEncodingFailed)?;
+    if Digest32::of_bytes(&encoded_input) != binding.user_input_digest {
+        return Err(Error::CorrelationMismatch("reconciliation user input"));
+    }
 
     let response = observed.response();
     if response.thread.id != intent.thread_id.as_str() {
@@ -269,10 +271,10 @@ pub fn adapt_observed_thread_read_reconciliation(
             else {
                 continue;
             };
-            if client_id != expected_client_id {
+            if client_id != expected_client_id.as_str() {
                 continue;
             }
-            if content != &expected_turn_start.input {
+            if content.as_slice() != expected_input {
                 return Err(Error::CorrelationMismatch(
                     "reconciliation user input",
                 ));
@@ -331,7 +333,7 @@ pub fn adapt_observed_thread_read_reconciliation(
 #[must_use]
 pub fn request_digest(intent: &CodexOperationIntent) -> Digest32 {
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.codex.adapter.request.v5");
+    bytes.extend_from_slice(b"hepta.codex.adapter.request.v6");
     push_id(&mut bytes, &intent.operation_id);
     push_id(&mut bytes, &intent.thread_id);
     push_id(&mut bytes, &intent.method_id);
@@ -345,6 +347,8 @@ pub fn request_digest(intent: &CodexOperationIntent) -> Digest32 {
             bytes.extend_from_slice(binding.source_admission_digest.as_array());
             bytes.extend_from_slice(&binding.agent_generation.get().to_be_bytes());
             push_id(&mut bytes, &binding.session_id);
+            push_id(&mut bytes, &binding.client_user_message_id);
+            bytes.extend_from_slice(binding.user_input_digest.as_array());
             push_id(&mut bytes, &binding.protocol_id);
             push_text(&mut bytes, &binding.app_server_version);
             bytes.extend_from_slice(binding.codex_home_digest.as_array());
@@ -420,6 +424,9 @@ fn validate_intent_static(intent: &CodexOperationIntent) -> Result<(), Error> {
         }
         if binding.codex_home_digest.is_zero() {
             return Err(Error::EmptyDigest("codex home"));
+        }
+        if binding.user_input_digest.is_zero() {
+            return Err(Error::EmptyDigest("user input"));
         }
         if binding.connection_id == 0 {
             return Err(Error::InvalidObservationIdentity("connection"));
