@@ -17,14 +17,13 @@ use crate::model::TerminalStatus;
 use crate::model::validate_digest;
 use crate::model::validate_stable_id;
 use crate::platform::PlatformAdapter;
-use crate::security::GrantVerifier;
-use crate::security::PlatformGrantContext;
-use crate::security::now_unix_ms;
+use crate::security::KernelFinalUseGate;
+use crate::security::platform_final_use_binding;
 
 pub struct NativeShellRuntime {
     backend: Box<dyn BackendAdapter>,
     platform: Box<dyn PlatformAdapter>,
-    grant_verifier: Arc<dyn GrantVerifier>,
+    final_use: Option<Arc<KernelFinalUseGate>>,
     journal: OperationJournal,
     session: Option<SessionIncarnation>,
     view: Option<RuntimeView>,
@@ -34,13 +33,13 @@ impl NativeShellRuntime {
     pub fn new(
         backend: Box<dyn BackendAdapter>,
         platform: Box<dyn PlatformAdapter>,
-        grant_verifier: Arc<dyn GrantVerifier>,
+        final_use: Option<Arc<KernelFinalUseGate>>,
         journal: OperationJournal,
     ) -> Self {
         Self {
             backend,
             platform,
-            grant_verifier,
+            final_use,
             journal,
             session: None,
             view: None,
@@ -114,6 +113,7 @@ impl NativeShellRuntime {
     ) -> Result<PlatformReceipt, ShellError> {
         let session = self.require_session()?.clone();
         let view = self.require_view()?.clone();
+        validate_stable_id(&request.subject_id, "subject_id")?;
         validate_stable_id(&request.operation_id, "operation_id")?;
         if request.displayed_revision != view.revision {
             return Err(ShellError::State(
@@ -123,17 +123,12 @@ impl NativeShellRuntime {
         request.payload.validate()?;
         let action = request.payload.action();
         let payload_digest = request.payload.digest()?;
-        let now = now_unix_ms()?;
-        self.grant_verifier.verify_platform_grant(
-            &request.grant,
-            PlatformGrantContext {
-                session_id: &session.session_id,
-                session_generation: session.generation,
-                operation_id: &request.operation_id,
-                action,
-                payload_digest: &payload_digest,
-                now_unix_ms: now,
-            },
+        let binding = platform_final_use_binding(
+            &request.subject_id,
+            &session,
+            &request.operation_id,
+            request.displayed_revision,
+            &request.payload,
         )?;
         let key = OperationKey::new(&session, &request.operation_id)?;
 
@@ -178,7 +173,20 @@ impl NativeShellRuntime {
             terminal_status: None,
             outcome_digest: None,
         };
-        self.journal.upsert(prepared)?;
+        self.journal.upsert(prepared.clone())?;
+
+        let Some(final_use) = self.final_use.clone() else {
+            return self.reject_without_dispatch(
+                prepared,
+                "kernel final-use authority is not composed for this native host",
+            );
+        };
+        let permit = match final_use.claim_platform(&request.grant, binding) {
+            Ok(permit) => permit,
+            Err(error) => {
+                return self.reject_without_dispatch(prepared, &error.to_string());
+            }
+        };
 
         let invoking = OperationRecord {
             endpoint_id: session.endpoint_id,
@@ -191,9 +199,11 @@ impl NativeShellRuntime {
         };
         self.journal.upsert(invoking.clone())?;
 
-        match self.platform.invoke(&key, &request.payload) {
-            Ok(observation) => self.finish_observation(invoking, observation),
-            Err(_error) => {
+        match final_use.with_platform_use(permit, || {
+            self.platform.invoke(&key, &request.payload)
+        }) {
+            Ok(Ok(observation)) => self.finish_observation(invoking, observation),
+            Ok(Err(_error)) => {
                 let indeterminate = OperationRecord {
                     phase: OperationPhase::Indeterminate,
                     ..invoking
@@ -202,6 +212,7 @@ impl NativeShellRuntime {
                 self.journal.upsert(indeterminate)?;
                 Ok(receipt)
             }
+            Err(error) => self.reject_without_dispatch(invoking, &error.to_string()),
         }
     }
 
@@ -322,6 +333,24 @@ impl NativeShellRuntime {
         };
         let receipt = next.receipt();
         self.journal.upsert(next)?;
+        Ok(receipt)
+    }
+
+    fn reject_without_dispatch(
+        &mut self,
+        record: OperationRecord,
+        reason: &str,
+    ) -> Result<PlatformReceipt, ShellError> {
+        let terminal = OperationRecord {
+            phase: OperationPhase::Terminal,
+            terminal_status: Some(TerminalStatus::Rejected),
+            outcome_digest: Some(crate::model::sha256_hex(format!(
+                "hepta.native.no-dispatch.v1:{reason}"
+            ))),
+            ..record
+        };
+        let receipt = terminal.receipt();
+        self.journal.upsert(terminal)?;
         Ok(receipt)
     }
 
