@@ -21,9 +21,21 @@ const TOPOLOGY_DESTINATION: &str = "runtime.hepta-live-shell.topology";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RuntimeTopologySnapshotV1 {
-    pub cns_id: StableId,
-    pub generation: Generation,
-    pub hierarchy_digest: Digest32,
+    pub route: CnsRouteV1,
+}
+
+impl RuntimeTopologySnapshotV1 {
+    pub fn cns_id(&self) -> &StableId {
+        &self.route.cns
+    }
+
+    pub fn generation(&self) -> Generation {
+        self.route.generation
+    }
+
+    pub fn hierarchy_digest(&self) -> Digest32 {
+        self.route.hierarchy_digest
+    }
 }
 
 #[derive(Debug)]
@@ -51,9 +63,7 @@ impl RuntimeTopologySuccessorV1 {
 
     pub fn snapshot(&self) -> RuntimeTopologySnapshotV1 {
         RuntimeTopologySnapshotV1 {
-            cns_id: self.route.cns.clone(),
-            generation: self.route.generation,
-            hierarchy_digest: self.route.hierarchy_digest,
+            route: self.route.clone(),
         }
     }
 }
@@ -149,11 +159,11 @@ pub(crate) fn validate_runtime_topology_transition_v1(
     let proposal = &request.governed.proposal;
     let successor = request.successor.snapshot();
     if proposal.baseline_generation != current_generation
-        || proposal.candidate_generation != successor.generation
+        || proposal.candidate_generation != successor.route.generation
         || current_generation.next().map_err(|_| RuntimeTopologyExecutionError::Generation)?
-            != successor.generation
+            != successor.route.generation
         || current_route.generation != current_generation
-        || current_route.cns != successor.cns_id
+        || current_route.cns != successor.route.cns
     {
         return Err(RuntimeTopologyExecutionError::Generation);
     }
@@ -172,7 +182,7 @@ pub(crate) fn validate_runtime_topology_transition_v1(
         .is_some_and(|digest| digest != current_route.hierarchy_digest)
         || change
             .candidate_digest
-            .is_some_and(|digest| digest != successor.hierarchy_digest)
+            .is_some_and(|digest| digest != successor.route.hierarchy_digest)
     {
         return Err(RuntimeTopologyExecutionError::Binding);
     }
@@ -189,7 +199,7 @@ pub(crate) fn validate_runtime_topology_transition_v1(
         || handoff.migration_digest != change.migration_digest
         || handoff.rollback_digest != change.rollback_digest
         || handoff.predecessor_writer_fence != current_generation.get()
-        || handoff.successor_writer_fence != successor.generation.get()
+        || handoff.successor_writer_fence != successor.route.generation.get()
     {
         return Err(RuntimeTopologyExecutionError::Binding);
     }
@@ -199,16 +209,16 @@ pub(crate) fn validate_runtime_topology_transition_v1(
         &request.candidate_id,
         &handoff,
         current_route.hierarchy_digest,
-        successor.hierarchy_digest,
+        successor.route.hierarchy_digest,
         current_generation,
-        successor.generation,
+        successor.route.generation,
     );
     let scope_digest = topology_execution_scope_digest_v1(current_route);
     let payload_digest = topology_execution_payload_digest_v1(
         request.governed.admission_digest,
         proposal.proposal_digest,
         &request.candidate_id,
-        successor.hierarchy_digest,
+        successor.route.hierarchy_digest,
         handoff.plan_digest,
     );
     let binding = FinalUseBinding {
@@ -226,9 +236,9 @@ pub(crate) fn validate_runtime_topology_transition_v1(
         admission_digest: request.governed.admission_digest,
         handoff,
         predecessor_generation: current_generation,
-        successor_generation: successor.generation,
+        successor_generation: successor.route.generation,
         predecessor_hierarchy_digest: current_route.hierarchy_digest,
-        successor_hierarchy_digest: successor.hierarchy_digest,
+        successor_hierarchy_digest: successor.route.hierarchy_digest,
         final_use_request_digest,
     })
 }
@@ -237,20 +247,9 @@ pub fn runtime_topology_final_use_binding_v1(
     current: &RuntimeTopologySnapshotV1,
     request: &RuntimeTopologyApplyRequestV1,
 ) -> Result<FinalUseBinding, RuntimeTopologyExecutionError> {
-    if current.cns_id != request.successor.route.cns {
-        return Err(RuntimeTopologyExecutionError::Binding);
-    }
-    let synthetic_route = CnsRouteV1 {
-        cns: current.cns_id.clone(),
-        generation: current.generation,
-        hierarchy_digest: current.hierarchy_digest,
-        source: request.successor.route.source.clone(),
-        output_port: request.successor.route.output_port,
-        targets: request.successor.route.targets.clone(),
-    };
     Ok(validate_runtime_topology_transition_v1(
-        &synthetic_route,
-        current.generation,
+        &current.route,
+        current.route.generation,
         request,
     )?
     .binding)
