@@ -21,13 +21,17 @@ interpreted as the Hölder/operator qualification profile.
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
 | build deterministic Bellman targets | `build_targets` (`train` compatibility alias) | `src/lib.rs` | implemented |
-| admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
+| validate structural smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | compatibility implemented |
+| authenticate applicability for qualification | `validate_applicability_with_signed_evidence_v2` | `src/authenticated.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
-| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
+| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented; evidence uniqueness canonical |
+| bind frozen dataset to tabular training | `verify_tabular_operator_plan_v2` / `fit_tabular_operator_verified_v2` | `src/dataset_bound.rs` | implemented |
 | predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
-| admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
-| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
+| validate rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | compatibility implemented |
+| authenticate regularity for qualification | `admit_operator_regularity_with_signed_evidence_v2` | `src/authenticated.rs` | implemented |
+| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented; evidence uniqueness canonical |
+| bind frozen dataset to world-model training | `verify_world_model_dataset_v2` / `fit_transition_model_verified_v2` | `src/dataset_bound.rs` | implemented |
 | predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
 
 ## Applicability and sensor core
@@ -51,6 +55,10 @@ bound fails.
 registered sensor and action identities. Missing or duplicate cells fail. It
 computes Q32 targets, deterministic greedy actions and action gaps; ties break by
 canonical action ID. This reference is the oracle for any later learned model.
+
+`fit_tabular_operator` is the first source-complete trainable operator profile. Duplicate underlying `evidence_digest` values are rejected by the canonical fit itself, so relabelling one observation cannot increase a cell count. `fit_tabular_operator_strict_v2` remains an additive compatibility/error surface rather than a stronger hidden trust boundary.
+
+`verify_tabular_operator_plan_v2` is the qualification ingress: it independently verifies a `DatasetSnapshotReceiptV3`, requires objective/dataset identity equality, and requires the sorted training evidence set to equal the frozen dataset's canonical `source_record_digests` exactly. Only its opaque `VerifiedTabularOperatorPlanV2` can enter `fit_tabular_operator_verified_v2`.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
@@ -83,12 +91,18 @@ profile.
 
 ## World-model baseline
 
+`verify_world_model_dataset_v2` applies the same frozen-receipt and exact evidence-set rule to world-model rows. The compatibility `fit_transition_model` also rejects duplicate evidence globally, so a relabelled observation cannot alter transition counts, probabilities or mean outcome.
+
 `fit_transition_model` builds a deterministic action-conditioned tabular model
 from an immutable dataset. For every supported `(state, action)` it records the
 mean bounded outcome and a branch distribution whose Q32 probabilities sum
 exactly to one. `predict_transition` rejects unsupported pairs rather than
 extrapolating and marks every prediction synthetic with deny-all authority.
 Synthetic predictions cannot become independent factual outcomes.
+
+## Authenticated qualification admission
+
+The V1 applicability and regularity functions are deterministic structural validators. They do not authenticate the caller merely because an evaluator ID or credential digest is non-zero. Qualification uses `validate_applicability_with_signed_evidence_v2` and `admit_operator_regularity_with_signed_evidence_v2`, which reuse the ledger-owned `LearningEvidenceVerifierV1`. The host supplies immutable trust state; both generator and evaluator sign the exact structural digest; principal/credential identity and controller separation are checked. The signature proves who attested exact bytes, not that the mathematical or empirical conclusion is scientifically correct.
 
 ## Host and external obligations
 
