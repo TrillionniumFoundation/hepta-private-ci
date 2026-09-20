@@ -283,3 +283,29 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
         FinalUseError::Revoked
     );
 }
+
+
+#[test]
+fn replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small() {
+    let (authority, signed, directory) = fixture().unwrap();
+    let _token = authority.claim(&signed, &signed.grant.binding).unwrap();
+
+    let claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
+    assert_eq!(claims.len(), 40);
+
+    let mut second = signed.clone();
+    second.grant.grant_id = "read-two".into();
+    second.grant.nonce = [6; 32];
+    second.signature = SigningKey::from_bytes(&[47; 32])
+        .sign(&second.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+    let _token = authority.claim(&second, &second.grant.binding).unwrap();
+
+    let claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
+    assert_eq!(claims.len(), 80);
+    let snapshot = std::fs::read(directory.path().join("authority.json")).unwrap();
+    assert!(snapshot.len() < 16 * 1024);
+    let snapshot_text = String::from_utf8(snapshot).unwrap();
+    assert!(!snapshot_text.contains("used_nonces"));
+}
