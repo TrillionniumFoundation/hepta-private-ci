@@ -423,3 +423,89 @@ fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
         assert!(!value.succeeded());
     }
 }
+
+
+#[test]
+fn disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses() {
+    assert_eq!(
+        classify_observation_failure("provider events lost"),
+        NativeBoundaryStatus::Quarantined
+    );
+    assert_eq!(
+        classify_observation_failure("App Server socket disconnected"),
+        NativeBoundaryStatus::Quarantined
+    );
+    assert_eq!(
+        classify_observation_failure(LOCAL_CANCELLED),
+        NativeBoundaryStatus::Cancelled
+    );
+    assert_eq!(
+        classify_observation_failure(LOCAL_DEADLINE_ELAPSED),
+        NativeBoundaryStatus::TimedOut
+    );
+}
+
+#[test]
+fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
+    use std::path::Path;
+
+    let ready = ready_owner();
+    assert!(
+        validate_post_authority_fence(
+            &ready,
+            Path::new("/tmp/hepta-app.sock"),
+            Path::new("/tmp/hepta-app.sock"),
+            false,
+            99,
+            100,
+        )
+        .is_ok()
+    );
+
+    let mut fenced = ready.clone();
+    fenced.fenced = true;
+    assert!(
+        validate_post_authority_fence(
+            &fenced,
+            Path::new("/tmp/hepta-app.sock"),
+            Path::new("/tmp/hepta-app.sock"),
+            false,
+            99,
+            100,
+        )
+        .is_err()
+    );
+    assert!(
+        validate_post_authority_fence(
+            &ready,
+            Path::new("/tmp/hepta-app.sock"),
+            Path::new("/tmp/other.sock"),
+            false,
+            99,
+            100,
+        )
+        .is_err()
+    );
+    assert!(
+        validate_post_authority_fence(
+            &ready,
+            Path::new("/tmp/hepta-app.sock"),
+            Path::new("/tmp/hepta-app.sock"),
+            true,
+            99,
+            100,
+        )
+        .is_err()
+    );
+    assert!(
+        validate_post_authority_fence(
+            &ready,
+            Path::new("/tmp/hepta-app.sock"),
+            Path::new("/tmp/hepta-app.sock"),
+            false,
+            100,
+            100,
+        )
+        .is_err()
+    );
+}
