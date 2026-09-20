@@ -67,6 +67,32 @@ fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
     }
 }
 
+fn conflict_record(run_id: &str, receipt: &[u8]) -> RunStartConflictRecordV1 {
+    RunStartConflictRecordV1 {
+        authentication: RunStartAuthenticationV1 {
+            issuer_id: id("issuer.objective"),
+            key_epoch: 3,
+            message_id: id(&format!("message.{run_id}")),
+            sequence: 5,
+            expires_at_ms: 9_999_999,
+            scope_digest: digest("objective-scope"),
+            signed_body_digest: digest("signed-body"),
+            signature: [7; 64],
+        },
+        admission: RunStartAdmissionBindingV1 {
+            profile_digest: digest("profile"),
+            intent_digest: digest("intent"),
+            admitted_source_digest: digest("admitted-source"),
+            observed_at_unix_micros: 1_000_000,
+            deadline_unix_micros: 2_000_000,
+        },
+        run_id: id(run_id),
+        runtime_body_digest: digest("runtime-body"),
+        conflict_digest: Digest32::of_bytes(receipt),
+        conflict_receipt_bytes: receipt.to_vec(),
+    }
+}
+
 struct Fixture {
     root: PathBuf,
 }
@@ -177,6 +203,49 @@ fn exact_retry_is_idempotent_but_run_id_drift_conflicts() {
 }
 
 #[test]
+fn durable_conflict_roundtrip_replays_exact_receipt_without_runtime_snapshot() {
+    let fixture = Fixture::new();
+    let mut journal = fixture.create();
+    let conflict = conflict_record("run-conflict", b"canonical-conflict-receipt");
+    let receipt = must(journal.append_conflict(Digest32::ZERO, conflict.clone()));
+    assert_eq!(receipt.disposition, RunStartAppendDisposition::Appended);
+    assert!(must(journal.records()).is_empty());
+    assert_eq!(must(journal.conflicts()), vec![&conflict]);
+    assert_eq!(
+        must(journal.authentication_records()).len(),
+        1,
+        "conflict consumes the signed replay identity"
+    );
+
+    let replay = must(journal.append_conflict(Digest32::ZERO, conflict.clone()));
+    assert_eq!(
+        replay.disposition,
+        RunStartAppendDisposition::IdempotentReplay
+    );
+    assert_eq!(replay.chain_digest, receipt.chain_digest);
+
+    let mut changed = conflict.clone();
+    changed.conflict_receipt_bytes = b"different-conflict-receipt".to_vec();
+    changed.conflict_digest = Digest32::of_bytes(&changed.conflict_receipt_bytes);
+    assert_eq!(
+        journal.append_conflict(Digest32::ZERO, changed),
+        Err(RunStartStoreError::Conflict)
+    );
+
+    let anchor = RunStartAnchor {
+        sequence: receipt.sequence,
+        chain_digest: receipt.chain_digest,
+    };
+    drop(journal);
+    let reopened = must(fixture.recover(RunStartRecovery::Acknowledged(anchor)));
+    assert_eq!(
+        must(reopened.get_conflict(&id("run-conflict"))),
+        Some(&conflict)
+    );
+    assert!(must(reopened.records()).is_empty());
+}
+
+#[test]
 fn objective_payload_digest_mismatch_rejects_before_io() {
     let fixture = Fixture::new();
     let mut journal = fixture.create();
@@ -231,7 +300,7 @@ fn incomplete_unacknowledged_tail_recovers_to_last_synced_frame() {
         predecessor_chain_digest: first.chain_digest,
         record_digest: second.record_digest,
         chain_digest: second.chain_digest,
-        record: second_record,
+        record: StoredRunStartRecord::Run(second_record),
     };
     let second_size = must(encode_frame(&second_stored)).len();
     let first_end = full.len() - second_size;
@@ -265,7 +334,7 @@ fn acknowledged_missing_history_never_repairs_as_success() {
         predecessor_chain_digest: first.chain_digest,
         record_digest: second.record_digest,
         chain_digest: second.chain_digest,
-        record: second_record,
+        record: StoredRunStartRecord::Run(second_record),
     };
     let second_size = must(encode_frame(&second_stored)).len();
     let first_end = full.len() - second_size;
