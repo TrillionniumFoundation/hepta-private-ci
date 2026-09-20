@@ -181,8 +181,8 @@ pub fn decide_ndu_well_posedness_v1(
         return Err(NduWellPosednessError::InvalidConditionalMean);
     }
 
-    let producer_payload = producer_payload(&evidence);
-    let evaluator_payload = evaluator_payload(&evidence);
+    let producer_payload = ndu_well_posedness_producer_signing_payload_v1(&evidence);
+    let evaluator_payload = ndu_well_posedness_evaluator_signing_payload_v1(&evidence);
     let producer_verified =
         verifier.verify(LearningEvidenceRoleV1::Generator, producer, &producer_payload, now)?;
     let evaluator_verified =
@@ -240,7 +240,8 @@ pub fn decide_ndu_well_posedness_v1(
     })
 }
 
-fn producer_payload(evidence: &NduWellPosednessEvidenceV1) -> Vec<u8> {
+#[must_use]
+pub fn ndu_well_posedness_producer_signing_payload_v1(evidence: &NduWellPosednessEvidenceV1) -> Vec<u8> {
     let mut bytes = b"hepta.learning-eval.ndu-well-posedness-producer.v1\0".to_vec();
     bytes.extend_from_slice(evidence.artifact_manifest_digest.as_array());
     bytes.extend_from_slice(evidence.objective_class_digest.as_array());
@@ -248,7 +249,8 @@ fn producer_payload(evidence: &NduWellPosednessEvidenceV1) -> Vec<u8> {
     bytes
 }
 
-fn evaluator_payload(evidence: &NduWellPosednessEvidenceV1) -> Vec<u8> {
+#[must_use]
+pub fn ndu_well_posedness_evaluator_signing_payload_v1(evidence: &NduWellPosednessEvidenceV1) -> Vec<u8> {
     let mut bytes = b"hepta.learning-eval.ndu-well-posedness-evaluator.v1\0".to_vec();
     push_id(&mut bytes, &evidence.certificate_id);
     bytes.extend_from_slice(evidence.artifact_manifest_digest.as_array());
@@ -283,7 +285,7 @@ fn digest_certificate(
     evaluator_payload_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = b"hepta.learning-eval.ndu-well-posedness-certificate.v2\0".to_vec();
-    bytes.extend_from_slice(&evaluator_payload(evidence));
+    bytes.extend_from_slice(&ndu_well_posedness_evaluator_signing_payload_v1(evidence));
     push_id(&mut bytes, producer);
     push_id(&mut bytes, evaluator);
     bytes.extend_from_slice(trust_digest.as_array());
