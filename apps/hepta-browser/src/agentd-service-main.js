@@ -65,6 +65,12 @@ const driver = new PooledSubprocessBrowserDriver({
       ? null
       : createFilePersistedEffectReconciler(
           requiredAbsolutePath("HEPTA_BROWSER_RECONCILIATION_ROOT"),
+          {
+            observerId: required("HEPTA_BROWSER_RECONCILIATION_OBSERVER_ID"),
+            verifyingKeyHex: requiredDigest(
+              "HEPTA_BROWSER_RECONCILIATION_VERIFYING_KEY",
+            ),
+          },
         ),
   launcher: new LinuxBubblewrapLauncher({
     bwrapPath: process.env.HEPTA_BROWSER_BWRAP_PATH ?? "/usr/bin/bwrap",
