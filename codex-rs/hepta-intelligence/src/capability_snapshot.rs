@@ -74,6 +74,7 @@ pub enum CapabilitySnapshotErrorV2 {
     UnknownCapability(StableId),
     MissingRequiredCapability(StableId),
     BindingMismatch(StableId),
+    StaleSnapshot,
 }
 
 impl fmt::Display for CapabilitySnapshotErrorV2 {
@@ -214,6 +215,23 @@ impl CapabilitySnapshotV2 {
     #[must_use]
     pub fn absent_optional(&self) -> &[StableId] {
         &self.absent_optional
+    }
+
+    /// Revalidate this frozen composition snapshot against a freshly admitted
+    /// current snapshot immediately before final host handoff.
+    ///
+    /// This compares the complete digest, which includes authority epoch, body
+    /// generation, configuration, revocation frontier and every capability
+    /// owner/contract/implementation/generation binding. The provider of
+    /// `current` remains responsible for authenticating those owner facts.
+    pub fn revalidate_current(
+        &self,
+        current: &Self,
+    ) -> Result<(), CapabilitySnapshotErrorV2> {
+        if self.snapshot_digest != current.snapshot_digest {
+            return Err(CapabilitySnapshotErrorV2::StaleSnapshot);
+        }
+        Ok(())
     }
 
     /// Use the admitted snapshot in the existing bounded, non-executing composer.
