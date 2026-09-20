@@ -3866,6 +3866,66 @@ async fn find_operation(
     .transpose()
 }
 
+fn checked_operation_intent(
+    stored: &DurableOperationRow,
+) -> Result<OperationIntent, LocalLeaseOutboxError> {
+    let payload_digest = stored
+        .payload_sha256
+        .parse::<Digest32>()
+        .map_err(|_| corrupt("durable operation payload digest is invalid"))?;
+    let expected_predecessor = stored
+        .expected_predecessor_sha256
+        .as_deref()
+        .map(str::parse::<Digest32>)
+        .transpose()
+        .map_err(|_| corrupt("durable operation predecessor digest is invalid"))?;
+    let intent = OperationIntent {
+        key: OperationKey {
+            id: StableId::new(stored.operation_id.clone())
+                .map_err(|_| corrupt("durable operation id is invalid"))?,
+            payload_digest,
+        },
+        scope: StableId::new(stored.scope_id.clone())
+            .map_err(|_| corrupt("durable operation scope is invalid"))?,
+        owner: StableId::new(stored.owner_id.clone())
+            .map_err(|_| corrupt("durable operation owner is invalid"))?,
+        destination: StableId::new(stored.destination_id.clone())
+            .map_err(|_| corrupt("durable operation destination is invalid"))?,
+        expected_predecessor,
+    };
+    intent
+        .validate()
+        .map_err(|_| corrupt("durable operation semantic fields are invalid"))?;
+    if intent.semantic_digest().to_string() != stored.semantic_sha256 {
+        return Err(corrupt("durable operation semantic digest mismatch"));
+    }
+    Ok(intent)
+}
+
+fn verify_operation_row_incremental(
+    stored: &DurableOperationRow,
+    lease_id: &str,
+    expected_owner: &AgentId,
+    event: &EventRow,
+    outbox: &OutboxRow,
+) -> Result<OperationIntent, LocalLeaseOutboxError> {
+    verify_occurrence_pair_incremental(lease_id, expected_owner, event, outbox)?;
+    if stored.lease_id != lease_id
+        || stored.event_id != event.event_id
+        || stored.outbox_id != outbox.outbox_id
+        || stored.owner_agent_id != *expected_owner
+        || stored.generation != event.generation
+        || stored.fencing_token != event.fencing_token
+        || stored.payload_sha256 != event.payload_sha256.as_str()
+        || stored.operation_id != event.occurrence_key
+    {
+        return Err(corrupt(
+            "durable operation row is not bound to its immutable event/outbox pair",
+        ));
+    }
+    checked_operation_intent(stored)
+}
+
 fn verify_operation_row_binding(
     operation: &OperationIntent,
     stored: &DurableOperationRow,
