@@ -110,9 +110,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-workspace
-          path: |
-            ${{ runner.temp }}/hepta-command-records/*.json
-            ${{ runner.temp }}/hepta-command-records/prompt-registry-qualification.log
+          path: ${{ runner.temp }}/hepta-command-records/*.json
           if-no-files-found: error
           retention-days: 30
   engineering-sandbox:
@@ -324,6 +322,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
-          path: ${{ runner.temp }}/hepta-command-records/*.json
+          path: |
+            ${{ runner.temp }}/hepta-command-records/*.json
+            ${{ runner.temp }}/hepta-command-records/prompt-registry-qualification.log
           if-no-files-found: error
           retention-days: 30
