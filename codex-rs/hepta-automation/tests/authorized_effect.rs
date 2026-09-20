@@ -6,6 +6,8 @@
 
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
@@ -51,6 +53,7 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+static NEXT_TEST_NONCE: AtomicU64 = AtomicU64::new(1);
 
 struct Fixture {
     _temp: tempfile::TempDir,
@@ -166,12 +169,17 @@ fn final_use(
             .as_millis(),
     )
     .expect("wall clock milliseconds fit u64");
+    let nonce_counter = NEXT_TEST_NONCE.fetch_add(1, Ordering::Relaxed);
+    let nonce_material = format!(
+        "{grant_id}:{}:{now}:{nonce_counter}",
+        std::process::id()
+    );
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "security-owner".to_string(),
         authority_epoch: 9,
         grant_id: grant_id.to_string(),
-        nonce: digest_bytes(&Sha256Digest::for_bytes(grant_id.as_bytes())),
+        nonce: digest_bytes(&Sha256Digest::for_bytes(nonce_material.as_bytes())),
         binding,
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 30_000,
