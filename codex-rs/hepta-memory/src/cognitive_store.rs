@@ -26,6 +26,8 @@ use crate::cognitive_kg_store::MAX_SCOPE_NODES;
 use crate::cognitive_kg_store::ProjectionEdge;
 use crate::cognitive_kg_store::ProjectionHead;
 use crate::cognitive_kg_store::ProjectionNode;
+use crate::cognitive_kg_store::canonical_generation_from_projection;
+use crate::cognitive_kg_store::graph_source_vector_digest_tx;
 use crate::cognitive_kg_store::input_heads_digest;
 use crate::cognitive_kg_store::output_digest;
 use crate::cognitive_model::COGNITIVE_SCHEMA_VERSION;
@@ -98,6 +100,11 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("kg_projection_generation_receipts_no_update", "trigger"),
     ("kg_projection_generation_receipts_no_delete", "trigger"),
     ("kg_projection_generation_receipts_trigger_lookup", "index"),
+    ("kg_projection_generation_semantics", "table"),
+    ("kg_projection_generation_semantics_no_update", "trigger"),
+    ("kg_projection_generation_semantics_no_delete", "trigger"),
+    ("kg_projection_generation_semantics_digest_lookup", "index"),
+    ("kg_projection_current_semantics_on_update", "trigger"),
     ("kg_projection_node_entities", "table"),
     ("kg_projection_node_entities_no_update", "trigger"),
     ("kg_projection_node_entities_no_delete", "trigger"),
@@ -719,10 +726,11 @@ async fn verify_migration_ledger(pool: &SqlitePool) -> Result<(), CognitiveStore
             (8, true),
             (9, true),
             (10, true),
+            (11, true),
         ]
     {
         return Err(CognitiveStoreError::Corrupt(format!(
-            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010 set: {migrations:?}"
+            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011 set: {migrations:?}"
         )));
     }
 
@@ -782,11 +790,17 @@ async fn verify_current_projection_contents(
     let mut transaction = pool.begin().await.map_err(unavailable)?;
     let current_rows = sqlx::query(
         "SELECT p.projection_scope, p.generation,
-                r.input_heads_sha256, r.output_sha256
+                r.input_heads_sha256, r.output_sha256,
+                s.source_snapshot_sha256, s.generation_vector_sha256,
+                s.graph_profile_sha256, s.generation_sha256,
+                s.publication_sha256
          FROM kg_projection p
          JOIN kg_projection_generation_receipts r
            ON r.projection_scope = p.projection_scope
           AND r.generation = p.generation
+         LEFT JOIN kg_projection_generation_semantics s
+           ON s.projection_scope = p.projection_scope
+          AND s.generation = p.generation
          ORDER BY p.projection_scope LIMIT ?",
     )
     .bind(bounded_limit(MAX_PROJECTION_SCOPES)?)
@@ -803,6 +817,13 @@ async fn verify_current_projection_contents(
         let projection_scope: String = current.try_get("projection_scope").map_err(unavailable)?;
         let generation: i64 = current.try_get("generation").map_err(unavailable)?;
         let (scope_kind, workspace_sha256) = projection_scope_database_parts(&projection_scope)?;
+        let cognitive_scope = match workspace_sha256.as_ref() {
+            None => CognitiveScope::AgentPrivate,
+            Some(workspace_sha256) => CognitiveScope::WorkspacePrivate {
+                workspace_sha256: Sha256Digest::parse(workspace_sha256.clone())
+                    .map_err(CognitiveStoreError::Corrupt)?,
+            },
+        };
 
         let head_rows = sqlx::query(
             "SELECT r.memory_id, r.revision, r.content_sha256,
@@ -1105,6 +1126,78 @@ async fn verify_current_projection_contents(
             return Err(CognitiveStoreError::Corrupt(format!(
                 "KG current projection `{projection_scope}` output digest failed canonical recomputation"
             )));
+        }
+
+        let semantic_fields = (
+            current
+                .try_get::<Option<String>, _>("source_snapshot_sha256")
+                .map_err(unavailable)?,
+            current
+                .try_get::<Option<String>, _>("generation_vector_sha256")
+                .map_err(unavailable)?,
+            current
+                .try_get::<Option<String>, _>("graph_profile_sha256")
+                .map_err(unavailable)?,
+            current
+                .try_get::<Option<String>, _>("generation_sha256")
+                .map_err(unavailable)?,
+            current
+                .try_get::<Option<String>, _>("publication_sha256")
+                .map_err(unavailable)?,
+        );
+        match semantic_fields {
+            (None, None, None, None, None) => {
+                // A projection created before migration 0011 is valid legacy
+                // history. It cannot drive digest-bound graph expansion.
+            }
+            (
+                Some(source_snapshot),
+                Some(generation_vector),
+                Some(graph_profile),
+                Some(generation_sha256),
+                Some(publication_sha256),
+            ) => {
+                let generation_u64 = u64::try_from(generation).map_err(|_| {
+                    CognitiveStoreError::Corrupt("negative KG generation".to_string())
+                })?;
+                let expected_generation_vector = graph_source_vector_digest_tx(
+                    &mut transaction,
+                    owner.as_str(),
+                    &cognitive_scope,
+                    expected_input
+                        .as_str()
+                        .parse::<codex_hepta_types::Digest32>()
+                        .map_err(|error| {
+                            CognitiveStoreError::Corrupt(format!(
+                                "invalid recomputed KG source snapshot digest: {error}"
+                            ))
+                        })?,
+                )
+                .await?;
+                let canonical = canonical_generation_from_projection(
+                    generation_u64,
+                    &expected_input,
+                    expected_generation_vector,
+                    &expected_nodes,
+                    &expected_edges,
+                )?;
+                if source_snapshot != canonical.source_snapshot_digest.to_string()
+                    || generation_vector != expected_generation_vector.to_string()
+                    || generation_vector != canonical.generation_vector_digest.to_string()
+                    || graph_profile != canonical.graph_profile_digest.to_string()
+                    || generation_sha256 != canonical.generation_digest.to_string()
+                {
+                    return Err(CognitiveStoreError::Corrupt(format!(
+                        "KG current projection `{projection_scope}` canonical V2 semantics failed reconstruction"
+                    )));
+                }
+                Sha256Digest::parse(publication_sha256).map_err(CognitiveStoreError::Corrupt)?;
+            }
+            _ => {
+                return Err(CognitiveStoreError::Corrupt(format!(
+                    "KG current projection `{projection_scope}` has a partial canonical V2 receipt"
+                )));
+            }
         }
     }
     transaction.commit().await.map_err(unavailable)?;

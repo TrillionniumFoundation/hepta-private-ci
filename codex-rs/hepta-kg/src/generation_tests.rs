@@ -26,6 +26,8 @@ fn support(label: &str, tombstoned: bool) -> KnowledgeSupportV2 {
         source_revision: revision(1),
         source_fact_digest: digest(&format!("fact:{label}")),
         validity_digest: digest(&format!("validity:{label}")),
+        valid_from_unix_seconds: None,
+        valid_to_unix_seconds: None,
         tombstoned,
     }
 }
@@ -180,6 +182,7 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
             generation_digest: second.generation_digest,
             seed_node_ids: vec![id("node:a")],
             relation_kinds: vec![KnowledgeRelationKindV2::Causes],
+            valid_at_unix_seconds: None,
             maximum_edges: 8,
         },
     )
@@ -195,6 +198,7 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
                 generation_digest: digest("stale"),
                 seed_node_ids: vec![id("node:a")],
                 relation_kinds: Vec::new(),
+                valid_at_unix_seconds: None,
                 maximum_edges: 8,
             }
         ),
@@ -224,4 +228,108 @@ fn supports_and_contradicts_remain_distinct_edges() {
     .unwrap_or_else(|error| panic!("valid contradictory graph: {error}"));
     assert_eq!(generation.edges.len(), 2);
     assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
+}
+
+#[test]
+fn custom_relation_identities_are_lossless_and_queryable() {
+    let studies = KnowledgeRelationKindV2::Custom(id("relation-kind:studies"));
+    let teaches = KnowledgeRelationKindV2::Custom(id("relation-kind:teaches"));
+    let generation = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b")],
+            vec![
+                edge("a", "b", studies.clone(), "studies-edge"),
+                edge("a", "b", teaches.clone(), "teaches-edge"),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid custom-relation graph: {error}"));
+    assert_eq!(generation.edges.len(), 2);
+    assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
+
+    let result = query_relations(
+        &generation,
+        KnowledgeRelationQueryV2 {
+            query_id: id("query:custom"),
+            generation_digest: generation.generation_digest,
+            seed_node_ids: vec![id("node:a")],
+            relation_kinds: vec![studies],
+            valid_at_unix_seconds: None,
+            maximum_edges: 8,
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid custom query: {error}"));
+    assert_eq!(result.edges.len(), 1);
+    assert_eq!(
+        result.edges[0].identity.relation,
+        KnowledgeRelationKindV2::Custom(id("relation-kind:studies"))
+    );
+}
+
+#[test]
+fn composed_owner_can_retain_more_than_sixty_four_supports() {
+    let mut canonical = node("shared", "shared");
+    canonical.supports = (1..=65)
+        .map(|index| support(&format!("shared-{index}"), false))
+        .collect();
+    let generation = build_complete_generation(generation(1), input(vec![canonical], Vec::new()))
+        .unwrap_or_else(|error| panic!("65 explicit supports remain within owner bounds: {error}"));
+    assert_eq!(generation.nodes[0].supports.len(), 65);
+}
+
+#[test]
+fn temporal_visibility_matches_inclusive_start_and_exclusive_end() {
+    let mut timed = edge("a", "b", KnowledgeRelationKindV2::Supports, "timed-edge");
+    timed.supports[0].valid_from_unix_seconds = Some(100);
+    timed.supports[0].valid_to_unix_seconds = Some(200);
+    let generation = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], vec![timed]),
+    )
+    .unwrap_or_else(|error| panic!("valid timed graph: {error}"));
+
+    let query_at = |at| {
+        query_relations(
+            &generation,
+            KnowledgeRelationQueryV2 {
+                query_id: id(&format!("query:at:{at}")),
+                generation_digest: generation.generation_digest,
+                seed_node_ids: vec![id("node:a")],
+                relation_kinds: Vec::new(),
+                valid_at_unix_seconds: Some(at),
+                maximum_edges: 8,
+            },
+        )
+        .unwrap_or_else(|error| panic!("valid timed query: {error}"))
+    };
+    assert!(query_at(99).edges.is_empty());
+    assert_eq!(query_at(100).edges.len(), 1);
+    assert_eq!(query_at(199).edges.len(), 1);
+    assert!(query_at(200).edges.is_empty());
+
+    let structural = query_relations(
+        &generation,
+        KnowledgeRelationQueryV2 {
+            query_id: id("query:structural"),
+            generation_digest: generation.generation_digest,
+            seed_node_ids: vec![id("node:a")],
+            relation_kinds: Vec::new(),
+            valid_at_unix_seconds: None,
+            maximum_edges: 8,
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid structural query: {error}"));
+    assert_eq!(structural.edges.len(), 1);
+}
+
+#[test]
+fn invalid_temporal_support_window_is_rejected() {
+    let mut invalid = node("a", "a");
+    invalid.supports[0].valid_from_unix_seconds = Some(200);
+    invalid.supports[0].valid_to_unix_seconds = Some(200);
+    assert_eq!(
+        build_complete_generation(generation(1), input(vec![invalid], Vec::new())),
+        Err(KnowledgeGenerationErrorV2::InvalidValidityWindow)
+    );
 }

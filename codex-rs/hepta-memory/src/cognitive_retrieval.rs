@@ -3,6 +3,9 @@ use std::collections::BTreeSet;
 use std::future::Future;
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::KnowledgeRelationQueryV2;
+use codex_hepta_kg::query_relations;
+use codex_hepta_types::StableId;
 use serde::Serialize;
 use sqlx::Row;
 use sqlx::Sqlite;
@@ -21,6 +24,7 @@ use crate::MemoryVerification;
 use crate::ProjectionGeneration;
 use crate::SourceRevisionId;
 use crate::StableMemoryId;
+use crate::cognitive_kg_store::load_canonical_generation_tx;
 use crate::cognitive_store::decode_scope;
 use crate::cognitive_store::unavailable;
 
@@ -55,6 +59,7 @@ pub struct MemoryExplanation {
     pub memory: MemoryRevisionRecord,
     pub citations: Vec<SourceCitationRecord>,
     pub kg_projection_generation: Option<ProjectionGeneration>,
+    pub kg_projection_generation_sha256: Option<Sha256Digest>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
@@ -84,6 +89,7 @@ pub struct MemoryRevalidationBinding {
     pub valid_to_unix_seconds: Option<i64>,
     pub citations: Vec<SourceRevalidationBinding>,
     pub kg_projection_generation: Option<ProjectionGeneration>,
+    pub kg_projection_generation_sha256: Option<Sha256Digest>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -135,6 +141,7 @@ pub enum RevalidationDrift {
     CitationSet,
     SourceHash,
     KgProjectionGeneration,
+    KgProjectionGenerationDigest,
     NotEligible,
 }
 
@@ -159,6 +166,7 @@ struct AggregatedRank {
 struct EntitySeed {
     projection_scope: String,
     generation: i64,
+    generation_sha256: Option<Sha256Digest>,
     canonical_entity_id: String,
     memory: MemoryKey,
 }
@@ -265,8 +273,8 @@ impl CognitiveStore {
             }
             citations.push(source);
         }
-        let kg_projection_generation = self
-            .projection_generation_for_scope_tx(transaction, &memory.scope)
+        let (kg_projection_generation, kg_projection_generation_sha256) = self
+            .projection_binding_for_scope_tx(transaction, &memory.scope)
             .await?;
         let current_head: i64 =
             sqlx::query_scalar("SELECT revision FROM memory_heads WHERE memory_id = ?")
@@ -283,6 +291,7 @@ impl CognitiveStore {
             memory,
             citations,
             kg_projection_generation,
+            kg_projection_generation_sha256,
         })
     }
 
@@ -482,31 +491,48 @@ impl CognitiveStore {
                 RevalidationDrift::KgProjectionGeneration,
             ));
         }
+        if explanation.kg_projection_generation_sha256 != binding.kg_projection_generation_sha256 {
+            return Ok(RevalidationStatus::Stale(
+                RevalidationDrift::KgProjectionGenerationDigest,
+            ));
+        }
         if !eligible(memory, now_unix_seconds) {
             return Ok(RevalidationStatus::Stale(RevalidationDrift::NotEligible));
         }
         Ok(RevalidationStatus::Current(Box::new(explanation)))
     }
 
-    async fn projection_generation_for_scope_tx(
+    async fn projection_binding_for_scope_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         scope: &CognitiveScope,
-    ) -> Result<Option<ProjectionGeneration>, CognitiveStoreError> {
-        let generation = sqlx::query_scalar::<_, i64>(
-            "SELECT generation FROM kg_projection WHERE projection_scope = ?",
+    ) -> Result<(Option<ProjectionGeneration>, Option<Sha256Digest>), CognitiveStoreError> {
+        let row = sqlx::query(
+            "SELECT p.generation, s.generation_sha256
+             FROM kg_projection p
+             LEFT JOIN kg_projection_generation_semantics s
+               ON s.projection_scope = p.projection_scope
+              AND s.generation = p.generation
+             WHERE p.projection_scope = ?",
         )
         .bind(scope.projection_key())
         .fetch_optional(&mut **transaction)
         .await
         .map_err(unavailable)?;
-        generation
-            .map(|generation| {
-                u64::try_from(generation)
-                    .map(ProjectionGeneration)
-                    .map_err(|_| CognitiveStoreError::Corrupt("negative KG generation".to_string()))
-            })
+        let Some(row) = row else {
+            return Ok((None, None));
+        };
+        let generation: i64 = row.try_get("generation").map_err(unavailable)?;
+        let generation = u64::try_from(generation)
+            .map(ProjectionGeneration)
+            .map_err(|_| CognitiveStoreError::Corrupt("negative KG generation".to_string()))?;
+        let generation_sha256 = row
+            .try_get::<Option<String>, _>("generation_sha256")
+            .map_err(unavailable)?
+            .map(Sha256Digest::parse)
             .transpose()
+            .map_err(CognitiveStoreError::Corrupt)?;
+        Ok((Some(generation), generation_sha256))
     }
 
     async fn memory_fts_channel_tx(
@@ -560,10 +586,14 @@ impl CognitiveStore {
             .map(|scope| scope.projection_key());
         let rows = sqlx::query(
             "SELECT f.projection_scope, f.generation, f.node_id,
-                    i.canonical_entity_id, n.memory_id, n.memory_revision
+                    i.canonical_entity_id, n.memory_id, n.memory_revision,
+                    s.generation_sha256
              FROM kg_entity_fts f
              JOIN kg_projection p ON p.projection_scope = f.projection_scope
                                   AND p.generation = f.generation
+             LEFT JOIN kg_projection_generation_semantics s
+               ON s.projection_scope = p.projection_scope
+              AND s.generation = p.generation
              JOIN kg_nodes n ON n.projection_scope = f.projection_scope
                             AND n.generation = f.generation AND n.node_id = f.node_id
              JOIN kg_projection_node_entities i
@@ -609,6 +639,12 @@ impl CognitiveStore {
                     let generation: i64 = row.try_get("generation").map_err(unavailable)?;
                     let canonical_entity_id: String =
                         row.try_get("canonical_entity_id").map_err(unavailable)?;
+                    let generation_sha256 = row
+                        .try_get::<Option<String>, _>("generation_sha256")
+                        .map_err(unavailable)?
+                        .map(Sha256Digest::parse)
+                        .transpose()
+                        .map_err(CognitiveStoreError::Corrupt)?;
                     if !seen.insert((
                         projection_scope.clone(),
                         generation,
@@ -620,6 +656,7 @@ impl CognitiveStore {
                     Ok(Some(EntitySeed {
                         projection_scope,
                         generation,
+                        generation_sha256,
                         canonical_entity_id,
                         memory,
                     }))
@@ -652,74 +689,103 @@ impl CognitiveStore {
             )) {
                 continue;
             }
+
+            let generation_sha256 = match &seed.generation_sha256 {
+                Some(digest) => Some(digest.clone()),
+                None => sqlx::query_scalar::<_, String>(
+                    "SELECT generation_sha256
+                     FROM kg_projection_generation_semantics
+                     WHERE projection_scope = ? AND generation = ?",
+                )
+                .bind(&seed.projection_scope)
+                .bind(seed.generation)
+                .fetch_optional(&mut **transaction)
+                .await
+                .map_err(unavailable)?
+                .map(Sha256Digest::parse)
+                .transpose()
+                .map_err(CognitiveStoreError::Corrupt)?,
+            };
+            let Some(generation_sha256) = generation_sha256 else {
+                // Legacy projections without a canonical V2 receipt remain
+                // available to lexical/entity channels, but cannot drive graph
+                // expansion until a canonical generation has been published.
+                continue;
+            };
+
+            let generation =
+                load_canonical_generation_tx(transaction, &seed.projection_scope, seed.generation)
+                    .await?;
+            if generation.generation_digest.to_string() != generation_sha256.as_str() {
+                return Err(CognitiveStoreError::Corrupt(
+                    "KG product query generation digest diverged from persisted semantics"
+                        .to_string(),
+                ));
+            }
+            let seed_node_id =
+                StableId::new(seed.canonical_entity_id.clone()).map_err(|error| {
+                    CognitiveStoreError::Corrupt(format!(
+                        "invalid canonical KG query seed identity: {error}"
+                    ))
+                })?;
             let remaining = MAX_RETRIEVAL_CHANNEL_CANDIDATES - result.len();
-            let rows = sqlx::query(
-                "WITH canonical_support_nodes AS (
-                     SELECT node_id
-                     FROM kg_projection_node_entities
-                     WHERE projection_scope = ? AND generation = ?
-                       AND canonical_entity_id = ?
-                 )
-                 SELECT DISTINCT e.edge_id, e.memory_id AS edge_memory_id,
-                        e.memory_revision AS edge_memory_revision,
-                        n.node_id, n.memory_id AS node_memory_id,
-                        n.memory_revision AS node_memory_revision
-                 FROM canonical_support_nodes s
-                 JOIN kg_edges e
-                   ON e.projection_scope = ? AND e.generation = ?
-                  AND (e.from_node_id = s.node_id OR e.to_node_id = s.node_id)
-                 JOIN kg_nodes n
-                   ON n.projection_scope = e.projection_scope AND n.generation = e.generation
-                  AND n.node_id = CASE WHEN e.from_node_id = s.node_id
-                                       THEN e.to_node_id ELSE e.from_node_id END
-                 JOIN memory_heads eh ON eh.memory_id = e.memory_id
-                                     AND eh.revision = e.memory_revision
-                 JOIN memory_heads nh ON nh.memory_id = n.memory_id
-                                     AND nh.revision = n.memory_revision
-                 JOIN memory_revisions er ON er.memory_id = e.memory_id
-                                         AND er.revision = e.memory_revision
-                 JOIN memory_revisions nr ON nr.memory_id = n.memory_id
-                                         AND nr.revision = n.memory_revision
-                 WHERE e.valid_from_unix_seconds <= ?
-                   AND (e.valid_to_unix_seconds IS NULL OR ? < e.valid_to_unix_seconds)
-                   AND n.valid_from_unix_seconds <= ?
-                   AND (n.valid_to_unix_seconds IS NULL OR ? < n.valid_to_unix_seconds)
-                   AND er.verification = 'verified' AND er.lifecycle = 'active'
-                   AND nr.verification = 'verified' AND nr.lifecycle = 'active'
-                   AND er.valid_from_unix_seconds <= ?
-                   AND (er.valid_to_unix_seconds IS NULL OR ? < er.valid_to_unix_seconds)
-                   AND nr.valid_from_unix_seconds <= ?
-                   AND (nr.valid_to_unix_seconds IS NULL OR ? < nr.valid_to_unix_seconds)
-                 ORDER BY e.edge_id, n.node_id
-                 LIMIT ?",
+            let query_result = query_relations(
+                &generation,
+                KnowledgeRelationQueryV2 {
+                    query_id: StableId::new("query:cognitive-retrieval-graph-v2").map_err(
+                        |error| {
+                            CognitiveStoreError::Corrupt(format!(
+                                "invalid canonical KG retrieval query identity: {error}"
+                            ))
+                        },
+                    )?,
+                    generation_digest: generation.generation_digest,
+                    seed_node_ids: vec![seed_node_id],
+                    relation_kinds: Vec::new(),
+                    valid_at_unix_seconds: Some(now),
+                    maximum_edges: u32::try_from(remaining).map_err(|_| {
+                        CognitiveStoreError::Invalid(
+                            "graph retrieval limit exceeds u32".to_string(),
+                        )
+                    })?,
+                },
             )
-            .bind(&seed.projection_scope)
-            .bind(seed.generation)
-            .bind(&seed.canonical_entity_id)
-            .bind(&seed.projection_scope)
-            .bind(seed.generation)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(i64::try_from(remaining).map_err(|_| {
-                CognitiveStoreError::Invalid("graph retrieval limit exceeds i64".to_string())
-            })?)
-            .fetch_all(&mut **transaction)
-            .await
-            .map_err(unavailable)?;
-            if rows.len() >= remaining {
+            .map_err(|error| {
+                CognitiveStoreError::Corrupt(format!(
+                    "persisted KG generation failed canonical V2 query: {error}"
+                ))
+            })?;
+            if query_result.omitted_count != 0 {
                 limit = RetrievalLimitObservation::LimitReached;
             }
-            for row in rows {
-                for key in [
-                    decode_memory_key(&row, "edge_memory_id", "edge_memory_revision")?,
-                    decode_memory_key(&row, "node_memory_id", "node_memory_revision")?,
-                ] {
+
+            for edge in query_result.edges {
+                for support in edge.supports {
+                    let row = sqlx::query(
+                        "SELECT memory_id, memory_revision
+                         FROM kg_edges
+                         WHERE projection_scope = ? AND generation = ? AND edge_id = ?",
+                    )
+                    .bind(&seed.projection_scope)
+                    .bind(seed.generation)
+                    .bind(support.source_id.as_str())
+                    .fetch_optional(&mut **transaction)
+                    .await
+                    .map_err(unavailable)?
+                    .ok_or_else(|| {
+                        CognitiveStoreError::Corrupt(
+                            "canonical KG edge support has no persisted occurrence".to_string(),
+                        )
+                    })?;
+                    let revision: i64 = row.try_get("memory_revision").map_err(unavailable)?;
+                    let key = MemoryKey {
+                        memory_id: row.try_get("memory_id").map_err(unavailable)?,
+                        revision: u64::try_from(revision).map_err(|_| {
+                            CognitiveStoreError::Corrupt(
+                                "negative KG edge-support memory revision".to_string(),
+                            )
+                        })?,
+                    };
                     if seen.insert(key.clone()) {
                         result.push(key);
                     }
@@ -754,6 +820,7 @@ impl CognitiveStore {
                     Ok(EntitySeed {
                         projection_scope: scope.projection_key(),
                         generation: to_i64(generation.get(), "projection generation")?,
+                        generation_sha256: None,
                         canonical_entity_id: canonical_entity_id.clone(),
                         memory: MemoryKey {
                             memory_id: memory.memory_id.as_str().to_string(),
@@ -879,6 +946,7 @@ fn binding_from_explanation(explanation: &MemoryExplanation) -> MemoryRevalidati
             })
             .collect(),
         kg_projection_generation: explanation.kg_projection_generation,
+        kg_projection_generation_sha256: explanation.kg_projection_generation_sha256.clone(),
     }
 }
 

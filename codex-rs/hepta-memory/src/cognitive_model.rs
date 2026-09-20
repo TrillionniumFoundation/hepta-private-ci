@@ -360,7 +360,13 @@ pub struct CognitiveProjectionReceipt {
     pub generation: ProjectionGeneration,
     pub fact_set_sha256: Sha256Digest,
     pub input_heads_sha256: Sha256Digest,
+    /// Digest of the physical SQLite occurrence projection retained for
+    /// reopen/integrity verification.
     pub output_sha256: Sha256Digest,
+    /// Canonical hepta-kg V2 generation digest for this exact source cut.
+    pub generation_sha256: Sha256Digest,
+    /// hepta-kg V2 predecessor-bound publication receipt digest.
+    pub publication_sha256: Sha256Digest,
     pub entity_count: u64,
     pub relation_count: u64,
     pub node_count: u64,

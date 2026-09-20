@@ -406,6 +406,10 @@ mod cognitive_memory_store_tests;
 mod cognitive_kg_store_tests;
 
 #[cfg(test)]
+#[path = "cognitive_kg_oracle_tests.rs"]
+mod cognitive_kg_oracle_tests;
+
+#[cfg(test)]
 #[path = "cognitive_intelligence_writer_tests.rs"]
 mod cognitive_intelligence_writer_tests;
 
