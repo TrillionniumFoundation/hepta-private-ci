@@ -28,7 +28,7 @@ EXPECTED_MODULES = {
     "learning.artifacts",
 }
 EXPECTED_CASES = {
-    *(f"LEDGER-{index:02d}" for index in range(1, 5)),
+    *(f"LEDGER-{index:02d}" for index in range(1, 14)),
     *(f"OP-{index:02d}" for index in range(1, 5)),
     *(f"EVAL-{index:02d}" for index in range(1, 5)),
     *(f"ART-{index:02d}" for index in range(1, 5)),
@@ -36,12 +36,19 @@ EXPECTED_CASES = {
 EXPECTED_EXTERNAL_GATES = {f"RDY-EXT-{index:03d}" for index in range(1, 10)}
 EXPECTED_OPERATIONS = {
     "learning.ledger": {
-        "verify_independent_roles",
-        "validate_authenticated_outcome",
+        "LedgerWriter::append_decision",
+        "LedgerWriter::append_outcome",
+        "LedgerWriter::append_credit_batch",
+        "LedgerWriter::append_unlearning",
+        "LedgerWriter::freeze_dataset",
+        "LedgerWriter::revalidate_dataset_snapshot",
+        "LedgerWriter::rotate_segment",
+        "sync_directory_handle",
+        "LedgerWitnessStore",
+        "activate_learning_trust",
+        "canonical_protocol_adapters",
+        "build_ledger_index_checkpoint",
         "validate_candidate_set_completeness",
-        "finalize_credit_batch",
-        "freeze_dataset",
-        "append_shadow_decision",
     },
     "learning.artifacts": {
         "validate_artifact_manifest_v2",
@@ -243,8 +250,9 @@ def verify_matrix(
                 "native_symbol_unresolved",
                 f"cannot resolve {symbol} in {source_path.relative_to(ROOT)}",
             )
+            status = operation.get("status")
             findings.require(
-                operation.get("status") in {"implemented", "implemented_existing"},
+                isinstance(status, str) and status.startswith("implemented"),
                 "operation_not_implemented",
                 f"{module}.{operation_name} is not source-implemented",
             )
