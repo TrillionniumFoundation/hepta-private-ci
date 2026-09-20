@@ -117,8 +117,9 @@ def main() -> int:
     for token in [DOMAIN[:-1].decode("ascii"), CONTRACT, SCHEMA]:
         if token not in wire:
             raise SystemExit(f"Rust wire implementation missing token: {token}")
-    if EXPECTED_DIGEST not in tests:
-        raise SystemExit("Rust golden-vector digest is not pinned to the Python oracle")
+    for expected in [EXPECTED_DIGEST, EVENT_EXPECTED_DIGEST]:
+        if expected not in tests:
+            raise SystemExit(f"Rust golden digest vector is missing: {expected}")
 
     print(
         json.dumps(
@@ -128,6 +129,8 @@ def main() -> int:
                 "schema": SCHEMA,
                 "canonicalEnvelopeBytes": len(envelope_bytes),
                 "digest": digest,
+                "eventDigest": event_digest,
+                "vectorCount": 2,
             },
             sort_keys=True,
         )
