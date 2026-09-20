@@ -92,10 +92,7 @@ fn sign(
     evidence
 }
 
-fn evidence(
-    verifier: &LearningEvidenceVerifierV1,
-    payload: &[u8],
-) -> SignedOperatorEvidenceV2 {
+fn evidence(verifier: &LearningEvidenceVerifierV1, payload: &[u8]) -> SignedOperatorEvidenceV2 {
     SignedOperatorEvidenceV2 {
         generator: sign(
             verifier,
