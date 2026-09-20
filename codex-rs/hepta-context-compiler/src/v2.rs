@@ -7,9 +7,10 @@
 //! admission/revocation state at attachment and immediately before dispatch.
 //!
 //! This crate never performs a model/provider/network effect. Instead it emits an
-//! opaque pre-dispatch safety witness whose digest must be bound into the existing
-//! provider invocation evidence. Delivery receipts are created only from a
-//! validated ProviderInvocationReceipt plus an independent delivery verifier.
+//! opaque pre-dispatch safety witness whose linkage to the exact provider attempt
+//! must be authenticated by the existing provider invocation evidence. Delivery
+//! receipts are created only from a validated ProviderInvocationReceipt plus an
+//! independent delivery verifier that receives the current preparation.
 //! Admission verifiers, serializers, tokenizers and evidence verifiers remain
 //! explicit trusted adapter seams that require product-host qualification.
 
@@ -88,6 +89,10 @@ pub struct ContextProviderDeliveryDecisionV2 {
 
 pub trait ContextProviderDeliveryVerifierV2 {
     fn verifier_digest(&self) -> Digest32;
+
+    /// Authenticate provider-owned attempt evidence against this exact
+    /// pre-dispatch preparation. The provider witness remains provider-owned;
+    /// context.compiler does not reinterpret it as a raw preparation digest.
 
     fn verify_delivery(
         &self,
