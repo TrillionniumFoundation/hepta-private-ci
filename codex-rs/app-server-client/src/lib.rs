@@ -67,6 +67,7 @@ pub use crate::remote::RemoteAppServerClient;
 pub use crate::remote::RemoteAppServerConnectArgs;
 pub use crate::remote::RemoteAppServerEndpoint;
 pub use crate::remote::RemoteAppServerObservedEvent;
+pub use crate::remote::RemoteAppServerObservedResponse;
 pub use crate::remote::RemoteAppServerObservedServerError;
 pub use crate::remote::RemoteAppServerRequestHandle;
 pub use crate::remote::RemoteObservedTypedRequestError;
