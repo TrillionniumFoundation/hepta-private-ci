@@ -118,37 +118,13 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
     }
-    if let Some(operations) = automation_operations {
-        let store = automation_store.as_ref().ok_or_else(|| {
-            AgentdError::Protocol(
-                "durable automation operations were configured but automation storage is unavailable"
-                    .to_string(),
-            )
-        })?;
-        let generation = Generation::new(identity.spawn_generation)
-            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-        let operations_path = identity
-            .layout
-            .agent_root()
-            .join("kernel-operations")
-            .join("automation.sqlite3");
-        state.refresh_generation()?;
-        let host = crate::AgentdOperationsHost::open(
-            &operations_path,
-            store.clone(),
-            operations.authority,
-            operations.grants,
-            generation,
-        )
-        .await
-        .map_err(|error| {
-            AgentdError::Protocol(format!(
-                "durable automation operations host failed to open: {error}"
-            ))
-        })?;
-        state.refresh_generation()?;
-        state.attach_automation_operations(Arc::new(host))?;
-    }
+    attach_automation_operations_after_generation_fence(
+        &state,
+        &identity,
+        automation_store.as_ref(),
+        automation_operations,
+    )
+    .await?;
     // Materialize the executable module topology before serving. This makes
     // module attachment part of the runtime control state rather than a set of
     // unrelated fields that can silently drift from one another.
@@ -261,6 +237,46 @@ fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
     Ok(runtime)
+}
+
+pub(crate) async fn attach_automation_operations_after_generation_fence(
+    state: &Arc<AgentdState>,
+    identity: &AgentdIdentity,
+    automation_store: Option<&AutomationStore>,
+    operations: Option<crate::config::AutomationOperationsConfig>,
+) -> Result<(), AgentdError> {
+    let Some(operations) = operations else {
+        return Ok(());
+    };
+    let store = automation_store.ok_or_else(|| {
+        AgentdError::Protocol(
+            "durable automation operations were configured but automation storage is unavailable"
+                .to_string(),
+        )
+    })?;
+    let generation = Generation::new(identity.spawn_generation)
+        .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+    let operations_path = identity
+        .layout
+        .agent_root()
+        .join("kernel-operations")
+        .join("automation.sqlite3");
+    state.refresh_generation()?;
+    let host = crate::AgentdOperationsHost::open(
+        &operations_path,
+        store.clone(),
+        operations.authority,
+        operations.grants,
+        generation,
+    )
+    .await
+    .map_err(|error| {
+        AgentdError::Protocol(format!(
+            "durable automation operations host failed to open: {error}"
+        ))
+    })?;
+    state.refresh_generation()?;
+    state.attach_automation_operations(Arc::new(host))
 }
 
 async fn open_automation_store_after_generation_fence<Open, OpenFuture>(
