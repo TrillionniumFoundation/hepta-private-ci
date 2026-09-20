@@ -231,6 +231,14 @@
       ]
     },
     {
+      "operation": "runtime_topology_recovery",
+      "state": "source_implemented_distinct_final_use_stopped_quarantined_exact_successor_recovery_not_target_host_qualified",
+      "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
+      "tests": [
+        "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics"
+      ]
+    },
+    {
       "operation": "runtime_structural_canary_fault_rollback",
       "state": "qualification_composed_live_apply_forced_stopped_host_fault_distinct_recovery_final_use_rollforward_and_authenticated_observer_receipt_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
