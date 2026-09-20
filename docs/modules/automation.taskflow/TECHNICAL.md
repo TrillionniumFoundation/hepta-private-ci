@@ -89,8 +89,10 @@ Consumed contracts:
 - `DomainRead::thread_sessionV1`
 - `ModulePort::kernel.operations::automation.taskflow`
 - `ModulePort::runtime.codex::automation.taskflow`
-- `OperationIntentV1`
+- `OperationIntentV1` (registered target dependency; its production `kernel.operations` producer is not yet present on current `main`)
 - kernel final-use authority/grant binding at the registered effect seam
+
+The current executable external-effect path uses automation-owned `AuthorizedEffectIntent` to close its local run/step/payload/scope/destination/dependency/compensation identity and final-use binding. That type does **not** satisfy or replace the producer-owned `OperationIntentV1`. Arbitrary cross-owner effect activation remains blocked until `kernel.operations` supplies the registered production contract and adapter.
 
 The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is explicitly narrowed to **durable Core queue admission**, not occurrence or effect completion. Existing `Once`/`FixedInterval` callers keep their historical overlap behavior through an explicit default `overlap=allow`. Calendar V2 is additive: it stores an immutable versioned schedule with timezone ID, tzdb digest, bounded transition profile, start/end, local civil time, cadence and explicit DST gap/overlap policy. The compatibility `automation_tasks.schedule_kind='once'` marker for a Calendar V2 task is not the authoritative calendar definition; callers read `calendar_schedule_v2()`.
 
@@ -204,7 +206,7 @@ Compatibility adapters and the legacy `Submitted` tick can be retired only after
 
 ## 15. Definition of module completion
 
-For this source candidate, repository completion means the causal state chain is present, bounded and connected to its existing owner caller; documentation/source mapping then must match exact candidate tests. Product completion additionally requires concrete provider composition where applicable, deployment qualification, independent acceptance and activation evidence. Promotion/release remain separate externally governed states.
+For this source candidate, the Agentd/Codex causal state chain, Calendar V2, durable TaskFlow step/outcome chain and owner-local final-use effect seam are present and bounded. Full repository source-boundary closure for arbitrary cross-owner effects still requires the registered `kernel.operations::OperationIntentV1` producer/composition; the current kernel.operations reference model is not that production boundary. Product completion additionally requires concrete provider composition where applicable, deployment qualification, independent acceptance and activation evidence. Promotion/release remain separate externally governed states.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
