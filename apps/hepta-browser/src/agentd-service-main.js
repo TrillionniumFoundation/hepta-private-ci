@@ -47,6 +47,14 @@ function optionalPositiveInteger(name, fallback) {
   return value;
 }
 
+function requiredPositiveInteger(name) {
+  const value = Number(required(name));
+  if (!Number.isSafeInteger(value) || value < 1) {
+    throw new TypeError(`${name} must be a positive safe integer`);
+  }
+  return value;
+}
+
 if (process.platform !== "linux") {
   throw new TypeError("current Agentd Browser service requires the qualified Linux launcher");
 }
@@ -69,6 +77,19 @@ const driver = new PooledSubprocessBrowserDriver({
             observerId: required("HEPTA_BROWSER_RECONCILIATION_OBSERVER_ID"),
             verifyingKeyHex: requiredDigest(
               "HEPTA_BROWSER_RECONCILIATION_VERIFYING_KEY",
+            ),
+            minimumObserverGeneration: requiredPositiveInteger(
+              "HEPTA_BROWSER_RECONCILIATION_MIN_OBSERVER_GENERATION",
+            ),
+            minimumObservedAtUnixMs: requiredPositiveInteger(
+              "HEPTA_BROWSER_RECONCILIATION_MIN_OBSERVED_AT_UNIX_MS",
+            ),
+            currentFrontierDigest: requiredDigest(
+              "HEPTA_BROWSER_RECONCILIATION_CURRENT_FRONTIER_DIGEST",
+            ),
+            maxFutureSkewMs: optionalPositiveInteger(
+              "HEPTA_BROWSER_RECONCILIATION_MAX_FUTURE_SKEW_MS",
+              60_000,
             ),
           },
         ),
