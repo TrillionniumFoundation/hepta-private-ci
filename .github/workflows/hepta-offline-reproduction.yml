@@ -1,0 +1,45 @@
+name: Hepta pinned-source offline reproduction
+
+on:
+  push:
+    branches: [work/hepta-offline-reproduction-20260920]
+    paths: [.github/workflows/hepta-offline-reproduction.yml]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-offline-reproduction-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: b11be3411eb7cddf14a20466380c088c8f34a763
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Archive committed objects only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          OUT="$RUNNER_TEMP/hepta-source"
+          mkdir -p "$OUT"
+          git bundle create "$OUT/source.bundle" HEAD
+          git bundle verify "$OUT/source.bundle"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/identity.txt"
+          (cd "$OUT" && sha256sum source.bundle > SHA256SUMS)
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-source-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-source/
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
