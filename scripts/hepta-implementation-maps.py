@@ -18,10 +18,13 @@ from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
 STRICT_SOURCE_BASE_MODULES = {"prompt.registry"}
+MODULE_LOCAL_PROVENANCE_SEMANTICS = (
+    "module_local_provenance_last_reviewed_source_commit_tree"
+)
 
 
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
+    """Return a generation baseline; exact candidate identity is supplied by CI."""
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
@@ -92,6 +95,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
+        "sourceBaseSemantics": MODULE_LOCAL_PROVENANCE_SEMANTICS,
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
@@ -183,6 +187,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
             "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBaseSemantics": row.get(
+                "sourceBaseSemantics", MODULE_LOCAL_PROVENANCE_SEMANTICS
+            ),
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -318,6 +325,8 @@ def verify():
         else:
             source_commit = source_base["commit"]
             if mid in STRICT_SOURCE_BASE_MODULES:
+                if row.get("sourceBaseSemantics") != MODULE_LOCAL_PROVENANCE_SEMANTICS:
+                    failures.append(f"{mid}: source base semantics")
                 try:
                     actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
                 except subprocess.CalledProcessError:
@@ -393,10 +402,12 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    # Source baselines are module-local provenance. A module is upgraded to
-    # strict source-base enforcement only after its map is rebound to an exact
-    # reviewed commit/tree; unrelated modules are not forced to share one stale
-    # global identity.
+    # sourceBase is module-local provenance, not a self-referential candidate
+    # identity. Exact source-head and synthetic-merge identities come from the
+    # CI event. Strict modules must prove that every mapped source/test/delegated
+    # evidence path is byte-unchanged from sourceBase through the candidate HEAD.
+    # This keeps provenance exact without pretending a tracked file can embed
+    # the hash of the commit that contains that same file.
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
