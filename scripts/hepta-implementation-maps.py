@@ -367,8 +367,14 @@ def verify():
                 if source:
                     evidence_paths.add(source)
                 for key in ("tests", "delegatedCallees"):
-                    for evidence_path in op.get(key, []):
-                        if evidence_path:
+                    for evidence in op.get(key, []):
+                        if isinstance(evidence, dict):
+                            evidence_path = evidence.get("path")
+                        elif isinstance(evidence, str):
+                            evidence_path = evidence
+                        else:
+                            evidence_path = None
+                        if isinstance(evidence_path, str) and evidence_path:
                             evidence_paths.add(evidence_path)
             if source_commit and evidence_paths:
                 drift = subprocess.run(
