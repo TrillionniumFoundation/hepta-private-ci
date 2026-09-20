@@ -180,7 +180,7 @@ impl From<io::Error> for RunStartStoreError {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum StoredRunStartRecord {
-    Run(RunStartRecordV1),
+    Run(Box<RunStartRecordV1>),
     Conflict(RunStartConflictRecordV1),
 }
 
@@ -319,7 +319,10 @@ impl DurableRunStartJournal {
         record: RunStartRecordV1,
     ) -> Result<RunStartAppendReceipt, RunStartStoreError> {
         validate_record(&record)?;
-        self.append_outcome(expected_predecessor, StoredRunStartRecord::Run(record))
+        self.append_outcome(
+            expected_predecessor,
+            StoredRunStartRecord::Run(Box::new(record)),
+        )
     }
 
     /// Append a durable hard-conflict outcome through the same predecessor
@@ -330,10 +333,7 @@ impl DurableRunStartJournal {
         record: RunStartConflictRecordV1,
     ) -> Result<RunStartAppendReceipt, RunStartStoreError> {
         validate_conflict_record(&record)?;
-        self.append_outcome(
-            expected_predecessor,
-            StoredRunStartRecord::Conflict(record),
-        )
+        self.append_outcome(expected_predecessor, StoredRunStartRecord::Conflict(record))
     }
 
     fn append_outcome(
@@ -416,7 +416,7 @@ impl DurableRunStartJournal {
             .records
             .iter()
             .filter_map(|value| match &value.record {
-                StoredRunStartRecord::Run(record) => Some(record),
+                StoredRunStartRecord::Run(record) => Some(record.as_ref()),
                 StoredRunStartRecord::Conflict(_) => None,
             })
             .collect())
@@ -458,7 +458,7 @@ impl DurableRunStartJournal {
             .get(run_id)
             .and_then(|index| self.records.get(*index))
             .and_then(|value| match &value.record {
-                StoredRunStartRecord::Run(record) => Some(record),
+                StoredRunStartRecord::Run(record) => Some(record.as_ref()),
                 StoredRunStartRecord::Conflict(_) => None,
             }))
     }
@@ -595,9 +595,7 @@ fn validate_record_compat(
             || record.objective_function_v1_bytes.is_empty()
             || record.objective_function_v1_bytes.len() > MAX_OBJECTIVE_PROTOCOL_BYTES
         {
-            return Err(RunStartStoreError::InvalidSnapshot(
-                "objectiveFunctionV1",
-            ));
+            return Err(RunStartStoreError::InvalidSnapshot("objectiveFunctionV1"));
         }
         if Digest32::of_bytes(&record.objective_function_v1_bytes)
             != record.objective_function_v1_digest
@@ -612,9 +610,7 @@ fn validate_record_compat(
     Ok(())
 }
 
-fn validate_conflict_record(
-    record: &RunStartConflictRecordV1,
-) -> Result<(), RunStartStoreError> {
+fn validate_conflict_record(record: &RunStartConflictRecordV1) -> Result<(), RunStartStoreError> {
     if record.authentication.key_epoch == 0
         || record.authentication.sequence == 0
         || record.authentication.expires_at_ms == 0
@@ -656,9 +652,7 @@ fn validate_conflict_record(
     if record.conflict_receipt_bytes.is_empty()
         || record.conflict_receipt_bytes.len() > MAX_OBJECTIVE_SEMANTIC_BYTES
     {
-        return Err(RunStartStoreError::InvalidSnapshot(
-            "conflictReceiptBytes",
-        ));
+        return Err(RunStartStoreError::InvalidSnapshot("conflictReceiptBytes"));
     }
     if Digest32::of_bytes(&record.conflict_receipt_bytes) != record.conflict_digest {
         return Err(RunStartStoreError::ObjectiveDigestMismatch);
@@ -830,9 +824,7 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
     Ok(record)
 }
 
-fn decode_conflict_record(
-    input: &[u8],
-) -> Result<RunStartConflictRecordV1, RunStartStoreError> {
+fn decode_conflict_record(input: &[u8]) -> Result<RunStartConflictRecordV1, RunStartStoreError> {
     let input = input
         .strip_prefix(CONFLICT_RECORD_DOMAIN)
         .ok_or(RunStartStoreError::Corrupt)?;
@@ -883,7 +875,7 @@ fn decode_conflict_record(
 
 fn decode_outcome_record(input: &[u8]) -> Result<StoredRunStartRecord, RunStartStoreError> {
     if input.starts_with(RECORD_DOMAIN) || input.starts_with(RECORD_DOMAIN_V1) {
-        return decode_record(input).map(StoredRunStartRecord::Run);
+        return decode_record(input).map(|record| StoredRunStartRecord::Run(Box::new(record)));
     }
     if input.starts_with(CONFLICT_RECORD_DOMAIN) {
         return decode_conflict_record(input).map(StoredRunStartRecord::Conflict);

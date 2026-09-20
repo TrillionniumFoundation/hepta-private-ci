@@ -310,7 +310,7 @@ fn incomplete_unacknowledged_tail_recovers_to_last_synced_frame() {
         predecessor_chain_digest: first.chain_digest,
         record_digest: second.record_digest,
         chain_digest: second.chain_digest,
-        record: StoredRunStartRecord::Run(second_record),
+        record: StoredRunStartRecord::Run(Box::new(second_record)),
     };
     let second_size = must(encode_frame(&second_stored)).len();
     let first_end = full.len() - second_size;
@@ -344,7 +344,7 @@ fn acknowledged_missing_history_never_repairs_as_success() {
         predecessor_chain_digest: first.chain_digest,
         record_digest: second.record_digest,
         chain_digest: second.chain_digest,
-        record: StoredRunStartRecord::Run(second_record),
+        record: StoredRunStartRecord::Run(Box::new(second_record)),
     };
     let second_size = must(encode_frame(&second_stored)).len();
     let first_end = full.len() - second_size;
@@ -362,7 +362,6 @@ fn acknowledged_missing_history_never_repairs_as_success() {
     );
     assert_eq!(must(fs::read(fixture.path())), damaged);
 }
-
 
 #[test]
 fn objective_protocol_digest_mismatch_rejects_before_io() {
@@ -404,16 +403,15 @@ fn semantic_or_protocol_drift_after_reopen_conflicts() {
     let first = must(journal.append(Digest32::ZERO, first_record));
     drop(journal);
 
-    let mut reopened = must(fixture.recover(RunStartRecovery::Acknowledged(
-        RunStartAnchor {
+    let mut reopened = must(
+        fixture.recover(RunStartRecovery::Acknowledged(RunStartAnchor {
             sequence: first.sequence,
             chain_digest: first.chain_digest,
-        },
-    )));
+        })),
+    );
     let mut changed = record("run-drift", b"objective-semantic");
     changed.objective_function_v1_bytes = b"{\"objectiveId\":\"different\"}".to_vec();
-    changed.objective_function_v1_digest =
-        Digest32::of_bytes(&changed.objective_function_v1_bytes);
+    changed.objective_function_v1_digest = Digest32::of_bytes(&changed.objective_function_v1_bytes);
     assert_eq!(
         reopened.append(first.chain_digest, changed),
         Err(RunStartStoreError::Conflict)
