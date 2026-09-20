@@ -52,3 +52,8 @@ The explicit `AgentdConfig::with_cognitive_ranker` host connects existing artifa
 - **Source tests:** [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md), [codex-rs/hepta-agentd/AUTHBUS_TEXT.md](../../../codex-rs/hepta-agentd/AUTHBUS_TEXT.md).
 - **Remaining work:** Prove the deployed socket/generation identity and full non-test Codex caller path; measure backpressure/restart on the target host.
+
+
+## Neuron owner-port composition
+
+Agentd may retain one explicitly injected authority-free `NeuronRuntimeProductPort`. The real daemon state calls it only while the fleet lifecycle is ready `Running`, refreshes the generation fence again after the bounded durable owner call, and rejects before dispatch once draining/fenced. Neuron checkpoint/result ownership remains in `neuron.runtime`; Agentd does not select a model or gain effect authority. This is repository source composition, not default activation or concrete-model evidence.

@@ -171,7 +171,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The pure native sparse tick remains a library operation. The current source candidate also provides `NeuronRuntimeHost`, which owns the canonical typed composition boundary over a host-supplied frozen-model executor, SparseJournal and an independently retained recovery witness. The embedding product still owns executor enrollment and port activation. Reopen using the same exact profile; never retry a failed anchored recovery without the anchor. An encoder digest in a request is not evidence that a local model was executed.
+The pure native sparse tick remains a library operation. The canonical `NeuronRuntimeHost` now composes a complete selected-model manifest, durable exact-result operation journal, sparse state journal and independent recovery witness. It re-admits live lineage at tick and recovery boundaries; a bare encoder digest cannot substitute for tokenizer/preprocessor/quantization/runtime/device/OOD identity. `hepta-intelligence` exposes the owner port and the real Agentd daemon can hold it behind generation fencing, but no default startup path manufactures a selected encoder or activates the port.
 
 Current operating and state-format references:
 
@@ -185,7 +185,7 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-neuron/src/closure_tests.rs](../../../codex-rs/hepta-neuron/src/closure_tests.rs); owner-host model binding, witnessed rotation/rebuild, calibration/OOD and plasticity cases.
+- [codex-rs/hepta-neuron/src/closure_tests.rs](../../../codex-rs/hepta-neuron/src/closure_tests.rs); exact-result crash cuts, full model binding, live/recovery revocation, witnessed rotation/rebuild, calibration/OOD and plasticity ancestry cases.\n- [codex-rs/hepta-agentd/src/state_isolation_tests.rs](../../../codex-rs/hepta-agentd/src/state_isolation_tests.rs); real Agentd state holds the owner port and fences it when the lifecycle leaves ready Running.
 - [codex-rs/hepta-neuron/src/wire_tests.rs](../../../codex-rs/hepta-neuron/src/wire_tests.rs); strict canonical Neuron protocol round trips and rejection cases.
 - [codex-rs/hepta-neuron/src/qualification_tests.rs](../../../codex-rs/hepta-neuron/src/qualification_tests.rs); executable mechanism lesions and longitudinal evidence-binding cases.
 - [codex-rs/hepta-neuron/src/journal_anchor_tests.rs](../../../codex-rs/hepta-neuron/src/journal_anchor_tests.rs); named case: `anchored_reopen_preserves_the_exact_receipt_and_all_bytes`.
@@ -210,7 +210,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Repository source composition now includes the named Agentd host through `NeuronRuntimeProductPort`; Agentd owns composition only and the neuron owner retains state. Activation is still false: a governed deployment must inject an independently selected concrete encoder/runtime, verify configuration/resource/failure behavior on the target host, and satisfy evidence predecessors. Shadow, source-composition and qualification callers are not deployment evidence.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 

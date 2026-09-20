@@ -318,3 +318,8 @@ This receipt records repository source bindings for the current documentation ca
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+
+### Optional neuron owner port
+
+`AgentdConfig::with_neuron_runtime_port` can attach one governed `NeuronRuntimeProductPort` to the daemon. `AgentdState::consume_neuron_tick` requires a ready `Running` generation before use and rechecks the fleet generation after the bounded owner call. The port is never auto-created from model IDs or environment variables and cannot grant runtime/effect authority. Concrete encoder selection and deployment activation remain external gates.

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "e8f8ad72da51bf0152b5e7b575d86081f11ea3ee",
+    "tree": "44387638a985419a6dd17cba695dd3257e416671"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -131,6 +131,37 @@
       "operation": "attach_context",
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "consume_neuron_tick",
+      "mappingClass": "composition_host",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "symbol": "consume_neuron_tick",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-intelligence/src/neuron_runtime_port.rs",
+          "symbol": "NeuronRuntimeProductPort::consume",
+          "buildTarget": "codex-hepta-intelligence",
+          "ownerModule": "intelligence.control"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+          "kind": "generation_fenced_product_composition",
+          "command": "just test -p codex-hepta-agentd --lib real_agentd_state_holds_calls_and_generation_fences_neuron_owner_port"
+        }
+      ],
+      "sourceSemantics": "Agentd owns only composition: it holds one injected neuron owner port, requires a ready Running generation before use, re-fences after the bounded owner call, and never acquires neuron state or effect authority.",
+      "operation": "consume_neuron_tick",
+      "nativeSymbol": "consume_neuron_tick",
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
       "sourcePathExists": true
     }
   ],
