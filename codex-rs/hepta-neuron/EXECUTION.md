@@ -38,8 +38,7 @@ fields are private; the state is returned only after full validation/computation
 must authenticate input provenance, enforce expiry/revocation and CAS the exact
 predecessor while atomically persisting the checkpoint and receipt. Concurrent
 proposals may be computed; only the host's single writer may publish one.
-Serialization, crash/reopen, deletion rebuild, real encoder invocation and the
-canonical wire-protocol adapter are still separate integration work.
+Owner-local serialization, crash/reopen, deletion rebuild, exact inference-control feature execution and canonical JSON protocol adapters are now implemented on the closure line. Product daemon activation, authenticated selected-artifact/current-owner wiring, and independently qualified real-model execution remain separate integration/evidence work.
 
 ## No manufactured intelligence evidence
 
@@ -59,3 +58,10 @@ actual-base synthetic merge. Tests cover canonical tie/order, inhibition,
 homeostasis, L1 projection, signed rounding, clock/sequence/scope/config drift,
 checkpoint corruption, extreme input and 2048-step bounded replay. Rollback
 removes the additive export; the old API and callers remain unchanged.
+
+
+## Versioned multi-population profile
+
+The durable V1 `SparseConfig` format remains single-population and same-width so old journal replay bytes never change meaning. `PopulationSparseConfigV2` / `population_sparse_tick_v2` are a separate pure mechanism profile: temporal state is bounded independently from activation state, temporal-to-activation projection is explicit, populations form one complete non-overlapping activation partition, each population performs deterministic local top-k, and a bounded global top-k is applied only to those local candidates. V2 emits no authority and still requires independent calibration.
+
+This V2 source implementation closes the mechanism-shape gap in the readiness target; it does not silently make the V1 journal capable of replaying V2 state. A production promotion to V2 requires a separately versioned durable encoding, owner migration/recovery tests, exact product composition, and target-host qualification.
