@@ -255,6 +255,20 @@ impl<D: ProcessDriver> Supervisor<D> {
                     agent_id.clone(),
                 ));
             }
+            let Some(current_compatibility) =
+                self.production_compatibility_receipt_sha256.as_ref()
+            else {
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            };
+            if &selection.binding.compatibility_receipt_sha256 != current_compatibility {
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
             if selection.source_release != rollback.identity() {
                 self.mark_signed_intent_recovery_required(agent_id, slot)?;
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
