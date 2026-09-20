@@ -66,15 +66,31 @@ impl AppServerModelDriver {
             .into());
         }
         if record.state != NativeReservationState::Reserved {
+            if record
+                .observation
+                .as_ref()
+                .is_some_and(|output| output.terminal_observed)
+            {
+                return Ok(record
+                    .observation
+                    .expect("terminal observation checked above"));
+            }
+            if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
+                control.settle_native(&record.request.request_id, reconciled.clone())?;
+                return Ok(reconciled);
+            }
             if let Some(output) = record.observation {
                 return Ok(output);
             }
-            let dispatch = record.dispatch.ok_or("missing durable dispatch binding")?;
+            let dispatch = record
+                .dispatch
+                .as_ref()
+                .ok_or("missing durable dispatch binding")?;
             let output = NativeRunOutput {
-                thread_id: dispatch.thread_id,
-                turn_id: record.turn_id.unwrap_or_default(),
-                model: record.request.model,
-                model_provider: dispatch.model_provider,
+                thread_id: dispatch.thread_id.clone(),
+                turn_id: record.turn_id.clone().unwrap_or_default(),
+                model: record.request.model.clone(),
+                model_provider: dispatch.model_provider.clone(),
                 status: NativeRunStatus::Indeterminate,
                 boundary_status: codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Indeterminate,
                 output: String::new(),
@@ -82,7 +98,8 @@ impl AppServerModelDriver {
                 terminal_observed: false,
                 owner_authority: NativeOwnerAuthority::Unverified,
                 stop_reason: Some(
-                    "reopened after possible dispatch; reservation held, no replay".to_string(),
+                    "reopened after possible dispatch; thread/read found no exact terminal evidence; reservation held, no replay"
+                        .to_string(),
                 ),
                 codex_terminal_correlation_digest: None,
             };
