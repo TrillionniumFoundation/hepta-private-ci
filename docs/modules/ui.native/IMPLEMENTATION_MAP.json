@@ -46,7 +46,7 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "apps/hepta-native/src/runtime.rs",
-        "symbol": "pub fn render_runtime_view(",
+        "symbol": "pub fn refresh_runtime_view(",
         "buildTarget": "hepta-native"
       },
       "delegatedCallees": [],
@@ -57,9 +57,9 @@
           "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --test runtime"
         }
       ],
-      "sourceSemantics": "Rejects mixed or regressed session/view generations and exposes one coherent presentation state for the active incarnation.",
+      "sourceSemantics": "Fetches the authenticated backend runtime status, binds its body digest and snapshot generation to the active session incarnation, and rejects mixed or regressed presentation state; arbitrary callers cannot inject a product view.",
       "operation": "render_runtime_view",
-      "nativeSymbol": "pub fn render_runtime_view(",
+      "nativeSymbol": "pub fn refresh_runtime_view(",
       "sourcePath": "apps/hepta-native/src/runtime.rs",
       "sourcePathExists": true
     },
@@ -80,7 +80,7 @@
           "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --test runtime"
         }
       ],
-      "sourceSemantics": "Computes the final payload binding in Rust, durably claims kernel FinalUseAuthority nonce/revocation state, records Invoking before effect entry, consumes VerifiedUseToken under a second current revocation check, deduplicates by session-incarnation operation key and reconciles indeterminate effects without replay.",
+      "sourceSemantics": "Binds subject, session incarnation, operation ID, displayed revision, action/resource payload, final payload digest, exact FinalUseBinding and signed grant identity into the durable operation record; claims kernel FinalUseAuthority, fsyncs Invoking before effect entry, revalidates current authority immediately before the local platform adapter, and reconciles uncertainty without replay.",
       "operation": "request_platform_capability",
       "nativeSymbol": "pub fn request_platform_capability(",
       "sourcePath": "apps/hepta-native/src/runtime.rs",
@@ -111,9 +111,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose an upstream Agentd/gateway product path that delivers independently issued SignedFinalUseGrant values for exact native platform operations; ui.native must not mint its own authority.",
-    "Implement and qualify an equivalent durable kernel.authority final-use store for Windows; until then Windows platform effects remain fail-closed/read-only.",
-    "Commit a reproducible native Cargo.lock and observe current exact-head plus Windows/macOS/Linux merge-candidate execution receipts for the final claim-bearing candidate before setting source/product completion flags."
+    "Commit a reproducible native Cargo.lock and observe current exact-head plus Windows/macOS/Linux merge-candidate execution receipts for the final claim-bearing candidate.",
+    "Run the packaged fault/restart qualification against the final candidate, including updater-process death and cross-generation effect reconciliation; repository tests must not convert unavailable OS terminal observation into success."
   ],
   "externalEvidenceGates": [
     "production Authenticode, Apple Developer ID/notarization and Linux distribution signing/repository ownership",
@@ -137,7 +136,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "read_only_composed_effect_consumer_source_only",
+  "productCallerState": "rust_product_composed_operator_signed_grant_ingress",
   "productionWriterState": "not_applicable_no_authoritative_domain_writer",
   "owner": "ui-platform",
   "deputy": "accessibility",
