@@ -109,3 +109,53 @@ fn bounded_history_keeps_latest_generation_reopenable() {
     assert_eq!(generations.last().copied(), Some(store_generation));
     assert_eq!(store.load(200).expect("latest").generation(), store_generation);
 }
+
+#[test]
+fn crash_after_staging_sync_reopens_predecessor_and_ignores_orphan_stage() {
+    let (temp, store) = store();
+    let faulted = store
+        .clone()
+        .with_publication_fault(PublicationFaultPoint::AfterStagingSync);
+    assert!(matches!(
+        faulted.admit_host(0, 200, host(1)),
+        Err(FleetAllocationStoreError::Io(_))
+    ));
+
+    let reopened = FleetAllocationStore::open_or_initialize(&temp.path().join("state"))
+        .expect("reopen after staged crash");
+    assert_eq!(reopened.load(200).expect("predecessor").generation(), 0);
+    assert!(
+        reopened
+            .snapshot_generations()
+            .expect("generations")
+            .iter()
+            .all(|generation| *generation == 0)
+    );
+}
+
+#[test]
+fn crash_after_publish_is_indeterminate_but_reopen_discovers_successor() {
+    let (temp, store) = store();
+    let faulted = store
+        .clone()
+        .with_publication_fault(PublicationFaultPoint::AfterPublishBeforeDirectorySync);
+    assert!(matches!(
+        faulted.admit_host(0, 200, host(1)),
+        Err(FleetAllocationStoreError::PublicationIndeterminate {
+            generation: 1,
+            ..
+        })
+    ));
+
+    let reopened = FleetAllocationStore::open_or_initialize(&temp.path().join("state"))
+        .expect("reopen after ambiguous publish");
+    assert_eq!(reopened.load(200).expect("successor").generation(), 1);
+    assert!(matches!(
+        reopened.admit_host(0, 200, host(1)),
+        Err(FleetAllocationStoreError::StaleGeneration {
+            expected: 0,
+            current: 1
+        })
+    ));
+}
+
