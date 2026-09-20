@@ -108,6 +108,70 @@ impl PlasticityRuntimeHandleV1 {
     }
 }
 
+/// Immutable construction envelope consumed exactly once by Agentd runtime
+/// composition. Creating this value does not start a second owner or grant
+/// proposal authority; the real daemon creates the bounded channel and retains
+/// the resulting owner/handle pair for its generation.
+pub struct PlasticityRuntimeBootstrapV1 {
+    capacity: usize,
+    artifacts: ArtifactRegistry,
+    ledger: DurableLedger,
+    owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
+    owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
+    verifier: LearningEvidenceVerifierV1,
+    parameter_writer: AnchoredPlasticityWriterV1,
+    parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
+    topology_writer: AgentdTopologyWriterV1,
+    topology_anchor_store: AgentdTopologyAnchorStoreV1,
+}
+
+impl PlasticityRuntimeBootstrapV1 {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        capacity: usize,
+        artifacts: ArtifactRegistry,
+        ledger: DurableLedger,
+        owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
+        owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
+        verifier: LearningEvidenceVerifierV1,
+        parameter_writer: AnchoredPlasticityWriterV1,
+        parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
+        topology_writer: AgentdTopologyWriterV1,
+        topology_anchor_store: AgentdTopologyAnchorStoreV1,
+    ) -> Result<Self, AgentdError> {
+        validate_plasticity_runtime_capacity(capacity)?;
+        Ok(Self {
+            capacity,
+            artifacts,
+            ledger,
+            owner_evidence_resolver,
+            owner_evidence_policy,
+            verifier,
+            parameter_writer,
+            parameter_anchor_store,
+            topology_writer,
+            topology_anchor_store,
+        })
+    }
+
+    pub(crate) fn into_channel(
+        self,
+    ) -> Result<(PlasticityRuntimeHandleV1, PlasticityRuntimeOwnerV1), AgentdError> {
+        plasticity_runtime_channel_v1(
+            self.capacity,
+            self.artifacts,
+            self.ledger,
+            self.owner_evidence_resolver,
+            self.owner_evidence_policy,
+            self.verifier,
+            self.parameter_writer,
+            self.parameter_anchor_store,
+            self.topology_writer,
+            self.topology_anchor_store,
+        )
+    }
+}
+
 /// Exact mutable owner retained for the lifetime of the Agentd generation.
 pub struct PlasticityRuntimeOwnerV1 {
     receiver: mpsc::Receiver<PlasticityRuntimeCommandV1>,
