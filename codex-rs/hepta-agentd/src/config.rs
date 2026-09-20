@@ -38,6 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    plasticity_runtime: Option<crate::PlasticityRuntimeOwnerV1>,
 }
 
 impl AgentdConfig {
@@ -143,6 +144,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            plasticity_runtime: None,
         })
     }
 
@@ -178,6 +180,26 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Attach the one long-lived governed plasticity owner for this Agentd
+    /// generation. The owner is constructed from already-opened authoritative
+    /// stores and independent anchor domains; there is no ambient default.
+    pub fn with_plasticity_runtime(
+        mut self,
+        runtime: crate::PlasticityRuntimeOwnerV1,
+    ) -> Result<Self, AgentdError> {
+        if self.plasticity_runtime.is_some() {
+            return Err(AgentdError::Invalid(
+                "plasticity runtime already configured".to_string(),
+            ));
+        }
+        self.plasticity_runtime = Some(runtime);
+        Ok(self)
+    }
+
+    pub(crate) fn take_plasticity_runtime(&mut self) -> Option<crate::PlasticityRuntimeOwnerV1> {
+        self.plasticity_runtime.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {
