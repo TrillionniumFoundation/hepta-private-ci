@@ -287,6 +287,25 @@ impl CnsOrganHostV1 {
         Ok(())
     }
 
+    /// Recover a stopped/quarantined hierarchy into one exact admitted successor.
+    /// Healthy replacement remains a distinct API so recovery cannot silently
+    /// weaken the Ready-predecessor invariant.
+    pub fn recover_read_only_generation(
+        &mut self,
+        expected: Generation,
+        next: Self,
+    ) -> Result<(), CnsHierarchyError> {
+        if self.cns != next.cns {
+            return Err(CnsHierarchyError::CnsIdentity);
+        }
+        let Self { host, routes, .. } = next;
+        self.host
+            .recover_admitted_read_only_generation(expected, host)
+            .map_err(CnsHierarchyError::Runtime)?;
+        self.routes = routes;
+        Ok(())
+    }
+
     pub fn route(
         &self,
         system: &StableId,
