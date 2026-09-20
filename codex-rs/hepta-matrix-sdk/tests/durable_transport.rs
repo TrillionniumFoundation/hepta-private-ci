@@ -250,6 +250,7 @@ struct TestAuthorizer {
     _directory: TempDir,
     sequence: AtomicU64,
     revoke_before_return: bool,
+    wrong_signer: bool,
 }
 
 #[cfg(unix)]
@@ -276,12 +277,19 @@ impl TestAuthorizer {
             _directory: directory,
             sequence: AtomicU64::new(0),
             revoke_before_return: false,
+            wrong_signer: false,
         })
     }
 
     fn revoking() -> TestResult<Self> {
         let mut value = Self::new()?;
         value.revoke_before_return = true;
+        Ok(value)
+    }
+
+    fn wrong_signer() -> TestResult<Self> {
+        let mut value = Self::new()?;
+        value.wrong_signer = true;
         Ok(value)
     }
 }
@@ -315,7 +323,14 @@ impl MatrixOutboundAuthorizer for TestAuthorizer {
             let signing_bytes = grant
                 .signing_bytes()
                 .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
-            let signature = self.signer.sign(&signing_bytes).to_bytes().to_vec();
+            let signature = if self.wrong_signer {
+                SigningKey::from_bytes(&[92; 32])
+                    .sign(&signing_bytes)
+                    .to_bytes()
+                    .to_vec()
+            } else {
+                self.signer.sign(&signing_bytes).to_bytes().to_vec()
+            };
             let signed = SignedFinalUseGrant { grant, signature };
             if self.revoke_before_return {
                 let mut revoked = BTreeSet::new();
@@ -910,6 +925,48 @@ async fn revoked_grant_never_enters_the_physical_matrix_adapter() -> TestResult 
             .is_none()
     );
     store.close().await;
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn wrong_signer_grant_never_enters_the_physical_matrix_adapter() -> TestResult {
+    let authorizer = TestAuthorizer::wrong_signer()?;
+    let temp = TempDir::new()?;
+    let agent_id = agent(FIRST_AGENT)?;
+    let layout = layout(&temp, &agent_id)?;
+    let store = prepared_store(&layout).await?;
+    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let transport = FakeTransport::new([Ok(event("$must-not-send-wrong-signer")?)]);
+    let config = OutboxDispatchConfig {
+        lease_ms: 20,
+        retry_delay_ms: 10,
+        max_retry_delay_ms: 40,
+        max_attempts: 3,
+        claim_limit: 1,
+        idle_poll: Duration::from_millis(10),
+    };
+
+    let result = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authorizer,
+        &config,
+        &CancellationToken::new(),
+        10,
+    )
+    .await;
+    assert!(matches!(
+        result,
+        Err(codex_hepta_matrix_sdk::OutboxDispatchError::Authority)
+    ));
+    assert!(transport.txn_ids()?.is_empty());
+    assert!(
+        store
+            .dispatch_authority_claim(&original.stable_txn_id, 1)
+            .await?
+            .is_none()
+    );
     Ok(())
 }
 

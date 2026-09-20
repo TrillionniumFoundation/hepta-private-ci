@@ -308,11 +308,109 @@ pub(crate) enum MatrixFinalUseBrokerError {
 mod tests {
     use super::*;
 
+    #[cfg(unix)]
+    use std::collections::BTreeSet;
+    #[cfg(unix)]
+    use std::error::Error;
+    #[cfg(unix)]
+    use std::os::unix::fs::PermissionsExt;
+
+    #[cfg(unix)]
+    use ed25519_dalek::SigningKey;
+    #[cfg(unix)]
+    use tempfile::TempDir;
+
+    #[cfg(unix)]
+    type TestResult<T = ()> = Result<T, Box<dyn Error>>;
+
+    #[cfg(unix)]
+    fn head(epoch: u64, revision: u64, revoked: &[&str]) -> FinalUseRevocations {
+        FinalUseRevocations {
+            authority_epoch: epoch,
+            revision,
+            revoked_grant_ids: revoked.iter().map(|value| (*value).to_string()).collect(),
+        }
+    }
+
+    #[cfg(unix)]
+    fn write_private_json(path: &Path, value: &FinalUseRevocations) -> TestResult {
+        std::fs::write(path, serde_json::to_vec(value)?)?;
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    fn test_broker(
+        initial: FinalUseRevocations,
+        file_head: FinalUseRevocations,
+    ) -> TestResult<(TempDir, MatrixFinalUseBroker)> {
+        let directory = TempDir::new()?;
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+        let signer = SigningKey::from_bytes(&[71; 32]);
+        let revocations_file = directory.path().join("revocations.json");
+        write_private_json(&revocations_file, &file_head)?;
+        let authority = FinalUseAuthority::open_state_dir(
+            &directory.path().join("authority"),
+            "matrix-broker-test".to_string(),
+            signer.verifying_key().to_bytes(),
+            initial,
+        )?;
+        let broker = MatrixFinalUseBroker {
+            authority,
+            broker_socket: directory.path().join("broker.sock"),
+            revocations_file,
+            request_timeout: Duration::from_millis(MIN_BROKER_TIMEOUT_MS),
+        };
+        Ok((directory, broker))
+    }
+
     #[test]
     fn config_constants_remain_bounded() {
         assert!(HOST_CONFIG_MAX_BYTES <= BROKER_FRAME_MAX_BYTES);
         assert!(MIN_BROKER_TIMEOUT_MS > 0);
         assert!(MAX_BROKER_TIMEOUT_MS <= 10_000);
         assert!(REVOCATIONS_MAX_BYTES <= 2 * 1024 * 1024);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn revocation_file_rollback_and_stale_head_fail_closed() -> TestResult {
+        let (_directory, broker) =
+            test_broker(head(17, 3, &["revoked-a"]), head(17, 2, &[]))?;
+        assert_eq!(
+            broker.refresh_revocations(),
+            Err(MatrixAuthorityError::Rejected),
+        );
+        assert_eq!(broker.authority.frontier()?.revision, 3);
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn stronger_revocation_file_is_adopted_monotonically() -> TestResult {
+        let (_directory, broker) =
+            test_broker(head(17, 1, &[]), head(17, 2, &["revoked-a"]))?;
+        broker.refresh_revocations()?;
+        let frontier = broker.authority.frontier()?;
+        assert_eq!(frontier.authority_epoch, 17);
+        assert_eq!(frontier.revision, 2);
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn broker_socket_death_fails_probe_closed() -> TestResult {
+        let (directory, mut broker) = test_broker(head(17, 1, &[]), head(17, 1, &[]))?;
+        let socket = directory.path().join("broker.sock");
+        let listener = tokio::net::UnixListener::bind(&socket)?;
+        std::fs::set_permissions(&socket, std::fs::Permissions::from_mode(0o700))?;
+        broker.broker_socket = socket;
+        broker.probe().await?;
+        drop(listener);
+        assert!(matches!(
+            broker.probe().await,
+            Err(MatrixFinalUseBrokerError::BrokerUnavailable)
+        ));
+        Ok(())
     }
 }
