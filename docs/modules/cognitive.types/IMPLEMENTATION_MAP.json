@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "413c08e913d3021e04557e5847810b39cbc631e6",
-    "tree": "b348fbfc1afc27889fe8a4cbf8f52d7fdc3778ad"
+    "commit": "14318b93a54ffb1aa959ceb4a28e9e81f14325dc",
+    "tree": "349a80ad93c6eee797278858a32340457f1e47f1"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.types",
@@ -44,11 +44,40 @@
       "designOperation": "cognitivesnapshotkeyv1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_hnmf_contracts",
+      "nativeSymbol": "MemoryEventV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/contract_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_memory_event_and_multimodal_contracts",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_contract_wire",
+      "nativeSymbol": "canonical_contract_digest_v1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/wire.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/contract_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_wire_encode_decode_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Qualify canonical HNMF contracts and wire encoding on exact source-head and deterministic synthetic merge.",
+    "Keep canonical contract types authority-free and require product owners to supply current source identity, scope and revocation evidence.",
+    "Complete registered product composition before changing productionImplementation or productExecutionProved."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -66,5 +95,6 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-types"
-  ]
+  ],
+  "sourceBaseSemantics": "exact_non_projection_source_snapshot"
 }
