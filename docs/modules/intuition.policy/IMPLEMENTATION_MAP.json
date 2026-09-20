@@ -71,9 +71,7 @@
       "state": "source_implemented_upstream_score_provenance_contract",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-intuition/src/qualified_tests.rs::v3_rejects_score_mutation_after_scoring_commitment",
-        "codex-rs/hepta-intuition/src/qualified_tests.rs::v3_rejects_risk_class_rebinding_after_scoring_commitment",
-        "codex-rs/hepta-intuition/src/qualified_tests.rs::v3_rejects_counterbased_to_deterministic_rebinding"
+        "codex-rs/hepta-intuition/src/qualified_tests.rs::v3_rejects_score_mutation_after_scoring_commitment"
       ],
       "sourcePathExists": true,
       "designOperation": "consume_upstream_learned_scores",
@@ -84,7 +82,7 @@
       "operation": "decide_authenticated_intuition_v1",
       "nativeSymbol": "decide_authenticated_intuition_v1",
       "sourcePath": "codex-rs/hepta-intelligence/src/intuition_qualification.rs",
-      "state": "source_implemented_consumer_admission_not_product_composed",
+      "state": "source_implemented_five_role_exact_request_admission_not_product_composed",
       "authority": "host_trust_snapshot_required",
       "tests": [
         "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs",
@@ -95,6 +93,7 @@
       "mappingClass": "registered_consumer_adapter",
       "delegatedCallees": [
         "LearningEvidenceVerifierV1",
+        "canonical_exact_request_evidence_payload_v1",
         "decide_calibrated_v3"
       ]
     }
