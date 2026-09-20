@@ -348,6 +348,7 @@ impl std::error::Error for ProtocolCodecError {}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::TestMust;
 
     fn id(value: &str) -> StableId {
         StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
@@ -375,11 +376,11 @@ mod tests {
                 .unwrap_or_else(|error| panic!("decode: {error}")),
             value
         );
-        let mut wire: serde_json::Value = serde_json::from_slice(&bytes).expect("valid json");
+        let mut wire: serde_json::Value = serde_json::from_slice(&bytes).must("valid json");
         wire.as_object_mut()
-            .expect("object")
+            .must("object")
             .insert("unknown".to_owned(), serde_json::json!(true));
-        let drifted = serde_json::to_vec(&wire).expect("json");
+        let drifted = serde_json::to_vec(&wire).must("json");
         assert_eq!(
             PromptFactorV1::decode_canonical_json(&drifted),
             Err(ProtocolCodecError::InvalidJson)
