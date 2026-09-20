@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
+import { createHash, generateKeyPairSync, sign } from "node:crypto";
 import http from "node:http";
 import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -9,7 +9,10 @@ import { join, resolve } from "node:path";
 
 import { browserActionDigest } from "../src/action.js";
 import { FileBrowserOperationJournal } from "../src/journal.js";
-import { createFilePersistedEffectReconciler } from "../src/persisted-reconciler.js";
+import {
+  createFilePersistedEffectReconciler,
+  persistedEffectObservationSigningBytes,
+} from "../src/persisted-reconciler.js";
 import { BrowserProfileHost } from "../src/runtime.js";
 import {
   LinuxBubblewrapLauncher,
@@ -130,6 +133,44 @@ async function settle(host, input, receipt) {
   return current;
 }
 
+function workerPid(processId) {
+  const match = /^servo\.pid\.(\d+)\.[A-Za-z0-9-]+$/.exec(processId);
+  const pid = match ? Number(match[1]) : NaN;
+  if (!Number.isSafeInteger(pid) || pid < 2) {
+    throw new TypeError("real Servo process identity does not expose a bounded OS pid");
+  }
+  return pid;
+}
+
+async function assertNoExternallyReachableWorkerListeners(processId) {
+  const pid = workerPid(processId);
+  const allowedV4 = new Set(["0100007F"]);
+  const allowedV6 = new Set([
+    "00000000000000000000000001000000",
+    "0000000000000000FFFF00000100007F",
+  ]);
+  for (const [name, allowed] of [["tcp", allowedV4], ["tcp6", allowedV6]]) {
+    let table;
+    try {
+      table = await readFile(`/proc/${pid}/net/${name}`, "utf8");
+    } catch (error) {
+      if (error?.code === "ENOENT") continue;
+      throw error;
+    }
+    for (const line of table.split("\n").slice(1)) {
+      const columns = line.trim().split(/\s+/);
+      if (columns.length < 4 || columns[3] !== "0A") continue;
+      const address = columns[1].split(":")[0].toUpperCase();
+      assert.equal(
+        allowed.has(address),
+        true,
+        `real Servo namespace exposed non-loopback ${name} listener ${columns[1]}`,
+      );
+    }
+  }
+  return true;
+}
+
 const workerBytes = await readFile(workerPath);
 const bwrapPath = "/usr/bin/bwrap";
 const prlimitPath = "/usr/bin/prlimit";
@@ -143,6 +184,7 @@ let forbiddenHits = 0;
 let otherAllowedHits = 0;
 let profileACookieHeader = null;
 let profileBCookieHeader = null;
+let cacheProbeHits = 0;
 const hanging = new Set();
 
 const forbidden = await listen((_request, response) => {
@@ -158,6 +200,16 @@ const otherAllowed = await listen((_request, response) => {
 const otherAllowedOrigin = `http://127.0.0.1:${otherAllowed.address().port}`;
 
 const app = await listen((request, response) => {
+  if (request.url === "/cache-probe.js") {
+    cacheProbeHits += 1;
+    response.writeHead(200, {
+      "content-type": "application/javascript; charset=utf-8",
+      "cache-control": "public, max-age=3600, immutable",
+      etag: '"hepta-cache-probe-v1"',
+    });
+    response.end("window.__heptaCacheProbe='alpha';");
+    return;
+  }
   if (request.url === "/redirect-forbidden") {
     response.writeHead(302, { location: otherAllowedOrigin + "/redirect-escape" });
     response.end();
@@ -168,19 +220,25 @@ const app = await listen((request, response) => {
       "content-type": "text/html; charset=utf-8",
       "set-cookie": "heptaProfile=alpha; Path=/; SameSite=Lax",
     });
-    response.end("<html><body>cookie-set</body></html>");
+    response.end(`<html><body>cookie-set<script>
+localStorage.setItem("heptaProfileStorage","alpha");
+</script><script src="/cache-probe.js"></script></body></html>`);
     return;
   }
   if (request.url === "/cookie-echo-a") {
     profileACookieHeader = request.headers.cookie ?? "";
     response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
-    response.end("<html><body>cookie-echo-a</body></html>");
+    response.end(`<html><body><script src="/cache-probe.js"></script><script>
+document.body.textContent="storage:"+(localStorage.getItem("heptaProfileStorage") ?? "none")+" cache:"+window.__heptaCacheProbe;
+</script></body></html>`);
     return;
   }
   if (request.url === "/cookie-echo-b") {
     profileBCookieHeader = request.headers.cookie ?? "";
     response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
-    response.end("<html><body>cookie-echo-b</body></html>");
+    response.end(`<html><body><script src="/cache-probe.js"></script><script>
+document.body.textContent="storage:"+(localStorage.getItem("heptaProfileStorage") ?? "none")+" cache:"+window.__heptaCacheProbe;
+</script></body></html>`);
     return;
   }
   if (request.url === "/never") {
@@ -252,7 +310,7 @@ try {
     expectedRevision: 1,
   };
   const navigateGrant = grant("navigate", browserActionDigest(navigateAction), origin, "nav");
-  await host.openProfile({
+  const liveSession = await host.openProfile({
     profileId: "profile.e2e",
     principalId: "principal.e2e",
     manifestDigest: D1,
@@ -262,6 +320,8 @@ try {
     allowedOrigins: [origin, otherAllowedOrigin],
     effectGrants: [navigateGrant],
   });
+  const noExternallyReachableWorkerListener =
+    await assertNoExternallyReachableWorkerListeners(liveSession.processId);
   const navInput = operation({
     profileId: "profile.e2e",
     principalId: "principal.e2e",
@@ -474,6 +534,7 @@ try {
     effectGrant: isoBGrant,
   });
   assert.equal((await settle(isolationHost, isoAInput, await isolationHost.navigateOrAct(isoAInput))).status, "succeeded");
+  assert.equal(cacheProbeHits, 1, "profile A must fetch the cache probe once to establish a real cache entry");
 
   const isoAPage = await isolationHost.observePage({
     profileId: "profile.iso.a",
@@ -517,12 +578,44 @@ try {
     true,
     "profile A must retain its own cookie before cross-profile isolation is claimed",
   );
+  assert.equal(
+    cacheProbeHits,
+    1,
+    "profile A second document must reuse its own cache entry before cache isolation is claimed",
+  );
+  const isoAEchoPage = await isolationHost.observePage({
+    profileId: "profile.iso.a",
+    principalId: "principal.iso.a",
+    generation: 1,
+    observationBudget: 16_384,
+  });
+  assert.match(
+    isoAEchoPage.semanticObservation.visibleText,
+    /storage:alpha cache:alpha/,
+    "profile A must retain its own localStorage state",
+  );
 
   assert.equal((await settle(isolationHost, isoBInput, await isolationHost.navigateOrAct(isoBInput))).status, "succeeded");
   assert.equal(
     profileBCookieHeader?.includes("heptaProfile=alpha"),
     false,
     "profile B must not receive profile A cookie",
+  );
+  assert.equal(
+    cacheProbeHits,
+    2,
+    "profile B must fetch its own cache entry instead of receiving profile A cache state",
+  );
+  const isoBPage = await isolationHost.observePage({
+    profileId: "profile.iso.b",
+    principalId: "principal.iso.b",
+    generation: 1,
+    observationBudget: 16_384,
+  });
+  assert.match(
+    isoBPage.semanticObservation.visibleText,
+    /storage:none cache:alpha/,
+    "profile B must not receive profile A localStorage state",
   );
   await isolationHost.closeProfile({
     profileId: "profile.iso.a",
@@ -646,26 +739,43 @@ try {
   const receiptRoot = join(root, "trusted-reconciliation");
   await import("node:fs/promises").then(({ mkdir }) => mkdir(receiptRoot, { mode: 0o700 }));
   const trustedOutcome = sha("trusted external terminal observation");
+  const observerId = "business-observer.e2e";
+  const observerKeys = generateKeyPairSync("ed25519");
+  const observerSpki = observerKeys.publicKey.export({ format: "der", type: "spki" });
+  const verifyingKeyHex = observerSpki.subarray(observerSpki.length - 32).toString("hex");
+  const unsignedObservation = {
+    schema: "hepta.browser.persisted-effect-observation.v2",
+    version: 2,
+    observerId,
+    observerGeneration: 1,
+    observedAtUnixMs: Date.now(),
+    frontierDigest: sha("trusted-business-frontier.e2e"),
+    profileId: "profile.crash",
+    profileGeneration: 1,
+    operationId: "operation.never",
+    requestDigest: durable.requestDigest,
+    semanticDigest: durable.semanticDigest,
+    terminalObserved: true,
+    status: "failed",
+    outcomeDigest: trustedOutcome,
+  };
+  const signature = sign(
+    null,
+    persistedEffectObservationSigningBytes(unsignedObservation),
+    observerKeys.privateKey,
+  ).toString("hex");
   await writeFile(
     join(receiptRoot, "profile.crash.1.operation.never.json"),
-    JSON.stringify({
-      schema: "hepta.browser.persisted-effect-observation.v1",
-      version: 1,
-      profileId: "profile.crash",
-      profileGeneration: 1,
-      operationId: "operation.never",
-      requestDigest: durable.requestDigest,
-      semanticDigest: durable.semanticDigest,
-      terminalObserved: true,
-      status: "failed",
-      outcomeDigest: trustedOutcome,
-    }),
+    JSON.stringify({ ...unsignedObservation, signature }),
     { mode: 0o600 },
   );
   const replacement = new BrowserProfileHost({
     driver: realDriver(
       join(root, "profiles-replacement"),
-      createFilePersistedEffectReconciler(receiptRoot),
+      createFilePersistedEffectReconciler(receiptRoot, {
+        observerId,
+        verifyingKeyHex,
+      }),
     ),
     authority: authority(),
     journal: crashJournal,
@@ -680,6 +790,7 @@ try {
   assert.equal(recovered.terminalObserved, true);
   assert.equal(recovered.status, "failed");
   assert.equal(recovered.outcomeDigest, trustedOutcome);
+  assert.match(recovered.terminalEvidenceDigest, /^[0-9a-f]{64}$/);
 
   process.stdout.write(
     JSON.stringify({
@@ -690,8 +801,12 @@ try {
       redirectEscapeDenied: true,
       profileAllowedCrossOriginRedirectDeniedByEffectGrant: true,
       revocationRaceBlockedUntilDispatchBoundary: true,
+      authenticatedPersistedCrashReconciliation: true,
       persistedCrashReconciliation: true,
       crossProfileCookieIsolation: true,
+      crossProfileStorageIsolation: true,
+      crossProfileCacheIsolation: true,
+      noExternallyReachableWorkerListener,
       workerSha256: sha(workerBytes),
     }) + "\n",
   );
