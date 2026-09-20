@@ -231,7 +231,7 @@ mod tests {
     }
 
     fn id(value: &str) -> StableId {
-        StableId::new(value.to_owned()).expect("valid fixture id")
+        StableId::new(value.to_owned()).unwrap_or_else(|error| panic!("valid fixture id: {error:?}"))
     }
 
     fn digest(value: &str) -> Digest32 {
@@ -293,7 +293,7 @@ mod tests {
                 },
             ],
         })
-        .expect("host trust");
+        .unwrap_or_else(|error| panic!("host trust: {error:?}"));
         Fixture {
             verifier,
             generator_key,
@@ -393,7 +393,7 @@ mod tests {
         let fixture = fixture();
         let certificate = certificate();
         let payload =
-            operator_applicability_signing_payload_v2(&certificate, 50).expect("payload");
+            operator_applicability_signing_payload_v2(&certificate, 50).unwrap_or_else(|error| panic!("payload: {error:?}"));
         let generator = sign(&fixture, &payload, LearningEvidenceRoleV1::Generator);
         let evaluator = sign(&fixture, &payload, LearningEvidenceRoleV1::Evaluator);
         let admitted = admit_signed_operator_applicability_v2(
@@ -403,7 +403,7 @@ mod tests {
             &fixture.verifier,
             50,
         )
-        .expect("authenticated admission");
+        .unwrap_or_else(|error| panic!("authenticated admission: {error:?}"));
         assert_eq!(admitted.generator_id, id("operator-generator"));
         assert_eq!(admitted.evaluator_id, id("independent-evaluator"));
         assert_eq!(admitted.trust_digest, fixture.verifier.trust_digest());
@@ -425,7 +425,7 @@ mod tests {
     fn op_06_signed_regularity_rejects_role_or_identity_drift() {
         let fixture = fixture();
         let assessment = assessment();
-        let payload = operator_regularity_signing_payload_v2(&assessment).expect("payload");
+        let payload = operator_regularity_signing_payload_v2(&assessment).unwrap_or_else(|error| panic!("payload: {error:?}"));
         let generator = sign(&fixture, &payload, LearningEvidenceRoleV1::Generator);
         assert!(admit_signed_operator_regularity_v2(
             &assessment,
@@ -439,7 +439,7 @@ mod tests {
         let mut wrong_identity = assessment;
         wrong_identity.evaluator_id = id("different-evaluator");
         let payload =
-            operator_regularity_signing_payload_v2(&wrong_identity).expect("payload");
+            operator_regularity_signing_payload_v2(&wrong_identity).unwrap_or_else(|error| panic!("payload: {error:?}"));
         let generator = sign(&fixture, &payload, LearningEvidenceRoleV1::Generator);
         let evaluator = sign(&fixture, &payload, LearningEvidenceRoleV1::Evaluator);
         assert_eq!(
