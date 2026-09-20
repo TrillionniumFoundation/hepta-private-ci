@@ -3,7 +3,17 @@ name: hnmf-qualification
 on:
   pull_request:
     paths:
+      - "codex-rs/hepta-cognitive-types/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
       - "docs/hnmf/**"
+      - "qualification/cognitive-types-v1/**"
+      - "qualification/cognitive-types-v1/**"
       - "qualification/hnmf-reference/**"
       - "qualification/hnmf-contract-reference/**"
       - "qualification/hnmf-adversarial-reference/**"
@@ -48,6 +58,18 @@ jobs:
           rustc --version --verbose
           cargo --version --verbose
           cargo clippy --version
+
+      - name: Check canonical cognitive.types formatting
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check
+
+      - name: Check canonical cognitive.types all targets
+        run: cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets
+
+      - name: Lint canonical cognitive.types
+        run: cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings
+
+      - name: Test canonical cognitive.types
+        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types
 
       - name: Check multimodal contract reference formatting
         run: cargo fmt --manifest-path qualification/hnmf-contract-reference/Cargo.toml -- --check
