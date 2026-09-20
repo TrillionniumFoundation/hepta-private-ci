@@ -56,7 +56,14 @@ impl AuthBusAuthorityStore {
             return Err(storage(error));
         }
         sqlx::query(
-            "UPDATE authbus_recovery_state SET recovery_required = 1 WHERE singleton = 1",
+            "UPDATE authbus_recovery_state
+             SET recovery_required = (
+                 SELECT EXISTS(
+                     SELECT 1 FROM authbus_quota_reservation
+                     WHERE state = 'dispatch_attempted'
+                 )
+             )
+             WHERE singleton = 1",
         )
         .execute(&pool)
         .await
