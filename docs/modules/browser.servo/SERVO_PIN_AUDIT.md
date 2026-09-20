@@ -6,6 +6,8 @@
 
 ## 1. Decision
 
+**2026-09-20 decision:** retain `5cc5bd32d02619acdec5736055515e38c5840ce1` for the current qualification cycle; do **not** absorb `b5a1f5e6ec6f8685d40cd389802ced7abe4980f6` mid-cycle. The reviewed Cargo.lock, reproducibility inputs and exact-source oracle are already frozen to `5cc5...`; moving now would restart the entire locked-build/E2E/SBOM chain. The WebView double-borrow change in `07777aaa...` is therefore a mandatory next-pin review item, not silently ignored compatibility evidence.
+
 The Browser/Servo source candidate is frozen at `5cc5bd32d02619acdec5736055515e38c5840ce1`, but it is not
 called qualified until the exact repository head produces a locked dependency
 receipt, successful real Browser E2E, reproducible byte-identical worker builds,
@@ -146,14 +148,20 @@ when one exact source SHA establishes all of the following:
 7. a revocation update started after final-use entry remains blocked until the
    real Servo worker reaches the dispatch admission boundary;
 8. crash recovery remains indeterminate until an exact Ed25519-authenticated
-   persisted-effect v2 receipt from the configured observer is supplied;
-9. the worker namespace exposes no non-loopback listening socket;
-10. a bounded 32-cycle real-worker RSS/FD soak stays under +512 MiB peak RSS,
+   persisted-effect v2 receipt from the configured observer is supplied and it
+   satisfies the configured minimum observer generation/time and exact current
+   frontier; stale/rollback/future receipts reject;
+9. profile expiry and owner close both contain a hostile page's background
+   fetch/timer/navigation without permitting later network growth;
+10. the worker namespace exposes no non-loopback listening socket;
+11. trusted target qualification proves public DNS plus certificate-validating
+    HTTPS through the production broker and denies an ungranted public CONNECT;
+12. a bounded 32-cycle real-worker RSS/FD soak stays under +512 MiB peak RSS,
     +256 MiB terminal RSS and +32 FD growth;
-11. two release builds are byte-identical;
-12. dynamic-library closure, deterministic SPDX 2.3 SBOM and checksummed build
+13. two release builds are byte-identical;
+14. dynamic-library closure, deterministic SPDX 2.3 SBOM and checksummed build
     receipt are retained;
-13. the committed candidate `Cargo.lock` matches the selected dependency graph
+15. the committed candidate `Cargo.lock` matches the selected dependency graph
     and the exact-head build receipt reports `cargoLockCommitted=true` before
     trusted target deployment qualification.
 
