@@ -121,6 +121,9 @@ pub struct NativeRunRecord {
     /// releases the local slot without inventing provider terminality/usage.
     #[serde(default)]
     pub reconciled_no_admission: Option<String>,
+    /// Independently authorized exact-turn usage settlement evidence.
+    #[serde(default)]
+    pub usage_evidence_digest: Option<String>,
     pub observation: Option<NativeRunOutput>,
 }
 
@@ -159,6 +162,11 @@ enum Event {
     Observe {
         request_id: String,
         output: NativeRunOutput,
+    },
+    UsageReconciled {
+        request_id: String,
+        observed_output_tokens: u64,
+        evidence_digest: String,
     },
 }
 
@@ -318,6 +326,39 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Trusted usage-settlement port. Authentication belongs to the composed
+    /// caller; this owner enforces exact terminal identity, monotonicity and
+    /// durable idempotency. A provider observation is never silently replaced.
+    pub fn reconcile_native_usage(
+        &mut self,
+        request_id: &str,
+        observed_output_tokens: u64,
+        evidence_digest: String,
+    ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.usage_evidence_digest.as_ref() == Some(&evidence_digest)
+            && record
+                .observation
+                .as_ref()
+                .and_then(|output| output.observed_output_tokens)
+                == Some(observed_output_tokens)
+        {
+            return Ok(record.clone());
+        }
+        self.commit_native(
+            request_id,
+            Event::UsageReconciled {
+                request_id: request_id.to_string(),
+                observed_output_tokens,
+                evidence_digest,
+            },
+        )
+    }
+
     pub fn native_record(&self, request_id: &str) -> Option<&NativeRunRecord> {
         self.native.records.get(request_id)
     }
@@ -401,6 +442,7 @@ impl NativeJournal {
                     cancel_requested: false,
                     pre_dispatch_stop: None,
                     reconciled_no_admission: None,
+                    usage_evidence_digest: None,
                     observation: None,
                 },
             );
@@ -413,7 +455,8 @@ impl NativeJournal {
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
             | Event::NoAdmission { request_id, .. }
-            | Event::Observe { request_id, .. } => request_id,
+            | Event::Observe { request_id, .. }
+            | Event::UsageReconciled { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
@@ -506,6 +549,36 @@ impl NativeJournal {
             }
             Event::Observe { output, .. } => {
                 apply_observation(record, output)?;
+            }
+            Event::UsageReconciled {
+                observed_output_tokens,
+                evidence_digest,
+                ..
+            } => {
+                validate_digest(&evidence_digest, "native usage evidence")?;
+                let output = record
+                    .observation
+                    .as_mut()
+                    .ok_or(Error::TerminalObservationMissing)?;
+                if !output.terminal_observed
+                    || record.state != NativeReservationState::Released
+                    || record.reconciled_no_admission.is_some()
+                    || output.turn_id.is_empty()
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                if record
+                    .usage_evidence_digest
+                    .as_ref()
+                    .is_some_and(|existing| existing != &evidence_digest)
+                    || output
+                        .observed_output_tokens
+                        .is_some_and(|existing| existing != observed_output_tokens)
+                {
+                    return Err(Error::Conflict);
+                }
+                output.observed_output_tokens = Some(observed_output_tokens);
+                record.usage_evidence_digest = Some(evidence_digest);
             }
         }
         record.revision = record
