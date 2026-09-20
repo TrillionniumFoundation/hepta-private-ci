@@ -36,7 +36,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SERVO_PIN: 5cc5bd32d02619acdec5736055515e38c5840ce1
+  SERVO_PIN: b5a1f5e6ec6f8685d40cd389802ced7abe4980f6
   WORKER_MANIFEST: apps/hepta-browser/servo-worker/Cargo.toml
   WORKER_LOCK: apps/hepta-browser/servo-worker/Cargo.lock
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
