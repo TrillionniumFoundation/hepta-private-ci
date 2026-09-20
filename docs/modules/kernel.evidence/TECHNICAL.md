@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The canonical qualification implementation is [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs), backed by migration `0011_qualification_evidence.sql`. The legacy provider-effect journal remains in [provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs). A named product caller/writer is composed in [codex-rs/hepta-agentd/src/evidence_host.rs](../../../codex-rs/hepta-agentd/src/evidence_host.rs) with an owner-controlled multi-issuer trust boundary in `evidence_trust.rs`. Product composition is explicitly configuration gated and grants no selection, promotion or release authority. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) for exact current claims and remaining external gates.
+The canonical qualification implementation is [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs), backed by migration `0011_qualification_evidence.sql`. The legacy provider-effect journal remains in [provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs). A named product caller/writer is composed in [codex-rs/hepta-agentd/src/evidence_host.rs](../../../codex-rs/hepta-agentd/src/evidence_host.rs) with an owner-controlled multi-issuer trust boundary in `evidence_trust.rs`. Positive verification reuses a freshly loaded current trust snapshot, so revoked/removed/role-mismatched/key-rotated evidence cannot continue satisfying a supported claim. A separately configured signed recovery frontier is verified by `evidence_frontier.rs` against deterministic local recovery digests from `hepta-evidence/src/recovery_frontier.rs` before host attachment. Product composition is explicitly configuration gated and grants no selection, promotion or release authority. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) for exact current claims and remaining external gates.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -156,7 +156,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, current-trust verification, signed recovery-frontier startup gate and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -199,8 +199,8 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-evidence/src/qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs): EVID-01..04, authenticated idempotency/replay, independent-decision binding, correction/revocation non-resurrection and reopen corruption.
-- [codex-rs/hepta-agentd/tests/kernel_evidence_product.rs](../../../codex-rs/hepta-agentd/tests/kernel_evidence_product.rs): real daemon append/query/verify, distinct reviewer principals, terminal observer and current revocation.
+- [codex-rs/hepta-evidence/src/qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs): EVID-01..04, shared-signing-key rejection, current trust/key rotation, authenticated idempotency/replay, independent-decision binding, correction/revocation non-resurrection, reopen corruption, query/traversal bounds, concurrent writers and transactional fault rollback.
+- [codex-rs/hepta-agentd/tests/kernel_evidence_product.rs](../../../codex-rs/hepta-agentd/tests/kernel_evidence_product.rs): real daemon append/query/verify, wrong candidate/role, replay/expiry, stale/revoked keys, distinct reviewer identities, terminal observer, current verification trust and signed recovery-frontier old-image rejection.
 - [codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs); named case: `current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers`.
 - [codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs); named case: `quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement`.
 
@@ -220,7 +220,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-The named product caller/writer host is now source-composed in Agentd and appears only when `--evidence-trust-file` successfully attaches a current multi-issuer trust registry. That establishes product composition, not operator activation or independent acceptance. Production activation still requires the external recovery frontier, exact-candidate independent acceptance and remaining evidence predecessors.
+The named product caller/writer host is now source-composed in Agentd and appears only when `--evidence-trust-file` successfully attaches a current multi-issuer trust registry. The optional recovery profile additionally requires both `--evidence-recovery-frontier-file` and `--evidence-recovery-frontier-trust-file`; a mismatch enters `recovery_required` before host availability. That establishes product composition and a concrete consumer for an external signed frontier, not operator activation or independent acceptance. Production activation still requires a durable external monotonic CAS/latest-frontier backend, exact-candidate independent acceptance and remaining evidence predecessors.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
