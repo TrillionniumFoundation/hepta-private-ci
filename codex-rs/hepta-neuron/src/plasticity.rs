@@ -11,6 +11,7 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::SparseCheckpoint;
@@ -90,7 +91,48 @@ pub struct ParameterGroupStatisticV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PlasticityAncestryV1 {
+    pub selected_artifact_digest: Digest32,
+    pub generation: Generation,
+    pub parameter_manifest_digest: Digest32,
+    pub window_digest: Digest32,
+    pub update_rule_digest: Digest32,
+    pub predecessor_digest: Digest32,
+}
+
+impl PlasticityAncestryV1 {
+    pub fn digest(&self) -> Result<Digest32, PlasticityError> {
+        for digest in [
+            self.selected_artifact_digest,
+            self.parameter_manifest_digest,
+            self.window_digest,
+            self.update_rule_digest,
+            self.predecessor_digest,
+        ] {
+            if digest.is_zero() {
+                return Err(PlasticityError::EmptyDigest);
+            }
+        }
+        let mut bytes = b"hepta.neuron.plasticity-ancestry.v1".to_vec();
+        bytes.extend_from_slice(self.selected_artifact_digest.as_array());
+        bytes.extend_from_slice(&self.generation.get().to_be_bytes());
+        bytes.extend_from_slice(self.parameter_manifest_digest.as_array());
+        bytes.extend_from_slice(self.window_digest.as_array());
+        bytes.extend_from_slice(self.update_rule_digest.as_array());
+        bytes.extend_from_slice(self.predecessor_digest.as_array());
+        Ok(Digest32::of_bytes(&bytes))
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlasticitySufficientStatisticsV1 {
+    pub selected_artifact_digest: Digest32,
+    pub generation: Generation,
+    pub parameter_manifest_digest: Digest32,
+    pub window_digest: Digest32,
+    pub update_rule_digest: Digest32,
+    pub predecessor_digest: Digest32,
+    pub ancestry_digest: Digest32,
     pub sample_count: u32,
     pub group_statistics: Vec<ParameterGroupStatisticV1>,
     pub eligibility_digest: Digest32,
@@ -129,6 +171,7 @@ impl fmt::Display for PlasticityError {
 impl StdError for PlasticityError {}
 
 pub fn accumulate_plasticity(
+    ancestry: &PlasticityAncestryV1,
     history: &[PlasticitySampleV1],
     groups: &[EligibilityParameterGroupV1],
     broadcast: &[ModulatorBroadcastRowV1],
@@ -137,6 +180,7 @@ pub fn accumulate_plasticity(
     if !(1..=MAX_HISTORY).contains(&history.len()) {
         return Err(PlasticityError::HistoryOutOfRange);
     }
+    let ancestry_digest = ancestry.digest()?;
     validate_trust_region(trust_region)?;
     let eligibility_width = history[0].eligibility_q24.len();
     let modulator_width = history[0].independent_modulator_q24.len();
@@ -199,6 +243,7 @@ pub fn accumulate_plasticity(
 
     let sample_count = u32::try_from(history.len()).map_err(|_| PlasticityError::Arithmetic)?;
     let statistics_digest = digest_statistics(
+        ancestry_digest,
         sample_count,
         &statistics,
         eligibility_digest,
@@ -208,6 +253,13 @@ pub fn accumulate_plasticity(
         projected,
     );
     Ok(PlasticitySufficientStatisticsV1 {
+        selected_artifact_digest: ancestry.selected_artifact_digest,
+        generation: ancestry.generation,
+        parameter_manifest_digest: ancestry.parameter_manifest_digest,
+        window_digest: ancestry.window_digest,
+        update_rule_digest: ancestry.update_rule_digest,
+        predecessor_digest: ancestry.predecessor_digest,
+        ancestry_digest,
         sample_count,
         group_statistics: statistics,
         eligibility_digest,
@@ -435,6 +487,7 @@ fn digest_broadcast(
 }
 
 fn digest_statistics(
+    ancestry_digest: Digest32,
     sample_count: u32,
     statistics: &[ParameterGroupStatisticV1],
     eligibility_digest: Digest32,
@@ -443,7 +496,8 @@ fn digest_statistics(
     trust_region: PlasticityTrustRegionV1,
     projected: bool,
 ) -> Digest32 {
-    let mut bytes = b"hepta.neuron.plasticity-sufficient-statistics.v1".to_vec();
+    let mut bytes = b"hepta.neuron.plasticity-sufficient-statistics.v2".to_vec();
+    bytes.extend_from_slice(ancestry_digest.as_array());
     bytes.extend_from_slice(&sample_count.to_be_bytes());
     for digest in [eligibility_digest, modulator_digest, broadcast_digest] {
         bytes.extend_from_slice(digest.as_array());
