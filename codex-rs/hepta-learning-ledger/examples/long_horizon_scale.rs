@@ -1,10 +1,11 @@
 //! Real-file long-horizon measurements with a fixed active tail and cache.
 //!
 //! Usage: long_horizon_scale <records: 100..=1000000> <new-output-directory>
-//! Rows are observations, not thresholds or a scalability certificate. Reopen
-//! uses the same process and warm filesystem cache; the checkpoint remains in
-//! caller memory. This does not measure power-loss recovery or independent
-//! witness retention. The supplied output directory is created, never replaced.
+//! Rows are observations, not thresholds or a scalability certificate. Each
+//! milestone measures a fresh-process recovery and a same-process reopen. The
+//! filesystem cache remains warm, and the parent supplies the checkpoint. This
+//! is not power-loss recovery or independent witness retention. The supplied
+//! output directory is created, never replaced.
 
 use std::fmt::Debug;
 use std::fs;
@@ -25,6 +26,9 @@ use codex_hepta_learning_ledger::LongHorizonSegmentedLedgerV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
+
+#[path = "long_horizon_scale/restart.rs"]
+mod restart;
 
 const SEGMENT_RECORDS: usize = 64;
 const SEGMENT_BYTES: u64 = 128 * 1024;
@@ -80,6 +84,9 @@ fn linux_memory_kib(field: &str) -> String {
 
 fn main() -> io::Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
+    if restart::run_if_requested(&args)? {
+        return Ok(());
+    }
     if args.len() != 2 {
         return Err(io::Error::other(
             "usage: long_horizon_scale <records: 100..=1000000> <new-output-directory>",
@@ -138,6 +145,7 @@ fn main() -> io::Result<()> {
         }
         let rss_before_reopen = linux_memory_kib("VmRSS");
         drop(ledger);
+        restart::measure(&root, checkpoint)?;
         let start = Instant::now();
         ledger = checked(LongHorizonSegmentedLedgerV1::recover(
             file(&owner_path, false)?,
@@ -150,18 +158,14 @@ fn main() -> io::Result<()> {
         ))?;
         let warm_reopen_ns = start.elapsed().as_nanos();
         if checked(ledger.checkpoint())? != checkpoint {
-            return Err(io::Error::other(
-                "reopen changed the acknowledged checkpoint",
-            ));
+            return Err(io::Error::other("reopen changed the acknowledged checkpoint"));
         }
         let retry = decision(0)?;
         let start = Instant::now();
         for _ in 0..1000 {
             let receipt = checked(ledger.append(Digest32::ZERO, retry.clone()))?;
             if receipt.disposition != AppendDisposition::IdempotentReplay {
-                return Err(io::Error::other(
-                    "historical retry appended duplicate history",
-                ));
+                return Err(io::Error::other("historical retry appended duplicate history"));
             }
             black_box(receipt);
         }
@@ -171,9 +175,7 @@ fn main() -> io::Result<()> {
             || metrics.historical_cache_entries > CACHE_ENTRIES
             || ledger.head_anchor() != checkpoint.head_anchor
         {
-            return Err(io::Error::other(
-                "resident bounds or retry identity changed",
-            ));
+            return Err(io::Error::other("resident bounds or retry identity changed"));
         }
         let first = id("record-0")?;
         if checked(ledger.archive_segment_for_record(&first))? != Some(0) {
@@ -182,9 +184,7 @@ fn main() -> io::Result<()> {
         let archived = checked(ledger.archived_record(File::open(segment(&root, 0))?, &first))?
             .ok_or_else(|| io::Error::other("oldest archived record is missing"))?;
         if archived.event != retry {
-            return Err(io::Error::other(
-                "archive returned different record content",
-            ));
+            return Err(io::Error::other("archive returned different record content"));
         }
         println!(
             "{{\"schema\":\"hepta.long-horizon-scale.v1\",\"records\":{size},\"appended_since_previous\":{},\"append_ns\":{append_ns},\"warm_reopen_ns\":{warm_reopen_ns},\"retry_1000_ns\":{retry_ns},\"active_segment\":{},\"active_segment_bytes\":{},\"resident_records\":{},\"historical_cache_entries\":{},\"record_limit\":{SEGMENT_RECORDS},\"cache_limit\":{CACHE_ENTRIES},\"rss_before_reopen_kib\":{rss_before_reopen},\"rss_after_reopen_and_retry_kib\":{},\"peak_rss_kib\":{},\"persistence_measured\":true,\"power_loss_tested\":false,\"independent_witness_retention\":false}}",
