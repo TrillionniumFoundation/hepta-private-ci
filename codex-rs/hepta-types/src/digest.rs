@@ -24,6 +24,19 @@ impl Digest32 {
         Self(value)
     }
 
+    /// Hash several byte slices as one exact byte stream without concatenating
+    /// them into a temporary allocation.
+    pub fn of_parts(parts: &[&[u8]]) -> Self {
+        let mut hasher = Sha256::new();
+        for part in parts {
+            hasher.update(part);
+        }
+        let digest = hasher.finalize();
+        let mut value = [0; 32];
+        value.copy_from_slice(&digest);
+        Self(value)
+    }
+
     pub const fn as_array(&self) -> &[u8; 32] {
         &self.0
     }

@@ -1,8 +1,8 @@
 //! A real Rust↔Python product-boundary test.
 //!
 //! The Rust producer emits the HPTA v1 frame consumed by a tiny Python
-//! boundary parser.  Python recomputes the payload digest and rejects a
-//! one-byte fault.  This exercises the actual wire bytes, rather than merely
+//! boundary parser. Python recomputes the payload digest and rejects a
+//! one-byte fault. This exercises the actual wire bytes, rather than merely
 //! proving two Rust functions agree with one another.
 
 use codex_hepta_types::Generation;
@@ -10,7 +10,8 @@ use codex_hepta_types::StableId;
 use codex_hepta_wire::WireEnvelope;
 use codex_hepta_wire::WireError;
 use serde_json::Value;
-use std::fmt::Debug;
+use std::error::Error;
+use std::io::Write;
 use std::process::Command;
 use std::process::Stdio;
 
@@ -48,47 +49,39 @@ fn encode_hex(bytes: &[u8]) -> String {
     output
 }
 
-fn must<T, E: Debug>(result: Result<T, E>) -> T {
-    match result {
-        Ok(value) => value,
-        Err(error) => panic!("unexpected fixture error: {error:?}"),
-    }
-}
-
-fn run_python(frame: &[u8]) -> std::process::Output {
-    let mut child = must(
-        Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
-            .args(["-c", PYTHON_PARSER])
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn(),
-    );
-    use std::io::Write;
-    let Some(mut stdin) = child.stdin.take() else {
-        panic!("python stdin must be piped");
-    };
-    must(stdin.write_all(encode_hex(frame).as_bytes()));
-    must(child.wait_with_output())
+fn run_python(frame: &[u8]) -> Result<std::process::Output, Box<dyn Error>> {
+    let mut child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
+        .args(["-c", PYTHON_PARSER])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()?;
+    let mut stdin = child.stdin.take().ok_or_else(|| {
+        std::io::Error::new(std::io::ErrorKind::BrokenPipe, "python stdin unavailable")
+    })?;
+    stdin.write_all(encode_hex(frame).as_bytes())?;
+    drop(stdin);
+    let output = child.wait_with_output()?;
+    Ok(output)
 }
 
 #[test]
-fn rust_python_wire_roundtrip_and_payload_fault_reject() {
-    let schema = must(StableId::new("hepta.integration.v1"));
-    let producer = must(StableId::new("hepta-shadow-qualification"));
-    let generation = must(Generation::new(7));
-    let payload = br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec();
-    let envelope = must(WireEnvelope::new(
+fn rust_python_wire_roundtrip_and_payload_fault_reject() -> Result<(), Box<dyn Error>> {
+    let schema = StableId::new("hepta.integration.v1")?;
+    let producer = StableId::new("hepta-shadow-qualification")?;
+    let generation = Generation::new(7)?;
+    let payload = br#"{\"objective\":\"ndu\",\"authority\":\"deny_all\",\"step\":1}"#.to_vec();
+    let envelope = WireEnvelope::new(
         schema.clone(),
         producer.clone(),
         generation,
         payload.clone(),
-    ));
+    )?;
     let frame = envelope.encode();
 
-    let output = run_python(&frame);
+    let output = run_python(&frame)?;
     assert!(output.status.success(), "python parser failed: {output:?}");
-    let report: Value = must(serde_json::from_slice(&output.stdout));
+    let report: Value = serde_json::from_slice(&output.stdout)?;
     assert_eq!(report["schema"], schema.as_str());
     assert_eq!(report["producer"], producer.as_str());
     assert_eq!(report["generation"], generation.get());
@@ -98,18 +91,19 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
         envelope.payload_digest().to_string()
     );
 
-    // Mutating the payload without changing the signed digest must be rejected
+    // Mutating the payload without changing the payload digest must be rejected
     // by both language boundaries.
     let mut tampered = frame;
-    let Some(last_byte) = tampered.last_mut() else {
-        panic!("encoded frame must not be empty");
-    };
-    *last_byte ^= 0x01;
-    let python_fault = run_python(&tampered);
+    let last = tampered.last_mut().ok_or_else(|| {
+        std::io::Error::new(std::io::ErrorKind::UnexpectedEof, "encoded frame is empty")
+    })?;
+    *last ^= 0x01;
+    let python_fault = run_python(&tampered)?;
     assert!(!python_fault.status.success());
     assert!(String::from_utf8_lossy(&python_fault.stderr).contains("digest mismatch"));
     assert!(matches!(
         WireEnvelope::decode(&tampered),
         Err(WireError::DigestMismatch { .. })
     ));
+    Ok(())
 }
