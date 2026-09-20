@@ -32,6 +32,7 @@ pub use codex_hepta_agent_protocol::AGENTD_RUN_LIFECYCLE_CAPABILITY_ID;
 pub use codex_hepta_agent_protocol::AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR;
 pub use codex_hepta_agent_protocol::AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR;
 pub use codex_hepta_agent_protocol::AgentCancellationDisposition;
+pub use codex_hepta_agent_protocol::AgentLearningDecisionBinding;
 pub use codex_hepta_agent_protocol::AgentContextAttachment;
 pub use codex_hepta_agent_protocol::AgentRunCancellation;
 pub use codex_hepta_agent_protocol::AgentRunPhase;
