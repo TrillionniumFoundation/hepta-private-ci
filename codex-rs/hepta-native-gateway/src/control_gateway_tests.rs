@@ -422,3 +422,48 @@ async fn stale_target_revision_fails_before_final_use_and_owner_dispatch() {
     );
     assert_eq!(fixture.owner.dispatches.load(Ordering::SeqCst), 0);
 }
+
+
+#[tokio::test]
+async fn reconciliation_cannot_cross_authenticated_principal_identity() {
+    let fixture = fixture(BTreeSet::from([UiControlRole::Operator])).await;
+    let request = operation_request(fixture.runtime_digest, "request_retry");
+    let semantic_digest: Digest32 = request.semantic_digest.parse().expect("semantic digest");
+    let service = gateway(&fixture, fixture.ledger.clone());
+    service
+        .submit_request("operation/request", request)
+        .await
+        .expect("seed operation");
+
+    let intruder = TrustedUiPrincipal {
+        principal_id: StableId::new("operator.two").expect("principal"),
+        session_id: StableId::new("session.1").expect("session"),
+        connection_generation: Generation::new(1).expect("connection generation"),
+        authentication_context_digest: Digest32::of_bytes(b"other-authenticated-session"),
+        roles: BTreeSet::from([UiControlRole::Operator]),
+    };
+    let intruder_service = UiControlGateway::new(
+        fixture.ledger.clone(),
+        fixture.authority.clone(),
+        Arc::new(FixtureAuthenticator { principal: intruder }),
+        fixture.view_verifier.clone(),
+        fixture.grant_provider.clone(),
+        fixture.owner.clone(),
+        fixture.owner_generation,
+    );
+
+    let error = intruder_service
+        .reconcile(UiControlReconcileQueryV1 {
+            session_id: "session.1".to_string(),
+            connection_generation: 1,
+            method: "operation/request".to_string(),
+            operation_id: "operation.ui.1".to_string(),
+            semantic_digest: semantic_digest.to_string(),
+            origin_session_id: "session.1".to_string(),
+            origin_connection_generation: 1,
+            runtime_generation: 7,
+        })
+        .await
+        .expect_err("another authenticated principal cannot reconcile this operation");
+    assert_eq!(error, UiControlGatewayError::ReconciliationMismatch);
+}
