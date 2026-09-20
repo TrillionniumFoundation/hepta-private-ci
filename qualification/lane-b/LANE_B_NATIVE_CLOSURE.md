@@ -21,7 +21,14 @@ The exact process driver, Agentd readiness/drain acknowledgements and current-ge
 | `start_instance` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn start(` |
 | `observe_health` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn tick(` |
 | `drain` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn drain(` |
+| `stop_instance` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn stop(` |
+| `kill_instance` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn kill(` |
+| `restart_instance` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn restart(` |
 | `load_next` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn upgrade(` |
+| `rollback_release` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn rollback(` |
+| `signed_upgrade` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn apply_production_grant(` |
+| `signed_rollback` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn apply_production_grant(` |
+| `reconcile_signed_intent` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn resolve_production_recovery(` |
 
 External evidence gates:
 
@@ -241,6 +248,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 39 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 46 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.
