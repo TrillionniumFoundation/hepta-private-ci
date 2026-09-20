@@ -98,7 +98,7 @@ available_for_plan(axis) = endowment(axis) - essential_floor(axis)
 
 Both terms are non-negative fixed-point values, and the floor cannot exceed the endowment. Every candidate must explicitly report each registered resource axis; missing axes are unavailable rather than zero. Unknown axes reject rather than widening the budget.
 
-The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
+The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. `canonical_resource_profile_digest` stable-sorts the reservation set and binds every axis, endowment and essential floor; `prepare_plan` recomputes it and rejects any mismatch before filtering candidates. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
 
 `prepare_plan` filters resource-infeasible candidates before NDU evaluation and records their IDs in `resource_rejected_candidate_ids`. The intrinsic `abstain` candidate must remain feasible after this filter. The digest of the source candidate set and the digest of the feasible candidate set are both retained, so resource filtering cannot be hidden.
 
@@ -181,6 +181,7 @@ Each entry contains sequence, kind, idempotency identity, payload digest, predec
 - sequence, predecessor and entry-digest verification;
 - truncation and unknown-kind rejection;
 - selected-plan projection;
+- semantic replay on reopen, requiring a recorded decision before selection or revocation and rejecting post-revocation reselection;
 - revocation edges that prevent reselection and restart resurrection.
 
 A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention policy and backup/restore qualification.
@@ -294,7 +295,26 @@ an observed digital task, not an estimate of model quality or memory capacity.
 
 The single-observation owner summary has its own initial revision and an explicit
 request-local generation fence. It does not impersonate a database revision or
-global revocation frontier. Existing host authorization and generation checks
-remain required before and after the read. Context bytes exclude the planning
+global revocation frontier. The Agentd caller timestamps this planner envelope in
+one process-local `Instant` domain rather than wall-clock Unix time; the store's
+separate civil-time expiry checks remain outside the planner clock domain.
+Existing host authorization and generation checks remain required before and after
+the read. Context bytes exclude the planning
 metadata to avoid a self-referential digest; the host separately bounds the final
 response envelope. Neither helper grants effects or proves long-term improvement.
+
+
+## Global product composition boundary
+
+The current Agentd `plan_observed_context` call is a named product caller for a
+narrow read-only objective, not the global multi-owner control plane. A production
+global caller still needs authenticated owner adapters, durable decision publication
+and independent final-use admission.
+
+`GrantRequestV1` currently binds operation/candidate/plan/payload, objective,
+snapshot, revocation frontier and expiry, but it does not carry the principal,
+destination or scope identity required by `kernel.authority::FinalUseBinding`.
+Those values must become part of the authenticated Control-owned request contract
+before the global caller can claim a final-use token; supplying them later at the
+effect caller would reopen a substitution boundary. Until then, the request set
+remains `AuthorityPosture::DENY_ALL`.

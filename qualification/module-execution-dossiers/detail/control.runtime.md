@@ -1,7 +1,7 @@
 # control.runtime: implementation design
 
 Parent: `docs/modules/control.runtime/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
-Status: source candidate global planner and owner-local decision journal implemented; product composition and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md` and `docs/readiness/CONTROL_RUNTIME_EXECUTION.md`.
+Status: source candidate global planner and owner-local decision journal implemented; the narrow Agentd cognitive-context caller is product-composed, while authenticated multi-owner global composition, production durability and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md` and `docs/readiness/CONTROL_RUNTIME_EXECUTION.md`.
 
 ## 1. Source and work envelope
 
@@ -15,10 +15,13 @@ Implemented operations are:
 
 ```text
 collect_snapshot(SnapshotRequestV1, OwnerSummaryV1[]) -> GlobalStateSnapshotV1
+canonical_resource_profile_digest(ResourceReservationV1[]) -> Digest32
 prepare_plan(snapshot, PlanningRequestV1) -> PreparedPlanInputV1
 bind_ndu_plan_evaluation_v1(NduPlanEvaluationInputV1) -> NduPlanEvaluationV1
+evaluate_prepared_plan_with_ndu(snapshot, prepared, input, now) -> EvaluatedPlanV1
 finalize_plan(snapshot, prepared, ndu_evaluation, now) -> FeasiblePlanReceiptV1
 request_execution_grants(snapshot, prepared, receipt, now) -> GrantRequestSetV1
+plan_observed_context(ObservedContextV1) -> ObservedContextPlanV1
 PlannerJournalV1::{append, record_decision, select_plan, revoke, reopen}
 ```
 
@@ -30,13 +33,13 @@ Every prepared input, evaluation binding, plan receipt and grant-request set is 
 
 `GlobalStateSnapshotV1` binds exact objective, body generation, configuration, revocation frontier, owner revisions, observation/expiry times, readiness, source frontiers and support. Missing, stale and unavailable owner masks are explicit. Any non-empty required mask blocks planning; absence is never treated as zero cost or ready state.
 
-`PreparedPlanInputV1` retains both the source candidate-set digest and the resource-feasible candidate-set digest. It records candidates rejected by essential resource floors. Missing resource axes reject instead of becoming zero. Intrinsic abstain must remain feasible.
+`PreparedPlanInputV1` retains both the source candidate-set digest and the resource-feasible candidate-set digest. It records candidates rejected by essential resource floors. Missing resource axes reject instead of becoming zero. Intrinsic abstain must remain feasible. The canonical resource-profile digest is derived from the stable-sorted reservation axis, endowment and essential floor values; `prepare_plan` rejects a caller-supplied digest that does not match those exact reservations.
 
 `NduPlanEvaluationV1` binds the NDU owner’s opaque evaluation digest plus the exact evaluated, rejected, Pareto and advisory candidate projection consumed by Control. Its binding digest is independently recomputed at finalization.
 
 `FeasiblePlanReceiptV1` binds snapshot, configuration, current revocation frontier, both candidate sets, resource rejections, NDU policy/evaluation/binding digests, disposition, uncertainty, selected plan and expiry. It claims only a result over the bounded supplied set.
 
-`PlannerJournalV1` provides a bounded append-only reference for snapshot/decision/selection/revocation records. It validates sequence, predecessor hashes, semantic identities and entry hashes on reopen. A revoked decision cannot be reselected or resurrected through restart.
+`PlannerJournalV1` provides a bounded append-only reference for snapshot/decision/selection/revocation records. It validates sequence, predecessor hashes, semantic identities and entry hashes on reopen. Reopen also replays decision-before-selection/revocation constraints and rejects a selection after revocation instead of accepting any self-consistent hash chain. A revoked decision cannot be reselected or resurrected through restart.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -87,8 +90,8 @@ This candidate grants no model, provider, tool, network, filesystem, secret, Mat
 
 `examples/cart_closed_loop.rs` runs the existing typed cart sensor/controller/actuator loop and emits a bounded CSV trace. It uses the same Q24 simulator rather than another plant implementation. Simulation ticks are not elapsed real time; no hardware, HIL or physical-safety qualification is implied.
 
-- **Implemented entrypoints:** `collect_snapshot` in [codex-rs/hepta-control-plane/src/planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs); `finalize_plan` in [codex-rs/hepta-control-plane/src/planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs); `OrganHostV1` in [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs); `admit_compiled_body_graph_v2` in [codex-rs/hepta-control-plane/src/organ_wire.rs](../../../codex-rs/hepta-control-plane/src/organ_wire.rs); `SyntheticCartIoV1` in [codex-rs/hepta-control-plane/src/embodiment/io.rs](../../../codex-rs/hepta-control-plane/src/embodiment/io.rs).
+- **Implemented entrypoints:** `collect_snapshot`, `canonical_resource_profile_digest`, `prepare_plan`, `finalize_plan` and `request_execution_grants` in [codex-rs/hepta-control-plane/src/planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs); `evaluate_prepared_plan_with_ndu` in [codex-rs/hepta-control-plane/src/planner_ndu.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu.rs); `plan_observed_context` in [codex-rs/hepta-control-plane/src/planner_context.rs](../../../codex-rs/hepta-control-plane/src/planner_context.rs), called by [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs); `OrganHostV1` in [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs); `admit_compiled_body_graph_v2` in [codex-rs/hepta-control-plane/src/organ_wire.rs](../../../codex-rs/hepta-control-plane/src/organ_wire.rs); `SyntheticCartIoV1` in [codex-rs/hepta-control-plane/src/embodiment/io.rs](../../../codex-rs/hepta-control-plane/src/embodiment/io.rs).
 - **State and recovery:** GlobalStateSnapshotV1 binds owner readiness/frontiers and expiry; missing/stale owners block planning. PlannerJournalV1 provides bounded hash-chain replay. OrganHostV1 runs trusted compiled-in read-only handlers and is not a sandbox or effect executor. Failed owner-callback restoration now quarantines predecessor dispatch and retains rollback errors; this is not a durable writer migration service. Native handoff matches host-owned protocol/profile/version/schema before graph construction. SyntheticCartIoV1 owns only an in-memory deterministic Q24 plant; read_sensor checks age/calibration and dispatch checks actuator identity, observation binding and DENY_ALL before a simulator step. Recreating the adapter resets this simulated plant; it is not physical-device recovery.
 - **Source tests:** [codex-rs/hepta-control-plane/src/planner_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_tests.rs), [codex-rs/hepta-control-plane/src/planner_journal_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_tests.rs), [codex-rs/hepta-control-plane/src/organ_runtime_tests.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime_tests.rs), [codex-rs/hepta-control-plane/src/organ_wire_tests.rs](../../../codex-rs/hepta-control-plane/src/organ_wire_tests.rs), [codex-rs/hepta-control-plane/src/embodiment/io.rs](../../../codex-rs/hepta-control-plane/src/embodiment/io.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/readiness/CONTROL_RUNTIME_EXECUTION.md](../../../docs/readiness/CONTROL_RUNTIME_EXECUTION.md), [codex-rs/hepta-control-plane/src/ORGAN_RUNTIME.md](../../../codex-rs/hepta-control-plane/src/ORGAN_RUNTIME.md), [codex-rs/hepta-control-plane/src/ORGAN_WIRE.md](../../../codex-rs/hepta-control-plane/src/ORGAN_WIRE.md), [docs/readiness/EMBODIED_TYPED_IO.md](../../../docs/readiness/EMBODIED_TYPED_IO.md).
-- **Remaining work:** Compose authenticated owner ports and durable product publication; a grant request remains DENY_ALL and the planner does not issue execution authority or an independent NDU convergence decision. Authenticated canonical producer wiring, durable stateful handoff, real simulator/HIL/device adapters and physical terminal reconciliation remain separate implementations and qualification.
+- **Remaining work:** The Agentd cognitive-context adapter is a real but request-local, read-only product caller; it does not establish the multi-owner global planner. Compose authenticated owner ports and a durable planner publication store with fsync, migration, restore/non-resurrection and recovery-required handling. Before connecting `GrantRequestSetV1` to `kernel.authority`, extend the grant-request contract so principal, destination and scope are bound by Control rather than supplied later by a caller; the current `FinalUseBinding` requires those identities. Real simulator/HIL/device adapters, physical terminal reconciliation, named-host qualification and independent acceptance remain separate evidence gates.

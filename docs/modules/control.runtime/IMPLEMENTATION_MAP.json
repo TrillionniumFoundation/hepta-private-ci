@@ -10,8 +10,8 @@
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "request_local_agentd_composed_global_not_composed",
+  "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "collect_snapshot",
@@ -194,6 +194,89 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
+    },
+    {
+      "operation": "canonical_resource_profile_digest",
+      "nativeSymbol": "codex_hepta_control_plane::canonical_resource_profile_digest",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "ResourceReservationV1 list"
+      ],
+      "outputs": [
+        "Digest32"
+      ],
+      "state": "source_implemented_exact_reservation_binding",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "resource_profile_digest_must_match_exact_reservations"
+        }
+      ],
+      "designOperation": "canonical_resource_profile_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "evaluate_prepared_plan_with_ndu",
+      "nativeSymbol": "codex_hepta_control_plane::evaluate_prepared_plan_with_ndu",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "inputs": [
+        "GlobalStateSnapshotV1",
+        "PreparedPlanInputV1",
+        "NduPlanningInputV1",
+        "current monotonic time"
+      ],
+      "outputs": [
+        "EvaluatedPlanV1"
+      ],
+      "state": "source_implemented_owner_composition_adapter",
+      "authority": "deny_all",
+      "ownerBoundary": "utility.ndu computes the evaluation; control.runtime seals only the consumed projection",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+          "symbol": "owner_evaluation_composes_into_real_planner_without_self_reported_selection"
+        }
+      ],
+      "designOperation": "evaluate_prepared_plan_with_ndu",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_ndu::evaluate_candidates_with_policy"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "plan_observed_context",
+      "nativeSymbol": "codex_hepta_control_plane::plan_observed_context",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "inputs": [
+        "ObservedContextV1"
+      ],
+      "outputs": [
+        "ObservedContextPlanV1"
+      ],
+      "state": "product_composed_request_local_read_only",
+      "authority": "deny_all",
+      "productCaller": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nonClaim": "narrow cognitive-context planning is not the global multi-owner planner product caller",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+          "symbol": "measured_context_is_selected_and_budget_excess_abstains"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+          "symbol": "planner_clock_is_process_monotonic"
+        }
+      ],
+      "designOperation": "plan_observed_context",
+      "mappingClass": "product_adapter",
+      "delegatedCallees": [
+        "evaluate_prepared_plan_with_ndu"
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalDomainContracts": [
@@ -210,15 +293,17 @@
   ],
   "completion": {
     "specification": "complete",
-    "nativePlanningKernel": "candidate_implemented",
-    "ownerLocalDurabilityReference": "candidate_implemented",
+    "nativePlanningKernel": "candidate_implemented_hardened",
+    "ownerLocalDurabilityReference": "candidate_implemented_semantic_replay",
     "canonicalExternalProtocolAdmission": "not_established",
-    "productionCaller": "not_established",
+    "productionCaller": "partial_request_local_only",
     "productionWriter": "not_established",
-    "exactHeadQualification": "required",
+    "exactHeadQualification": "required_on_current_candidate",
     "independentAcceptance": "not_established",
     "activation": "not_established",
-    "release": "not_established"
+    "release": "not_established",
+    "requestLocalProductCaller": "established_agentd_cognitive_context",
+    "globalPlannerProductCaller": "not_established"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -236,19 +321,28 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "requestLocalProductExecutionProved": true,
+    "globalProductExecutionProved": false
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Extend execution-grant semantics with authenticated principal, destination and scope binding before kernel.authority composition.",
+    "Establish the durable production planner store, including fsync, migration, restore/non-resurrection and recovery-required handling.",
+    "Compose an authenticated multi-owner global planner caller and production writer; the Agentd cognitive-context caller is request-local only.",
+    "Run exact-head and deterministic synthetic-merge qualification for the current candidate."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "sourceObservation": {
+    "commit": "46efcd4da12db4576fc19455b0d6a677acfa33bd",
+    "tree": "fb4e795157a47b8bb45742510a7247db9e70348f",
+    "scope": "control.runtime source commit before truth-surface refresh"
+  }
 }

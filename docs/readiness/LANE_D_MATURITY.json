@@ -190,25 +190,29 @@
           ]
         },
         "nativeApiMapping": {
-          "state": "candidate_complete",
+          "state": "candidate_complete_with_request_local_extensions",
           "evidence": [
-            "docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
+            "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+            "planner_ndu::evaluate_prepared_plan_with_ndu",
+            "planner_context::plan_observed_context"
           ]
         },
         "globalPlannerKernel": {
-          "state": "candidate_implemented",
+          "state": "candidate_implemented_hardened",
           "evidence": [
             "collect_snapshot",
             "prepare_plan",
+            "canonical_resource_profile_digest",
             "bind_ndu_plan_evaluation_v1",
             "finalize_plan",
             "request_execution_grants"
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "owner_local_reference_semantic_replay_implemented_not_production_writer",
           "evidence": [
-            "PlannerJournalV1"
+            "PlannerJournalV1",
+            "reopen_replays_semantic_transitions_not_only_hashes"
           ]
         },
         "effectAuthority": {
@@ -222,8 +226,11 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "request_local_established_global_not_established",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "plan_observed_context"
+          ]
         },
         "productionWriter": {
           "state": "not_established",
@@ -254,6 +261,26 @@
             "snapshotPolicyDigest",
             "evaluationPolicyDigest",
             "resourceProfileDigest"
+          ]
+        },
+        "monotonicPlannerClock": {
+          "state": "candidate_implemented_request_local_host",
+          "evidence": [
+            "cognitive_context::monotonic_micros",
+            "planner_clock_is_process_monotonic"
+          ]
+        },
+        "resourceProfileBinding": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "canonical_resource_profile_digest",
+            "resource_profile_digest_must_match_exact_reservations"
+          ]
+        },
+        "finalUseAuthorityBinding": {
+          "state": "contract_gap_principal_destination_scope_not_bound",
+          "evidence": [
+            "GrantRequestV1 remains authority-free and lacks FinalUseBinding destination/scope identity"
           ]
         }
       }
