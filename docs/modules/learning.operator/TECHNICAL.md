@@ -231,7 +231,7 @@ For `learning.operator`, this document grants no runtime, production, model, pro
 
 #### `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `learning-platform` / `qualification-plane`.
 - Allowed write paths:
 - `codex-rs/hepta-bellman-operator/**`
