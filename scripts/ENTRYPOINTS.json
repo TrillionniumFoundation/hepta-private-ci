@@ -188,6 +188,16 @@
       "status": "active"
     },
     {
+      "script": "scripts/hepta-ui-control-source-base.py",
+      "callers": [
+        ".github/workflows/hepta-ui-control.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
       "script": "scripts/test_hepta_ci_source_identity.py",
       "callers": [
         ".github/workflows/hepta-consolidated-source.yml"
