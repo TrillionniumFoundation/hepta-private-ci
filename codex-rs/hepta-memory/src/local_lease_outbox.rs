@@ -948,6 +948,28 @@ impl LocalLeaseOutbox {
         Ok(())
     }
 
+    /// Hot-path currentness check used after CognitiveStore::open has already
+    /// performed the complete lease/event/outbox/operation integrity audit.
+    /// The child journals are immutable by schema, so ordinary product
+    /// mutations only need to revalidate the live lease head and the exact
+    /// occurrence rows they consume. Full-chain verification remains on
+    /// open/reopen/recovery and terminal lifecycle paths.
+    pub(crate) async fn verify_current_hot_path(&self) -> Result<(), LocalLeaseOutboxError> {
+        let mut transaction = self
+            .store
+            .pool
+            .begin()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        ensure_current_active(&lease, self)?;
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(())
+    }
+
     /// Verify the active lease and both append-only local chains inside a
     /// caller-owned transaction.  Composite local writers use this helper to
     /// hold the SQLite write lock while coupling another journal mutation to
@@ -4499,6 +4521,58 @@ async fn outbox_head(
         Some(value) => Sha256Digest::parse(value).map_err(corrupt),
         None => Ok(Sha256Digest::for_bytes(GENESIS_OUTBOX_SHA256)),
     }
+}
+
+fn verify_occurrence_pair_incremental(
+    lease_id: &str,
+    expected_owner: &AgentId,
+    event: &EventRow,
+    outbox: &OutboxRow,
+) -> Result<(), LocalLeaseOutboxError> {
+    if event.owner_agent_id != *expected_owner
+        || outbox.owner_agent_id != *expected_owner
+        || event.event_id != outbox.event_id
+        || event.occurrence_key != outbox.occurrence_key
+        || event.generation != outbox.generation
+        || event.fencing_token != outbox.fencing_token
+        || event.payload_sha256 != outbox.payload_sha256
+        || Sha256Digest::for_bytes(event.payload_json.as_bytes()) != event.payload_sha256
+        || Sha256Digest::for_bytes(outbox.payload_json.as_bytes()) != outbox.payload_sha256
+    {
+        return Err(corrupt("incremental event/outbox semantic binding mismatch"));
+    }
+    let event_expected = event_digest(
+        lease_id,
+        event.sequence,
+        &event.event_id,
+        &event.occurrence_key,
+        &event.owner_agent_id,
+        event.generation,
+        &event.fencing_token,
+        &event.kind,
+        &event.payload_sha256,
+        &event.previous_sha256,
+    );
+    if event_expected != event.event_sha256 {
+        return Err(corrupt("incremental event digest mismatch"));
+    }
+    let outbox_expected = outbox_digest(
+        lease_id,
+        outbox.sequence,
+        &outbox.outbox_id,
+        &outbox.event_id,
+        &outbox.occurrence_key,
+        &outbox.owner_agent_id,
+        outbox.generation,
+        &outbox.fencing_token,
+        &outbox.topic,
+        &outbox.payload_sha256,
+        &outbox.previous_sha256,
+    );
+    if outbox_expected != outbox.outbox_sha256 {
+        return Err(corrupt("incremental outbox digest mismatch"));
+    }
+    Ok(())
 }
 
 fn queued_receipt(
