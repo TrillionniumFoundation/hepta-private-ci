@@ -138,7 +138,7 @@
       "dossier": "qualification/module-execution-dossiers/detail/learning.operator.md",
       "nativeMapping": "codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md",
       "implementationState": "source_implemented_ci_pending",
-      "compatibility": "legacy_train_alias_retained_raw_predictors_deprecated_pinned_load_required",
+      "compatibility": "legacy_train_and_raw_fit_predict_retained; qualification uses verified DatasetSnapshotReceiptV3 binding, signed evaluator admission, and independently pinned loads",
       "operations": [
         {
           "operation": "build_targets",
@@ -229,6 +229,36 @@
           "nativeSymbol": "codex_hepta_operator_acceptance::verify_receipt",
           "source": "codex-rs/hepta-operator-acceptance/src/lib.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "verify_operator_dataset_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::VerifiedOperatorDatasetV2::from_receipt",
+          "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "fit_tabular_operator_bound_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator_bound_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "fit_transition_model_bound_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model_bound_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "admit_signed_operator_applicability_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::admit_signed_operator_applicability_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "admit_signed_operator_regularity_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::admit_signed_operator_regularity_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
+          "status": "implemented"
         }
       ],
       "supplementalOperations": [
@@ -268,18 +298,40 @@
         "independent_pin_and_all_truncations_are_checked",
         "pinned_world_model_roundtrips_and_predicts_from_private_state",
         "payload_tampering_and_stale_pins_fail_closed",
-        "exact_replay_returns_same_receipt_and_conflicting_claim_fails"
+        "exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+        "op_06_signed_applicability_authenticates_exact_evaluator_and_payload",
+        "op_06_signed_regularity_rejects_role_or_identity_drift",
+        "op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows",
+        "op_07_bound_fit_rejects_detached_digest_or_row_set",
+        "op_07_bound_world_model_takes_dataset_identity_from_receipt"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
         "independent_mathematical_and_semantic_review",
         "target_host_runtime_device_and_resource_measurements",
         "real_future_calibration_retention_and_world_model_validation",
-        "independent_operator_acceptance_execution_product_selection_canary_promotion_and_release"
+        "independent_operator_acceptance_execution_product_selection_canary_promotion_and_release",
+        "authenticated signatures do not self-prove scientific validity or organizational independence"
       ],
       "sourceRoots": [
         "codex-rs/hepta-bellman-operator",
         "codex-rs/hepta-operator-acceptance"
+      ],
+      "productCallerState": "explicit_read_consumer_composed_default_learning_loop_not_wired",
+      "productionImplementation": false,
+      "productConsumers": [
+        {
+          "caller": "runtime.agentd::PinnedCognitiveRanker",
+          "source": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+          "state": "explicit_read_ranking_consumer",
+          "semantics": "loads a selected pinned tabular operator, revalidates current registry/revocation on each read, and can only reorder already-admitted cognitive records",
+          "notProved": [
+            "automatic training",
+            "independent selection",
+            "default App Server learning loop",
+            "longitudinal task benefit"
+          ]
+        }
       ]
     },
     {
