@@ -17,6 +17,10 @@ pub use evaluated_shadow::run_evaluated_shadow_v1;
 pub use neuron_runtime_port::NeuronConsumerDispositionV1;
 pub use neuron_runtime_port::NeuronConsumerErrorV1;
 pub use neuron_runtime_port::NeuronConsumerReceiptV1;
+pub use neuron_runtime_port::NeuronRuntimeProductPort;
+pub use neuron_runtime_port::NeuronTickInputV1;
+pub use neuron_runtime_port::OwnedNeuronRuntimePort;
+pub use neuron_runtime_port::RuntimeTickObservationV1;
 pub use neuron_runtime_port::consume_neuron_tick;
 
 mod capability_snapshot;
