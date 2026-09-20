@@ -132,7 +132,7 @@ impl From<WitnessError> for RuntimeError {
     }
 }
 
-pub struct NeuronRuntimeHost<E, W, L>
+pub struct LegacyNeuronRuntimeHost<E, W, L>
 where
     E: FrozenModelExecutor,
     W: RecoveryWitnessStore,
@@ -153,7 +153,7 @@ where
     poisoned: bool,
 }
 
-impl<E, W, L> NeuronRuntimeHost<E, W, L>
+impl<E, W, L> LegacyNeuronRuntimeHost<E, W, L>
 where
     E: FrozenModelExecutor,
     W: RecoveryWitnessStore,
