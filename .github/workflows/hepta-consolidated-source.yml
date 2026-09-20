@@ -281,6 +281,29 @@ jobs:
           for package in $PACKAGES; do args+=(-p "$package"); done
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/owner-test.json" -- just test --locked "${args[@]}"
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
+      - name: Qualify cognitive child-process crash and reopen
+        if: matrix.lane == 'source-head'
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null && \
+             git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- \
+               codex-rs/hepta-cognitive-store/ \
+               codex-rs/hepta-memory/ \
+               codex-rs/hepta-agentd/ \
+               codex-rs/state/; then
+            echo "No cognitive durable-owner changes; child crash/reopen probe skipped."
+            exit 0
+          fi
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/cognitive-child-crash-reopen.json" -- \
+            cargo test --locked -p codex-hepta-memory \
+              local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe \
+              -- --ignored --exact
+
       - name: Measure cognitive durable-store profile
         if: matrix.lane == 'source-head'
         working-directory: codex-rs
