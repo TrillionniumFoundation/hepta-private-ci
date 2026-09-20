@@ -296,6 +296,13 @@ impl SegmentedLedger {
         Ok(current_anchor(&self.core))
     }
 
+    /// Test a validated historical frontier without cloning payload history.
+    /// Poisoned writers must recover before even the empty frontier is trusted.
+    pub fn contains_anchor(&self, anchor: LedgerAnchor) -> Result<bool, DurableLedgerError> {
+        self.ready()?;
+        Ok(contains_record_anchor(self.core.records(), anchor))
+    }
+
     pub fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
         self.ready()?;
         Ok(self.core.snapshot())
@@ -349,6 +356,20 @@ pub fn inspect_ledger_segments(
         return Err(DurableLedgerError::UnwitnessedTail);
     }
     Ok(core.snapshot())
+}
+
+/// Exact sequence lookup for a validated contiguous history. Never truncate a
+/// u64 sequence on a narrower host or alias a missing frontier to another row.
+pub(crate) fn contains_record_anchor(records: &[LedgerRecord], anchor: LedgerAnchor) -> bool {
+    if anchor.sequence == 0 {
+        return anchor.chain_digest.is_zero();
+    }
+    let Ok(index) = usize::try_from(anchor.sequence - 1) else {
+        return false;
+    };
+    records.get(index).is_some_and(|record| {
+        record.sequence.get() == anchor.sequence && record.chain_digest == anchor.chain_digest
+    })
 }
 
 pub(crate) fn current_anchor(core: &LearningLedger) -> LedgerAnchor {

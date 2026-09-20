@@ -57,13 +57,9 @@ impl DurableLearningJournal for DurableLedger {
     }
 
     fn contains_anchor(&self, anchor: LedgerAnchor) -> Result<bool, DurableLedgerError> {
-        if anchor.sequence == 0 {
-            return Ok(anchor.chain_digest.is_zero());
-        }
+        // Validate handle health before accepting even the empty frontier.
         let records = self.records()?;
-        Ok(records
-            .get((anchor.sequence - 1) as usize)
-            .is_some_and(|record| record.chain_digest == anchor.chain_digest))
+        Ok(crate::segments::contains_record_anchor(records, anchor))
     }
 }
 
@@ -81,14 +77,7 @@ impl DurableLearningJournal for SegmentedLedger {
     }
 
     fn contains_anchor(&self, anchor: LedgerAnchor) -> Result<bool, DurableLedgerError> {
-        if anchor.sequence == 0 {
-            return Ok(anchor.chain_digest.is_zero());
-        }
-        let snapshot = SegmentedLedger::snapshot(self)?;
-        Ok(snapshot
-            .records()
-            .get((anchor.sequence - 1) as usize)
-            .is_some_and(|record| record.chain_digest == anchor.chain_digest))
+        SegmentedLedger::contains_anchor(self, anchor)
     }
 }
 
