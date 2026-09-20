@@ -358,6 +358,7 @@ pub use production_writer::ProductionAuthorityLease;
 pub use production_writer::ProductionAuthorityToken;
 pub use production_writer::ProductionAuthorityVerifier;
 pub use production_writer::ProductionCognitiveMutation;
+pub use production_writer::ProductionCognitiveMutationCapability;
 pub use production_writer::ProductionCognitiveMutationError;
 pub use production_writer::ProductionCognitiveMutationFuture;
 pub use production_writer::ProductionDispatchFuture;
