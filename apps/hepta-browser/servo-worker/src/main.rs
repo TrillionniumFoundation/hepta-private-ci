@@ -32,6 +32,8 @@ const EGRESS_RESPONSE_SCHEMA: &str = "hepta.browser.egress-response.v1";
 const MAX_EGRESS_REQUEST_FRAME_BYTES: usize = 262_144;
 const MAX_EGRESS_RESPONSE_FRAME_BYTES: usize = 12 * 1024 * 1024;
 const MAX_EGRESS_BODY_BYTES: usize = 8 * 1024 * 1024;
+const WORKER_TERMINAL_SCHEMA: &str = "hepta.browser.worker-terminal.v1";
+const MAX_WORKER_TERMINAL_LINE_BYTES: usize = 16 * 1024;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -88,6 +90,105 @@ struct EgressResponse {
     status_message: Vec<u8>,
     headers: HeaderMap,
     body: Vec<u8>,
+}
+
+
+struct TerminalReceiptWriter {
+    writer: BufWriter<File>,
+}
+
+impl TerminalReceiptWriter {
+    fn open() -> Result<Self, String> {
+        let writer = OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open("/proc/self/fd/5")
+            .map_err(|error| format!("terminal receipt fd unavailable: {error}"))?;
+        Ok(Self {
+            writer: BufWriter::new(writer),
+        })
+    }
+
+    fn persist(
+        &mut self,
+        frame: &Frame,
+        action: &str,
+        status: &str,
+        outcome_digest: &str,
+    ) -> Result<(), String> {
+        if !matches!(status, "succeeded" | "failed") || !is_digest(outcome_digest) {
+            return Err("terminal receipt status or outcome digest is invalid".to_string());
+        }
+        let operation_id = string_field(&frame.payload, "operationId")?;
+        let page_generation = frame
+            .payload
+            .get("pageGeneration")
+            .and_then(Value::as_u64)
+            .ok_or_else(|| "terminal receipt lacks pageGeneration".to_string())?;
+        let document_digest = match frame.payload.get("documentDigest") {
+            Some(Value::Null) => None,
+            Some(Value::String(value)) if is_digest(value) => Some(value.clone()),
+            _ => return Err("terminal receipt documentDigest is invalid".to_string()),
+        };
+        let final_payload_digest = string_field(&frame.payload, "finalPayloadDigest")?;
+        let effect_grant_digest = string_field(&frame.payload, "effectGrantDigest")?;
+        let authority_epoch = frame
+            .payload
+            .get("authorityEpoch")
+            .and_then(Value::as_u64)
+            .filter(|value| *value > 0)
+            .ok_or_else(|| "terminal receipt lacks authorityEpoch".to_string())?;
+        if !is_digest(final_payload_digest) || !is_digest(effect_grant_digest) {
+            return Err("terminal receipt effect digest is invalid".to_string());
+        }
+        let document_binding = document_digest.as_deref().unwrap_or("<none>");
+        let binding_digest = sha256_hex(
+            [
+                WORKER_TERMINAL_SCHEMA,
+                frame.session_id.as_str(),
+                frame.generation.to_string().as_str(),
+                operation_id,
+                page_generation.to_string().as_str(),
+                document_binding,
+                action,
+                final_payload_digest,
+                effect_grant_digest,
+                authority_epoch.to_string().as_str(),
+                status,
+                outcome_digest,
+            ]
+            .join("\0")
+            .as_bytes(),
+        );
+        let receipt = json!({
+            "schema": WORKER_TERMINAL_SCHEMA,
+            "version": 1,
+            "profileId": frame.session_id,
+            "generation": frame.generation,
+            "operationId": operation_id,
+            "pageGeneration": page_generation,
+            "documentDigest": document_digest,
+            "action": action,
+            "finalPayloadDigest": final_payload_digest,
+            "effectGrantDigest": effect_grant_digest,
+            "authorityEpoch": authority_epoch,
+            "status": status,
+            "outcomeDigest": outcome_digest,
+            "bindingDigest": binding_digest,
+        });
+        let line = format!("{}\n", canonical_json(&receipt));
+        if line.as_bytes().len() > MAX_WORKER_TERMINAL_LINE_BYTES {
+            return Err("terminal receipt line exceeds byte limit".to_string());
+        }
+        self.writer
+            .write_all(line.as_bytes())
+            .and_then(|_| self.writer.flush())
+            .map_err(|error| format!("terminal receipt write failed: {error}"))?;
+        self.writer
+            .get_ref()
+            .sync_data()
+            .map_err(|error| format!("terminal receipt fsync failed: {error}"))
+    }
 }
 
 impl EgressBrokerClient {
@@ -372,6 +473,7 @@ struct Browser {
     frame_ready: Arc<AtomicBool>,
     navigation_epoch: Arc<AtomicU64>,
     egress_authority: Arc<Mutex<Option<EgressAuthority>>>,
+    terminal_receipts: TerminalReceiptWriter,
     observed_navigation_epoch: Option<u64>,
     last_document_digest: Option<String>,
     last_action_surface_digest: Option<String>,
@@ -386,6 +488,7 @@ impl Browser {
         allowed_origins: HashSet<String>,
         waker: Waker,
         egress: Arc<Mutex<EgressBrokerClient>>,
+        terminal_receipts: TerminalReceiptWriter,
     ) -> Result<Self, String> {
         let context = Rc::new(
             SoftwareRenderingContext::new(PhysicalSize::new(1280, 720))
@@ -419,6 +522,7 @@ impl Browser {
             frame_ready,
             navigation_epoch,
             egress_authority,
+            terminal_receipts,
             observed_navigation_epoch: None,
             last_document_digest: None,
             last_action_surface_digest: None,
@@ -620,6 +724,10 @@ impl Browser {
                         .to_string(),
                 )
             });
+        if let Some((status, outcome_digest)) = terminal.as_ref() {
+            self.terminal_receipts
+                .persist(frame, kind, status, outcome_digest)?;
+        }
         let stored = self
             .operations
             .get_mut(operation_id)
@@ -801,6 +909,8 @@ impl Browser {
             .unwrap_or("unknown");
         if kind == "navigate" && self.webview.load_status() == LoadStatus::Complete {
             let outcome = self.outcome_digest("navigate");
+            self.terminal_receipts
+                .persist(frame, "navigate", "succeeded", &outcome)?;
             if let Some(stored) = self.operations.get_mut(operation_id) {
                 stored.terminal = Some(("succeeded".to_string(), outcome.clone()));
             }
@@ -851,6 +961,7 @@ fn run() -> Result<(), String> {
         .map_err(|error| format!("private channel thread failed: {error}"))?;
     let waker = Waker(sender);
     let egress = Arc::new(Mutex::new(EgressBrokerClient::open()?));
+    let mut terminal_receipts = Some(TerminalReceiptWriter::open()?);
     let mut output = io::stdout().lock();
     let mut browser: Option<Browser> = None;
     let mut session: Option<String> = None;
@@ -880,10 +991,14 @@ fn run() -> Result<(), String> {
                             Err("worker is already started".to_string())
                         } else {
                             let allowed = parse_allowed_origins(&frame.payload)?;
+                            let terminal_writer = terminal_receipts
+                                .take()
+                                .ok_or_else(|| "terminal receipt writer was already consumed".to_string())?;
                             browser = Some(Browser::new(
                                 allowed,
                                 waker.clone(),
                                 Arc::clone(&egress),
+                                terminal_writer,
                             )?);
                             session = Some(frame.session_id.clone());
                             generation = Some(frame.generation);
