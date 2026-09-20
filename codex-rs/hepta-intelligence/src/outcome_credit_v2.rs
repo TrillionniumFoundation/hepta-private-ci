@@ -151,20 +151,23 @@ fn validate_terminal_request(
             "missing decision/outcome predecessor",
         ));
     }
-    if request.outcome.outcome.watermark.terminality != OutcomeTerminalityV1::Terminal
-        || request.outcome.outcome.value.is_none()
-    {
+    if request.outcome.outcome.watermark.terminality != OutcomeTerminalityV1::Terminal {
         return Err(OutcomeCreditClosureErrorV2::Binding(
             "non-terminal outcome",
         ));
     }
+    let Some(terminal_value) = request.outcome.outcome.value else {
+        return Err(OutcomeCreditClosureErrorV2::Binding(
+            "non-terminal outcome",
+        ));
+    };
     if request.credit.episode_id != request.outcome.outcome.episode_id {
         return Err(OutcomeCreditClosureErrorV2::Binding("episode"));
     }
     if request.credit.outcome_id != request.outcome.outcome.outcome_id {
         return Err(OutcomeCreditClosureErrorV2::Binding("outcome"));
     }
-    if request.credit.terminal_outcome != request.outcome.outcome.value.expect("checked above") {
+    if request.credit.terminal_outcome != terminal_value {
         return Err(OutcomeCreditClosureErrorV2::Binding("terminal value"));
     }
     if !request.credit.finalized {
