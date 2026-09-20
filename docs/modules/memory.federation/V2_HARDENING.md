@@ -85,7 +85,7 @@ For each physical federated recall:
 7. rediscover the current owner capability after I/O;
 8. admit evidence only if the final live authority observation is current;
 9. aggregate explicit requested/completed/failed/truncated coverage;
-10. revalidate each attached memory again at physical model-request assembly under the same bounded product read horizon; timeout or owner unavailability drops the federated proposal fail-closed.
+10. batch-revalidate the prepared attachment at physical model-request assembly: bindings from the same owner/capability share one SQLite read snapshot, the whole batch shares one bounded product deadline, and different owners remain independent federation snapshots; timeout, stale generation, revocation or owner unavailability drops the federated proposal fail-closed.
 
 The product adapter is read-only. It does not enroll peers, mint capability grants, mutate remote memory, inherit owner credentials or retry unknown operations.
 
@@ -137,7 +137,7 @@ The focused V2 suite includes adversarial cases for:
 - wrong-workspace grants never entering queried coverage or transport dispatch;
 - revoked/stale terminal attempts contributing failed aggregate coverage;
 - combined local+federated model input preserving the federation coverage vector;
-- bounded fail-closed physical-send revalidation;
+- bounded fail-closed physical-send revalidation, including same-owner/capability batch coherence under one SQLite snapshot and one total final-use deadline;
 - legacy compatibility composition cannot downgrade an already-composed V2 product runtime;
 - cancellation receipts carrying no success assumption;
 - exact-scope owner memory frontier acquired from the same SQLite snapshot, including legitimate empty frontier zero.
