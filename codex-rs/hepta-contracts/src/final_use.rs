@@ -5,19 +5,29 @@ use std::collections::BTreeSet;
 use std::fmt;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
+use crate::AuthorityClock;
+use crate::AuthorityFrontierStore;
+use crate::AuthorityTrustError;
+use crate::SystemAuthorityClock;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 
 #[path = "final_use_store.rs"]
 mod store;
 
 const MAX_CLAIMS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
+const MAX_ISSUER_TRUST_KEYS: usize = 8;
+
+/// Source-visible markers consumed by the closed-world B4 caller proof.
+pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_CLAIM: &str = "claim_final_use";
+pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DELIVERY: &str = "deliver_final_use";
+pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH: &str = "dispatch_final_use";
 
 /// Exact operation identity signed by the authority owner. Digests must bind
 /// destination instance, resource, operation, payload and consumer identity.
@@ -76,14 +86,124 @@ pub struct SignedFinalUseGrant {
     pub signature: Vec<u8>,
 }
 
+/// One issuer key generation accepted only in its inclusive authority-epoch
+/// window. Key ids are configuration/audit identities and are not request
+/// authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FinalUseIssuerTrustKey {
+    pub key_id: String,
+    pub verifying_key: [u8; 32],
+    pub not_before_authority_epoch: u64,
+    pub not_after_authority_epoch: u64,
+}
+
+#[derive(Clone)]
+struct PinnedIssuerKey {
+    key_id: String,
+    key: VerifyingKey,
+    not_before_authority_epoch: u64,
+    not_after_authority_epoch: u64,
+}
+
+fn pin_issuer_keys(
+    mut keys: Vec<FinalUseIssuerTrustKey>,
+) -> Result<(Vec<PinnedIssuerKey>, [u8; 32]), FinalUseError> {
+    if keys.is_empty() || keys.len() > MAX_ISSUER_TRUST_KEYS {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    keys.sort_by(|left, right| left.key_id.cmp(&right.key_id));
+    let mut ids = BTreeSet::new();
+    let mut public_keys = BTreeSet::new();
+    let mut digest = Sha256::new();
+    digest.update(b"hepta.kernel.authority.final-use-issuer-trust.v1\0");
+    let mut pinned = Vec::with_capacity(keys.len());
+    for candidate in keys {
+        let key = VerifyingKey::from_bytes(&candidate.verifying_key)
+            .map_err(|_| FinalUseError::InvalidTrust)?;
+        if !identifier(&candidate.key_id)
+            || key.is_weak()
+            || candidate.not_before_authority_epoch == 0
+            || candidate.not_after_authority_epoch < candidate.not_before_authority_epoch
+            || !ids.insert(candidate.key_id.clone())
+            || !public_keys.insert(candidate.verifying_key)
+        {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        digest.update((candidate.key_id.len() as u64).to_le_bytes());
+        digest.update(candidate.key_id.as_bytes());
+        digest.update(candidate.verifying_key);
+        digest.update(candidate.not_before_authority_epoch.to_le_bytes());
+        digest.update(candidate.not_after_authority_epoch.to_le_bytes());
+        pinned.push(PinnedIssuerKey {
+            key_id: candidate.key_id,
+            key,
+            not_before_authority_epoch: candidate.not_before_authority_epoch,
+            not_after_authority_epoch: candidate.not_after_authority_epoch,
+        });
+    }
+    Ok((pinned, digest.finalize().into()))
+}
+
 /// Trusted host update. Increasing revision is mandatory; epoch changes fence
 /// every earlier grant. The authority persists the head and claimed nonces.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct FinalUseRevocations {
     pub authority_epoch: u64,
     pub revision: u64,
     pub revoked_grant_ids: BTreeSet<String>,
+}
+
+/// Externally durable anti-rollback frontier for one exact local authority
+/// state. The digest covers the complete revocation head and claimed nonce set.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FinalUseFrontier {
+    pub authority_epoch: u64,
+    pub revocation_revision: u64,
+    pub state_sha256: [u8; 32],
+}
+
+impl FinalUseFrontier {
+    pub fn for_initial_head(head: &FinalUseRevocations) -> Result<Self, FinalUseError> {
+        if !valid_head(head) {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        Ok(frontier_for_state(&State {
+            head: head.clone(),
+            used_nonces: BTreeSet::new(),
+            failed: false,
+        }))
+    }
+}
+
+/// Read-only capacity/frontier snapshot for host alerting and epoch rollover.
+/// This is observability only: it grants no authority and does not mutate state.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FinalUseCapacity {
+    pub authority_epoch: u64,
+    pub revision: u64,
+    pub used_nonces: usize,
+    pub revoked_grants: usize,
+    pub max_claims: usize,
+    pub max_revocations: usize,
+}
+
+impl FinalUseCapacity {
+    pub fn remaining_claims(self) -> usize {
+        self.max_claims.saturating_sub(self.used_nonces)
+    }
+
+    pub fn remaining_revocations(self) -> usize {
+        self.max_revocations.saturating_sub(self.revoked_grants)
+    }
+
+    /// Hosts can reserve a bounded safety margin before requesting a signed
+    /// epoch-transition head. The caller chooses the reserve according to its
+    /// deployment/fanout SLA; this method itself is not rollover authority.
+    pub fn rollover_required_with_reserve(self, reserve: usize) -> bool {
+        self.remaining_claims() <= reserve || self.remaining_revocations() <= reserve
+    }
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -97,9 +217,11 @@ struct State {
 
 struct Inner {
     signer_id: String,
-    key: VerifyingKey,
+    issuer_keys: Vec<PinnedIssuerKey>,
     state: Mutex<State>,
     store: store::Store,
+    clock: Arc<dyn AuthorityClock>,
+    frontier_store: Option<Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>>,
 }
 
 /// Host-configured authority owner. Clone shares the same revocation and
@@ -127,24 +249,171 @@ impl fmt::Debug for VerifiedUseToken {
 }
 
 impl FinalUseAuthority {
+    /// Compatibility constructor using the process system clock and no
+    /// external rollback oracle. Product compositions must prefer
+    /// open_state_dir_with_trust.
     pub fn open_state_dir(
         directory: &std::path::Path,
         signer_id: String,
         verifying_key: [u8; 32],
         head: FinalUseRevocations,
     ) -> Result<Self, FinalUseError> {
+        Self::open_state_dir_with_clock(
+            directory,
+            signer_id,
+            verifying_key,
+            head,
+            Arc::new(SystemAuthorityClock),
+        )
+    }
+
+    /// Clock-injected constructor for qualification and hosts that have an
+    /// independently protected time source but no external rollback oracle.
+    pub fn open_state_dir_with_clock(
+        directory: &std::path::Path,
+        signer_id: String,
+        verifying_key: [u8; 32],
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+    ) -> Result<Self, FinalUseError> {
         let key =
             VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
         if !identifier(&signer_id) || key.is_weak() || !valid_head(&head) {
             return Err(FinalUseError::InvalidTrust);
         }
+        clock.now_unix_ms().map_err(map_trust_error)?;
         let (store, state) = store::Store::open(directory, &signer_id, verifying_key, head)?;
         Ok(Self(Arc::new(Inner {
             signer_id,
-            key,
+            issuer_keys: vec![PinnedIssuerKey {
+                key_id: "single-key".into(),
+                key,
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: u64::MAX,
+            }],
             state: Mutex::new(state),
             store,
+            clock,
+            frontier_store: None,
         })))
+    }
+
+    /// Production constructor: trusted time plus an externally durable CAS
+    /// frontier. The external frontier must exactly match local state on open.
+    /// Every mutation advances it before the corresponding local fsync/rename.
+    pub fn open_state_dir_with_trust(
+        directory: &std::path::Path,
+        signer_id: String,
+        verifying_key: [u8; 32],
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+    ) -> Result<Self, FinalUseError> {
+        let key =
+            VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
+        if !identifier(&signer_id) || key.is_weak() || !valid_head(&head) {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        clock.now_unix_ms().map_err(map_trust_error)?;
+        let (store, state) = store::Store::open_exact(directory, &signer_id, verifying_key, head)?;
+        let observed = frontier_for_state(&state);
+        let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
+        if trusted != observed {
+            return Err(FinalUseError::AntiRollbackViolation);
+        }
+        Ok(Self(Arc::new(Inner {
+            signer_id,
+            issuer_keys: vec![PinnedIssuerKey {
+                key_id: "single-key".into(),
+                key,
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: u64::MAX,
+            }],
+            state: Mutex::new(state),
+            store,
+            clock,
+            frontier_store: Some(frontier_store),
+        })))
+    }
+
+    /// Production constructor with a bounded issuer key ring. The complete
+    /// trust-set digest is pinned in durable store schema V2. V1 single-key
+    /// state is not silently migrated into this trust model.
+    pub fn open_state_dir_with_issuer_keys(
+        directory: &std::path::Path,
+        signer_id: String,
+        issuer_keys: Vec<FinalUseIssuerTrustKey>,
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+    ) -> Result<Self, FinalUseError> {
+        if !identifier(&signer_id) || !valid_head(&head) {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        clock.now_unix_ms().map_err(map_trust_error)?;
+        let (issuer_keys, issuer_trust_sha256) = pin_issuer_keys(issuer_keys)?;
+        let (store, state) = store::Store::open_key_ring_exact(
+            directory,
+            &signer_id,
+            issuer_trust_sha256,
+            head,
+        )?;
+        let observed = frontier_for_state(&state);
+        let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
+        if trusted != observed {
+            return Err(FinalUseError::AntiRollbackViolation);
+        }
+        Ok(Self(Arc::new(Inner {
+            signer_id,
+            issuer_keys,
+            state: Mutex::new(state),
+            store,
+            clock,
+            frontier_store: Some(frontier_store),
+        })))
+    }
+
+    pub fn issuer_key_ids(&self) -> Vec<&str> {
+        self.0
+            .issuer_keys
+            .iter()
+            .map(|candidate| candidate.key_id.as_str())
+            .collect()
+    }
+
+    pub fn frontier(&self) -> Result<FinalUseFrontier, FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(frontier_for_state(&state))
+    }
+
+    /// Return a coherent read-only snapshot that lets the trusted host alert
+    /// before either bounded registry reaches fail-closed capacity. An epoch
+    /// transition is still accepted only through `update_revocations` (or the
+    /// independently authenticated revocation-feed wrapper).
+    pub fn capacity(&self) -> Result<FinalUseCapacity, FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(FinalUseCapacity {
+            authority_epoch: state.head.authority_epoch,
+            revision: state.head.revision,
+            used_nonces: state.used_nonces.len(),
+            revoked_grants: state.head.revoked_grant_ids.len(),
+            max_claims: MAX_CLAIMS,
+            max_revocations: MAX_CLAIMS,
+        })
     }
 
     /// Called only by the trusted host, not from a provider response or grant.
@@ -173,12 +442,7 @@ impl FinalUseAuthority {
             next.used_nonces.clear();
         }
         next.head = head;
-        if self.0.store.persist(&next).is_err() {
-            state.failed = true;
-            return Err(FinalUseError::Unavailable);
-        }
-        *state = next;
-        Ok(())
+        self.persist_or_fence(&mut state, next)
     }
 
     /// Atomically validate and claim one nonce immediately before dispatch.
@@ -195,10 +459,14 @@ impl FinalUseAuthority {
         }
         let signature = Signature::from_slice(&signed.signature)
             .map_err(|_| FinalUseError::InvalidSignature)?;
-        self.0
-            .key
-            .verify_strict(&input, &signature)
-            .map_err(|_| FinalUseError::InvalidSignature)?;
+        let verified = self.0.issuer_keys.iter().any(|candidate| {
+            signed.grant.authority_epoch >= candidate.not_before_authority_epoch
+                && signed.grant.authority_epoch <= candidate.not_after_authority_epoch
+                && candidate.key.verify_strict(&input, &signature).is_ok()
+        });
+        if !verified {
+            return Err(FinalUseError::InvalidSignature);
+        }
         let mut state = self
             .0
             .state
@@ -207,35 +475,54 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        validate_live(&signed.grant, &state.head)?;
+        let now_unix_ms = self.now_unix_ms()?;
+        validate_live(&signed.grant, &state.head, now_unix_ms)?;
         if state.used_nonces.contains(&signed.grant.nonce) {
             return Err(FinalUseError::AlreadyClaimed);
         }
         if state.used_nonces.len() >= MAX_CLAIMS {
             return Err(FinalUseError::CapacityExceeded);
         }
-        state.used_nonces.insert(signed.grant.nonce);
-        if self.0.store.persist(&state).is_err() {
-            state.failed = true;
-            return Err(FinalUseError::Unavailable);
-        }
+        let mut next = state.clone();
+        next.used_nonces.insert(signed.grant.nonce);
+        self.persist_or_fence(&mut state, next)?;
         // Persistence can outlast a short grant. Never admit a dispatch using
         // the time sampled before that I/O; its nonce stays consumed on expiry.
-        validate_live(&signed.grant, &state.head)?;
+        validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
         Ok(VerifiedUseToken {
             owner: Arc::clone(&self.0),
             grant: signed.grant.clone(),
         })
     }
 
-    /// Revalidate live authority after asynchronous work and before releasing a
-    /// secret to its consumer. The consumer runs under the revocation fence, so
-    /// a successful revocation update cannot race between check and delivery.
+    /// Revalidate live authority after asynchronous work and linearize final
+    /// consumer entry. The mutex is released before running user code: a slow,
+    /// panicking or re-entrant callback cannot block future revocation updates.
+    /// A revocation that commits after this validation is ordered after entry
+    /// and cannot retroactively cancel an already-entered synchronous effect.
     pub fn with_verified_use<T>(
         &self,
         token: VerifiedUseToken,
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
+    ) -> Result<T, FinalUseError> {
+        self.validate_token_live(&token, expected)?;
+        Ok(consumer())
+    }
+
+    /// Revalidate live authority and hold the revocation linearization fence
+    /// only while the caller crosses its local irreversible dispatch boundary.
+    ///
+    /// The callback must synchronously publish durable intent and/or cross the
+    /// already-selected local adapter/worker boundary, then return immediately.
+    /// It must not wait for remote execution, provider terminality,
+    /// reconciliation, or arbitrary user code. Revocation updates that start
+    /// after this validation are ordered after the local dispatch boundary.
+    pub fn with_dispatch_boundary<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        dispatch_boundary: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
@@ -248,11 +535,92 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        validate_live(&token.grant, &state.head)?;
-        let result = consumer();
+        validate_live(&token.grant, &state.head, self.now_unix_ms()?)?;
+        let result = dispatch_boundary();
         drop(state);
         Ok(result)
     }
+
+    fn validate_token_live(
+        &self,
+        token: &VerifiedUseToken,
+        expected: &FinalUseBinding,
+    ) -> Result<(), FinalUseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&token.grant, &state.head, self.now_unix_ms()?)
+    }
+
+    fn now_unix_ms(&self) -> Result<u64, FinalUseError> {
+        self.0.clock.now_unix_ms().map_err(map_trust_error)
+    }
+
+    fn persist_or_fence(
+        &self,
+        state: &mut std::sync::MutexGuard<'_, State>,
+        next: State,
+    ) -> Result<(), FinalUseError> {
+        if let Some(frontier_store) = &self.0.frontier_store {
+            let expected = frontier_for_state(state);
+            let advanced = frontier_for_state(&next);
+            if let Err(error) =
+                frontier_store.compare_and_set(&self.0.signer_id, &expected, &advanced)
+            {
+                state.failed = true;
+                return Err(map_trust_error(error));
+            }
+        }
+        if self.0.store.persist(&next).is_err() {
+            state.failed = true;
+            return Err(FinalUseError::Unavailable);
+        }
+        **state = next;
+        Ok(())
+    }
+}
+
+/// Closed-world B4 entrypoint for signed final-use admission. Product adapters
+/// call this free function rather than inventing alternate admission paths.
+pub fn claim_final_use(
+    authority: &FinalUseAuthority,
+    signed: &SignedFinalUseGrant,
+    expected: &FinalUseBinding,
+) -> Result<VerifiedUseToken, FinalUseError> {
+    let _boundary = HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_CLAIM;
+    authority.claim(signed, expected)
+}
+
+/// Closed-world B4 entrypoint for the final synchronous effect boundary.
+pub fn deliver_final_use<T>(
+    authority: &FinalUseAuthority,
+    token: VerifiedUseToken,
+    expected: &FinalUseBinding,
+    consumer: impl FnOnce() -> T,
+) -> Result<T, FinalUseError> {
+    let _boundary = HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DELIVERY;
+    authority.with_verified_use(token, expected, consumer)
+}
+
+/// Closed-world B4 entrypoint for a bounded local irreversible dispatch fence.
+/// Unlike deliver_final_use, this keeps the authority mutex across only the
+/// short local boundary supplied by the caller.
+pub fn dispatch_final_use<T>(
+    authority: &FinalUseAuthority,
+    token: VerifiedUseToken,
+    expected: &FinalUseBinding,
+    dispatch_boundary: impl FnOnce() -> T,
+) -> Result<T, FinalUseError> {
+    let _boundary = HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH;
+    authority.with_dispatch_boundary(token, expected, dispatch_boundary)
 }
 
 fn valid_head(head: &FinalUseRevocations) -> bool {
@@ -270,30 +638,60 @@ fn identifier(value: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b"_-.:/".contains(&b))
 }
 
-fn validate_live(grant: &FinalUseGrant, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
+fn validate_live(
+    grant: &FinalUseGrant,
+    head: &FinalUseRevocations,
+    now_unix_ms: u64,
+) -> Result<(), FinalUseError> {
     if grant.authority_epoch != head.authority_epoch {
         return Err(FinalUseError::EpochMismatch);
     }
     if head.revoked_grant_ids.contains(&grant.grant_id) {
         return Err(FinalUseError::Revoked);
     }
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|_| FinalUseError::Unavailable)?
-        .as_millis();
-    if now < u128::from(grant.not_before_unix_ms) {
+    if now_unix_ms < grant.not_before_unix_ms {
         return Err(FinalUseError::NotYetValid);
     }
-    if now >= u128::from(grant.expires_at_unix_ms) {
+    if now_unix_ms >= grant.expires_at_unix_ms {
         return Err(FinalUseError::Expired);
     }
     Ok(())
+}
+
+fn frontier_for_state(state: &State) -> FinalUseFrontier {
+    let mut hash = Sha256::new();
+    hash.update(b"hepta.kernel.authority.final-use-frontier.v1\0");
+    hash.update(state.head.authority_epoch.to_le_bytes());
+    hash.update(state.head.revision.to_le_bytes());
+    hash.update((state.head.revoked_grant_ids.len() as u64).to_le_bytes());
+    for grant_id in &state.head.revoked_grant_ids {
+        hash.update((grant_id.len() as u64).to_le_bytes());
+        hash.update(grant_id.as_bytes());
+    }
+    hash.update((state.used_nonces.len() as u64).to_le_bytes());
+    for nonce in &state.used_nonces {
+        hash.update(nonce);
+    }
+    FinalUseFrontier {
+        authority_epoch: state.head.authority_epoch,
+        revocation_revision: state.head.revision,
+        state_sha256: hash.finalize().into(),
+    }
+}
+
+fn map_trust_error(error: AuthorityTrustError) -> FinalUseError {
+    match error {
+        AuthorityTrustError::Invalid => FinalUseError::InvalidTrust,
+        AuthorityTrustError::Conflict => FinalUseError::AntiRollbackViolation,
+        AuthorityTrustError::Unavailable => FinalUseError::Unavailable,
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FinalUseError {
     InvalidGrant,
     InvalidTrust,
+    AntiRollbackViolation,
     InvalidSignature,
     BindingMismatch,
     EpochMismatch,
