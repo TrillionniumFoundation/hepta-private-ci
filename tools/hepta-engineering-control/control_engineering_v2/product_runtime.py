@@ -16,6 +16,7 @@ from .evidence import SignatureTrustStore
 from .integration_controller import (
     IntegrationQueueGeneration,
     IntegrationQueueItem,
+    IntegrationTerminalReceipt,
     integration_queue_item,
     publish_integration_queue,
     reconcile_integration_item,
@@ -242,6 +243,7 @@ class EngineeringControlProduct:
         review_digest: str | None = None,
         ci_digest: str | None = None,
         terminal_outcome: str | None = None,
+        terminal_receipt: IntegrationTerminalReceipt | None = None,
         now_ns: int | None = None,
     ) -> IntegrationQueueItem:
         return reconcile_integration_item(
@@ -254,6 +256,8 @@ class EngineeringControlProduct:
             review_digest=review_digest,
             ci_digest=ci_digest,
             terminal_outcome=terminal_outcome,
+            terminal_receipt=terminal_receipt,
+            trust_store=self.trust_store,
             now_ns=now_ns,
         )
 
