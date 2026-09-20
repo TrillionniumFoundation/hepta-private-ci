@@ -287,10 +287,8 @@ impl OrganHostV1 {
 
         let mut handlers_by_id = BTreeMap::new();
         for handler in handlers {
-            let id = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                handler.id().clone()
-            }))
-            .map_err(|_| OrganRuntimeError::HandlerIdentityPanicked)?;
+            let id = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| handler.id().clone()))
+                .map_err(|_| OrganRuntimeError::HandlerIdentityPanicked)?;
             if handlers_by_id.insert(id.clone(), handler).is_some() {
                 return Err(OrganRuntimeError::DuplicateHandler { organ: id });
             }
@@ -457,13 +455,8 @@ impl OrganHostV1 {
         mut candidate: Self,
     ) -> Result<(), OrganRuntimeError> {
         candidate.start_all()?;
-        let predecessor_faults = self.stop_indices(
-            self.validated
-                .initialization_order
-                .clone()
-                .into_iter()
-                .rev(),
-        );
+        let predecessor_faults =
+            self.stop_indices(self.validated.initialization_order.clone().into_iter().rev());
         if !predecessor_faults.is_empty() {
             let candidate_cleanup_faults = candidate.stop_indices(
                 candidate
@@ -534,9 +527,9 @@ impl OrganHostV1 {
                 rollback_error,
             });
         }
-        if let Err(error) = call_migration(|| {
-            migration.migrate(&snapshot, expected, candidate.generation())
-        }) {
+        if let Err(error) =
+            call_migration(|| migration.migrate(&snapshot, expected, candidate.generation()))
+        {
             let candidate_cleanup_faults = candidate.stop_indices(
                 candidate
                     .validated
@@ -558,13 +551,8 @@ impl OrganHostV1 {
                 candidate_cleanup_faults,
             });
         }
-        let predecessor_faults = self.stop_indices(
-            self.validated
-                .initialization_order
-                .clone()
-                .into_iter()
-                .rev(),
-        );
+        let predecessor_faults =
+            self.stop_indices(self.validated.initialization_order.clone().into_iter().rev());
         if !predecessor_faults.is_empty() {
             let candidate_cleanup_faults = candidate.stop_indices(
                 candidate

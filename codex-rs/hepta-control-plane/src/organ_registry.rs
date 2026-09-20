@@ -208,10 +208,9 @@ impl OrganHandlerRegistryV1 {
                 driver: binding.driver.clone(),
                 fault,
             })?;
-            let actual = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                handler.id().clone()
-            }))
-            .map_err(|_| OrganRuntimeError::HandlerIdentityPanicked)?;
+            let actual =
+                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| handler.id().clone()))
+                    .map_err(|_| OrganRuntimeError::HandlerIdentityPanicked)?;
             if actual != organ.id {
                 return Err(OrganHandlerRegistryError::HandlerIdentityMismatch {
                     expected: organ.id.clone(),
