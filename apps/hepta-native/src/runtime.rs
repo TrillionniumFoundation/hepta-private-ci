@@ -199,9 +199,7 @@ impl NativeShellRuntime {
         };
         self.journal.upsert(invoking.clone())?;
 
-        match final_use.with_platform_use(permit, || {
-            self.platform.invoke(&key, &request.payload)
-        }) {
+        match final_use.with_platform_use(permit, || self.platform.invoke(&key, &request.payload)) {
             Ok(Ok(observation)) => self.finish_observation(invoking, observation),
             Ok(Err(_error)) => {
                 let indeterminate = OperationRecord {
