@@ -154,18 +154,21 @@ jobs:
 
   source-snapshot:
     name: Export exact source for offline reproduction
-    if: github.event_name == 'workflow_dispatch' && inputs.source_snapshot
+    # Temporary candidate-only diagnostic; remove this PR condition after reproduction.
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.source_snapshot) ||
+      (github.event_name == 'pull_request' && github.event.pull_request.number == 774)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
       - name: Bundle only committed Git objects, never runner files or credentials
         env:
-          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -180,7 +183,7 @@ jobs:
       - name: Retain reproduction input separately from test receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-source-snapshot-${{ github.sha }}-${{ github.run_id }}
+          name: hepta-source-snapshot-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
           path: ${{ runner.temp }}/hepta-source-snapshot/
           if-no-files-found: error
           compression-level: 0
