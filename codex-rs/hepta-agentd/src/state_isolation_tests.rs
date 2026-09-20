@@ -130,6 +130,16 @@ fn digest(byte: char) -> String {
     byte.to_string().repeat(64)
 }
 
+fn run_fence(state: &AgentdState, current_generation: u64) -> String {
+    let mut material = b"hepta:agentd:objective-fence:v1\0".to_vec();
+    material.extend_from_slice(state.identity.agent_id.as_str().as_bytes());
+    material.extend_from_slice(&state.identity.spawn_generation.to_be_bytes());
+    material.extend_from_slice(&current_generation.to_be_bytes());
+    codex_hepta_contracts::Sha256Digest::for_bytes(&material)
+        .as_str()
+        .to_string()
+}
+
 #[tokio::test]
 async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
@@ -158,8 +168,42 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
         body_digest: digest('3'),
         artifact_set_digest: digest('4'),
         authority_epoch: 7,
+        generation: 2,
+        fence_digest: run_fence(&state, 2),
         deadline_ms: u64::MAX - 1,
     };
+    let mut stale_generation = snapshot.clone();
+    stale_generation.run_id = "run.control.stale-generation".to_string();
+    stale_generation.generation = 1;
+    assert!(
+        state
+            .response(
+                11,
+                1,
+                crate::AgentdMethod::RunStart {
+                    snapshot: stale_generation,
+                },
+            )
+            .await
+            .is_err()
+    );
+
+    let mut stale_fence = snapshot.clone();
+    stale_fence.run_id = "run.control.stale-fence".to_string();
+    stale_fence.fence_digest = digest('f');
+    assert!(
+        state
+            .response(
+                11,
+                1,
+                crate::AgentdMethod::RunStart {
+                    snapshot: stale_fence,
+                },
+            )
+            .await
+            .is_err()
+    );
+
     let started = state
         .response(
             11,
@@ -189,6 +233,8 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
                     body_digest: snapshot.body_digest.clone(),
                     artifact_set_digest: snapshot.artifact_set_digest.clone(),
                     authority_epoch: snapshot.authority_epoch,
+                    generation: snapshot.generation,
+                    fence_digest: snapshot.fence_digest.clone(),
                     deadline_ms: snapshot.deadline_ms,
                     context_digest: digest('5'),
                     compilation_receipt_digest: digest('6'),
