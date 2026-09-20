@@ -109,10 +109,17 @@ impl AutomationStore {
         proof_digest: &Sha256Digest,
         observed_at_ms: u64,
     ) -> Result<(), AutomationError> {
-        let current = self
-            .automation_occurrence(task_id, occurrence)
-            .await?
-            .ok_or(AutomationError::Conflict)?;
+        let Some(current) = self.automation_occurrence(task_id, occurrence).await? else {
+            return self
+                .reconcile_legacy_uncertain_occurrence_absent(
+                    task_id,
+                    occurrence,
+                    client_user_message_id,
+                    proof_digest,
+                    observed_at_ms,
+                )
+                .await;
+        };
         if current.client_user_message_id != client_user_message_id {
             return Err(AutomationError::Conflict);
         }
@@ -180,6 +187,152 @@ impl AutomationStore {
         // replayable without resurrecting the retired task or occurrence.
         self.release_uncertain_for_retry(task_id, occurrence, client_user_message_id)
             .await
+    }
+
+    /// Resolve a pre-v14 dispatch-unknown row that never reached occurrence
+    /// materialization. The historical schedule revision is unknowable and is
+    /// never guessed. Only an exact provider-proven absence may retire this
+    /// unqualified run. The proof is retained append-only, the old run is
+    /// cancelled, and any later scheduler claim receives a new occurrence
+    /// number under the then-current frozen schedule revision.
+    async fn reconcile_legacy_uncertain_occurrence_absent(
+        &self,
+        task_id: AutomationTaskId,
+        occurrence: u64,
+        client_user_message_id: &str,
+        proof_digest: &Sha256Digest,
+        observed_at_ms: u64,
+    ) -> Result<(), AutomationError> {
+        const ZERO_DIGEST: &str =
+            "0000000000000000000000000000000000000000000000000000000000000000";
+        if proof_digest.as_str() == ZERO_DIGEST {
+            return Err(AutomationError::Invalid);
+        }
+
+        let mut tx = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let existing = sqlx::query(
+            "SELECT client_user_message_id, proof_digest
+             FROM automation_legacy_dispatch_reconciliations
+             WHERE task_id = ? AND occurrence = ?",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if let Some(existing) = existing {
+            let stored_client: String = existing
+                .try_get("client_user_message_id")
+                .map_err(|_| AutomationError::Corrupt)?;
+            let stored_proof: String = existing
+                .try_get("proof_digest")
+                .map_err(|_| AutomationError::Corrupt)?;
+            if stored_client != client_user_message_id || stored_proof != proof_digest.as_str() {
+                return Err(AutomationError::Conflict);
+            }
+            let state: Option<String> = sqlx::query_scalar(
+                "SELECT state FROM automation_runs
+                 WHERE task_id = ? AND occurrence = ?",
+            )
+            .bind(task_id.to_string())
+            .bind(to_i64(occurrence)?)
+            .fetch_optional(&mut *tx)
+            .await
+            .map_err(unavailable)?;
+            let dispatch_count: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM automation_dispatch_outcomes
+                 WHERE task_id = ? AND occurrence = ?",
+            )
+            .bind(task_id.to_string())
+            .bind(to_i64(occurrence)?)
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(unavailable)?;
+            if state.as_deref() != Some("cancelled") || dispatch_count != 0 {
+                return Err(AutomationError::Corrupt);
+            }
+            tx.commit().await.map_err(unavailable)?;
+            return Ok(());
+        }
+
+        let row = sqlx::query(
+            "SELECT r.client_user_message_id
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             JOIN automation_dispatch_outcomes d
+               ON d.task_id = r.task_id AND d.occurrence = r.occurrence
+             WHERE r.task_id = ? AND r.occurrence = ?
+               AND t.owner_agent_id = ?
+               AND r.schedule_revision IS NULL
+               AND r.state = 'leased'
+               AND d.outcome = 'uncertain'
+               AND NOT EXISTS (
+                   SELECT 1 FROM automation_occurrence_lifecycle o
+                   WHERE o.task_id = r.task_id AND o.occurrence = r.occurrence
+               )",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(unavailable)?
+        .ok_or(AutomationError::Conflict)?;
+        let stored_client: String = row
+            .try_get("client_user_message_id")
+            .map_err(|_| AutomationError::Corrupt)?;
+        if stored_client != client_user_message_id {
+            return Err(AutomationError::Conflict);
+        }
+
+        sqlx::query(
+            "INSERT INTO automation_legacy_dispatch_reconciliations (
+                task_id, occurrence, client_user_message_id, proof_digest, observed_at_ms
+             ) VALUES (?, ?, ?, ?, ?)",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(client_user_message_id)
+        .bind(proof_digest.as_str())
+        .bind(to_i64(observed_at_ms)?)
+        .execute(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+
+        let updated = sqlx::query(
+            "UPDATE automation_runs
+             SET state = 'cancelled', lease_generation = NULL, lease_token = NULL,
+                 lease_expires_at_ms = NULL
+             WHERE task_id = ? AND occurrence = ?
+               AND state = 'leased' AND schedule_revision IS NULL
+               AND client_user_message_id = ?",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(client_user_message_id)
+        .execute(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if updated.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
+
+        let deleted = sqlx::query(
+            "DELETE FROM automation_dispatch_outcomes
+             WHERE task_id = ? AND occurrence = ?
+               AND outcome = 'uncertain' AND client_user_message_id = ?",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(client_user_message_id)
+        .execute(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if deleted.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
+
+        tx.commit().await.map_err(unavailable)
     }
 }
 
