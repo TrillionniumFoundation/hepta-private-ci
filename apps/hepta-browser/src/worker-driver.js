@@ -23,6 +23,9 @@ const MAX_WORKER_ARTIFACT_BYTES = 512 * 1024 * 1024;
 const MAX_BWRAP_ARTIFACT_BYTES = 64 * 1024 * 1024;
 const MAX_PRLIMIT_ARTIFACT_BYTES = 16 * 1024 * 1024;
 const MAX_ABANDONED_RESPONSES = 1024;
+const WORKER_TERMINAL_SCHEMA = "hepta.browser.worker-terminal.v1";
+const MAX_WORKER_TERMINAL_BYTES = 8 * 1024 * 1024;
+const MAX_WORKER_TERMINAL_LINE_BYTES = 16 * 1024;
 const DEFAULT_MAX_ADDRESS_SPACE_BYTES = 8 * 1024 * 1024 * 1024;
 const DEFAULT_MAX_CPU_SECONDS = 300;
 const DEFAULT_MAX_OPEN_FILES = 4096;
@@ -65,6 +68,31 @@ function requestId(kind, semanticId) {
     .update(`${kind}\u0000${semanticId}`)
     .digest("hex");
   return `browser.${kind}.${digest.slice(0, 32)}`;
+}
+
+function terminalReceiptPath(profileRoot, profileId, generation) {
+  stableId(profileId, "profileId");
+  positiveInteger(generation, "generation");
+  return join(profileRoot, `.hepta-worker-terminal.${profileId}.${generation}.jsonl`);
+}
+
+function terminalReceiptBindingDigest(value) {
+  const documentDigest =
+    value.documentDigest === null ? "<none>" : expectedDigest(value.documentDigest, "documentDigest");
+  return sha256(Buffer.from([
+    WORKER_TERMINAL_SCHEMA,
+    stableId(value.profileId, "profileId"),
+    String(positiveInteger(value.generation, "generation")),
+    stableId(value.operationId, "operationId"),
+    String(value.pageGeneration),
+    documentDigest,
+    stableId(value.action, "action"),
+    expectedDigest(value.finalPayloadDigest, "finalPayloadDigest"),
+    expectedDigest(value.effectGrantDigest, "effectGrantDigest"),
+    String(positiveInteger(value.authorityEpoch, "authorityEpoch")),
+    value.status,
+    expectedDigest(value.outcomeDigest, "outcomeDigest"),
+  ].join("\u0000"), "utf8"));
 }
 
 async function ensurePrivateProfileRoot(path) {
@@ -279,10 +307,13 @@ export class LinuxBubblewrapLauncher {
     });
   }
 
-  spawn({ workerPath, profileDir }) {
+  spawn({ workerPath, profileDir, terminalReceiptFd }) {
+    if (!Number.isSafeInteger(terminalReceiptFd) || terminalReceiptFd < 0) {
+      throw new TypeError("terminalReceiptFd must be an inherited file descriptor");
+    }
     const spec = this.spawnSpec({ workerPath, profileDir });
     return spawn(spec.command, [...spec.args], {
-      stdio: ["pipe", "pipe", "pipe", "pipe", "pipe"],
+      stdio: ["pipe", "pipe", "pipe", "pipe", "pipe", terminalReceiptFd],
       env: {},
       shell: false,
       windowsHide: true,
@@ -602,6 +633,8 @@ export class SubprocessBrowserDriver {
   #profileDir = null;
   #profileOwnerPath = null;
   #verifiedWorkerPath = null;
+  #terminalReceiptPath = null;
+  #terminalReceiptHandle = null;
   #sessionId = null;
   #generation = null;
   #processId = null;
@@ -698,12 +731,30 @@ export class SubprocessBrowserDriver {
         `.hepta-verified-worker.${profileId}.${generation}.${randomUUID()}`,
       );
       await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
+      this.#terminalReceiptPath = terminalReceiptPath(
+        this.#profileRoot,
+        profileId,
+        generation,
+      );
+      const noFollow = constants.O_NOFOLLOW ?? 0;
+      this.#terminalReceiptHandle = await open(
+        this.#terminalReceiptPath,
+        constants.O_WRONLY |
+          constants.O_APPEND |
+          constants.O_CREAT |
+          constants.O_EXCL |
+          noFollow,
+        0o600,
+      );
       this.#sessionId = profileId;
       this.#generation = generation;
       this.#child = this.#launcher.spawn({
         workerPath: this.#verifiedWorkerPath,
         profileDir: this.#profileDir,
+        terminalReceiptFd: this.#terminalReceiptHandle.fd,
       });
+      await this.#terminalReceiptHandle.close();
+      this.#terminalReceiptHandle = null;
       if (
         !this.#child?.stdin ||
         !this.#child?.stdout ||
@@ -827,6 +878,16 @@ export class SubprocessBrowserDriver {
     if (signal?.aborted) {
       throw signal.reason instanceof Error ? signal.reason : abortError();
     }
+
+    // The selected Servo worker writes a host-private terminal receipt through
+    // inherited fd 5 before it returns a terminal protocol response. This file
+    // survives a Browser-parent crash and lets a replacement Browser owner
+    // recover terminality that was already known by the trusted worker.
+    const workerTerminal = await this.#readPersistedWorkerTerminal(input);
+    if (workerTerminal !== null) {
+      return workerTerminal;
+    }
+
     if (this.#persistedReconciler === null) {
       return Object.freeze({
         terminalObserved: false,
@@ -895,6 +956,132 @@ export class SubprocessBrowserDriver {
       this.#egressBroker = null;
       await this.#cleanupProfile();
     }
+  }
+
+  async #readPersistedWorkerTerminal(input) {
+    const profileId = stableId(input.profileId, "profileId");
+    const generation = positiveInteger(
+      input.profileGeneration ?? input.generation,
+      "profileGeneration",
+    );
+    const operationId = stableId(input.operationId, "operationId");
+    const path = terminalReceiptPath(this.#profileRoot, profileId, generation);
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    let handle;
+    try {
+      handle = await open(path, constants.O_RDONLY | noFollow);
+    } catch (error) {
+      if (error?.code === "ENOENT") return null;
+      throw error;
+    }
+    let text;
+    try {
+      const info = await handle.stat();
+      if (!info.isFile() || info.size > MAX_WORKER_TERMINAL_BYTES) {
+        throw new TypeError("worker terminal receipt file is not bounded");
+      }
+      if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
+        throw new TypeError("worker terminal receipt permissions are too broad");
+      }
+      text = await handle.readFile({ encoding: "utf8" });
+    } finally {
+      await handle.close();
+    }
+
+    let matched = null;
+    for (const line of text.split("\n")) {
+      if (line.length === 0) continue;
+      if (Buffer.byteLength(line) > MAX_WORKER_TERMINAL_LINE_BYTES) {
+        throw new TypeError("worker terminal receipt line exceeds the byte limit");
+      }
+      let value;
+      try {
+        value = JSON.parse(line);
+      } catch {
+        throw new TypeError("worker terminal receipt contains malformed JSON");
+      }
+      requireRecord(value, "worker terminal receipt");
+      const keys = Object.keys(value).sort();
+      const expected = [
+        "action",
+        "authorityEpoch",
+        "bindingDigest",
+        "documentDigest",
+        "effectGrantDigest",
+        "finalPayloadDigest",
+        "generation",
+        "operationId",
+        "outcomeDigest",
+        "pageGeneration",
+        "profileId",
+        "schema",
+        "status",
+        "version",
+      ].sort();
+      if (
+        keys.length !== expected.length ||
+        keys.some((key, index) => key !== expected[index])
+      ) {
+        throw new TypeError("worker terminal receipt contains missing or unknown fields");
+      }
+      if (value.schema !== WORKER_TERMINAL_SCHEMA || value.version !== 1) {
+        throw new TypeError("worker terminal receipt schema is unsupported");
+      }
+      if (
+        !Number.isSafeInteger(value.pageGeneration) ||
+        value.pageGeneration < 0 ||
+        (value.documentDigest !== null &&
+          (typeof value.documentDigest !== "string" ||
+            !DIGEST.test(value.documentDigest) ||
+            /^0+$/.test(value.documentDigest))) ||
+        (value.status !== "succeeded" && value.status !== "failed")
+      ) {
+        throw new TypeError("worker terminal receipt fields are invalid");
+      }
+      if (
+        typeof value.bindingDigest !== "string" ||
+        value.bindingDigest !== terminalReceiptBindingDigest(value)
+      ) {
+        throw new TypeError("worker terminal receipt binding digest mismatch");
+      }
+      if (
+        value.profileId !== profileId ||
+        value.generation !== generation ||
+        value.operationId !== operationId
+      ) {
+        continue;
+      }
+      if (
+        value.pageGeneration !== input.pageGeneration ||
+        value.documentDigest !== input.documentDigest ||
+        value.action !== input.action ||
+        value.finalPayloadDigest !== input.finalPayloadDigest ||
+        value.effectGrantDigest !== input.effectGrantDigest ||
+        value.authorityEpoch !== input.authorityEpoch
+      ) {
+        throw new TypeError(
+          "worker terminal receipt drifted from the durable operation",
+        );
+      }
+      if (
+        matched !== null &&
+        (matched.status !== value.status ||
+          matched.outcomeDigest !== value.outcomeDigest)
+      ) {
+        throw new TypeError("worker terminal receipt contains conflicting terminality");
+      }
+      matched = value;
+    }
+    if (matched === null) return null;
+    return Object.freeze({
+      operationId,
+      requestDigest: expectedDigest(input.requestDigest, "requestDigest"),
+      semanticDigest: expectedDigest(input.semanticDigest, "semanticDigest"),
+      terminalObserved: true,
+      status: matched.status,
+      outcomeDigest: matched.outcomeDigest,
+      observationReason: "worker_persisted_terminal_receipt",
+    });
   }
 
   async #readVerifiedWorkerArtifact() {
@@ -984,14 +1171,22 @@ export class SubprocessBrowserDriver {
     const profileDir = this.#profileDir;
     const profileOwnerPath = this.#profileOwnerPath;
     const verifiedWorkerPath = this.#verifiedWorkerPath;
+    const terminalReceiptPath = this.#terminalReceiptPath;
+    const terminalReceiptHandle = this.#terminalReceiptHandle;
     this.#profileDir = null;
     this.#profileOwnerPath = null;
     this.#verifiedWorkerPath = null;
+    this.#terminalReceiptPath = null;
+    this.#terminalReceiptHandle = null;
+    await terminalReceiptHandle?.close?.().catch?.(() => {});
     if (profileOwnerPath) {
       await rm(profileOwnerPath, { force: true });
     }
     if (verifiedWorkerPath) {
       await rm(verifiedWorkerPath, { force: true });
+    }
+    if (terminalReceiptPath) {
+      await rm(terminalReceiptPath, { force: true });
     }
     if (profileDir) {
       await rm(profileDir, { recursive: true, force: true });
