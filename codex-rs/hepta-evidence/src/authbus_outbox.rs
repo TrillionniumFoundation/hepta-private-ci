@@ -9,6 +9,7 @@ use crate::AuthBusAdmissionError;
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
 use crate::authbus_outbox_record::*;
+use crate::authbus_recovery::replay_checkpoint_pending;
 use crate::authbus_store::advance_replay;
 use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
@@ -216,6 +217,9 @@ async fn pending(
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(classify_sqlx_error)?;
+    if replay_checkpoint_pending(&mut tx).await? {
+        return Err(AuthBusOutboxError::Unavailable);
+    }
     let now = now_millis()?;
     maintain(&mut tx, now).await?;
     let issuer_id = issuer.map(|issuer| issuer.issuer_id.as_str());

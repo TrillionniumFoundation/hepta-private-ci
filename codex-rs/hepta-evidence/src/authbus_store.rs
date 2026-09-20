@@ -7,6 +7,9 @@ use codex_hepta_types::StableId;
 
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
+use crate::authbus_recovery::replay_checkpoint_pending;
+use crate::authbus_recovery::replay_epoch_retired;
+use crate::authbus_recovery::stage_replay_checkpoint_after_mutation;
 use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
 
@@ -63,8 +66,14 @@ pub(crate) async fn advance_replay(
     transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
     authenticated: &AuthenticatedMessage,
 ) -> Result<(), AuthBusAdmissionError> {
+    if replay_checkpoint_pending(transaction).await? {
+        return Err(codex_hepta_authbus::Error::ExternalCheckpointRequired.into());
+    }
     let claims = authenticated.claims();
     let epoch = claims.key_epoch.get().to_be_bytes();
+    if replay_epoch_retired(transaction, claims.issuer_id.as_str(), epoch.as_slice()).await? {
+        return Err(codex_hepta_authbus::Error::Revoked.into());
+    }
     let previous: Option<Vec<u8>> = sqlx::query_scalar(
         "SELECT sequence FROM authbus_replay_sequences
              WHERE issuer_id = ? AND key_epoch = ? AND subject_id = ? AND scope_digest = ?",
@@ -114,6 +123,7 @@ pub(crate) async fn advance_replay(
     .execute(&mut **transaction)
     .await
     .map_err(classify_sqlx_error)?;
+    stage_replay_checkpoint_after_mutation(transaction).await?;
     Ok(())
 }
 

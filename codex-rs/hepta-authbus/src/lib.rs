@@ -104,6 +104,7 @@ pub enum Error {
     Expired,
     ScopeMismatch,
     SubjectMismatch,
+    ExternalCheckpointRequired,
     PayloadMismatch,
     Replay,
     CapacityExceeded,
