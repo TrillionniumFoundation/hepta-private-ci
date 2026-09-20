@@ -14,8 +14,8 @@ use codex_hepta_types::StableId;
 
 mod wire;
 
-pub use wire::CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2;
 pub use wire::CODEX_OPERATION_INTENT_WIRE_PRODUCER_V2;
+pub use wire::CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2;
 pub use wire::CodexOperationIntentWireV2;
 pub use wire::WireAdapterError;
 pub use wire::adapt_wire_v2;
