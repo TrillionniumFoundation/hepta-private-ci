@@ -192,6 +192,180 @@ mod tests {
         .expect("port")
     }
 
+    #[cfg(unix)]
+    #[test]
+    fn independently_signed_usage_reconciliation_is_durable_and_single_use() {
+        use codex_hepta_contracts::FinalUseGrant;
+        use codex_hepta_contracts::FinalUseRevocations;
+        use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+        use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
+        use codex_hepta_infer_core::durable_control::native::NativeRequest;
+        use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
+        use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+        use ed25519_dalek::Signer as _;
+        use ed25519_dalek::SigningKey;
+        use std::collections::BTreeSet;
+        use std::os::unix::fs::PermissionsExt;
+        use std::time::SystemTime;
+        use std::time::UNIX_EPOCH;
+
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = std::env::temp_dir().join(format!(
+            "hepta-worker-port-usage-{}-{nonce}",
+            std::process::id()
+        ));
+        std::fs::create_dir_all(&root).unwrap();
+        let mut permissions = std::fs::metadata(&root).unwrap().permissions();
+        permissions.set_mode(0o700);
+        std::fs::set_permissions(&root, permissions).unwrap();
+
+        let journal = root.join("inference.journal");
+        let mut control = DurableInferenceControl::open(&journal, 8).unwrap();
+        let request_id = "request.usage.1".to_string();
+        control
+            .reserve_native(
+                NativeRequest {
+                    request_id: request_id.clone(),
+                    principal_id: "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12".to_string(),
+                    worker_generation: 7,
+                    model: "model.exact".to_string(),
+                    payload_digest: "a".repeat(64),
+                },
+                1,
+            )
+            .unwrap();
+        control
+            .dispatch_native(
+                &request_id,
+                NativeDispatch {
+                    thread_id: "thread-usage-1".to_string(),
+                    model_provider: "provider.exact".to_string(),
+                    context_digest: "b".repeat(64),
+                    client_user_message_id: Some(request_id.clone()),
+                    input_payload_sha256: Some("c".repeat(64)),
+                },
+            )
+            .unwrap();
+        control
+            .native_started(&request_id, "turn-usage-1".to_string())
+            .unwrap();
+        control
+            .settle_native(
+                &request_id,
+                NativeRunOutput {
+                    thread_id: "thread-usage-1".to_string(),
+                    turn_id: "turn-usage-1".to_string(),
+                    model: "model.exact".to_string(),
+                    model_provider: "provider.exact".to_string(),
+                    status: NativeRunStatus::Completed,
+                    output: "terminal".to_string(),
+                    observed_output_tokens: None,
+                    terminal_observed: true,
+                    stop_reason: None,
+                    owner_authority: NativeOwnerAuthority::ObservedReady,
+                },
+            )
+            .unwrap();
+
+        let usage = NativeUsageReconciliation {
+            request_id: request_id.clone(),
+            thread_id: "thread-usage-1".to_string(),
+            turn_id: "turn-usage-1".to_string(),
+            model_provider: "provider.exact".to_string(),
+            observed_output_tokens: 41,
+            evidence_digest: "d".repeat(64),
+        };
+        let port = port();
+        let binding = port
+            .usage_reconciliation_binding(&control, &usage)
+            .expect("usage binding");
+        assert_eq!(
+            binding.destination_id,
+            "inference:usage-reconciliation"
+        );
+
+        let signing = SigningKey::from_bytes(&[23_u8; 32]);
+        let authority_dir = root.join("usage-authority");
+        std::fs::create_dir_all(&authority_dir).unwrap();
+        let mut permissions = std::fs::metadata(&authority_dir).unwrap().permissions();
+        permissions.set_mode(0o700);
+        std::fs::set_permissions(&authority_dir, permissions).unwrap();
+        let authority = FinalUseAuthority::open_state_dir(
+            &authority_dir,
+            "usage-authority".to_string(),
+            signing.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )
+        .unwrap();
+        let now_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_millis(),
+        )
+        .unwrap();
+        let proposal = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "usage-authority".to_string(),
+            authority_epoch: 9,
+            grant_id: "usage-proof.1".to_string(),
+            nonce: [17_u8; 32],
+            binding,
+            not_before_unix_ms: now_ms.saturating_sub(1000),
+            expires_at_unix_ms: now_ms + 60_000,
+        };
+        let signed = SignedFinalUseGrant {
+            signature: signing
+                .sign(&proposal.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            grant: proposal,
+        };
+        port.reconcile_usage(&mut control, &authority, &signed, usage)
+            .expect("signed usage reconciliation");
+        let expected = control.native_record(&request_id).unwrap().clone();
+        assert_eq!(expected.usage_evidence_digest, Some("d".repeat(64)));
+        assert_eq!(
+            expected
+                .observation
+                .as_ref()
+                .unwrap()
+                .observed_output_tokens,
+            Some(41)
+        );
+
+        assert!(
+            port.reconcile_usage(
+                &mut control,
+                &authority,
+                &signed,
+                NativeUsageReconciliation {
+                    request_id: request_id.clone(),
+                    thread_id: "thread-usage-1".to_string(),
+                    turn_id: "turn-usage-1".to_string(),
+                    model_provider: "provider.exact".to_string(),
+                    observed_output_tokens: 41,
+                    evidence_digest: "d".repeat(64),
+                },
+            )
+            .is_err(),
+            "signed nonce must not be reusable"
+        );
+        drop(control);
+        drop(authority);
+        let reopened = DurableInferenceControl::open(&journal, 8).unwrap();
+        assert_eq!(reopened.native_record(&request_id), Some(&expected));
+        drop(reopened);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
     #[test]
     fn final_use_binding_is_exact_stable_and_payload_sensitive() {
         let port = port();
