@@ -12,6 +12,10 @@ use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_operations::OperationIntentV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 use thiserror::Error;
@@ -54,6 +58,7 @@ pub struct AuthorizedEffectIntent {
     pub payload_digest: Sha256Digest,
     pub final_use_scope_digest: Sha256Digest,
     pub policy_generation: u64,
+    pub expected_predecessor_digest: Option<Sha256Digest>,
     pub dependencies: Vec<AuthorizedEffectDependency>,
     pub compensation_for: Option<String>,
 }
@@ -61,16 +66,12 @@ pub struct AuthorizedEffectIntent {
 impl AuthorizedEffectIntent {
     pub fn digest(&self) -> Result<Sha256Digest, TaskFlowError> {
         self.validate()?;
-        let mut bytes = b"hepta.automation.effect.intent.v1\0".to_vec();
+        let operation = self.operation_intent_v1()?;
+        let mut bytes = b"hepta.automation.effect.intent.v2\0".to_vec();
         push_text(&mut bytes, &self.run_id);
         push_text(&mut bytes, &self.step_id);
         bytes.extend_from_slice(&self.attempt.to_be_bytes());
-        push_text(&mut bytes, &self.operation_id);
-        push_text(&mut bytes, &self.subject_id);
-        push_text(&mut bytes, &self.destination_id);
-        push_digest(&mut bytes, &self.payload_digest);
-        push_digest(&mut bytes, &self.final_use_scope_digest);
-        bytes.extend_from_slice(&self.policy_generation.to_be_bytes());
+        bytes.extend_from_slice(operation.semantic_digest().as_array());
         bytes.extend_from_slice(
             &u32::try_from(self.dependencies.len())
                 .map_err(|_| TaskFlowError::Invalid("effect dependency count".to_string()))?
@@ -102,6 +103,9 @@ impl AuthorizedEffectIntent {
         )?;
         validate_nonzero_digest(&self.payload_digest, "payload_digest")?;
         validate_nonzero_digest(&self.final_use_scope_digest, "final_use_scope_digest")?;
+        if let Some(predecessor) = &self.expected_predecessor_digest {
+            validate_nonzero_digest(predecessor, "expected_predecessor_digest")?;
+        }
         if self.attempt == 0 || self.policy_generation == 0 {
             return Err(TaskFlowError::Invalid(
                 "effect attempt and policy generation must be nonzero".to_string(),
@@ -139,6 +143,33 @@ impl AuthorizedEffectIntent {
             }
         }
         Ok(())
+    }
+
+    /// Build the kernel-owned authority-free operation contract consumed at
+    /// the effect boundary. TaskFlow orchestration identity is layered on top
+    /// by `digest()`; it is not duplicated into kernel.operations.
+    pub fn operation_intent_v1(&self) -> Result<OperationIntentV1, TaskFlowError> {
+        let operation_id = StableId::new(self.operation_id.clone())
+            .map_err(|error| TaskFlowError::Invalid(format!("operation_id: {error}")))?;
+        let subject_id = StableId::new(self.subject_id.clone())
+            .map_err(|error| TaskFlowError::Invalid(format!("subject_id: {error}")))?;
+        let destination_id = StableId::new(self.destination_id.clone())
+            .map_err(|error| TaskFlowError::Invalid(format!("destination_id: {error}")))?;
+        let policy_generation = Generation::new(self.policy_generation)
+            .map_err(|error| TaskFlowError::Invalid(format!("policy_generation: {error}")))?;
+        OperationIntentV1::new(
+            operation_id,
+            subject_id,
+            destination_id,
+            digest32(&self.payload_digest)?,
+            digest32(&self.final_use_scope_digest)?,
+            policy_generation,
+            self.expected_predecessor_digest
+                .as_ref()
+                .map(digest32)
+                .transpose()?,
+        )
+        .map_err(|error| TaskFlowError::Invalid(format!("kernel operation intent: {error}")))
     }
 }
 
@@ -217,6 +248,7 @@ pub struct AuthorizedEffectProviderReceipt {
 }
 
 pub struct AuthorizedEffectRequest<'a> {
+    pub operation_intent: &'a OperationIntentV1,
     pub intent: &'a AuthorizedEffectIntent,
     pub intent_digest: &'a Sha256Digest,
     pub binding: &'a FinalUseBinding,
@@ -298,6 +330,7 @@ impl AutomationStore {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;
         let payload_digest = &intent.payload_digest;
         let current = self
@@ -394,6 +427,7 @@ impl AutomationStore {
         };
 
         let request = AuthorizedEffectRequest {
+            operation_intent: &operation_intent,
             intent,
             intent_digest: &intent_digest,
             binding: expected_binding,
@@ -886,6 +920,13 @@ fn no_contact_digest(durable: &EffectDispatchAttempt, reason: &str) -> Sha256Dig
     bytes.push(0);
     bytes.extend_from_slice(reason.as_bytes());
     Sha256Digest::for_bytes(&bytes)
+}
+
+fn digest32(digest: &Sha256Digest) -> Result<Digest32, TaskFlowError> {
+    digest
+        .as_str()
+        .parse::<Digest32>()
+        .map_err(|_| TaskFlowError::Invalid("non-canonical sha256 digest".to_string()))
 }
 
 fn digest_bytes(digest: &Sha256Digest) -> Result<[u8; 32], AuthorizedEffectError> {
