@@ -1108,14 +1108,43 @@ impl<D: ProcessDriver> Supervisor<D> {
         let Some(selection) = read_release_selection(record.layout.run_root())? else {
             // New production admissions always persist the authoritative
             // release-selection record first. An intent without its selection
-            // can only be legacy/corrupt state and cannot be reconstructed
-            // without inventing compatibility/provenance facts.
-            if intent.is_some() {
-                return Err(SupervisorError::SignedIntentRecoveryRequired(
-                    agent_id.clone(),
+            // is legacy/corrupt state: preserve the old fail-closed behavior
+            // and mark the surviving witness RecoveryRequired, but do not
+            // invent compatibility/provenance fields for a fake selection.
+            let Some(intent) = intent else {
+                return Ok(());
+            };
+            if intent.agent_id != agent_id.to_string() {
+                return Err(SupervisorError::Invalid(
+                    "signed supervisor intent agent binding mismatch".to_string(),
                 ));
             }
-            return Ok(());
+            let recovery = intent
+                .with_status(SignedIntentStatus::RecoveryRequired)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            write_intent(record.layout.run_root(), &recovery)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.signed_intent = Some(recovery);
+            let lifecycle = self.record(agent_id)?.lifecycle;
+            if matches!(
+                lifecycle.lifecycle,
+                AgentLifecycle::Starting | AgentLifecycle::Running | AgentLifecycle::Draining
+            ) {
+                self.transition_without_runtime(
+                    agent_id,
+                    slot,
+                    lifecycle.generation,
+                    AgentLifecycle::Failed,
+                )?;
+            }
+            if let Some(runtime) = slot.runtime.as_mut() {
+                let _ = runtime.process.kill();
+                runtime.fenced = true;
+                runtime.phase = RuntimePhase::Killing;
+            }
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
         };
         selection.validate()?;
         if selection.agent_id != agent_id.to_string() {
