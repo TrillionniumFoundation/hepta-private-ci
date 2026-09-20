@@ -122,7 +122,17 @@ def verify(root: Path = ROOT) -> int:
             f"{module}: resolved roots",
         )
         for owner_root in resolved_roots:
-            canonical_path(root, owner_root, f"{module}: owner root", require_file=False)
+            # Resolved roots may intentionally be exact files as well as directories.
+            # Determine the expected root kind from the checked-out candidate, then run
+            # the same canonical/symlink/escape validation for that kind. Missing roots
+            # still fail closed because neither a file nor a directory satisfies it.
+            candidate_root = root / owner_root
+            canonical_path(
+                root,
+                owner_root,
+                f"{module}: owner root",
+                require_file=candidate_root.is_file(),
+            )
         maps[module] = row
         roots[module] = resolved_roots
 
