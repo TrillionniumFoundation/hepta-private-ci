@@ -34,7 +34,10 @@ The native general capability owner is split by type-level least authority:
   owner-CAS revocation. The authority clock creates the revocation timestamp;
   an exact retry returns the original receipt;
 - `prune_expired_leases(max_to_prune)` reclaims a bounded batch of expired,
-  unrevoked leases without collecting revocation tombstones inside an epoch;
+  unrevoked live leases only after recording each lease ID's last revision in
+  the durable retired-lineage map; same-epoch reuse must continue at revision
+  `retired + 1`, and neither retired lineage nor revocation tombstones are
+  collected inside an epoch;
 - `advance_epoch(expected_store_revision, new_epoch)` durably fences old
   authority and clears bounded old-epoch history only as part of the epoch
   transition.
@@ -59,6 +62,11 @@ through an owner-only Unix directory, process lock, complete next-state write,
 file fsync, same-directory rename and directory fsync. Storage uncertainty fences
 the live handle. A host-supplied trusted frontier rejects rollback or an
 initialized-but-missing store above genesis.
+
+The authority-lease image is canonical store schema V2; retired revision lineage
+participates in the state digest/frontier. No schema-V1 authority-lease image
+has been activated or released, so V1 is not silently accepted as V2. Any future
+predecessor migration must be explicit and frontier-bound.
 
 The final-use nonce/revocation store remains separate because signed one-shot
 grants and general durable leases have different lifecycle semantics.
@@ -102,9 +110,10 @@ does not perform fleet transport.
 ## 5. Capacity and performance profile
 
 Both current owner stores are bounded; there is no silent eviction. The general
-lease registry exposes current/max lease and revocation counts, bounded online
-pruning of expired unrevoked leases (maximum 1,024 per call), and explicit
-durable epoch rollover. A selected deployment must alert before exhaustion and
+lease registry exposes current/max live-lease, revocation and retired-ID counts,
+bounded online pruning of expired unrevoked leases (maximum 1,024 per call,
+limited by remaining retired-lineage capacity), and explicit durable epoch
+rollover. Prune never resets identity lineage inside the epoch. A selected deployment must alert before exhaustion and
 coordinate the trusted epoch/frontier transition before admitting new work.
 
 Pilot verified-use request <= 16 KiB; bounded scope predicates <= 64; no
