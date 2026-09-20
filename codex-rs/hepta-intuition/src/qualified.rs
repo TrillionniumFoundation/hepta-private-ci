@@ -368,6 +368,7 @@ pub fn canonical_completeness_evidence_payload_v1(
     bytes.extend_from_slice(&request.sequence.to_be_bytes());
     bytes.extend_from_slice(&request.completeness.candidate_count.to_be_bytes());
     bytes.extend_from_slice(&request.completeness.omitted_count_bound.to_be_bytes());
+    bytes.push(risk_class_code(request.risk_class));
     Ok(bytes)
 }
 
