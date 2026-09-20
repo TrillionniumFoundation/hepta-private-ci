@@ -100,9 +100,7 @@ impl AgentdIntelligenceHostV1 {
         {
             return Err(rejection());
         }
-        if input.capability_id.as_str() != "host.handoff"
-            || input.implementation_digest.is_zero()
-        {
+        if input.capability_id.as_str() != "host.handoff" || input.implementation_digest.is_zero() {
             return Err(rejection());
         }
         let acceptance = self.accept(envelope).map_err(|_| rejection())?;
