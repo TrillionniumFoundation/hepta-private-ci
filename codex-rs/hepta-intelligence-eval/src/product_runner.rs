@@ -5,7 +5,6 @@
 //! signed qualification and durable evidence publication. Callers never submit
 //! final metric intervals: they are derived from sealed estimator receipts.
 
-use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
