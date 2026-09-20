@@ -6,6 +6,8 @@
 
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_agent_protocol::KernelEvidenceAppendIngress;
 use codex_hepta_agent_protocol::KernelEvidenceCandidateV1;
@@ -179,7 +181,7 @@ pub(crate) async fn verify(
             candidate,
             claim_class,
             required_roles,
-            now_unix_ms: request.now_unix_ms,
+            now_unix_ms: current_time_millis()?,
         })
         .await
         .map_err(evidence_error)?;
@@ -224,6 +226,14 @@ fn require_ready(state: &AgentdState) -> Result<(), AgentdError> {
         ));
     }
     Ok(())
+}
+
+fn current_time_millis() -> Result<u64, AgentdError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| invalid(&format!("system clock is before Unix epoch: {error}")))?
+        .as_millis();
+    u64::try_from(millis).map_err(|error| invalid(&format!("system clock overflow: {error}")))
 }
 
 fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {
