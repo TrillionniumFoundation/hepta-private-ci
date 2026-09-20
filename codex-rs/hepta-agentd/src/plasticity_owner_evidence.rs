@@ -88,7 +88,7 @@ impl ConcretePlasticityOwnerEvidenceResolverV1 {
         query: &PlasticityOwnerEvidenceQueryV1,
     ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
         verify_dataset_snapshot_receipt_v3(&self.dataset, query.now)
-            .map_err(|_| PlasticityOwnerEvidenceErrorV1::ResolverFailure)?;
+            .map_err(|_| PlasticityOwnerEvidenceErrorV1::Missing)?;
         let snapshot = &self.dataset.snapshot;
         if snapshot.dataset_digest != query.evidence_digest
             || snapshot.dataset_digest != query.dataset_digest
@@ -118,11 +118,11 @@ impl ConcretePlasticityOwnerEvidenceResolverV1 {
         let artifact_id = self
             .artifact_bindings
             .get(&query.kind)
-            .ok_or(PlasticityOwnerEvidenceErrorV1::ResolverFailure)?;
+            .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
         let manifest = self
             .artifacts
             .manifest(artifact_id)
-            .ok_or(PlasticityOwnerEvidenceErrorV1::ResolverFailure)?;
+            .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
         if !self.artifacts.is_eligible(artifact_id)
             || manifest.kind != ArtifactKind::Policy
             || manifest.content_digest != query.evidence_digest
