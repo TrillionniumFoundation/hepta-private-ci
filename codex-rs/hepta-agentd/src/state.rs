@@ -9,10 +9,10 @@ use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_memory::CognitiveStore;
 
-use crate::AgentdError;
-use crate::AgentdEventKind;
 use crate::AgentRunCoordinator;
 use crate::AgentRunError;
+use crate::AgentdError;
+use crate::AgentdEventKind;
 use crate::AgentdIdentity;
 use crate::EventBuffer;
 use crate::RuntimeComposition;
@@ -305,11 +305,7 @@ impl AgentdState {
     }
 
     pub(crate) fn active_run_count(&self) -> Result<usize, AgentdError> {
-        Ok(self
-            .runs
-            .lock()
-            .map_err(poisoned_state)?
-            .active_run_count())
+        Ok(self.runs.lock().map_err(poisoned_state)?.active_run_count())
     }
 
     pub(crate) fn unresolved_run_count(&self) -> Result<usize, AgentdError> {
