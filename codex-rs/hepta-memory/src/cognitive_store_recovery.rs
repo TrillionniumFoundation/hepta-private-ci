@@ -171,7 +171,7 @@ impl CognitiveStore {
             let pool = config
                 .open_durable_evidence_pool(&candidate)
                 .await
-                .map_err(recovery_error)?;
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let authenticated = async {
                 verify_store(&pool, layout.agent_id())
                     .await
@@ -238,7 +238,7 @@ impl CognitiveStore {
             let pool = config
                 .open_durable_evidence_pool(&candidate)
                 .await
-                .map_err(recovery_error)?;
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let final_check = async {
                 verify_store(&pool, layout.agent_id())
                     .await
