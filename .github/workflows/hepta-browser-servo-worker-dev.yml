@@ -192,7 +192,11 @@ jobs:
           assert result["profileAllowedCrossOriginRedirectDeniedByEffectGrant"] is True
           assert result["revocationRaceBlockedUntilDispatchBoundary"] is True
           assert result["persistedCrashReconciliation"] is True
+          assert result["authenticatedPersistedCrashReconciliation"] is True
           assert result["crossProfileCookieIsolation"] is True
+          assert result["crossProfileStorageIsolation"] is True
+          assert result["crossProfileCacheIsolation"] is True
+          assert result["noExternallyReachableWorkerListener"] is True
           PY
 
       - name: Run bounded real-worker resource soak
@@ -205,7 +209,10 @@ jobs:
           result = json.loads(pathlib.Path("worker-evidence/real-browser-soak.json").read_text())
           assert result["cycles"] == 32
           assert result["boundedFdGrowth"] is True
+          assert result["boundedRssGrowth"] is True
           assert result["rssKiB"]["max"] >= result["rssKiB"]["min"] > 0
+          assert result["rssPeakGrowthLimitKiB"] == 524288
+          assert result["rssTerminalGrowthLimitKiB"] == 262144
           PY
 
       - name: Generate deterministic SPDX 2.3 SBOM and build receipt
