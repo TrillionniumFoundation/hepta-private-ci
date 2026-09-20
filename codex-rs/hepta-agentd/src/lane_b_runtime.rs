@@ -27,7 +27,10 @@ impl RunPhase {
     }
 
     fn unresolved_after_dispatch(self) -> bool {
-        matches!(self, Self::Dispatched | Self::Cancelling | Self::Indeterminate)
+        matches!(
+            self,
+            Self::Dispatched | Self::Cancelling | Self::Indeterminate
+        )
     }
 }
 
@@ -426,10 +429,7 @@ impl AgentRunCoordinator {
         Ok(self.unresolved_run_count())
     }
 
-    pub fn mark_unresolved_indeterminate(
-        &mut self,
-        reason: &str,
-    ) -> Result<usize, AgentRunError> {
+    pub fn mark_unresolved_indeterminate(&mut self, reason: &str) -> Result<usize, AgentRunError> {
         validate_cancel_reason(reason)?;
         let mut changed = 0usize;
         for record in self.runs.values_mut() {
@@ -538,10 +538,7 @@ fn validate_recovery(value: &RunRecovery) -> Result<(), AgentRunError> {
         return Err(AgentRunError::StaleRevision);
     }
     validate_digest(&value.context_digest, "context")?;
-    validate_digest(
-        &value.compilation_receipt_digest,
-        "compilation receipt",
-    )?;
+    validate_digest(&value.compilation_receipt_digest, "compilation receipt")?;
     if let Some(reason) = value.cancel_reason.as_deref() {
         validate_cancel_reason(reason)?;
     }
