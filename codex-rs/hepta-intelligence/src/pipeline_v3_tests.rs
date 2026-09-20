@@ -1,223 +1,493 @@
 use super::*;
-use codex_hepta_types::Generation;
 use crate::CapabilityBindingV2;
 use crate::CapabilityNecessityV2;
 use crate::CapabilityRequirementV2;
 use crate::CapabilitySnapshotRequestV2;
+use crate::LegalActionCandidateV1;
+use crate::build_legal_candidates_v1;
+use codex_hepta_types::Generation;
+use std::cell::Cell;
+use std::rc::Rc;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("id")
+    StableId::new(value).expect("fixture id")
 }
+
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
-fn snapshot() -> CapabilitySnapshotV2 {
-    let required = [
-        ("objective.validation", "objective.compiler"),
-        ("evaluation.admission", "learning.eval"),
-        ("legal.actions", "intelligence.control"),
-        ("utility.evaluation", "utility.ndu"),
-        ("intuition.decision", "intuition.policy"),
-        ("context.compilation", "context.compiler"),
-        ("host.handoff", "runtime.agentd"),
-        ("learning.record", "learning.ledger"),
+
+fn capability_snapshot(with_optional: bool) -> CapabilitySnapshotV2 {
+    let mut pairs = vec![
+        (
+            "objective.validation",
+            "objective.compiler",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "legal.actions",
+            "intelligence.control",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "utility.evaluation",
+            "utility.ndu",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "learning.evaluation",
+            "learning.eval",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "intuition.decision",
+            "intuition.policy",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "context.compilation",
+            "context.compiler",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "host.handoff",
+            "runtime.agentd",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "learning.record",
+            "learning.ledger",
+            CapabilityNecessityV2::Required,
+        ),
     ];
-    let contract = digest("contract");
+    if with_optional {
+        pairs.extend([
+            (
+                "neural.signal",
+                "neuron.runtime",
+                CapabilityNecessityV2::Optional,
+            ),
+            (
+                "prompt.portfolio",
+                "prompt.optimizer",
+                CapabilityNecessityV2::Optional,
+            ),
+        ]);
+    }
+    let requirements = pairs
+        .iter()
+        .map(|(capability, owner, necessity)| CapabilityRequirementV2 {
+            capability_id: id(capability),
+            owner_id: id(owner),
+            contract_digest: digest(&format!("contract:{capability}")),
+            necessity: *necessity,
+        })
+        .collect::<Vec<_>>();
+    let bindings = pairs
+        .iter()
+        .map(|(capability, owner, _)| CapabilityBindingV2 {
+            capability_id: id(capability),
+            owner_id: id(owner),
+            contract_digest: digest(&format!("contract:{capability}")),
+            implementation_digest: digest(&format!("implementation:{owner}")),
+            generation: Generation::new(1).expect("generation"),
+        })
+        .collect::<Vec<_>>();
     CapabilitySnapshotV2::admit(CapabilitySnapshotRequestV2 {
         objective_digest: digest("objective"),
         authority_epoch: 1,
         body_generation: Generation::new(1).expect("generation"),
         configuration_digest: digest("configuration"),
         revocation_frontier_digest: digest("revocations"),
-        requirements: required
-            .iter()
-            .map(|(capability, owner)| CapabilityRequirementV2 {
-                capability_id: id(capability),
-                owner_id: id(owner),
-                contract_digest: contract,
-                necessity: CapabilityNecessityV2::Required,
-            })
-            .chain(
-                [
-                    ("neural.signal", "neuron.runtime"),
-                    ("prompt.portfolio", "prompt.optimizer"),
-                ]
-                .iter()
-                .map(|(capability, owner)| CapabilityRequirementV2 {
-                    capability_id: id(capability),
-                    owner_id: id(owner),
-                    contract_digest: contract,
-                    necessity: CapabilityNecessityV2::Optional,
-                }),
-            )
-            .collect(),
-        bindings: required
-            .iter()
-            .map(|(capability, owner)| CapabilityBindingV2 {
-                capability_id: id(capability),
-                owner_id: id(owner),
-                contract_digest: contract,
-                implementation_digest: digest(owner),
-                generation: Generation::new(1).expect("generation"),
-            })
-            .collect(),
+        requirements,
+        bindings,
     })
-    .expect("snapshot")
+    .expect("capability snapshot")
 }
 
-fn request() -> IntelligenceRunRequestV3 {
-    IntelligenceRunRequestV3 {
+fn request(with_optional: bool) -> LaneFRunRequestV3 {
+    let snapshot = capability_snapshot(with_optional);
+    let candidates = build_legal_candidates_v1(
+        id("candidate-set"),
+        snapshot.digest(),
+        digest("grammar"),
+        700_000,
+        vec![LegalActionCandidateV1 {
+            candidate_id: id("action.read"),
+            action_digest: digest("action"),
+            support_digest: digest("support"),
+            support_ppm: 900_000,
+        }],
+    )
+    .expect("legal candidates");
+    LaneFRunRequestV3 {
         run_id: id("run:v3"),
         request_digest: digest("request"),
-        snapshot: snapshot(),
-        budget: IntelligenceBudgetV3 {
-            total_micros: 10_000,
-            objective_micros: 1_000,
-            evaluation_micros: 1_000,
-            legal_set_micros: 1_000,
-            utility_micros: 1_000,
-            neural_micros: 1_000,
-            prompt_micros: 1_000,
-            intuition_micros: 1_000,
-            context_micros: 1_000,
-            handoff_micros: 1_000,
-            ledger_micros: 1_000,
+        body_digest: digest("body"),
+        artifact_set_digest: digest("artifact-set"),
+        snapshot,
+        legal_candidates: candidates,
+        budget: LaneFBudgetV3 {
+            total_micros: 22_000_000,
+            objective_micros: 2_000_000,
+            legal_set_micros: 2_000_000,
+            utility_micros: 2_000_000,
+            evaluation_micros: 2_000_000,
+            neural_micros: 2_000_000,
+            prompt_micros: 2_000_000,
+            intuition_micros: 2_000_000,
+            context_micros: 2_000_000,
+            envelope_micros: 2_000_000,
+            host_handoff_micros: 2_000_000,
+            ledger_micros: 2_000_000,
         },
+        deadline_unix_micros: 4_000_000_000_000_000,
     }
 }
 
 #[derive(Default)]
 struct Ports {
-    calls: Vec<IntelligenceStageV3>,
-    abstain: bool,
+    calls: Vec<LaneFStageV3>,
+    fail: Option<(LaneFStageV3, PortFailureClassV3)>,
+    intuition: PortDecisionV3,
+    accepted_envelope: Option<Digest32>,
+    cancel_after: Option<(LaneFStageV3, Rc<Cell<bool>>)>,
 }
 
 impl Ports {
-    fn receipt(
+    fn call(
         &mut self,
-        input: &IntelligencePortInputV3,
+        input: &PortInputV3,
         producer: &str,
-    ) -> Result<IntelligencePortReceiptV3, IntelligencePortFailureV3> {
+    ) -> Result<PortReceiptV3, PortFailureV3> {
         self.calls.push(input.stage);
-        Ok(IntelligencePortReceiptV3 {
+        if let Some((stage, class)) = self.fail
+            && stage == input.stage
+        {
+            return Err(PortFailureV3 {
+                class,
+                evidence_digest: digest(&format!("failure:{stage:?}")),
+            });
+        }
+        let output_digest = if input.stage == LaneFStageV3::ObjectiveValidated {
+            digest("objective")
+        } else {
+            digest(&format!("output:{stage:?}", stage = input.stage))
+        };
+        let receipt = PortReceiptV3 {
             stage: input.stage,
             producer: id(producer),
             snapshot_digest: input.snapshot_digest,
             predecessor_digest: input.predecessor_digest,
-            output_digest: digest(&format!("{producer}:{:?}", input.stage)),
-            decision: if self.abstain && input.stage == IntelligenceStageV3::IntuitionDecided {
-                IntelligencePortDecisionV3::Abstain
+            output_digest,
+            decision: if input.stage == LaneFStageV3::IntuitionDecided {
+                self.intuition
             } else {
-                IntelligencePortDecisionV3::Continue
+                PortDecisionV3::Continue
             },
             authority: AuthorityPosture::DENY_ALL,
-        })
-    }
-}
-
-macro_rules! port {
-    ($name:ident, $owner:literal) => {
-        fn $name(
-            &mut self,
-            input: &IntelligencePortInputV3,
-        ) -> Result<IntelligencePortReceiptV3, IntelligencePortFailureV3> {
-            self.receipt(input, $owner)
+        };
+        if let Some((stage, cancelled)) = &self.cancel_after
+            && *stage == input.stage
+        {
+            cancelled.set(true);
         }
-    };
-}
-
-impl IntelligenceCompositionPortsV3 for Ports {
-    port!(validate_objective, "objective.compiler");
-    port!(admit_evaluation, "learning.eval");
-    port!(build_legal_set, "intelligence.control");
-    port!(evaluate_utility, "utility.ndu");
-    port!(collect_neural_signal, "neuron.runtime");
-    port!(build_prompt_portfolio, "prompt.optimizer");
-    port!(decide_intuition, "intuition.policy");
-    port!(compile_context, "context.compiler");
-    port!(handoff_to_host, "runtime.agentd");
-    port!(record_learning, "learning.ledger");
-}
-
-#[test]
-fn v3_binds_evaluation_and_utility_into_one_predecessor_chain() {
-    let mut ports = Ports::default();
-    let receipt = run_composition_v3(request(), &mut ports).expect("composition");
-    assert_eq!(receipt.disposition, IntelligenceDispositionV3::HostHandedOff);
-    assert_eq!(
-        ports.calls,
-        vec![
-            IntelligenceStageV3::ObjectiveValidated,
-            IntelligenceStageV3::EvaluationAdmitted,
-            IntelligenceStageV3::LegalSetBuilt,
-            IntelligenceStageV3::UtilityEvaluated,
-            IntelligenceStageV3::IntuitionDecided,
-            IntelligenceStageV3::ContextCompiled,
-            IntelligenceStageV3::HostHandoff,
-            IntelligenceStageV3::LearningRecorded,
-        ]
-    );
-    assert_eq!(receipt.stages.len(), 10);
-    for pair in receipt.stages.windows(2) {
-        assert_eq!(pair[1].predecessor_digest, pair[0].output_digest);
+        Ok(receipt)
     }
-    let envelope = receipt.host_envelope.expect("host envelope");
-    assert_eq!(envelope.utility_receipt_digest, receipt.stages[3].output_digest);
-    assert_eq!(
-        envelope.evaluation_receipt_digest,
-        receipt.stages[1].output_digest
-    );
-    assert_eq!(envelope.authority, AuthorityPosture::DENY_ALL);
+}
+
+impl LaneFV3Ports for Ports {
+    fn validate_objective(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.call(input, "objective.compiler")
+    }
+
+    fn evaluate_utility(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.call(input, "utility.ndu")
+    }
+
+    fn admit_evaluation(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.call(input, "learning.eval")
+    }
+
+    fn collect_neural_signal(
+        &mut self,
+        input: &PortInputV3,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        self.call(input, "neuron.runtime")
+    }
+
+    fn build_prompt_portfolio(
+        &mut self,
+        input: &PortInputV3,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        self.call(input, "prompt.optimizer")
+    }
+
+    fn decide_intuition(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.call(input, "intuition.policy")
+    }
+
+    fn compile_context(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.call(input, "context.compiler")
+    }
+
+    fn accept_host_envelope(
+        &mut self,
+        input: &PortInputV3,
+        envelope: &IntelligenceHostEnvelopeV1,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        envelope.validate().expect("valid host envelope");
+        assert_eq!(input.predecessor_digest, envelope.envelope_digest);
+        self.accepted_envelope = Some(envelope.envelope_digest);
+        self.call(input, "runtime.agentd")
+    }
+
+    fn record_learning(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.call(input, "learning.ledger")
+    }
+}
+
+impl Default for PortDecisionV3 {
+    fn default() -> Self {
+        Self::Continue
+    }
 }
 
 #[test]
-fn absent_optional_neuron_and_prompt_are_explicit_fallbacks() {
+fn v3_baseline_routes_seven_owner_ports_and_records_optional_absence() {
     let mut ports = Ports::default();
-    let receipt = run_composition_v3(request(), &mut ports).expect("composition");
-    assert!(!ports.calls.contains(&IntelligenceStageV3::NeuralSignalCollected));
-    assert!(!ports.calls.contains(&IntelligenceStageV3::PromptPortfolioBuilt));
+    let receipt = run_composition_v3(request(false), &mut ports).expect("V3 composition");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::HostHandoffAccepted
+    );
+    assert_eq!(ports.calls.len(), 7);
+    assert!(!ports.calls.contains(&LaneFStageV3::NeuralSignalCollected));
+    assert!(!ports.calls.contains(&LaneFStageV3::PromptPortfolioBuilt));
     assert!(receipt.stages.iter().any(|trace| {
-        trace.stage == IntelligenceStageV3::NeuralSignalCollected
-            && trace.outcome
-                == IntelligenceStageOutcomeV3::FallbackUsed(
-                    IntelligenceFailureClassV3::Unavailable,
-                )
+        trace.stage == LaneFStageV3::NeuralSignalCollected
+            && trace.outcome == StageOutcomeV3::FallbackUsed(PortFailureClassV3::Unavailable)
     }));
+    assert!(receipt.stages.iter().any(|trace| {
+        trace.stage == LaneFStageV3::PromptPortfolioBuilt
+            && trace.outcome == StageOutcomeV3::FallbackUsed(PortFailureClassV3::Unavailable)
+    }));
+    let envelope = receipt.host_envelope.as_ref().expect("host envelope");
+    assert_eq!(ports.accepted_envelope, Some(envelope.envelope_digest));
+    receipt.validate().expect("valid receipt");
 }
 
 #[test]
-fn abstain_skips_context_and_host_handoff_but_records_learning() {
+fn v3_full_capability_snapshot_routes_nine_owner_ports() {
+    let mut ports = Ports::default();
+    let receipt = run_composition_v3(request(true), &mut ports).expect("V3 composition");
+    assert_eq!(ports.calls.len(), 9);
+    assert!(ports.calls.contains(&LaneFStageV3::NeuralSignalCollected));
+    assert!(ports.calls.contains(&LaneFStageV3::PromptPortfolioBuilt));
+    assert!(
+        receipt
+            .stages
+            .iter()
+            .all(|trace| !matches!(trace.outcome, StageOutcomeV3::FallbackUsed(_)))
+    );
+}
+
+#[test]
+fn utility_and_evaluation_are_required_predecessor_stages() {
+    for stage in [
+        LaneFStageV3::UtilityEvaluated,
+        LaneFStageV3::EvaluationAdmitted,
+    ] {
+        let mut ports = Ports {
+            fail: Some((stage, PortFailureClassV3::Rejected)),
+            ..Ports::default()
+        };
+        let receipt = run_composition_v3(request(false), &mut ports).expect("terminal receipt");
+        assert_eq!(
+            receipt.disposition,
+            PipelineDispositionV3::Failed(PortFailureClassV3::Rejected)
+        );
+        assert_eq!(receipt.stages.last().map(|trace| trace.stage), Some(stage));
+        assert!(!ports.calls.contains(&LaneFStageV3::IntuitionDecided));
+    }
+}
+
+#[derive(Default)]
+struct Cancelled;
+
+impl CompositionControlV3 for Cancelled {
+    fn cancelled(&self) -> bool {
+        true
+    }
+}
+
+#[test]
+fn cancellation_fails_before_any_owner_call() {
+    let mut ports = Ports::default();
+    let receipt = run_composition_v3_with_control(request(false), &mut ports, &Cancelled)
+        .expect("cancelled receipt");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::Failed(PortFailureClassV3::Cancelled)
+    );
+    assert!(ports.calls.is_empty());
+    assert_eq!(
+        receipt.stages.last().map(|trace| trace.stage),
+        Some(LaneFStageV3::ObjectiveValidated)
+    );
+}
+
+#[test]
+fn abstain_skips_context_and_agentd_but_still_records_learning() {
     let mut ports = Ports {
-        abstain: true,
+        intuition: PortDecisionV3::Abstain,
         ..Ports::default()
     };
-    let receipt = run_composition_v3(request(), &mut ports).expect("composition");
-    assert_eq!(receipt.disposition, IntelligenceDispositionV3::Abstained);
+    let receipt = run_composition_v3(request(false), &mut ports).expect("abstained");
+    assert_eq!(receipt.disposition, PipelineDispositionV3::Abstained);
     assert!(receipt.host_envelope.is_none());
-    assert!(!ports.calls.contains(&IntelligenceStageV3::ContextCompiled));
-    assert!(!ports.calls.contains(&IntelligenceStageV3::HostHandoff));
-    assert_eq!(ports.calls.last(), Some(&IntelligenceStageV3::LearningRecorded));
+    assert!(!ports.calls.contains(&LaneFStageV3::ContextCompiled));
+    assert!(!ports.calls.contains(&LaneFStageV3::HostHandoffAccepted));
+    assert_eq!(ports.calls.last(), Some(&LaneFStageV3::LearningRecorded));
 }
 
 #[test]
-fn native_legal_candidate_contract_is_bounded_and_digest_stable() {
-    let first = LegalActionCandidateSetV1::new(
-        id("set"),
-        digest("state"),
-        id("generator"),
+fn candidate_set_must_bind_the_exact_capability_snapshot() {
+    let mut value = request(false);
+    value.legal_candidates = build_legal_candidates_v1(
+        id("candidate-set:drift"),
+        digest("different-state"),
         digest("grammar"),
-        vec![id("b"), id("a")],
-        900_000,
+        700_000,
+        vec![LegalActionCandidateV1 {
+            candidate_id: id("action.read"),
+            action_digest: digest("action"),
+            support_digest: digest("support"),
+            support_ppm: 900_000,
+        }],
     )
-    .expect("candidate set");
-    let second = LegalActionCandidateSetV1::new(
-        id("set"),
-        digest("state"),
-        id("generator"),
-        digest("grammar"),
-        vec![id("a"), id("b")],
-        900_000,
-    )
-    .expect("candidate set");
-    assert_eq!(first, second);
+    .expect("drifted candidate set");
+    let mut ports = Ports::default();
+    assert_eq!(
+        run_composition_v3(value, &mut ports),
+        Err(PipelineErrorV3::CandidateStateMismatch)
+    );
+    assert!(ports.calls.is_empty());
+}
+
+#[test]
+fn optional_rejection_is_terminal_and_cannot_be_downgraded_to_fallback() {
+    let mut ports = Ports {
+        fail: Some((
+            LaneFStageV3::NeuralSignalCollected,
+            PortFailureClassV3::Rejected,
+        )),
+        ..Ports::default()
+    };
+    let receipt = run_composition_v3(request(true), &mut ports).expect("terminal receipt");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::Failed(PortFailureClassV3::Rejected)
+    );
+    assert_eq!(
+        receipt.stages.last().map(|trace| trace.stage),
+        Some(LaneFStageV3::NeuralSignalCollected)
+    );
+    assert!(!ports.calls.contains(&LaneFStageV3::PromptPortfolioBuilt));
+}
+
+#[test]
+fn failed_host_handoff_stops_before_learning_record() {
+    let mut ports = Ports {
+        fail: Some((
+            LaneFStageV3::HostHandoffAccepted,
+            PortFailureClassV3::Rejected,
+        )),
+        ..Ports::default()
+    };
+    let receipt = run_composition_v3(request(false), &mut ports).expect("terminal receipt");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::Failed(PortFailureClassV3::Rejected)
+    );
+    assert_eq!(
+        receipt.stages.last().map(|trace| trace.stage),
+        Some(LaneFStageV3::HostHandoffAccepted)
+    );
+    assert!(!ports.calls.contains(&LaneFStageV3::LearningRecorded));
+}
+
+#[derive(Default)]
+struct ExpiredDeadline;
+
+impl CompositionControlV3 for ExpiredDeadline {
+    fn cancelled(&self) -> bool {
+        false
+    }
+
+    fn now_unix_micros(&self) -> u64 {
+        4_000_000_000_000_000
+    }
+}
+
+#[test]
+fn absolute_run_deadline_fails_before_any_owner_call() {
+    let mut ports = Ports::default();
+    let receipt = run_composition_v3_with_control(request(false), &mut ports, &ExpiredDeadline)
+        .expect("deadline receipt");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::Failed(PortFailureClassV3::TimedOut)
+    );
+    assert!(ports.calls.is_empty());
+    assert_eq!(
+        receipt.stages.last().map(|trace| trace.stage),
+        Some(LaneFStageV3::ObjectiveValidated)
+    );
+}
+
+struct SharedCancellation {
+    cancelled: Rc<Cell<bool>>,
+}
+
+impl CompositionControlV3 for SharedCancellation {
+    fn cancelled(&self) -> bool {
+        self.cancelled.get()
+    }
+}
+
+#[test]
+fn cancellation_after_committed_host_handoff_applies_to_next_stage_only() {
+    let cancelled = Rc::new(Cell::new(false));
+    let control = SharedCancellation {
+        cancelled: Rc::clone(&cancelled),
+    };
+    let mut ports = Ports {
+        cancel_after: Some((LaneFStageV3::HostHandoffAccepted, Rc::clone(&cancelled))),
+        ..Ports::default()
+    };
+    let receipt = run_composition_v3_with_control(request(false), &mut ports, &control)
+        .expect("committed handoff receipt");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::Failed(PortFailureClassV3::Cancelled)
+    );
+    assert_eq!(
+        receipt
+            .stages
+            .iter()
+            .find(|stage| stage.stage == LaneFStageV3::HostHandoffAccepted)
+            .map(|stage| stage.outcome),
+        Some(StageOutcomeV3::Completed)
+    );
+    assert_eq!(
+        receipt
+            .stages
+            .last()
+            .map(|stage| (stage.stage, stage.outcome)),
+        Some((
+            LaneFStageV3::LearningRecorded,
+            StageOutcomeV3::Failed(PortFailureClassV3::Cancelled)
+        ))
+    );
 }

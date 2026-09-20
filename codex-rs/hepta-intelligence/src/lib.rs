@@ -15,6 +15,7 @@ pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
 
 mod capability_snapshot;
+mod contracts_v1;
 
 pub use capability_snapshot::CapabilityBindingV2;
 pub use capability_snapshot::CapabilityNecessityV2;
@@ -22,34 +23,48 @@ pub use capability_snapshot::CapabilityRequirementV2;
 pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
+pub use contracts_v1::IntelligenceContractErrorV1;
+pub use contracts_v1::IntelligenceHostEnvelopeV1;
+pub use contracts_v1::LegalActionCandidateSetV1;
+pub use contracts_v1::LegalActionCandidateV1;
+pub use contracts_v1::build_legal_candidates_v1;
 
+mod native_ports_v3;
+mod outcome_credit;
+mod pipeline_v2;
 mod pipeline_v3;
 
-pub use pipeline_v3::IntelligenceBudgetV3;
-pub use pipeline_v3::IntelligenceCompositionPortsV3;
-pub use pipeline_v3::IntelligenceCompositionReceiptV3;
-pub use pipeline_v3::IntelligenceDispositionV3;
-pub use pipeline_v3::IntelligenceFailureClassV3;
-pub use pipeline_v3::IntelligenceHostEnvelopeV1;
-pub use pipeline_v3::IntelligencePipelineErrorV3;
-pub use pipeline_v3::IntelligencePortDecisionV3;
-pub use pipeline_v3::IntelligencePortFailureV3;
-pub use pipeline_v3::IntelligencePortInputV3;
-pub use pipeline_v3::IntelligencePortReceiptV3;
-pub use pipeline_v3::IntelligenceRunRequestV3;
-pub use pipeline_v3::IntelligenceStageOutcomeV3;
-pub use pipeline_v3::IntelligenceStageTraceV3;
-pub use pipeline_v3::IntelligenceStageV3;
-pub use pipeline_v3::LegalActionCandidateSetV1;
-pub use pipeline_v3::run_composition_v3;
-
-mod pipeline_v2;
-
+pub use codex_hepta_learning_ledger::DurableLearningJournal;
+pub use native_ports_v3::HostEnvelopePortV3;
+pub use native_ports_v3::LearningDecisionTemplateV3;
+pub use native_ports_v3::NativeV3OwnerInputs;
+pub use native_ports_v3::NativeV3OwnerPorts;
+pub use outcome_credit::OutcomeCreditClosureErrorV1;
+pub use outcome_credit::OutcomeCreditClosureReceiptV1;
+pub use outcome_credit::OutcomeCreditClosureRequestV1;
+pub use outcome_credit::append_outcome_credit_v1;
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
 pub use pipeline_v2::run_shadow_pipeline_v2;
-
+pub use pipeline_v3::CompositionControlV3;
+pub use pipeline_v3::LaneFBudgetV3;
+pub use pipeline_v3::LaneFCompositionReceiptV3;
+pub use pipeline_v3::LaneFRunRequestV3;
+pub use pipeline_v3::LaneFStageV3;
+pub use pipeline_v3::LaneFV3Ports;
+pub use pipeline_v3::NeverCancelledV3;
+pub use pipeline_v3::PipelineDispositionV3;
+pub use pipeline_v3::PipelineErrorV3;
+pub use pipeline_v3::PortDecisionV3;
+pub use pipeline_v3::PortFailureClassV3;
+pub use pipeline_v3::PortFailureV3;
+pub use pipeline_v3::PortInputV3;
+pub use pipeline_v3::PortReceiptV3;
+pub use pipeline_v3::StageOutcomeV3;
+pub use pipeline_v3::StageTraceV3;
+pub use pipeline_v3::run_composition_v3;
+pub use pipeline_v3::run_composition_v3_with_control;
 mod pipeline;
 
 pub use pipeline::CoherentLaneFSnapshotV1;
