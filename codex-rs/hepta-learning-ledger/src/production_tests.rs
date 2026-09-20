@@ -379,6 +379,9 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
     assert_eq!(dataset.snapshot.source_record_digests.len(), 3);
     assert_eq!(dataset.snapshot.pending_outcomes, 0);
     assert_eq!(dataset.snapshot.censored_outcomes, 0);
+    writer
+        .revalidate_dataset_snapshot(&dataset, 50)
+        .expect("fresh dataset remains current");
 
     let unlearning = UnlearningLineageRequestV1 {
         record_id: id("unlearning-record"),
@@ -406,6 +409,13 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
     let frontier = writer.witness_frontier().unwrap();
     assert_eq!(frontier.anchor.sequence, 5);
     assert_eq!(frontier.anchor.chain_digest, receipt.append.chain_digest);
+
+    assert!(matches!(
+        writer.revalidate_dataset_snapshot(&dataset, 50),
+        Err(ProductionLedgerError::Binding(
+            "dataset source revoked, corrected or unavailable"
+        ))
+    ));
 
     let core = LearningLedger::from_snapshot(writer.snapshot().unwrap()).unwrap();
     let active: Vec<_> = core
