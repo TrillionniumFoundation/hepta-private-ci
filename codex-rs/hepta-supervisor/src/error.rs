@@ -42,6 +42,8 @@ pub enum SupervisorError {
     NoPreviousRelease(AgentId),
     #[error("agent {0} already has a release change in progress")]
     ReleaseChangePending(AgentId),
+    #[error("agent {0} exhausted its restart budget")]
+    RestartBudgetExhausted(AgentId),
     #[error("agent {0} already runs the selected release")]
     TargetReleaseUnchanged(AgentId),
     #[error("agent {0} has an unresolved process lease")]
