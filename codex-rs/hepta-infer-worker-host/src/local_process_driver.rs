@@ -68,6 +68,11 @@ pub struct LocalModelArtifacts {
 pub struct LocalProcessDriverConfig {
     pub runtime_executable: PathBuf,
     pub models: BTreeMap<String, LocalModelArtifacts>,
+    /// Production local execution must provide both fields. The launcher is
+    /// responsible for OS/filesystem/network/uid/cgroup/namespace/seccomp/LSM
+    /// and device isolation; the worker binds it and the immutable CAS root.
+    pub sandbox_launcher: Option<PathBuf>,
+    pub immutable_artifact_root: Option<PathBuf>,
     pub maximum_protocol_line_bytes: usize,
     /// Absolute ceiling for load/run/unload protocol responses. Per-request
     /// run deadlines may make this bound shorter.
@@ -80,10 +85,22 @@ impl LocalProcessDriverConfig {
         Self {
             runtime_executable,
             models,
+            sandbox_launcher: None,
+            immutable_artifact_root: None,
             maximum_protocol_line_bytes: DEFAULT_MAX_PROTOCOL_LINE_BYTES,
             response_timeout: DEFAULT_RESPONSE_TIMEOUT,
             shutdown_timeout: DEFAULT_SHUTDOWN_TIMEOUT,
         }
+    }
+
+    pub fn with_production_isolation(
+        mut self,
+        sandbox_launcher: PathBuf,
+        immutable_artifact_root: PathBuf,
+    ) -> Self {
+        self.sandbox_launcher = Some(sandbox_launcher);
+        self.immutable_artifact_root = Some(immutable_artifact_root);
+        self
     }
 }
 
@@ -133,8 +150,39 @@ impl LocalProcessDriver {
         {
             return Err(driver_error("invalid local runtime bounds"));
         }
+        if config.sandbox_launcher.is_some() != config.immutable_artifact_root.is_some() {
+            return Err(driver_error(
+                "sandbox launcher and immutable artifact root must be configured together",
+            ));
+        }
         let runtime_executable =
             verify_regular_file(&config.runtime_executable, None, "runtime executable")?;
+        if let Some(root) = &config.immutable_artifact_root {
+            let metadata = fs::symlink_metadata(root).map_err(io_error)?;
+            if metadata.file_type().is_symlink() || !metadata.is_dir() || !root.is_absolute() {
+                return Err(driver_error(
+                    "immutable artifact root must be an absolute non-symlink directory",
+                ));
+            }
+            config.immutable_artifact_root = Some(fs::canonicalize(root).map_err(io_error)?);
+        }
+        if let Some(launcher) = &config.sandbox_launcher {
+            let launcher = verify_regular_file(launcher, None, "sandbox launcher")?;
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                if fs::metadata(&launcher)
+                    .map_err(io_error)?
+                    .permissions()
+                    .mode()
+                    & 0o111
+                    == 0
+                {
+                    return Err(driver_error("sandbox launcher is not executable"));
+                }
+            }
+            config.sandbox_launcher = Some(launcher);
+        }
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
@@ -181,7 +229,7 @@ impl LocalProcessDriver {
             .models
             .get(&manifest.model_id)
             .ok_or_else(|| driver_error("model has no configured local artifact set"))?;
-        Ok(VerifiedArtifacts {
+        let verified = VerifiedArtifacts {
             weights: verify_regular_file(
                 &configured.weights_path,
                 Some(&manifest.weights_digest),
@@ -207,12 +255,43 @@ impl LocalProcessDriver {
                 Some(&manifest.device_digest),
                 "device descriptor",
             )?,
-        })
+        };
+        if let Some(root) = &self.config.immutable_artifact_root {
+            for (path, digest, label) in [
+                (&self.runtime_executable, &manifest.runtime_digest, "runtime"),
+                (&verified.weights, &manifest.weights_digest, "weights"),
+                (&verified.tokenizer, &manifest.tokenizer_digest, "tokenizer"),
+                (&verified.preprocessor, &manifest.preprocessor_digest, "preprocessor"),
+                (&verified.quantization, &manifest.quantization_digest, "quantization"),
+                (&verified.device_descriptor, &manifest.device_digest, "device descriptor"),
+            ] {
+                verify_immutable_content_address(root, path, digest, label)?;
+            }
+        }
+        Ok(verified)
     }
 
     fn spawn_runtime(&self) -> Result<RuntimeProcess, Error> {
-        let mut child = Command::new(&self.runtime_executable)
-            .arg("--hepta-local-model-worker-v1")
+        let mut command = if let (Some(launcher), Some(root)) = (
+            &self.config.sandbox_launcher,
+            &self.config.immutable_artifact_root,
+        ) {
+            let mut command = Command::new(launcher);
+            command
+                .arg("--hepta-sandbox-v1")
+                .arg("--runtime")
+                .arg(&self.runtime_executable)
+                .arg("--artifact-root")
+                .arg(root)
+                .arg("--")
+                .arg("--hepta-local-model-worker-v1");
+            command
+        } else {
+            let mut command = Command::new(&self.runtime_executable);
+            command.arg("--hepta-local-model-worker-v1");
+            command
+        };
+        let mut child = command
             .env_clear()
             .env("PATH", "/usr/bin:/bin")
             .env("LANG", "C")
@@ -705,6 +784,29 @@ fn verify_regular_file(
         return Err(driver_error(format!("{label} digest mismatch")));
     }
     Ok(canonical)
+}
+
+fn verify_immutable_content_address(
+    root: &Path,
+    path: &Path,
+    digest: &str,
+    label: &str,
+) -> Result<(), Error> {
+    if !path.starts_with(root) {
+        return Err(driver_error(format!(
+            "{label} is outside the immutable artifact root"
+        )));
+    }
+    let name = path
+        .file_name()
+        .and_then(|value| value.to_str())
+        .ok_or_else(|| driver_error(format!("{label} content-addressed name is invalid")))?;
+    if name != digest && !name.starts_with(&format!("{digest}.")) {
+        return Err(driver_error(format!(
+            "{label} path is not content-addressed by its digest"
+        )));
+    }
+    Ok(())
 }
 
 fn sha256_file(path: &Path) -> Result<String, Error> {
