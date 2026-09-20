@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use codex_hepta_contracts::FinalUseBinding;
+
 use crate::backend::BackendAdapter;
 use crate::error::ShellError;
 use crate::journal::OperationJournal;
@@ -135,6 +137,23 @@ impl NativeShellRuntime {
         };
         let presentation = self.render_runtime_view(view)?;
         Ok((presentation, observed.value))
+    }
+
+    pub fn prepare_platform_binding(
+        &self,
+        subject_id: &str,
+        operation_id: &str,
+        payload: &crate::model::PlatformPayload,
+    ) -> Result<FinalUseBinding, ShellError> {
+        let session = self.require_session()?;
+        let view = self.require_view()?;
+        platform_final_use_binding(
+            subject_id,
+            session,
+            operation_id,
+            view.revision,
+            payload,
+        )
     }
 
     pub fn request_platform_capability(
