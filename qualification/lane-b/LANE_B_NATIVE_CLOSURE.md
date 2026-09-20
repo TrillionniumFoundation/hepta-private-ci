@@ -228,13 +228,14 @@ The authenticated backend, local platform adapter, and separately verified updat
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `connect_runtime` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn connect_runtime(` |
-| `render_runtime_view` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn render_runtime_view(` |
+| `render_runtime_view` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn refresh_runtime_view(` |
 | `request_platform_capability` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn request_platform_capability(` |
 | `apply_shell_update` | `owner_boundary` | `apps/hepta-native/src/updater.rs` — `pub fn activate_staged_update(` |
 
 Remaining repository implementation gaps:
 
-- Observe current exact-head and merge-candidate execution receipts for the final claim-bearing candidate before setting productionImplementation/productExecutionComplete true.
+- Commit a reproducible native Cargo.lock and observe current exact-head plus Windows/macOS/Linux merge-candidate execution receipts for the final claim-bearing candidate.
+- Run the packaged fault/restart qualification against the final candidate, including updater-process death and cross-generation effect reconciliation; repository tests must not convert unavailable OS terminal observation into success.
 
 External evidence gates:
 
