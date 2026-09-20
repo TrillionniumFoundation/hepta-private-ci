@@ -14,8 +14,6 @@
   ],
   "resolvedRoots": [
     "codex-rs/app-server",
-    "codex-rs/core/src/tools/router.rs",
-    "codex-rs/core/src/codex_thread.rs",
     "codex-rs/hepta-codex-adapter"
   ],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
@@ -131,8 +129,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "current runtime.codex exact-head and merge-candidate CI evidence is pending for the composed caller/authority/reconciliation candidate",
-    "IMPLEMENTATION_MAP sourceBase still uses the repository-wide legacy common source snapshot; current-head exact-source provenance requires the canonical verifier/migration before this map can serve as exact-candidate evidence"
+    "current runtime.codex exact-head, deterministic synthetic-merge, focused product fault-matrix, and product E2E evidence are pending for this composed candidate"
   ],
   "externalEvidenceGates": [
     "independently operated final-use authority endpoint, signer-key custody, pathname plus connected-peer socket identity, trusted time/revocation distribution, and external anti-rollback recovery for replay/epoch state",
@@ -146,7 +143,7 @@
     "nativeSourceMappingComplete": false,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": false,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -159,7 +156,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "composed_authority_external_qualification_pending",
+  "productCallerState": "composed_candidate_exact_head_qualification_pending",
   "productionWriterState": "existing_app_server_owner",
   "owner": "codex-integration",
   "deputy": "agent-runtime",
@@ -270,5 +267,18 @@
       ],
       "evidenceBoundary": "controlled mock Responses provider only; real provider and target-host identity remain external qualification gates"
     }
-  ]
+  ],
+  "sourceBaseSemantics": "historical_provenance_only",
+  "exactCandidateProvenance": {
+    "mode": "verification_derived_from_checkout",
+    "commitCommand": "git rev-parse HEAD",
+    "treeCommand": "git rev-parse HEAD^{tree}",
+    "verifier": "scripts/hepta-lane-b-truth.py verify",
+    "receiptFields": [
+      "exactHead",
+      "exactTree"
+    ],
+    "hardCodedInMap": false,
+    "rationale": "A committed map cannot safely hard-code its own Git commit/tree identity without becoming self-referential. Exact candidate identity is derived and emitted from the checked-out candidate by the verifier; sourceBase remains historical provenance only."
+  }
 }
