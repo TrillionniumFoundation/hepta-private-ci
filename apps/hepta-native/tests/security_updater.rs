@@ -378,6 +378,34 @@ fn unconfirmed_activation_rolls_back_to_predecessor() {
 }
 
 #[test]
+fn interrupted_activation_is_reconciled_to_predecessor_before_restart() {
+    let (temp, keys, signing) = key_fixture();
+    let root = temp.path().join("updates");
+    let manager = UpdateManager::new(keys.clone(), root.clone()).unwrap();
+    let predecessor = temp.path().join("hepta-native");
+    let package = temp.path().join("candidate");
+    std::fs::write(&predecessor, b"predecessor").unwrap();
+    std::fs::write(&package, b"candidate").unwrap();
+
+    let manifest = signed_update_manifest(
+        &signing,
+        hepta_native::updater::digest_file(&package).unwrap(),
+        hepta_native::updater::digest_file(&predecessor).unwrap(),
+        "selector.1",
+        "generator.1",
+    );
+    manager.verify_and_stage(manifest, &package, 1).unwrap();
+    activate_staged_update(&manager.pending_path(), &keys, &predecessor, 1).unwrap();
+    assert_eq!(std::fs::read(&predecessor).unwrap(), b"candidate");
+
+    let reopened = UpdateManager::new(keys, root).unwrap();
+    assert!(reopened.recover_interrupted_activation().unwrap());
+    assert_eq!(std::fs::read(&predecessor).unwrap(), b"predecessor");
+    let pending = reopened.load_pending().unwrap().unwrap();
+    assert_eq!(pending.status, PendingUpdateStatus::RolledBack);
+}
+
+#[test]
 fn failed_rollback_is_durable_recovery_required() {
     let temp = TempDir::new().unwrap();
     let (signing, keys, key_path) = key_fixture(temp.path());
