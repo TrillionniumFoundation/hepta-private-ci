@@ -1,4 +1,7 @@
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use eframe::egui;
 
@@ -8,6 +11,8 @@ use crate::model::RuntimeView;
 use crate::model::sha256_hex;
 use crate::runtime::NativeShellRuntime;
 use crate::session_store::SessionReferenceStore;
+use crate::updater::SignedUpdateManifestV1;
+use crate::updater::UpdateManager;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Screen {
@@ -54,13 +59,19 @@ pub struct HeptaNativeApp {
     last_error: Option<String>,
     view_revision: u64,
     pending_update_path: PathBuf,
+    updater: UpdateManager,
+    activate_update_on_exit: Arc<AtomicBool>,
+    update_manifest_path: String,
+    update_package_path: String,
+    update_message: Option<String>,
 }
 
 impl HeptaNativeApp {
     pub fn new(
         mut runtime: NativeShellRuntime,
         manifest: EndpointManifest,
-        pending_update_path: PathBuf,
+        updater: UpdateManager,
+        activate_update_on_exit: Arc<AtomicBool>,
     ) -> Result<Self, ShellError> {
         let session = runtime.connect_runtime(&manifest)?;
         SessionReferenceStore::default().save(&session, &manifest.manifest_digest)?;
@@ -72,7 +83,12 @@ impl HeptaNativeApp {
             status: None,
             last_error: None,
             view_revision: 0,
-            pending_update_path,
+            pending_update_path: updater.pending_path(),
+            updater,
+            activate_update_on_exit,
+            update_manifest_path: String::new(),
+            update_package_path: String::new(),
+            update_message: None,
         };
         app.refresh();
         Ok(app)
@@ -219,23 +235,101 @@ impl HeptaNativeApp {
         });
     }
 
-    fn updates_view(&self, ui: &mut egui::Ui) {
+    fn updates_view(&mut self, ui: &mut egui::Ui) {
         ui.heading(self.locale.text("Signed updates", "签名更新"));
         ui.label(self.locale.text(
-            "Update selection, Ed25519 verification, staging, predecessor backup and rollback are implemented in Rust. Activation is performed by the separate hepta-native-updater helper so the running application never replaces itself.",
-            "更新选择、Ed25519 验签、暂存、前任版本备份与回滚已由 Rust 实现。激活由独立 hepta-native-updater 辅助程序执行，运行中的应用不会自行替换自身。",
+            "Only a signed stable-channel manifest can be staged. Activation closes this GUI first, then a separate updater helper re-verifies the manifest, installed predecessor and staged package before replacement.",
+            "只有签名的 stable-channel 清单才能进入暂存。激活时先关闭 GUI，再由独立 updater 辅助程序重新验证清单、已安装前任版本和暂存包后执行替换。",
         ));
+        ui.separator();
+        ui.label(self.locale.text("Signed manifest path", "签名清单路径"));
+        ui.text_edit_singleline(&mut self.update_manifest_path);
+        ui.label(self.locale.text("Package path", "更新包路径"));
+        ui.text_edit_singleline(&mut self.update_package_path);
+        if ui.button(self.locale.text("Verify & stage", "验证并暂存")).clicked() {
+            self.stage_update();
+        }
         ui.separator();
         ui.label(format!(
             "{}: {}",
             self.locale.text("Pending record", "待处理记录"),
             self.pending_update_path.display()
         ));
-        ui.label(if self.pending_update_path.exists() {
-            self.locale.text("Pending update exists", "存在待处理更新")
-        } else {
-            self.locale.text("No pending update", "无待处理更新")
-        });
+        match self.updater.load_pending() {
+            Ok(Some(pending)) => {
+                ui.label(format!(
+                    "{}: {:?}",
+                    self.locale.text("Pending status", "待处理状态"),
+                    pending.status
+                ));
+                ui.label(format!(
+                    "{}: {}",
+                    self.locale.text("Package digest", "包摘要"),
+                    pending.manifest.package_digest
+                ));
+                if ui
+                    .button(self.locale.text(
+                        "Activate on restart & close",
+                        "关闭并在重启时激活",
+                    ))
+                    .clicked()
+                {
+                    self.activate_update_on_exit.store(true, Ordering::SeqCst);
+                    self.update_message = Some(
+                        self.locale
+                            .text(
+                                "Closing the GUI; the external updater will perform final verification and activation.",
+                                "正在关闭 GUI；外部 updater 将执行最终验证与激活。",
+                            )
+                            .to_owned(),
+                    );
+                    ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+                }
+            }
+            Ok(None) => {
+                ui.label(self.locale.text("No pending update", "无待处理更新"));
+            }
+            Err(error) => {
+                self.last_error = Some(error.to_string());
+            }
+        }
+        if let Some(message) = &self.update_message {
+            ui.separator();
+            ui.label(message);
+        }
+    }
+
+    fn stage_update(&mut self) {
+        let outcome = (|| -> Result<String, ShellError> {
+            let manifest_path = PathBuf::from(self.update_manifest_path.trim());
+            let package_path = PathBuf::from(self.update_package_path.trim());
+            if !manifest_path.is_absolute() || !package_path.is_absolute() {
+                return Err(ShellError::InvalidInput(
+                    "update manifest and package paths must be absolute".to_owned(),
+                ));
+            }
+            let manifest: SignedUpdateManifestV1 =
+                serde_json::from_slice(&std::fs::read(&manifest_path)?)?;
+            let pending =
+                self.updater
+                    .verify_and_stage(manifest, &package_path, self.manifest.protocol_version)?;
+            Ok(format!(
+                "staged {} for {}/{}",
+                pending.manifest.package_digest,
+                pending.manifest.platform,
+                pending.manifest.architecture
+            ))
+        })();
+        match outcome {
+            Ok(message) => {
+                self.update_message = Some(message);
+                self.last_error = None;
+            }
+            Err(error) => {
+                self.update_message = None;
+                self.last_error = Some(error.to_string());
+            }
+        }
     }
 
     fn accessibility_view(&self, ui: &mut egui::Ui) {
