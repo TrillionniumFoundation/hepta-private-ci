@@ -68,7 +68,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked --release -p codex-hepta-intelligence --test intuition_authenticated_fast_gate -- --nocapture 2>&1 | tee ../intuition-fast-authenticated.txt
+          cargo test --locked --release -p codex-hepta-intelligence --test intuition_authenticated_fast_gate -- --ignored --nocapture 2>&1 | tee ../intuition-fast-authenticated.txt
           grep -q "authenticated_e2e,128" ../intuition-fast-authenticated.txt
       - name: Verify patch hygiene
         working-directory: ${{ github.workspace }}
@@ -122,7 +122,7 @@ jobs:
       - name: Gate kernel fast policy on merge candidate
         run: cargo run --locked --release -p codex-hepta-intuition --example fast_gate
       - name: Gate authenticated fast policy on merge candidate
-        run: cargo test --locked --release -p codex-hepta-intelligence --test intuition_authenticated_fast_gate -- --nocapture
+        run: cargo test --locked --release -p codex-hepta-intelligence --test intuition_authenticated_fast_gate -- --ignored --nocapture
       - name: Verify patch hygiene
         working-directory: ${{ github.workspace }}
         run: git diff --check
