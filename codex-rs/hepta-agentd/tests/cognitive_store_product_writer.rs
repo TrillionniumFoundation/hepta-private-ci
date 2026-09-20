@@ -14,6 +14,7 @@ use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
 use codex_hepta_cognitive_store::CognitiveScope;
 use codex_hepta_cognitive_store::DurableCognitiveStore;
+use codex_hepta_cognitive_store::ForgetMemoryDraft;
 use codex_hepta_cognitive_store::KgFactSetDraft;
 use codex_hepta_cognitive_store::LedgerSourceKind;
 use codex_hepta_cognitive_store::MemoryDraft;
@@ -197,6 +198,64 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         .await?;
     assert_eq!(written.memory.id.revision, 1);
     assert_eq!(written.source.revision, 1);
+
+    let corrected_content = "Production semantic memory remains current after correction.";
+    let correction_source = SourceDraft {
+        scope: scope.clone(),
+        kind: LedgerSourceKind::ExplicitMemoryDirective,
+        event_key: "product-recovery-semantic-write:2".to_string(),
+        content: corrected_content.as_bytes().to_vec(),
+        observed_at_unix_seconds: now,
+    };
+    let correction = MemoryRevisionDraft {
+        scope: scope.clone(),
+        content: corrected_content.to_string(),
+        verification: MemoryVerification::Verified,
+        lifecycle: MemoryLifecycleState::Active,
+        valid_from_unix_seconds: now,
+        valid_to_unix_seconds: None,
+        citations: Vec::new(),
+    };
+    let corrected = host
+        .correct_with_kg(
+            &access,
+            &written.memory.id.memory_id,
+            1,
+            &correction_source,
+            &correction,
+            &KgFactSetDraft::default(),
+        )
+        .await?;
+    assert_eq!(corrected.memory.id.revision, 2);
+
+    let forget_reason = "Production semantic memory is explicitly forgotten.";
+    let forget_source = SourceDraft {
+        scope: scope.clone(),
+        kind: LedgerSourceKind::ExplicitMemoryDirective,
+        event_key: "product-recovery-semantic-write:3".to_string(),
+        content: forget_reason.as_bytes().to_vec(),
+        observed_at_unix_seconds: now,
+    };
+    let forget = ForgetMemoryDraft {
+        scope: scope.clone(),
+        reason: forget_reason.to_string(),
+        valid_from_unix_seconds: now,
+        citations: Vec::new(),
+    };
+    let forgotten = host
+        .forget_with_kg(
+            &access,
+            &written.memory.id.memory_id,
+            2,
+            &forget_source,
+            &forget,
+        )
+        .await?;
+    assert_eq!(forgotten.memory.id.revision, 3);
+    assert_eq!(
+        forgotten.memory.lifecycle,
+        MemoryLifecycleState::Tombstoned
+    );
 
     let cut_before_revoked_write = host.writer().recovery_anchor().await?;
     authority_live.store(false, Ordering::SeqCst);
