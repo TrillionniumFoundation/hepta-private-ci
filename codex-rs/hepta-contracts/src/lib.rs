@@ -55,6 +55,7 @@ pub use final_use_control::FinalUseRevocationAck;
 pub use final_use_control::FinalUseRevocationConvergenceReport;
 pub use final_use_control::FinalUseRevocationConvergenceVerifier;
 pub use final_use_control::FinalUseRevocationFeedVerifier;
+pub use final_use_control::FinalUseRevocationFeedVerifier;
 pub use final_use_control::FinalUseRevocationNodeTrust;
 pub use final_use_control::FinalUseRevocationReceipt;
 pub use final_use_control::FinalUseRevocationUpdate;
@@ -311,3 +312,4 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
