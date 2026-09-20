@@ -10,18 +10,15 @@ fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
 }
 
 fn expected_digest() -> Digest32 {
-    checked(
-        "8ef482c0a0cd42aee59638898402103024004fbb0ea189d5673d4d6455c2a53d"
-            .parse::<Digest32>(),
-    )
+    checked("8ef482c0a0cd42aee59638898402103024004fbb0ea189d5673d4d6455c2a53d".parse::<Digest32>())
 }
 
 #[test]
 fn frozen_golden_vector_matches_cross_language_digest() {
     let type_id = checked(validate_id("platform.types:golden", IdProfileV1::Stable));
     let digest_bytes = Digest32::from_array([
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-        23, 24, 25, 26, 27, 28, 29, 30, 31,
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+        25, 26, 27, 28, 29, 30, 31,
     ]);
     let values = [
         CanonicalValueV1::I64(-1),
@@ -45,10 +42,7 @@ fn frozen_golden_vector_matches_cross_language_digest() {
 
     let encoded = checked(canonical_encode_v1(&type_id, 1, &fields));
     assert_eq!(encoded.as_slice().len(), 254);
-    assert_eq!(
-        &encoded.as_slice()[..26],
-        b"HEPTA-CANONICAL-DIGEST-V1\0"
-    );
+    assert_eq!(&encoded.as_slice()[..26], b"HEPTA-CANONICAL-DIGEST-V1\0");
     assert_eq!(
         checked(canonical_digest_v1(&type_id, 1, &fields)),
         expected_digest()
@@ -124,7 +118,6 @@ fn canonical_encoding_is_bounded() {
     );
 }
 
-
 #[test]
 fn canonical_field_collection_and_depth_limits_reject() {
     let type_id = checked(validate_id("platform.types:limits", IdProfileV1::Stable));
@@ -194,10 +187,12 @@ fn canonical_order_is_invariant_across_deterministic_permutations() {
     }
 }
 
-
 #[test]
 fn deterministic_fuzz_corpus_preserves_text_field_framing() {
-    let type_id = checked(validate_id("platform.types:fuzz-framing", IdProfileV1::Stable));
+    let type_id = checked(validate_id(
+        "platform.types:fuzz-framing",
+        IdProfileV1::Stable,
+    ));
     let mut state = 0x6a09_e667_f3bc_c909_u64;
     for _ in 0..2048 {
         state = state
@@ -210,13 +205,16 @@ fn deterministic_fuzz_corpus_preserves_text_field_framing() {
             let byte = b'a' + (((state >> shift) as u8) % 26);
             payload.push(char::from(byte));
         }
-        let split_a = 1 + usize::try_from((state >> 8) % u64::try_from(len - 1).unwrap_or(1))
-            .unwrap_or(1);
+        let split_a =
+            1 + usize::try_from((state >> 8) % u64::try_from(len - 1).unwrap_or(1)).unwrap_or(1);
         let mut split_b =
-            1 + usize::try_from((state >> 24) % u64::try_from(len - 1).unwrap_or(1))
-                .unwrap_or(1);
+            1 + usize::try_from((state >> 24) % u64::try_from(len - 1).unwrap_or(1)).unwrap_or(1);
         if split_b == split_a {
-            split_b = if split_b + 1 < len { split_b + 1 } else { split_b - 1 };
+            split_b = if split_b + 1 < len {
+                split_b + 1
+            } else {
+                split_b - 1
+            };
         }
 
         let left = [

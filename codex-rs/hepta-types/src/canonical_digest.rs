@@ -99,9 +99,9 @@ pub fn canonical_encode_v1(
 fn validate_field_name(name: &str) -> Result<(), CanonicalDigestError> {
     if name.is_empty()
         || name.len() > MAX_FIELD_NAME_BYTES_V1
-        || !name.bytes().all(|byte| {
-            byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-')
-        })
+        || !name
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-'))
     {
         return Err(CanonicalDigestError::InvalidFieldName);
     }

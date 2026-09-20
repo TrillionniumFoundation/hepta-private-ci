@@ -72,7 +72,7 @@ async fn serving_agent_survives_unrelated_registry_corruption() {
         .expect("serving control response");
     assert_eq!(
         serde_json::to_value(response.payload).expect("serialize actual lifecycle"),
-        serde_json::to_value(AgentdPayload::Lifecycle(LifecycleSnapshot {
+        serde_json::to_value(crate::AgentdPayload::Lifecycle(crate::LifecycleSnapshot {
             lifecycle: AgentLifecycle::Running,
             app_server_ready: true,
             fenced: false,

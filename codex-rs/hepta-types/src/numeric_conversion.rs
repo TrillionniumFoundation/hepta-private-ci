@@ -184,8 +184,7 @@ fn signal_digest(signal: &NumericSignalV1) -> Result<Digest32, NumericConversion
         CanonicalFieldV1::new("unit", CanonicalValueV1::U64(u64::from(schema.unit.tag()))),
         CanonicalFieldV1::new("values", CanonicalValueV1::Array(&values)),
     ];
-    canonical_digest_v1(&type_id, 1, &fields)
-        .map_err(|_| NumericConversionError::CanonicalEncoding)
+    canonical_digest_v1(&type_id, 1, &fields).map_err(|_| NumericConversionError::CanonicalEncoding)
 }
 
 fn conversion_digest(
@@ -200,10 +199,7 @@ fn conversion_digest(
     let numerator = error.numerator.to_be_bytes();
     let denominator = error.denominator.to_be_bytes();
     let fields = [
-        CanonicalFieldV1::new(
-            "error_denominator",
-            CanonicalValueV1::Bytes(&denominator),
-        ),
+        CanonicalFieldV1::new("error_denominator", CanonicalValueV1::Bytes(&denominator)),
         CanonicalFieldV1::new("error_numerator", CanonicalValueV1::Bytes(&numerator)),
         CanonicalFieldV1::new("output_digest", CanonicalValueV1::Digest(output_digest)),
         CanonicalFieldV1::new("source_digest", CanonicalValueV1::Digest(source_digest)),
@@ -216,8 +212,7 @@ fn conversion_digest(
             CanonicalValueV1::Text(target_profile.id()),
         ),
     ];
-    canonical_digest_v1(&type_id, 1, &fields)
-        .map_err(|_| NumericConversionError::CanonicalEncoding)
+    canonical_digest_v1(&type_id, 1, &fields).map_err(|_| NumericConversionError::CanonicalEncoding)
 }
 
 #[cfg(test)]

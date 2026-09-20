@@ -122,11 +122,7 @@ fn validate_profile(raw: &str, profile: IdProfileV1) -> Result<(), IdentityError
     }
 }
 
-fn validate_prefix(
-    raw: &str,
-    prefix: &str,
-    profile: IdProfileV1,
-) -> Result<(), IdentityError> {
+fn validate_prefix(raw: &str, prefix: &str, profile: IdProfileV1) -> Result<(), IdentityError> {
     let Some(local) = raw.strip_prefix(prefix) else {
         return Err(IdentityError::ProfileMismatch(profile));
     };
@@ -238,7 +234,11 @@ impl fmt::Display for IdentityError {
             }
             Self::UnknownProfile => formatter.write_str("unknown identifier profile"),
             Self::ProfileMismatch(profile) => {
-                write!(formatter, "identifier does not match profile {}", profile.id())
+                write!(
+                    formatter,
+                    "identifier does not match profile {}",
+                    profile.id()
+                )
             }
             Self::Zero => formatter.write_str("monotonic identity must be non-zero"),
             Self::Overflow => formatter.write_str("monotonic identity overflow"),

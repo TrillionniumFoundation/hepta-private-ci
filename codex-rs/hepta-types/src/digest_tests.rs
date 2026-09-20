@@ -47,7 +47,6 @@ fn multipart_hash_matches_exact_concatenation() {
     assert_eq!(Digest32::of_parts(&parts), Digest32::of_bytes(b"hepta"));
 }
 
-
 #[test]
 fn every_digest_position_rejects_non_hex() {
     for index in 0..64 {

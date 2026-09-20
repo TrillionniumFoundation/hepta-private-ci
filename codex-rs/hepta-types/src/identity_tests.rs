@@ -53,8 +53,7 @@ fn stable_id_boundaries_and_alphabet_are_exhaustive() {
     );
 
     for byte in 0_u8..=127 {
-        let allowed =
-            byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':');
+        let allowed = byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':');
         let value = format!("a{}z", char::from(byte));
         if allowed {
             assert!(validate_id(&value, IdProfileV1::Stable).is_ok());

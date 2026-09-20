@@ -57,9 +57,9 @@ fn registry_rejects_duplicate_identity_and_wrong_kind() {
             1,
             b"wrong namespace",
         ),
-        Err(ContractRegistryError::Identity(IdentityError::ProfileMismatch(
-            IdProfileV1::Schema
-        )))
+        Err(ContractRegistryError::Identity(
+            IdentityError::ProfileMismatch(IdProfileV1::Schema)
+        ))
     );
 
     let registry = checked(ContractRegistryV1::new(vec![definition.clone()]));

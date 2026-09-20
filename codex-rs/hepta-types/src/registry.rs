@@ -60,11 +60,8 @@ impl ContractDefinitionV1 {
         };
         validate_id(id.as_str(), id_profile).map_err(ContractRegistryError::Identity)?;
         let body = BoundedBytes::try_from_slice(body).map_err(ContractRegistryError::Body)?;
-        let type_id = validate_id(
-            "platform.types:contract-definition-v1",
-            IdProfileV1::Stable,
-        )
-        .map_err(ContractRegistryError::Identity)?;
+        let type_id = validate_id("platform.types:contract-definition-v1", IdProfileV1::Stable)
+            .map_err(ContractRegistryError::Identity)?;
         let fields = [
             CanonicalFieldV1::new("kind", CanonicalValueV1::Text(kind.id())),
             CanonicalFieldV1::new("id", CanonicalValueV1::Text(id.as_str())),
@@ -126,11 +123,7 @@ impl ContractRegistryV1 {
             if total_bytes > MAX_REGISTRY_DEFINITION_BYTES_V1 {
                 return Err(ContractRegistryError::TooMuchDefinitionData);
             }
-            if !identities.insert((
-                definition.kind,
-                definition.id.clone(),
-                definition.version,
-            )) {
+            if !identities.insert((definition.kind, definition.id.clone(), definition.version)) {
                 return Err(ContractRegistryError::DuplicateIdentity);
             }
             if !digests.insert(definition.digest) {
@@ -182,7 +175,9 @@ pub enum ContractRegistryError {
 impl fmt::Display for ContractRegistryError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::ZeroVersion => formatter.write_str("contract definition version must be non-zero"),
+            Self::ZeroVersion => {
+                formatter.write_str("contract definition version must be non-zero")
+            }
             Self::Body(error) => error.fmt(formatter),
             Self::Identity(error) => error.fmt(formatter),
             Self::Canonical(error) => error.fmt(formatter),
