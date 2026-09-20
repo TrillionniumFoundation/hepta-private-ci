@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e85ccd1d4e7094b6cff8f8b17783c5a04ef36eca",
-    "tree": "f591ca00ba73ec3618677afaadb3777326eabac9"
+    "commit": "02eb5f5c99cb6bdfe178bfaeff40f325f1b064c3",
+    "tree": "fac56c271f4edf02054ed0a351f5a06ce172b0ae"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
@@ -18,8 +18,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "named_intelligence_caller_source_implemented_not_agentd_activated",
-  "productionWriterState": "durable_owner_and_external_witness_source_implemented_not_activated",
+  "productCallerState": "agentd_owner_source_compiled_not_daemon_lifecycle_composed",
+  "productionWriterState": "durable_v1_owner_external_witness_source_implemented_not_activated",
   "operations": [
     {
       "operation": "neuron_runtime_tick",
@@ -125,18 +125,45 @@
       "designOperation": "qualification_surfaces",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_neuron_protocols",
+      "nativeSymbol": "canonical_runtime_config_v1 / canonical_tick_receipt_v1 / canonical_checkpoint_v1",
+      "sourcePath": "codex-rs/hepta-neuron/src/protocol.rs",
+      "state": "source_implemented_registered_json_projection_not_activation",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/protocol_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_neuron_protocols",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "population_sparse_v2",
+      "nativeSymbol": "population_sparse_tick_v2",
+      "sourcePath": "codex-rs/hepta-neuron/src/population_v2.rs",
+      "state": "source_implemented_pure_versioned_mechanism_not_durable_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/population_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "population_sparse_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Compose NeuronRuntime through runtime.agentd with a concrete current inference.control implementation and selected artifact/witness lifecycle; the named intelligence caller is not production activation.",
-    "Close the registered canonical JSON Neuron protocol adapters, including canonical NeuronCheckpointV1 publication, rather than treating owner-local structs as the wire contract.",
-    "Implement and qualify the target multi-population mechanism with distinct temporal/activation dimensions; the current SparseConfig remains a single-population same-width compatibility profile.",
-    "Run exact-head and deterministic synthetic-merge product tests before changing productionImplementation or productExecutionProved."
+    "Stack/rebase the compiled AgentdNeuronOwner onto the daemon-owned runtime.agentd run lifecycle and bind a concrete current inference.control feature port plus selected-artifact/witness lifecycle; a compiled owner boundary is not daemon activation.",
+    "If PopulationSparseConfigV2 is promoted beyond qualification, implement a separately versioned durable journal/owner migration and recovery path; never reinterpret V1 journal bytes as V2 state.",
+    "Run current exact-head, deterministic synthetic-merge and product-host qualification before changing productionImplementation or productExecutionProved."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "target-host product execution with authenticated selected model/runtime/device evidence",
+    "measured calibration/OOD/resource acceptance plus future-window ablation, retention and deletion non-resurrection evidence",
+    "independent semantic/operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -149,5 +176,17 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-neuron"
+  ],
+  "productCallers": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+      "symbol": "AgentdNeuronOwner",
+      "state": "compiled_long_lived_owner_boundary_not_daemon_activated"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
+      "symbol": "run_neuron_runtime",
+      "state": "typed_intelligence_caller_source_implemented"
+    }
   ]
 }
