@@ -19,21 +19,20 @@ consumer callback. Receipts contain metadata and digests, never raw secret data.
   `BaoClientError`: `codex-rs/hepta-bao-adapter/src/https_consumer.rs`;
 - final-use grant and durable nonce/revocation state:
   `codex-rs/hepta-contracts/src/final_use*.rs`;
+- durable metadata-only lease lifecycle registry and reconciliation state machine:
+  `codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs`;
 - host integration and real-service procedure:
   `codex-rs/hepta-bao-adapter/README.md`.
 
 ## Durability and activation
 
-Secret values remain owned by the external Bao service. Local durability is
-limited to final-use nonce/revocation state. Activation requires protected host
+Secret values remain owned by the external Bao service. Local durability now covers both final-use nonce/revocation state and metadata-only lease operation/lease lifecycle state. The lease registry persists operation identity, semantic digest, provider lease identity, scope, expiry, generation and explicit Unknown states; it never stores raw secret values. Activation requires protected host
 configuration, provider token, pinned trust, independent grants and a
 host-selected consumer callback.
 
 ## Target-only design
 
-Secret mutation, generic lease issue/renew/revoke, durable operations/evidence
-composition, quota settlement and automatic production enrollment are
-target-only.
+Provider-native secret mutation and network dispatch for generic lease issue/renew/revoke, product composition, quota settlement and automatic production enrollment remain target-only. The local lifecycle/registry semantics are source-implemented, but they do not invent unqualified provider endpoints.
 
 ## Known limits and non-claims
 
