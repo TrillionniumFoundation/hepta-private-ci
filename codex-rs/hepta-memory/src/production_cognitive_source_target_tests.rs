@@ -207,6 +207,7 @@ async fn real_cognitive_destination_deduplicates_same_operation_and_rejects_payl
 
     let operation_id = "operation:cognitive-dedupe";
     let (_draft, payload) = source_payload(operation_id, b"stable-source-content");
+    let durable_intent = operation(&owner, operation_id, &payload);
     let request = crate::ProductionDispatchRequest {
         schema_version: crate::PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
         namespace: crate::PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
@@ -216,6 +217,12 @@ async fn real_cognitive_destination_deduplicates_same_operation_and_rejects_payl
         payload_json: payload.clone(),
         payload_sha256: Sha256Digest::for_bytes(payload.as_bytes()),
         idempotency_key: operation_id.to_string(),
+        operation_scope_id: durable_intent.scope.as_str().to_string(),
+        operation_owner_id: durable_intent.owner.as_str().to_string(),
+        operation_destination_id: durable_intent.destination.as_str().to_string(),
+        operation_semantic_sha256: Sha256Digest::parse(durable_intent.semantic_digest().to_string())
+            .expect("semantic digest"),
+        expected_predecessor_sha256: None,
         operation_digest: Sha256Digest::for_bytes(b"operation-digest"),
     };
     let first = target.dispatch(request.clone()).await;
@@ -231,15 +238,67 @@ async fn real_cognitive_destination_deduplicates_same_operation_and_rejects_payl
     assert_eq!(first_receipt, second_receipt);
 
     let (_changed_draft, changed_payload) = source_payload(operation_id, b"changed-source-content");
+    let changed_intent = operation(&owner, operation_id, &changed_payload);
     let changed = crate::ProductionDispatchRequest {
         payload_json: changed_payload.clone(),
         payload_sha256: Sha256Digest::for_bytes(changed_payload.as_bytes()),
+        operation_semantic_sha256: Sha256Digest::parse(
+            changed_intent.semantic_digest().to_string(),
+        )
+        .expect("changed semantic digest"),
         ..request
     };
     assert!(matches!(
         target.dispatch(changed).await,
         crate::ProductionTargetOutcome::Rejected { .. }
     ));
+}
+
+#[tokio::test]
+async fn predecessor_mismatch_is_not_applied_inside_destination_transaction() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let target = CognitiveSourceOutboxTarget::new(
+        store.clone(),
+        CognitiveAccess::agent_private(owner.clone()),
+    )
+    .expect("target");
+
+    let operation_id = "operation:cognitive-predecessor-mismatch";
+    let (_draft, payload) = source_payload(operation_id, b"predecessor-mismatch");
+    let predecessor = Digest32::of_bytes(b"expected-existing-head");
+    let mut intent = operation(&owner, operation_id, &payload);
+    intent.expected_predecessor = Some(predecessor);
+    let request = crate::ProductionDispatchRequest {
+        schema_version: crate::PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
+        namespace: crate::PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
+        lease_id: "lease:destination-cas".to_string(),
+        occurrence_key: operation_id.to_string(),
+        topic: COGNITIVE_SOURCE_TOPIC_V1.to_string(),
+        payload_json: payload.clone(),
+        payload_sha256: Sha256Digest::for_bytes(payload.as_bytes()),
+        idempotency_key: operation_id.to_string(),
+        operation_scope_id: intent.scope.as_str().to_string(),
+        operation_owner_id: intent.owner.as_str().to_string(),
+        operation_destination_id: intent.destination.as_str().to_string(),
+        operation_semantic_sha256: Sha256Digest::parse(intent.semantic_digest().to_string())
+            .expect("semantic digest"),
+        expected_predecessor_sha256: Some(
+            Sha256Digest::parse(predecessor.to_string()).expect("predecessor digest"),
+        ),
+        operation_digest: Sha256Digest::for_bytes(b"predecessor-bound-operation"),
+    };
+
+    assert!(matches!(
+        target.dispatch(request.clone()).await,
+        crate::ProductionTargetOutcome::NotApplied { .. }
+    ));
+    assert_eq!(
+        target.observe_terminal(&request).await,
+        CognitiveSourceTerminalObservation::NotApplied,
+        "destination CAS mismatch must leave no source row behind"
+    );
 }
 
 #[cfg(unix)]
