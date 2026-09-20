@@ -641,6 +641,7 @@ export class FileBrowserOperationJournal {
       await handle.close();
     }
     const records = new Map();
+    let repairedTornTail = false;
     const trailingLineWasDurablyTerminated =
       bytes.length === 0 || bytes.endsWith("\n");
     const lines = bytes.length === 0 ? [] : bytes.split("\n");
@@ -661,6 +662,7 @@ export class FileBrowserOperationJournal {
           !trailingLineWasDurablyTerminated &&
           index === lines.length - 1
         ) {
+          repairedTornTail = true;
           break;
         }
         throw new TypeError("browser journal contains malformed JSON");
@@ -727,6 +729,13 @@ export class FileBrowserOperationJournal {
         records.set(key, record);
       }
     }
+    if (repairedTornTail) {
+      // Recovery must repair the physical tail before any later append. Merely
+      // ignoring the fragment once would let a subsequent record turn it into
+      // newline-terminated corruption on the next reopen.
+      await this.#rewrite(records);
+      this.#fault("torn_prefix_repaired");
+    }
     return records;
   }
 
@@ -735,9 +744,22 @@ export class FileBrowserOperationJournal {
     const lineBytes = UTF8.encode(line).byteLength;
     await ensureCanonicalPrivateParent(this.#path);
     const noFollow = constants.O_NOFOLLOW ?? 0;
-    const flags =
-      constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
-    let handle = await open(this.#path, flags, 0o600);
+    const createFlags =
+      constants.O_WRONLY |
+      constants.O_APPEND |
+      constants.O_CREAT |
+      constants.O_EXCL |
+      noFollow;
+    const appendFlags = constants.O_WRONLY | constants.O_APPEND | noFollow;
+    let handle;
+    let created = false;
+    try {
+      handle = await open(this.#path, createFlags, 0o600);
+      created = true;
+    } catch (error) {
+      if (error?.code !== "EEXIST") throw error;
+      handle = await open(this.#path, appendFlags);
+    }
     try {
       const info = await handle.stat();
       if (!info.isFile()) {
@@ -757,6 +779,15 @@ export class FileBrowserOperationJournal {
       }
       await handle.writeFile(line, "utf8");
       await handle.sync();
+      if (created) {
+        this.#fault("append_created_fsynced_before_parent_fsync");
+        const parent = await open(dirname(this.#path), constants.O_RDONLY | noFollow);
+        try {
+          await parent.sync();
+        } finally {
+          await parent.close();
+        }
+      }
       return info.size + lineBytes;
     } finally {
       await handle?.close();
