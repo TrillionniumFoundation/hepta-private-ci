@@ -1,6 +1,12 @@
 use super::*;
 
 use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf_learning::OutcomeSignalV1;
+use codex_hepta_cognitive_types::hnmf_learning::ReplayResourceReceiptV1;
+use codex_hepta_cognitive_types::hnmf_learning::ReplaySelectionReceiptV1;
+use codex_hepta_cognitive_types::hnmf_learning::SourceBucketCountV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Revision;
 
@@ -74,6 +80,71 @@ fn policy(maximum: u32, protected: Vec<StableId>) -> CompactionPolicyV2 {
         compatibility_digest: digest("compatibility"),
         maximum_retained_records: maximum,
         protected_record_ids: protected,
+    }
+}
+
+fn contract_id(value: &str) -> ContractIdV1 {
+    ContractIdV1::new(value).unwrap_or_else(|error| panic!("valid contract id: {error}"))
+}
+
+fn contract_digest(value: &str) -> ContractDigestV1 {
+    ContractDigestV1::from_digest(digest(value))
+        .unwrap_or_else(|error| panic!("valid contract digest: {error}"))
+}
+
+fn shadow_candidate() -> QualifiedCompactionCandidateV2 {
+    let retained = record("memory:retained", 1, None, RecordState::Live);
+    build_qualified_candidate(
+        snapshot_key(),
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        &policy(1, vec![id("memory:retained")]),
+        vec![input(retained, 10)],
+    )
+    .unwrap_or_else(|error| panic!("valid shadow candidate: {error}"))
+}
+
+fn replay_receipt(event_ids: Vec<ContractIdV1>) -> ReplaySelectionReceiptV1 {
+    let selected_count =
+        u16::try_from(event_ids.len()).unwrap_or_else(|_| panic!("bounded replay fixture"));
+    ReplaySelectionReceiptV1 {
+        candidate_set_digest: contract_digest("candidate-set"),
+        selected_event_ids: event_ids,
+        source_bucket_counts: if selected_count == 0 {
+            Vec::new()
+        } else {
+            vec![SourceBucketCountV1 {
+                source_bucket: 1,
+                selected_count,
+            }]
+        },
+        selection_policy_digest: contract_digest("selection-policy"),
+        resource_receipt: ReplayResourceReceiptV1 {
+            candidate_count: selected_count.max(1),
+            selected_count,
+            maximum_per_source_bucket: selected_count.max(1),
+        },
+    }
+}
+
+fn outcome_signal() -> OutcomeSignalV1 {
+    OutcomeSignalV1 {
+        episode_id: contract_id("episode:1"),
+        utility_delta_ppm: 10_000,
+        prediction_error_ppm: 20_000,
+        novelty_ppm: 30_000,
+        risk_ppm: 40_000,
+        ood_ppm: 50_000,
+        observer_digest: contract_digest("observer"),
+    }
+}
+
+fn replay_binding(event_id: &str, record: &MemoryRecord) -> CanonicalReplayRecordBindingV1 {
+    CanonicalReplayRecordBindingV1 {
+        event_id: contract_id(event_id),
+        legacy_record_id: record.record_id.clone(),
+        legacy_record_revision: record.revision,
+        legacy_record_digest: record.record_digest(),
     }
 }
 
@@ -227,5 +298,78 @@ fn protected_set_cannot_exceed_checkpoint_capacity() {
             vec![input(first, 1), input(second, 1)],
         ),
         Err(QualifiedCompactionError::ProtectedReferencesExceedCapacity)
+    );
+}
+
+#[test]
+fn canonical_replay_shadow_binds_selected_event_to_retained_record() {
+    let candidate = shadow_candidate();
+    let retained = candidate.retained_records[0].clone();
+    let replay = replay_receipt(vec![contract_id("event:retained")]);
+    let shadow = bind_canonical_replay_outcome_shadow_v1(
+        &candidate,
+        replay,
+        outcome_signal(),
+        vec![replay_binding("event:retained", &retained)],
+    )
+    .unwrap_or_else(|error| panic!("canonical replay shadow: {error}"));
+
+    shadow
+        .validate()
+        .unwrap_or_else(|error| panic!("canonical replay shadow validation: {error}"));
+    assert_eq!(shadow.candidate.candidate_digest, candidate.candidate_digest);
+    assert_eq!(shadow.selected_bindings.len(), 1);
+    assert!(!shadow.authority.grants_any());
+}
+
+#[test]
+fn canonical_replay_shadow_rejects_nonretained_or_collapsed_identity() {
+    let candidate = shadow_candidate();
+    let retained = candidate.retained_records[0].clone();
+    let replay = replay_receipt(vec![contract_id("event:retained")]);
+
+    let mut missing = replay_binding("event:retained", &retained);
+    missing.legacy_record_id = id("memory:not-retained");
+    assert_eq!(
+        bind_canonical_replay_outcome_shadow_v1(
+            &candidate,
+            replay,
+            outcome_signal(),
+            vec![missing],
+        ),
+        Err(QualifiedCompactionError::CanonicalReplayBindingMismatch)
+    );
+
+    let replay = replay_receipt(vec![contract_id("event:a"), contract_id("event:b")]);
+    assert_eq!(
+        bind_canonical_replay_outcome_shadow_v1(
+            &candidate,
+            replay,
+            outcome_signal(),
+            vec![
+                replay_binding("event:b", &retained),
+                replay_binding("event:a", &retained),
+            ],
+        ),
+        Err(QualifiedCompactionError::CanonicalReplayBindingMismatch)
+    );
+}
+
+#[test]
+fn canonical_replay_shadow_revalidates_embedded_evidence() {
+    let candidate = shadow_candidate();
+    let retained = candidate.retained_records[0].clone();
+    let mut shadow = bind_canonical_replay_outcome_shadow_v1(
+        &candidate,
+        replay_receipt(vec![contract_id("event:retained")]),
+        outcome_signal(),
+        vec![replay_binding("event:retained", &retained)],
+    )
+    .unwrap_or_else(|error| panic!("canonical replay shadow: {error}"));
+
+    shadow.outcome_signal.risk_ppm = 41_000;
+    assert_eq!(
+        shadow.validate(),
+        Err(QualifiedCompactionError::CanonicalShadowDigestMismatch)
     );
 }
