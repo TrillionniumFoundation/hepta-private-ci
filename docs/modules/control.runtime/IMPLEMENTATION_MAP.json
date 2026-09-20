@@ -368,7 +368,7 @@
     "canonicalExternalProtocolAdmission": "not_established",
     "productionCaller": "partial_request_local_only",
     "productionWriter": "not_established",
-    "exactHeadQualification": "required_on_current_candidate",
+    "exactHeadQualification": "pending_current_head_workflows",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established",
@@ -395,7 +395,8 @@
     "activation": false,
     "release": false,
     "requestLocalProductExecutionProved": true,
-    "globalProductExecutionProved": false
+    "globalProductExecutionProved": false,
+    "currentSourceCandidate": "5e1b933ff0c3ecd6c8812901544987306d945982"
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
@@ -414,9 +415,9 @@
     "operator acceptance, canary, promotion and release"
   ],
   "sourceObservation": {
-    "commit": "230db14d7f7ad338f9f1191c96d4449c8f50ae48",
-    "tree": "6c451a135519e05a023cbfb0bde082f012387b1d",
-    "scope": "current control.runtime plus Agentd final-use integration candidate"
+    "commit": "5e1b933ff0c3ecd6c8812901544987306d945982",
+    "tree": "e5818bb71d3019e0aaab5c8fafddc90294db8639",
+    "scope": "frozen control.runtime source/test candidate before final documentation freeze"
   },
   "integrationAdapters": [
     {
@@ -433,7 +434,8 @@
       "nonClaim": "not attached by default Agentd startup and not a global multi-owner planner caller",
       "tests": [
         "sealed_control_request_maps_exactly_to_final_use_binding",
-        "request_field_drift_is_rejected_before_authority_claim"
+        "request_field_drift_is_rejected_before_authority_claim",
+        "signed_final_use_claim_consumes_sealed_control_request"
       ]
     }
   ]
