@@ -108,6 +108,8 @@ fn retrieval_assignment() -> LedgerEvent {
         context_exposed: true,
         omitted_by_policy_limits: 0,
         assignment_propensity: ProbabilityQ32::ONE,
+        downstream_policy_digest: Some(Digest32::of_bytes(b"ranker-policy")),
+        delivery_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompleteness::Complete,
         support_digest: Digest32::of_bytes(b"retrieval-observation"),
     })
@@ -651,6 +653,11 @@ fn retrieval_assignment_tag_four_replays_exactly_after_reopen() {
     assert_eq!(fact.selected_candidate_indices, vec![1]);
     assert_eq!(fact.delivered_candidate_indices, vec![1]);
     assert!(fact.context_exposed);
+    assert_eq!(
+        fact.downstream_policy_digest,
+        Some(Digest32::of_bytes(b"ranker-policy"))
+    );
+    assert_eq!(fact.delivery_propensity, ProbabilityQ32::ONE);
     assert_eq!(must(reopened.snapshot()), snapshot);
 
     let mut core = LearningLedger::new();
