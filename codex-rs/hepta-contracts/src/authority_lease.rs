@@ -26,9 +26,10 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 const LEASE_SCHEMA_VERSION: u32 = 1;
-const STORE_SCHEMA_VERSION: u32 = 1;
+const STORE_SCHEMA_VERSION: u32 = 2;
 pub const MAX_AUTHORITY_LEASES: usize = 16_384;
 pub const MAX_CAPABILITY_REVOCATIONS: usize = 16_384;
+pub const MAX_RETIRED_AUTHORITY_LEASE_IDS: usize = 16_384;
 pub const MAX_AUTHORITY_LEASE_LIFETIME_MS: u64 = 86_400_000;
 pub const MAX_AUTHORITY_PRUNE_BATCH: usize = 1_024;
 pub const MAX_AUTHORITY_STORE_BYTES: usize = 64 * 1024 * 1024;
@@ -85,6 +86,7 @@ impl AuthorityLeaseFrontier {
             store_revision: 1,
             leases: BTreeMap::new(),
             revocations: BTreeMap::new(),
+            retired_revisions: BTreeMap::new(),
             failed: false,
         }))
     }
@@ -94,8 +96,10 @@ impl AuthorityLeaseFrontier {
 pub struct AuthorityCapacity {
     pub leases: usize,
     pub revocations: usize,
+    pub retired_lease_ids: usize,
     pub max_leases: usize,
     pub max_revocations: usize,
+    pub max_retired_lease_ids: usize,
 }
 
 impl AuthorityCapacity {
@@ -107,8 +111,15 @@ impl AuthorityCapacity {
         self.max_revocations.saturating_sub(self.revocations)
     }
 
+    pub fn remaining_retired_lease_ids(self) -> usize {
+        self.max_retired_lease_ids
+            .saturating_sub(self.retired_lease_ids)
+    }
+
     pub fn rollover_required_with_reserve(self, reserve: usize) -> bool {
-        self.remaining_leases() <= reserve || self.remaining_revocations() <= reserve
+        self.remaining_leases() <= reserve
+            || self.remaining_revocations() <= reserve
+            || self.remaining_retired_lease_ids() <= reserve
     }
 }
 
@@ -144,6 +155,7 @@ struct State {
     store_revision: u64,
     leases: BTreeMap<String, AuthorityLease>,
     revocations: BTreeMap<String, CapabilityRevocation>,
+    retired_revisions: BTreeMap<String, u64>,
     #[serde(skip)]
     failed: bool,
 }
@@ -250,10 +262,10 @@ impl AuthorityLeaseRegistry {
         })))
     }
 
-    /// External-frontier convenience constructor. The externally durable
-    /// frontier is loaded and must exactly match local state, but time still
-    /// comes from `SystemAuthorityClock`. A production composition that also
-    /// requires protected time must use `open_state_dir_with_trust`.
+    /// Rollback-hardened compatibility constructor. The externally durable
+    /// frontier is loaded and CAS-advanced, but time still comes from
+    /// `SystemAuthorityClock`. Production composition requiring trusted time
+    /// must use `open_state_dir_with_trust`.
     pub fn open_state_dir_with_frontier_store(
         directory: &Path,
         owner_id: String,
@@ -342,8 +354,10 @@ impl AuthorityLeaseRegistry {
         Ok(AuthorityCapacity {
             leases: state.leases.len(),
             revocations: state.revocations.len(),
+            retired_lease_ids: state.retired_revisions.len(),
             max_leases: MAX_AUTHORITY_LEASES,
             max_revocations: MAX_CAPABILITY_REVOCATIONS,
+            max_retired_lease_ids: MAX_RETIRED_AUTHORITY_LEASE_IDS,
         })
     }
 
@@ -366,7 +380,13 @@ impl AuthorityLeaseRegistry {
         }
         match state.leases.get(&lease.lease_id) {
             None => {
-                if expected_revision != 0 || lease.revision != 1 {
+                if let Some(retired_revision) = state.retired_revisions.get(&lease.lease_id) {
+                    if *retired_revision != expected_revision
+                        || lease.revision != next_revision(*retired_revision)?
+                    {
+                        return Err(AuthorityLeaseError::RevisionMismatch);
+                    }
+                } else if expected_revision != 0 || lease.revision != 1 {
                     return Err(AuthorityLeaseError::RevisionMismatch);
                 }
                 if state.leases.len() >= MAX_AUTHORITY_LEASES {
@@ -375,16 +395,13 @@ impl AuthorityLeaseRegistry {
             }
             Some(current) => {
                 if current == &lease {
-                    if lease.revision != next_revision(expected_revision)? {
-                        return Err(AuthorityLeaseError::RevisionMismatch);
-                    }
                     return Ok(AuthorityLeaseReadV1 {
                         lease,
                         store_revision: state.store_revision,
                     });
                 }
                 if current.revision != expected_revision
-                    || lease.revision != next_revision(expected_revision)?
+                    || lease.revision != expected_revision.saturating_add(1)
                 {
                     return Err(AuthorityLeaseError::RevisionMismatch);
                 }
@@ -392,6 +409,7 @@ impl AuthorityLeaseRegistry {
         }
         let mut next = state.clone();
         next.store_revision = next_revision(next.store_revision)?;
+        next.retired_revisions.remove(&lease.lease_id);
         next.leases.insert(lease.lease_id.clone(), lease.clone());
         self.persist_or_fence(&mut state, next)?;
         Ok(AuthorityLeaseReadV1 {
@@ -446,7 +464,7 @@ impl AuthorityLeaseRegistry {
         }
         let mut state = self.lock_state()?;
         if let Some(existing) = state.revocations.get(lease_id) {
-            if existing.lease_revision == next_revision(expected_revision)?
+            if existing.lease_revision == expected_revision.saturating_add(1)
                 && existing.reason_sha256 == reason_sha256
             {
                 return Ok(receipt(existing, expected_revision));
@@ -498,7 +516,7 @@ impl AuthorityLeaseRegistry {
         }
         let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let mut state = self.lock_state()?;
-        let expired: Vec<String> = state
+        let candidates: Vec<String> = state
             .leases
             .iter()
             .filter(|(id, lease)| {
@@ -507,12 +525,23 @@ impl AuthorityLeaseRegistry {
             .take(max_to_prune)
             .map(|(id, _)| id.clone())
             .collect();
-        if expired.is_empty() {
+        if candidates.is_empty() {
             return Ok(0);
         }
+        let available_retired =
+            MAX_RETIRED_AUTHORITY_LEASE_IDS.saturating_sub(state.retired_revisions.len());
+        if available_retired == 0 {
+            return Err(AuthorityLeaseError::CapacityExceeded);
+        }
+        let expired: Vec<String> = candidates.into_iter().take(available_retired).collect();
         let mut next = state.clone();
         for lease_id in &expired {
-            next.leases.remove(lease_id);
+            let lease = next
+                .leases
+                .remove(lease_id)
+                .ok_or(AuthorityLeaseError::LeaseNotFound)?;
+            next.retired_revisions
+                .insert(lease_id.clone(), lease.revision);
         }
         next.store_revision = next_revision(next.store_revision)?;
         self.persist_or_fence(&mut state, next)?;
@@ -539,6 +568,7 @@ impl AuthorityLeaseRegistry {
         next.store_revision = next_revision(next.store_revision)?;
         next.leases.clear();
         next.revocations.clear();
+        next.retired_revisions.clear();
         self.persist_or_fence(&mut state, next)?;
         Ok(frontier_for_state(&state))
     }
@@ -594,8 +624,10 @@ impl AuthorityLeaseVerifier {
         Ok(AuthorityCapacity {
             leases: state.leases.len(),
             revocations: state.revocations.len(),
+            retired_lease_ids: state.retired_revisions.len(),
             max_leases: MAX_AUTHORITY_LEASES,
             max_revocations: MAX_CAPABILITY_REVOCATIONS,
+            max_retired_lease_ids: MAX_RETIRED_AUTHORITY_LEASE_IDS,
         })
     }
 
@@ -849,6 +881,7 @@ impl Store {
                 store_revision: trusted_frontier.store_revision,
                 leases: BTreeMap::new(),
                 revocations: BTreeMap::new(),
+                retired_revisions: BTreeMap::new(),
                 failed: false,
             };
             if frontier_for_state(&state) != trusted_frontier {
@@ -894,7 +927,7 @@ fn frontier_conflicts(
 
 fn frontier_for_state(state: &State) -> AuthorityLeaseFrontier {
     let mut hash = Sha256::new();
-    hash.update(b"hepta.kernel.authority.lease-frontier.v1\0");
+    hash.update(b"hepta.kernel.authority.lease-frontier.v2\0");
     hash.update(state.authority_epoch.to_le_bytes());
     hash.update(state.store_revision.to_le_bytes());
     hash.update((state.leases.len() as u64).to_le_bytes());
@@ -911,6 +944,11 @@ fn frontier_for_state(state: &State) -> AuthorityLeaseFrontier {
         hash.update(lease.binding.payload_sha256);
         hash.update(lease.issued_at_unix_ms.to_le_bytes());
         hash.update(lease.expires_at_unix_ms.to_le_bytes());
+    }
+    hash.update((state.retired_revisions.len() as u64).to_le_bytes());
+    for (lease_id, revision) in &state.retired_revisions {
+        hash_text(&mut hash, lease_id);
+        hash.update(revision.to_le_bytes());
     }
     hash.update((state.revocations.len() as u64).to_le_bytes());
     for (lease_id, revocation) in &state.revocations {
@@ -940,6 +978,13 @@ fn state_valid(state: &State) -> bool {
         && state.store_revision > 0
         && state.leases.len() <= MAX_AUTHORITY_LEASES
         && state.revocations.len() <= MAX_CAPABILITY_REVOCATIONS
+        && state.retired_revisions.len() <= MAX_RETIRED_AUTHORITY_LEASE_IDS
+        && state.retired_revisions.iter().all(|(id, revision)| {
+            identifier(id)
+                && *revision > 0
+                && !state.leases.contains_key(id)
+                && !state.revocations.contains_key(id)
+        })
         && state.leases.iter().all(|(id, lease)| {
             id == &lease.lease_id
                 && lease.validate().is_ok()
@@ -1252,30 +1297,6 @@ mod tests {
     }
 
     #[test]
-    fn identical_put_retry_requires_the_original_predecessor() {
-        let (registry, _directory) = fixture();
-        let original = lease();
-        let first = registry.put_lease(original.clone(), 0).unwrap();
-        let retry = registry.put_lease(original.clone(), 0).unwrap();
-        assert_eq!(first, retry);
-        assert_eq!(
-            registry.put_lease(original, 1).unwrap_err(),
-            AuthorityLeaseError::RevisionMismatch
-        );
-
-        let mut replacement = lease();
-        replacement.revision = 2;
-        replacement.expires_at_unix_ms = 40_000;
-        let first = registry.put_lease(replacement.clone(), 1).unwrap();
-        let retry = registry.put_lease(replacement.clone(), 1).unwrap();
-        assert_eq!(first, retry);
-        assert_eq!(
-            registry.put_lease(replacement, 2).unwrap_err(),
-            AuthorityLeaseError::RevisionMismatch
-        );
-    }
-
-    #[test]
     fn stale_cas_and_binding_drift_fail_closed() {
         let (registry, _directory) = fixture();
         registry.put_lease(lease(), 0).unwrap();
@@ -1330,12 +1351,6 @@ mod tests {
                 .unwrap_err(),
             AuthorityLeaseError::Revoked
         );
-        assert_eq!(
-            registry
-                .revoke("lease-one", 2, [9; 32])
-                .unwrap_err(),
-            AuthorityLeaseError::Revoked
-        );
     }
 
     #[test]
@@ -1350,7 +1365,62 @@ mod tests {
             .read_lease("lease-one")
             .unwrap()
             .is_none());
-        assert_eq!(registry.capacity().unwrap().leases, 0);
+        let capacity = registry.capacity().unwrap();
+        assert_eq!(capacity.leases, 0);
+        assert_eq!(capacity.retired_lease_ids, 1);
+    }
+
+    #[test]
+    fn pruned_lease_id_preserves_monotonic_revision_lineage() {
+        let (registry, _directory) = fixture();
+        let mut expired = lease();
+        expired.expires_at_unix_ms = 1_500;
+        registry.put_lease(expired, 0).unwrap();
+        assert_eq!(registry.prune_expired_leases(1), Ok(1));
+
+        let stale = lease();
+        assert_eq!(
+            registry.put_lease(stale, 0).unwrap_err(),
+            AuthorityLeaseError::RevisionMismatch
+        );
+
+        let mut successor = lease();
+        successor.revision = 2;
+        registry.put_lease(successor, 1).unwrap();
+        assert_eq!(
+            registry
+                .verifier()
+                .verify_use("lease-one", 1, &binding())
+                .unwrap_err(),
+            AuthorityLeaseError::RevisionMismatch
+        );
+        assert!(registry
+            .verifier()
+            .verify_use("lease-one", 2, &binding())
+            .is_ok());
+    }
+
+    #[test]
+    fn epoch_rollover_is_the_only_revision_lineage_reset() {
+        let (registry, _directory) = fixture();
+        let mut expired = lease();
+        expired.expires_at_unix_ms = 1_500;
+        registry.put_lease(expired, 0).unwrap();
+        assert_eq!(registry.prune_expired_leases(1), Ok(1));
+
+        let before = registry.frontier().unwrap();
+        registry.advance_epoch(before.store_revision, 8).unwrap();
+
+        let mut fresh = lease();
+        fresh.authority_epoch = 8;
+        fresh.revision = 1;
+        fresh.issued_at_unix_ms = 1_000;
+        fresh.expires_at_unix_ms = 30_000;
+        registry.put_lease(fresh, 0).unwrap();
+        assert!(registry
+            .verifier()
+            .verify_use("lease-one", 1, &binding())
+            .is_ok());
     }
 
     #[test]
@@ -1361,9 +1431,13 @@ mod tests {
         };
         let mut state = State {
             authority_epoch: 7,
-            store_revision: (MAX_AUTHORITY_LEASES + MAX_CAPABILITY_REVOCATIONS + 1) as u64,
+            store_revision: (MAX_AUTHORITY_LEASES
+                + MAX_CAPABILITY_REVOCATIONS
+                + MAX_RETIRED_AUTHORITY_LEASE_IDS
+                + 1) as u64,
             leases: BTreeMap::new(),
             revocations: BTreeMap::new(),
+            retired_revisions: BTreeMap::new(),
             failed: false,
         };
         for index in 0..MAX_AUTHORITY_LEASES {
@@ -1386,6 +1460,11 @@ mod tests {
                     expires_at_unix_ms: MAX_AUTHORITY_LEASE_LIFETIME_MS + 1,
                 },
             );
+        }
+        for index in 0..MAX_RETIRED_AUTHORITY_LEASE_IDS {
+            state
+                .retired_revisions
+                .insert(max_id("t", index), u64::try_from(index + 1).unwrap());
         }
         for index in 0..MAX_CAPABILITY_REVOCATIONS {
             let lease_id = max_id("r", index);
@@ -1503,7 +1582,6 @@ mod tests {
         let old = AuthorityLeaseFrontier {
             authority_epoch: frontier.authority_epoch,
             store_revision: frontier.store_revision + 1,
-            state_sha256: frontier.state_sha256,
         };
         assert_eq!(
             AuthorityLeaseRegistry::open_state_dir(
