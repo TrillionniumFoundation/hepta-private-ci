@@ -523,3 +523,47 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+
+#[test]
+fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success() {
+    let path = path("historical-codex-frontier");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let mut historical = dispatch();
+    historical.codex_authority_epoch = None;
+    historical.codex_revocation_revision = None;
+    historical.codex_revocation_head_sha256 = None;
+    control.dispatch_native("r1", historical).unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+    drop(control);
+
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let reopened = control.native_record("r1").unwrap();
+    assert_eq!(
+        reopened
+            .dispatch
+            .as_ref()
+            .unwrap()
+            .codex_revocation_revision,
+        None
+    );
+
+    let mut observed = output(NativeRunStatus::Completed, Some(7));
+    observed.owner_authority = NativeOwnerAuthority::ObservedReady;
+    let settled = control.settle_native("r1", observed).unwrap();
+    let terminal = settled.observation.unwrap();
+    assert_eq!(terminal.status, NativeRunStatus::Completed);
+    assert!(terminal.terminal_observed);
+    assert_eq!(terminal.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert!(!terminal.succeeded());
+    assert!(
+        terminal
+            .stop_reason
+            .as_deref()
+            .is_some_and(|reason| reason.contains("lacks claim-time authority frontier"))
+    );
+
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
