@@ -23,6 +23,8 @@ product host authenticates generator and immutable objective
   -> learning.ledger freezes DatasetSnapshotV2 against an exact ledger head,
      eligible frontier, outcome watermark, correction cut, revocation cut and
      inclusion policy
+  -> DatasetSnapshotReceiptV3 retains and self-verifies the complete V2 digest
+     preimage plus producer/cut/policy identity for cross-module consumption
 ```
 
 Linearization rules:
@@ -41,27 +43,34 @@ Linearization rules:
 ## 2. Dataset to operator and world-model candidates
 
 ```text
-DatasetSnapshotV2
-  -> validate current objective, lineage and withdrawal state
-  -> fit_transition_model builds an action-conditioned tabular baseline from
-     independently observed rows
-  -> unsupported state/action pairs return OOD instead of extrapolation
-  -> validate_applicability_certificate admits only current, independently
-     evaluated smooth-axis profiles with positive ellipticity and named fallback
+DatasetSnapshotReceiptV3
+  -> VerifiedOperatorDatasetV2::from_receipt recomputes the frozen receipt and
+     retains the exact snapshot/objective/dataset/ledger-head/source-record set
+  -> build_targets_bound_v2 binds target construction to that exact receipt;
+     relabelled support evidence cannot increase target support
+  -> fit_transition_model_bound_v2 builds the action-conditioned tabular
+     baseline from exactly the frozen independently observed evidence rows
+  -> fit_tabular_operator_bound_v2 fits the complete sensor/action grid from the
+     same verified dataset identity
+  -> unsupported state/action or sensor/action pairs return OOD instead of
+     extrapolation
+  -> admit_signed_operator_applicability_v2 authenticates generator/evaluator
+     attestations for the exact applicability payload before structural admission
   -> build_sensor_core deterministically selects a fixed farthest-point core
      and measures fill distance, separation radius and mesh ratio
   -> evaluate_bellman_reference requires a complete sensor/action grid and emits
      deterministic targets, greedy actions and action gaps
   -> optional learned implementations are compared with that reference
-  -> admit_operator_regularity intersects rank, reconstruction gain,
-     monotonicity, positivity, Hölder/Lipschitz residuals, OOD and the complete
-     error-component budget
+  -> admit_signed_operator_regularity_v2 authenticates the exact regularity
+     payload before intersecting rank, reconstruction gain, shape,
+     Hölder/Lipschitz residuals, OOD and the complete error-component budget
   -> candidate bytes and the complete V2 manifest go to learning.artifacts
 ```
 
-The existing `train` API is retained only as a compatibility alias for
-`build_targets`. It is a deterministic target builder, not proof that a learned
-operator, neural network or production inference path exists.
+The existing `train`/`build_targets`, raw fit and raw prediction APIs remain
+compatibility surfaces. New qualification uses the receipt-bound target/fit
+operations and independently pinned tabular/world-model loaders. None of these
+surfaces is proof that a neural operator or production inference path exists.
 
 World-model predictions are always marked synthetic. They may support planning
 or evaluation models, but they cannot become the independent factual outcome
@@ -109,8 +118,9 @@ construct the complete EvaluationPlan before outcomes are inspected
   -> compute OPE/sequential estimates and support diagnostics
   -> compute prespecified cluster intervals and multiplicity-adjusted evidence
   -> collect retention, subgroup, privacy and unlearning receipts
-  -> decide_independently validates both receipt seals and their exact semantic
-     binding, then verifies distinct principal, credential and signing key
+  -> decide_with_signed_evidence_v2 validates the frozen semantic binding and
+     host-trusted generator/evaluator signatures, roles, principals, credentials,
+     signing keys, authority epoch, lifetime and revocation
   -> intersect candidate LCB versus baseline UCB, safety floors, support,
      multiplicity, snapshot count, future windows, retention and unlearning
   -> emit EligibleForIndependentSelection, Ineligible or InsufficientEvidence
