@@ -39,6 +39,12 @@ on:
       - ".github/workflows/hepta-development-docs.yml"
       - ".github/actions/hepta-synthetic-merge/**"
   workflow_dispatch:
+    inputs:
+      source_snapshot:
+        description: "Retain a credential-free Git bundle for offline reproduction (not qualification evidence)"
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -145,3 +151,37 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
+
+  source-snapshot:
+    name: Export exact source for offline reproduction
+    if: github.event_name == 'workflow_dispatch' && inputs.source_snapshot
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bundle only committed Git objects, never runner files or credentials
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          OUT="$RUNNER_TEMP/hepta-source-snapshot"
+          mkdir -p "$OUT"
+          git bundle create "$OUT/source.bundle" HEAD
+          git bundle verify "$OUT/source.bundle"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/identity.txt"
+          sha256sum "$OUT/source.bundle" > "$OUT/SHA256SUMS"
+          git diff --exit-code
+      - name: Retain reproduction input separately from test receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-source-snapshot-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-source-snapshot/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
