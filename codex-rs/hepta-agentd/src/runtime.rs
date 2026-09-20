@@ -44,7 +44,7 @@ pub async fn run(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
-    let plasticity_runtime = config.take_plasticity_runtime();
+    let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
@@ -63,6 +63,14 @@ pub async fn run(
         registry,
         EVENT_CAPACITY,
     )?);
+    let plasticity_runtime = match plasticity_bootstrap {
+        Some(bootstrap) => {
+            let (handle, owner) = bootstrap.into_channel()?;
+            state.attach_plasticity_runtime(handle)?;
+            Some(owner)
+        }
+        None => None,
+    };
     if let Some(ranker) = ranker {
         state
             .cognitive_ranker
