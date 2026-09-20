@@ -32,14 +32,6 @@ sha2 = { workspace = true }
 
 
 [dev-dependencies]
-anyhow = { workspace = true }
-app_test_support = { workspace = true }
-codex-app-server-client = { workspace = true, features = ["test-support"] }
-codex-hepta-fleet = { workspace = true }
-codex-hepta-paths = { workspace = true }
-codex-hepta-supervisor = { workspace = true }
-codex-utils-cargo-bin = { workspace = true }
-core_test_support = { workspace = true }
 ed25519-dalek = { workspace = true }
 tempfile = { workspace = true }
-wiremock = { workspace = true }
+codex-app-server-client = { workspace = true, features = ["test-support"] }
