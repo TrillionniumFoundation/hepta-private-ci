@@ -35,7 +35,18 @@ use codex_hepta_codex_adapter::PromptRuntimePrepareRequest;
 use codex_hepta_codex_adapter::PromptRuntimeRecordFuture;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalOutcomeV1;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalRecordV1;
+use codex_hepta_intelligence::PromptRegistryCandidateAdapterV1;
+use codex_hepta_intelligence::PromptRegistryCompilationRequestV2;
 use codex_hepta_intelligence::PromptRegistryCompiledContextV2;
+use codex_hepta_intelligence::compile_prompt_registry_v2;
+use codex_hepta_prompt_optimizer::PromptExerciseRequestV1;
+use codex_hepta_prompt_optimizer::PromptRegistryCandidateSetAuditV1;
+use codex_hepta_prompt_optimizer::PromptRegistryExerciseAuditV1;
+use codex_hepta_prompt_optimizer::PromptRegistryPortfolioAuditV1;
+use codex_hepta_prompt_optimizer::PromptRegistryPricingSetAuditV1;
+use codex_hepta_prompt_optimizer::PromptRelationSourceV1;
+use codex_hepta_prompt_registry::DurablePromptRegistry;
+use codex_hepta_prompt_registry::PromptModelTupleV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::PromptDeliveryObservationV1;
@@ -475,6 +486,137 @@ impl AgentdPromptRuntimeOwner {
         if let Some(store) = &self.store {
             store.fail_directory_sync_after_rename_once.set(true);
         }
+    }
+}
+
+
+#[derive(Debug)]
+pub enum AgentdPromptPipelineError {
+    RegistryOpen(String),
+    RuntimeOpen(AgentdPromptRuntimeError),
+    StatePoisoned,
+    CandidateSource(String),
+    Compilation(String),
+    Stage(AgentdPromptRuntimeError),
+}
+
+impl fmt::Display for AgentdPromptPipelineError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl std::error::Error for AgentdPromptPipelineError {}
+
+/// Named Agentd composition owner for the canonical prompt-intervention path.
+///
+/// This facade owns no alternate optimizer or model loop. It opens the
+/// authoritative durable registry, derives the optimizer candidate source from
+/// that exact owner, validates canonical optimizer receipts through
+/// \`compile_prompt_registry_v2\`, and stages the resulting exact realization
+/// bytes into the same PromptRuntimeHost consumed by the embedded App Server.
+pub struct AgentdPromptPipelineOwner {
+    registry: Mutex<DurablePromptRegistry>,
+    runtime: Arc<AgentdPromptRuntimeOwner>,
+}
+
+impl fmt::Debug for AgentdPromptPipelineOwner {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("AgentdPromptPipelineOwner")
+            .field("runtime", &self.runtime)
+            .finish_non_exhaustive()
+    }
+}
+
+impl AgentdPromptPipelineOwner {
+    pub fn open_state_dirs(
+        registry_directory: &Path,
+        runtime_directory: &Path,
+        maximum_registry_records: usize,
+    ) -> Result<Self, AgentdPromptPipelineError> {
+        let registry =
+            DurablePromptRegistry::open_state_dir(registry_directory, maximum_registry_records)
+                .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
+        let runtime = AgentdPromptRuntimeOwner::open_state_dir(runtime_directory)
+            .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
+        Ok(Self {
+            registry: Mutex::new(registry),
+            runtime: Arc::new(runtime),
+        })
+    }
+
+    #[must_use]
+    pub fn runtime_owner(&self) -> Arc<AgentdPromptRuntimeOwner> {
+        Arc::clone(&self.runtime)
+    }
+
+    pub fn candidate_adapter(
+        &self,
+        generation_vector_digest: Digest32,
+        model: &PromptModelTupleV2,
+        now_unix_ms: u64,
+        required_factor_ids: Vec<StableId>,
+        maximum_results: u32,
+    ) -> Result<PromptRegistryCandidateAdapterV1, AgentdPromptPipelineError> {
+        let registry = self
+            .registry
+            .lock()
+            .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?;
+        PromptRegistryCandidateAdapterV1::from_registry(
+            &registry,
+            generation_vector_digest,
+            model,
+            now_unix_ms,
+            required_factor_ids,
+            maximum_results,
+        )
+        .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn compile_and_stage(
+        &self,
+        thread_id: &str,
+        turn_id: &str,
+        model: &str,
+        requested_deadline_ms: u64,
+        adapter: &PromptRegistryCandidateAdapterV1,
+        candidate_set: &PromptRegistryCandidateSetAuditV1,
+        pricing: &PromptRegistryPricingSetAuditV1,
+        relations: &PromptRelationSourceV1,
+        portfolio: &PromptRegistryPortfolioAuditV1,
+        exercise: &PromptRegistryExerciseAuditV1,
+        exercise_request: &PromptExerciseRequestV1,
+        compilation_request: PromptRegistryCompilationRequestV2,
+    ) -> Result<PromptRuntimeStageDisposition, AgentdPromptPipelineError> {
+        let compiled = {
+            let registry = self
+                .registry
+                .lock()
+                .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?;
+            compile_prompt_registry_v2(
+                &registry,
+                adapter,
+                candidate_set,
+                pricing,
+                relations,
+                portfolio,
+                exercise,
+                exercise_request,
+                compilation_request,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
+        };
+        self.runtime
+            .stage_compiled_prompt_context(
+                thread_id,
+                turn_id,
+                model,
+                requested_deadline_ms,
+                &compiled,
+            )
+            .map_err(AgentdPromptPipelineError::Stage)
     }
 }
 
