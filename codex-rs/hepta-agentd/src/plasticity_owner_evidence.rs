@@ -7,10 +7,13 @@
 //! mandatory owner adapter rather than being reclassified as artifacts.
 
 use std::collections::BTreeMap;
+use std::sync::{Arc, Mutex, RwLock};
 
 use codex_hepta_learning_artifacts::{ArtifactKind, ArtifactManifest, ArtifactRegistry};
 use codex_hepta_learning_ledger::{DatasetSnapshotReceiptV3, verify_dataset_snapshot_receipt_v3};
-use codex_hepta_types::{Digest32, StableId};
+use codex_hepta_ndu::NduProjectionJournalV1;
+use codex_hepta_neuron::{JournalAnchor, SparseCheckpoint, SparseJournal};
+use codex_hepta_types::{Digest32, FixedQ32, StableId};
 
 use crate::{
     PlasticityOwnerEvidenceErrorV1, PlasticityOwnerEvidenceKindV1, PlasticityOwnerEvidenceQueryV1,
@@ -153,6 +156,512 @@ impl PlasticityOwnerEvidenceResolverV1 for ConcretePlasticityOwnerEvidenceResolv
             | PlasticityOwnerEvidenceKindV1::ParameterSignal => self.dynamic.resolve(query),
         }
     }
+}
+
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PlasticityDynamicSignalBindingV1 {
+    pub layer_id: StableId,
+    pub parameter_id: StableId,
+    pub eligibility_index: u32,
+    /// Q32 row over the bounded NDU-owned modulator vector. L1 must be <= 1.
+    pub modulator_weights: Vec<FixedQ32>,
+}
+
+/// Concrete dynamic owner composition.
+///
+/// utility.ndu owns the selected low-dimensional modulator projection through
+/// its append/reopen-verified projection journal. neuron.runtime owns
+/// eligibility through its anchored SparseJournal. The explicit broadcast
+/// mapping is an immutable Policy artifact bound to the current ArtifactRegistry
+/// head. Per-parameter signal evidence is recomputed from those owner facts and
+/// the exact generator values; no caller-authored digest is trusted as proof.
+pub struct PlasticityDynamicOwnerEvidenceResolverV1 {
+    objective_digest: Digest32,
+    ndu_subject_digest: Digest32,
+    ndu_owner_id: StableId,
+    neuron_owner_id: StableId,
+    ndu_journal: Arc<RwLock<NduProjectionJournalV1>>,
+    modulator_values: Vec<FixedQ32>,
+    neuron_journal: Arc<Mutex<SparseJournal>>,
+    acknowledged_neuron_anchor: JournalAnchor,
+    broadcast_artifacts: ArtifactRegistry,
+    broadcast_artifact_id: StableId,
+    bindings: BTreeMap<(StableId, StableId), PlasticityDynamicSignalBindingV1>,
+    observed_at: u64,
+    expires_at: u64,
+}
+
+impl PlasticityDynamicOwnerEvidenceResolverV1 {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        objective_digest: Digest32,
+        ndu_subject_digest: Digest32,
+        ndu_owner_id: StableId,
+        neuron_owner_id: StableId,
+        ndu_journal: Arc<RwLock<NduProjectionJournalV1>>,
+        modulator_values: Vec<FixedQ32>,
+        neuron_journal: Arc<Mutex<SparseJournal>>,
+        acknowledged_neuron_anchor: JournalAnchor,
+        broadcast_artifacts: ArtifactRegistry,
+        broadcast_artifact_id: StableId,
+        bindings: Vec<PlasticityDynamicSignalBindingV1>,
+        observed_at: u64,
+        expires_at: u64,
+    ) -> Result<Self, PlasticityOwnerEvidenceErrorV1> {
+        if objective_digest.is_zero()
+            || ndu_subject_digest.is_zero()
+            || observed_at > expires_at
+            || acknowledged_neuron_anchor.sequence == 0
+            || acknowledged_neuron_anchor.checkpoint_digest.is_zero()
+            || modulator_values.is_empty()
+            || modulator_values.len() > 8
+            || modulator_values.iter().any(|value| {
+                *value < FixedQ32::from_raw(-FixedQ32::ONE.raw()) || *value > FixedQ32::ONE
+            })
+        {
+            return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+        }
+
+        let mut binding_map = BTreeMap::new();
+        for binding in bindings {
+            if binding.modulator_weights.len() != modulator_values.len()
+                || fixed_l1(&binding.modulator_weights)? > i128::from(FixedQ32::ONE.raw())
+            {
+                return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+            }
+            let key = (binding.layer_id.clone(), binding.parameter_id.clone());
+            if binding_map.insert(key, binding).is_some() {
+                return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+            }
+        }
+        if binding_map.is_empty() {
+            return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+        }
+
+        {
+            let journal = neuron_journal
+                .lock()
+                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
+            let checkpoint = journal
+                .current()
+                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
+                .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
+            if checkpoint.digest() != acknowledged_neuron_anchor.checkpoint_digest {
+                return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+            }
+            let width = checkpoint.eligibility_q24().len();
+            if binding_map.values().any(|binding| {
+                usize::try_from(binding.eligibility_index)
+                    .map_or(true, |index| index >= width)
+            }) {
+                return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+            }
+        }
+
+        let modulator_digest =
+            plasticity_modulator_digest_v1(objective_digest, ndu_subject_digest, &modulator_values)?;
+        {
+            let journal = ndu_journal
+                .read()
+                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
+            if journal.selected_projection_digest(objective_digest, ndu_subject_digest)
+                != Some(modulator_digest)
+                || journal.entries().last().is_none()
+            {
+                return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+            }
+        }
+
+        let broadcast_digest =
+            plasticity_modulator_broadcast_digest_v1(binding_map.values())?;
+        let manifest = broadcast_artifacts
+            .manifest(&broadcast_artifact_id)
+            .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
+        if !broadcast_artifacts.is_eligible(&broadcast_artifact_id)
+            || manifest.kind != ArtifactKind::Policy
+            || manifest.objective_digest != objective_digest
+            || manifest.content_digest != broadcast_digest
+        {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+
+        Ok(Self {
+            objective_digest,
+            ndu_subject_digest,
+            ndu_owner_id,
+            neuron_owner_id,
+            ndu_journal,
+            modulator_values,
+            neuron_journal,
+            acknowledged_neuron_anchor,
+            broadcast_artifacts,
+            broadcast_artifact_id,
+            bindings: binding_map,
+            observed_at,
+            expires_at,
+        })
+    }
+
+    fn current_modulator(
+        &self,
+    ) -> Result<(Digest32, Digest32), PlasticityOwnerEvidenceErrorV1> {
+        let digest = plasticity_modulator_digest_v1(
+            self.objective_digest,
+            self.ndu_subject_digest,
+            &self.modulator_values,
+        )?;
+        let journal = self
+            .ndu_journal
+            .read()
+            .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
+        if journal.selected_projection_digest(self.objective_digest, self.ndu_subject_digest)
+            != Some(digest)
+        {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+        let head = journal
+            .entries()
+            .last()
+            .map(|entry| entry.entry_digest)
+            .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
+        Ok((digest, head))
+    }
+
+    fn current_eligibility(
+        &self,
+    ) -> Result<(Digest32, Digest32, Vec<i64>), PlasticityOwnerEvidenceErrorV1> {
+        let journal = self
+            .neuron_journal
+            .lock()
+            .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
+        let checkpoint = journal
+            .current()
+            .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
+            .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
+        if checkpoint.digest().is_zero() {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+        let digest = plasticity_eligibility_digest_v1(checkpoint)?;
+        Ok((
+            digest,
+            checkpoint.digest(),
+            checkpoint.eligibility_q24().to_vec(),
+        ))
+    }
+
+    fn broadcast(
+        &self,
+        artifact_registry_head_digest: Digest32,
+    ) -> Result<(Digest32, StableId, Digest32), PlasticityOwnerEvidenceErrorV1> {
+        let head = self.broadcast_artifacts.snapshot().head_digest;
+        if head.is_zero() || head != artifact_registry_head_digest {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+        let manifest = self
+            .broadcast_artifacts
+            .manifest(&self.broadcast_artifact_id)
+            .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
+        if !self.broadcast_artifacts.is_eligible(&self.broadcast_artifact_id)
+            || manifest.kind != ArtifactKind::Policy
+            || manifest.objective_digest != self.objective_digest
+        {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+        let expected = plasticity_modulator_broadcast_digest_v1(self.bindings.values())?;
+        if manifest.content_digest != expected {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+        Ok((
+            expected,
+            manifest.producer_id.clone(),
+            artifact_manifest_receipt_digest(manifest),
+        ))
+    }
+
+    fn resolve_parameter_signal(
+        &self,
+        query: &PlasticityOwnerEvidenceQueryV1,
+    ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+        let layer = query
+            .layer_id
+            .as_ref()
+            .ok_or(PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
+        let parameter = query
+            .parameter_id
+            .as_ref()
+            .ok_or(PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
+        let binding = self
+            .bindings
+            .get(&(layer.clone(), parameter.clone()))
+            .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
+        let (modulator_digest, _) = self.current_modulator()?;
+        let (eligibility_digest, checkpoint_digest, eligibility_q24) =
+            self.current_eligibility()?;
+        let (broadcast_digest, _, _) = self.broadcast(query.artifact_registry_head_digest)?;
+        let index = usize::try_from(binding.eligibility_index)
+            .map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
+        let eligibility = q24_to_q32(
+            *eligibility_q24
+                .get(index)
+                .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?,
+        )?;
+        let modulator = weighted_modulator(&binding.modulator_weights, &self.modulator_values)?;
+
+        let learning_rate = query
+            .signal_learning_rate
+            .ok_or(PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
+        let lower_bound = query
+            .signal_lower_bound
+            .ok_or(PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
+        let upper_bound = query
+            .signal_upper_bound
+            .ok_or(PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
+        if query.signal_eligibility != Some(eligibility)
+            || query.signal_modulator != Some(modulator)
+            || lower_bound > upper_bound
+        {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+        let expected = plasticity_parameter_signal_digest_v1(
+            layer,
+            parameter,
+            eligibility,
+            modulator,
+            learning_rate,
+            lower_bound,
+            upper_bound,
+            eligibility_digest,
+            modulator_digest,
+            broadcast_digest,
+        )?;
+        if expected != query.evidence_digest {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+        Ok(receipt_from_query(
+            query,
+            self.neuron_owner_id.clone(),
+            checkpoint_digest,
+            expected,
+            self.observed_at,
+            self.expires_at,
+        ))
+    }
+}
+
+impl PlasticityOwnerEvidenceResolverV1 for PlasticityDynamicOwnerEvidenceResolverV1 {
+    fn resolve(
+        &self,
+        query: &PlasticityOwnerEvidenceQueryV1,
+    ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+        if query.objective_digest != self.objective_digest {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+        match query.kind {
+            PlasticityOwnerEvidenceKindV1::Modulator => {
+                let (digest, head) = self.current_modulator()?;
+                if query.evidence_digest != digest {
+                    return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+                }
+                Ok(receipt_from_query(
+                    query,
+                    self.ndu_owner_id.clone(),
+                    head,
+                    head,
+                    self.observed_at,
+                    self.expires_at,
+                ))
+            }
+            PlasticityOwnerEvidenceKindV1::ModulatorBroadcast => {
+                let (digest, owner_id, receipt_digest) =
+                    self.broadcast(query.artifact_registry_head_digest)?;
+                if query.evidence_digest != digest {
+                    return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+                }
+                Ok(receipt_from_query(
+                    query,
+                    owner_id,
+                    query.artifact_registry_head_digest,
+                    receipt_digest,
+                    self.observed_at,
+                    self.expires_at,
+                ))
+            }
+            PlasticityOwnerEvidenceKindV1::Eligibility => {
+                let (digest, checkpoint_digest, _) = self.current_eligibility()?;
+                if query.evidence_digest != digest {
+                    return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+                }
+                Ok(receipt_from_query(
+                    query,
+                    self.neuron_owner_id.clone(),
+                    checkpoint_digest,
+                    digest,
+                    self.observed_at,
+                    self.expires_at,
+                ))
+            }
+            PlasticityOwnerEvidenceKindV1::ParameterSignal => {
+                self.resolve_parameter_signal(query)
+            }
+            _ => Err(PlasticityOwnerEvidenceErrorV1::Unavailable),
+        }
+    }
+}
+
+pub fn plasticity_modulator_digest_v1(
+    objective_digest: Digest32,
+    subject_digest: Digest32,
+    values: &[FixedQ32],
+) -> Result<Digest32, PlasticityOwnerEvidenceErrorV1> {
+    if objective_digest.is_zero()
+        || subject_digest.is_zero()
+        || values.is_empty()
+        || values.len() > 8
+    {
+        return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+    }
+    let mut bytes = b"hepta.utility.ndu.plasticity-modulator.v1\0".to_vec();
+    bytes.extend_from_slice(objective_digest.as_array());
+    bytes.extend_from_slice(subject_digest.as_array());
+    bytes.extend_from_slice(
+        &u32::try_from(values.len())
+            .map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?
+            .to_be_bytes(),
+    );
+    for value in values {
+        if *value < FixedQ32::from_raw(-FixedQ32::ONE.raw()) || *value > FixedQ32::ONE {
+            return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+        }
+        bytes.extend_from_slice(&value.raw().to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+pub fn plasticity_modulator_broadcast_digest_v1<'a>(
+    bindings: impl IntoIterator<Item = &'a PlasticityDynamicSignalBindingV1>,
+) -> Result<Digest32, PlasticityOwnerEvidenceErrorV1> {
+    let mut bindings = bindings.into_iter().cloned().collect::<Vec<_>>();
+    if bindings.is_empty() {
+        return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+    }
+    bindings.sort_by(|left, right| {
+        left.layer_id
+            .cmp(&right.layer_id)
+            .then_with(|| left.parameter_id.cmp(&right.parameter_id))
+    });
+    let mut bytes = b"hepta.neuron.modulator-broadcast.v1\0".to_vec();
+    for binding in bindings {
+        push_id_checked(&mut bytes, &binding.layer_id)?;
+        push_id_checked(&mut bytes, &binding.parameter_id)?;
+        bytes.extend_from_slice(&binding.eligibility_index.to_be_bytes());
+        bytes.extend_from_slice(
+            &u32::try_from(binding.modulator_weights.len())
+                .map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?
+                .to_be_bytes(),
+        );
+        for weight in binding.modulator_weights {
+            bytes.extend_from_slice(&weight.raw().to_be_bytes());
+        }
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+pub fn plasticity_eligibility_digest_v1(
+    checkpoint: &SparseCheckpoint,
+) -> Result<Digest32, PlasticityOwnerEvidenceErrorV1> {
+    if checkpoint.digest().is_zero() || checkpoint.eligibility_q24().is_empty() {
+        return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+    }
+    let mut bytes = b"hepta.neuron.eligibility.v1\0".to_vec();
+    bytes.extend_from_slice(checkpoint.digest().as_array());
+    bytes.extend_from_slice(
+        &u32::try_from(checkpoint.eligibility_q24().len())
+            .map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?
+            .to_be_bytes(),
+    );
+    for value in checkpoint.eligibility_q24() {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn plasticity_parameter_signal_digest_v1(
+    layer_id: &StableId,
+    parameter_id: &StableId,
+    eligibility: FixedQ32,
+    modulator: FixedQ32,
+    learning_rate: FixedQ32,
+    lower_bound: FixedQ32,
+    upper_bound: FixedQ32,
+    eligibility_digest: Digest32,
+    modulator_digest: Digest32,
+    broadcast_digest: Digest32,
+) -> Result<Digest32, PlasticityOwnerEvidenceErrorV1> {
+    if eligibility_digest.is_zero()
+        || modulator_digest.is_zero()
+        || broadcast_digest.is_zero()
+        || lower_bound > upper_bound
+    {
+        return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+    }
+    let mut bytes = b"hepta.neuron.parameter-plasticity-signal.v1\0".to_vec();
+    push_id_checked(&mut bytes, layer_id)?;
+    push_id_checked(&mut bytes, parameter_id)?;
+    for value in [eligibility, modulator, learning_rate, lower_bound, upper_bound] {
+        bytes.extend_from_slice(&value.raw().to_be_bytes());
+    }
+    for digest in [eligibility_digest, modulator_digest, broadcast_digest] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn weighted_modulator(
+    weights: &[FixedQ32],
+    values: &[FixedQ32],
+) -> Result<FixedQ32, PlasticityOwnerEvidenceErrorV1> {
+    if weights.len() != values.len() {
+        return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+    }
+    weights
+        .iter()
+        .zip(values)
+        .try_fold(FixedQ32::ZERO, |sum, (weight, value)| {
+            let product = weight
+                .checked_mul(*value)
+                .map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
+            sum.checked_add(product)
+                .map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)
+        })
+}
+
+fn fixed_l1(values: &[FixedQ32]) -> Result<i128, PlasticityOwnerEvidenceErrorV1> {
+    values.iter().try_fold(0_i128, |sum, value| {
+        sum.checked_add(i128::from(value.raw()).abs())
+            .ok_or(PlasticityOwnerEvidenceErrorV1::InvalidReceipt)
+    })
+}
+
+fn q24_to_q32(value: i64) -> Result<FixedQ32, PlasticityOwnerEvidenceErrorV1> {
+    value
+        .checked_mul(1_i64 << 8)
+        .map(FixedQ32::from_raw)
+        .ok_or(PlasticityOwnerEvidenceErrorV1::InvalidReceipt)
+}
+
+fn push_id_checked(
+    bytes: &mut Vec<u8>,
+    value: &StableId,
+) -> Result<(), PlasticityOwnerEvidenceErrorV1> {
+    bytes.extend_from_slice(
+        &u32::try_from(value.as_str().len())
+            .map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?
+            .to_be_bytes(),
+    );
+    bytes.extend_from_slice(value.as_str().as_bytes());
+    Ok(())
 }
 
 fn receipt_from_query(
