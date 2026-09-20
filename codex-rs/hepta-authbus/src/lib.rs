@@ -10,6 +10,7 @@
 
 mod authority;
 mod authority_store;
+mod host;
 mod quota;
 mod quota_store;
 mod recovery;
@@ -25,6 +26,7 @@ pub use authority::PolicyEffect;
 pub use authority::PolicySpec;
 pub use authority::TrustedTimeSample;
 pub use authority_store::AuthBusAuthorityStore;
+pub use host::AuthBusAuthorityHost;
 pub use quota::QuotaReservation;
 pub use quota::QuotaSnapshot;
 pub use quota::QuotaSpec;
