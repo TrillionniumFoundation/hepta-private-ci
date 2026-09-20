@@ -126,3 +126,26 @@ BEFORE DELETE ON qualification_evidence
 BEGIN
     SELECT RAISE(ABORT, 'qualification evidence is immutable');
 END;
+
+
+-- The externally enrolled store identity is immutable once the independent
+-- recovery-frontier ceremony binds this database lineage.
+CREATE TABLE evidence_recovery_identity (
+    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+    store_id TEXT NOT NULL UNIQUE CHECK (
+        length(store_id) BETWEEN 1 AND 128
+        AND store_id NOT GLOB '*[^A-Za-z0-9._:-]*'
+    )
+);
+
+CREATE TRIGGER evidence_recovery_identity_no_update
+BEFORE UPDATE ON evidence_recovery_identity
+BEGIN
+    SELECT RAISE(ABORT, 'evidence recovery identity is immutable');
+END;
+
+CREATE TRIGGER evidence_recovery_identity_no_delete
+BEFORE DELETE ON evidence_recovery_identity
+BEGIN
+    SELECT RAISE(ABORT, 'evidence recovery identity is immutable');
+END;
