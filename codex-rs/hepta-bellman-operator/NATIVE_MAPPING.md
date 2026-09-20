@@ -10,7 +10,9 @@ policy, artifact selector or production writer.
 The original public `train(TrainingRequest)` function is retained for source
 compatibility, but it delegates to `build_targets`. Its actual behavior is a
 bounded deterministic Bellman-target builder over caller-supplied continuation
-values. It does not fit a neural network or prove a complete Bellman operator.
+values. Legacy target construction now rejects a repeated `support_digest` even
+when the row is relabelled; canonical qualification uses `build_targets_bound_v2`
+so snapshot/objective/ledger-head/source-record identity is receipt-bound. It does not fit a neural network or prove a complete Bellman operator.
 
 The complete regularity gate uses `OperatorRegularityAssessmentV1`; the legacy
 `RegularityProfile` contains only target-builder diagnostics and must not be
@@ -21,6 +23,7 @@ interpreted as the Hölder/operator qualification profile.
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
 | build deterministic Bellman targets | `build_targets` (`train` compatibility alias) | `src/lib.rs` | implemented |
+| build receipt-bound Bellman targets | `build_targets_bound_v2` | `src/dataset_binding.rs` | implemented |
 | admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
@@ -37,7 +40,7 @@ interpreted as the Hölder/operator qualification profile.
 
 ## Frozen dataset and authenticated evaluator boundaries
 
-`VerifiedOperatorDatasetV2::from_receipt` verifies the full `DatasetSnapshotReceiptV3` digest preimage and keeps the frozen dataset identity private. The bound tabular/world-model fit APIs require the training rows' evidence digests to equal the frozen source-record set exactly; callers cannot substitute a detached dataset digest, omit one frozen row or add a foreign row. A future profile that intentionally transforms one source record into multiple training rows needs a separately typed projection receipt rather than weakening this invariant.
+`VerifiedOperatorDatasetV2::from_receipt` verifies the full `DatasetSnapshotReceiptV3` digest preimage and keeps the frozen dataset identity private. `build_targets_bound_v2`, the bound tabular fit and the bound world-model fit require the training rows' evidence digests to equal the frozen source-record set exactly; target construction additionally binds snapshot ID, objective and ledger head, and emits the V3 dataset digest rather than a detached legacy dataset hash; callers cannot substitute a detached dataset digest, omit one frozen row or add a foreign row. A future profile that intentionally transforms one source record into multiple training rows needs a separately typed projection receipt rather than weakening this invariant.
 
 `admit_signed_operator_applicability_v2` and `admit_signed_operator_regularity_v2` reuse `LearningEvidenceVerifierV1` for both the Generator and Evaluator attestations over the exact same payload, then call `verify_signed_role_separation`. Ed25519 signatures, roles, principal/credential/signing-key separation, controller separation, scope/objective, authority epoch, lifetime and revocation are checked against host-owned trust. The legacy structural validators remain compatible deterministic cores, but a nonzero evaluator digest or `dominant_component_approved` boolean alone is not authenticated independent evidence. Cryptographic role separation still does not self-prove scientific validity or broader organizational independence.
 
