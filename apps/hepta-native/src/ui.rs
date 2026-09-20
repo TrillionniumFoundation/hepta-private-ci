@@ -3,13 +3,16 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+use codex_hepta_contracts::SignedFinalUseGrant;
 use eframe::egui;
 
 use crate::error::ShellError;
 use crate::model::EndpointManifest;
-use crate::model::RuntimeView;
-use crate::model::sha256_hex;
+use crate::model::PlatformAction;
+use crate::model::PlatformPayload;
+use crate::model::PlatformRequest;
 use crate::runtime::NativeShellRuntime;
+use crate::security::now_unix_ms;
 use crate::session_store::SessionReferenceStore;
 use crate::updater::SignedUpdateManifestV1;
 use crate::updater::UpdateManager;
@@ -57,7 +60,16 @@ pub struct HeptaNativeApp {
     locale: Locale,
     status: Option<serde_json::Value>,
     last_error: Option<String>,
-    view_revision: u64,
+    operation_subject_id: String,
+    operation_id: String,
+    operation_action: PlatformAction,
+    operation_path: String,
+    operation_text: String,
+    notification_title: String,
+    notification_body: String,
+    operation_grant_path: String,
+    operation_binding: Option<String>,
+    operation_message: Option<String>,
     pending_update_path: PathBuf,
     updater: UpdateManager,
     activate_update_on_exit: Arc<AtomicBool>,
@@ -82,7 +94,20 @@ impl HeptaNativeApp {
             locale: Locale::detect(),
             status: None,
             last_error: None,
-            view_revision: 0,
+            operation_subject_id: "operator.local".to_owned(),
+            operation_id: format!(
+                "native.ui.{}.{}",
+                std::process::id(),
+                now_unix_ms()?.max(1)
+            ),
+            operation_action: PlatformAction::CopyText,
+            operation_path: String::new(),
+            operation_text: String::new(),
+            notification_title: String::new(),
+            notification_body: String::new(),
+            operation_grant_path: String::new(),
+            operation_binding: None,
+            operation_message: None,
             pending_update_path: updater.pending_path(),
             updater,
             activate_update_on_exit,
@@ -95,33 +120,10 @@ impl HeptaNativeApp {
     }
 
     fn refresh(&mut self) {
-        match self.runtime.runtime_status() {
-            Ok(status) => {
-                let Some(session) = self.runtime.session().cloned() else {
-                    self.last_error = Some("native session disappeared during refresh".to_owned());
-                    return;
-                };
-                let bytes = match serde_json::to_vec(&status) {
-                    Ok(bytes) => bytes,
-                    Err(error) => {
-                        self.last_error = Some(error.to_string());
-                        return;
-                    }
-                };
-                self.view_revision = self.view_revision.saturating_add(1).max(1);
-                let view = RuntimeView {
-                    session_id: session.session_id,
-                    session_generation: session.generation,
-                    generation: 1,
-                    revision: self.view_revision,
-                    digest: sha256_hex(bytes),
-                    modules: vec!["runtime.agentd".to_owned(), "ui.native".to_owned()],
-                };
-                if let Err(error) = self.runtime.render_runtime_view(view) {
-                    self.last_error = Some(error.to_string());
-                    return;
-                }
+        match self.runtime.refresh_runtime_view() {
+            Ok((_presentation, status)) => {
                 self.status = Some(status);
+                self.operation_binding = None;
                 self.last_error = None;
             }
             Err(error) => self.last_error = Some(error.to_string()),
@@ -205,13 +207,90 @@ impl HeptaNativeApp {
         }
     }
 
-    fn operations_view(&self, ui: &mut egui::Ui) {
+    fn operations_view(&mut self, ui: &mut egui::Ui) {
         ui.heading(self.locale.text("Native operations", "原生操作"));
+        ui.label(self.locale.text(
+            "The shell never signs its own authority. Prepare the exact binding, have the independent authority owner issue a SignedFinalUseGrant, then select that grant file for one final-use operation.",
+            "壳层绝不会自行签发权限。先生成精确 binding，由独立 authority owner 签发 SignedFinalUseGrant，再选择该 grant 文件执行一次 final-use 操作。",
+        ));
+        ui.separator();
+
+        ui.label(self.locale.text("Authority subject", "权限主体"));
+        ui.text_edit_singleline(&mut self.operation_subject_id);
+        ui.label(self.locale.text("Operation ID", "操作 ID"));
+        ui.text_edit_singleline(&mut self.operation_id);
+        egui::ComboBox::from_id_salt("native-operation-action")
+            .selected_text(self.operation_action.to_string())
+            .show_ui(ui, |ui| {
+                for action in [
+                    PlatformAction::OpenPath,
+                    PlatformAction::RevealPath,
+                    PlatformAction::CopyText,
+                    PlatformAction::Notify,
+                ] {
+                    ui.selectable_value(
+                        &mut self.operation_action,
+                        action,
+                        action.to_string(),
+                    );
+                }
+            });
+
+        match self.operation_action {
+            PlatformAction::OpenPath | PlatformAction::RevealPath => {
+                ui.label(self.locale.text("Absolute path", "绝对路径"));
+                ui.text_edit_singleline(&mut self.operation_path);
+            }
+            PlatformAction::CopyText => {
+                ui.label(self.locale.text("Clipboard text", "剪贴板文本"));
+                ui.text_edit_multiline(&mut self.operation_text);
+            }
+            PlatformAction::Notify => {
+                ui.label(self.locale.text("Notification title", "通知标题"));
+                ui.text_edit_singleline(&mut self.notification_title);
+                ui.label(self.locale.text("Notification body", "通知正文"));
+                ui.text_edit_multiline(&mut self.notification_body);
+            }
+        }
+
+        ui.label(self.locale.text("Signed grant path", "签名 grant 路径"));
+        ui.text_edit_singleline(&mut self.operation_grant_path);
+        ui.horizontal(|ui| {
+            if ui
+                .button(self.locale.text("Prepare exact binding", "生成精确 binding"))
+                .clicked()
+            {
+                self.prepare_operation_binding();
+            }
+            if ui
+                .button(self.locale.text("Execute with signed grant", "使用签名 grant 执行"))
+                .clicked()
+            {
+                self.execute_operation();
+            }
+        });
+        if let Some(binding) = &self.operation_binding {
+            ui.label(self.locale.text(
+                "Binding for the independent issuer:",
+                "交给独立签发方的 binding：",
+            ));
+            let mut binding = binding.clone();
+            ui.add(
+                egui::TextEdit::multiline(&mut binding)
+                    .font(egui::TextStyle::Monospace)
+                    .desired_rows(10)
+                    .interactive(false),
+            );
+        }
+        if let Some(message) = &self.operation_message {
+            ui.label(message);
+        }
+
+        ui.separator();
         ui.label(self.locale.text(
             "Indeterminate operations are never automatically replayed. Reconcile asks the platform adapter for a trustworthy terminal observation.",
             "不确定操作绝不会自动重放。对账只接受平台适配器提供的可信终态观察。",
         ));
-        ui.separator();
         let operations = self.runtime.operation_history();
         if operations.is_empty() {
             ui.label(self.locale.text("No operation receipts.", "暂无操作回执。"));
@@ -233,6 +312,103 @@ impl HeptaNativeApp {
                 });
             }
         });
+    }
+
+    fn operation_payload(&self) -> Result<PlatformPayload, ShellError> {
+        let payload = match self.operation_action {
+            PlatformAction::OpenPath => PlatformPayload::OpenPath {
+                path: PathBuf::from(self.operation_path.trim()),
+            },
+            PlatformAction::RevealPath => PlatformPayload::RevealPath {
+                path: PathBuf::from(self.operation_path.trim()),
+            },
+            PlatformAction::CopyText => PlatformPayload::CopyText {
+                text: self.operation_text.clone(),
+            },
+            PlatformAction::Notify => PlatformPayload::Notify {
+                title: self.notification_title.clone(),
+                body: self.notification_body.clone(),
+            },
+        };
+        payload.validate()?;
+        Ok(payload)
+    }
+
+    fn prepare_operation_binding(&mut self) {
+        let outcome = (|| -> Result<String, ShellError> {
+            let payload = self.operation_payload()?;
+            let binding = self.runtime.prepare_platform_binding(
+                self.operation_subject_id.trim(),
+                self.operation_id.trim(),
+                &payload,
+            )?;
+            serde_json::to_string_pretty(&binding).map_err(ShellError::from)
+        })();
+        match outcome {
+            Ok(binding) => {
+                self.operation_binding = Some(binding);
+                self.operation_message = Some(
+                    self.locale
+                        .text(
+                            "Binding prepared. The independent authority owner must choose grant identity, nonce, epoch and lifetime and sign the complete grant.",
+                            "Binding 已生成。独立 authority owner 必须自行选择 grant identity、nonce、epoch 与有效期，并签署完整 grant。",
+                        )
+                        .to_owned(),
+                );
+                self.last_error = None;
+            }
+            Err(error) => {
+                self.operation_binding = None;
+                self.operation_message = None;
+                self.last_error = Some(error.to_string());
+            }
+        }
+    }
+
+    fn execute_operation(&mut self) {
+        let outcome = (|| -> Result<String, ShellError> {
+            let grant_path = PathBuf::from(self.operation_grant_path.trim());
+            if !grant_path.is_absolute() {
+                return Err(ShellError::InvalidInput(
+                    "signed final-use grant path must be absolute".to_owned(),
+                ));
+            }
+            let metadata = std::fs::metadata(&grant_path)?;
+            if !metadata.is_file() || metadata.len() == 0 || metadata.len() > 16 * 1024 {
+                return Err(ShellError::InvalidInput(
+                    "signed final-use grant must be a non-empty regular file <= 16 KiB"
+                        .to_owned(),
+                ));
+            }
+            let grant: SignedFinalUseGrant =
+                serde_json::from_slice(&std::fs::read(&grant_path)?)?;
+            let displayed_revision = self
+                .runtime
+                .view()
+                .map(|view| view.revision)
+                .ok_or_else(|| ShellError::State("native runtime view is unavailable".to_owned()))?;
+            let receipt = self.runtime.request_platform_capability(PlatformRequest {
+                subject_id: self.operation_subject_id.trim().to_owned(),
+                operation_id: self.operation_id.trim().to_owned(),
+                displayed_revision,
+                payload: self.operation_payload()?,
+                grant,
+            })?;
+            Ok(format!(
+                "{}: terminal={} status={:?}",
+                receipt.key.operation_id, receipt.terminal_observed, receipt.terminal_status
+            ))
+        })();
+        match outcome {
+            Ok(message) => {
+                self.operation_message = Some(message);
+                self.last_error = None;
+            }
+            Err(error) => {
+                self.operation_message = None;
+                self.last_error = Some(error.to_string());
+            }
+        }
     }
 
     fn updates_view(&mut self, ui: &mut egui::Ui) {
