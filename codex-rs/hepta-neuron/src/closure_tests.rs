@@ -534,7 +534,7 @@ fn runtime_executes_model_commits_witness_and_rotates_without_state_reset() {
         config_digest,
         &runtime_scope,
     ));
-    let mut runtime = checked(NeuronRuntimeHost::open(
+    let mut runtime = checked(LegacyNeuronRuntimeHost::open(
         fixture.file("segment-1"),
         runtime_config,
         native(),
@@ -587,7 +587,7 @@ fn runtime_executes_model_commits_witness_and_rotates_without_state_reset() {
         config_digest,
         &scope(),
     ));
-    let reopened = checked(NeuronRuntimeHost::open_with_genesis(
+    let reopened = checked(LegacyNeuronRuntimeHost::open_with_genesis(
         fixture.file("segment-2"),
         config(),
         native(),
@@ -620,7 +620,7 @@ fn reopen_reconciles_a_durable_suffix_before_accepting_new_ticks() {
         config_digest,
         &scope,
     ));
-    let mut runtime = checked(NeuronRuntimeHost::open(
+    let mut runtime = checked(LegacyNeuronRuntimeHost::open(
         fixture.file("segment-reconcile"),
         config.clone(),
         native(),
@@ -663,7 +663,7 @@ fn reopen_reconciles_a_durable_suffix_before_accepting_new_ticks() {
         config_digest,
         &scope,
     ));
-    let mut reopened = checked(NeuronRuntimeHost::open(
+    let mut reopened = checked(LegacyNeuronRuntimeHost::open(
         fixture.file("segment-reconcile"),
         config,
         native(),
@@ -715,7 +715,7 @@ fn failed_deletion_rebuild_poisoned_partial_state_is_not_reusable() {
         config_digest,
         &scope,
     ));
-    let mut runtime = checked(NeuronRuntimeHost::open(
+    let mut runtime = checked(LegacyNeuronRuntimeHost::open(
         fixture.file("partial-rebuild"),
         config,
         native,
@@ -768,7 +768,7 @@ fn deletion_rebuild_rechecks_live_lineage_before_model_execution() {
     ));
     let revoked_input = input(1, Digest32::ZERO);
     let denied = revoked_input.input_feature_digest;
-    let mut runtime = checked(NeuronRuntimeHost::open(
+    let mut runtime = checked(LegacyNeuronRuntimeHost::open(
         fixture.file("rebuild"),
         config,
         native(),
@@ -823,7 +823,7 @@ fn runtime_rejects_revoked_calibration_evidence_before_model_execution() {
     ));
     let artifact = calibration_artifact();
     let denied = artifact.support_digest;
-    let result = NeuronRuntimeHost::open(
+    let result = LegacyNeuronRuntimeHost::open(
         fixture.file("calibration-lineage"),
         config,
         native(),
