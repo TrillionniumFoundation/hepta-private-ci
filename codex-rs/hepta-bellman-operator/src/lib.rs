@@ -19,6 +19,8 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 mod admitted;
+mod authenticated_admission;
+mod dataset_binding;
 mod learned;
 mod learned_strict;
 mod loaded;
@@ -30,6 +32,16 @@ mod world_model_qualification;
 
 pub use admitted::fit_tabular_operator;
 pub use admitted::fit_transition_model;
+pub use authenticated_admission::AuthenticatedApplicabilityAdmissionV1;
+pub use authenticated_admission::AuthenticatedEvaluatorError;
+pub use authenticated_admission::AuthenticatedRegularityAdmissionV1;
+pub use authenticated_admission::admit_authenticated_applicability_v1;
+pub use authenticated_admission::admit_authenticated_regularity_v1;
+pub use dataset_binding::OperatorDatasetError;
+pub use dataset_binding::VerifiedOperatorDatasetV1;
+pub use dataset_binding::fit_tabular_operator_verified_v1;
+pub use dataset_binding::fit_transition_model_verified_v1;
+pub use dataset_binding::verify_operator_dataset_v1;
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
 pub use learned::TabularOperatorCellV1;
