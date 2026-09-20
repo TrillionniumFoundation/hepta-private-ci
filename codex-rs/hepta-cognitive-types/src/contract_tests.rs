@@ -392,23 +392,65 @@ fn maximum_bounds_reject_before_publication() {
 }
 
 #[test]
-fn all_registered_v1_contracts_have_distinct_nonzero_digests() {
+fn all_registered_v1_contracts_have_distinct_cross_language_golden_digests() {
     let values = [
-        canonical_contract_digest_v1(&text_span()).expect("span"),
-        canonical_contract_digest_v1(&event()).expect("event"),
-        canonical_contract_digest_v1(&cross_binding()).expect("binding"),
-        canonical_contract_digest_v1(&engram_node()).expect("engram"),
-        canonical_contract_digest_v1(&synapse()).expect("synapse"),
-        canonical_contract_digest_v1(&cue()).expect("cue"),
-        canonical_contract_digest_v1(&recall_packet()).expect("recall"),
-        canonical_contract_digest_v1(&outcome()).expect("outcome"),
-        canonical_contract_digest_v1(&replay_receipt()).expect("replay"),
-        canonical_contract_digest_v1(&plasticity()).expect("plasticity"),
-        canonical_contract_digest_v1(&topology()).expect("topology"),
-        canonical_contract_digest_v1(&forget()).expect("forget"),
+        (
+            canonical_contract_digest_v1(&text_span()).expect("span"),
+            "1e1c8f2232a1f6ddfea98400f3c2ae9d29ecd39ae2a2ff0e0bac70f91f0ad273",
+        ),
+        (
+            canonical_contract_digest_v1(&event()).expect("event"),
+            "22d5a29e55ad08c3541eb8eb9afe577eb5efd1a75e0d37ea1c64eae436db0540",
+        ),
+        (
+            canonical_contract_digest_v1(&cross_binding()).expect("binding"),
+            "4f85c20ffc206e5fe472dfd5be8ab7a71e5d79eb8661bce6dcb5a8f8284b777f",
+        ),
+        (
+            canonical_contract_digest_v1(&engram_node()).expect("engram"),
+            "5b7f4f5addf00b7e331d6682e9fb5be99dbc438d4cfc915ac536e8a16dcb23c5",
+        ),
+        (
+            canonical_contract_digest_v1(&synapse()).expect("synapse"),
+            "1649b8d6d428cd485dfbf2c46b2b0b82f41baec6c1cd0bee5da7a511cad93d6c",
+        ),
+        (
+            canonical_contract_digest_v1(&cue()).expect("cue"),
+            "27adab5830e8849e2ac765bf69728bfb10d000caaa639c84e2cec9e3adec5a00",
+        ),
+        (
+            canonical_contract_digest_v1(&recall_packet()).expect("recall"),
+            "0a3ec1c285ce6f7c710c975c79497a870c2d9c6a91696e22c16a11c43b0983fc",
+        ),
+        (
+            canonical_contract_digest_v1(&outcome()).expect("outcome"),
+            "78294b30bac6687f2332b4294471d3ba609bb827e0b01ec77280e2eeedc07a0d",
+        ),
+        (
+            canonical_contract_digest_v1(&replay_receipt()).expect("replay"),
+            "94f4265ca6c39c314e1d350aba45d78dd6b9aa973bfd740f8bb81df0995a5787",
+        ),
+        (
+            canonical_contract_digest_v1(&plasticity()).expect("plasticity"),
+            "779fc9779a6a170aba791fd4c984eb35855d5cbc394c37945123bc0ddf8dd41a",
+        ),
+        (
+            canonical_contract_digest_v1(&topology()).expect("topology"),
+            "83fed9c7f5a4677f9564ac36b524cf8865effc27f032ca465d4368c114ac40aa",
+        ),
+        (
+            canonical_contract_digest_v1(&forget()).expect("forget"),
+            "f0f4f746a2c2e3f5a22bd5d5ce1760185d5c6579ef0bb6e5a23b1722edbfd62b",
+        ),
     ];
-    assert!(values.iter().all(|value| !value.is_zero()));
-    assert_eq!(values.into_iter().collect::<BTreeSet<_>>().len(), 12);
+    assert!(values.iter().all(|(value, _)| !value.is_zero()));
+    assert_eq!(
+        values.iter().map(|(value, _)| *value).collect::<BTreeSet<_>>().len(),
+        12
+    );
+    for (actual, expected) in values {
+        assert_eq!(actual.to_string(), expected);
+    }
 }
 
 #[test]
