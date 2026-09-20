@@ -78,10 +78,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         CognitiveStore::open(&cognitive_layout).await
     })
     .await?;
-    // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
-    // the existing availability-tolerant behavior; only the explicit
-    // compile-time qualification profile takes this fail-closed startup gate.
+    // A writer-enabled Agentd product profile must never serve with a
+    // degraded CognitiveRuntime. Read-only/no-default-feature builds retain
+    // the availability-tolerant behavior.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
@@ -180,18 +179,18 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     outcome
 }
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
     if runtime.available_store().is_some() {
         Ok(runtime)
     } else {
-        Err(AgentdError::QualificationCognitiveRuntimeUnavailable)
+        Err(AgentdError::CognitiveWriteRuntimeUnavailable)
     }
 }
 
-#[cfg(not(feature = "qualification-cognitive-write"))]
+#[cfg(not(feature = "production-cognitive-write"))]
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
