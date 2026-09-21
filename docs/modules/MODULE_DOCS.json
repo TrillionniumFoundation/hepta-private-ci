@@ -164,7 +164,6 @@
         "ModulePort::kernel.authority::runtime.fleet",
         "ModulePort::kernel.authority::runtime.supervisor",
         "ModulePort::kernel.authority::secrets.heptabao",
-        "ModulePort::kernel.authority::ui.native",
         "VerifiedUseTokenWitnessV1"
       ],
       "consumedContracts": [
@@ -537,7 +536,8 @@
         "ASM-3-STATE-MIGRATION-QUALIFICATION",
         "EMB-2-REFLEX-MOTOR-ACTUATION",
         "P0.8B-READINESS",
-        "P0.8D-VERTICAL-SLICE"
+        "P0.8D-VERTICAL-SLICE",
+        "TASKFLOW-1-EXECUTION-BOUNDARY"
       ],
       "threats": []
     },
@@ -2601,9 +2601,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "UI-NATIVE-1-SHELL",
-      "sha256": "07a80c44a800cef3679a3e4e9501c4ead110b9dd30f476f1372c64c7b70db5d6",
-      "bytes": 20419,
-      "words": 2267,
+      "sha256": "f420a9e940d1491f27fb552024e821776304fa76b6402d060e2535768936fc30",
+      "bytes": 16231,
+      "words": 1802,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -2625,9 +2625,7 @@
       "producedContracts": [],
       "consumedContracts": [
         "DomainRead::runtime_health_observationV1",
-        "ModulePort::kernel.authority::ui.native",
-        "ModulePort::runtime.agentd::ui.native",
-        "VerifiedUseTokenWitnessV1"
+        "ModulePort::runtime.agentd::ui.native"
       ],
       "protocols": [],
       "ownedDomains": [],

@@ -3,31 +3,37 @@ name: Hepta Lane B source closure
 on:
   pull_request:
     paths:
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
-      - "apps/hepta-native/**"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
+      - ".github/workflows/automation-taskflow-focused.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
     branches:
       - main
     paths:
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
-      - "apps/hepta-native/**"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
+      - ".github/workflows/automation-taskflow-focused.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
 
@@ -51,9 +57,28 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
+      - name: Resolve current pull-request base
+        id: current-base
+        if: github.event_name == 'pull_request'
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'HEPTA_CANDIDATE_BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+
       - name: Verify source truth and generated projections
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_CANDIDATE_BASE_SHA: ${{ steps.current-base.outputs.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -65,46 +90,13 @@ jobs:
           python3 scripts/hepta-lane-b-truth.py verify
           git diff --check
 
-      - name: Verify JavaScript browser and control boundaries
+      - name: Verify JavaScript runtime boundaries
         shell: bash
         run: |
           set -euo pipefail
           node --test apps/hepta-browser/test/runtime.test.js
           node --test apps/hepta-control-ui/test/runtime-client.test.js
-
-      - name: Install Linux native UI dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev
-
-      - name: Resolve native dependency lock
-        working-directory: apps/hepta-native
-        run: cargo generate-lockfile
-
-      - name: Preserve exact-head native dependency lock
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-native-resolved-lock-${{ github.run_id }}
-          path: apps/hepta-native/Cargo.lock
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Verify native product exact head
-        working-directory: apps/hepta-native
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --check
-          cargo clippy --all-targets --all-features -- -D warnings
-          cargo test --all-targets
-          cargo build --release --bins
-          ./target/release/hepta-native --self-test
-
-      - name: Verify authenticated native gateway exact head
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-native-gateway
+          node --test apps/hepta-native/test/shell-runtime.test.js
 
       - name: Verify Rust formatting
         working-directory: codex-rs
@@ -120,13 +112,22 @@ jobs:
           cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
           cargo test -p codex-hepta-infer-core --bin hepta-infer-control
           cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
-          cargo test -p codex-hepta-automation --lib
+          cargo test -p codex-hepta-automation
+          cargo test -p codex-hepta-automation --features taskflow-structural-qualification
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
           cargo test -p codex-hepta-matrixd --lib
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cargo test -p codex-app-server --test all thread_start
           cargo test -p codex-app-server --test all turn_start
           cargo test -p codex-core executed_tool_calls
+
+      - name: Verify TaskFlow Bazel qualification targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel test --test_output=errors \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-step-qualification-test
 
       - name: Assert tracked tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=no)"
@@ -144,11 +145,27 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
+      - name: Resolve current pull-request base
+        id: current-base
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
+
       - name: Construct deterministic synthetic merge
         id: merge
         uses: ./.github/actions/hepta-synthetic-merge
         with:
-          base-sha: ${{ github.event.pull_request.base.sha }}
+          base-sha: ${{ steps.current-base.outputs.sha }}
           source-sha: ${{ github.event.pull_request.head.sha }}
           pr-number: ${{ github.event.pull_request.number }}
           author-name: Hepta Lane B CI
@@ -159,22 +176,21 @@ jobs:
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
           HEPTA_SYNTHETIC_MERGE: "1"
+          HEPTA_CANDIDATE_BASE_SHA: ${{ steps.current-base.outputs.sha }}
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
-          sudo apt-get update
-          sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev
-          cargo generate-lockfile --manifest-path apps/hepta-native/Cargo.toml
-          cargo fmt --manifest-path apps/hepta-native/Cargo.toml --check
-          cargo clippy --manifest-path apps/hepta-native/Cargo.toml --all-targets --all-features -- -D warnings
-          cargo test --manifest-path apps/hepta-native/Cargo.toml --all-targets
-          cargo build --manifest-path apps/hepta-native/Cargo.toml --release --bins
-          ./apps/hepta-native/target/release/hepta-native --self-test
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+          (
+            cd codex-rs
+            cargo test -p codex-hepta-automation
+            cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+            cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+          )
+          bazel test --test_output=errors \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-step-qualification-test
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
-

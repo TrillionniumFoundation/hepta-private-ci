@@ -139,27 +139,23 @@ External evidence gates:
 
 ## 8. `automation.taskflow`
 
-Owns schedule, occurrence, claim, and step-orchestration facts without owning downstream domain effects.
+Owns durable legacy and Calendar V2 schedule revisions, deterministic occurrence identity, claim, TaskFlow run/step orchestration, provider-attempt/reconciliation evidence, and terminal occurrence projection without owning downstream domain effects.
 
-The registered effect driver supplies terminal observations; unknown effects block dependent steps and compensation is separately authorized.
+Agentd observes the existing App Server persisted-turn terminal state for Codex activity; registered external effect owners supply their own terminal/reconciliation receipts through the final-use-authorized durable step seam.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `register_schedule` | `owner_native` | `codex-rs/hepta-automation/src/store.rs` — `pub async fn create_task(` |
+| `register_schedule` | `owner_native` | `codex-rs/hepta-automation/src/schedule_v2.rs` — `pub async fn create_calendar_task_v2(` |
 | `materialize_due` | `owner_native` | `codex-rs/hepta-automation/src/scheduler.rs` — `pub async fn tick(` |
-| `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/effect_executor.rs` — `pub fn claim_occurrence(` |
-| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/effect_executor.rs` — `pub fn execute_step(` |
-
-Remaining repository implementation gaps:
-
-- Connect the effect-executor component to the existing durable TaskFlow step outbox and a real final-use authorized effect provider.
-- Implement post-crash effect reconciliation before permitting dependent steps.
+| `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/lifecycle.rs` — `pub async fn materialize_occurrence(` |
+| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/authorized_effect.rs` — `pub async fn execute_authorized_taskflow_effect` |
 
 External evidence gates:
 
-- non-test Codex/App Server caller
-- real downstream effect owner and terminal observer
-- DST/timezone-database and multi-scheduler target qualification
+- selected-host Agentd/App Server execution receipt for the composed durable causal path
+- concrete registered downstream effect owner and trusted terminal/reconciliation evidence for every activated external effect
+- real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification
+- independent acceptance, activation, promotion and release evidence
 
 ## 9. `channel.matrix`
 
@@ -221,27 +217,22 @@ External evidence gates:
 
 ## 12. `ui.native`
 
-Owns native shell/window/session state, a bounded durable operation journal, and opaque keyring references; backend domain facts, authority and signing private keys remain with their owners.
+Owns shell/window/session state and opaque platform references; domain facts and secrets remain with their owners.
 
-The authenticated backend, local platform adapter, and separately verified updater supply observations; uncertain OS effects remain indeterminate when no trustworthy terminal query exists, and the shell cannot self-issue success.
+The backend, platform permission adapter, and updater each supply their own observations; the shell cannot self-issue success.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `connect_runtime` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn connect_runtime(` |
-| `render_runtime_view` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn refresh_runtime_view(` |
-| `request_platform_capability` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn request_platform_capability(` |
-| `apply_shell_update` | `owner_boundary` | `apps/hepta-native/src/updater.rs` — `pub fn activate_staged_update(` |
-
-Remaining repository implementation gaps:
-
-- Commit a reproducible native Cargo.lock and observe current exact-head plus Windows/macOS/Linux merge-candidate execution receipts for the final claim-bearing candidate.
-- Run the packaged fault/restart qualification against the final candidate, including updater-process death and cross-generation effect reconciliation; repository tests must not convert unavailable OS terminal observation into success.
+| `connect_runtime` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async connectRuntime(` |
+| `render_runtime_view` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `renderRuntimeView(` |
+| `request_platform_capability` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async requestPlatformCapability(` |
+| `apply_shell_update` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async applyShellUpdate(` |
 
 External evidence gates:
 
-- production Authenticode, Apple Developer ID/notarization and Linux distribution signing/repository ownership
-- installed Windows AppUserModelID notification identity plus real target-host OS permission/revocation evidence where applicable
-- independent screen-reader/accessibility acceptance, operator acceptance, promotion and release
+- selected native framework and supported platform matrix
+- real code signing/notarization/keychain and updater trust roots
+- packaged crash/restart/accessibility/update rollback qualification
 
 ## 13. Cross-module acceptance boundary
 

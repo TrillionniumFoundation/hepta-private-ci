@@ -8499,14 +8499,16 @@
       "id": "TASKFLOW-1-EXECUTION-BOUNDARY",
       "module": "automation.taskflow",
       "priority": 2,
-      "state": "planned",
+      "state": "source_implemented_execution_pending",
       "parallelClass": "contract_coordinated",
       "authorityDelta": "none",
       "developmentAfter": [
-        "P0.7B-B4-CALLSITE-PROOF"
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.8D-VERTICAL-SLICE"
       ],
       "activationAfter": [
-        "P0.7B-B4-CALLSITE-PROOF"
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.8D-VERTICAL-SLICE"
       ],
       "evidenceAfter": [
         "P0.7B-B4-CALLSITE-PROOF"
@@ -8516,9 +8518,14 @@
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
         "codex-rs/hepta-automation/**",
+        "codex-rs/hepta-agentd/src/automation.rs",
+        "codex-rs/hepta-agentd/src/automation_recovery.rs",
+        ".github/workflows/automation-taskflow-focused.yml",
         ".github/workflows/hepta-lane-b-truth.yml"
       ],
-      "coOwnerModules": [],
+      "coOwnerModules": [
+        "runtime.agentd"
+      ],
       "consumesContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
@@ -8723,9 +8730,7 @@
       "coOwnerModules": [],
       "consumesContracts": [
         "DomainRead::runtime_health_observationV1",
-        "ModulePort::kernel.authority::ui.native",
-        "ModulePort::runtime.agentd::ui.native",
-        "VerifiedUseTokenWitnessV1"
+        "ModulePort::runtime.agentd::ui.native"
       ],
       "producesContracts": [],
       "deliverables": [
@@ -8766,14 +8771,11 @@
         ],
         "authoritativeWriteDomains": [],
         "directDependencies": [
-          "kernel.authority",
           "runtime.agentd"
         ],
         "contractInputs": [
           "DomainRead::runtime_health_observationV1",
-          "ModulePort::kernel.authority::ui.native",
-          "ModulePort::runtime.agentd::ui.native",
-          "VerifiedUseTokenWitnessV1"
+          "ModulePort::runtime.agentd::ui.native"
         ],
         "contractOutputs": [],
         "centralSynchronousRpcAllowed": false,
