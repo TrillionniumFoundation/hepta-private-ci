@@ -88,6 +88,9 @@ fn proof_signing_key() -> SigningKey {
 fn proof_witness(proof: &CompactionProofV2) -> CompactionProofWitnessV1 {
     let signing_key = proof_signing_key();
     let mut qualification = CompactionQualificationV2 {
+        tokenizer_implementation_digest: proof.tokenizer_implementation_digest,
+        tokenizer_attestation_digest: proof.tokenizer_attestation_digest,
+        tokenizer_key_digest: proof.tokenizer_key_digest,
         evaluator_id: proof.evaluator_id.clone(),
         evaluator_implementation_digest: proof.evaluator_implementation_digest,
         evaluation_artifact_digest: proof.evaluation_artifact_digest,
@@ -118,6 +121,9 @@ fn proof(checkpoint: &CompactCheckpointV1, candidate_seed: &str) -> CompactionPr
     let evaluator_implementation_digest = digest("evaluator-implementation");
     let attestation_digest = digest(&format!("attestation:{candidate_seed}"));
     let mut qualification = CompactionQualificationV2 {
+        tokenizer_implementation_digest: digest("tokenizer-implementation"),
+        tokenizer_attestation_digest: digest("tokenizer-attestation"),
+        tokenizer_key_digest: digest("tokenizer-key"),
         evaluator_id: id("evaluator:independent"),
         evaluator_implementation_digest,
         evaluation_artifact_digest: digest(&format!("evaluation:{candidate_seed}")),
