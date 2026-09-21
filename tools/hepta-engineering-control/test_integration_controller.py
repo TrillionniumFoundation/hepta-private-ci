@@ -88,7 +88,9 @@ class IntegrationControllerTests(unittest.TestCase):
         )
 
     def terminal_receipt(self, *, outcome="merged_observed", observed=None):
-        observed = self.now + 5 if observed is None else observed
+        # The default receipt must already have been observed at the first
+        # terminal reconciliation boundary. Later calls may replay it.
+        observed = self.now + 3 if observed is None else observed
         value = IntegrationTerminalReceipt(
             "queue-a",
             "package-a",
