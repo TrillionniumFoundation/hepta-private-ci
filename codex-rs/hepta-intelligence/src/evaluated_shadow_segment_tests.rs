@@ -51,8 +51,8 @@ fn writer(
 fn existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery() {
     let mut fixture = Fixture::new();
     let first_fixture = Fixture::new();
-    let directory = tempfile::tempdir().unwrap();
-    let root = directory.path();
+    let temp = tempfile::tempdir().unwrap();
+    let root = temp.path();
     let bounds = LedgerSegmentLimits {
         records: 1,
         bytes: 4096,
@@ -142,8 +142,8 @@ fn existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
 fn bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal() {
     let mut fixture = Fixture::new();
     fixture.candidate_evidence.signature[0] ^= 1;
-    let directory = tempfile::tempdir().unwrap();
-    let root = directory.path();
+    let temp = tempfile::tempdir().unwrap();
+    let root = temp.path();
     let bounds = LedgerSegmentLimits {
         records: 1,
         bytes: 4096,
@@ -153,13 +153,7 @@ fn bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal() 
     let before = journal.snapshot().unwrap();
     let mut ports = Ports::new(&fixture);
     assert!(
-        run_evaluated_shadow_v1(
-            fixture.request(),
-            &mut journal,
-            &mut ports,
-            /*now*/ 50,
-        )
-        .is_err()
+        run_evaluated_shadow_v1(fixture.request(), &mut journal, &mut ports, /*now*/ 50,).is_err()
     );
     assert!(ports.calls.is_empty());
     assert_eq!(journal.snapshot().unwrap(), before);
