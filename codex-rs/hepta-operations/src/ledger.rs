@@ -106,7 +106,7 @@ impl OperationLedger {
                 }
             }
             Entry::Vacant(entry) => Ok(entry.insert(OperationRecord {
-                key: intent.key.clone(),
+                key: intent.operation_key(),
                 intent: Some(intent),
                 owner_generation,
                 revision: first_revision(),
