@@ -275,7 +275,7 @@ impl DurableTopologyProposalRegistryV1 {
             let mut length_bytes = [0_u8; 4];
             store.file.read_exact(&mut length_bytes)?;
             let frame_len = u32::from_be_bytes(length_bytes) as usize;
-            if frame_len < 8 + 32 + 4 + 32 || frame_len > MAX_PAYLOAD_BYTES + 76 {
+            if !(8 + 32 + 4 + 32..=MAX_PAYLOAD_BYTES + 76).contains(&frame_len) {
                 return Err(DurableTopologyRegistryErrorV1::Corrupt);
             }
             let total = 4_u64
