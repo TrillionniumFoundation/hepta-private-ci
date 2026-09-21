@@ -10,10 +10,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
 
+from hepta_module_source_roots import _path as checked_source_path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,15 +34,159 @@ def current_source_base() -> dict[str, str]:
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
+def unique_keys(items):
+    result = {}
+    for key, value in items:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
 def load(rel: str):
-    return json.loads((ROOT / rel).read_text(encoding="utf-8"))
+    return json.loads(
+        (ROOT / rel).read_text(encoding="utf-8"), object_pairs_hook=unique_keys
+    )
 
 
 def git(*args: str) -> str:
+    # Read the checked-out repository, not ambient GIT_DIR, replacement objects,
+    # user aliases, network-backed promisor objects or external diff drivers.
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(
+        GIT_CONFIG_NOSYSTEM="1",
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_NO_REPLACE_OBJECTS="1",
+        GIT_NO_LAZY_FETCH="1",
+        GIT_TERMINAL_PROMPT="0",
+    )
     p = subprocess.run(
-        ["git", *args], cwd=ROOT, text=True, capture_output=True, check=True
+        ["git", "--literal-pathspecs", "-c", "core.fsmonitor=false", *args],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=True,
     )
     return p.stdout.strip()
+
+
+def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
+    if not isinstance(value, dict) or any(
+        not isinstance(value.get(key), str)
+        or not re.fullmatch(r"[0-9a-f]{40}", value[key])
+        for key in ("commit", "tree")
+    ):
+        raise ValueError("source identity requires literal commit/tree SHA-1 values")
+    commit, tree = value["commit"], value["tree"]
+    if git("cat-file", "-t", commit) != "commit":
+        raise ValueError("source identity does not identify a commit")
+    if git("rev-parse", f"{commit}^{{tree}}") != tree:
+        raise ValueError("source tree mismatch")
+    git("merge-base", "--is-ancestor", commit, candidate["commit"])
+    return {"commit": commit, "tree": tree}
+
+
+def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
+    paths = set(resolved_roots)
+    for root in row.get("declaredRoots", []):
+        # Alias declarations are source selection inputs, not ownership transfers.
+        alias = checked_source_path(ROOT, root) / "BINDING.json"
+        if alias.is_file():
+            paths.add(str(alias.relative_to(ROOT)))
+    for op in row["operations"]:
+        source = op.get("sourcePath")
+        if source is not None:
+            paths.add(source)
+        owner = op.get("ownerEntrypoint")
+        if owner is not None:
+            if not isinstance(owner, dict) or not owner.get("path"):
+                raise ValueError("invalid owner entrypoint path")
+            paths.add(owner["path"])
+        for key in ("tests", "delegatedCallees"):
+            entries = op.get(key, [])
+            if not isinstance(entries, list):
+                raise ValueError(f"{key} must be a list")
+            for entry in entries:
+                path = entry.get("path") if isinstance(entry, dict) else entry
+                if not isinstance(path, str) or not path:
+                    raise ValueError(f"{key} evidence requires an explicit source path")
+                paths.add(path)
+    for path in paths:
+        local = checked_source_path(ROOT, path)
+        if not local.exists():
+            raise ValueError(f"missing mapped source/evidence: {path}")
+    return sorted(paths)
+
+
+def verify_source_identity(row: dict, roots: list[str], candidate: dict[str, str]) -> None:
+    policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
+    if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
+        raise ValueError(f"unknown source identity policy: {policy}")
+    source = checked_identity(row.get("sourceBase"), candidate)
+    paths = evidence_paths(row, roots)
+    observations = [(source, paths)]
+    if "observedAtHead" in row:
+        observed = checked_identity(row["observedAtHead"], candidate)
+        observed_paths = row.get("observedSourcePaths", roots)
+        if not isinstance(observed_paths, list) or not observed_paths or any(
+            not isinstance(path, str) for path in observed_paths
+        ):
+            raise ValueError("invalid observed source paths")
+        if not set(roots).issubset(observed_paths):
+            raise ValueError("observed source paths omit resolved roots")
+        observations.append((observed, sorted(set(paths + observed_paths))))
+    else:
+        observed = None
+    if policy == "candidate_or_exact_observation_v1" and source not in (
+        candidate, observed
+    ):
+        raise ValueError("source base is neither candidate nor exact observed source")
+    checked_paths = sorted({path for _, items in observations for path in items})
+    require_clean_candidate(candidate, checked_paths)
+    for identity, observed_paths in observations:
+        for path in observed_paths:
+            local = checked_source_path(ROOT, path)
+            if not local.exists():
+                raise ValueError(f"missing observed source/evidence: {path}")
+            # Missing paths at BOTH revisions must not pass as an empty diff.
+            for commit in (identity["commit"], candidate["commit"]):
+                if git("cat-file", "-t", f"{commit}:{path}") not in {"blob", "tree"}:
+                    raise ValueError(f"untracked source/evidence: {path}")
+        if observed_paths:
+            changed = git(
+                "diff",
+                "--no-ext-diff",
+                "--no-textconv",
+                "--name-only",
+                identity["commit"],
+                candidate["commit"],
+                "--",
+                *observed_paths,
+            )
+            if changed:
+                raise ValueError(
+                    "mapped source/evidence changed after source observation: " + changed
+                )
+
+    require_clean_candidate(candidate, checked_paths)
+
+
+def require_clean_candidate(
+    candidate: dict[str, str], paths: list[str] | None = None
+) -> None:
+    # This is a quiescent-checkout verifier, not a concurrent build attestor.
+    # Untracked CI reports outside mapped roots are not source mutations.
+    if current_source_base() != candidate or git(
+        "status", "--porcelain=v1", "--untracked-files=no"
+    ):
+        raise ValueError(
+            "candidate checkout changed or is dirty; commit source before verification"
+        )
+    if paths and git(
+        "status", "--porcelain=v1", "--untracked-files=all", "--", *paths
+    ):
+        raise ValueError("mapped source checkout contains uncommitted evidence")
 
 
 def lane_by_module():
@@ -121,9 +267,8 @@ def map_for(module: dict, source_base: dict, lanes: dict):
             "operator acceptance, canary, promotion and release",
         ],
         "claimBoundary": {
-            "nativeSourceMappingComplete": all(
-                op["sourcePathExists"] and op["nativeSymbol"] for op in operations
-            ),
+            # Navigation cannot prove a closed public API or executable tests.
+            "nativeSourceMappingComplete": False,
             "sourceRootPresent": all((ROOT / x).exists() for x in roots),
             "productionImplementation": False,
             "productExecutionProved": False,
@@ -152,9 +297,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     operations = []
     for original in row.get("operations", []):
         op = dict(original)
-        name = (
-            op.get("operation") or op.get("designOperation") or "native_mapping_pending"
-        )
+        name = op.get("operation") or op.get("designOperation") or "native_mapping_pending"
         op.setdefault("operation", name)
         op.setdefault("designOperation", name)
         anchor = op.get("ownerEntrypoint") or {}
@@ -198,13 +341,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "declaredRoots": declared,
             "resolvedRoots": resolve_source_roots(ROOT, module),
             "sourceRootPresent": all((ROOT / x).exists() for x in declared),
-            "productionImplementation": bool(
-                row.get("productionImplementation", False)
-            ),
+            "productionImplementation": bool(row.get("productionImplementation", False)),
             "productCallerState": row.get("productCallerState", "not_composed"),
-            "productionWriterState": row.get(
-                "productionWriterState", "not_established"
-            ),
+            "productionWriterState": row.get("productionWriterState", "not_established"),
             "operations": operations,
         }
     )
@@ -213,10 +352,8 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         boundary = {}
     migrated["claimBoundary"] = {
         **boundary,
-        "nativeSourceMappingComplete": all(
-            bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
-            for op in operations
-        ),
+        # Preserve a reviewed claim; migration must not manufacture one.
+        "nativeSourceMappingComplete": boundary.get("nativeSourceMappingComplete", False),
         "sourceRootPresent": migrated["sourceRootPresent"],
         "productionImplementation": migrated["productionImplementation"],
         "productExecutionProved": bool(boundary.get("productExecutionProved", False)),
@@ -239,36 +376,48 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "operator acceptance, canary, promotion and release",
         ],
     )
+    if "observedAtHead" in migrated:
+        migrated["observedAtHead"] = {**migrated["observedAtHead"], **source_base}
     # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
     return migrated
 
 
-def migrate():
+def migrate(selected_modules: list[str] | None = None):
     modules = load("docs/modules/MODULES.json")["modules"]
     by_id = {m["id"]: m for m in modules}
+    selected = set(by_id) if selected_modules is None else set(selected_modules)
+    unknown = selected - set(by_id)
+    if unknown:
+        raise SystemExit("unknown modules: " + ", ".join(sorted(unknown)))
     lanes = lane_by_module()
     source_base = current_source_base()
-    changed = []
-    for path in sorted((ROOT / "docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
-        row = json.loads(path.read_text(encoding="utf-8"))
-        module = by_id.get(row.get("module") or path.parent.name)
-        if module is None:
-            continue
-        if (
-            row.get("schema") == "hepta.module-implementation-map.v3"
-            and row.get("schemaVersion") == 3
-        ):
-            # Normalize existing v3 operations with compatibility aliases.
-            migrated = migrate_map(row, module, lanes, source_base)
-        else:
-            migrated = migrate_map(row, module, lanes, source_base)
-        path.write_text(
-            json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    # Prepare all changes before writing, so a malformed/unknown module does
+    # not leave a partially rebound batch. --module confines ordinary updates.
+    pending = []
+    for mid in sorted(selected):
+        path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
+        if not path.is_file():
+            raise SystemExit(f"{mid}: missing map")
+        row = load(str(path.relative_to(ROOT)))
+        if row.get("module", mid) != mid:
+            raise SystemExit(f"{mid}: identity")
+        migrated = migrate_map(row, by_id[mid], lanes, source_base)
+        rendered = json.dumps(migrated, indent=2, ensure_ascii=False) + "\n"
+        if rendered != path.read_text(encoding="utf-8"):
+            pending.append((path, rendered))
+    for path, rendered in pending:
+        path.write_text(rendered, encoding="utf-8")
+    print(
+        json.dumps(
+            {
+                "migrated": len(pending),
+                "maps": [str(p.relative_to(ROOT)) for p, _ in pending],
+            },
+            ensure_ascii=False,
         )
-        changed.append(str(path.relative_to(ROOT)))
-    print(json.dumps({"migrated": len(changed), "maps": changed}, ensure_ascii=False))
+    )
 
 
 def generate():
@@ -292,122 +441,65 @@ def generate():
 
 
 def verify():
-    modules = load("docs/modules/MODULES.json")["modules"]
-    lanes = lane_by_module()
+    candidate = current_source_base()
+    try:
+        require_clean_candidate(candidate)
+        modules = load("docs/modules/MODULES.json")["modules"]
+        if not isinstance(modules, list) or not modules:
+            raise ValueError("module registry must be nonempty")
+        ids = [module["id"] for module in modules]
+        if len(set(ids)) != len(ids):
+            raise ValueError("duplicate module identity")
+        lanes = lane_by_module()
+    except (ValueError, OSError, subprocess.CalledProcessError) as exc:
+        raise SystemExit(f"FAIL_HEPTA_IMPLEMENTATION_MAPS: {exc}") from exc
     failures = []
     source_bases = set()
     for module in modules:
         mid = module["id"]
-        path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
-        if not path.is_file():
-            failures.append(f"{mid}: missing map")
-            continue
         try:
-            row = json.loads(path.read_text(encoding="utf-8"))
-        except Exception as exc:
-            failures.append(f"{mid}: invalid JSON: {exc}")
-            continue
-        if (
-            row.get("schema") != "hepta.module-implementation-map.v3"
-            or row.get("schemaVersion") != 3
-        ):
-            failures.append(f"{mid}: schema must be v3")
-        if row.get("module") != mid:
-            failures.append(f"{mid}: identity")
-        if row.get("laneId") != lanes.get(mid):
-            failures.append(f"{mid}: lane")
-        source_base = row.get("sourceBase")
-        if (
-            not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
-        ):
-            failures.append(f"{mid}: source base")
-        else:
-            source_commit = source_base["commit"]
-            source_bases.add((source_commit, source_base["tree"]))
-            try:
-                actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
-            except subprocess.CalledProcessError:
-                failures.append(f"{mid}: source base commit is unavailable")
-            else:
-                if actual_tree != source_base["tree"]:
-                    failures.append(f"{mid}: source base tree mismatch")
-                ancestor = subprocess.run(
-                    ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
-                    cwd=ROOT,
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                if ancestor.returncode != 0:
-                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
-        roots = [x["path"] for x in module["rootBindings"]]
-        declared = row.get("declaredRoots", row.get("sourceRoot", []))
-        if isinstance(declared, str):
-            declared = [declared]
-        if declared != roots:
-            failures.append(f"{mid}: declared roots")
-        try:
-            if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
-                failures.append(f"{mid}: resolved source roots")
-        except (ValueError, OSError) as exc:
-            failures.append(f"{mid}: source alias: {exc}")
-        ops = row.get("operations")
-        if not isinstance(ops, list) or not ops:
-            failures.append(f"{mid}: operations")
-            continue
-        if "sourceRootPresent" not in row or "productionImplementation" not in row:
-            failures.append(f"{mid}: status model")
-        evidence_paths = set(row.get("resolvedRoots") or [])
-        for op in ops:
-            if not op.get("operation"):
-                failures.append(f"{mid}: operation id")
-            if "nativeSymbol" not in op or "sourcePath" not in op:
-                failures.append(f"{mid}: canonical operation fields")
-            source = op.get("sourcePath")
-            if source:
-                evidence_paths.add(source)
-                if not (ROOT / source).is_file():
-                    failures.append(f"{mid}: missing source {source}")
-            owner_entrypoint = op.get("ownerEntrypoint")
-            if isinstance(owner_entrypoint, dict) and owner_entrypoint.get("path"):
-                evidence_paths.add(owner_entrypoint["path"])
-            for key in ("tests", "delegatedCallees"):
-                for evidence in op.get(key, []):
-                    if isinstance(evidence, dict):
-                        evidence_path = evidence.get("path")
-                    elif isinstance(evidence, str):
-                        evidence_path = evidence
-                    else:
-                        evidence_path = None
-                    if isinstance(evidence_path, str) and evidence_path:
-                        evidence_paths.add(evidence_path)
-        if isinstance(source_base, dict) and source_base.get("commit") and evidence_paths:
-            drift = subprocess.run(
-                [
-                    "git",
-                    "diff",
-                    "--quiet",
-                    source_base["commit"],
-                    "HEAD",
-                    "--",
-                    *sorted(evidence_paths),
-                ],
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            if drift.returncode == 1:
-                failures.append(f"{mid}: mapped source/evidence changed after source base")
-            elif drift.returncode != 0:
-                failures.append(f"{mid}: cannot compare source base to HEAD")
-        boundary = row.get("claimBoundary") or row.get("completion")
-        if not isinstance(boundary, dict):
-            failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+            row = load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
+            if (
+                row.get("schema") != "hepta.module-implementation-map.v3"
+                or row.get("schemaVersion") != 3
+            ):
+                raise ValueError("schema must be v3")
+            if row.get("module") != mid or row.get("laneId") != lanes.get(mid):
+                raise ValueError("module/lane identity")
+            roots = [x["path"] for x in module["rootBindings"]]
+            declared = row.get("declaredRoots", row.get("sourceRoot", []))
+            if isinstance(declared, str):
+                declared = [declared]
+            if declared != roots:
+                raise ValueError("declared roots")
+            resolved = resolve_source_roots(ROOT, module)
+            if row.get("resolvedRoots") != resolved:
+                raise ValueError("resolved source roots")
+            ops = row.get("operations")
+            if not isinstance(ops, list) or not ops:
+                raise ValueError("operations")
+            if "sourceRootPresent" not in row or "productionImplementation" not in row:
+                raise ValueError("status model")
+            for op in ops:
+                if not isinstance(op, dict) or not op.get("operation"):
+                    raise ValueError("operation id")
+                if "nativeSymbol" not in op or "sourcePath" not in op:
+                    raise ValueError("canonical operation fields")
+                source = op.get("sourcePath")
+                if source is not None and not checked_source_path(ROOT, source).is_file():
+                    raise ValueError(f"missing source: {source}")
+            verify_source_identity(row, resolved, candidate)
+            source_bases.add((row["sourceBase"]["commit"], row["sourceBase"]["tree"]))
+            if not isinstance(row.get("claimBoundary") or row.get("completion"), dict):
+                raise ValueError("claim boundary")
+        except (
+            ValueError, TypeError, KeyError, OSError, subprocess.CalledProcessError
+        ) as exc:
+            failures.append(f"{mid}: {exc}")
+    try:
+        require_clean_candidate(candidate)
+    except (ValueError, subprocess.CalledProcessError) as exc:
+        failures.append(str(exc))
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -417,8 +509,10 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
-                "candidateSource": current_source_base(),
-                "sourceBaseSemantics": "exact_rebind_anchor_plus_no_mapped-source-drift",
+                "candidateSource": candidate,
+                "sourceObservationCount": len(source_bases),
+                "sourceBaseSemantics": "module_local_rebind_anchor_plus_no_mapped_source_drift",
+                "validationScope": "source_navigation_and_declared_evidence_not_build_or_execution",
             },
             sort_keys=True,
         )
@@ -428,8 +522,19 @@ def verify():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["generate", "migrate", "verify"])
+    parser.add_argument(
+        "--module",
+        action="append",
+        dest="modules",
+        help="rebind only this module (repeatable; migrate only)",
+    )
     args = parser.parse_args()
-    {"generate": generate, "migrate": migrate, "verify": verify}[args.command]()
+    if args.modules is not None and args.command != "migrate":
+        parser.error("--module applies only to migrate")
+    if args.command == "migrate":
+        migrate(args.modules)
+    else:
+        {"generate": generate, "verify": verify}[args.command]()
 
 
 if __name__ == "__main__":
