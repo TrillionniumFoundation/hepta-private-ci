@@ -54,6 +54,7 @@ use ed25519_dalek::SigningKey;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 static NEXT_TEST_NONCE: AtomicU64 = AtomicU64::new(1);
+const EFFECT_PAYLOAD: &[u8] = b"effect-payload";
 
 struct Fixture {
     _temp: tempfile::TempDir,
@@ -335,6 +336,11 @@ impl AuthorizedEffectDriver for RecordingDriver {
             request.intent_digest,
             &request.intent.digest().expect("driver intent digest")
         );
+        assert_eq!(request.wire_payload, EFFECT_PAYLOAD);
+        assert_eq!(
+            Sha256Digest::for_bytes(request.wire_payload),
+            request.intent.payload_digest
+        );
         assert_eq!(
             request.operation_intent.operation_id().as_str(),
             request.intent.operation_id.as_str()
@@ -405,6 +411,11 @@ impl AuthorizedEffectDriver for CrashAfterProviderContactDriver {
             request.intent_digest,
             &request.intent.digest().expect("driver intent digest")
         );
+        assert_eq!(request.wire_payload, EFFECT_PAYLOAD);
+        assert_eq!(
+            Sha256Digest::for_bytes(request.wire_payload),
+            request.intent.payload_digest
+        );
         panic!("simulated crash after provider contact before observation append");
     }
 }
@@ -418,6 +429,11 @@ impl AuthorizedEffectDriver for RevocationRaceDriver {
         assert_eq!(
             request.intent_digest,
             &request.intent.digest().expect("driver intent digest")
+        );
+        assert_eq!(request.wire_payload, EFFECT_PAYLOAD);
+        assert_eq!(
+            Sha256Digest::for_bytes(request.wire_payload),
+            request.intent.payload_digest
         );
         let authority = self.authority.clone();
         let grant_id = self.grant_id.clone();
@@ -447,6 +463,48 @@ impl AuthorizedEffectDriver for RevocationRaceDriver {
 }
 
 #[tokio::test]
+async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "wire-payload-drift");
+    let mut driver = RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"success");
+
+    assert!(matches!(
+        store
+            .execute_authorized_taskflow_effect(
+                &authority,
+                &mut driver,
+                &effect,
+                b"different-provider-bytes",
+                &owner,
+                &signed,
+                &expected,
+                "authorized-effect-dispatch",
+                30,
+            )
+            .await,
+        Err(AuthorizedEffectError::BindingMismatch)
+    ));
+    assert_eq!(driver.calls, 0);
+
+    store
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &owner,
+            &signed,
+            &expected,
+            "authorized-effect-dispatch",
+            31,
+        )
+        .await
+        .expect("same grant remains usable after local wire mismatch");
+    assert_eq!(driver.calls, 1);
+}
+
+#[tokio::test]
 async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
@@ -461,6 +519,7 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
                 &authority,
                 &mut driver,
                 &effect,
+                EFFECT_PAYLOAD,
                 &owner,
                 &signed,
                 &wrong,
@@ -477,6 +536,7 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
             &authority,
             &mut driver,
             &effect,
+            EFFECT_PAYLOAD,
             &owner,
             &signed,
             &expected,
@@ -513,6 +573,7 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
             &authority,
             &mut driver,
             &effect,
+            EFFECT_PAYLOAD,
             &owner,
             &signed,
             &expected,
@@ -529,6 +590,7 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
             &authority,
             &mut driver,
             &effect,
+            EFFECT_PAYLOAD,
             &owner,
             &signed,
             &expected,
@@ -598,6 +660,7 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
             &authority,
             &mut must_not_dispatch,
             &effect,
+            EFFECT_PAYLOAD,
             &owner,
             &signed,
             &expected,
@@ -644,6 +707,7 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
             &authority,
             &mut ambiguous,
             &effect,
+            EFFECT_PAYLOAD,
             &owner,
             &signed,
             &expected,
@@ -686,6 +750,7 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
             &authority,
             &mut must_not_dispatch,
             &effect,
+            EFFECT_PAYLOAD,
             &owner,
             &signed,
             &expected,
@@ -745,6 +810,7 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
                 &authority,
                 &mut driver,
                 &effect,
+                EFFECT_PAYLOAD,
                 &owner,
                 &signed,
                 &expected,
@@ -772,6 +838,7 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
             &authority,
             &mut driver,
             &effect,
+            EFFECT_PAYLOAD,
             &owner,
             &signed,
             &expected,
@@ -802,6 +869,7 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
             &authority,
             &mut driver,
             &effect,
+            EFFECT_PAYLOAD,
             &owner,
             &signed,
             &expected,
@@ -836,6 +904,7 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
                 &authority,
                 &mut must_not_dispatch,
                 &effect,
+                EFFECT_PAYLOAD,
                 &owner,
                 &signed,
                 &expected,
@@ -868,6 +937,7 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
             &authority,
             &mut ambiguous,
             &compensation,
+            EFFECT_PAYLOAD,
             &owner,
             &signed,
             &expected,
@@ -926,6 +996,7 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
                 &authority,
                 &mut must_not_dispatch,
                 &compensation,
+                EFFECT_PAYLOAD,
                 &owner,
                 &signed,
                 &expected,
