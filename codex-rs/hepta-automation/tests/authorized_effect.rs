@@ -615,9 +615,8 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
     let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-unknown");
     let logical_id = format!("taskflow:{}:{}", effect.run_id, effect.step_id);
-    let key = ProviderEffectKey::for_logical_effect(&effect.destination_id, &logical_id)
+    let _key = ProviderEffectKey::for_logical_effect(&effect.destination_id, &logical_id)
         .expect("provider effect key");
-    let provider_intent = ProviderEffectIntent::new(key, effect.payload_digest.clone());
     let adapter = RecordingProviderEffectAdapter::new(
         ProviderEffectDispatch::Unknown,
         ProviderEffectLookup::NotFound,
@@ -653,8 +652,13 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
         TaskFlowRunState::Indeterminate
     );
 
+    let pending = store
+        .pending_authorized_taskflow_effects(8)
+        .await
+        .expect("pending provider effect");
+    assert_eq!(pending.len(), 1);
     assert!(matches!(
-        driver.lookup(&provider_intent).await,
+        driver.lookup(&pending[0]).await,
         AuthorizedProviderEffectLookup::ProvenAbsent { .. }
     ));
 }
