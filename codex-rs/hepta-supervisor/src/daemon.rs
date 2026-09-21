@@ -394,7 +394,7 @@ async fn handle_request<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     method: SupervisordMethod,
 ) -> SupervisordPayload {
-    if production_production_release_change_requires_signed_rpc(
+    if production_release_change_requires_signed_rpc(
         state.production_grant_verifier.is_some(),
         &method,
     ) {
@@ -1445,7 +1445,7 @@ mod tests {
 
     #[test]
     fn production_release_mode_rejects_unsigned_upgrade_and_rollback() {
-        assert!(production_production_release_change_requires_signed_rpc(
+        assert!(production_release_change_requires_signed_rpc(
             true,
             &SupervisordMethod::Upgrade {
                 fence: fence(),
