@@ -416,14 +416,7 @@ async fn terminal_observer_cursor_is_durable_bounded_progress() {
 
     let cursor_one = r#"{"turn_id":"page-anchor-1600","include_anchor":false}"#;
     let advanced = store
-        .record_terminal_scan_cursor(
-            task.task_id,
-            1,
-            "turn-known-but-old",
-            None,
-            cursor_one,
-            102,
-        )
+        .record_terminal_scan_cursor(task.task_id, 1, "turn-known-but-old", None, cursor_one, 102)
         .await
         .expect("persist first bounded continuation");
     assert_eq!(advanced.terminal_scan_cursor.as_deref(), Some(cursor_one));
@@ -485,7 +478,10 @@ async fn terminal_observer_cursor_is_durable_bounded_progress() {
         .mark_occurrence_indeterminate(task.task_id, 1, &missing, 106)
         .await
         .expect("terminal scan exhaustion");
-    assert_eq!(indeterminate.state, AutomationOccurrenceState::Indeterminate);
+    assert_eq!(
+        indeterminate.state,
+        AutomationOccurrenceState::Indeterminate
+    );
     assert!(indeterminate.terminal_scan_cursor.is_none());
 }
 
@@ -686,7 +682,10 @@ async fn retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurren
         .await
         .expect("reopened occurrence")
         .expect("reopened materialized occurrence");
-    assert_eq!(reopened_occurrence.state, AutomationOccurrenceState::Cancelled);
+    assert_eq!(
+        reopened_occurrence.state,
+        AutomationOccurrenceState::Cancelled
+    );
     assert_eq!(
         reopened_occurrence.terminal_receipt_digest.as_ref(),
         Some(&proof)
@@ -810,7 +809,6 @@ async fn retired_stale_generation_before_uncertainty_closes_without_provider_con
         TaskFlowRunState::Cancelled
     );
 }
-
 
 #[tokio::test]
 async fn reopen_rejects_tampered_canonical_occurrence_identity() {
