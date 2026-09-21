@@ -63,6 +63,7 @@ Agentd preserves dispatch-boundary uncertainty and accepts terminal state only f
 | `start_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn start_run(` |
 | `cancel_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn cancel_run(` |
 | `attach_context` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn attach_context(` |
+| `daemon_run_lifecycle_control` | `owner_native` | `codex-rs/hepta-agentd/src/state_control.rs` — `crate::AgentdMethod::RunStart` |
 
 External evidence gates:
 
@@ -240,6 +241,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 39 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 40 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.
