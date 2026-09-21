@@ -227,6 +227,38 @@ fn validate_plasticity_runtime_capacity(capacity: usize) -> Result<(), AgentdErr
     Ok(())
 }
 
+pub(crate) fn compose_plasticity_runtime_v1(
+    state: &Arc<AgentdState>,
+    bootstrap: Option<PlasticityRuntimeBootstrapV1>,
+) -> Result<Option<PlasticityRuntimeOwnerV1>, AgentdError> {
+    match bootstrap {
+        Some(bootstrap) => {
+            let (handle, owner) = bootstrap.into_channel()?;
+            state.attach_plasticity_runtime(handle)?;
+            Ok(Some(owner))
+        }
+        None => Ok(None),
+    }
+}
+
+pub(crate) fn spawn_plasticity_runtime_v1(
+    state: Arc<AgentdState>,
+    owner: Option<PlasticityRuntimeOwnerV1>,
+    cancellation: CancellationToken,
+) -> tokio::task::JoinHandle<Result<(), AgentdError>> {
+    tokio::spawn(async move {
+        match owner {
+            Some(owner) => owner.run(state, cancellation).await,
+            None => {
+                // Plasticity is opt-in. The absence of an explicitly composed
+                // owner means this generation has no proposal writer.
+                cancellation.cancelled().await;
+                Ok(())
+            }
+        }
+    })
+}
+
 impl PlasticityRuntimeOwnerV1 {
     pub(crate) async fn run(
         mut self,
