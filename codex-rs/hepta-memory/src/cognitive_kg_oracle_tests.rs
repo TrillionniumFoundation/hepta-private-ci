@@ -482,7 +482,6 @@ async fn canonical_v2_sqlite_restart_query_correction_and_tombstone_are_one_chai
     assert!(sql_three.is_empty());
 }
 
-
 #[tokio::test]
 async fn canonical_entity_shape_conflicts_while_live_and_evolves_after_correction() {
     let temp = TempDir::new().expect("temp dir");
