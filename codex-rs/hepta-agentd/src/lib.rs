@@ -86,6 +86,7 @@ pub use intelligence_host::AgentdIntelligenceAcceptanceV1;
 pub use intelligence_host::AgentdIntelligenceErrorV1;
 pub use intelligence_host::AgentdIntelligenceHostV1;
 pub use intelligence_snapshot::AuthenticatedCapabilitySnapshotProviderV3;
+pub use intelligence_snapshot::AuthenticatedCapabilitySnapshotRegistryV3;
 pub use intelligence_snapshot::CapabilityOwnerAttestationV3;
 pub use lane_b_runtime::AgentRunCoordinator;
 pub use lane_b_runtime::AgentRunError;
