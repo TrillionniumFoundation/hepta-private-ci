@@ -628,6 +628,7 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
                 &crash_authority,
                 &mut driver,
                 &crash_effect,
+                EFFECT_PAYLOAD,
                 &crash_owner,
                 &crash_signed,
                 &crash_expected,
