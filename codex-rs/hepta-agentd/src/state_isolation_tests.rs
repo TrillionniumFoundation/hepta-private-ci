@@ -83,6 +83,40 @@ async fn serving_agent_survives_unrelated_registry_corruption() {
     );
 }
 
+#[tokio::test]
+async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress() {
+    let (temp, _registry, state) = fixture().expect("runtime fixture");
+    let signer = ed25519_dalek::SigningKey::from_bytes(&[41; 32]);
+    let runner = crate::AgentdIntelligenceProductRunnerV1::new(
+        temp.path().join("intelligence-authority.json"),
+        crate::IntelligenceAuthorityVerifierV1 {
+            signer_id: "authority.owner".to_string(),
+            verifying_key: signer.verifying_key().to_bytes(),
+        },
+    )
+    .expect("valid runner");
+    state
+        .intelligence_product
+        .set(Arc::new(runner))
+        .expect("attach runner once");
+
+    let response = state
+        .response(
+            /*request_id*/ 2,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Capabilities,
+        )
+        .await
+        .expect("capabilities response");
+    let AgentdPayload::Capabilities(capabilities) = response.payload else {
+        panic!("capabilities payload");
+    };
+    assert!(
+        capabilities.capabilities.is_empty(),
+        "runner presence must not advertise a product capability before a daemon ingress exists"
+    );
+}
+
 #[test]
 fn missing_local_record_immediately_fences_the_serving_agent() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
