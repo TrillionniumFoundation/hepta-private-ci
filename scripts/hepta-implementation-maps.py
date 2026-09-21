@@ -80,6 +80,18 @@ def validate_observed_source(
     if not set(resolved_roots).issubset(set(paths)):
         failures.append(f"{mid}: observed source paths omit resolved roots")
         return
+    if row.get("sourceIdentityPolicy") == "candidate_or_exact_observation_v1" and any(
+        source_root == "codex-rs" or source_root.startswith("codex-rs/")
+        for source_root in resolved_roots
+    ):
+        required_workspace_inputs = {"codex-rs/Cargo.toml", "codex-rs/Cargo.lock"}
+        missing_workspace_inputs = sorted(required_workspace_inputs.difference(paths))
+        if missing_workspace_inputs:
+            failures.append(
+                f"{mid}: observed source paths omit Rust workspace build inputs "
+                + ", ".join(missing_workspace_inputs)
+            )
+            return
     root = ROOT.resolve()
     for path in paths:
         candidate = (ROOT / path).resolve()
