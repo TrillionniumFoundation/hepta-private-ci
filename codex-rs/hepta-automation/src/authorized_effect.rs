@@ -772,7 +772,7 @@ impl AutomationStore {
                     fence,
                     &durable.intent_digest,
                     &durable.payload_digest,
-                    &effect_command_id("step-absent", durable),
+                    &provider_absence_step_command_id(durable),
                     &observation.evidence_digest,
                     observation.observed_at_ms,
                 )
@@ -906,6 +906,19 @@ fn effect_command_id(phase: &str, durable: &EffectDispatchAttempt) -> String {
     bytes.extend_from_slice(&durable.attempt.to_be_bytes());
     format!(
         "effect:{phase}:{}",
+        Sha256Digest::for_bytes(&bytes).as_str()
+    )
+}
+
+fn provider_absence_step_command_id(durable: &EffectDispatchAttempt) -> String {
+    let mut bytes = b"hepta.automation.step.provider-absent.v1\0".to_vec();
+    bytes.extend_from_slice(durable.run_id.as_bytes());
+    bytes.push(0);
+    bytes.extend_from_slice(durable.step_id.as_bytes());
+    bytes.extend_from_slice(&durable.attempt.to_be_bytes());
+    bytes.extend_from_slice(durable.binding_digest.as_str().as_bytes());
+    format!(
+        "automation:step:provider-absent:effect:{}",
         Sha256Digest::for_bytes(&bytes).as_str()
     )
 }
