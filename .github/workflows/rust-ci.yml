@@ -22,18 +22,27 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Test fast-feedback failure semantics
+        run: python3 -m unittest discover -s scripts -p 'test_hepta_rust_ci_feedback.py' -v
       - name: Detect changed paths (no external action)
         id: detect
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
 
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            BASE_SHA='${{ github.event.pull_request.base.sha }}'
-            HEAD_SHA='${{ github.event.pull_request.head.sha }}'
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
             echo "Base SHA: $BASE_SHA"
             echo "Head SHA: $HEAD_SHA"
-            mapfile -t files < <(git diff --name-only --no-renames "$BASE_SHA" "$HEAD_SHA")
+            # Process substitution hides a failed git command from errexit.
+            # Write NUL-delimited paths first: errors are fatal and names stay literal.
+            changed_paths="$(mktemp "${RUNNER_TEMP}/rust-ci-paths.XXXXXX")"
+            trap 'rm -f "$changed_paths"' EXIT
+            git --no-replace-objects diff --name-only --no-renames -z "$BASE_SHA" "$HEAD_SHA" > "$changed_paths"
+            mapfile -d '' -t files < "$changed_paths"
           else
             # On manual runs, default to the full fast-PR bundle.
             files=("codex-rs/force" "tools/argument-comment-lint/force" ".github/force")
@@ -44,7 +53,7 @@ jobs:
           argument_comment_lint_package=false
           workflows=false
           for f in "${files[@]}"; do
-            [[ $f == codex-rs/* ]] && codex=true
+            [[ $f == codex-rs/* || $f == .cargo/* || $f == justfile || $f == rust-toolchain || $f == rust-toolchain.toml || $f == scripts/hepta_workspace.py || $f == scripts/test_hepta_workspace.py || $f == scripts/test_hepta_rust_ci_feedback.py ]] && codex=true
             [[ $f == codex-rs/* || $f == tools/argument-comment-lint/* || $f == justfile ]] && argument_comment_lint=true
             [[ $f == defs.bzl || $f == workspace_root_test_launcher.sh.tpl || $f == workspace_root_test_launcher.bat.tpl ]] && argument_comment_lint=true
             [[ $f == tools/argument-comment-lint/* || $f == .github/workflows/rust-ci.yml || $f == .github/workflows/rust-ci-full.yml ]] && argument_comment_lint_package=true
@@ -61,9 +70,35 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   # --- Fast Cargo-native PR checks -------------------------------------------
+  workspace_manifest:
+    timeout-minutes: 15
+    name: Cargo manifest preflight
+    runs-on: ubuntu-24.04
+    needs: changed
+    if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Check local manifest graph before installing native prerequisites
+        run: python3 scripts/hepta_workspace.py
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - name: Validate Cargo metadata for the actual checkout
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet
+          git diff --cached --quiet
+          git rev-parse HEAD 'HEAD^{tree}'
+          cargo metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/cargo-workspace-metadata.json"
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
   general:
     timeout-minutes: 30
-    name: Format / etc
+    name: Rust format
     runs-on: ubuntu-24.04
     needs: changed
     if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
@@ -80,9 +115,28 @@ jobs:
           components: rustfmt
       - name: cargo fmt
         run: cargo fmt -- --config imports_granularity=Item --check
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
+  benchmark_smoke:
+    timeout-minutes: 30
+    name: Rust benchmark smoke
+    runs-on: ubuntu-24.04
+    needs: [changed, workspace_manifest]
+    if: ${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
       - name: Rust benchmark smoke test
         run: just bench-smoke
-
       - name: Check for a clean worktree
         if: always() && !cancelled()
         uses: ./.github/actions/check-clean-worktree
@@ -226,7 +280,9 @@ jobs:
     needs:
       [
         changed,
+        workspace_manifest,
         general,
+        benchmark_smoke,
         cargo_shear,
         argument_comment_lint_package,
         argument_comment_lint_prebuilt,
@@ -237,31 +293,40 @@ jobs:
       - name: Summarize
         shell: bash
         run: |
-          echo "argpkg : ${{ needs.argument_comment_lint_package.result }}"
-          echo "arglint: ${{ needs.argument_comment_lint_prebuilt.result }}"
-          echo "general: ${{ needs.general.result }}"
-          echo "shear  : ${{ needs.cargo_shear.result }}"
+          set -euo pipefail
+          # Missing outputs from failed/cancelled detection are not "no changes".
+          [[ "$CHANGED_RESULT" == 'success' ]] || { echo 'change detection did not succeed'; exit 1; }
+          for flag in "$NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT" "$NEEDS_CHANGED_OUTPUTS_CODEX" "$NEEDS_CHANGED_OUTPUTS_WORKFLOWS" "$NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE"; do
+            [[ "$flag" == 'true' || "$flag" == 'false' ]] || { echo 'invalid change-detection output'; exit 1; }
+          done
 
-          # If nothing relevant changed (PR touching only root README, etc.),
-          # declare success regardless of other jobs.
-          if [[ "${NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT}" != 'true' && "${NEEDS_CHANGED_OUTPUTS_CODEX}" != 'true' && "${NEEDS_CHANGED_OUTPUTS_WORKFLOWS}" != 'true' ]]; then
+          if [[ "$NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT" == 'false' && "$NEEDS_CHANGED_OUTPUTS_CODEX" == 'false' && "$NEEDS_CHANGED_OUTPUTS_WORKFLOWS" == 'false' && "$NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE" == 'false' ]]; then
             echo 'No relevant changes -> CI not required.'
             exit 0
           fi
 
-          if [[ "${NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE}" == 'true' ]]; then
-            [[ '${{ needs.argument_comment_lint_package.result }}' == 'success' ]] || { echo 'argument_comment_lint_package failed'; exit 1; }
+          if [[ "$NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE" == 'true' ]]; then
+            [[ "$ARGPKG_RESULT" == 'success' ]] || { echo 'argument_comment_lint_package failed'; exit 1; }
           fi
 
-          if [[ "${NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT}" == 'true' || "${NEEDS_CHANGED_OUTPUTS_WORKFLOWS}" == 'true' ]]; then
-            [[ '${{ needs.argument_comment_lint_prebuilt.result }}' == 'success' ]] || { echo 'argument_comment_lint_prebuilt failed'; exit 1; }
+          if [[ "$NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT" == 'true' || "$NEEDS_CHANGED_OUTPUTS_WORKFLOWS" == 'true' ]]; then
+            [[ "$ARGLINT_RESULT" == 'success' ]] || { echo 'argument_comment_lint_prebuilt failed'; exit 1; }
           fi
 
-          if [[ "${NEEDS_CHANGED_OUTPUTS_CODEX}" == 'true' || "${NEEDS_CHANGED_OUTPUTS_WORKFLOWS}" == 'true' ]]; then
-            [[ '${{ needs.general.result }}' == 'success' ]] || { echo 'general failed'; exit 1; }
-            [[ '${{ needs.cargo_shear.result }}' == 'success' ]] || { echo 'cargo_shear failed'; exit 1; }
+          if [[ "$NEEDS_CHANGED_OUTPUTS_CODEX" == 'true' || "$NEEDS_CHANGED_OUTPUTS_WORKFLOWS" == 'true' ]]; then
+            [[ "$MANIFEST_RESULT" == 'success' ]] || { echo 'workspace_manifest failed'; exit 1; }
+            [[ "$GENERAL_RESULT" == 'success' ]] || { echo 'general failed'; exit 1; }
+            [[ "$BENCHMARK_RESULT" == 'success' ]] || { echo 'benchmark_smoke failed'; exit 1; }
+            [[ "$SHEAR_RESULT" == 'success' ]] || { echo 'cargo_shear failed'; exit 1; }
           fi
         env:
+          CHANGED_RESULT: ${{ needs.changed.result }}
+          MANIFEST_RESULT: ${{ needs.workspace_manifest.result }}
+          GENERAL_RESULT: ${{ needs.general.result }}
+          BENCHMARK_RESULT: ${{ needs.benchmark_smoke.result }}
+          SHEAR_RESULT: ${{ needs.cargo_shear.result }}
+          ARGPKG_RESULT: ${{ needs.argument_comment_lint_package.result }}
+          ARGLINT_RESULT: ${{ needs.argument_comment_lint_prebuilt.result }}
           NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT: ${{ needs.changed.outputs.argument_comment_lint }}
           NEEDS_CHANGED_OUTPUTS_CODEX: ${{ needs.changed.outputs.codex }}
           NEEDS_CHANGED_OUTPUTS_WORKFLOWS: ${{ needs.changed.outputs.workflows }}
