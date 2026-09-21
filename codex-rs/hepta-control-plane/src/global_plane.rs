@@ -515,10 +515,7 @@ pub fn revalidate_fleet_allocation_for_plan_v1(
     if fleet_summary.revision.get() != grant.lease_generation
         || fleet_summary.source_frontier_digest != semantic_digest
         || fleet_summary.support_digest
-            != bind_admission_support(
-                fence.authenticated_support_digest,
-                fence.grant_digest,
-            )
+            != bind_admission_support(fence.authenticated_support_digest, fence.grant_digest)
         || request.snapshot_digest != plan.snapshot.snapshot_digest()
     {
         return Err(GlobalPlaneError::FleetExecutionBindingMismatch);
