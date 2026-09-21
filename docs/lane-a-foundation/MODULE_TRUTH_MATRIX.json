@@ -172,20 +172,23 @@
         "source": "implemented",
         "implementation": "durable_owner_source_implemented",
         "durability": "sqlite_wal_full_integrated_owner",
-        "qualification": "source_tests_and_crash_probe_present",
-        "activation": "inactive",
+        "qualification": "source_fault_capacity_and_crash_tests_present_execution_pending",
+        "activation": "source_composed_external_authority_enrollment_pending",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "atomic durable operation/event/outbox publication in the existing CognitiveStore SQLite owner",
-        "fenced dispatch claim, owner-generation handoff and indeterminate reconciliation without blind resend",
-        "real final-use-gated dispatch with destination-owned CognitiveStore dedupe and lost-ack observation",
+        "persisted bounded dispatch claim lease, renewal, attempt budget, retry backoff and newer-generation takeover",
+        "one-shot effect-entry fencing plus owner-generation handoff and indeterminate reconciliation without blind resend",
+        "full OperationIntent semantic and predecessor binding through final-use dispatch",
+        "destination-owned CognitiveStore predecessor/CAS apply and Automation atomic dedupe/apply with terminal observation",
+        "Agentd runtime composition with an immediate-then-periodic observer-only reconciler when externally configured",
         "bounded deterministic operation/outbox reference oracle"
       ],
       "targetOnlyCapabilities": [
-        "default always-on Agentd dispatcher/reconciler activation",
+        "deployment enrollment of external authority, final-use issuer and grant provider",
         "bounded segment/checkpoint compaction of append-only local operation journals",
-        "remaining destination-owned dedupe/apply/terminal-observer integrations",
+        "destination-owned dedupe/apply/terminal-observer integration for each additional activated effect owner",
         "target-host physical power-loss and storage qualification",
         "independent acceptance, promotion and release"
       ],
@@ -198,27 +201,72 @@
           ]
         },
         {
+          "path": "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+          "mustContain": [
+            "CREATE TABLE cognitive_operation_dispatch_claims",
+            "claim_state",
+            "lease_expires_at_unix_ms",
+            "next_eligible_at_unix_ms"
+          ]
+        },
+        {
           "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
           "mustContain": [
             "pub async fn admit_operation(",
-            "begin_with(\"BEGIN IMMEDIATE\")",
-            "claim_inherited_dispatch",
-            "verify_operation_ledger"
+            "bounded_next_sequence(",
+            "verify_occurrence_pair_incremental",
+            "claim_inherited_dispatch"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+          "mustContain": [
+            "pub(crate) async fn claim(",
+            "pub(crate) async fn renew(",
+            "MAX_DURABLE_DISPATCH_ATTEMPTS",
+            "mark_entered"
           ]
         },
         {
           "path": "codex-rs/hepta-memory/src/production_writer.rs",
           "mustContain": [
             "ProductionFinalUseOutboxDispatcher",
-            "with_verified_use",
-            "pub async fn final_use_binding("
+            "operation_semantic_sha256",
+            "expected_predecessor_sha256",
+            "with_verified_use"
           ]
         },
         {
           "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
           "mustContain": [
             "pub struct CognitiveSourceOutboxTarget",
+            "expected_predecessor_sha256",
+            "begin_with(\"BEGIN IMMEDIATE\")",
             "observe_terminal"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/operation_destination.rs",
+          "mustContain": [
+            "create_task_from_operation",
+            "BEGIN IMMEDIATE",
+            "observe_task_operation"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "take_production_operations",
+            "run_production_operation_reconciler"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "mustContain": [
+            "AgentdProductionOperationRuntimeConfig",
+            "AgentdFinalUseGrantProvider",
+            "dispatch_with_grant_provider",
+            "pub async fn reconcile"
           ]
         },
         {
