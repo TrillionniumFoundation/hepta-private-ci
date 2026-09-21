@@ -11,7 +11,7 @@ Canonical work package: `MEM-5-COMPACT`.
 Durable owner: existing Agent-local CognitiveStore.
 Named product façade: `AgentdProductionWriterHost`. Runtime composition seam: `AgentdProductionWriterBootstrap`, injected explicitly into `AgentdConfig`; default startup has no bootstrap and mints no authority/trust.
 
-The bounded co-owner integration paths are recorded in `docs/delivery/WORK_PACKAGES.json`; they include `cognitive.types`, `cognitive.store`, `runtime.agentd`, `runtime.codex` and `context.compiler`. The compact engine owns compaction semantics, not a second database, execution spine or production authority.
+The bounded co-owner integration paths are recorded in `docs/delivery/WORK_PACKAGES.json`; they include `cognitive.types`, `cognitive.store`, `context.compiler`, `control.runtime`, `runtime.agentd` and `runtime.codex`. The compact engine owns compaction semantics, not a second database, execution spine or production authority.
 
 #959's parallel production-event-journal / publish-only Agentd host is retired. The canonical physical topology is the qualified checkpoint/payload tables in the existing CognitiveStore.
 
