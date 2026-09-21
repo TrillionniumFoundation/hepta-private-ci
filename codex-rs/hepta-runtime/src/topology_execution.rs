@@ -10,7 +10,9 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_contracts::{FinalUseBinding, FinalUseError};
-use codex_hepta_control_plane::{CnsHierarchyError, CnsOrganHostV1, CnsRouteV1};
+use codex_hepta_control_plane::{
+    CnsHierarchyError, CnsOrganHostV1, CnsRouteV1, OrganStateMigrationV1,
+};
 use codex_hepta_plasticity::{
     GovernedTopologyProposalV1, TopologyCandidateKindV2, TopologyGovernanceErrorV1,
     WriterHandoffPlanV1, admit_governed_topology_v1, validate_writer_handoff_plan_v1,
@@ -69,6 +71,13 @@ impl RuntimeTopologySuccessorV1 {
     }
 }
 
+pub trait RuntimeTopologyMigrationOwnerV1: OrganStateMigrationV1 + fmt::Debug + Send {
+    /// Bind this executable migration owner to the exact governed handoff plan.
+    /// The runtime refuses a callback prepared for any other migration/rollback
+    /// or writer-fence contract before consuming final-use authority.
+    fn handoff_plan_digest(&self) -> Digest32;
+}
+
 #[derive(Debug)]
 pub struct RuntimeTopologyApplyRequestV1 {
     pub governed: GovernedTopologyProposalV1,
@@ -76,6 +85,9 @@ pub struct RuntimeTopologyApplyRequestV1 {
     /// Identity selected by the external authority issuer. The runtime trusts
     /// it only when the signed final-use grant binds the same value.
     pub accepted_subject_id: StableId,
+    /// Authoritative state owner for the exact writer-handoff plan. Plasticity
+    /// supplies only the digest-bound plan; the external runtime owns execution.
+    pub migration: Box<dyn RuntimeTopologyMigrationOwnerV1>,
     pub successor: RuntimeTopologySuccessorV1,
 }
 
@@ -225,6 +237,9 @@ fn validate_runtime_topology_transition_for_destination_v1(
         .ok_or(RuntimeTopologyExecutionError::Binding)?
         .clone();
     validate_writer_handoff_plan_v1(&handoff, Some(change.writer_handoff_digest))?;
+    if request.migration.handoff_plan_digest() != handoff.plan_digest {
+        return Err(RuntimeTopologyExecutionError::Binding);
+    }
     if handoff.source_store_digest != current_route.hierarchy_digest
         || handoff.migration_digest != change.migration_digest
         || handoff.rollback_digest != change.rollback_digest
