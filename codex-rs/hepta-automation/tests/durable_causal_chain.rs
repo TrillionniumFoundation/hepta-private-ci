@@ -29,6 +29,8 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
@@ -693,4 +695,58 @@ async fn retired_stale_generation_before_uncertainty_closes_without_provider_con
             .state,
         TaskFlowRunState::Cancelled
     );
+}
+
+
+#[tokio::test]
+async fn reopen_rejects_tampered_canonical_occurrence_identity() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75107",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let lease = store
+        .claim_due(100, 1, 30_000)
+        .await
+        .expect("claim")
+        .expect("lease");
+    let occurrence = store
+        .materialize_occurrence(&lease, 100)
+        .await
+        .expect("materialize");
+    let database_path = store.path().to_path_buf();
+    store.close().await;
+
+    let sqlite_home =
+        AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root()).expect("sqlite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(&database_path)
+        .await
+        .expect("inspection pool");
+    sqlx::query("DROP TRIGGER automation_occurrence_identity_no_update")
+        .execute(&pool)
+        .await
+        .expect("drop identity trigger");
+    let forged = format!("automation-occurrence:{}", "a".repeat(64));
+    assert_ne!(forged, occurrence.occurrence_id);
+    sqlx::query(
+        "UPDATE automation_occurrence_lifecycle
+         SET occurrence_id = ?
+         WHERE task_id = ? AND occurrence = ?",
+    )
+    .bind(forged)
+    .bind(task.task_id.to_string())
+    .bind(1_i64)
+    .execute(&pool)
+    .await
+    .expect("tamper occurrence identity");
+    pool.close().await;
+
+    assert!(matches!(
+        AutomationStore::open(&fixture.layout).await,
+        Err(AutomationError::Corrupt)
+    ));
 }
