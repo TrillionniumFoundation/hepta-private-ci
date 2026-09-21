@@ -5,6 +5,7 @@
 //! It does not implement a second runtime kernel or a fleet-wide message bus.
 
 mod ui_control_wire;
+mod ui_control_product;
 mod app_runtime;
 mod authbus_dispatch;
 mod authbus_ingress;
