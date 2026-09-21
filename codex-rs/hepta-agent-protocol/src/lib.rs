@@ -120,6 +120,8 @@ pub struct AgentRunSnapshot {
     pub objective_digest: String,
     pub body_digest: String,
     pub artifact_set_digest: String,
+    /// Exact runtime.codex physical payload commitment admitted for this run.
+    pub execution_payload_digest: String,
     pub authority_epoch: u64,
     pub deadline_ms: u64,
 }
@@ -155,6 +157,8 @@ pub struct AgentRunReceipt {
     pub context_digest: Option<String>,
     /// Exact compilation/intelligence-envelope receipt attached before dispatch.
     pub compilation_receipt_digest: Option<String>,
+    /// Exact runtime.codex physical payload commitment for reconciliation.
+    pub execution_payload_digest: String,
     pub authority_epoch: u64,
     pub deadline_ms: u64,
     pub cancel_reason: Option<String>,
