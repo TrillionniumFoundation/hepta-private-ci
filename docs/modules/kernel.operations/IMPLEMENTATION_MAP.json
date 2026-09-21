@@ -40,7 +40,7 @@
     },
     {
       "operation": "claim_outbox",
-      "nativeSymbol": "DurableOperationClaims::claim",
+      "nativeSymbol": "operation_claims::claim",
       "sourcePath": "codex-rs/hepta-memory/src/operation_claims.rs",
       "state": "durable_claim_lease_implemented_execution_pending",
       "authority": "generation_fence_attempt_lease_bound",
@@ -56,7 +56,7 @@
     },
     {
       "operation": "renew_outbox_claim",
-      "nativeSymbol": "DurableOperationClaims::renew",
+      "nativeSymbol": "operation_claims::renew",
       "sourcePath": "codex-rs/hepta-memory/src/operation_claims.rs",
       "state": "durable_claim_renewal_implemented_execution_pending",
       "authority": "generation_fence_attempt_lease_bound",
@@ -230,7 +230,11 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
-        "blobSha": "954b23329826518f8fd0173026b5bfd41ea4b3e2"
+        "blobSha": "7726f7ad9c0d1b04d5b4961f30cad67a5897c07a"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+        "blobSha": "b8f10ff751639b183c6e26dd396b6dbe0790865c"
       },
       {
         "path": "codex-rs/hepta-memory/src/operation_claims.rs",
@@ -243,6 +247,10 @@
       {
         "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
         "blobSha": "f7cca8a1ba12d596718094408ad01fb65a647be1"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+        "blobSha": "f518217101c43a71ecde722ac5af319bcfeda47a"
       },
       {
         "path": "codex-rs/hepta-agentd/src/config.rs",
@@ -263,8 +271,12 @@
       {
         "path": "codex-rs/hepta-automation/src/operation_destination.rs",
         "blobSha": "b6f23ab57f77cfb7ecc2582d1d574f7d13b9f7c8"
+      },
+      {
+        "path": "codex-rs/hepta-automation/tests/kernel_operations_destination.rs",
+        "blobSha": "b256df2fb2b106f32ad473bbcb4ccb8deceac4fe"
       }
     ],
-    "digest": "sha256:6a794cd325b2e5836aa8be653dc645a9b85b96732ff3a840a245ef99f64b7e11"
+    "digest": "sha256:f2f3a2bda9764496c4f9f352f9ab5df0e5e36f386c4870296a9a7e3fca856927"
   }
 }
