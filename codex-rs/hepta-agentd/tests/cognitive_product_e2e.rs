@@ -1504,13 +1504,22 @@ async fn runtime_automation_store_failure_does_not_end_real_agentd_or_normal_tur
 
     let database_path = agent.layout.automation_root().join("automation_1.sqlite3");
     let sqlite_home = AbsolutePathBuf::from_absolute_path(agent.layout.automation_root())?;
-    let sabotage = SqliteConfig::from_sqlite_home(sqlite_home)
+    let sabotage_pool = SqliteConfig::from_sqlite_home(sqlite_home)
         .open_durable_evidence_pool(&database_path)
         .await?;
-    sqlx::query("DROP TABLE automation_tasks")
-        .execute(&sabotage)
+    let mut sabotage = sabotage_pool.acquire().await?;
+    // The production schema deliberately has foreign-key dependents on
+    // automation_tasks. This test is simulating physical store corruption, not
+    // exercising a legal owner mutation, so disable FK enforcement only on the
+    // dedicated sabotage connection before removing the parent table.
+    sqlx::query("PRAGMA foreign_keys = OFF")
+        .execute(&mut *sabotage)
         .await?;
-    sabotage.close().await;
+    sqlx::query("DROP TABLE automation_tasks")
+        .execute(&mut *sabotage)
+        .await?;
+    drop(sabotage);
+    sabotage_pool.close().await;
 
     let error = timeout(Duration::from_secs(5), async {
         loop {
@@ -1606,13 +1615,22 @@ async fn five_real_agents_survive_one_automation_store_failure_without_peer_stal
         .automation_root()
         .join("automation_1.sqlite3");
     let sqlite_home = AbsolutePathBuf::from_absolute_path(agent_a.layout.automation_root())?;
-    let sabotage = SqliteConfig::from_sqlite_home(sqlite_home)
+    let sabotage_pool = SqliteConfig::from_sqlite_home(sqlite_home)
         .open_durable_evidence_pool(&database_path)
         .await?;
-    sqlx::query("DROP TABLE automation_tasks")
-        .execute(&sabotage)
+    let mut sabotage = sabotage_pool.acquire().await?;
+    // The production schema deliberately has foreign-key dependents on
+    // automation_tasks. This test is simulating physical store corruption, not
+    // exercising a legal owner mutation, so disable FK enforcement only on the
+    // dedicated sabotage connection before removing the parent table.
+    sqlx::query("PRAGMA foreign_keys = OFF")
+        .execute(&mut *sabotage)
         .await?;
-    sabotage.close().await;
+    sqlx::query("DROP TABLE automation_tasks")
+        .execute(&mut *sabotage)
+        .await?;
+    drop(sabotage);
+    sabotage_pool.close().await;
 
     let unavailable = timeout(Duration::from_secs(5), async {
         loop {
