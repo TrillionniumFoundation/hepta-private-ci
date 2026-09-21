@@ -15,6 +15,9 @@ let reconcileCount = 0;
 let connectCount = 0;
 let expireSnapshotOnce = false;
 let currentSessionId = null;
+let e2eHoldResponse = null;
+let e2eHoldTimer = null;
+let e2eCompleted = false;
 
 function findChrome() {
   if (process.env.HEPTA_CHROME) return process.env.HEPTA_CHROME;
@@ -218,12 +221,55 @@ try {
   document.body.setAttribute("data-e2e-status", "fail");
   document.body.setAttribute("data-e2e-stage", stage);
   document.body.setAttribute("data-e2e-error", String(error?.message ?? error));
+} finally {
+  await fetch("/api/ui-control/e2e-complete", {
+    method: "POST",
+    credentials: "same-origin",
+    cache: "no-store"
+  }).catch(() => {});
 }
 `;
 
 const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url, "http://127.0.0.1");
+    if (url.pathname === "/e2e-hold") {
+      if (e2eCompleted) {
+        res.writeHead(204, { "cache-control": "no-store" });
+        return res.end();
+      }
+      if (e2eHoldResponse) {
+        return json(res, 409, { error: "duplicate hold" });
+      }
+      e2eHoldResponse = res;
+      e2eHoldTimer = setTimeout(() => {
+        if (!e2eHoldResponse) return;
+        e2eHoldResponse.writeHead(204, { "cache-control": "no-store" });
+        e2eHoldResponse.end();
+        e2eHoldResponse = null;
+      }, 30_000);
+      e2eHoldTimer.unref?.();
+      req.on("close", () => {
+        if (e2eHoldResponse === res) {
+          e2eHoldResponse = null;
+        }
+      });
+      return;
+    }
+    if (url.pathname === "/api/ui-control/e2e-complete") {
+      if (!requireAuthenticated(req, res)) return;
+      e2eCompleted = true;
+      if (e2eHoldTimer) {
+        clearTimeout(e2eHoldTimer);
+        e2eHoldTimer = null;
+      }
+      if (e2eHoldResponse) {
+        e2eHoldResponse.writeHead(204, { "cache-control": "no-store" });
+        e2eHoldResponse.end();
+        e2eHoldResponse = null;
+      }
+      return json(res, 200, { completed: true });
+    }
     if (url.pathname === "/api/ui-control/bootstrap") {
       if (!requireAuthenticated(req, res)) return;
       return json(res, 200, {
@@ -311,7 +357,10 @@ const server = createServer(async (req, res) => {
     if (!full.startsWith(dist)) return json(res, 404, { error: "not found" });
     let body = await readFile(full);
     if (path === "/index.html") {
-      body = Buffer.from(baseIndex.replace("</body>", '  <script type="module" src="/e2e-driver.js"></script>\n</body>'));
+      body = Buffer.from(baseIndex.replace(
+        "</body>",
+        '  <img src="/e2e-hold" alt="" hidden>\n  <script type="module" src="/e2e-driver.js"></script>\n</body>'
+      ));
     }
     for (const [name, value] of Object.entries(securityHeaders)) res.setHeader(name, value);
     if (path === "/index.html") {
