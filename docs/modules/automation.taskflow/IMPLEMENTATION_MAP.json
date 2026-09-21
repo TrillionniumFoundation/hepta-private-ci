@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "37fabb4a76cf0362896aeb6df9a8e0ffdaccce60",
-    "tree": "ee55b0b056339d8c6583629d7457d5663f69c2fc"
+    "commit": "b33c3d9ab09d5e0b5cc5ee67c1544afbd8459050",
+    "tree": "0b828babc3750a8d8f68423c46ea8c3c85c8fe43"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -197,9 +197,9 @@
     "codex-rs/Cargo.lock"
   ],
   "observedAtHead": {
-    "commit": "37fabb4a76cf0362896aeb6df9a8e0ffdaccce60",
-    "tree": "ee55b0b056339d8c6583629d7457d5663f69c2fc",
-    "interpretation": "exact final TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence, schedule-revision claim linearization, producer-owned OperationIntentV1 composition, final-use nonce hardening, revocation-race/compensation-crash coverage, after-provider-contact fault injection, Calendar V2 bounded missed-run/DST coverage, and legacy revision-unknown dispatch reconciliation; later commits are documentation/projection truth updates only, and qualification results remain separate"
+    "commit": "b33c3d9ab09d5e0b5cc5ee67c1544afbd8459050",
+    "tree": "0b828babc3750a8d8f68423c46ea8c3c85c8fe43",
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source re-observation after current-main durable causal-chain closure and the shared Cargo.lock refresh required by channel.matrix final-use dependencies; TaskFlow semantic source remains unchanged, and qualification/activation evidence remains separate"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }

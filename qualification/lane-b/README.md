@@ -1,6 +1,6 @@
 # Lane B runtime source closure
 
-This directory contains the closed-world, repository-controlled truth for `LANE-B-RUNTIME` at immutable source base `f278a89eea18fccb6d37b876aa5679863a64139d`. Exact candidate identity is always derived from Git HEAD by the verifier.
+This directory contains the closed-world, repository-controlled truth for `LANE-B-RUNTIME` at immutable source base `b33c3d9ab09d5e0b5cc5ee67c1544afbd8459050`. Exact candidate identity is always derived from Git HEAD by the verifier.
 
 ## Authoritative files
 

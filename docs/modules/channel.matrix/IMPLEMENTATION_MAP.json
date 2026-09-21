@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "701cc8c78b8802861546683a2e2d442965b74433",
-    "tree": "1317f8fdc8015d59ad6de030ef6f5015f3bb8835"
+    "commit": "b33c3d9ab09d5e0b5cc5ee67c1544afbd8459050",
+    "tree": "0b828babc3750a8d8f68423c46ea8c3c85c8fe43"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
@@ -198,5 +198,20 @@
     "codex-rs/hepta-matrixd",
     "codex-rs/hepta-matrix-store",
     "codex-rs/hepta-matrix-protocol"
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "b33c3d9ab09d5e0b5cc5ee67c1544afbd8459050",
+    "tree": "0b828babc3750a8d8f68423c46ea8c3c85c8fe43",
+    "interpretation": "exact current-main channel.matrix source observation after durable qualified terminality, current-attempt final-use evidence, crash/reopen reconciliation, product runner composition, and merged workspace dependency lock; deployment qualification remains separate"
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrixd",
+    "codex-rs/hepta-matrix-store",
+    "codex-rs/hepta-matrix-protocol",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_tests.rs",
+    "codex-rs/Cargo.lock"
   ]
 }
