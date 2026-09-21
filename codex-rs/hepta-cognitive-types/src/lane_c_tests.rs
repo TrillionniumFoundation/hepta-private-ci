@@ -218,6 +218,9 @@ fn compact_checkpoint_and_proof_are_non_authoritative() {
     let mut proof_v2 = CompactionProofV2 {
         checkpoint_digest: checkpoint.checkpoint_digest,
         candidate_digest: digest("candidate"),
+        tokenizer_implementation_digest: digest("tokenizer-implementation"),
+        tokenizer_attestation_digest: digest("tokenizer-attestation"),
+        tokenizer_key_digest: digest("tokenizer-key"),
         evaluator_id: id("evaluator:independent"),
         evaluator_implementation_digest: digest("evaluator-implementation"),
         evaluation_artifact_digest: digest("evaluation-artifact"),
