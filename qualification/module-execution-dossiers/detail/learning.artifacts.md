@@ -42,6 +42,7 @@ New/hardened operations include:
 - contained validation-before-create writers ending in `_beneath`;
 - `validate_iteration_transition` and
   `IterationLedgerV1::{append_candidate, transition, snapshot, from_snapshot}`.
+- `ArtifactSelectionVerifierV1::verify`, `record_verified_selection` and `load_selected_candidate`; selector trust is bound to the artifact-owner trust snapshot but uses a disjoint selector key set.
 
 Candidate registration or admission is not selection. A successful read is not
 execution or activation. Iteration records do not run a sandbox, merge source,
@@ -98,8 +99,8 @@ of atomic multi-file fsync.
 7. Validate and durably publish the independently authenticated current-head
    witness.
 8. Persist the transaction phase and acknowledge only after witness durability.
-9. A separately authorized selector/router may later consume independent
-   selection evidence. This crate cannot perform that action.
+9. Verify a separately signed selector receipt against the exact authenticated CURRENT view and full artifact identity. The verifier produces only DENY_ALL load eligibility; it does not mint selector authority.
+10. Record the verified selector digest as the `OperatorAccepted -> Selected` lifecycle evidence and, when requested by a qualification/product host, load that exact immutable candidate. Canary, promotion and release remain separate authorities.
 
 The lifecycle evidence path is
 `proposed -> trained -> evaluated -> shadow -> canary -> operator_accepted ->
@@ -165,6 +166,17 @@ The canonical Lane E case IDs are:
   `VerifiedCurrentRegistryViewV1` values issued after signed CURRENT + exact
   snapshot verification; a bare `File + RegistrySnapshotReceipt` is not a
   product currentness interface.
+- **ART-12:** selector verification is a separate Ed25519 trust domain bound to
+  the exact artifact-owner trust snapshot; selector keys may not equal
+  writer/head authority keys or the artifact producer identity. The signed
+  selection binds exact CURRENT witness/trust/head plus artifact kind,
+  generation, predecessor, payload/objective/support/compatibility digests and
+  byte length. Verified selection records only the
+  `OperatorAccepted -> Selected` lifecycle transition with DENY_ALL authority.
+  The cross-process tabular qualification then loads generation 2, reloads the
+  exact compatible generation-1 predecessor in another process, and proves that
+  fresh signed selection attempts at the post-revocation CURRENT head fail
+  before payload use.
 
 Contained-write/path-escape and V1-projection swap tests remain supplemental
 hardening cases rather than separate authority claims.
@@ -212,6 +224,7 @@ instead of a caller-constructible file/receipt pair.
   ArtifactRegistry physical writer and durable snapshot.
 - **Governed self-iteration bookkeeping:** `iteration.rs`,
   `iteration_ledger.rs`.
+- **Independent selection verification/load:** `selection.rs`; the source owns verification and exact load eligibility, not selector private keys or canary/promotion authority.
 - **Operating references:** `STORAGE.md`, `READ_BOUNDARY.md`,
   `PINNED_LOAD.md`, `DATASET_REVOCATION.md`, `NATIVE_MAPPING.md`.
 
@@ -230,9 +243,4 @@ The workflow compiles all targets, runs owner and cross-crate tests, strict
 Clippy and rustfmt. Push synthetic merge resolves its predecessor from
 `github.event.before`; PR synthetic merge uses the pull-request base.
 
-External evidence intentionally remains open. The repository cannot
-self-provision a trusted production filesystem namespace or signing key, prove
-parent-directory durability on every target, operate the newest-head
-distribution service, prove external-cache/physical-erasure behavior, or issue
-independent product selection, process loading, canary, operator acceptance,
-promotion or release.
+External evidence intentionally remains open. The repository cannot self-provision a trusted production filesystem namespace, artifact-owner or selector private keys, prove parent-directory durability on every target, operate the external newest-head distribution service, prove external-cache/physical-erasure behavior, or issue live operator acceptance, canary, promotion or release. Repository tests can verify signed selection/load/revoke/rollback semantics but are not production selection or rollout receipts.

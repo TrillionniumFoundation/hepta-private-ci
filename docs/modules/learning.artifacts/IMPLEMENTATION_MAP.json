@@ -284,6 +284,49 @@
       "designOperation": "current_head_restart_anchor",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "independent_selection_verify",
+      "nativeSymbol": "ArtifactSelectionVerifierV1::verify",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "state": "source_implemented_external_selector_authority_required",
+      "authority": "none",
+      "tests": [
+        "art_12_independent_selector_binds_exact_current_and_manifest",
+        "art_12_selection_rejects_self_selection_and_revoked_selector"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "independent_selection_verify",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "record_verified_selection",
+      "nativeSymbol": "record_verified_selection",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "state": "source_implemented_external_selector_authority_required",
+      "authority": "none",
+      "tests": [
+        "art_12_verified_selection_records_only_selected_transition"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "record_verified_selection",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "load_selected_candidate",
+      "nativeSymbol": "load_selected_candidate",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "existing_artifact_owner_new_process_predictions_and_revoked_rollback"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "load_selected_candidate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",
@@ -295,10 +338,10 @@
     "Compose independently selected product loading and routing without granting this crate selection or release authority."
   ],
   "externalEvidenceGates": [
-    "target-host trusted ancestor and containing-directory durability plus real power-loss qualification",
-    "production signer/key provisioning and independent retention of the signed current-head restart anchor",
-    "real selected-artifact process loading, revocation observation, exact rollback and target measurements",
-    "independent semantic/security review, operator acceptance, canary, selection, promotion and release"
+    "independent semantic review",
+    "target-host product execution and power-loss qualification",
+    "production owner/selector trust provisioning and independent operator acceptance",
+    "canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,

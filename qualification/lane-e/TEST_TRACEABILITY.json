@@ -99,6 +99,30 @@
       "status": "native_test_mapped"
     },
     {
+      "id": "ART-12",
+      "module": "learning.artifacts",
+      "requirement": "Independent selector trust is cryptographically separate from artifact writer/head authority, binds the exact authenticated CURRENT head and complete artifact manifest/payload identity, records only an OperatorAccepted -> Selected lifecycle transition with DENY_ALL authority, and the selected immutable candidate loads in a new process, supports exact predecessor rollback loading, and fails closed on fresh signed selection attempts after revocation.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "function": "art_12_independent_selector_binds_exact_current_and_manifest"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "function": "art_12_selection_rejects_self_selection_and_revoked_selector"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "function": "art_12_verified_selection_records_only_selected_transition"
+        },
+        {
+          "source": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
+          "function": "existing_artifact_owner_new_process_predictions_and_revoked_rollback"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
       "id": "OP-01",
       "module": "learning.operator",
       "requirement": "The analytic sensor and Bellman reference produces deterministic canonical targets and action gaps.",

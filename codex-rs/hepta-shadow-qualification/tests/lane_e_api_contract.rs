@@ -115,6 +115,9 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1::verify_current_registry_view;
     let _ = codex_hepta_learning_artifacts::LearningArtifactOwnerHost::current_registry_view;
     let _ = codex_hepta_learning_artifacts::LearningArtifactOwnerService::current_registry_view;
+    let _ = codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1::verify;
+    let _ = codex_hepta_learning_artifacts::record_verified_selection;
+    let _ = codex_hepta_learning_artifacts::load_selected_candidate;
     let _ = codex_hepta_learning_artifacts::validate_iteration_transition;
     let _ = codex_hepta_learning_artifacts::IterationLedgerV1::append_candidate;
     let _ = codex_hepta_learning_artifacts::IterationLedgerV1::transition;

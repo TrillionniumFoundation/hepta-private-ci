@@ -31,7 +31,7 @@ EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 5)),
     *(f"OP-{index:02d}" for index in range(1, 5)),
     *(f"EVAL-{index:02d}" for index in range(1, 5)),
-    *(f"ART-{index:02d}" for index in range(1, 12)),
+    *(f"ART-{index:02d}" for index in range(1, 13)),
 }
 EXPECTED_EXTERNAL_GATES = {f"RDY-EXT-{index:03d}" for index in range(1, 10)}
 EXPECTED_OPERATIONS = {
@@ -68,6 +68,9 @@ EXPECTED_OPERATIONS = {
         "LearningArtifactOwnerService::current_registry_view",
         "LearningArtifactOwnerService::publish",
         "load_pinned_candidate",
+        "ArtifactSelectionVerifierV1::verify",
+        "record_verified_selection",
+        "load_selected_candidate",
     },
     "learning.operator": {
         "build_targets",

@@ -170,11 +170,20 @@ validate the actor at current time; historical recovery validates the same
 credential at the immutable event occurrence time, so a credential expiring
 after a valid event does not make old lifecycle state unrecoverable.
 
-Selection is consumed by a different supervisor or selector. A new process
-loads an exact manifest and payload against the current registry head and current
-withdrawal frontier. The old process retains its immutable run snapshot.
-Rollback is a new authorized transition to an exact compatible predecessor; it
-is never an implicit reuse of an expired grant or a stale backup marker.
+Selection is consumed by a different supervisor or selector trust domain. The
+selector signs the artifact identity, exact authenticated CURRENT head/witness,
+manifest lineage and payload bindings. `ArtifactSelectionVerifierV1` binds that
+selector trust to the actual artifact-owner trust snapshot and rejects selector
+keys reused by writer/head authority. Only then may
+`record_verified_selection` persist the `OperatorAccepted -> Selected`
+evidence and `load_selected_candidate` expose the exact immutable bytes.
+
+A new process still revalidates CURRENT before each use. The old process retains
+its immutable run snapshot. Rollback is a new independently signed selection of
+an exact compatible predecessor; it is never implicit reuse of an expired grant
+or stale backup marker. Revocation at a newer CURRENT head makes even a freshly
+signed selection attempt fail before payload use. Canary, promotion and release
+remain separately governed outcomes.
 
 ## 6. Correction, deletion and non-resurrection
 

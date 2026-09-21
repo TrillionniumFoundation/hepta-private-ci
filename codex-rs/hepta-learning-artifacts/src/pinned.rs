@@ -170,6 +170,10 @@ impl VerifiedCurrentRegistryViewV1 {
     pub const fn trust_digest(&self) -> Digest32 {
         self.trust_digest
     }
+
+    pub(crate) fn registry(&self) -> &ArtifactRegistry {
+        &self.registry
+    }
 }
 
 impl fmt::Debug for VerifiedCurrentRegistryViewV1 {

@@ -57,10 +57,11 @@ The current source is materially beyond the original V1 bootstrap while preservi
 - `pinned.rs` and `dataset_revocation.rs`: exact pinned loading, current-view revalidation, and snapshot-local revocation preparation;
 - `iteration.rs` and `iteration_ledger.rs`: bounded authority-free iteration envelopes, candidates, externally evidenced transitions, and replayable iteration bookkeeping. These records do not run sandboxes or grant selection, promotion, merge or release authority.
 - `owner_host.rs` and `owner_service.rs`: the named fenced product writer, signed writer-lease validation, signed CURRENT chain discovery, durable publication recovery, old-backup/authority-epoch rollback rejection, and opaque `VerifiedCurrentRegistryViewV1` issuance for final-use readers.
+- `selection.rs`: an independent selector trust domain bound to the exact artifact-owner trust snapshot; selector keys must not collide with writer/head authority keys, signed selection binds CURRENT + complete V1 manifest/payload identity, and verified selection yields DENY_ALL load eligibility rather than activation authority.
 
 The shared durable state ceiling is `MAX_DURABLE_ARTIFACT_RECORDS = 4096`. This deliberately aligns accepted artifact-registry, withdrawal and lifecycle record counts with the supported bounded snapshot formats so an in-memory state cannot cross a record-count threshold that the crate refuses to persist.
 
-Source implementation is therefore not equivalent to product activation. The crate now has a named source-composed owner service with an exclusive OS writer fence, signed writer/head authentication and bounded local CURRENT discovery. The exact candidate remains qualification-dependent; trusted deployment namespace/parent-directory durability, external CURRENT distribution transport, independent selection, canary/promotion/release and target-host power-loss evidence remain host/external responsibilities.
+Source implementation is therefore not equivalent to product activation. The crate now has a named source-composed owner service with an exclusive OS writer fence, signed writer/head authentication and bounded local CURRENT discovery. The exact candidate remains qualification-dependent; trusted deployment namespace/parent-directory durability, external CURRENT distribution transport, live selector trust enrollment/private keys, independent canary/operator acceptance/promotion/release and target-host power-loss evidence remain host/external responsibilities.
 
 ## 3. Boundary, responsibilities and non-goals
 

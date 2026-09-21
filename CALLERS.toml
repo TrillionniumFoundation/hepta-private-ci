@@ -95,6 +95,11 @@ required = ["VerifiedCurrentRegistryViewV1", "CurrentCognitiveRegistry", ".with_
 forbidden = ["Result<(File, RegistrySnapshotReceipt)", "candidate.with_current(file, receipt"]
 
 [[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/selection.rs"
+required = ["ArtifactSelectionVerifierV1", "OwnerTrustMismatch", "AuthorityKeyCollision", "AuthorityPosture::DENY_ALL", "load_selected_candidate"]
+forbidden = ["AuthorityPosture::ALLOW_ALL", "force_select", "self_select"]
+
+[[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"
 required = ["impl ProviderEffectAdapter for HttpProviderEffectAdapter"]
 forbidden = ["impl Default for HttpProviderEffectAdapter"]

@@ -227,6 +227,24 @@
           "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerService::current_registry_view",
           "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "ArtifactSelectionVerifierV1::verify",
+          "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1::verify",
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "record_verified_selection",
+          "nativeSymbol": "codex_hepta_learning_artifacts::record_verified_selection",
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "load_selected_candidate",
+          "nativeSymbol": "codex_hepta_learning_artifacts::load_selected_candidate",
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "status": "implemented"
         }
       ],
       "tests": [
@@ -250,14 +268,18 @@
         "named_owner_service_publishes_retries_and_reopens_from_current_head",
         "owner_host_process_kill_reopen_matrix",
         "independent_current_head_anchor_rejects_restored_old_backup",
-        "current_head_rotation_preserves_history_and_requires_current_key_epoch"
+        "current_head_rotation_preserves_history_and_requires_current_key_epoch",
+        "art_12_independent_selector_binds_exact_current_and_manifest",
+        "art_12_selection_rejects_self_selection_and_revoked_selector",
+        "art_12_verified_selection_records_only_selected_transition",
+        "existing_artifact_owner_new_process_predictions_and_revoked_rollback"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
         "target-host trusted-ancestor and containing-directory durability plus real power-loss qualification",
-        "production trust/signing-key provisioning and independent retention of the signed current-head anchor",
-        "real selected artifact process loading, revocation observation, exact rollback, target measurements and operational orphan reconciliation",
-        "independent selection, operator acceptance, canary, promotion and release"
+        "production artifact-owner and selector trust/signing-key provisioning plus independently retained CURRENT anchor operations",
+        "live product selector/operator enrollment, target-host load/revocation/rollback measurements and operational orphan reconciliation",
+        "independent canary, operator acceptance, promotion and release"
       ]
     },
     {
