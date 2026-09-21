@@ -61,7 +61,8 @@
       "tests": [
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability"
-      ]
+      ],
+      "note": "Pure composition worker; a prepared envelope is not a physical-turn binding until prepare_and_admit crosses the Agentd run coordinator."
     },
     {
       "operation": "AgentdIntelligenceProductRunnerV1::append_decision",
@@ -120,6 +121,14 @@
       "source": "not_implemented",
       "tests": [],
       "note": "AgentdState stores the configured runner, but no AgentdMethod/App Server ingress currently invokes prepare/append_decision/append_outcome. Capability advertisement remains disabled until this exists."
+    },
+    {
+      "operation": "AgentdIntelligenceProductRunnerV1::prepare_and_admit",
+      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
+      ],
+      "note": "Canonical composition and Agentd RunStart+ContextAttached are one public runner operation. This closes the manual lifecycle bypass in source tests but is not yet a daemon UDS/App Server ingress."
     }
   ],
   "claimBoundary": {
