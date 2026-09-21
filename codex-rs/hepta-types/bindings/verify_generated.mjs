@@ -11,6 +11,11 @@ import {
 if (STABLE_ID_MAX_BYTES !== 128) throw new Error("stable ID bound drift");
 validateIdProfile("schema:numeric-signal", "Schema");
 validateIdProfile("normalization:identity", "Normalization");
+for (const [value, variant] of [["plátform.types", "Module"], ["platform.-types", "Module"], ["schema:naïve", "Schema"]]) {
+  let rejected = false;
+  try { validateIdProfile(value, variant); } catch (_) { rejected = true; }
+  if (!rejected) throw new Error(`generated JavaScript binding admitted non-Rust identifier grammar: ${variant} ${value}`);
+}
 admitAuthorityWireV1(new Uint8Array([0]));
 for (const value of [1, 128]) {
   let rejected = false;
