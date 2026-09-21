@@ -1,5 +1,12 @@
 use super::*;
 
+use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_learning_ledger::RunStartSnapshotV1;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+
 fn digest(byte: char) -> String {
     byte.to_string().repeat(64)
 }
@@ -389,4 +396,119 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
             .expect("release capacity");
     }
     assert_eq!(coordinator.run("run.1"), None);
+}
+
+
+#[test]
+fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence() {
+    let id = |value: &str| StableId::new(value).expect("stable id");
+    let d = |value: &str| Digest32::of_bytes(value.as_bytes());
+    let record = RunStartRecordV1 {
+        authentication: RunStartAuthenticationV1 {
+            issuer_id: id("issuer.1"),
+            key_epoch: 2,
+            message_id: id("message.1"),
+            sequence: 3,
+            expires_at_ms: 20_000,
+            scope_digest: d("scope"),
+            signed_body_digest: d("signed-body"),
+            signature: [1; 64],
+        },
+        admission: RunStartAdmissionBindingV1 {
+            profile_id: id("profile.1"),
+            profile_revision: 4,
+            profile_digest: d("profile"),
+            supplied_source_digest: d("supplied-source"),
+            intent_digest: d("intent"),
+            admitted_source_digest: d("admitted-source"),
+            observed_at_unix_micros: 100_000,
+            deadline_unix_micros: 10_000_001,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        disposition: RunStartObjectiveDispositionV1::Compiled,
+        snapshot: RunStartSnapshotV1 {
+            run_id: id("run.durable"),
+            objective_digest: d("objective"),
+            hard_constraint_digest: d("hard"),
+            preference_state_digest: d("preference"),
+            model_tuple_digest: d("model"),
+            prompt_registry_digest: d("prompt"),
+            artifact_set_digest: d("artifacts"),
+            authority_epoch: 7,
+            generation: 3,
+            fence_digest: d("fence"),
+        },
+        runtime_body_digest: d("body"),
+        objective_semantic_bytes: vec![1],
+        objective_function_v1_digest: d("objective-v1"),
+        objective_function_v1_bytes: vec![2],
+    };
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    let receipt = coordinator
+        .start_revalidated_run_start(100, &record)
+        .expect("admit durable run start");
+    let retained = coordinator.run("run.durable").expect("retained run");
+    assert_eq!(receipt, retained);
+    let current = coordinator.runs.get("run.durable").expect("record");
+    assert_eq!(
+        current.snapshot.request_digest,
+        record.admission.admitted_source_digest.to_string()
+    );
+    assert_eq!(
+        current.snapshot.fence_digest,
+        record.snapshot.fence_digest.to_string()
+    );
+    assert_eq!(current.snapshot.deadline_ms, 10_001);
+}
+
+#[test]
+fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
+    let id = |value: &str| StableId::new(value).expect("stable id");
+    let d = |value: &str| Digest32::of_bytes(value.as_bytes());
+    let record = RunStartRecordV1 {
+        authentication: RunStartAuthenticationV1 {
+            issuer_id: id("issuer.1"),
+            key_epoch: 2,
+            message_id: id("message.2"),
+            sequence: 4,
+            expires_at_ms: 20_000,
+            scope_digest: d("scope"),
+            signed_body_digest: d("signed-body"),
+            signature: [1; 64],
+        },
+        admission: RunStartAdmissionBindingV1 {
+            profile_id: id("profile.1"),
+            profile_revision: 4,
+            profile_digest: d("profile"),
+            supplied_source_digest: d("supplied-source"),
+            intent_digest: d("intent"),
+            admitted_source_digest: d("admitted-source"),
+            observed_at_unix_micros: 100_000,
+            deadline_unix_micros: 10_000_001,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        disposition: RunStartObjectiveDispositionV1::ExplicitAbstain,
+        snapshot: RunStartSnapshotV1 {
+            run_id: id("run.abstain"),
+            objective_digest: d("objective"),
+            hard_constraint_digest: d("hard"),
+            preference_state_digest: d("preference"),
+            model_tuple_digest: d("model"),
+            prompt_registry_digest: d("prompt"),
+            artifact_set_digest: d("artifacts"),
+            authority_epoch: 7,
+            generation: 3,
+            fence_digest: d("fence"),
+        },
+        runtime_body_digest: d("body"),
+        objective_semantic_bytes: vec![1],
+        objective_function_v1_digest: d("objective-v1"),
+        objective_function_v1_bytes: vec![2],
+    };
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    assert_eq!(
+        coordinator.start_revalidated_run_start(100, &record),
+        Err(AgentRunError::InvalidRunStart("objective disposition"))
+    );
+    assert_eq!(coordinator.run("run.abstain"), None);
 }
