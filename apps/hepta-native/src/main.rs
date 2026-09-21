@@ -28,6 +28,27 @@ fn main() {
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let raw_args: Vec<String> = std::env::args().skip(1).collect();
+    if raw_args.len() == 1 && raw_args[0] == "--qualification-e2e" {
+        let receipt = hepta_native::qualification::run_packaged_e2e()?;
+        println!("{}", serde_json::to_string(&receipt)?);
+        return Ok(());
+    }
+    if raw_args.len() == 3 && raw_args[0] == "--qualification-journal-child" {
+        hepta_native::qualification::run_journal_child(
+            Path::new(&raw_args[1]),
+            Path::new(&raw_args[2]),
+        )?;
+        return Ok(());
+    }
+    if raw_args.len() == 5 && raw_args[0] == "--qualification-updater-child" {
+        hepta_native::qualification::run_updater_child(
+            Path::new(&raw_args[1]),
+            Path::new(&raw_args[2]),
+            Path::new(&raw_args[3]),
+            Path::new(&raw_args[4]),
+        )?;
+        return Ok(());
+    }
     if raw_args.len() == 1 && raw_args[0] == "--self-test" {
         println!(
             "{{\"schema\":\"hepta.native-self-test.v1\",\"platform\":\"{}\",\"architecture\":\"{}\",\"gui\":\"eframe-0.36.2\",\"accessibility\":\"accesskit\"}}",
