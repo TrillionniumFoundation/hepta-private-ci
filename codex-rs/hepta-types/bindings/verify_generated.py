@@ -19,6 +19,17 @@ for value, variant in (("plátform.types", "Module"), ("platform.-types", "Modul
     else:
         raise SystemExit(f"generated Python binding admitted non-Rust identifier grammar: {variant} {value!r}")
 binding.admit_authority_wire_v1(b"\x00")
+for target, key, value in (
+    (binding.ID_PROFILES["Schema"], "prefix", "artifact:"),
+    (binding.AUTHORITY_WIRE_V1["bits"], "runtime", 7),
+    (binding.NUMERIC_PROFILES["signed-q32-nearest-ties-even-v1"], "rounding", "toward-zero"),
+):
+    try:
+        target[key] = value
+    except TypeError:
+        pass
+    else:
+        raise SystemExit("generated Python binding exposes mutable contract metadata")
 for raw in (b"\x01", b"\x80"):
     try:
         binding.admit_authority_wire_v1(raw)
