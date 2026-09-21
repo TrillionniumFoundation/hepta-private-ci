@@ -44,6 +44,7 @@ codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
 codex-hepta-memory = { workspace = true }
+codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 codex-hepta-memory-extension = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-protocol = { workspace = true }
@@ -69,7 +70,6 @@ tokio-util = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
-codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 app_test_support = { workspace = true }
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
