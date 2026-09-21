@@ -258,7 +258,7 @@ class SourceConformanceTests(unittest.TestCase):
             text=True,
             check=True,
         )
-        self.assertEqual(json.loads(result.stdout)["operations"], 39)
+        self.assertEqual(json.loads(result.stdout)["operations"], LANE_B.OPERATION_COUNT)
         evaluation = subprocess.run(
             [sys.executable, str(SCRIPTS / "hepta-lane-e-closure.py"), "self-test"],
             capture_output=True,
@@ -282,7 +282,7 @@ class SourceConformanceTests(unittest.TestCase):
             "Wire the registered owner to a real observer."
         ]
         maps[0]["claimBoundary"]["repositoryControlledSourceBoundaryGapsClosed"] = False
-        self.assertEqual(LANE_B.verify_truth(truth, maps)[0], 39)
+        self.assertEqual(LANE_B.verify_truth(truth, maps)[0], LANE_B.OPERATION_COUNT)
         projection = LANE_B.native_projection(truth, maps)
         self.assertIn(maps[0]["repositoryControlledGaps"][0], projection)
         self.assertNotIn("source gaps closed", projection)
