@@ -27,6 +27,7 @@ pub use authbus_ingress::authbus_text_claims;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+pub use codex_hepta_agent_protocol::AgentdCapability;
 pub use codex_hepta_agent_protocol::AgentdCapabilitySet;
 pub use codex_hepta_agent_protocol::AgentdEvent;
 pub use codex_hepta_agent_protocol::AgentdEventKind;
