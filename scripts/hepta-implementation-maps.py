@@ -267,12 +267,24 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     boundary = migrated.get("claimBoundary") or migrated.get("completion")
     if not isinstance(boundary, dict):
         boundary = {}
+    implemented_mapping_complete = all(
+        bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+        for op in operations
+    )
+    owned_target_protocol_source_complete = boundary.get(
+        "ownedTargetProtocolSourceComplete"
+    )
+    native_source_mapping_complete = implemented_mapping_complete
+    if isinstance(owned_target_protocol_source_complete, bool):
+        native_source_mapping_complete = (
+            implemented_mapping_complete and owned_target_protocol_source_complete
+        )
     migrated["claimBoundary"] = {
         **boundary,
-        "nativeSourceMappingComplete": all(
-            bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
-            for op in operations
+        "implementedOperationMappingComplete": boundary.get(
+            "implementedOperationMappingComplete", implemented_mapping_complete
         ),
+        "nativeSourceMappingComplete": native_source_mapping_complete,
         "sourceRootPresent": migrated["sourceRootPresent"],
         "productionImplementation": migrated["productionImplementation"],
         "productExecutionProved": bool(boundary.get("productExecutionProved", False)),
@@ -439,6 +451,36 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        else:
+            implemented_mapping_complete = all(
+                bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+                for op in ops
+            )
+            if (
+                "implementedOperationMappingComplete" in boundary
+                and boundary.get("implementedOperationMappingComplete")
+                is not implemented_mapping_complete
+            ):
+                failures.append(f"{mid}: implemented operation mapping claim drift")
+            owned_protocols = row.get("ownedTargetProtocols")
+            if owned_protocols is not None:
+                if not isinstance(owned_protocols, list):
+                    failures.append(f"{mid}: owned target protocols")
+                else:
+                    owned_source_complete = all(
+                        isinstance(item, dict) and item.get("state") == "source_implemented"
+                        for item in owned_protocols
+                    )
+                    if (
+                        boundary.get("ownedTargetProtocolSourceComplete")
+                        is not owned_source_complete
+                    ):
+                        failures.append(f"{mid}: owned target protocol source claim drift")
+                    expected_native_complete = (
+                        implemented_mapping_complete and owned_source_complete
+                    )
+                    if boundary.get("nativeSourceMappingComplete") is not expected_native_complete:
+                        failures.append(f"{mid}: native source mapping claim drift")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
