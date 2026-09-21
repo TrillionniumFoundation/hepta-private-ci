@@ -158,7 +158,7 @@ Failures are not collapsed into a successful empty read:
 - post-I/O revoke or generation drift suppresses all remote items and contributes failed aggregate coverage;
 - an unobservable owner capability store contributes a bounded failed discovery slot, while a successfully observed owner with no active matching grant is simply not enrolled;
 - a grant for a different consumer workspace is filtered before a query is formed;
-- final physical-send revalidation timeout, capability drift, memory drift or secret-like content removes the federated proposal rather than blocking the turn or sending stale evidence.
+- final physical-send revalidation timeout, capability drift, memory drift, capability expiry crossing during the bounded batch, clock regression, or secret-like content removes the federated proposal rather than blocking the turn or sending stale evidence.
 
 The module has no durable local state to replay after restart. Rollback may stop using the V2 product caller and discard ephemeral results, but it must not restore revoked authority or reinterpret stale cached evidence as current. The compatibility `AvailableFederated` path is not an automatic product fallback.
 
@@ -186,7 +186,7 @@ These are enforced source limits, not deployment latency/SLO measurements. A cro
 
 The native federation contract validates scoped remote observations; its result does not enroll a peer or establish a general network service. The current Agentd product caller supplies bounded owner-layout candidates, rediscovers active grants, filters the exact consumer workspace before enrollment, and adapts the local owner read through canonical V2. Unobservable owner capability stores remain explicit bounded failed coverage; revoked or generation-stale post-I/O observations cannot contribute admissible evidence.
 
-The Memory extension preserves requested/completed/failed/truncated coverage through pure federated and combined local+federated model-input payloads, and revalidates capability plus memory again under a bounded timeout at physical model-request assembly.
+The Memory extension preserves requested/completed/failed/truncated coverage through pure federated and combined local+federated model-input payloads, revalidates capability plus memory again under a bounded timeout at physical model-request assembly, and then takes a fresh wall-clock observation so a capability that expires during the batch cannot reach provider dispatch.
 
 The in-process adapter reads `observed_frontier` from the same exact-scope SQLite snapshot that produces the candidate set; capability revision is not substituted for a data frontier. A truly empty scope may report frontier `0`, while non-empty evidence cannot. A multi-process or multi-host profile must authenticate this real remote data frontier/snapshot witness. Preserve partial coverage/unavailable on timeout and invalidate evidence on revocation, generation drift or deletion.
 
@@ -207,7 +207,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-memory-federation/src/lib_tests.rs](../../../codex-rs/hepta-memory-federation/src/lib_tests.rs).
 - [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), covering response-binding tamper/replay, prefix-sensitive item-order integrity, `Partial + []` preservation, expiry ceilings, preflight/post-I/O authority drift, true in-flight cancellation/deadline interruption, duplicate identities and bounded partial results.
 - [codex-rs/hepta-memory/src/cognitive_runtime_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_runtime_tests.rs), covering product composition, explicit discovery failure coverage and wrong-workspace non-enrollment.
-- [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs), whose focused tests cover physical-send revalidation and coverage-preserving combined model input.
+- [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs), whose focused tests cover physical-send revalidation, post-batch capability-expiry/clock-regression rejection, and coverage-preserving combined model input.
 
 The candidate also carries a read-only focused workflow at [`.github/workflows/memory-federation-v2-final-verify.yml`](../../../.github/workflows/memory-federation-v2-final-verify.yml). Commands and workflow definitions are not pass receipts: inspect exact-current-head and merge-candidate outputs before changing `productExecutionProved` or any activation/release claim. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) separately labels target acceptance designs.
 
