@@ -7,12 +7,14 @@
 //! Tasks are never restarted automatically: retrying an unknown external effect
 //! requires its existing durable owner and reconciliation protocol.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::future::Future;
 use std::time::Duration;
 
+use codex_hepta_types::Generation;
 use tokio::task::Id;
 use tokio::task::JoinError;
 use tokio::task::JoinSet;
@@ -20,6 +22,9 @@ use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
+
+#[path = "runtime_service_generations.rs"]
+mod service_generations;
 
 const MAX_TASKS: usize = 128;
 const MAX_NAME_BYTES: usize = 128;
@@ -42,15 +47,16 @@ pub struct RuntimeTaskFailure {
 
 /// One collection supervises all host tasks, including future optional services.
 ///
-/// Registering a future does not select a module, authenticate its executable,
-/// grant effects, or perform writer handoff. Those remain composition/admission
-/// responsibilities. A name is single-use within this host generation, including
-/// after failure; a stopped task cannot silently resurrect through re-registration.
+/// Registration does not select a module, authenticate its executable, grant
+/// effects or perform writer handoff. Legacy names remain single-use. Versioned
+/// optional services reuse one identity slot only after acknowledged retirement,
+/// with a monotone generation fence that survives retirement within this host.
 pub struct RuntimeTasks {
     tasks: JoinSet<Result<(), AgentdError>>,
     entries: HashMap<Id, TaskEntry>,
     admitted_names: BTreeSet<String>,
     retired_names: BTreeSet<String>,
+    service_generations: BTreeMap<String, Generation>,
     failures: VecDeque<RuntimeTaskFailure>,
     cancellation: CancellationToken,
     shutdown_grace: Duration,
@@ -73,6 +79,7 @@ impl RuntimeTasks {
             entries: HashMap::new(),
             admitted_names: BTreeSet::new(),
             retired_names: BTreeSet::new(),
+            service_generations: BTreeMap::new(),
             failures: VecDeque::new(),
             cancellation,
             shutdown_grace,
@@ -85,6 +92,7 @@ impl RuntimeTasks {
     where
         F: Future<Output = Result<(), AgentdError>> + Send + 'static,
     {
+        self.reject_versioned_name(name)?;
         self.spawn(name, future, /*quarantine*/ None, /*retirement*/ None)
     }
 
@@ -101,6 +109,7 @@ impl RuntimeTasks {
         F: Future<Output = Result<(), AgentdError>> + Send + 'static,
         Q: FnOnce() -> Result<(), AgentdError> + Send + 'static,
     {
+        self.reject_versioned_name(name)?;
         self.spawn(name, future, Some(Box::new(quarantine)), /*retirement*/ None)
     }
 
@@ -125,6 +134,23 @@ impl RuntimeTasks {
         Q: FnOnce() -> Result<(), AgentdError> + Send + 'static,
         R: FnOnce() -> Result<(), AgentdError> + Send + 'static,
     {
+        self.reject_versioned_name(name)?;
+        self.spawn_service(name, start, quarantine, retire)
+    }
+
+    fn spawn_service<F, S, Q, R>(
+        &mut self,
+        name: &str,
+        start: S,
+        quarantine: Q,
+        retire: R,
+    ) -> Result<(), AgentdError>
+    where
+        F: Future<Output = Result<(), AgentdError>> + Send + 'static,
+        S: FnOnce(CancellationToken) -> F + Send + 'static,
+        Q: FnOnce() -> Result<(), AgentdError> + Send + 'static,
+        R: FnOnce() -> Result<(), AgentdError> + Send + 'static,
+    {
         let cancellation = self.cancellation.child_token();
         let service_cancellation = cancellation.clone();
         self.spawn(
@@ -135,13 +161,17 @@ impl RuntimeTasks {
         )
     }
 
-    /// Stop one optional service without cancelling the host or its siblings.
-    ///
-    /// A timeout is NOT retirement success: the service remains draining and its
-    /// name remains reserved. The caller must continue supervision/reconciliation
-    /// or shut down; it must not publish a replacement from an unacknowledged stop.
-    /// Repeating an acknowledged retirement is idempotent within this generation.
+    /// Stop a legacy optional service without cancelling its siblings.
+    /// Versioned identities require retire_optional_generation instead, so an
+    /// old unversioned request cannot retire the successor using the same name.
     pub async fn retire_optional(&mut self, name: &str) -> Result<(), AgentdError> {
+        self.reject_versioned_name(name)?;
+        self.retire_optional_inner(name).await
+    }
+
+    /// Timeout is NOT retirement success. The service remains draining and its
+    /// name remains reserved until an acknowledged owner callback completes.
+    async fn retire_optional_inner(&mut self, name: &str) -> Result<(), AgentdError> {
         if self.retired_names.contains(name) {
             return Ok(());
         }
@@ -239,11 +269,6 @@ impl RuntimeTasks {
             )),
         };
         if result.is_err() {
-            // A consumed task completion must not consume the shared safety
-            // fence. This also applies when retire_optional, rather than
-            // run_until, observes it and its caller handles the returned error.
-            // Successful optional quarantine and an unfinished drain timeout
-            // do not reach this branch and remain locally isolated.
             self.failed = true;
             self.stopped = true;
             self.cancellation.cancel();
@@ -269,8 +294,6 @@ impl RuntimeTasks {
             let (_, retire) = entry.retirement.ok_or_else(|| {
                 AgentdError::Protocol("runtime retirement contract was lost".to_string())
             })?;
-            // A success marker is published only AFTER the owner callback.
-            // A panic/rejection cannot create a reusable retirement receipt.
             std::panic::catch_unwind(std::panic::AssertUnwindSafe(retire))
                 .map_err(|_| {
                     AgentdError::Protocol("runtime retirement callback panicked".to_string())
@@ -282,7 +305,6 @@ impl RuntimeTasks {
             Ok(()) => AgentdError::Protocol(format!("{} exited before agentd shutdown", entry.name)),
             Err(error) => error,
         };
-        // Optional availability never suppresses a shared generation/writer fence.
         if matches!(
             error,
             AgentdError::GenerationFenced(_)
@@ -302,8 +324,6 @@ impl RuntimeTasks {
             name: entry.name.clone(),
             diagnostic,
         });
-        // A panicking quarantine is a failed safety boundary, not an optional
-        // task panic. Convert it to a host failure so run_until still drains.
         std::panic::catch_unwind(std::panic::AssertUnwindSafe(quarantine))
             .map_err(|_| {
                 AgentdError::Protocol("runtime quarantine callback panicked".to_string())
@@ -349,11 +369,9 @@ impl RuntimeTasks {
         result
     }
 
-    /// Consume a completion during cleanup without dropping its owner outcome.
-    ///
-    /// A normal host stop is NOT module retirement: only a previously requested
-    /// retirement may run its retirement callback and publish that acknowledgement.
-    /// Host-initiated aborts also never acknowledge drain or external effects.
+    /// A normal host stop is NOT module retirement. Only an explicit retirement
+    /// may run its callback and publish an acknowledgement. Host-initiated aborts
+    /// never acknowledge drain or external effects.
     fn observe_shutdown_completion(
         &mut self,
         completion: Result<(Id, Result<(), AgentdError>), JoinError>,
@@ -370,14 +388,10 @@ impl RuntimeTasks {
         let name = entry.name.clone();
         let retiring = entry.retiring;
         let result = match completion {
-            // Ordinary tasks may return Ok in response to shared cancellation.
-            // Do not reinterpret that as an unexpected pre-shutdown exit.
             Ok((id, Ok(()))) if !retiring => {
                 self.entries.remove(&id);
                 Ok(())
             }
-            // Only cancellation caused by this host's final abort is expected.
-            // A concurrent panic or returned owner error must still be observed.
             Err(error) if abort_requested && error.is_cancelled() => {
                 self.entries.remove(&id);
                 Ok(())
@@ -399,8 +413,7 @@ impl RuntimeTasks {
 
     /// Cooperative cancellation first, then abort and join all remaining tasks.
     /// Durable owners, not task completion, determine external-effect outcomes.
-    /// Errors observed here remain latched for run_until, including on reentry.
-    /// A forced abort is cleanup, never a successful module-retirement receipt.
+    /// Errors remain latched for run_until, including on reentry.
     pub async fn shutdown(&mut self) {
         self.stopped = true;
         self.cancellation.cancel();
@@ -422,8 +435,6 @@ impl RuntimeTasks {
     }
 }
 
-// Agentd does not directly depend on tracing. Keep warnings best-effort and
-// dependency-free; a closed stderr must not panic across a lifecycle boundary.
 fn lifecycle_warning(name: &str, message: &str) {
     use std::io::Write;
     let _ = writeln!(std::io::stderr().lock(), "hepta-agentd module={name}: {message}");
@@ -431,7 +442,6 @@ fn lifecycle_warning(name: &str, message: &str) {
 
 impl Drop for RuntimeTasks {
     fn drop(&mut self) {
-        // Also covers cancellation of the run_until future by an outer owner.
         self.cancellation.cancel();
         self.tasks.abort_all();
     }

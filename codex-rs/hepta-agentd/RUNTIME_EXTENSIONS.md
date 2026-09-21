@@ -17,6 +17,35 @@ SQLite write transaction as the effect. Historical dedupe receipt replay remains
 read-only after retirement. Uncommitted work cannot acquire a receipt from a
 rejected old writer.
 
+## Repeated replacement and capacity
+
+Legacy names remain single-use. New long-lived composition can use
+`spawn_optional_service_generation(name, generation, expected_predecessor,
+factory, quarantine, retire)` and `retire_optional_generation(name, generation)`.
+The host keeps one greatest-generation fence per logical service. A replacement
+must name that exact predecessor, advance its generation and follow an
+acknowledged retirement. Pending drain, quarantine and forced abort do not count.
+Delayed retirement requests cannot stop the successor. Unversioned APIs cannot
+reuse or retire a versioned identity.
+
+Acknowledged replacement reuses one of the 128 identity slots rather than
+consuming a slot per generation. Failed registration preserves the prior fence
+and acknowledgement and never invokes the factory. `remaining_admission_slots`
+reports capacity for new identities, not permission to start a service. New
+identities are still bounded, including retired identities. Composition must
+plan Supervisor-controlled process-generation rotation before that budget is
+exhausted; it must not erase tombstones, rename a failed service or treat a new
+host object as a durable recovery checkpoint. No automatic restart is introduced.
+
+The in-memory task fence is not a persistent writer lease. Cross-process recovery
+still loads owner state and the Supervisor generation. A new task generation does
+not prove compatibility, independent selection or state migration. Stateful
+replacement must quiesce/reconcile its owner, acknowledge task drain, commit the
+existing durable handoff and explicitly publish the compatible successor. An
+unknown effect keeps that sequence blocked. Cross-schema migration requires its
+own owner implementation and rollback validation; the same-schema timer tests
+below do not establish it.
+
 ## Built-in executable observations
 
 Agentd binds built-in implementation identity to the executable bytes plus the
@@ -33,11 +62,13 @@ Bootstrap's input/output port vectors still need concrete, versioned owner-port
 bindings before they can be advertised as a general hot-replacement ABI. An
 executable hash alone is not protocol compatibility.
 
-## Running-service regression
+## Running-service regressions
 
 From the repository root:
 
 ```sh
+cargo test --locked --manifest-path codex-rs/Cargo.toml \
+  -p codex-hepta-agentd --lib runtime_tasks::service_generations -- --nocapture
 cargo test --locked --manifest-path codex-rs/Cargo.toml \
   -p codex-hepta-agentd --test optional_module_restart forty_first_service -- --nocapture
 cargo test --locked --manifest-path codex-rs/Cargo.toml \
@@ -46,18 +77,23 @@ cargo test --locked --manifest-path codex-rs/Cargo.toml \
   -p codex-hepta-agentd runtime_executable
 ```
 
-The first test starts a forty-first optional service using the same public host,
-executes real SQLite schedule mutations, injects a post-commit task panic and an
-abrupt OS-process exit before acknowledgement, and reopens the owner in later
-processes. Four same-schema replacements advance the actual writer epoch; stale
-handles fail and exact requests retain the original dedupe receipt. Retirement
-survives another process restart and rejects new schedule effects. Required
-sibling services exchange real messages before and after optional lifecycle
-changes.
+The generation suite fills all 128 identity slots, performs 1,024 acknowledged
+replacements of one service and checks bounded retained metadata. It also rejects
+stale and unversioned requests, failed callbacks, quarantined predecessors and
+unacknowledged drains. Its SQLite test runs 256 service generations through the
+public host and the real timer owner, checks old-writer rejection at each handoff,
+retains one original operation receipt and reopens the durably retired owner.
 
-The forty required services in this fixture are bounded echo services, **not
-forty Codex sessions**. This test does not establish production App Server
-integration, arbitrary cross-schema migration, multi-host handoff, a target-host
-capacity limit, physical-effect completion, independent credential custody or
-future-window learning efficacy. Those boundaries retain their own qualification.
-No command definition or test source is a test-pass receipt.
+The existing process test starts a forty-first optional service using the same
+public host, executes real SQLite schedule mutations, injects a post-commit task
+panic and an abrupt OS-process exit before acknowledgement, and reopens the owner
+in later processes. Same-schema replacements advance the actual writer epoch;
+stale handles fail and exact requests retain the original dedupe receipt.
+Retirement survives process restart and rejects new schedule effects. Required
+sibling services exchange real messages before and after lifecycle changes.
+
+The forty required services in that fixture are bounded echo services, not forty
+Codex sessions. Neither suite establishes production App Server integration,
+arbitrary cross-schema migration, multi-host handoff, target-host capacity,
+physical-effect completion, independent credential custody or future-window
+learning efficacy. No command definition or test source is a test-pass receipt.
