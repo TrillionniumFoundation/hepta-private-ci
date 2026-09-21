@@ -280,7 +280,10 @@ pub fn verify_signed_role_separation(
     now: u64,
 ) -> Result<(), SignedEvidenceError> {
     if generator.role != LearningEvidenceRoleV1::Generator
-        || observer.role == LearningEvidenceRoleV1::Generator
+        || !matches!(
+            observer.role,
+            LearningEvidenceRoleV1::Observer | LearningEvidenceRoleV1::Evaluator
+        )
     {
         return Err(SignedEvidenceError::RoleMismatch);
     }
