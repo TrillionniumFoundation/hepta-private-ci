@@ -357,10 +357,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
 
 impl EphemeralModelInputContributor for FederatedCognitiveExtension {
     fn is_active(&self, thread_store: &ExtensionData, turn_store: &ExtensionData) -> bool {
-        thread_store
-            .get::<HeptaMemoryThreadState>()
-            .is_some_and(|state| state.attachment_proposal_enabled)
-            && turn_store.get::<PreparedFederatedAttachment>().is_some()
+        self.has_prepared_attachment(thread_store, turn_store)
     }
 
     fn contribute<'a>(
@@ -368,112 +365,10 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
         input: EphemeralModelInputContext<'a>,
     ) -> ModelProviderPolicyFuture<'a, Option<EphemeralModelInputProposal>> {
         Box::pin(async move {
-            // Federation is optional context. A revoked/expired/corrupt owner
-            // capability removes the whole proposal and never blocks the turn.
-            if input.schema_version != EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION
-                || input.request_kind != ModelProviderRequestKind::Turn
-                || !input.generate
-                || input.thread_id != input.thread_store.level_id()
-                || input.turn_id != input.turn_store.level_id()
-                || !input.cwd.is_absolute()
-            {
-                return Ok(None);
-            }
-            let Some(thread_state) = input.thread_store.get::<HeptaMemoryThreadState>() else {
-                return Ok(None);
-            };
-            if !thread_state.attachment_proposal_enabled {
-                return Ok(None);
-            }
-            let Some(prepared) = input.turn_store.get::<PreparedFederatedAttachment>() else {
-                return Ok(None);
-            };
-            if prepared.thread_id != input.thread_id
-                || prepared.turn_id != input.turn_id
-                || path_identity_bytes(prepared.workspace.as_path())
-                    != path_identity_bytes(input.cwd)
-            {
-                return Ok(None);
-            }
-            let Some(model_context_window) = input
-                .model_context_window
-                .and_then(|value| u64::try_from(value).ok())
-            else {
-                return Ok(None);
-            };
-            let context_budget = model_context_window
-                .saturating_mul(u64::from(thread_state.limits.max_context_window_ppm()))
-                / 1_000_000;
-            if u64::from(prepared.claimed_token_count) > context_budget {
-                return Ok(None);
-            }
-            let Some(now) = now_unix_seconds() else {
-                return Ok(None);
-            };
-            let Some(consumer_agent_id) = self.consumer_agent_id() else {
-                return Ok(None);
-            };
-            let access =
-                FederationConsumerAccess::new(consumer_agent_id, workspace_digest(input.cwd));
-            let mut explanations = Vec::with_capacity(prepared.bindings.len());
-            for binding in &prepared.bindings {
-                let Ok(status) = self.revalidate(&access, binding, now).await else {
-                    return Ok(None);
-                };
-                let FederatedRevalidationStatus::Current(explanation) = status else {
-                    return Ok(None);
-                };
-                if explanation.explanation.memory.verification != MemoryVerification::Verified
-                    || explanation.explanation.memory.lifecycle != MemoryLifecycleState::Active
-                    || secret_like(explanation.explanation.memory.content.as_bytes())
-                    || explanation
-                        .explanation
-                        .citations
-                        .iter()
-                        .any(|citation| secret_like(&citation.content))
-                {
-                    return Ok(None);
-                }
-                explanations.push(*explanation);
-            }
-            let Some(content) = compile_explanations(&explanations, prepared.coverage) else {
-                return Ok(None);
-            };
-            let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
-            let Some(source_binding_sha256) = federation_source_binding(
-                input.thread_id,
-                input.turn_id,
-                input.cwd,
-                &prepared.query_sha256,
-                &prepared.coverage,
-                &prepared.bindings,
-                &content_sha256,
-            ) else {
-                return Ok(None);
-            };
-            let Ok(claimed_token_count) = u32::try_from(content.len()) else {
-                return Ok(None);
-            };
-            if source_binding_sha256 != prepared.source_binding_sha256
-                || content_sha256 != prepared.content_sha256
-                || claimed_token_count != prepared.claimed_token_count
-                || content.is_empty()
-                || content.len() > input.max_content_bytes as usize
-                || claimed_token_count > input.max_content_tokens
-            {
-                return Ok(None);
-            }
-            Ok(Some(EphemeralModelInputProposal::new(
-                EphemeralModelInputSource::parse(FEDERATED_COGNITIVE_SOURCE)?,
-                input.attempt_id,
-                input.base_logical_request_sha256.clone(),
-                input.thread_id,
-                input.turn_id,
-                api_digest(&source_binding_sha256)?,
-                api_digest(&content_sha256)?,
-                content,
-                claimed_token_count,
-            )?))
+            self.revalidate_prepared_attachment(&input)
+                .await
+                .map(|material| material.into_proposal(&input))
+                .transpose()
         })
     }
 }
