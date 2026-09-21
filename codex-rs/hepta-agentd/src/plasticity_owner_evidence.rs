@@ -772,6 +772,10 @@ mod tests {
     use codex_hepta_types::Generation;
     use tempfile::tempfile;
 
+    use crate::{
+        PlasticityOwnerEvidencePolicyV1, verify_agentd_plasticity_owner_evidence_v1,
+    };
+
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("stable id")
     }
