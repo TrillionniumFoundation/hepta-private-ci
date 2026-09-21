@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b2ce6589f9c28059c8c9565a2dbe97ab9a728cd8",
-    "tree": "d4800eb6b63d128c2026094a137abb801b9d2678"
+    "commit": "38baea45e9b7a45580afa4b6bbf12ca4b50432e0",
+    "tree": "f8f9fc36842a497a8f8b707923065c8f1364dcf1"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "intelligence.control",
@@ -231,7 +231,7 @@
   ],
   "repositoryControlledGaps": [
     "Invoke the AgentdState-owned canonical V3 seam from the real App Server turn-admission path with authenticated owner inputs; daemon state ownership is composed, but ordinary product turns do not yet call it.",
-    "Bind CurrentCapabilitySnapshotProviderV3 to authenticated current owner/trust surfaces. Agentd enforces exact final-use snapshot equality immediately before handoff; intelligence.control must not self-mint provider authenticity.",
+    "Compose Agentd's AuthenticatedCapabilitySnapshotProviderV3 into ordinary product bootstrap with the exact owner-issued attestations/current trust registry; the authenticated provider implementation exists, but ordinary App Server turns do not yet enroll it.",
     "Connect the existing Codex/App Server execution spine after the authority-free Agentd handoff with separately owned final-use model/effect authority and actual delivery/terminal evidence.",
     "Use owner-side cancellable I/O or isolated workers for blocking V3 ports and durable ledger calls; the synchronous coordinator cannot preempt a call that never returns.",
     "Run exact-head and deterministic synthetic-merge qualification for this exact candidate before advancing source-complete or product-execution claims."
@@ -258,7 +258,9 @@
     "namedAgentdSourceCallsiteComposed": true,
     "realDaemonComposition": true,
     "agentdStateOwnsCanonicalV3Caller": true,
-    "appServerTurnInvocationComposed": false
+    "appServerTurnInvocationComposed": false,
+    "authenticatedCurrentSnapshotProviderSourceImplemented": true,
+    "authenticatedProviderProductEnrollment": false
   },
   "sourceRoot": [
     "codex-rs/hepta-intelligence"
