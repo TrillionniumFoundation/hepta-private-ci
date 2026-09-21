@@ -728,6 +728,9 @@ impl AgentRunCoordinator {
         }
         require_revision(record, expected_revision)?;
         require_live_deadline(record, now_ms)?;
+        if record.phase == RunPhase::Indeterminate {
+            return Err(AgentRunError::InvalidTransition);
+        }
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
