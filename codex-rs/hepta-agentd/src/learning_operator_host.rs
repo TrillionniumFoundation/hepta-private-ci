@@ -33,8 +33,8 @@ use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
 use codex_hepta_intelligence_eval::SignedEvaluationDecisionV1;
-use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
+use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
 use codex_hepta_learning_artifacts::ArtifactEvent;
@@ -365,24 +365,25 @@ const fn allowed_phase_transition(
 ) -> bool {
     matches!(
         (current, next),
-        (OfflineOperatorPhaseV1::Prepared, OfflineOperatorPhaseV1::Trained)
-            | (OfflineOperatorPhaseV1::Trained, OfflineOperatorPhaseV1::Published)
-            | (
-                OfflineOperatorPhaseV1::Published,
-                OfflineOperatorPhaseV1::EvaluatedEligible
-            )
-            | (
-                OfflineOperatorPhaseV1::Published,
-                OfflineOperatorPhaseV1::EvaluatedRejected
-            )
-            | (
-                OfflineOperatorPhaseV1::EvaluatedEligible,
-                OfflineOperatorPhaseV1::SelectionObserved
-            )
-            | (
-                OfflineOperatorPhaseV1::SelectionObserved,
-                OfflineOperatorPhaseV1::Reloaded
-            )
+        (
+            OfflineOperatorPhaseV1::Prepared,
+            OfflineOperatorPhaseV1::Trained
+        ) | (
+            OfflineOperatorPhaseV1::Trained,
+            OfflineOperatorPhaseV1::Published
+        ) | (
+            OfflineOperatorPhaseV1::Published,
+            OfflineOperatorPhaseV1::EvaluatedEligible
+        ) | (
+            OfflineOperatorPhaseV1::Published,
+            OfflineOperatorPhaseV1::EvaluatedRejected
+        ) | (
+            OfflineOperatorPhaseV1::EvaluatedEligible,
+            OfflineOperatorPhaseV1::SelectionObserved
+        ) | (
+            OfflineOperatorPhaseV1::SelectionObserved,
+            OfflineOperatorPhaseV1::Reloaded
+        )
     )
 }
 
@@ -519,10 +520,7 @@ fn decode_record(
     })
 }
 
-fn take_digest(
-    bytes: &[u8],
-    cursor: &mut usize,
-) -> Result<Digest32, OfflineOperatorJournalError> {
+fn take_digest(bytes: &[u8], cursor: &mut usize) -> Result<Digest32, OfflineOperatorJournalError> {
     let end = cursor
         .checked_add(32)
         .ok_or(OfflineOperatorJournalError::Corrupt)?;
@@ -999,11 +997,9 @@ fn digest_product_request(
     push_id(&mut bytes, &request.manifest.producer_id)?;
     bytes.extend_from_slice(&request.manifest.encoded_size_bytes.to_be_bytes());
     bytes.extend_from_slice(request.registry_binding.as_array());
-    let evaluation_payload = evaluation_signing_payload_v2(
-        &request.evaluation,
-        &request.metric_roles,
-    )
-    .map_err(|_| LearningOperatorHostError::Binding("evaluation payload is invalid"))?;
+    let evaluation_payload =
+        evaluation_signing_payload_v2(&request.evaluation, &request.metric_roles)
+            .map_err(|_| LearningOperatorHostError::Binding("evaluation payload is invalid"))?;
     bytes.extend_from_slice(Digest32::of_bytes(&evaluation_payload).as_array());
     bytes.extend_from_slice(
         Digest32::of_bytes(&request.candidate_evidence.signing_bytes()).as_array(),
@@ -1018,9 +1014,12 @@ fn persist_or_reconcile_payload(
     expected_bytes: &[u8],
 ) -> Result<Digest32, LearningOperatorHostError> {
     match target {
-        OfflineOperatorPayloadTargetV1::Create(file) => {
-            Ok(write_candidate_payload(file, registry, artifact_id, expected_bytes)?)
-        }
+        OfflineOperatorPayloadTargetV1::Create(file) => Ok(write_candidate_payload(
+            file,
+            registry,
+            artifact_id,
+            expected_bytes,
+        )?),
         OfflineOperatorPayloadTargetV1::Existing(file) => {
             let observed = read_candidate_payload(file, registry, artifact_id)?;
             if observed != expected_bytes {
@@ -1055,13 +1054,7 @@ fn ensure_lifecycle_event(
         }
         return Ok((existing.event_digest, existing.chain_digest));
     }
-    let receipt = lifecycle.append(
-        lifecycle.head_digest(),
-        producer_id,
-        actor,
-        event,
-        now,
-    )?;
+    let receipt = lifecycle.append(lifecycle.head_digest(), producer_id, actor, event, now)?;
     Ok((receipt.event_digest, receipt.head_digest))
 }
 
@@ -1166,10 +1159,7 @@ fn digest_evaluation_decision(decision: &SignedEvaluationDecisionV1) -> Digest32
     ])
 }
 
-fn push_id(
-    bytes: &mut Vec<u8>,
-    value: &StableId,
-) -> Result<(), LearningOperatorHostError> {
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), LearningOperatorHostError> {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(
         &u32::try_from(raw.len())
