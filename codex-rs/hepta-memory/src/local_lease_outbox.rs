@@ -1809,14 +1809,13 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox_rows =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox_rows)?;
-        let Some(admission) = events
-            .iter()
-            .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted")
+        let Some(admission) = find_admission(
+            &mut transaction,
+            &self.lease_id,
+            occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
         else {
             transaction
                 .commit()
@@ -1824,10 +1823,20 @@ impl LocalLeaseOutbox {
                 .map_err(crate::cognitive_store::unavailable)?;
             return Ok(None);
         };
-        let outbox = outbox_rows
-            .iter()
-            .find(|row| row.occurrence_key == occurrence_key)
-            .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
+        let outbox = find_outbox(
+            &mut transaction,
+            &self.lease_id,
+            occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
+        verify_occurrence_pair_incremental(
+            &self.lease_id,
+            &self.owner_agent_id,
+            &admission,
+            &outbox,
+        )?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -1916,27 +1925,36 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox_rows =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox_rows)?;
-        let admission = events
-            .iter()
-            .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted")
-            .ok_or_else(|| {
-                LocalLeaseOutboxError::StaleFence(
-                    "inherited dispatch admission is missing".to_string(),
-                )
-            })?;
-        let outbox = outbox_rows
-            .iter()
-            .find(|row| row.occurrence_key == occurrence_key)
-            .ok_or_else(|| {
-                LocalLeaseOutboxError::StaleFence(
-                    "inherited dispatch outbox is missing".to_string(),
-                )
-            })?;
+        let admission = find_admission(
+            &mut transaction,
+            &self.lease_id,
+            occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::StaleFence(
+                "inherited dispatch admission is missing".to_string(),
+            )
+        })?;
+        let outbox = find_outbox(
+            &mut transaction,
+            &self.lease_id,
+            occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::StaleFence(
+                "inherited dispatch outbox is missing".to_string(),
+            )
+        })?;
+        verify_occurrence_pair_incremental(
+            &self.lease_id,
+            &self.owner_agent_id,
+            &admission,
+            &outbox,
+        )?;
         if admission.event_id != event_id
             || outbox.outbox_id != outbox_id
             || admission.event_id != outbox.event_id
@@ -2303,30 +2321,32 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox_rows =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox_rows)?;
-
-        let admission = events
-            .iter()
-            .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted")
-            .ok_or_else(|| {
-                LocalLeaseOutboxError::IllegalTransition(format!(
-                    "occurrence {occurrence_key} has no admitted event"
-                ))
-            })?;
-        let outbox = outbox_rows
-            .iter()
-            .find(|row| row.occurrence_key == occurrence_key)
-            .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
-        if admission.event_id != outbox.event_id
-            || admission.owner_agent_id != self.owner_agent_id
-            || outbox.owner_agent_id != self.owner_agent_id
-        {
-            return Err(corrupt("event/outbox reconciliation binding mismatch"));
-        }
+        let admission = find_admission(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::IllegalTransition(format!(
+                "occurrence {occurrence_key} has no admitted event"
+            ))
+        })?;
+        let outbox = find_outbox(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
+        verify_occurrence_pair_incremental(
+            &self.lease_id,
+            &self.owner_agent_id,
+            &admission,
+            &outbox,
+        )?;
 
         let current = current_outcome(
             &mut transaction,
@@ -2342,11 +2362,14 @@ impl LocalLeaseOutbox {
             )));
         }
 
-        let latest = events
-            .iter()
-            .rev()
-            .find(|event| event.occurrence_key == occurrence_key)
-            .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
+        let latest = latest_occurrence_event(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
         let current_fence =
             latest.generation == self.generation && latest.fencing_token == self.fencing_token;
         let admission_fence = admission.generation == self.generation
@@ -2370,9 +2393,14 @@ impl LocalLeaseOutbox {
             }
         }
 
-        if let Some(existing) = events
-            .iter()
-            .find(|event| event.occurrence_key == occurrence_key && event.kind == kind)
+        if let Some(existing) = find_transition(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            kind,
+            &self.owner_agent_id,
+        )
+        .await?
         {
             if existing.payload_sha256 != payload_sha256 {
                 return Err(LocalLeaseOutboxError::CasConflict(
@@ -4581,6 +4609,35 @@ async fn find_transition(
     .transpose()
 }
 
+async fn latest_occurrence_event(
+    transaction: &mut Transaction<'_, Sqlite>,
+    lease_id: &str,
+    occurrence_key: &str,
+    owner: &AgentId,
+) -> Result<Option<EventRow>, LocalLeaseOutboxError> {
+    let row = sqlx::query(
+        "SELECT event_sequence, event_id, occurrence_key, owner_agent_id,
+                generation, fencing_token, event_kind, payload_json,
+                payload_sha256, previous_sha256, event_sha256
+         FROM cognitive_local_events
+         WHERE lease_id = ? AND occurrence_key = ?
+         ORDER BY event_sequence DESC LIMIT 1",
+    )
+    .bind(lease_id)
+    .bind(occurrence_key)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    row.map(|row| {
+        let event = checked_event_row(lease_id, &row)?;
+        if event.owner_agent_id != *owner {
+            return Err(corrupt("occurrence event belongs to a foreign owner"));
+        }
+        Ok(event)
+    })
+    .transpose()
+}
+
 async fn find_outbox(
     transaction: &mut Transaction<'_, Sqlite>,
     lease_id: &str,
@@ -4857,24 +4914,14 @@ async fn ensure_occurrence_readable(
     {
         return Ok(());
     }
-    let row = sqlx::query(
-        "SELECT event_sequence, event_id, occurrence_key, owner_agent_id,
-                generation, fencing_token, event_kind, payload_json,
-                payload_sha256, previous_sha256, event_sha256
-         FROM cognitive_local_events
-         WHERE lease_id = ? AND occurrence_key = ?
-         ORDER BY event_sequence DESC LIMIT 1",
+    let latest = latest_occurrence_event(
+        transaction,
+        &handle.lease_id,
+        &event.occurrence_key,
+        &handle.owner_agent_id,
     )
-    .bind(&handle.lease_id)
-    .bind(&event.occurrence_key)
-    .fetch_optional(&mut **transaction)
-    .await
-    .map_err(crate::cognitive_store::unavailable)?
+    .await?
     .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
-    let latest = checked_event_row(&handle.lease_id, &row)?;
-    if latest.owner_agent_id != handle.owner_agent_id {
-        return Err(corrupt("occurrence event belongs to a foreign owner"));
-    }
     if latest.generation == handle.generation && latest.fencing_token == handle.fencing_token {
         return Ok(());
     }
