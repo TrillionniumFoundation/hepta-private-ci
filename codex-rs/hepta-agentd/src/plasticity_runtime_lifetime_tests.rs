@@ -761,14 +761,16 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         topology_anchor_store,
     )
     .expect("runtime bootstrap");
-    let (handle, owner) = bootstrap.into_channel().expect("runtime channel");
     let state = daemon.state();
-    state
-        .attach_plasticity_runtime(handle)
-        .expect("attach producer handle");
+    let owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, Some(bootstrap))
+        .expect("compose daemon plasticity owner");
     let producer = state.plasticity_runtime().expect("named Agentd producer");
     let cancellation = CancellationToken::new();
-    let owner_task = tokio::spawn(owner.run(Arc::clone(&state), cancellation.clone()));
+    let owner_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
+        Arc::clone(&state),
+        owner,
+        cancellation.clone(),
+    );
 
     let first = producer
         .propose_parameter(request.clone(), 50)
@@ -825,17 +827,19 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         topology_anchor_store,
     )
     .expect("restart bootstrap");
-    let (restarted_handle, restarted_owner) =
-        restarted_bootstrap.into_channel().expect("restart channel");
-    restarted_state
-        .attach_plasticity_runtime(restarted_handle)
-        .expect("reattach producer handle");
+    let restarted_owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(
+        &restarted_state,
+        Some(restarted_bootstrap),
+    )
+    .expect("compose restarted daemon plasticity owner");
     let restarted_producer = restarted_state
         .plasticity_runtime()
         .expect("restarted named producer");
     let restarted_cancellation = CancellationToken::new();
-    let restarted_task = tokio::spawn(
-        restarted_owner.run(Arc::clone(&restarted_state), restarted_cancellation.clone()),
+    let restarted_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
+        Arc::clone(&restarted_state),
+        restarted_owner,
+        restarted_cancellation.clone(),
     );
 
     let second = restarted_producer
