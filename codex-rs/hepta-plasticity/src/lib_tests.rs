@@ -208,12 +208,10 @@ fn legacy_v1_migration_digest_is_fixed() {
 }
 
 #[test]
-fn legacy_v1_read_rejects_authority_and_missing_opaque_digest() {
-    let mut proposal = legacy_proposal();
-    proposal.authority.selection = true;
+fn legacy_v1_raw_authority_ingress_and_missing_opaque_digest_fail_closed() {
     assert_eq!(
-        read_versioned_proposal(1, ProposalRecord::LegacyV1(Box::new(proposal))),
-        Err(Error::AuthorityGranted)
+        AuthorityPosture::try_from_wire_bytes(&[0x20]),
+        Err(codex_hepta_types::AuthorityPostureError::GrantRequested)
     );
 
     let mut proposal = legacy_proposal();
@@ -609,7 +607,7 @@ fn canonical_order_is_independent_of_input_order() {
 }
 
 #[test]
-fn read_validation_rejects_tampered_metrics_digest_profile_and_authority() {
+fn read_validation_rejects_tampered_metrics_digest_and_profile() {
     let proposal = must(propose_v2(v2_request()));
 
     let mut tampered = proposal.clone();
@@ -633,12 +631,6 @@ fn read_validation_rejects_tampered_metrics_digest_profile_and_authority() {
         Err(Error::NormProfileMismatch)
     );
 
-    let mut tampered = proposal;
-    tampered.authority.runtime = true;
-    assert_eq!(
-        verify_parameter_proposal_v2(&tampered),
-        Err(Error::AuthorityGranted)
-    );
 }
 
 #[test]
