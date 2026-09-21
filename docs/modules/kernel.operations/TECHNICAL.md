@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The retained reference source is [codex-rs/hepta-operations](../../../codex-rs/hepta-operations). The production-shaped durable owner is deliberately composed into the existing CognitiveStore writer rather than a second database: [local_lease_outbox.rs](../../../codex-rs/hepta-memory/src/local_lease_outbox.rs), [production_writer.rs](../../../codex-rs/hepta-memory/src/production_writer.rs), migration [0011_kernel_operations.sql](../../../codex-rs/hepta-memory/migrations/0011_kernel_operations.sql), the real [production_cognitive_source_target.rs](../../../codex-rs/hepta-memory/src/production_cognitive_source_target.rs), and the named Agentd [production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs).
+The retained reference source is [codex-rs/hepta-operations](../../../codex-rs/hepta-operations). The production-shaped durable owner is deliberately composed into the existing CognitiveStore writer rather than a second database: [local_lease_outbox.rs](../../../codex-rs/hepta-memory/src/local_lease_outbox.rs), durable dispatch-claim owner [operation_claims.rs](../../../codex-rs/hepta-memory/src/operation_claims.rs), [production_writer.rs](../../../codex-rs/hepta-memory/src/production_writer.rs), migrations [0011_kernel_operations.sql](../../../codex-rs/hepta-memory/migrations/0011_kernel_operations.sql) and [0012_kernel_operation_dispatch_claims.sql](../../../codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql), the CognitiveStore [production_cognitive_source_target.rs](../../../codex-rs/hepta-memory/src/production_cognitive_source_target.rs), the Automation destination owner, and the named Agentd runtime composition in [production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs) plus `runtime.rs`.
 
 ### Current claim levels
 
@@ -54,12 +54,12 @@ The retained reference source is [codex-rs/hepta-operations](../../../codex-rs/h
 | --- | --- |
 | target | specified durable ledger/outbox/cross-owner transaction architecture |
 | reference-implemented | yes: bounded `hepta-operations` oracle |
-| production-implemented | source-implemented: atomic CognitiveStore operation/event/outbox owner, final-use target entry, one real CognitiveStore destination |
+| production-implemented | source-implemented: atomic CognitiveStore operation/event/outbox owner, persisted claim lease/attempt/takeover state, final-use target entry, CognitiveStore and Automation destination slices |
 | execution-proved | pending current exact-head and merge-candidate CI |
 | product-activated | no |
 | independently accepted / promoted / released | no |
 
-The 16,384-record bounds belong only to the reference oracle. The integrated SQLite owner does not inherit that model ceiling. Its lease/event/outbox evidence remains append-only; bounded physical journal compaction/checkpoint retention is still an explicit gap.
+The 16,384-record bounds belong only to the reference oracle. The integrated SQLite owner enforces write-before-mutation ceilings of 100,000 operation/outbox rows and 400,000 event rows per lease so multi-event lifecycle records do not silently reduce the 100,000-operation pilot envelope. Its append-only evidence still requires a versioned segment/checkpoint protocol before long-lived physical retention can be claimed.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -139,21 +139,21 @@ Read-only data dependencies:
 
 None.
 
-The durable operation surface reuses the existing CognitiveStore SQLite owner. `admit_operation` owns the source operation/event/outbox transaction and commits all three identities atomically under `BEGIN IMMEDIATE`. Exact semantic replay is idempotent and changed semantic identity conflicts. Destination domain facts remain destination-owned; `CognitiveSourceOutboxTarget` is the first concrete destination binding.
+The durable operation surface reuses the existing CognitiveStore SQLite owner. `admit_operation` owns the source operation/event/outbox transaction and commits all three identities atomically under `BEGIN IMMEDIATE`. Exact semantic replay is idempotent and changed semantic identity conflicts. Destination domain facts remain destination-owned. `CognitiveSourceOutboxTarget` provides a predecessor-aware create-only CAS slice, while Automation provides a second destination-owned atomic dedupe/apply + terminal-observation slice.
 
-Migrations are deterministic and checksum-bound. CognitiveStore open verifies migration lineage, required schema objects, quick/foreign-key checks and local journal integrity before returning a writer. Migration `0011_kernel_operations.sql` adds the immutable operation semantic binding. Rollback is represented by a new append-only lifecycle/outcome record and never erases an observed external effect.
+Migrations are deterministic and checksum-bound. CognitiveStore open verifies migration lineage, required schema objects, quick/foreign-key checks and local journal integrity before returning a writer. Migration `0011_kernel_operations.sql` adds the immutable operation semantic binding; `0012_kernel_operation_dispatch_claims.sql` adds immutable attempt/lease/renew/entered/settled dispatch-claim history. Rollback is represented by a new append-only lifecycle/outcome record and never erases an observed external effect.
 
 The authoritative local lease/event/outbox journals remain append-only hash chains. This candidate does not claim bounded physical deletion/compaction of those journals. A future retention implementation must use an explicit segment/checkpoint protocol that preserves anti-resurrection identity and reopen verification; in-place deletion is not an acceptable shortcut.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) identifies the retained in-memory oracle and the actual persistent CognitiveStore owner. Atomic prepare uses `BEGIN IMMEDIATE`; physical dispatch is preceded by a strict durable claim, and successor handoff reuses the same immutable event/outbox identity rather than creating a second send identity.
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) identifies the retained in-memory oracle and the actual persistent CognitiveStore owner. Atomic prepare uses `BEGIN IMMEDIATE`. Ordinary prepare/status/receipt/dispatch/reconciliation paths validate exact occurrence rows incrementally after open/reopen has audited the full append-only chains. Dispatch first acquires a persisted bounded claim lease/attempt, then writes the one-shot effect-entry indeterminate fence immediately before final-use target entry. Successor handoff reuses the same immutable event/outbox identity rather than creating a second send identity.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Source recovery covers SQLite reopen, append-only journal verification, pre-target durable claim, concurrent-dispatch exclusion, predecessor-generation handoff and indeterminate reconciliation. A qualification-only child-process kill/reopen probe exists and explicitly makes no physical power-loss claim. Default hosted reconciliation and target-host storage/power-loss evidence remain activation gates.
+Source recovery covers SQLite reopen, append-only journal verification, bounded claim lease expiry/renewal/takeover, pre-target one-shot effect-entry fencing, concurrent-dispatch exclusion, predecessor-generation handoff and indeterminate reconciliation. Source tests also force SQLite `SQLITE_FULL` and verify atomic rollback plus clean reopen. A qualification-only child-process kill/reopen probe exists and explicitly makes no physical power-loss claim. Target-host storage/power-loss evidence remains an activation gate.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -170,7 +170,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) specifies this module's algorithm and pilot ceilings. The durable owner now enforces the 100,000 operation/outbox and 400,000 event write ceilings before mutation; focused tests bind the exact boundary. These are correctness limits, not throughput measurements. Target-host p50/p95/p99 commit/fsync, reconciliation backlog and long-history measurements remain qualification work.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -182,6 +182,8 @@ Current operating and state-format references:
 
 - [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs).
 - [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs).
+- [codex-rs/hepta-memory/src/operation_claims.rs](../../../codex-rs/hepta-memory/src/operation_claims.rs).
+- [codex-rs/hepta-memory/src/production_writer.rs](../../../codex-rs/hepta-memory/src/production_writer.rs).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -191,6 +193,9 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs); named case: `dispatch_ack_is_not_terminal_success`.
 - [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs); named case: `claim_and_ack_are_generation_fenced`.
+- `codex-rs/hepta-memory/src/local_lease_outbox_tests.rs`; named cases include exact durable sequence capacity fencing and `SQLITE_FULL` atomic rollback/reopen.
+- `codex-rs/hepta-memory/src/production_writer.rs`; focused tests cover durable claim renewal/takeover, final-use entry and lost-ack reconciliation.
+- `codex-rs/hepta-automation/tests/kernel_operations_destination.rs`; destination-owned atomic dedupe/apply and observation.
 
 In `codex-rs`, run `just test -p codex-hepta-operations`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) separately labels target acceptance designs.
 
