@@ -1632,7 +1632,7 @@ mod tests {
 
     #[cfg(unix)]
     #[tokio::test(flavor = "current_thread")]
-    async fn unresolved_signed_intent_blocks_daemon_startup_before_socket_bind() {
+    async fn unresolved_signed_intent_keeps_daemon_reachable_but_not_ready() {
         let temp = tempfile::tempdir().expect("create temporary fleet");
         let fleet_root = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("fleet root");
         let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
@@ -1681,19 +1681,64 @@ mod tests {
         crate::signed_intent::write_intent(record.layout.run_root(), &intent)
             .expect("persist signed intent");
 
-        let error =
-            match run_supervisord_inner(fleet_root.clone(), CancellationToken::new(), None).await {
-                Ok(_) => panic!("unresolved signed intent must stop daemon startup"),
-                Err(error) => error,
-            };
-        assert!(matches!(
-            error,
-            SupervisorError::SignedIntentRecoveryRequired(id) if id == agent_id
+        let cancellation = CancellationToken::new();
+        let daemon = tokio::spawn(run_supervisord_inner(
+            fleet_root.clone(),
+            cancellation.clone(),
+            None,
         ));
+        let client = crate::SupervisordClient::new(
+            registry.layout().supervisor_socket().to_path_buf(),
+        )
+        .expect("client");
+        let deadline = Instant::now() + Duration::from_secs(2);
+        let health = loop {
+            match client.health().await {
+                Ok(health) => break health,
+                Err(error) => {
+                    assert!(
+                        Instant::now() < deadline,
+                        "recovery daemon did not bind a reachable socket: {error}"
+                    );
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            }
+        };
         assert!(
-            !registry.layout().supervisor_socket().exists(),
-            "daemon must not bind a control socket after fail-closed recovery"
+            !health.ready,
+            "unresolved production recovery must keep daemon health not-ready"
         );
+
+        let mutation = client
+            .production_mutation_status(agent_id.clone())
+            .await
+            .expect("query recovery status")
+            .expect("durable recovery status");
+        assert_eq!(
+            mutation.receipt.status,
+            crate::ProductionMutationStatus::RecoveryRequired
+        );
+
+        let status = client
+            .snapshot(agent_id.clone())
+            .await
+            .expect("recovery snapshot");
+        let restart_error = client
+            .restart(status.control_fence)
+            .await
+            .expect_err("ordinary mutation must remain blocked during production recovery");
+        assert!(
+            restart_error
+                .to_string()
+                .contains("signed_intent_recovery_required"),
+            "unexpected recovery rejection: {restart_error}"
+        );
+
+        cancellation.cancel();
+        daemon
+            .await
+            .expect("join recovery daemon")
+            .expect("shutdown recovery daemon");
     }
 }
 
