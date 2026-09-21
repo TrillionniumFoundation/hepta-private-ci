@@ -537,8 +537,7 @@ mod tests {
         rollback_writer.sync_all().expect("sync rollback");
         drop(rollback_writer);
 
-        let result =
-            reopen_agentd_topology_writer_v1(registry_file, anchor_file, scope, 8);
+        let result = reopen_agentd_topology_writer_v1(registry_file, anchor_file, scope, 8);
         assert!(matches!(
             result,
             Err(AgentdTopologyHostErrorV1::Registry(
