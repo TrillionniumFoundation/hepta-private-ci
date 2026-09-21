@@ -1,0 +1,92 @@
+name: Hepta Browser adopt reviewed Servo lock
+
+on:
+  push:
+    branches:
+      - codex/browser-servo-product-closure-20260919
+    paths:
+      - ".github/workflows/hepta-browser-adopt-servo-lock.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-browser-adopt-servo-lock-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  adopt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EXPECTED_BRANCH: codex/browser-servo-product-closure-20260919
+      SERVO_PIN: b5a1f5e6ec6f8685d40cd389802ced7abe4980f6
+      EXPECTED_LOCK_SHA256: 58fa539f65f1884231f60aba0eda3acbc5999b386067c63f7f4f352ac2446086
+      WORKER_MANIFEST: apps/hepta-browser/servo-worker/Cargo.toml
+      WORKER_LOCK: apps/hepta-browser/servo-worker/Cargo.lock
+    steps:
+      - name: Check out exact adoption source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify bounded adoption context
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          grep -F "$SERVO_PIN" "$WORKER_MANIFEST"
+
+      - name: Reproduce reviewed b5a1 lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup override set 1.88.0
+          rm -f "$WORKER_LOCK"
+          cargo generate-lockfile --manifest-path "$WORKER_MANIFEST"
+          test -s "$WORKER_LOCK"
+          grep -F "$SERVO_PIN" "$WORKER_LOCK"
+          actual="$(sha256sum "$WORKER_LOCK" | awk '{print $1}')"
+          printf 'reviewed=%s\nreproduced=%s\n' "$EXPECTED_LOCK_SHA256" "$actual"
+          test "$actual" = "$EXPECTED_LOCK_SHA256"
+
+      - name: Commit exact reviewed lock and bind map source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-browser-lock-adoption"
+          git config user.email "hepta-browser-lock-adoption@users.noreply.github.com"
+
+          git add "$WORKER_LOCK"
+          git commit -m "build(browser.servo): adopt reviewed b5a1 Cargo.lock"
+          source_sha="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse HEAD^{tree})"
+          export SOURCE_SHA="$source_sha" SOURCE_TREE="$source_tree"
+
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path("docs/modules/browser.servo/IMPLEMENTATION_MAP.json")
+          row = json.loads(path.read_text(encoding="utf-8"))
+          row["sourceBase"] = {
+              "commit": os.environ["SOURCE_SHA"],
+              "tree": os.environ["SOURCE_TREE"],
+          }
+          row["productCallerState"] = (
+              "persistent_agentd_owner_source_present_b5a1_lock_committed_not_qualified"
+          )
+          path.write_text(
+              json.dumps(row, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          git add docs/modules/browser.servo/IMPLEMENTATION_MAP.json
+          git commit -m "docs(browser.servo): bind reviewed lock source snapshot"
+
+          test "$(git rev-parse HEAD^)" != "$GITHUB_SHA"
+          git push origin "HEAD:$EXPECTED_BRANCH"
