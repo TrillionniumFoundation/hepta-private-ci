@@ -20,10 +20,19 @@ use hepta_native::updater::SignedUpdateManifestV1;
 use hepta_native::updater::UpdateManager;
 use hepta_native::updater::activate_staged_update;
 use hepta_native::updater::digest_file;
+use sha2::Digest as _;
 use tempfile::TempDir;
 
+fn test_material(label: &str) -> [u8; 32] {
+    sha2::Sha256::digest(label.as_bytes()).into()
+}
+
+fn test_signing_key(label: &str) -> SigningKey {
+    SigningKey::from_bytes(&test_material(label))
+}
+
 fn key_fixture(root: &Path) -> (SigningKey, TrustedKeySet, std::path::PathBuf) {
-    let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    let signing = test_signing_key("release-key-fixture");
     let public = STANDARD.encode(signing.verifying_key().to_bytes());
     let path = root.join("trusted-keys.json");
     std::fs::write(
@@ -88,7 +97,7 @@ fn signed_final_use_grant(
 #[test]
 fn kernel_final_use_binding_rejects_session_drift() {
     let temp = TempDir::new().unwrap();
-    let signing = SigningKey::from_bytes(&[9_u8; 32]);
+    let signing = test_signing_key("session-drift-key");
     let head = FinalUseRevocations {
         authority_epoch: 1,
         revision: 1,
@@ -111,7 +120,7 @@ fn kernel_final_use_binding_rejects_session_drift() {
     };
     let binding1 =
         platform_final_use_binding("principal.1", &session1, "operation.1", 11, &payload).unwrap();
-    let signed = signed_final_use_grant(&signing, "grant.binding", [1_u8; 32], binding1.clone());
+    let signed = signed_final_use_grant(&signing, "grant.binding", test_material("session-drift-nonce"), binding1.clone());
     let _permit = gate.claim_platform(&signed, binding1).unwrap();
 
     let binding2 =
@@ -123,7 +132,7 @@ fn kernel_final_use_binding_rejects_session_drift() {
 #[test]
 fn kernel_final_use_reloads_revocation_before_os_entry() {
     let temp = TempDir::new().unwrap();
-    let signing = SigningKey::from_bytes(&[10_u8; 32]);
+    let signing = test_signing_key("revocation-key");
     let head = FinalUseRevocations {
         authority_epoch: 1,
         revision: 1,
@@ -142,7 +151,7 @@ fn kernel_final_use_reloads_revocation_before_os_entry() {
     let binding =
         platform_final_use_binding("principal.1", &session, "operation.revoked", 11, &payload)
             .unwrap();
-    let signed = signed_final_use_grant(&signing, "grant.revoked", [2_u8; 32], binding.clone());
+    let signed = signed_final_use_grant(&signing, "grant.revoked", test_material("revocation-nonce"), binding.clone());
     let permit = gate.claim_platform(&signed, binding).unwrap();
 
     let mut revoked = std::collections::BTreeSet::new();

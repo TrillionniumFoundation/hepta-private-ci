@@ -29,14 +29,17 @@ Plane `kernel`, kind `authority`, state model `stateful` and architecture role `
 Declared exclusive target roots:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/hepta-private-state`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/hepta-private-state`
 
 Non-authoritative implementation evidence roots:
 
 - `codex-rs/hepta-contracts`
+- `codex-rs/hepta-private-state`
 - `codex-rs/ext/hepta-governance`
 
 Declared roots not yet present:
@@ -47,7 +50,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); observed identifiers include `FinalUseAuthority`, `VerifiedUseToken`, `claim`, `with_verified_use`, `verify_strict`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.authority.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the Windows owner-store helper is [codex-rs/hepta-private-state](../../../codex-rs/hepta-private-state); observed identifiers include `FinalUseAuthority`, `VerifiedUseToken`, `claim`, `with_verified_use`, `verify_strict`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.authority.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -163,7 +166,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed FinalUseAuthority behind a trusted host boundary. Open its owner-only state directory before accepting grants, keep its process lock and preserve nonce/revocation state across restarts. Replacing old state is an authority reset requiring a new trusted epoch, not ordinary backup restore.
+Embed FinalUseAuthority behind a trusted host boundary. Open its owner-only state directory before accepting grants, keep its process lock and preserve nonce/revocation state across restarts. Unix uses descriptor-relative owner/mode validation; Windows uses a non-reparse handle plus current-user/SYSTEM-only DACL verification through the internal `hepta-private-state` helper. Replacing old state is an authority reset requiring a new trusted epoch, not ordinary backup restore.
 
 Current operating and state-format references:
 
@@ -217,6 +220,7 @@ For `kernel.authority`, this document grants no runtime, production, model, prov
 - Owner/deputy: `security-authority` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-contracts/**`
+- `codex-rs/hepta-private-state/**`
 - Development predecessors:
 - `P0.7A-RUNTIME-BOOTSTRAP`
 - Activation predecessors:

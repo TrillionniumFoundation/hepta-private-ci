@@ -138,6 +138,10 @@
         {
           "path": "codex-rs/hepta-contracts",
           "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-private-state",
+          "mode": "exclusive"
         }
       ],
       "hotPathPolicy": {
@@ -155,7 +159,8 @@
       "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-contracts",
-        "codex-rs/ext/hepta-governance"
+        "codex-rs/ext/hepta-governance",
+        "codex-rs/hepta-private-state"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7B-B0-VERIFIED-USE",

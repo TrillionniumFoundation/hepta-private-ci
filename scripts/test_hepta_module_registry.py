@@ -15,8 +15,8 @@ class ModuleRegistryTests(unittest.TestCase):
         report = compare_registry(ROOT)
         self.assertEqual(report["schema"], "hepta.module-registry-drift.v1")
         self.assertEqual(report["canonicalModuleCount"], 40)
-        self.assertEqual(report["cargoHeptaCrateCount"], 50)
-        self.assertEqual(report["boundCrateCount"], 50)
+        self.assertEqual(report["cargoHeptaCrateCount"], 51)
+        self.assertEqual(report["boundCrateCount"], 51)
         self.assertEqual(report["status"], "aligned")
         self.assertEqual(report["unclaimedCargoCrates"], [])
 

@@ -366,6 +366,12 @@ fn verify_directory(handle: HANDLE, current: *mut c_void, system: *mut c_void) -
         {
             return Err(io::Error::last_os_error());
         }
+        let dacl_start = dacl.cast::<u8>() as usize;
+        let dacl_end = dacl_start
+            .checked_add(acl_info.AclBytesInUse as usize)
+            .ok_or_else(|| {
+                io::Error::new(io::ErrorKind::InvalidData, "private state DACL size overflow")
+            })?;
         let mut current_ok = false;
         let mut system_ok = false;
         for index in 0..acl_info.AceCount {
@@ -373,20 +379,65 @@ fn verify_directory(handle: HANDLE, current: *mut c_void, system: *mut c_void) -
             if unsafe { GetAce(dacl.cast(), index, &mut raw_ace) } == 0 || raw_ace.is_null() {
                 return Err(io::Error::last_os_error());
             }
-            let header = unsafe { &*(raw_ace as *const ACE_HEADER) };
+            let ace_start = raw_ace as usize;
+            let header_end = ace_start
+                .checked_add(std::mem::size_of::<ACE_HEADER>())
+                .ok_or_else(|| {
+                    io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        "private state ACE header overflow",
+                    )
+                })?;
+            if ace_start < dacl_start || header_end > dacl_end {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "private state DACL contains an out-of-bounds ACE header",
+                ));
+            }
+            let header = unsafe { std::ptr::read_unaligned(raw_ace.cast::<ACE_HEADER>()) };
             if header.AceType != ACCESS_ALLOWED_ACE_TYPE {
                 return Err(io::Error::new(
                     io::ErrorKind::PermissionDenied,
                     "private state DACL contains a non-allow ACE",
                 ));
             }
-            let ace = unsafe { &*(raw_ace as *const ACCESS_ALLOWED_ACE) };
-            let ace_sid = (&ace.SidStart as *const u32).cast_mut().cast::<c_void>();
+            let ace_size = usize::from(header.AceSize);
+            let ace_end = ace_start.checked_add(ace_size).ok_or_else(|| {
+                io::Error::new(io::ErrorKind::InvalidData, "private state ACE size overflow")
+            })?;
+            if ace_size < std::mem::size_of::<ACCESS_ALLOWED_ACE>() || ace_end > dacl_end {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "private state DACL contains an invalid ACE size",
+                ));
+            }
+            let ace = unsafe { std::ptr::read_unaligned(raw_ace.cast::<ACCESS_ALLOWED_ACE>()) };
+            let sid_offset = std::mem::offset_of!(ACCESS_ALLOWED_ACE, SidStart);
+            let sid_start = ace_start.checked_add(sid_offset).ok_or_else(|| {
+                io::Error::new(io::ErrorKind::InvalidData, "private state SID offset overflow")
+            })?;
+            if sid_start >= ace_end {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "private state DACL contains a missing SID",
+                ));
+            }
+            let ace_sid = sid_start as *mut c_void;
             if unsafe { IsValidSid(ace_sid) } == 0 || (ace.Mask & FILE_ALL_ACCESS) != FILE_ALL_ACCESS
             {
                 return Err(io::Error::new(
                     io::ErrorKind::PermissionDenied,
                     "private state DACL contains an invalid or incomplete allow ACE",
+                ));
+            }
+            let sid_len = unsafe { GetLengthSid(ace_sid) } as usize;
+            let sid_end = sid_start.checked_add(sid_len).ok_or_else(|| {
+                io::Error::new(io::ErrorKind::InvalidData, "private state SID size overflow")
+            })?;
+            if sid_len == 0 || sid_end > ace_end {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "private state DACL contains an out-of-bounds SID",
                 ));
             }
             if unsafe { EqualSid(ace_sid, current) } != 0 {
@@ -504,11 +555,43 @@ fn current_user_sid() -> io::Result<Vec<u8>> {
         {
             return Err(io::Error::last_os_error());
         }
-        let token_user = unsafe { &*(buffer.as_ptr() as *const TOKEN_USER) };
+        if buffer.len() < std::mem::size_of::<TOKEN_USER>() {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "token user buffer is truncated",
+            ));
+        }
+        let token_user = unsafe { std::ptr::read_unaligned(buffer.as_ptr().cast::<TOKEN_USER>()) };
         let sid = token_user.User.Sid;
+        if sid.is_null() {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "token user SID is missing",
+            ));
+        }
+        let buffer_start = buffer.as_ptr() as usize;
+        let buffer_end = buffer_start.checked_add(buffer.len()).ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidData, "token user buffer overflow")
+        })?;
+        let sid_start = sid as usize;
+        if sid_start < buffer_start
+            || sid_start >= buffer_end
+            || unsafe { IsValidSid(sid) } == 0
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "token user SID is out of bounds",
+            ));
+        }
         let length = unsafe { GetLengthSid(sid) };
-        if length == 0 {
-            return Err(io::Error::last_os_error());
+        let sid_end = sid_start.checked_add(length as usize).ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidData, "token user SID size overflow")
+        })?;
+        if length == 0 || sid_end > buffer_end {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "token user SID is truncated",
+            ));
         }
         let mut copy = vec![0_u8; length as usize];
         if unsafe { CopySid(length, copy.as_mut_ptr().cast(), sid) } == 0 {

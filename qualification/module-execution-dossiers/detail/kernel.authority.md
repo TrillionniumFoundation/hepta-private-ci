@@ -5,7 +5,7 @@ Status: signed final-use verification and durable nonce/revocation ownership imp
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-contracts`.
+Roots: `codex-rs/hepta-contracts`, `codex-rs/hepta-private-state`.
 Packages: `P0.7B-B0-VERIFIED-USE`, `P0.7B-B4-CALLSITE-PROOF`.
 
 Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
@@ -46,7 +46,7 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 ## 8. Current native implementation
 
 - **Implemented entrypoints:** `FinalUseAuthority` in [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); `Store` in [codex-rs/hepta-contracts/src/final_use_store.rs](../../../codex-rs/hepta-contracts/src/final_use_store.rs). Signed final-use verification and durable nonce/revocation ownership implemented.
-- **State and recovery:** open_state_dir owns locked private Unix state; claim verifies Ed25519 and syncs nonce consumption before dispatch, while with_verified_use rechecks live epoch/revocation under the same lock before callback entry. Uncertain persistence fences the handle.
+- **State and recovery:** open_state_dir owns locked private state; Unix uses descriptor-relative owner/mode checks and Windows uses a non-reparse directory handle with current-user/SYSTEM-only DACL validation through `codex-rs/hepta-private-state`. Claim verifies Ed25519 and syncs nonce consumption before dispatch, while with_verified_use rechecks live epoch/revocation under the same lock before callback entry. Uncertain persistence fences the handle.
 - **Source tests:** [codex-rs/hepta-contracts/src/final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-contracts/FINAL_USE.md](../../../codex-rs/hepta-contracts/FINAL_USE.md), [codex-rs/hepta-supervisor/EXTERNAL_AUTHORITY_SIGNER.md](../../../codex-rs/hepta-supervisor/EXTERNAL_AUTHORITY_SIGNER.md).
-- **Remaining work:** Host trust, current revocation distribution and backup anti-rollback remain external owner responsibilities; equivalent non-Unix ACL storage is not implemented.
+- **Remaining work:** Host trust, current revocation distribution and backup anti-rollback remain external owner responsibilities; Windows ACL semantics require current target-host qualification and do not establish deployment acceptance.
