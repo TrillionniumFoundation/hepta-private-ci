@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e43760f42cd18cd3f6d173971349f04a2f3d66bf",
-    "tree": "868955419b3271759534162a002e5cb489906df7"
+    "commit": "4f52136a04eec0bf8a010f0c07d1805aa93fc293",
+    "tree": "903bb9906bb8f521a935352e5c4eb837dda630a1"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -198,9 +198,9 @@
     "codex-rs/Cargo.lock"
   ],
   "observedAtHead": {
-    "commit": "e43760f42cd18cd3f6d173971349f04a2f3d66bf",
-    "tree": "868955419b3271759534162a002e5cb489906df7",
-    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence plus the required workspace dependency registration for codex-hepta-operations; later commits may update documentation/projection truth only, and every declared observed source path must remain byte-unchanged through the verified candidate"
+    "commit": "4f52136a04eec0bf8a010f0c07d1805aa93fc293",
+    "tree": "903bb9906bb8f521a935352e5c4eb837dda630a1",
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence, required codex-hepta-operations workspace dependency registration, and repository-current Rust formatting needed to execute exact-head/synthetic-merge qualification; later commits may update documentation/projection truth only, and every declared observed source path must remain byte-unchanged through the verified candidate"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
