@@ -162,6 +162,6 @@ writer-fence mismatch, append-only anchor-journal crash-tail recovery and comple
 corruption rejection, zero-complete-frame bootstrap recovery plus complete-unacknowledged
 history rejection, monotonic generation rollover, canonical mutation-grammar digest
 binding, evidence-kind wrong-owner denial, typed parameter-mutation-policy
-protected-surface denial, topology writer-handoff validation, topology anchored reopen,
+protected-surface denial, topology writer-handoff validation, topology anchored reopen and append/ack registry-only rollback rejection,
 topology self-activation denial, authenticated structural-canary observation binding,
 and structural-canary abort semantics. Repository qualification additionally performs an actual live CNS cutover, forces the serving host into a stopped/faulted state, executes a separately FinalUse-authorized stopped-generation recovery as the next generation, verifies serving recovery, and only then signs the canary observation through the independent Observer boundary. This proves repository source composition, not deployment. The selected target host must repeat the path with production telemetry, physically independent rollback domains and operator evidence. Until those receipts exist, product execution, independent acceptance, activation and release remain false even when source compilation/tests pass.

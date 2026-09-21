@@ -346,7 +346,8 @@
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/topology_plasticity_host.rs::tests::topology_anchor_store_preserves_fence_and_anchor",
-        "codex-rs/hepta-intelligence/src/topology_product.rs::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record"
+        "codex-rs/hepta-intelligence/src/topology_product.rs::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record",
+        "codex-rs/hepta-agentd/src/topology_plasticity_host.rs::tests::topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart"
       ],
       "sourcePathExists": true,
       "designOperation": "agentd_topology_host",

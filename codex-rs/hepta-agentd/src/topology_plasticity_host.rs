@@ -411,11 +411,140 @@ pub fn reopen_agentd_topology_writer_v1(
 
 #[cfg(test)]
 mod tests {
+    use std::io::{Read, Seek, SeekFrom, Write};
+
     use super::*;
     use tempfile::tempfile;
 
     fn digest(value: &[u8]) -> Digest32 {
         Digest32::of_bytes(value)
+    }
+
+    fn governed_topology_for_rollback() -> codex_hepta_plasticity::GovernedTopologyProposalV1 {
+        let module_id = StableId::new("module:topology-rollback").expect("id");
+        let migration = digest(b"topology-rollback-migration");
+        let rollback = digest(b"topology-rollback-plan");
+        let handoff = codex_hepta_plasticity::build_writer_handoff_plan_v1(
+            module_id.clone(),
+            StableId::new("owner:topology-old").expect("id"),
+            StableId::new("owner:topology-new").expect("id"),
+            10,
+            11,
+            digest(b"topology-rollback-source-store"),
+            migration,
+            rollback,
+            digest(b"topology-rollback-ack"),
+        )
+        .expect("handoff");
+        let artifact = digest(b"topology-rollback-artifact");
+        let proposal = codex_hepta_plasticity::propose_topology_v2(
+            codex_hepta_plasticity::TopologyProposalRequestV2 {
+                proposal_id: StableId::new("proposal:topology-rollback").expect("id"),
+                proposer_id: StableId::new("generator:topology").expect("id"),
+                evaluator_id: StableId::new("evaluator:topology").expect("id"),
+                selected_artifact_digest: artifact,
+                window: codex_hepta_plasticity::ProposalWindowV2 {
+                    window_id: StableId::new("window:topology-rollback").expect("id"),
+                    window_digest: digest(b"topology-rollback-window"),
+                },
+                baseline_generation: Generation::new(10).expect("generation"),
+                candidate_generation: Generation::new(11).expect("generation"),
+                evaluation_digest: digest(b"topology-rollback-evaluation"),
+                rollback_predecessor_digest: artifact,
+                changes: vec![codex_hepta_plasticity::TopologyChangeV2 {
+                    module_id,
+                    operation: codex_hepta_plasticity::TopologyOperationV2::Replace,
+                    predecessor_digest: Some(digest(b"topology-rollback-old")),
+                    candidate_digest: Some(digest(b"topology-rollback-new")),
+                    capability_typing_digest: digest(b"topology-rollback-capability"),
+                    compatibility_plan_digest: digest(b"topology-rollback-compatibility"),
+                    lesion_ablation_digest: digest(b"topology-rollback-lesion"),
+                    resource_review_digest: digest(b"topology-rollback-resource"),
+                    security_review_digest: digest(b"topology-rollback-security"),
+                    migration_digest: migration,
+                    rollback_digest: rollback,
+                    writer_handoff_digest: handoff.plan_digest,
+                    evidence_digest: digest(b"topology-rollback-evidence"),
+                }],
+            },
+        )
+        .expect("proposal");
+        codex_hepta_plasticity::admit_governed_topology_v1(
+            proposal,
+            vec![handoff],
+            digest(b"topology-rollback-source-auth"),
+            digest(b"topology-rollback-eval-auth"),
+        )
+        .expect("governed")
+    }
+
+    #[test]
+    fn topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart() {
+        let registry_file = tempfile().expect("registry file");
+        let anchor_file = tempfile().expect("anchor file");
+        let scope = digest(b"topology-real-rollback-domain-scope");
+
+        let mut anchor_store = AgentdTopologyAnchorStoreV1::open(
+            anchor_file.try_clone().expect("anchor clone"),
+            scope,
+        )
+        .expect("open anchor store");
+        let fence = anchor_store.issue_next_fence().expect("issue fence");
+        assert_eq!(fence, 1);
+
+        let mut registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
+            registry_file.try_clone().expect("registry clone"),
+            scope,
+            fence,
+            8,
+        )
+        .expect("bootstrap registry");
+        let mut header_reader = registry_file.try_clone().expect("header clone");
+        header_reader.seek(SeekFrom::Start(0)).expect("seek header");
+        let mut header_only = Vec::new();
+        header_reader
+            .read_to_end(&mut header_only)
+            .expect("read header");
+        assert!(!header_only.is_empty());
+
+        let append = registry
+            .append(Digest32::ZERO, governed_topology_for_rollback())
+            .expect("append");
+        assert_eq!(append.sequence, 1);
+        let acknowledged = registry
+            .current_anchor()
+            .expect("current anchor")
+            .expect("acknowledgeable anchor");
+        anchor_store
+            .persist_anchor(scope, fence, acknowledged)
+            .expect("persist anchor");
+
+        // Crash boundary: both in-process handles disappear after the proposal
+        // frame and independent acknowledgement are durable.
+        drop(registry);
+        drop(anchor_store);
+
+        // Roll back only the topology-registry domain to its previous valid
+        // header while retaining the independent anchor/fence journal.
+        let mut rollback_writer = registry_file.try_clone().expect("rollback writer");
+        rollback_writer.set_len(0).expect("truncate registry");
+        rollback_writer
+            .seek(SeekFrom::Start(0))
+            .expect("seek rollback");
+        rollback_writer
+            .write_all(&header_only)
+            .expect("restore old registry");
+        rollback_writer.sync_all().expect("sync rollback");
+        drop(rollback_writer);
+
+        let result =
+            reopen_agentd_topology_writer_v1(registry_file, anchor_file, scope, 8);
+        assert!(matches!(
+            result,
+            Err(AgentdTopologyHostErrorV1::Registry(
+                DurableTopologyRegistryErrorV1::AcknowledgedHistoryMissing
+            ))
+        ));
     }
 
     #[test]
