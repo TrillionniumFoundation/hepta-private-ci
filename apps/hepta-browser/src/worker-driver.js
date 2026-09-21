@@ -803,12 +803,12 @@ export class SubprocessBrowserDriver {
     ]);
     if (first === "rejected" && !crossed) {
       if (earlyError?.code !== "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
-        this.#containBeforeDispatchBoundary();
+        await this.#containBeforeDispatchBoundary();
       }
       throw earlyError;
     }
     if (first === "resolved" && !crossed) {
-      this.#containBeforeDispatchBoundary();
+      await this.#containBeforeDispatchBoundary();
       throw new TypeError(
         "browser worker settled dispatch before admission boundary",
       );
@@ -1014,13 +1014,23 @@ export class SubprocessBrowserDriver {
     }
   }
 
-  #containBeforeDispatchBoundary() {
+  async #containBeforeDispatchBoundary() {
+    this.#clearExpiryTimer();
+    const broker = this.#egressBroker;
+    this.#egressBroker = null;
     const client = this.#client;
     const child = this.#child;
     this.#client = null;
     this.#child = null;
     client?.close();
     child?.kill?.("SIGKILL");
+    try {
+      await broker?.close();
+    } catch {
+      // The worker is already killed and the server close precedes socket
+      // unlink. Preserve the original dispatch uncertainty; final profile
+      // cleanup will retry filesystem removal through stop/close.
+    }
   }
 
   async #cleanupProfile() {

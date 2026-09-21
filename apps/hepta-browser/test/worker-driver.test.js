@@ -325,10 +325,13 @@ test("failed spawn removes host-private staging and writable profile bytes", asy
   assert.deepEqual(await readdir(profileRoot), []);
 });
 
-test("dispatch returns at worker admission boundary without waiting for worker execution response", async () => {
+test("dispatch returns at worker admission boundary without waiting for worker execution response", async (t) => {
   const held = {};
   const { driver, started } = await preparedDriver({
     launcher: fakeLauncher({ holdDispatchResponse: held }),
+  });
+  t.after(async () => {
+    await driver.stop({ profileId: "profile.1", generation: 1 });
   });
   const timeout = Symbol("timeout");
   const dispatched = await Promise.race([
@@ -357,10 +360,13 @@ test("dispatch returns at worker admission boundary without waiting for worker e
   assert.equal(terminal.status, "succeeded");
 });
 
-test("pipe write alone does not cross the final-use dispatch boundary", async () => {
+test("pipe write alone does not cross the final-use dispatch boundary", async (t) => {
   const held = {};
   const { driver, started } = await preparedDriver({
     launcher: fakeLauncher({ holdDispatchBoundary: held }),
+  });
+  t.after(async () => {
+    await driver.stop({ profileId: "profile.1", generation: 1 });
   });
   const dispatch = driver.dispatch({
     profileId: "profile.1",
@@ -388,13 +394,16 @@ test("pipe write alone does not cross the final-use dispatch boundary", async ()
   assert.equal(result.terminalObserved, false);
 });
 
-test("worker can reject stale dispatch before boundary without killing the channel", async () => {
+test("worker can reject stale dispatch before boundary without killing the channel", async (t) => {
   const capture = {};
   const { driver, started } = await preparedDriver({
     launcher: fakeLauncher({
       rejectDispatchBeforeBoundary: true,
       capture,
     }),
+  });
+  t.after(async () => {
+    await driver.stop({ profileId: "profile.1", generation: 1 });
   });
   await assert.rejects(
     driver.dispatch({
@@ -421,11 +430,14 @@ test("worker can reject stale dispatch before boundary without killing the chann
   assert.equal(observed.origin, "https://example.com");
 });
 
-test("abort before worker admission boundary contains the worker before dispatch settles", async () => {
+test("abort before worker admission boundary contains the worker before dispatch settles", async (t) => {
   const held = {};
   const capture = {};
   const { driver, started } = await preparedDriver({
     launcher: fakeLauncher({ holdDispatchBoundary: held, capture }),
+  });
+  t.after(async () => {
+    await driver.stop({ profileId: "profile.1", generation: 1 });
   });
   const controller = new AbortController();
   const dispatch = driver.dispatch(
@@ -440,6 +452,10 @@ test("abort before worker admission boundary contains the worker before dispatch
   controller.abort(new Error("deadline"));
   await assert.rejects(dispatch, /exited before response|deadline|aborted/);
   assert.equal(capture.child.killed, true);
+  await assert.rejects(
+    stat(join(capture.spec.profileDir, ".hepta-egress.sock")),
+    { code: "ENOENT" },
+  );
 });
 
 test("worker response must echo exact request kind and payload digest", async () => {
