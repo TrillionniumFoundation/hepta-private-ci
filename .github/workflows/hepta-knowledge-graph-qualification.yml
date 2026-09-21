@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-kg/**"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/ext/hepta-memory/**"
@@ -18,6 +20,8 @@ on:
     branches: [main]
     paths:
       - "codex-rs/hepta-kg/**"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/ext/hepta-memory/**"
@@ -105,7 +109,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --package codex-hepta-kg --package codex-hepta-memory --package codex-hepta-agentd -- --check
+          cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
+            --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
+            --package codex-hepta-agentd -- --check
 
       - name: Prepare native test prerequisites
         shell: bash
@@ -128,6 +134,13 @@ jobs:
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-kg -- --nocapture
 
+      - name: Test prompt-factor owner, projection and real consumer
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture
+          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
+
       - name: Test durable cognitive KG owner and recovery
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
@@ -149,7 +162,14 @@ jobs:
             cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt \
             -- --ignored --exact --nocapture --test-threads=1
 
-      - name: Test real Agentd qualification-write product path
+      - name: Test default Agentd production cognitive-writer profile
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_product_e2e -- --nocapture --test-threads=1
+
+      - name: Test qualification witness on top of product writer
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -162,7 +182,8 @@ jobs:
         run: |
           set -euo pipefail
           cargo clippy --locked \
-            -p codex-hepta-kg -p codex-hepta-memory -p codex-hepta-agentd \
+            -p codex-hepta-kg -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
             --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
             -- -D warnings
 
