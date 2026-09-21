@@ -5,6 +5,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
+use codex_hepta_infer_worker_host::native_app_server::NativeIntelligenceRunBinding;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use tokio::io::AsyncReadExt;
 use tokio_util::sync::CancellationToken;
@@ -19,13 +20,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut request_id = None;
     let mut maximum_in_flight = None;
     let mut context_query = None;
+    let mut intelligence_run_id = None;
+    let mut intelligence_revision = None;
+    let mut intelligence_context_digest = None;
+    let mut intelligence_envelope_digest = None;
     let mut native_profile_selected = false;
     let mut timeout_ms = 120_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; executes through the owning Agent's configured model provider."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N [--context-query TEXT] [--timeout-ms N] [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX]\nReads one prompt from stdin. When the four intelligence flags are supplied together, physical turn/start is fenced by the exact Agentd ContextAttached intelligence handoff."
             );
             return Ok(());
         }
@@ -41,6 +46,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--request-id" => request_id = Some(value),
             "--maximum-in-flight" => maximum_in_flight = Some(value.parse()?),
             "--context-query" => context_query = Some(value),
+            "--intelligence-run-id" => intelligence_run_id = Some(value),
+            "--intelligence-revision" => intelligence_revision = Some(value.parse()?),
+            "--intelligence-context-digest" => intelligence_context_digest = Some(value),
+            "--intelligence-envelope-digest" => intelligence_envelope_digest = Some(value),
             "--timeout-ms" => timeout_ms = value.parse()?,
             _ => return Err(format!("unknown argument: {flag}").into()),
         }
@@ -76,15 +85,52 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             signal.cancel();
         }
     });
-    let result = driver
-        .run(
-            &mut control,
-            admission,
-            prompt,
-            context_query,
-            &cancellation,
-        )
-        .await;
+    let intelligence = match (
+        intelligence_run_id,
+        intelligence_revision,
+        intelligence_context_digest,
+        intelligence_envelope_digest,
+    ) {
+        (None, None, None, None) => None,
+        (Some(run_id), Some(expected_revision), Some(context_digest), Some(envelope_digest)) => {
+            Some(NativeIntelligenceRunBinding {
+                run_id,
+                expected_revision,
+                context_digest,
+                envelope_digest,
+            })
+        }
+        _ => {
+            return Err(
+                "all four --intelligence-* arguments must be supplied together".into(),
+            );
+        }
+    };
+    let result = match intelligence {
+        Some(binding) => {
+            driver
+                .run_intelligence(
+                    &mut control,
+                    admission,
+                    prompt,
+                    context_query,
+                    binding,
+                    &cancellation,
+                )
+                .await
+        }
+        None => {
+            driver
+                .run(
+                    &mut control,
+                    admission,
+                    prompt,
+                    context_query,
+                    &cancellation,
+                )
+                .await
+        }
+    };
     signal_task.abort();
     let output = result?;
     println!("{}", serde_json::to_string(&output)?);
