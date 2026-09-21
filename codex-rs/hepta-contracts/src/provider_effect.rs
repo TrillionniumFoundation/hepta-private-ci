@@ -1624,6 +1624,34 @@ mod tests {
     }
 
     #[test]
+    fn logical_effect_key_is_stable_across_local_attempts_and_payload_changes() {
+        let first = ProviderEffectKey::for_logical_effect(
+            "provider-1/config-v1",
+            "taskflow:run-1:step-send",
+        )
+        .expect("logical key");
+        let retry = ProviderEffectKey::for_logical_effect(
+            "provider-1/config-v1",
+            "taskflow:run-1:step-send",
+        )
+        .expect("retry logical key");
+        let other_step = ProviderEffectKey::for_logical_effect(
+            "provider-1/config-v1",
+            "taskflow:run-1:step-other",
+        )
+        .expect("other logical key");
+        let other_provider = ProviderEffectKey::for_logical_effect(
+            "provider-2/config-v1",
+            "taskflow:run-1:step-send",
+        )
+        .expect("other provider key");
+
+        assert_eq!(first, retry);
+        assert_ne!(first, other_step);
+        assert_ne!(first, other_provider);
+    }
+
+    #[test]
     fn same_key_different_payload_is_rejected() {
         let intent = intent(b"payload-a");
         let mismatched = ack(&intent, b"payload-b");
