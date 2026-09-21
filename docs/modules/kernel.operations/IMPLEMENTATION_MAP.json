@@ -19,7 +19,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": true,
-  "productCallerState": "agentd_final_use_host_source_composed_default_runtime_activation_pending",
+  "productCallerState": "agentd_runtime_lifecycle_source_composed_external_authority_activation_pending",
   "productionWriterState": "durable_cognitive_store_owner_implemented_not_activated",
   "operations": [
     {
@@ -122,6 +122,22 @@
       ]
     },
     {
+      "operation": "agentd_runtime_composition",
+      "nativeSymbol": "runtime::run",
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+      "state": "explicit_daemon_lifecycle_source_implemented_activation_pending",
+      "authority": "externally_supplied_authority_and_grant_provider",
+      "tests": [
+        "codex-rs/hepta-agentd/src/runtime_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "product_composition",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "runtime.agentd"
+      ]
+    },
+    {
       "operation": "automation_operation_consumer",
       "nativeSymbol": "AutomationStore::dispatch_authorized_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -168,7 +184,6 @@
   ],
   "repositoryControlledGaps": [
     "Run current exact-head and deterministic synthetic-merge qualification for this current-main convergence candidate and close every resulting finding.",
-    "Wire the final-use Agentd host into the current AgentdState daemon lifecycle only through an explicit externally enrolled authority/grant configuration; default startup must remain fail-closed.",
     "Add destination-owned dedupe/apply/terminal observation before activating each remaining registered effect destination.",
     "Design and qualify bounded segment/checkpoint compaction for append-only lease/event/outbox history before long-lived capacity qualification."
   ],
@@ -247,6 +262,22 @@
       {
         "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
         "blobSha": "2f0a8cea98cecc940a785dae606861ab2053a109"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "blobSha": "f07f9e5ca43d7033ba4e960e8ff6f94e9c93ccdf"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "blobSha": "d2001328a899a5eb487c044772f4260a14b443be"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "blobSha": "1b63d182ce3e3fe561abe125bc6ff6c7d7adc944"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "blobSha": "01f6691b73f82c351f9387fcc24c9b97c4434708"
       }
     ]
   }
