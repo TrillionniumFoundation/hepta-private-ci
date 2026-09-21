@@ -567,7 +567,7 @@ async fn verify_revision_tx(
         if principal != expected.principal_id.as_str()
             || action != expected.action_id.as_str()
             || resource != expected.resource_id.as_str()
-            || allowed != i64::from(expected.allowed)
+            || allowed != if expected.allowed { 1 } else { 0 }
         {
             return Err(corrupt("idempotent policy revision rule differs"));
         }
