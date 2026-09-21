@@ -139,7 +139,14 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
     assert_eq!(coverage.requested_peers, 1);
     assert_eq!(coverage.completed_peers, 1);
     assert_eq!(coverage.failed_peers, 0);
+    assert_eq!(coverage.truncated_peers, 0);
+    assert_eq!(coverage.omitted_peer_candidates, 0);
     assert_eq!(coverage.truncated_items, 0);
+    assert_eq!(coverage.failures.discovery_unavailable, 0);
+    assert_eq!(coverage.failures.deadline_or_cancelled, 0);
+    assert_eq!(coverage.failures.authority_rejected, 0);
+    assert_eq!(coverage.failures.integrity_rejected, 0);
+    assert_eq!(coverage.failures.transport_unavailable, 0);
     assert_eq!(batch.candidates.len(), 2);
     assert!(
         batch
@@ -338,6 +345,11 @@ async fn product_v2_unobservable_owner_is_explicit_failed_discovery_coverage() {
     assert_eq!(coverage.requested_peers, 1);
     assert_eq!(coverage.completed_peers, 0);
     assert_eq!(coverage.failed_peers, 1);
+    assert_eq!(coverage.failures.discovery_unavailable, 1);
+    assert_eq!(coverage.failures.deadline_or_cancelled, 0);
+    assert_eq!(coverage.failures.authority_rejected, 0);
+    assert_eq!(coverage.failures.integrity_rejected, 0);
+    assert_eq!(coverage.failures.transport_unavailable, 0);
 }
 
 #[tokio::test]
@@ -378,4 +390,82 @@ async fn product_v2_scope_mismatch_is_not_enrolled_or_dispatched() {
     assert_eq!(coverage.requested_peers, 0);
     assert_eq!(coverage.completed_peers, 0);
     assert_eq!(coverage.failed_peers, 0);
+}
+
+
+#[tokio::test]
+async fn product_v2_composition_reports_omitted_owner_candidates() {
+    let temp = TempDir::new().expect("temp dir");
+    let consumer_id = agent_id(200);
+    let consumer_layout = layout(&temp, &consumer_id);
+    let consumer = CognitiveStore::open(&consumer_layout)
+        .await
+        .expect("consumer store");
+    let owner_layouts = (0..130)
+        .map(|index| agent_id(u8::try_from(index + 1).expect("bounded id")))
+        .map(|owner_id| layout(&temp, &owner_id))
+        .collect::<Vec<_>>();
+    let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
+        .with_federation_sources(consumer_id, owner_layouts);
+    match runtime {
+        CognitiveRuntime::AvailableFederatedV2 {
+            owner_layouts,
+            omitted_owner_candidates,
+            ..
+        } => {
+            assert_eq!(owner_layouts.len(), 128);
+            assert_eq!(omitted_owner_candidates, 2);
+        }
+        other => panic!("expected V2 runtime, got {other:?}"),
+    }
+}
+
+#[tokio::test]
+async fn product_v2_reports_peer_truncation_before_aggregation() {
+    let temp = TempDir::new().expect("temp dir");
+    let consumer_id = agent_id(220);
+    let consumer_layout = layout(&temp, &consumer_id);
+    let consumer = CognitiveStore::open(&consumer_layout)
+        .await
+        .expect("consumer store");
+    let consumer_workspace = workspace("runtime-v2-peer-truncation");
+    let mut owner_layouts = Vec::new();
+    for raw_id in 1..=17 {
+        let owner_id = agent_id(raw_id);
+        let owner_layout = layout(&temp, &owner_id);
+        let owner = CognitiveStore::open(&owner_layout)
+            .await
+            .expect("owner store");
+        let owner_access = CognitiveAccess::agent_private(owner_id);
+        owner
+            .grant_federated_recall(
+                &owner_access,
+                &FederationGrantRequest {
+                    consumer_agent_id: consumer_id.clone(),
+                    scope: FederationGrantScope::new(
+                        CognitiveScope::AgentPrivate,
+                        consumer_workspace.clone(),
+                    ),
+                    effective_at_unix_seconds: 100,
+                    expires_at_unix_seconds: 1_000,
+                },
+            )
+            .await
+            .expect("grant");
+        owner_layouts.push(owner_layout);
+    }
+
+    let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
+        .with_federation_sources(consumer_id.clone(), owner_layouts);
+    let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
+    let (batch, coverage) = runtime
+        .retrieve_product_federated(&access, &RetrievalRequest::new("anything", 150))
+        .await
+        .expect("bounded product retrieval");
+    assert!(batch.candidates.is_empty());
+    assert_eq!(coverage.requested_peers, 16);
+    assert_eq!(coverage.completed_peers, 16);
+    assert_eq!(coverage.failed_peers, 0);
+    assert_eq!(coverage.truncated_peers, 1);
+    assert_eq!(coverage.omitted_peer_candidates, 0);
 }
