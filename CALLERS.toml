@@ -30,6 +30,22 @@ product_callers = []
 caller_markers = []
 
 [[boundary]]
+id = "learning_artifact_owner_bootstrap"
+symbol = "LearningArtifactOwnerHost::open"
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+definition_markers = ["pub struct LearningArtifactOwnerHost", "pub fn open", "SignedArtifactWriterLeaseV1"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_service.rs"]
+caller_markers = ["LearningArtifactOwnerHost::open", "LearningArtifactOwnerService"]
+
+[[boundary]]
+id = "learning_artifact_owner_restart"
+symbol = "LearningArtifactOwnerHost::open_with_required_current_head"
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+definition_markers = ["pub fn open_with_required_current_head", "CurrentHeadRollback", "required_current_head"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_service.rs"]
+caller_markers = ["LearningArtifactOwnerHost::open_with_required_current_head", "LearningArtifactOwnerService"]
+
+[[boundary]]
 id = "provider_effect_coordinator"
 symbol = "ProviderEffectCoordinator::new"
 definition_path = "codex-rs/hepta-contracts/src/provider_effect.rs"
@@ -54,6 +70,16 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
 required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
 forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+required = ["LearningArtifactOwnerHost::open", "LearningArtifactOwnerHost::open_with_required_current_head", "recover_current_registry", "recovery_required_operations"]
+forbidden = ["permit_all", "AllowVerifier", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+required = ["writer_fence.try_lock", "verify_signature", "recover_registry_by_head", "discover_current_head", "persist_checkpoint"]
+forbidden = ["permit_all", "AllowVerifier"]
 
 [[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"

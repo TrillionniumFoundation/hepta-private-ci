@@ -5,6 +5,52 @@
 
 #[test]
 fn lane_e_public_operation_surface_is_linkable() {
+    fn link_write_candidate_payload_beneath(
+        root: &std::path::Path,
+        relative: &std::path::Path,
+        registry: &codex_hepta_learning_artifacts::ArtifactRegistry,
+        artifact: &codex_hepta_types::StableId,
+        bytes: &[u8],
+    ) -> Result<codex_hepta_types::Digest32, codex_hepta_learning_artifacts::ArtifactStorageError>
+    {
+        codex_hepta_learning_artifacts::write_candidate_payload_beneath(
+            root, relative, registry, artifact, bytes,
+        )
+    }
+
+    fn link_write_registry_snapshot_beneath(
+        root: &std::path::Path,
+        relative: &std::path::Path,
+        registry: &codex_hepta_learning_artifacts::ArtifactRegistry,
+        binding: codex_hepta_types::Digest32,
+    ) -> Result<
+        codex_hepta_learning_artifacts::RegistrySnapshotReceipt,
+        codex_hepta_learning_artifacts::ArtifactStorageError,
+    > {
+        codex_hepta_learning_artifacts::write_registry_snapshot_beneath(
+            root, relative, registry, binding,
+        )
+    }
+
+    fn link_write_registry_head_witness_beneath(
+        root: &std::path::Path,
+        relative: &std::path::Path,
+        witness: &codex_hepta_learning_artifacts::RegistryHeadWitnessV1,
+        requirement: &codex_hepta_learning_artifacts::RegistryHeadRequirementV1,
+        binding: codex_hepta_types::Digest32,
+    ) -> Result<
+        codex_hepta_learning_artifacts::RegistryHeadWitnessReceipt,
+        codex_hepta_learning_artifacts::ArtifactStorageError,
+    > {
+        codex_hepta_learning_artifacts::write_registry_head_witness_beneath(
+            root,
+            relative,
+            witness,
+            requirement,
+            binding,
+        )
+    }
+
     let _ = codex_hepta_learning_ledger::verify_independent_roles;
     let _ = codex_hepta_learning_ledger::validate_authenticated_outcome;
     let _ = codex_hepta_learning_ledger::validate_candidate_set_completeness;
@@ -52,4 +98,25 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_artifacts::verify_artifact_admission_v3;
     let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::append;
     let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::from_snapshot;
+    let _ = codex_hepta_learning_artifacts::DatasetWithdrawalRegistry::new_scoped;
+    let _ = codex_hepta_learning_artifacts::write_dataset_withdrawal_snapshot;
+    let _ = codex_hepta_learning_artifacts::read_dataset_withdrawal_snapshot;
+    let _ = codex_hepta_learning_artifacts::write_artifact_lifecycle_snapshot;
+    let _ = codex_hepta_learning_artifacts::read_artifact_lifecycle_snapshot;
+    let _ = codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::begin;
+    let _ =
+        codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::record_payload_durable;
+    let _ =
+        codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::record_registry_durable;
+    let _ =
+        codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::record_witness_durable;
+    let _ = codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::acknowledge;
+    let _ = codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::status;
+    let _ = codex_hepta_learning_artifacts::validate_iteration_transition;
+    let _ = codex_hepta_learning_artifacts::IterationLedgerV1::append_candidate;
+    let _ = codex_hepta_learning_artifacts::IterationLedgerV1::transition;
+    let _ = codex_hepta_learning_artifacts::IterationLedgerV1::from_snapshot;
+    let _ = link_write_candidate_payload_beneath;
+    let _ = link_write_registry_snapshot_beneath;
+    let _ = link_write_registry_head_witness_beneath;
 }

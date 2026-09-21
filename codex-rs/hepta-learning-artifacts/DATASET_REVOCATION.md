@@ -55,11 +55,17 @@ No selected artifact or running process is changed by preparation or persistence
 
 ## Explicit remaining limits
 
-This is a snapshot-local invalidation batch, NOT a persistent dataset tombstone.
-The host must retain the source withdrawal and deny new dataset-dependent artifact
-admission; otherwise an entirely new artifact could be registered later. A retry
-against a newer head can invalidate newly discovered direct targets, but cannot
-prove that all external caches, models or backups were covered. Rebuilding without
+`prepare_dataset_revocation` itself remains a snapshot-local invalidation batch;
+it is not the persistent tombstone store. The persistent future-admission guard is
+the separate scoped `DatasetWithdrawalRegistry`. A host records the authenticated
+withdrawal there, persists it with the canonical withdrawal snapshot adapter, and
+uses scoped V3 admission so every later dataset-derived manifest is checked against
+that exact withdrawal frontier.
+
+The withdrawal registry closes the former "new artifact can silently reuse a
+withdrawn dataset" source gap. It does not prove that all external caches, model
+stores, backups or physical media were erased. A retry against a newer artifact
+registry head can invalidate newly discovered direct targets; rebuilding without
 the dataset, exact source membership, independent credentials, production rollout,
 physical erasure and backup non-resurrection remain separate gates.
 
@@ -69,3 +75,18 @@ revocation/quarantine, quota and real-file persist/reopen/current-witness rollba
 The original registry and storage suites are retained. The new functions are test
 source, not executed evidence; source-head, actual-base merge, strict lint,
 formatting, full product matrix and independent review remain mandatory.
+
+
+## Persistent withdrawal scope
+
+For V3 admission the withdrawal registry is created with
+`DatasetWithdrawalScopeV1 { authority_domain_id, registry_id, scope_id }`.
+That scope participates in the scoped genesis/head derivation and admission
+digest. An unscoped registry cannot issue a V3 admission, and a receipt admitted
+under one scope cannot be published under another scope merely because both
+registries happen to contain the same event sequence.
+
+`write_dataset_withdrawal_snapshot` and its contained `*_beneath` variant
+persist canonical scoped state. The read path requires an independently retained
+receipt binding the scope digest, chain head, file digest, record count and
+encoded byte count before replay returns a registry.

@@ -102,7 +102,14 @@ class SourceRootTests(unittest.TestCase):
         self.assertEqual(
             result["operations"][0]["tests"], row["operations"][0]["tests"]
         )
-        self.assertEqual(result["sourceBase"], source_base)
+        self.assertEqual(
+            result["sourceBase"],
+            {"commit": "$CURRENT_HEAD", "tree": "$CURRENT_TREE"},
+        )
+        self.assertEqual(result["sourceIdentityPolicy"], "runtime_current_candidate")
+        self.assertEqual(
+            result["sourceBaseResolution"], maps.RUNTIME_SOURCE_BASE_RESOLUTION
+        )
         self.assertFalse(result["claimBoundary"]["activation"])
 
     def test_identity_version_and_authority_mismatches_reject(self):

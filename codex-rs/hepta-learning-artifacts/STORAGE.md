@@ -21,7 +21,7 @@ and each writer consumes it. These restrictions make it impossible for safe
 callers to relabel an existing empty inode as new. Reader APIs remain
 file-capability based and accept independently opened read-only `File` values.
 
-The required public writer signatures are:
+The retained capability-based public writer signatures are:
 
 ```text
 write_registry_snapshot(CreateOnlyArtifactFile, &ArtifactRegistry, Digest32)
@@ -29,6 +29,19 @@ write_candidate_payload(CreateOnlyArtifactFile, &ArtifactRegistry, &StableId, &[
 write_registry_head_witness(CreateOnlyArtifactFile, &RegistryHeadWitnessV1, &RegistryHeadRequirementV1, Digest32)
 read_registry_head_witness(File, RegistryHeadWitnessReceipt, &RegistryHeadRequirementV1)
 ```
+
+For new path-based host integration, prefer the contained validation-before-create
+variants `write_registry_snapshot_beneath`, `write_candidate_payload_beneath`
+and `write_registry_head_witness_beneath`. They accept a host-designated trusted
+root plus a strictly relative path, reject absolute/parent/non-normal path
+components and symlink ancestors, complete semantic validation first, then create
+the final component with `create_new`.
+
+Scoped withdrawal and lifecycle state also have canonical create-only adapters:
+`write/read_dataset_withdrawal_snapshot` and
+`write/read_artifact_lifecycle_snapshot`, plus contained `*_beneath` writers.
+Their receipts bind file digest, byte count, record count and chain head;
+withdrawal receipts additionally bind the withdrawal scope digest.
 
 `write_registry_snapshot` writes one new empty target and syncs it before
 returning a `RegistrySnapshotReceipt`. `read_registry_snapshot` requires that
@@ -56,17 +69,24 @@ selection or activation authority.
 
 Candidate payload functions verify current registry eligibility, byte length and
 content digest. A revoked ancestor blocks loading descendants. Stored code or
-model bytes are never executed. Snapshot limits are 4096 events and 8 MiB;
-payloads are bounded by 64 MiB. Snapshot creation is O(history), bounded by the
-pilot cap; this is not a high-frequency journal or hard-real-time controller.
+model bytes are never executed. Artifact-registry, withdrawal and lifecycle
+state share `MAX_DURABLE_ARTIFACT_RECORDS = 4096`; this aligns the logical
+record ceiling with the supported durable representation. V1 registry and
+auxiliary snapshots are bounded at 8 MiB and candidate payloads at 64 MiB.
+Snapshot creation/replay is O(history), bounded by the source cap; this is not a
+high-frequency journal or hard-real-time controller.
 
 ## Failure and retry semantics
 
-Validation occurs after the caller creates the opaque capability but before any
-artifact bytes are written. Invalid binding, ineligible artifact or payload
-mismatch therefore leaves a zero-length orphan for host reconciliation. It does
-not authorize reusing that path: a second `create` must return
-`AlreadyExists`.
+The retained low-level capability APIs allow the caller to create an opaque file
+before a later semantic validation call. A rejected binding/manifest/payload on
+that legacy path can therefore leave a zero-length orphan for host
+reconciliation, and that path must never be reused.
+
+The new contained high-level writers invert that order: they validate and encode
+first, then create the final path. Ordinary semantic rejection therefore leaves
+no final-path orphan. A failure after final-path creation is still treated as an
+indeterminate write and requires reconciliation.
 
 After successful atomic creation, a nonzero length observed before the guarded
 write indicates interference and returns `Indeterminate`. Lock contention
@@ -85,17 +105,24 @@ any runtime use: a valid old snapshot plus its old receipt can still predate a
 deletion. This module cannot infer the latest state from the suspect file. Never
 use an older snapshot to make a revoked predecessor appear eligible for rollback.
 
-Create payload -> sync -> create canonical registry snapshot -> sync -> durably
-publish the receipt/witness -> independent evaluation/decision -> separately
-owned next-run selection. Cross-store atomicity requires a host transaction or
-outbox reconciliation; two synced files are not an atomic multi-store transaction.
-A crash before witness publication may leave an orphan candidate, not a selected
-artifact.
+`ArtifactPublicationTransactionV1` is the hard host publication contract:
+`Prepared -> PayloadDurable -> RegistryDurable -> WitnessDurable -> Acknowledged`.
+It binds the complete scoped V3 admission to the exact V1 compatibility-registry
+receipt and independently validated head-witness receipt. Acknowledgement before
+witness durability is rejected, and replayed crash snapshots preserve their last
+durable phase.
 
-`create_new` protects the final path component from an existence-check race; it
-does not authenticate ancestor traversal, retain a path-to-inode binding after
-return, synchronize the parent directory or isolate hostile writers. The host
-owns trusted parent traversal, containing-directory sync, encryption,
+This remains an ordered host durability protocol, not a cross-file atomic
+filesystem transaction. The host must durably persist each transaction snapshot
+under its writer fence before treating the phase as durable. A crash before
+witness publication may leave durable bytes or a registry generation, but never
+a valid acknowledged publication.
+
+`create_new` protects the final path component from an existence-check race.
+`create_beneath_trusted_root` additionally rejects lexical escape and symlink
+ancestors under a canonical trusted root. Neither API is an `openat2`-style
+directory capability: the host must prevent concurrent hostile replacement of
+trusted ancestors and still owns containing-directory sync, encryption,
 quota/retention, revocation freshness, physical erasure, backup deletion,
 independent witness storage and selection/rollback. File locks fence cooperative
 independently opened handles, not hostile writers or cloned/inherited handles.

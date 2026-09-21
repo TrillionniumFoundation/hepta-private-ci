@@ -17,11 +17,21 @@ from pathlib import Path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
+RUNTIME_CURRENT_SOURCE_BASE = {"commit": "$CURRENT_HEAD", "tree": "$CURRENT_TREE"}
+RUNTIME_SOURCE_BASE_RESOLUTION = (
+    "scripts/hepta-implementation-maps.py verify resolves these sentinels to the exact "
+    "checked-out HEAD/tree and CI receipts retain the concrete identity"
+)
 
 
 def current_source_base() -> dict[str, str]:
     """Return the immutable source identity used by generated maps."""
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+
+
+def state_claims_binding(value: object) -> bool:
+    """Return true only for a positive composition/writer claim."""
+    return isinstance(value, str) and not value.startswith("not_")
 
 
 def load(rel: str):
@@ -99,6 +109,7 @@ def validate_observed_source(
     if changed:
         failures.append(f"{mid}: observed source drift since {commit}")
 
+
 def lane_by_module():
     return {
         m: lane["id"]
@@ -154,7 +165,9 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     return {
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
-        "sourceBase": source_base,
+        "sourceBase": dict(RUNTIME_CURRENT_SOURCE_BASE),
+        "sourceIdentityPolicy": "runtime_current_candidate",
+        "sourceBaseResolution": RUNTIME_SOURCE_BASE_RESOLUTION,
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
@@ -245,7 +258,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": dict(RUNTIME_CURRENT_SOURCE_BASE),
+            "sourceIdentityPolicy": "runtime_current_candidate",
+            "sourceBaseResolution": RUNTIME_SOURCE_BASE_RESOLUTION,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -330,10 +345,7 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    source_base = dict(RUNTIME_CURRENT_SOURCE_BASE)
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
@@ -350,11 +362,9 @@ def generate():
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    candidate_source_base = current_source_base()
     failures = []
-    source_bases = set()
-    candidate_bound_maps = 0
-    exact_observed_fallback_maps = 0
+    runtime_source_base = current_source_base()
+    runtime_bound_modules = []
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -383,32 +393,19 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
-            if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
-                failures.append(f"{mid}: unknown source identity policy")
-            elif policy == "legacy_shared_batch":
-                source_bases.add((source_base["commit"], source_base["tree"]))
-            elif source_base == candidate_source_base:
-                candidate_bound_maps += 1
-            else:
-                observed = row.get("observedAtHead")
-                observed_identity = (
-                    {
-                        "commit": observed.get("commit"),
-                        "tree": observed.get("tree"),
-                    }
-                    if isinstance(observed, dict)
-                    else None
+            source_policy = row.get("sourceIdentityPolicy")
+            if source_policy != "runtime_current_candidate":
+                failures.append(
+                    f"{mid}: source identity policy must be runtime_current_candidate"
                 )
-                if source_base == observed_identity:
-                    # validate_observed_source below proves that this exact
-                    # owner-source commit/tree is in current history and every
-                    # declared observed path is byte-unchanged through HEAD.
-                    exact_observed_fallback_maps += 1
-                else:
-                    failures.append(
-                        f"{mid}: source base is neither current candidate nor exact observed source"
-                    )
+            elif source_base != RUNTIME_CURRENT_SOURCE_BASE:
+                failures.append(
+                    f"{mid}: runtime-current source base must use the canonical sentinels"
+                )
+            elif row.get("sourceBaseResolution") != RUNTIME_SOURCE_BASE_RESOLUTION:
+                failures.append(f"{mid}: source base resolution")
+            else:
+                runtime_bound_modules.append(mid)
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -439,8 +436,57 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+
+        product_state = row.get("productCallerState", "not_composed")
+        product_policy = row.get("productCallerBindingPolicy")
+        product_bindings = row.get("productCallerBindings", [])
+        if product_policy not in (None, "closed_world"):
+            failures.append(f"{mid}: invalid product caller binding policy")
+        if state_claims_binding(product_state) and product_policy == "closed_world":
+            if not isinstance(product_bindings, list) or not product_bindings:
+                failures.append(f"{mid}: composed product caller has no verified binding")
+        if isinstance(product_bindings, list):
+            for index, binding in enumerate(product_bindings):
+                if not isinstance(binding, dict):
+                    failures.append(f"{mid}: invalid product binding {index}")
+                    continue
+                caller_path = binding.get("callerPath")
+                marker = binding.get("mustContain")
+                if (
+                    not isinstance(caller_path, str)
+                    or not isinstance(marker, str)
+                    or not (ROOT / caller_path).is_file()
+                    or marker not in (ROOT / caller_path).read_text(encoding="utf-8")
+                ):
+                    failures.append(
+                        f"{mid}: unresolved product binding {index} ({caller_path!r})"
+                    )
+
+        writer_state = row.get("productionWriterState", "not_established")
+        writer_policy = row.get("productionWriterBindingPolicy")
+        writer_bindings = row.get("productionWriterBindings", [])
+        if writer_policy not in (None, "closed_world"):
+            failures.append(f"{mid}: invalid production writer binding policy")
+        if state_claims_binding(writer_state) and writer_policy == "closed_world":
+            if not isinstance(writer_bindings, list) or not writer_bindings:
+                failures.append(f"{mid}: writer state has no verified source binding")
+        if isinstance(writer_bindings, list):
+            for index, binding in enumerate(writer_bindings):
+                if not isinstance(binding, dict):
+                    failures.append(f"{mid}: invalid writer binding {index}")
+                    continue
+                source_path = binding.get("sourcePath")
+                marker = binding.get("mustContain")
+                if (
+                    not isinstance(source_path, str)
+                    or not isinstance(marker, str)
+                    or not (ROOT / source_path).is_file()
+                    or marker not in (ROOT / source_path).read_text(encoding="utf-8")
+                ):
+                    failures.append(
+                        f"{mid}: unresolved writer binding {index} ({source_path!r})"
+                    )
+
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -450,8 +496,8 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
-                "candidateBoundMaps": candidate_bound_maps,
-                "exactObservedFallbackMaps": exact_observed_fallback_maps,
+                "runtimeSourceBase": runtime_source_base,
+                "runtimeBoundModules": sorted(runtime_bound_modules),
             },
             sort_keys=True,
         )

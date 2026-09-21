@@ -16,12 +16,12 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactKind;
+use crate::limits::MAX_DURABLE_ARTIFACT_RECORDS;
 
 const MAX_ARTIFACT_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_DATASET_INPUTS: usize = 64;
 const MAX_LINEAGE_DIGESTS: usize = 1_024;
 const MAX_PREDECESSORS: usize = 64;
-const MAX_WITHDRAWALS: usize = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ProvenanceModeV1 {
@@ -147,6 +147,24 @@ pub fn validate_artifact_manifest_v2(
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DatasetWithdrawalScopeV1 {
+    pub authority_domain_id: StableId,
+    pub registry_id: StableId,
+    pub scope_id: StableId,
+}
+
+impl DatasetWithdrawalScopeV1 {
+    #[must_use]
+    pub fn digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal-scope.v1".to_vec();
+        push_id(&mut bytes, &self.authority_domain_id);
+        push_id(&mut bytes, &self.registry_id);
+        push_id(&mut bytes, &self.scope_id);
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DatasetWithdrawalNoticeV1 {
     pub notice_id: StableId,
     pub dataset_digest: Digest32,
@@ -184,11 +202,22 @@ pub struct DatasetWithdrawalReceiptV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DatasetWithdrawalRegistrySnapshotV1 {
+    scope: Option<DatasetWithdrawalScopeV1>,
     records: Vec<DatasetWithdrawalRecordV1>,
     pub head_digest: Digest32,
 }
 
 impl DatasetWithdrawalRegistrySnapshotV1 {
+    #[must_use]
+    pub fn scope(&self) -> Option<&DatasetWithdrawalScopeV1> {
+        self.scope.as_ref()
+    }
+
+    #[must_use]
+    pub fn scope_digest(&self) -> Option<Digest32> {
+        self.scope.as_ref().map(DatasetWithdrawalScopeV1::digest)
+    }
+
     #[must_use]
     pub fn records(&self) -> &[DatasetWithdrawalRecordV1] {
         &self.records
@@ -197,6 +226,7 @@ impl DatasetWithdrawalRegistrySnapshotV1 {
 
 #[derive(Clone, Debug, Default)]
 pub struct DatasetWithdrawalRegistry {
+    scope: Option<DatasetWithdrawalScopeV1>,
     records: Vec<DatasetWithdrawalRecordV1>,
     notice_digests: BTreeMap<StableId, Digest32>,
     withdrawn_datasets: BTreeMap<Digest32, u64>,
@@ -206,6 +236,35 @@ impl DatasetWithdrawalRegistry {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+
+    #[must_use]
+    pub fn new_scoped(scope: DatasetWithdrawalScopeV1) -> Self {
+        Self {
+            scope: Some(scope),
+            ..Self::default()
+        }
+    }
+
+    #[must_use]
+    pub fn scope(&self) -> Option<&DatasetWithdrawalScopeV1> {
+        self.scope.as_ref()
+    }
+
+    #[must_use]
+    pub fn scope_digest(&self) -> Option<Digest32> {
+        self.scope.as_ref().map(DatasetWithdrawalScopeV1::digest)
+    }
+
+    #[must_use]
+    pub fn head_digest(&self) -> Digest32 {
+        self.records.last().map_or_else(
+            || {
+                self.scope_digest()
+                    .map_or(Digest32::ZERO, digest_withdrawal_genesis)
+            },
+            |record| record.chain_digest,
+        )
     }
 
     pub fn append(
@@ -230,7 +289,7 @@ impl DatasetWithdrawalRegistry {
                 WithdrawalAppendDispositionV1::IdempotentReplay,
             ));
         }
-        if self.records.len() >= MAX_WITHDRAWALS {
+        if self.records.len() >= MAX_DURABLE_ARTIFACT_RECORDS {
             return Err(ArtifactClosureError::WithdrawalLimit);
         }
         let sequence_value = u64::try_from(self.records.len())
@@ -239,12 +298,16 @@ impl DatasetWithdrawalRegistry {
             .ok_or(ArtifactClosureError::Arithmetic)?;
         let sequence =
             LogicalSequence::new(sequence_value).map_err(|_| ArtifactClosureError::Arithmetic)?;
-        let predecessor_chain_digest = self
-            .records
-            .last()
-            .map_or(Digest32::ZERO, |record| record.chain_digest);
-        let chain_digest =
-            digest_withdrawal_chain(predecessor_chain_digest, sequence, event_digest);
+        let predecessor_chain_digest = self.head_digest();
+        let chain_digest = match self.scope_digest() {
+            Some(scope_digest) => digest_scoped_withdrawal_chain(
+                scope_digest,
+                predecessor_chain_digest,
+                sequence,
+                event_digest,
+            ),
+            None => digest_withdrawal_chain(predecessor_chain_digest, sequence, event_digest),
+        };
         let record = DatasetWithdrawalRecordV1 {
             sequence,
             predecessor_chain_digest,
@@ -288,11 +351,9 @@ impl DatasetWithdrawalRegistry {
     #[must_use]
     pub fn snapshot(&self) -> DatasetWithdrawalRegistrySnapshotV1 {
         DatasetWithdrawalRegistrySnapshotV1 {
+            scope: self.scope.clone(),
             records: self.records.clone(),
-            head_digest: self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |record| record.chain_digest),
+            head_digest: self.head_digest(),
         }
     }
 
@@ -300,7 +361,10 @@ impl DatasetWithdrawalRegistry {
         snapshot: DatasetWithdrawalRegistrySnapshotV1,
     ) -> Result<Self, ArtifactClosureError> {
         let expected_head = snapshot.head_digest;
-        let mut registry = Self::new();
+        let mut registry = match snapshot.scope {
+            Some(scope) => Self::new_scoped(scope),
+            None => Self::new(),
+        };
         for expected in snapshot.records {
             let receipt = registry.append(expected.notice.clone())?;
             let actual = registry
@@ -312,10 +376,7 @@ impl DatasetWithdrawalRegistry {
                 return Err(ArtifactClosureError::WithdrawalSnapshotMismatch);
             }
         }
-        let actual_head = registry
-            .records
-            .last()
-            .map_or(Digest32::ZERO, |record| record.chain_digest);
+        let actual_head = registry.head_digest();
         if actual_head != expected_head {
             return Err(ArtifactClosureError::WithdrawalSnapshotMismatch);
         }
@@ -640,6 +701,26 @@ fn digest_withdrawal_chain(
     event_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal-chain.v1".to_vec();
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(&sequence.get().to_be_bytes());
+    bytes.extend_from_slice(event_digest.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn digest_withdrawal_genesis(scope_digest: Digest32) -> Digest32 {
+    let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal-genesis.v1".to_vec();
+    bytes.extend_from_slice(scope_digest.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn digest_scoped_withdrawal_chain(
+    scope_digest: Digest32,
+    predecessor: Digest32,
+    sequence: LogicalSequence,
+    event_digest: Digest32,
+) -> Digest32 {
+    let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal-chain.scoped.v1".to_vec();
+    bytes.extend_from_slice(scope_digest.as_array());
     bytes.extend_from_slice(predecessor.as_array());
     bytes.extend_from_slice(&sequence.get().to_be_bytes());
     bytes.extend_from_slice(event_digest.as_array());
