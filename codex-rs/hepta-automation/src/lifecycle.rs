@@ -7,6 +7,7 @@
 //! distinct from terminal execution.
 
 use codex_hepta_contracts::Sha256Digest;
+use serde::Deserialize;
 use serde::Serialize;
 use sqlx::Row;
 
@@ -21,7 +22,7 @@ const ZERO_DIGEST: &str = "00000000000000000000000000000000000000000000000000000
 const MAX_CATCH_UP: u16 = 1_024;
 const MAX_RECOVERY_SCAN: usize = 1_024;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AutomationMissedRunPolicy {
     Skip,
@@ -59,7 +60,7 @@ impl AutomationMissedRunPolicy {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AutomationOverlapPolicy {
     /// Do not materialize the next occurrence until this occurrence is terminal.
