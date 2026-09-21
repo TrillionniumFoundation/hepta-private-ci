@@ -851,6 +851,12 @@ impl CompactionProofWitnessV1 {
         let mut signing_bytes = Vec::new();
         signing_bytes.extend_from_slice(COMPACTION_QUALIFICATION_DOMAIN);
         push_digest(&mut signing_bytes, proof.candidate_digest);
+        push_digest(
+            &mut signing_bytes,
+            proof.tokenizer_implementation_digest,
+        );
+        push_digest(&mut signing_bytes, proof.tokenizer_attestation_digest);
+        push_digest(&mut signing_bytes, proof.tokenizer_key_digest);
         push_id(&mut signing_bytes, &proof.evaluator_id);
         for digest in [
             proof.evaluator_implementation_digest,
