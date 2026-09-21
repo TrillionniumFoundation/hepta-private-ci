@@ -67,6 +67,7 @@ pub struct QualifiedCompactSelection {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct QualifiedCompactRollbackCandidate {
+    pub publication: QualifiedCompactCheckpointPublication,
     pub source_generation: Generation,
     pub payload_digest: Digest32,
     pub payload: Vec<u8>,
@@ -828,9 +829,11 @@ impl CognitiveStore {
                     "rollback payload is missing, revoked, or garbage-collected".to_string(),
                 )
             })?;
+        let payload_digest = publication.checkpoint.payload_digest;
         Ok(Some(QualifiedCompactRollbackCandidate {
+            publication,
             source_generation: generation,
-            payload_digest: publication.checkpoint.payload_digest,
+            payload_digest,
             payload,
             authority: AuthorityPosture::DENY_ALL,
         }))
