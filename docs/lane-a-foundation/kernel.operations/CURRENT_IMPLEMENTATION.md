@@ -2,69 +2,78 @@
 
 ## Current executable contract
 
-`codex-rs/hepta-operations` is a bounded **in-memory reference model**, not a
-durable operation service. It models pending, authorized, dispatched,
-indeterminate and terminal states; exact operation/payload identity; monotonic
-revisions; generation-fenced terminal observation; and a bounded in-memory
-outbox.
+The current candidate has two deliberately separate surfaces:
 
-All evidence digests required by transitions are nonzero. Exact command replay
-is idempotent; identity reuse with changed semantics conflicts. The
-`ReferenceAuthorityWitness` is intentionally not a cryptographic credential and
-must never be accepted by a production effect adapter. Its reference digest is
-canonically derived from operation identity, final payload digest, authority
-generation and expiry. Construction rejects a digest for any other semantic
-tuple, and authorization replay revalidates the complete binding and current
-expiry before it is treated as idempotent.
+1. `codex-rs/hepta-operations` is the deterministic bounded reference oracle.
+2. The production-shaped durable owner reuses the existing per-Agent CognitiveStore SQLite owner in `codex-rs/hepta-memory`; it does not create a second operation database or execution spine.
 
-Acknowledged outbox state retains both the claiming owner generation and the
-acknowledgement digest. A terminal replay is idempotent only for that exact
-tuple; a different generation remains stale and a different digest conflicts.
+The canonical authority-free contract is `OperationIntentV1`. Its semantic digest binds operation id, subject id, destination id, exact payload digest, scope digest, policy generation and optional expected predecessor. Exact semantic replay is idempotent; reusing an operation id with changed semantics conflicts.
 
-## Public symbols and source bindings
+## Durable owner
 
-- `OperationKey`, `OperationState`, `OperationRecord`,
-  `ReconciliationOutcome`, `ReferenceAuthorityWitness`: `src/model.rs`;
-- `OperationLedger`, `MAX_MODEL_OPERATION_RECORDS`: `src/ledger.rs`;
-- `Outbox`, `OutboxIntent`, `OutboxState`,
-  `MAX_MODEL_OUTBOX_RECORDS`: `src/outbox.rs`;
-- stable errors, including reference-witness semantic mismatch:
-  `src/error.rs`.
+`ProductionDurableWriter::prepare_operation` commits the durable operation identity together with its local event/outbox identity under the CognitiveStore owner transaction. Migration `0011_kernel_operations.sql` installs the immutable operation ledger and migration `0012_kernel_operation_dispatch_claims.sql` installs durable per-operation dispatch claims.
 
-## Durability and activation
+The durable claim path has bounded attempts, lease expiry, renewal, retry eligibility/backoff and higher-generation takeover. A one-shot effect-entry transition is persisted before an external target is entered; once an effect may have crossed the boundary, restart/reopen uses reconciliation instead of blind redispatch.
 
-Durability is **not implemented**. Process exit loses every record and claim.
-There is no database, journal, fsync, interprocess lock, claim lease, dispatcher
-or product caller. The module is inactive.
+SQLite is required to be WAL with `synchronous=FULL`. Source tests cover atomic rollback across operation/event/outbox fault cuts, deterministic `SQLITE_FULL`, reopen integrity and pre-mutation capacity rejection. These are source test identities; they are not target-host power-loss evidence.
 
-## Target-only design
+## Final-use and cross-owner semantics
 
-The target is a transactional durable ledger/outbox with atomic intent
-publication, destination deduplication, bounded claim leases, crash/reopen
-takeover, reconciliation, migrations, corruption handling and rollback.
+`ProductionDispatchRequest` carries the complete durable semantics needed by the destination:
 
-## Known limits and non-claims
+- operation subject;
+- destination;
+- scope digest;
+- policy generation;
+- complete `OperationIntentV1` semantic digest;
+- optional expected predecessor;
+- exact payload digest and operation idempotency identity.
 
-Cloning a model is not reopen recovery. An outbox claim has no lease expiry and
-cannot be taken over inside this model. Caller-provided reference time is a test
-input, not trusted production time. A semantically bound reference digest is
-not authentication or a signature. Compensation is a new authorized operation,
-never implicit rollback.
+`ProductionFinalUseOutboxDispatcher` consumes `kernel.authority` final-use authority immediately before target entry. The legacy direct dispatcher is crate-private and is not a product API.
 
-The reference ledger does not itself enforce final-use authority at an external
-adapter. Product composition must consume the non-serializable token owned by
-`kernel.authority` immediately before the effect boundary.
+`CognitiveSourceOutboxTarget` is the first durable-owner destination slice. It reconstructs `OperationIntentV1`, verifies its semantic digest, begins a destination-owned `BEGIN IMMEDIATE` transaction, checks predecessor/CAS inside that transaction, and returns deterministic `NotApplied` for a mismatch. Queue/transport acknowledgement never proves terminal success. Lost acknowledgement is reconciled through the destination-owned observer without redispatch.
 
-## Verification
+Current-main `automation.taskflow` is a second producer-owned `OperationIntentV1` / final-use consumer with its own durable effect-dispatch lineage. It is not folded into the CognitiveStore transaction and does not make kernel.operations the owner of Automation facts.
 
-The shared model tests cover invalid/zero digests, capacity, idempotent replay,
-payload and operation drift, stale/expired reference witnesses, authority
-generation and expiry digest binding, stale outbox acknowledgement generations,
-changed acknowledgement digests, stale terminal generations, dispatch not being
-terminal success and indeterminate reconciliation.
+## Reference oracle
 
-## Integration prerequisites
+The in-memory `OperationLedger` and `Outbox` remain useful as deterministic oracles. They cover semantic replay/conflict, owner handoff, generation fencing, bounded claim leases, attempts, expiry/renewal/takeover and terminal observation. Their 16,384-record ceilings are reference-model bounds only.
 
-No production binary may use this crate as a durability or authority boundary.
-A future backend must execute the same transition suite plus crash, disk-full,
-corruption, migration, multi-writer and claim-takeover tests before activation.
+## Agentd composition
+
+`AgentdProductionWriterHost` is now final-use-only: targets are attached with a `FinalUseAuthority`, and product dispatch requires either an externally supplied signed grant or an `AgentdFinalUseGrantProvider` that receives the exact derived `FinalUseBinding`. Multiple destinations are registered by stable destination id; observer-only reconciliation is bounded.
+
+This is a named source-composition primitive, not default daemon activation. Current Agentd process startup does not synthesize authority, signing keys or a production grant source.
+
+## Capacity and verification cost
+
+The durable journal capacity is separate from the reference oracle. Append paths reject capacity before visible mutation. Ordinary admit/outcome mutation uses targeted row/current-state checks; full append-only chain verification remains on open/reopen/recovery/audit boundaries rather than every mutation.
+
+Long-lived physical history compaction is not implemented. The append-only lease/event/outbox history must not be deleted in place because that would destroy audit/reopen lineage. A segment/checkpoint design with anti-resurrection evidence is still required before long-lived capacity qualification.
+
+## Current verification identities
+
+Source tests now cover, among other cases:
+
+- exact `OperationIntentV1` semantic binding and drift rejection;
+- operation/event/outbox atomic rollback across every injected prepare cut;
+- capacity rejection before mutation;
+- deterministic `SQLITE_FULL` rollback and clean reopen;
+- durable claim attempt/expiry/renewal/takeover semantics;
+- destination semantic-digest reconstruction;
+- predecessor mismatch -> deterministic `NotApplied`;
+- final-use binding mismatch before target entry;
+- lost acknowledgement -> indeterminate -> observer-only terminal reconciliation.
+
+Exact-head and deterministic synthetic-merge execution receipts remain separate evidence and must be current for the final PR head.
+
+## Remaining source/product gates
+
+The remaining repository-controlled gates are:
+
+1. wire the final-use Agentd host into the current daemon lifecycle only through explicit externally enrolled authority/grant configuration, while default startup remains fail-closed;
+2. add destination-owned dedupe/apply/terminal observation before each remaining registered effect destination is activated;
+3. design and qualify bounded segment/checkpoint compaction for long-lived append-only history;
+4. obtain current exact-head and deterministic synthetic-merge success for this current-main convergence candidate.
+
+Target-host power-loss/storage qualification, independent semantic acceptance, operator acceptance, canary, promotion and release remain externally governed and false.
