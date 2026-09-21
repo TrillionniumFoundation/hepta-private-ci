@@ -1,14 +1,22 @@
 # GENERATED from bindings/PLATFORM_TYPES_BINDINGS_V1.json; DO NOT EDIT.
 from __future__ import annotations
 import json
+import re
+from types import MappingProxyType
 
 _SPEC = json.loads(r'''{"schema":"hepta.platform-types.generated-bindings.v1","schemaVersion":1,"stableIdMaxBytes":128,"idProfiles":[{"variant":"Stable","id":"stable-v1"},{"variant":"Module","id":"module-v1"},{"variant":"Namespaced","id":"namespaced-v1"},{"variant":"Execution","id":"execution-id-v1","prefix":"execution:"},{"variant":"Schema","id":"schema-id-v1","prefix":"schema:"},{"variant":"Normalization","id":"normalization-id-v1","prefix":"normalization:"},{"variant":"Receipt","id":"receipt-id-v1","prefix":"receipt:"},{"variant":"Artifact","id":"artifact-id-v1","prefix":"artifact:"}],"authorityWireV1":{"encodedBytes":1,"trustedMask":0,"bits":{"runtime":0,"productionWriter":1,"modelInvocation":2,"providerDispatch":3,"externalEffect":4,"selection":5,"promotion":6,"release":7}},"fixedQ32":{"scale":"4294967296","arithmeticProfileId":"fixed-q32-toward-zero-v1","multiplyDivideRounding":"toward-zero"},"numericProfiles":[{"id":"hnmf-ppm-toward-zero-v1","version":1,"scale":"1000000","rounding":"toward-zero"},{"id":"signed-q24-nearest-ties-even-v1","version":1,"scale":"16777216","rounding":"nearest-ties-even"},{"id":"signed-q32-nearest-ties-even-v1","version":1,"scale":"4294967296","rounding":"nearest-ties-even","sharesFixedQ32RawScale":true,"fixedQ32ArithmeticCompatible":false}],"canonicalDigestV1":{"magic":"HPTC","encodingVersion":1,"domain":"hepta.platform.types.canonical-digest.v1","maxEncodedBytes":262144,"maxContainerItems":4096,"maxDepth":16}}''')
 STABLE_ID_MAX_BYTES = _SPEC["stableIdMaxBytes"]
-ID_PROFILES = {row["variant"]: row for row in _SPEC["idProfiles"]}
-AUTHORITY_WIRE_V1 = _SPEC["authorityWireV1"]
-FIXED_Q32 = _SPEC["fixedQ32"]
-NUMERIC_PROFILES = {row["id"]: row for row in _SPEC["numericProfiles"]}
-CANONICAL_DIGEST_V1 = _SPEC["canonicalDigestV1"]
+ID_PROFILES = MappingProxyType({
+    row["variant"]: MappingProxyType(dict(row)) for row in _SPEC["idProfiles"]
+})
+_authority_wire = dict(_SPEC["authorityWireV1"])
+_authority_wire["bits"] = MappingProxyType(dict(_authority_wire["bits"]))
+AUTHORITY_WIRE_V1 = MappingProxyType(_authority_wire)
+FIXED_Q32 = MappingProxyType(dict(_SPEC["fixedQ32"]))
+NUMERIC_PROFILES = MappingProxyType({
+    row["id"]: MappingProxyType(dict(row)) for row in _SPEC["numericProfiles"]
+})
+CANONICAL_DIGEST_V1 = MappingProxyType(dict(_SPEC["canonicalDigestV1"]))
 
 def numeric_profile(profile_id: str) -> dict:
     row = NUMERIC_PROFILES.get(profile_id)
