@@ -171,10 +171,7 @@ fn final_use(
     )
     .expect("wall clock milliseconds fit u64");
     let nonce_counter = NEXT_TEST_NONCE.fetch_add(1, Ordering::Relaxed);
-    let nonce_material = format!(
-        "{grant_id}:{}:{now}:{nonce_counter}",
-        std::process::id()
-    );
+    let nonce_material = format!("{grant_id}:{}:{now}:{nonce_counter}", std::process::id());
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "security-owner".to_string(),
