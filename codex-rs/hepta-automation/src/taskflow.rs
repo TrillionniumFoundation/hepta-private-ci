@@ -1,11 +1,12 @@
-//! Agent-local, qualification-only TaskFlow definition and run ledger.
+//! Agent-local, authority-free TaskFlow definition and run ledger.
 //!
-//! This module is deliberately small and boring: it gives the H2 compiler and
-//! H3 durable-kernel work a typed seam without creating a second scheduler or
-//! an effect executor.  Definitions and transitions are immutable evidence in
-//! the existing per-Agent automation SQLite database.  The existing
+//! This module is deliberately small and boring: it provides the durable run
+//! projection used by the composed automation path without creating a second
+//! scheduler or effect executor. Definitions and transitions are immutable
+//! evidence in the existing per-Agent automation SQLite database. The existing
 //! `AutomationScheduler` remains the only wakeup owner; callers must provide a
-//! lease/generation fence for every run mutation.
+//! lease/generation fence for every run mutation. Composition here does not
+//! grant external-effect or final-use authority.
 
 #![allow(
     clippy::expect_used,
@@ -33,7 +34,10 @@ use sqlx::Transaction;
 use crate::AutomationStore;
 
 pub const TASKFLOW_SCHEMA_VERSION: u32 = 1;
+// Retained for on-disk compatibility with the original ledger namespace. The
+// namespace string is not an authority or activation claim.
 pub const TASKFLOW_NAMESPACE: &str = "local_qualification_only";
+pub const TASKFLOW_COMPOSED_CALLER: bool = true;
 pub const TASKFLOW_EXTERNAL_EFFECTS: bool = false;
 pub const TASKFLOW_PRODUCTION_CALLER: bool = false;
 pub const TASKFLOW_SCHEDULER_AUTHORITY: bool = false;
@@ -573,6 +577,19 @@ pub enum TaskFlowTransition {
     Retry {
         retry_at_ms: u64,
     },
+    /// Re-open the same durable run only after the registered provider owner
+    /// has proved that the previous dispatch identity was never admitted.
+    /// This transition is accepted only through the crate-private automation
+    /// recovery entry point; generic callers cannot use it as a retry escape.
+    RequeueProvenAbsent {
+        proof_digest: Sha256Digest,
+    },
+    /// Terminal cancellation used only when the registered owner has proved
+    /// that provider contact did not occur and the surrounding schedule no
+    /// longer permits a retry.
+    CancelProvenAbsent {
+        proof_digest: Sha256Digest,
+    },
     Cancel {
         reason: String,
     },
@@ -1002,6 +1019,41 @@ impl AutomationStore {
             }
             return Ok(run);
         }
+        let effect_attempts: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM taskflow_effect_dispatch_attempts
+             WHERE owner_agent_id = ? AND run_id = ?",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        let unresolved_effects: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*)
+             FROM taskflow_effect_dispatch_attempts a
+             LEFT JOIN taskflow_effect_dispatch_observations o
+               ON o.owner_agent_id = a.owner_agent_id
+              AND o.run_id = a.run_id
+              AND o.step_id = a.step_id
+              AND o.attempt = a.attempt
+             WHERE a.owner_agent_id = ? AND a.run_id = ?
+               AND (o.observation IS NULL OR o.observation != 'proven_absent')",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        if unresolved_effects != 0 {
+            return Err(TaskFlowError::Conflict(
+                "TaskFlow run has unresolved provider-contact evidence".to_string(),
+            ));
+        }
+        if effect_attempts != 0 && run.state != TaskFlowRunState::Queued {
+            return Err(TaskFlowError::Conflict(
+                "provider absence must be durably requeued before run takeover".to_string(),
+            ));
+        }
         if let Some(previous_generation) = run.generation
             && fence.generation <= previous_generation
         {
@@ -1048,6 +1100,73 @@ impl AutomationStore {
     pub async fn apply_taskflow_command(
         &self,
         command: &TaskFlowCommand,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
+        if matches!(
+            &command.transition,
+            TaskFlowTransition::RequeueProvenAbsent { .. }
+                | TaskFlowTransition::CancelProvenAbsent { .. }
+        ) {
+            return Err(invalid(
+                "provider-absence transitions are restricted to automation recovery",
+            ));
+        }
+        self.apply_taskflow_command_inner(command, false, false)
+            .await
+    }
+
+    pub(crate) async fn apply_taskflow_requeue_proven_absent(
+        &self,
+        command: &TaskFlowCommand,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
+        if !matches!(
+            &command.transition,
+            TaskFlowTransition::RequeueProvenAbsent { .. }
+        ) {
+            return Err(invalid(
+                "internal requeue requires provider-absence transition",
+            ));
+        }
+        self.apply_taskflow_command_inner(command, true, false)
+            .await
+    }
+
+    pub(crate) async fn apply_taskflow_cancel_proven_absent(
+        &self,
+        command: &TaskFlowCommand,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
+        if !matches!(
+            &command.transition,
+            TaskFlowTransition::CancelProvenAbsent { .. }
+        ) {
+            return Err(invalid(
+                "internal cancellation requires provider-absence transition",
+            ));
+        }
+        self.apply_taskflow_command_inner(command, true, false)
+            .await
+    }
+
+    pub(crate) async fn apply_taskflow_effect_observation_quarantine(
+        &self,
+        command: &TaskFlowCommand,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
+        if !matches!(
+            &command.transition,
+            TaskFlowTransition::Indeterminate { .. }
+        ) {
+            return Err(invalid(
+                "effect observation quarantine requires indeterminate transition",
+            ));
+        }
+        self.apply_taskflow_command_inner(command, false, true)
+            .await
+    }
+
+    async fn apply_taskflow_command_inner(
+        &self,
+        command: &TaskFlowCommand,
+        allow_proven_absence_requeue: bool,
+        allow_effect_observation_quarantine: bool,
     ) -> Result<TaskFlowCommandResult, TaskFlowError> {
         validate_text(&command.run_id, "run_id", MAX_ID_BYTES)?;
         validate_text(&command.command_id, "command_id", MAX_ID_BYTES)?;
@@ -1126,11 +1245,29 @@ impl AutomationStore {
         }
         let explicit_reconcile = run.state == TaskFlowRunState::Indeterminate
             && matches!(&command.transition, TaskFlowTransition::Reconcile { .. });
-        if explicit_reconcile {
-            // An indeterminate run retains its durable owner tuple, but its
-            // lease may have expired while an external outcome was being
-            // investigated. Reconciliation still requires that exact tuple;
-            // the run is never claimable by a new generation.
+        let proven_absence_recovery = allow_proven_absence_requeue
+            && matches!(
+                run.state,
+                TaskFlowRunState::Queued
+                    | TaskFlowRunState::Running
+                    | TaskFlowRunState::Indeterminate
+            )
+            && matches!(
+                &command.transition,
+                TaskFlowTransition::RequeueProvenAbsent { .. }
+                    | TaskFlowTransition::CancelProvenAbsent { .. }
+            );
+        let effect_observation_quarantine = allow_effect_observation_quarantine
+            && run.state == TaskFlowRunState::Running
+            && matches!(
+                &command.transition,
+                TaskFlowTransition::Indeterminate { .. }
+            );
+        if explicit_reconcile || proven_absence_recovery || effect_observation_quarantine {
+            // Recovery evidence may arrive after the lease deadline. These
+            // transitions still require the exact historical owner tuple and
+            // are reachable only through their crate-private durable-evidence
+            // entry points (except ordinary explicit reconciliation).
             self.check_run_identity_fence(&run, &command.fence)?;
         } else {
             self.check_run_fence(&run, &command.fence, command.now_ms)?;
@@ -1345,6 +1482,43 @@ fn apply_transition(
             run.state = TaskFlowRunState::RetryBackoff;
             run.retry_at_ms = Some(*retry_at_ms);
         }
+        TaskFlowTransition::RequeueProvenAbsent { proof_digest } => {
+            if !matches!(
+                run.state,
+                TaskFlowRunState::Queued
+                    | TaskFlowRunState::Running
+                    | TaskFlowRunState::Indeterminate
+            ) {
+                return Err(invalid_transition(
+                    "provider-absence requeue requires queued, running, or indeterminate state",
+                ));
+            }
+            validate_digest(proof_digest, "provider absence proof digest")?;
+            run.state = TaskFlowRunState::Queued;
+            run.wait_token = None;
+            run.retry_at_ms = None;
+            run.terminal_reason = None;
+            clear_lease(run);
+        }
+        TaskFlowTransition::CancelProvenAbsent { proof_digest } => {
+            if !matches!(
+                run.state,
+                TaskFlowRunState::Queued
+                    | TaskFlowRunState::Running
+                    | TaskFlowRunState::Indeterminate
+            ) {
+                return Err(invalid_transition(
+                    "provider-absence cancellation requires queued, running, or indeterminate state",
+                ));
+            }
+            validate_digest(proof_digest, "provider absence proof digest")?;
+            run.cancel_requested = true;
+            run.state = TaskFlowRunState::Cancelled;
+            run.wait_token = None;
+            run.retry_at_ms = None;
+            run.terminal_reason = Some("provider_proven_absent".to_string());
+            clear_lease(run);
+        }
         TaskFlowTransition::Cancel { reason } => {
             if run.state.terminal() {
                 return Err(invalid_transition("terminal run cannot be cancelled"));
@@ -1435,6 +1609,8 @@ fn transition_name(transition: &TaskFlowTransition) -> &'static str {
         TaskFlowTransition::Wait { .. } => "waiting",
         TaskFlowTransition::Resume { .. } => "resumed",
         TaskFlowTransition::Retry { .. } => "retry_scheduled",
+        TaskFlowTransition::RequeueProvenAbsent { .. } => "requeued_proven_absent",
+        TaskFlowTransition::CancelProvenAbsent { .. } => "cancelled_proven_absent",
         TaskFlowTransition::Cancel { .. } => "cancelled",
         TaskFlowTransition::Succeed { .. } => "succeeded",
         TaskFlowTransition::Fail { .. } => "failed",
@@ -1955,7 +2131,7 @@ fn verify_taskflow_event_rows(
                 && run.cancel_requested;
             if !(matches!(
                 transition.as_str(),
-                "succeeded" | "failed" | "cancelled" | "reconciled"
+                "succeeded" | "failed" | "cancelled" | "reconciled" | "requeued_proven_absent"
             ) || index == 0 && transition == "run_created"
                 || sticky_cancel_resume)
             {
