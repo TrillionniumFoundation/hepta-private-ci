@@ -373,14 +373,8 @@ fn objective_explicit_abstain_skips_all_downstream_cognition_and_records_learnin
             .map(|stage| (stage.stage, stage.outcome))
             .collect::<Vec<_>>(),
         vec![
-            (
-                LaneFStageV3::ObjectiveValidated,
-                StageOutcomeV3::Abstained
-            ),
-            (
-                LaneFStageV3::LearningRecorded,
-                StageOutcomeV3::Completed
-            ),
+            (LaneFStageV3::ObjectiveValidated, StageOutcomeV3::Abstained),
+            (LaneFStageV3::LearningRecorded, StageOutcomeV3::Completed),
         ]
     );
     receipt.validate().expect("valid objective-abstain receipt");
