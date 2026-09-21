@@ -43,6 +43,59 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use super::MAX_EVENT_ROWS;
+use super::MAX_OUTBOX_ROWS;
+use super::bounded_next_sequence;
+
+#[test]
+fn durable_sequence_capacity_rejects_before_mutation_boundary() {
+    assert_eq!(
+        bounded_next_sequence(
+            i64::try_from(MAX_EVENT_ROWS - 1).expect("event bound"),
+            MAX_EVENT_ROWS,
+            "durable event journal",
+            "event sequence",
+        )
+        .expect("last event slot"),
+        u64::try_from(MAX_EVENT_ROWS).expect("event maximum"),
+    );
+    assert!(matches!(
+        bounded_next_sequence(
+            i64::try_from(MAX_EVENT_ROWS).expect("event bound"),
+            MAX_EVENT_ROWS,
+            "durable event journal",
+            "event sequence",
+        ),
+        Err(LocalLeaseOutboxError::CapacityExceeded {
+            resource: "durable event journal",
+            maximum: MAX_EVENT_ROWS,
+        })
+    ));
+
+    assert_eq!(
+        bounded_next_sequence(
+            i64::try_from(MAX_OUTBOX_ROWS - 1).expect("outbox bound"),
+            MAX_OUTBOX_ROWS,
+            "durable outbox",
+            "outbox sequence",
+        )
+        .expect("last outbox slot"),
+        u64::try_from(MAX_OUTBOX_ROWS).expect("outbox maximum"),
+    );
+    assert!(matches!(
+        bounded_next_sequence(
+            i64::try_from(MAX_OUTBOX_ROWS).expect("outbox bound"),
+            MAX_OUTBOX_ROWS,
+            "durable outbox",
+            "outbox sequence",
+        ),
+        Err(LocalLeaseOutboxError::CapacityExceeded {
+            resource: "durable outbox",
+            maximum: MAX_OUTBOX_ROWS,
+        })
+    ));
+}
+
 async fn opened_store(temp: &TempDir, number: u8) -> CognitiveStore {
     let owner = agent_id(number);
     CognitiveStore::open(&layout(temp, &owner))
