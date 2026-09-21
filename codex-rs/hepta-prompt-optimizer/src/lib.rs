@@ -14,8 +14,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
-pub mod local_shadow;
 mod graph;
+pub mod local_shadow;
 
 pub use graph::GraphBoundPromptPortfolioReceipt;
 pub use graph::optimize_with_factor_graph;
