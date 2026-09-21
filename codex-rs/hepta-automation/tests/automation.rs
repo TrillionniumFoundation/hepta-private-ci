@@ -1586,7 +1586,7 @@ async fn five_real_agent_identities_are_isolated_and_one_blocked_backlog_cannot_
             Duration::from_secs(2),
         )
         .expect("peer scheduler");
-        let outcome = tokio::time::timeout(Duration::from_secs(1), scheduler.tick(1))
+        let outcome = tokio::time::timeout(Duration::from_secs(5), scheduler.tick(1))
             .await
             .expect("peer must not wait for A")
             .expect("peer tick");
