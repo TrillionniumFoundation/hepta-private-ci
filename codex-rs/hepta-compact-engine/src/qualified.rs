@@ -677,6 +677,9 @@ impl TrustedCompactionEvaluatorV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompactionQualificationV2 {
+    pub tokenizer_implementation_digest: Digest32,
+    pub tokenizer_attestation_digest: Digest32,
+    pub tokenizer_key_digest: Digest32,
     pub evaluator_id: StableId,
     pub evaluator_implementation_digest: Digest32,
     pub evaluation_artifact_digest: Digest32,
@@ -697,6 +700,9 @@ impl CompactionQualificationV2 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(QUALIFICATION_DOMAIN);
         push_digest(&mut bytes, candidate_digest);
+        push_digest(&mut bytes, self.tokenizer_implementation_digest);
+        push_digest(&mut bytes, self.tokenizer_attestation_digest);
+        push_digest(&mut bytes, self.tokenizer_key_digest);
         push_id(&mut bytes, &self.evaluator_id);
         for digest in [
             self.evaluator_implementation_digest,
@@ -717,6 +723,15 @@ impl CompactionQualificationV2 {
 
     fn validate_digests(&self) -> Result<(), QualifiedCompactionError> {
         for (name, digest) in [
+            (
+                "qualification_tokenizer_implementation",
+                self.tokenizer_implementation_digest,
+            ),
+            (
+                "qualification_tokenizer_attestation",
+                self.tokenizer_attestation_digest,
+            ),
+            ("qualification_tokenizer_key", self.tokenizer_key_digest),
             (
                 "evaluator_implementation",
                 self.evaluator_implementation_digest,
@@ -990,6 +1005,13 @@ pub fn prove_compaction(
     candidate.validate()?;
     evaluator.validate()?;
     qualification.validate_digests()?;
+    if qualification.tokenizer_implementation_digest
+        != candidate.policy.tokenizer_implementation_digest
+        || qualification.tokenizer_attestation_digest != candidate.tokenizer_attestation_digest
+        || qualification.tokenizer_key_digest != candidate.tokenizer_key_digest
+    {
+        return Err(QualifiedCompactionError::TokenizerMismatch);
+    }
     if qualification.evaluator_id != evaluator.evaluator_id
         || qualification.evaluator_implementation_digest != evaluator.implementation_digest
         || qualification.attestation_digest != evaluator.attestation_digest
@@ -1031,9 +1053,9 @@ pub fn prove_compaction(
     let mut proof = CompactionProofV2 {
         checkpoint_digest: candidate.checkpoint.checkpoint_digest,
         candidate_digest: candidate.candidate_digest,
-        tokenizer_implementation_digest: candidate.policy.tokenizer_implementation_digest,
-        tokenizer_attestation_digest: candidate.tokenizer_attestation_digest,
-        tokenizer_key_digest: candidate.tokenizer_key_digest,
+        tokenizer_implementation_digest: qualification.tokenizer_implementation_digest,
+        tokenizer_attestation_digest: qualification.tokenizer_attestation_digest,
+        tokenizer_key_digest: qualification.tokenizer_key_digest,
         evaluator_id: qualification.evaluator_id,
         evaluator_implementation_digest: qualification.evaluator_implementation_digest,
         evaluation_artifact_digest: qualification.evaluation_artifact_digest,
