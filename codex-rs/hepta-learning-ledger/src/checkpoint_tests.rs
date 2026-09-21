@@ -63,7 +63,7 @@ fn checkpoint_is_content_addressed_and_supports_binary_lookup() {
 #[test]
 fn checkpoint_revocation_frontier_changes_without_rewriting_history() {
     let mut ledger = LearningLedger::new();
-    ledger.append(decision(0)).unwrap();
+    let source = ledger.append(decision(0)).unwrap();
     let before = build_ledger_index_checkpoint(&ledger.snapshot()).unwrap();
     ledger
         .append(LedgerEvent::UnlearningLineageV1(
@@ -71,7 +71,9 @@ fn checkpoint_revocation_frontier_changes_without_rewriting_history() {
                 record_id: id("unlearning-record"),
                 lineage_id: id("unlearning-lineage"),
                 source_record_id: id("decision-record-00000"),
+                source_event_digest: source.event_digest,
                 dataset_snapshot_id: id("dataset"),
+                dataset_digest: digest("dataset-digest"),
                 artifact_id: id("artifact"),
                 authority_id: id("privacy-owner"),
                 reason_digest: digest("withdrawal"),
