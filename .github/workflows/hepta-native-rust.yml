@@ -11,6 +11,14 @@ on:
       - ".github/workflows/hepta-native-rust.yml"
       - "docs/modules/ui.native/**"
       - "qualification/module-execution-dossiers/detail/ui.native.md"
+      - "qualification/module-execution-dossiers/detail/kernel.authority.md"
+      - "qualification/module-execution-dossiers/DETAILS.json"
+      - "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json"
+      - "docs/modules/kernel.authority/TECHNICAL.md"
+      - "docs/delivery/PATH_OWNERSHIP.json"
+      - "docs/modules/SOURCE_BINDINGS.json"
+      - "docs/modules/CARGO_BINDINGS.json"
+      - "docs/modules/MODULE_DOCS.json"
   push:
     branches: [main]
     paths:
@@ -22,6 +30,14 @@ on:
       - ".github/workflows/hepta-native-rust.yml"
       - "docs/modules/ui.native/**"
       - "qualification/module-execution-dossiers/detail/ui.native.md"
+      - "qualification/module-execution-dossiers/detail/kernel.authority.md"
+      - "qualification/module-execution-dossiers/DETAILS.json"
+      - "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json"
+      - "docs/modules/kernel.authority/TECHNICAL.md"
+      - "docs/delivery/PATH_OWNERSHIP.json"
+      - "docs/modules/SOURCE_BINDINGS.json"
+      - "docs/modules/CARGO_BINDINGS.json"
+      - "docs/modules/MODULE_DOCS.json"
   workflow_dispatch:
 
 permissions:
