@@ -442,9 +442,7 @@ mod tests {
         .unwrap_or_else(|error| panic!("valid host trust: {error:?}"));
         let payload = operator_dataset_signing_payload_v2(&receipt, 50)
             .unwrap_or_else(|error| panic!("dataset payload: {error:?}"));
-        let sign = |principal: &AuthenticatedPrincipalV1,
-                    key: &SigningKey,
-                    evidence_id: &str| {
+        let sign = |principal: &AuthenticatedPrincipalV1, key: &SigningKey, evidence_id: &str| {
             let mut evidence = SignedLearningEvidenceV1 {
                 evidence_id: id(evidence_id),
                 principal_id: principal.principal_id.clone(),
