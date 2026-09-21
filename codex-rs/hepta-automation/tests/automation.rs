@@ -1,7 +1,6 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use codex_hepta_automation::AUTOMATION_SCHEMA_VERSION;
 use codex_hepta_automation::AutomationAdmission;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationFuture;
@@ -15,6 +14,7 @@ use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_automation::AutomationTaskState;
 use codex_hepta_automation::AutomationTick;
 use codex_hepta_automation::AutomationTurnQueue;
+use codex_hepta_automation::AUTOMATION_SCHEMA_VERSION;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;
@@ -1173,10 +1173,7 @@ async fn legacy_unknown_without_frozen_revision_requires_absence_proof_before_ne
         .await
         .expect("list uncertainty");
     assert_eq!(uncertain.len(), 1);
-    assert_eq!(
-        uncertain[0].client_user_message_id,
-        lease.client_user_message_id
-    );
+    assert_eq!(uncertain[0].client_user_message_id, lease.client_user_message_id);
 
     let admitted = store
         .reconcile_uncertain_occurrence_admitted(
