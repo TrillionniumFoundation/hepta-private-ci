@@ -2,9 +2,10 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `331b81d385a88837e252bd80fda8b8ac35ea4191`
-- frozen candidate implementation head: `8ff3c4a646d42c55fcd93288b9ae5d01668d895d`
-- frozen candidate implementation tree: `f1722ca0e1fdec0971763595cfe19a657043cd4d`
+- frozen candidate implementation head: `320585bf96fe8cc443fdc5ed5017cc6e9251644f`
+- frozen candidate implementation tree: `2f8481ed506aa076c108d74c0b1d6105e440e014`
 - status: `pending_exact_current_head_and_merge_candidate_execution`
+- current main parent: `a74246c4d7657d4c6b09fc50c41f1d715ace5e0e`
 - claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
 
 ## Candidate boundary
@@ -33,7 +34,7 @@ The candidate establishes the following source-level properties without promotin
 - documentation truth that the current V2 structs are in-process Rust contracts, not a registered authenticated cross-host wire protocol.
 - local `observed_frontier` is an exact-scope append-only memory-revision count from the same retrieval snapshot, not an authenticated cut digest or rollback witness.
 
-The module implementation map now uses `sourceIdentityPolicy = candidate_or_exact_observation_v1`: its `sourceBase` and `observedAtHead` are the frozen candidate above, and the declared federation source root must remain byte-unchanged through metadata-only receipt commits. The branch also preserves current-main generated indexes, Cargo lock state, and the current implementation-map verifier before adding federation-specific deltas.
+The module implementation map uses `sourceIdentityPolicy = candidate_or_exact_observation_v1`: its `sourceBase` and `observedAtHead` are the frozen current-main merge candidate above, and the declared federation source root must remain byte-unchanged through metadata-only receipt commits. The candidate tree is built from current main plus only the reviewed #935 file set; overlapping generated indexes, Cargo lock state and the implementation-map verifier were forward-ported before the merge.
 
 ## Required executable checks
 
