@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "28cb0a43620a8cff52925cacfe04faed04a677db",
-    "tree": "5a5fbfff83f9a4f4a6e1270c8dbeac4d5b707fd3"
+    "commit": "da04c955764bff92ff674cdac20a81bea76ba64b",
+    "tree": "bb57db4d159e63fc84bd3ba0e887a2e99b976b8a"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -235,9 +235,9 @@
     "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs"
   ],
   "observedAtHead": {
-    "commit": "28cb0a43620a8cff52925cacfe04faed04a677db",
-    "tree": "5a5fbfff83f9a4f4a6e1270c8dbeac4d5b707fd3",
-    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd control, real five-Agent process coverage that creates one Calendar V2 task through AgentdClient and executes it through the existing scheduler/App Server spine, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity plus structural replay validation that binds scoped claim IDs to persisted owner epoch/generation while preserving legacy immutable claim history, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, reopen/CAS regression coverage, Calendar V2 capability type export, and repository-current rustfmt; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
+    "commit": "da04c955764bff92ff674cdac20a81bea76ba64b",
+    "tree": "bb57db4d159e63fc84bd3ba0e887a2e99b976b8a",
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd control, real five-Agent process coverage that creates one Calendar V2 task through AgentdClient and executes it through the existing scheduler/App Server spine, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity plus structural replay validation plus regression coverage that binds scoped claim IDs to persisted owner epoch/generation while preserving legacy immutable claim history, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, reopen/CAS regression coverage, Calendar V2 capability type export, and repository-current rustfmt; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "repositoryControlledProductCompositionGaps": [
