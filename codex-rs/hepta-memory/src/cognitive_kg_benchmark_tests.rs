@@ -94,7 +94,10 @@ fn linux_rss_kib() -> Option<u64> {
 fn linux_cpu_ticks() -> Option<u64> {
     let stat = fs::read_to_string("/proc/self/stat").ok()?;
     let close = stat.rfind(')')?;
-    let fields = stat.get(close + 1..)?.split_whitespace().collect::<Vec<_>>();
+    let fields = stat
+        .get(close + 1..)?
+        .split_whitespace()
+        .collect::<Vec<_>>();
     let user = fields.get(11)?.parse::<u64>().ok()?;
     let system = fields.get(12)?.parse::<u64>().ok()?;
     user.checked_add(system)
@@ -187,13 +190,13 @@ async fn qualification_knowledge_graph_capacity_receipt() {
     for _ in 0..query_samples {
         let started = Instant::now();
         let result = store
-            .retrieve_memory_candidates(
-                &access,
-                &RetrievalRequest::new("Benchmark Graph", 200),
-            )
+            .retrieve_memory_candidates(&access, &RetrievalRequest::new("Benchmark Graph", 200))
             .await
             .expect("KG benchmark retrieval");
-        assert!(!result.candidates.is_empty(), "KG benchmark query returned empty");
+        assert!(
+            !result.candidates.is_empty(),
+            "KG benchmark query returned empty"
+        );
         query_ns.push(elapsed_ns(started));
     }
 
