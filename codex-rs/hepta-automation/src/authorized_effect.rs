@@ -513,6 +513,43 @@ impl AutomationStore {
         }
     }
 
+    /// Read one exact durable provider-contact attempt by its immutable
+    /// TaskFlow identity. This avoids bounded-list intersection in product
+    /// reconciliation and never authorizes redispatch.
+    pub async fn authorized_taskflow_effect_attempt(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<AuthorizedEffectPending>, AuthorizedEffectError> {
+        Ok(self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .await?
+            .map(AuthorizedEffectPending::from))
+    }
+
+    /// Settle already-durable local provider evidence into TaskFlow before a
+    /// product reconciler performs any fresh provider status I/O. A missing
+    /// observation returns `None`; an indeterminate observation remains
+    /// non-terminal and callers may then perform owner-specific lookup.
+    pub async fn settle_authorized_taskflow_effect_observation(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+    ) -> Result<Option<AuthorizedEffectRecoveryResult>, AuthorizedEffectError> {
+        let Some(durable) = self.effect_dispatch_attempt(run_id, step_id, attempt).await? else {
+            return Ok(None);
+        };
+        if durable.observation.is_none() {
+            return Ok(None);
+        }
+        Ok(Some(
+            self.settle_effect_dispatch_attempt(&durable, fence).await?,
+        ))
+    }
+
     /// Return bounded provider-contact attempts that have no durable provider
     /// observation yet. A restart reconciler must hand these immutable
     /// identities to the registered downstream effect owner; this scan never
