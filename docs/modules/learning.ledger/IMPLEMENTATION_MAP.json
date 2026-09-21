@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "63f56b079d88f30fb8898854aa6daab5ae71e612",
-    "tree": "ff46706c7bb7790eb20d01ff79d9b309a6f4c7a2"
+    "commit": "66b83497f62b7b9e53c590966111549fd6f6b595",
+    "tree": "51600caac37ab30a1005488b2b62016381451685"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
@@ -76,7 +76,7 @@
       "operation": "append_unlearning",
       "nativeSymbol": "LedgerWriter::append_unlearning",
       "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
-      "state": "source_implemented_explicit_lineage",
+      "state": "source_implemented_verified_source_dataset_membership_artifact_handoff",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
@@ -226,6 +226,7 @@
     "production root provisioning/rotation ceremony, trust-distribution transport, key custody and independent witness placement",
     "target-host latency, storage growth, reopen, sustained throughput, RSS and physical power-loss/filesystem qualification",
     "live independent outcomes and genuine future-window longitudinal evidence",
+    "live learning.artifacts dataset-withdrawal fanout, descendant revocation and rebuild handoff",
     "independent semantic review, operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
@@ -245,7 +246,8 @@
     "sourceImplementationState": "production_writer_and_terminal_closure_source_implemented",
     "compositionState": "decision_and_terminal_closure_source_composed_live_daemon_binding_pending",
     "qualificationState": "exact_head_and_synthetic_merge_required_for_current_candidate",
-    "liveProductState": "not_established"
+    "liveProductState": "not_established",
+    "qualification": "current_candidate_exact_head_and_synthetic_merge_pending"
   },
   "sourceEvidencePolicy": "module_local_anchor_no_mapped_evidence_drift",
   "sourceEvidencePaths": [
@@ -282,6 +284,7 @@
   ],
   "crossLaneRepositoryDependencies": [
     "runtime.agentd daemon-owned terminal observation binding follows the runtime.agentd owner convergence line",
-    "intelligence.control canonical product composition must consume these LedgerWriter callsites before activation"
+    "intelligence.control canonical product composition must consume these LedgerWriter callsites before activation",
+    "learning.artifacts remains authoritative for dataset-to-artifact membership, withdrawal fanout and descendant revocation; learning.ledger only persists the verified source-to-dataset edge plus handoff identity"
   ]
 }
