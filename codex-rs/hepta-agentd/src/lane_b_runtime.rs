@@ -1,5 +1,8 @@
 use std::collections::BTreeMap;
 
+use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_learning_ledger::RunStartRecordV1;
+
 const MAX_SUPPORTED_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
 const MAX_CANCEL_REASON_BYTES: usize = 512;
@@ -123,6 +126,7 @@ pub enum AgentRunError {
     ContextRequired,
     TerminalObservationRequired,
     ArithmeticOverflow,
+    InvalidRunStart(&'static str),
 }
 
 #[derive(Clone, Debug)]
@@ -214,6 +218,43 @@ impl AgentRunCoordinator {
         Ok(result)
     }
 
+    /// Admit one durable run-start record only after the product owner has
+    /// revalidated its authentication/currentness against the live trust
+    /// frontier. This method deliberately does not authenticate raw records.
+    /// It only fixes the canonical durable-owner -> daemon-owner projection.
+    pub(crate) fn start_revalidated_run_start(
+        &mut self,
+        now_ms: u64,
+        record: &RunStartRecordV1,
+    ) -> Result<RunReceipt, AgentRunError> {
+        if record.disposition != RunStartObjectiveDispositionV1::Compiled {
+            return Err(AgentRunError::InvalidRunStart("objective disposition"));
+        }
+        if record.admission.authority.grants_any() {
+            return Err(AgentRunError::InvalidRunStart("authority"));
+        }
+        let deadline_ms = record
+            .admission
+            .deadline_unix_micros
+            .checked_add(999)
+            .map(|value| value / 1_000)
+            .ok_or(AgentRunError::ArithmeticOverflow)?;
+        self.start_run(
+            now_ms,
+            RunSnapshot {
+                run_id: record.snapshot.run_id.to_string(),
+                request_digest: record.admission.admitted_source_digest.to_string(),
+                objective_digest: record.snapshot.objective_digest.to_string(),
+                body_digest: record.runtime_body_digest.to_string(),
+                artifact_set_digest: record.snapshot.artifact_set_digest.to_string(),
+                authority_epoch: record.snapshot.authority_epoch,
+                generation: record.snapshot.generation,
+                fence_digest: record.snapshot.fence_digest.to_string(),
+                deadline_ms,
+            },
+        )
+    }
+
     pub fn attach_context(
         &mut self,
         now_ms: u64,
@@ -271,6 +312,9 @@ impl AgentRunCoordinator {
         }
         require_revision(record, expected_revision)?;
         require_live_deadline(record, now_ms)?;
+        if record.phase == RunPhase::Indeterminate {
+            return Err(AgentRunError::InvalidTransition);
+        }
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
