@@ -299,14 +299,65 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     }
 
 
+
+def validate_claim_booleans(row: dict) -> None:
+    """Never turn strings, integers or containers into positive evidence claims."""
+    fields = {
+        "sourceRootPresent", "productionImplementation", "nativeSourceMappingComplete",
+        "listedEntrypointsPresent", "productExecutionProved", "independentAcceptance",
+        "activation", "release", "implemented", "composed", "qualified",
+    }
+    records = [("map", row)]
+    for key in ("claimBoundary", "completion", "status"):
+        if key in row:
+            if not isinstance(row[key], dict):
+                raise ValueError(f"{key} must be an object")
+            records.append((key, row[key]))
+    for label, record in records:
+        for key in fields.intersection(record):
+            if type(record[key]) is not bool:
+                raise ValueError(f"{label}.{key} must be boolean")
+
+
+def selected_modules(module_ids: list[str] | None = None) -> list[dict]:
+    """Keep the default global; explicit local work cannot silently select nothing."""
+    modules = load("docs/modules/MODULES.json")["modules"]
+    if not isinstance(modules, list) or not modules:
+        raise ValueError("module registry must be a nonempty list")
+    seen = set()
+    for module in modules:
+        mid = module.get("id") if isinstance(module, dict) else None
+        if not isinstance(mid, str) or not mid or "/" in mid or "\\" in mid:
+            raise ValueError("invalid module identity")
+        # Do not allow module identities to escape their canonical directory.
+        if mid in {".", ".."}:
+            raise ValueError("invalid module identity")
+        if mid in seen:
+            raise ValueError(f"duplicate module identity: {mid}")
+        seen.add(mid)
+    if module_ids is None:
+        return modules
+    if not isinstance(module_ids, list) or not module_ids:
+        raise ValueError("empty module selection")
+    if any(not isinstance(mid, str) for mid in module_ids):
+        raise ValueError("invalid module selection")
+    requested = set(module_ids)
+    unknown = requested - seen
+    if unknown:
+        raise ValueError("unknown module: " + ", ".join(sorted(unknown)))
+    return [module for module in modules if module["id"] in requested]
+
+
 def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
     """Upgrade legacy v1/v2 maps without discarding implementation evidence.
 
     v1 used ``sourceRoot`` and canonical operation fields directly; v2 wrapped
     the native anchor in ``ownerEntrypoint`` and called it ``designOperation``.
     v3 keeps every legacy field for compatibility while adding one stable
-    operation vocabulary and top-level status/claim fields.
+    operation vocabulary and top-level status/claim fields. Source witnesses
+    are preserved, never refreshed: a schema migration is not a new execution.
     """
+    validate_claim_booleans(row)
     roots = [x["path"] for x in module["rootBindings"]]
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
     if isinstance(declared, str):
@@ -410,64 +461,67 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     # ``sourceRoot`` is a v1 spelling. Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
-    if "sourceObjects" in row:
-        # Only maps that opted into exact source-object receipts are refreshed.
-        # This keeps migration compatible while making composed maps fail closed
-        # once they publish this stronger evidence boundary.
-        migrated["sourceObjects"] = current_source_objects(migrated)
+    # Keep sourceObjects, observedAtHead and their full input set unchanged.
+    # Rehashing here would pair newly edited source with old execution claims,
+    # and could silently discard additional owner-declared evidence inputs.
+    # Verification must continue to reject an obsolete witness after migration.
     return migrated
 
 
-def migrate():
-    modules = load("docs/modules/MODULES.json")["modules"]
-    by_id = {m["id"]: m for m in modules}
+def migrate(module_ids: list[str] | None = None):
+    modules = selected_modules(module_ids)
     lanes = lane_by_module()
     source_base = current_source_base()
-    changed = []
-    for path in sorted((ROOT / "docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
-        row = json.loads(
-            path.read_text(encoding="utf-8"), object_pairs_hook=unique_keys
-        )
-        module = by_id.get(row.get("module") or path.parent.name)
-        if module is None:
-            continue
-        if (
-            row.get("schema") == "hepta.module-implementation-map.v3"
-            and row.get("schemaVersion") == 3
-        ):
-            # Normalize existing v3 operations with compatibility aliases.
-            migrated = migrate_map(row, module, lanes, source_base)
-        else:
-            migrated = migrate_map(row, module, lanes, source_base)
-        path.write_text(
-            json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
-        changed.append(str(path.relative_to(ROOT)))
-    print(json.dumps({"migrated": len(changed), "maps": changed}, ensure_ascii=False))
-
-
-def generate():
-    modules = load("docs/modules/MODULES.json")["modules"]
-    lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
-    written = []
+    updates = []
+    # Validate and render every selected map before changing any file. This
+    # prevents a bad later map from leaving a partly normalized working tree.
     for module in modules:
-        path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
+        mid = module["id"]
+        path = checked_source_path(ROOT, f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
+        if not path.is_file():
+            raise ValueError(f"{mid}: missing map; use generate first")
+        text = path.read_text(encoding="utf-8")
+        row = json.loads(text, object_pairs_hook=unique_keys)
+        if not isinstance(row, dict) or row.get("module", mid) != mid:
+            raise ValueError(f"{mid}: map identity mismatch")
+        migrated = migrate_map(row, module, lanes, source_base)
+        rendered = json.dumps(migrated, indent=2, ensure_ascii=False) + "\n"
+        if rendered != text:
+            updates.append((path, rendered))
+    for path, rendered in updates:
+        path.write_text(rendered, encoding="utf-8")
+    print(json.dumps({
+        "migrated": len(updates),
+        "maps": [str(path.relative_to(ROOT)) for path, _ in updates],
+    }, ensure_ascii=False))
+
+
+def generate(module_ids: list[str] | None = None):
+    modules = selected_modules(module_ids)
+    lanes = lane_by_module()
+    source_base = current_source_base()
+    updates = []
+    for module in modules:
+        path = checked_source_path(
+            ROOT, f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
+        )
         if path.exists():
             continue
         value = map_for(module, source_base, lanes)
-        path.write_text(
-            json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
-        written.append(str(path.relative_to(ROOT)))
-    print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
+        updates.append((path, json.dumps(value, indent=2, ensure_ascii=False) + "\n"))
+    for path, rendered in updates:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(rendered, encoding="utf-8")
+    print(json.dumps({
+        "generated": len(updates),
+        "maps": [str(path.relative_to(ROOT)) for path, _ in updates],
+    }, ensure_ascii=False))
 
 
-def verify(require_current_source: bool = False):
-    modules = load("docs/modules/MODULES.json")["modules"]
+def verify(
+    require_current_source: bool = False, *, module_ids: list[str] | None = None
+):
+    modules = selected_modules(module_ids)
     lanes = lane_by_module()
     failures = []
     witnessed_modules = []
@@ -484,6 +538,7 @@ def verify(require_current_source: bool = False):
             )
             if not isinstance(row, dict):
                 raise ValueError("map must be an object")
+            validate_claim_booleans(row)
         except Exception as exc:
             failures.append(f"{mid}: invalid JSON: {exc}")
             continue
@@ -594,6 +649,8 @@ def verify(require_current_source: bool = False):
                 "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
                 "modules": len(modules),
                 "maps": len(modules),
+                "moduleSelection": "all_registered" if module_ids is None else "explicit",
+                "selectedModules": [module["id"] for module in modules],
                 "productionImplementationProved": False,
                 "validationScope": "navigation_and_explicit_source_witnesses_not_execution",
                 "candidate": current_source_base(),
@@ -609,16 +666,28 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["generate", "migrate", "verify"])
     parser.add_argument(
+        "--module", dest="module_ids", action="append", metavar="MODULE_ID",
+        help="limit to named registered modules; repeatable; default checks all modules",
+    )
+    parser.add_argument(
         "--require-current-source", action="store_true",
         help="reject navigation-only maps when an exact-source claim is required",
     )
     args = parser.parse_args()
-    if args.command == "verify":
-        verify(require_current_source=args.require_current_source)
-    else:
-        if args.require_current_source:
-            parser.error("--require-current-source applies only to verify")
-        {"generate": generate, "migrate": migrate}[args.command]()
+    try:
+        if args.command == "verify":
+            verify(
+                require_current_source=args.require_current_source,
+                module_ids=args.module_ids,
+            )
+        else:
+            if args.require_current_source:
+                parser.error("--require-current-source applies only to verify")
+            {"generate": generate, "migrate": migrate}[args.command](
+                module_ids=args.module_ids
+            )
+    except (ValueError, KeyError, OSError, subprocess.CalledProcessError) as exc:
+        parser.exit(1, f"FAIL_HEPTA_IMPLEMENTATION_MAPS: {exc}\n")
 
 
 if __name__ == "__main__":

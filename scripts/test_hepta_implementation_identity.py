@@ -327,5 +327,255 @@ class SourceIdentityTests(unittest.TestCase):
         self.assertFalse(result["claimBoundary"]["nativeSourceMappingComplete"])
 
 
+    def migrated_row(self):
+        return subject.migrate_map(
+            self.row, self.module, {"example.owner": "owner-lane"},
+            subject.current_source_base(),
+        )
+
+    def test_schema_migration_cannot_rebind_changed_source_to_old_execution(self):
+        for changed in (
+            "owner/src/lib.rs", "tests/product.rs", "host/caller.rs",
+            "delegate/src/lib.rs",
+        ):
+            with self.subTest(changed=changed):
+                self.bind_objects()
+                self.row["claimBoundary"]["productExecutionProved"] = True
+                witness = copy.deepcopy(self.row["sourceObjects"])
+                self.write(changed, "changed since witnessed execution\n")
+                self.commit()
+                migrated = self.migrated_row()
+                self.assertEqual(migrated["sourceObjects"], witness)
+                with self.assertRaisesRegex(ValueError, "stale source object"):
+                    subject.verify_source_identity(migrated)
+                # A new test iteration must create a genuinely different commit.
+                self.write(changed, "restored for next case\n")
+                self.commit()
+
+    def test_schema_migration_preserves_additional_evidence_inputs(self):
+        self.write("build-policy.txt", "reviewed policy\n")
+        self.commit()
+        self.bind_objects()
+        self.row["sourceObjects"].append({
+            "path": "build-policy.txt",
+            "object": self.git("rev-parse", "HEAD:build-policy.txt"),
+        })
+        witness = copy.deepcopy(self.row["sourceObjects"])
+        self.assertEqual(self.migrated_row()["sourceObjects"], witness)
+
+    def test_schema_migration_preserves_exact_observation(self):
+        self.bind_observation()
+        self.write("owner/src/lib.rs", "changed since observation\n")
+        self.commit()
+        migrated = self.migrated_row()
+        self.assertEqual(migrated["observedAtHead"], self.row["observedAtHead"])
+        with self.assertRaisesRegex(ValueError, "source drift"):
+            subject.verify_source_identity(migrated)
+
+    def test_document_only_migration_keeps_witness_valid(self):
+        self.bind_objects()
+        self.write("docs/explanation.md", "Documentation only.\n")
+        self.commit()
+        before = copy.deepcopy(self.row)
+        migrated = self.migrated_row()
+        self.assertEqual(self.row, before)
+        self.assertEqual(migrated["sourceObjects"], before["sourceObjects"])
+        self.assertTrue(subject.verify_source_identity(migrated))
+
+    def test_migration_rejects_non_boolean_execution_claims(self):
+        original = copy.deepcopy(self.row)
+        for value in ("false", "true", 0, 1, None, [], {"value": False}):
+            for container in ("top", "claimBoundary", "completion"):
+                with self.subTest(value=value, container=container):
+                    self.row = copy.deepcopy(original)
+                    record = self.row if container == "top" else self.row.setdefault(container, {})
+                    record["productExecutionProved"] = value
+                    with self.assertRaisesRegex(ValueError, "must be boolean"):
+                        self.migrated_row()
+        self.row = original
+
+    def test_migration_rejects_non_boolean_production_implementation(self):
+        self.row["productionImplementation"] = "false"
+        with self.assertRaisesRegex(ValueError, "must be boolean"):
+            self.migrated_row()
+
+    def test_verify_rejects_non_boolean_claim_instead_of_ignoring_it(self):
+        self.row["claimBoundary"]["productExecutionProved"] = "true"
+        self.registry()
+        with self.assertRaisesRegex(SystemExit, "must be boolean"):
+            self.report()
+
+    def test_verify_rejects_integer_execution_claim(self):
+        self.row["claimBoundary"]["productExecutionProved"] = 1
+        self.registry()
+        with self.assertRaisesRegex(SystemExit, "must be boolean"):
+            self.report()
+
+    def test_typed_true_claim_is_preserved_not_recertified(self):
+        self.bind_objects()
+        self.row["claimBoundary"]["productExecutionProved"] = True
+        migrated = self.migrated_row()
+        self.assertIs(migrated["claimBoundary"]["productExecutionProved"], True)
+        self.assertEqual(migrated["sourceObjects"], self.row["sourceObjects"])
+
+    def second_module(self, *, valid_map=True):
+        self.registry()
+        other = copy.deepcopy(self.module)
+        other["id"] = "second.owner"
+        other["technicalDocument"] = "docs/modules/second.owner/TECHNICAL.md"
+        self.write("docs/modules/MODULES.json", json.dumps({"modules": [self.module, other]}))
+        self.write("docs/readiness/READINESS.json", json.dumps({
+            "implementationLanes": [{
+                "id": "owner-lane", "modules": [self.module["id"], other["id"]],
+            }],
+        }))
+        second = copy.deepcopy(self.row)
+        second["module"] = other["id"]
+        self.write(
+            "docs/modules/second.owner/IMPLEMENTATION_MAP.json",
+            json.dumps(second) if valid_map else "invalid unrelated JSON\n",
+        )
+        return "docs/modules/second.owner/IMPLEMENTATION_MAP.json"
+
+    def call_scoped(self, function, module_ids, **kwargs):
+        stream = io.StringIO()
+        with contextlib.redirect_stdout(stream):
+            function(module_ids=module_ids, **kwargs)
+        return json.loads(stream.getvalue())
+
+    def test_scoped_verify_does_not_parse_unrelated_maps(self):
+        self.second_module(valid_map=False)
+        result = self.call_scoped(subject.verify, ["example.owner"])
+        self.assertEqual(result["selectedModules"], ["example.owner"])
+        self.assertEqual(result["moduleSelection"], "explicit")
+        self.assertEqual(result["modules"], 1)
+        self.assertFalse(result["productionImplementationProved"])
+
+    def test_default_verify_still_checks_all_registered_maps(self):
+        self.second_module(valid_map=False)
+        with self.assertRaisesRegex(SystemExit, "second.owner: invalid JSON"):
+            self.report()
+
+    def test_scoped_strict_verify_still_rejects_historical_only_map(self):
+        self.registry()
+        with self.assertRaisesRegex(SystemExit, "current source witness required"):
+            self.call_scoped(subject.verify, ["example.owner"], require_current_source=True)
+
+    def test_scoped_migrate_does_not_read_or_write_unrelated_map(self):
+        other_path = self.second_module(valid_map=False)
+        original = (self.root / other_path).read_bytes()
+        result = self.call_scoped(subject.migrate, ["example.owner"])
+        self.assertEqual(result["maps"], ["docs/modules/example.owner/IMPLEMENTATION_MAP.json"])
+        self.assertEqual((self.root / other_path).read_bytes(), original)
+
+    def test_repeated_migration_is_a_noop(self):
+        self.registry()
+        self.call_scoped(subject.migrate, ["example.owner"])
+        path = self.root / "docs/modules/example.owner/IMPLEMENTATION_MAP.json"
+        before = path.stat().st_mtime_ns
+        result = self.call_scoped(subject.migrate, ["example.owner"])
+        self.assertEqual(result["migrated"], 0)
+        self.assertEqual(path.stat().st_mtime_ns, before)
+
+    def test_migration_prevalidates_all_targets_before_first_write(self):
+        self.second_module(valid_map=False)
+        path = self.root / "docs/modules/example.owner/IMPLEMENTATION_MAP.json"
+        before = path.read_bytes()
+        with contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaises(ValueError):
+                subject.migrate()
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_unknown_module_is_rejected_before_any_write(self):
+        self.registry()
+        path = self.root / "docs/modules/example.owner/IMPLEMENTATION_MAP.json"
+        before = path.read_bytes()
+        with self.assertRaisesRegex(ValueError, "unknown module"):
+            subject.migrate(module_ids=["example.owner", "typo.owner"])
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_empty_explicit_module_selection_is_not_success(self):
+        self.registry()
+        with self.assertRaisesRegex(ValueError, "empty module selection"):
+            subject.verify(module_ids=[])
+
+    def test_duplicate_module_requests_are_deduplicated(self):
+        self.registry()
+        result = self.call_scoped(subject.migrate, ["example.owner", "example.owner"])
+        self.assertEqual(result["migrated"], 1)
+
+    def test_duplicate_registry_identity_fails_before_migration(self):
+        self.registry()
+        self.write("docs/modules/MODULES.json", json.dumps({
+            "modules": [self.module, self.module],
+        }))
+        with self.assertRaisesRegex(ValueError, "duplicate module"):
+            subject.migrate()
+
+    def test_scoped_generate_creates_only_selected_missing_map(self):
+        other_path = self.second_module()
+        first_path = self.root / "docs/modules/example.owner/IMPLEMENTATION_MAP.json"
+        first_path.unlink()
+        (self.root / other_path).unlink()
+        result = self.call_scoped(subject.generate, ["example.owner"])
+        self.assertEqual(result["generated"], 1)
+        self.assertTrue(first_path.is_file())
+        self.assertFalse((self.root / other_path).exists())
+
+    def test_generate_never_overwrites_an_existing_witness(self):
+        self.bind_objects()
+        self.registry()
+        path = self.root / "docs/modules/example.owner/IMPLEMENTATION_MAP.json"
+        before = path.read_bytes()
+        result = self.call_scoped(subject.generate, ["example.owner"])
+        self.assertEqual(result["generated"], 0)
+        self.assertEqual(path.read_bytes(), before)
+
+    def test_map_identity_mismatch_is_not_silently_migrated(self):
+        self.registry()
+        path = self.root / "docs/modules/example.owner/IMPLEMENTATION_MAP.json"
+        wrong = copy.deepcopy(self.row)
+        wrong["module"] = "second.owner"
+        path.write_text(json.dumps(wrong))
+        with self.assertRaisesRegex(ValueError, "map identity mismatch"):
+            subject.migrate(module_ids=["example.owner"])
+        self.assertEqual(json.loads(path.read_text())["module"], "second.owner")
+
+    def test_missing_selected_map_is_not_reported_as_success(self):
+        self.registry()
+        (self.root / "docs/modules/example.owner/IMPLEMENTATION_MAP.json").unlink()
+        with self.assertRaisesRegex(ValueError, "missing map"):
+            subject.migrate(module_ids=["example.owner"])
+
+    def test_symlink_map_cannot_be_migrated(self):
+        self.registry()
+        path = self.root / "docs/modules/example.owner/IMPLEMENTATION_MAP.json"
+        text = path.read_text()
+        path.unlink()
+        target = self.root / "outside-map.json"
+        target.write_text(text)
+        path.symlink_to(target)
+        with self.assertRaisesRegex(ValueError, "symlink source path"):
+            subject.migrate(module_ids=["example.owner"])
+        self.assertEqual(target.read_text(), text)
+
+    def test_cli_module_option_is_repeatable_and_explicit(self):
+        self.second_module()
+        with patch("sys.argv", ["hepta-implementation-maps.py", "verify",
+                                "--module", "example.owner", "--module", "second.owner"]):
+            stream = io.StringIO()
+            with contextlib.redirect_stdout(stream):
+                subject.main()
+        result = json.loads(stream.getvalue())
+        self.assertEqual(result["selectedModules"], ["example.owner", "second.owner"])
+        self.assertEqual(result["moduleSelection"], "explicit")
+
+    def test_unscoped_report_explicitly_names_global_scope(self):
+        self.registry()
+        result = self.report()
+        self.assertEqual(result["moduleSelection"], "all_registered")
+        self.assertEqual(result["selectedModules"], ["example.owner"])
+
+
 if __name__ == "__main__":
     unittest.main()
