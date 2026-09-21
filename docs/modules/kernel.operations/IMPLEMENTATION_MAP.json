@@ -5,6 +5,7 @@
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
+  "sourceIdentityPolicy": "path_blob_manifest_v1",
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.operations",
   "owner": "durability-kernel",
@@ -17,48 +18,169 @@
     "codex-rs/hepta-operations"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "agentd_final_use_host_source_composed_default_runtime_activation_pending",
+  "productionWriterState": "durable_cognitive_store_owner_implemented_not_activated",
   "operations": [
     {
-      "operation": "operationledger",
-      "nativeSymbol": "OperationLedger",
-      "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "operation_intent_v1",
+      "nativeSymbol": "OperationIntentV1",
+      "sourcePath": "codex-rs/hepta-operations/src/model.rs",
+      "state": "canonical_contract_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-operations/src/model.rs",
+        "codex-rs/hepta-operations/src/ledger_tests.rs",
+        "codex-rs/hepta-operations/src/outbox_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "operationledger",
+      "designOperation": "prepare_intent",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "outbox",
+      "operation": "prepare_operation",
+      "nativeSymbol": "ProductionDurableWriter::prepare_operation",
+      "sourcePath": "codex-rs/hepta-memory/src/production_writer.rs",
+      "state": "durable_source_implemented_execution_pending",
+      "authority": "durability-kernel",
+      "tests": [
+        "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_intent",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "cognitive.store"
+      ]
+    },
+    {
+      "operation": "claim_outbox",
+      "nativeSymbol": "operation_claims::claim",
+      "sourcePath": "codex-rs/hepta-memory/src/operation_claims.rs",
+      "state": "durable_claim_lease_implemented_execution_pending",
+      "authority": "generation_fence_attempt_lease_bound",
+      "tests": [
+        "codex-rs/hepta-memory/src/production_writer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "claim_outbox",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "cognitive.store"
+      ]
+    },
+    {
+      "operation": "authorized_dispatch",
+      "nativeSymbol": "ProductionFinalUseOutboxDispatcher::dispatch",
+      "sourcePath": "codex-rs/hepta-memory/src/production_writer.rs",
+      "state": "final_use_boundary_source_implemented_execution_pending",
+      "authority": "kernel.authority_final_use_consumed",
+      "tests": [
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorized_dispatch",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "kernel.authority",
+        "cognitive.store"
+      ]
+    },
+    {
+      "operation": "observe_cognitive_terminal",
+      "nativeSymbol": "CognitiveSourceOutboxTarget::observe_terminal",
+      "sourcePath": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+      "state": "destination_cas_and_observer_source_implemented_execution_pending",
+      "authority": "destination_owned_terminal_evidence",
+      "tests": [
+        "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "observe_terminal",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "cognitive.store"
+      ]
+    },
+    {
+      "operation": "agentd_final_use_host",
+      "nativeSymbol": "AgentdProductionWriterHost",
+      "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "state": "named_final_use_host_source_implemented_activation_pending",
+      "authority": "externally_supplied_authority_and_grant_provider",
+      "tests": [
+        "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "product_composition",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "runtime.agentd"
+      ]
+    },
+    {
+      "operation": "automation_operation_consumer",
+      "nativeSymbol": "AutomationStore::dispatch_authorized_effect",
+      "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "state": "second_operation_intent_consumer_source_implemented",
+      "authority": "kernel.authority_final_use_consumed",
+      "tests": [
+        "codex-rs/hepta-automation/tests/authorized_effect.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "destination_apply",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "automation.taskflow"
+      ]
+    },
+    {
+      "operation": "reference_operationledger",
+      "nativeSymbol": "OperationLedger",
+      "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
+      "state": "reference_oracle_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-operations/src/ledger_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reference_operationledger",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reference_outbox",
       "nativeSymbol": "Outbox",
       "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-operations/src/outbox_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "outbox",
+      "designOperation": "reference_outbox",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run current exact-head and deterministic synthetic-merge qualification for this current-main convergence candidate and close every resulting finding.",
+    "Wire the final-use Agentd host into the current AgentdState daemon lifecycle only through an explicit externally enrolled authority/grant configuration; default startup must remain fail-closed.",
+    "Add destination-owned dedupe/apply/terminal observation before activating each remaining registered effect destination.",
+    "Design and qualify bounded segment/checkpoint compaction for append-only lease/event/outbox history before long-lived capacity qualification."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "enrolled production authority/grant source and target-host crash/power-loss/storage qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -66,5 +188,66 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-operations"
-  ]
+  ],
+  "exactSourceEvidence": {
+    "kind": "path_blob_manifest_v1",
+    "entries": [
+      {
+        "path": "codex-rs/hepta-operations/src/model.rs",
+        "blobSha": "78f95d637a1d790e2b6e00c5bde36c36ed9e401b"
+      },
+      {
+        "path": "codex-rs/hepta-operations/src/ledger.rs",
+        "blobSha": "d65f48c9711c2a83a1220cf4e73512346c299c1e"
+      },
+      {
+        "path": "codex-rs/hepta-operations/src/outbox.rs",
+        "blobSha": "c014045ce43d132744a53c95e7cd70cfb33d0a8f"
+      },
+      {
+        "path": "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+        "blobSha": "918195da1b30ce7ebb432df54a7bc247f5154a63"
+      },
+      {
+        "path": "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+        "blobSha": "b8d06d5ca867f6d5b32d78f5276f9a1b4f11f5cc"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+        "blobSha": "ddca3a3ca5c255fef01c1fdb2b355feb124709b4"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+        "blobSha": "bad8dedc09414fd8172625805f6c63fe18c80308"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+        "blobSha": "3c168bb2f4e26d80f6a5cd24253c26d44cf4bc87"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_writer.rs",
+        "blobSha": "7b26a4a2802789666d5a7ae3be0119611c38fb84"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+        "blobSha": "acf69f570749b04f83b14671fa8a0ce060fa681e"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+        "blobSha": "64856b8076f919bf1a764d62e7bd51275dae60ce"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+        "blobSha": "c32203c1d6a30b8255e31515866c3b49e602941e"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "blobSha": "6b1c903926aae66b9d962d2a6735398a7c91b8c2"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+        "blobSha": "2f0a8cea98cecc940a785dae606861ab2053a109"
+      }
+    ]
+  }
 }
