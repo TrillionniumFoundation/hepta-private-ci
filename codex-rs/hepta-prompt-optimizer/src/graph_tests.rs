@@ -61,8 +61,8 @@ fn edge(
     }
 }
 
-fn graph() -> KnowledgeGenerationV2 {
-    build_complete_generation(
+fn graph() -> PromptFactorProjectionV1 {
+    let generation = build_complete_generation(
         Generation::new(1).expect("generation"),
         KnowledgeProjectionInputV2 {
             source_snapshot_digest: digest("prompt-registry-source"),
@@ -86,9 +86,15 @@ fn graph() -> KnowledgeGenerationV2 {
             ],
         },
     )
-    .expect("factor graph")
+    .expect("factor graph");
+    PromptFactorProjectionV1 {
+        registry_revision: 1,
+        registry_snapshot_digest: digest("registry"),
+        source_digest: generation.source_snapshot_digest,
+        generation,
+        authority: AuthorityPosture::DENY_ALL,
+    }
 }
-
 fn candidate(name: &str, factor_id: &str, gain: i64) -> PromptCandidate {
     PromptCandidate {
         candidate_id: id(name),
@@ -126,7 +132,7 @@ fn graph_conflicts_are_hard_constraints_and_receipt_binds_relation_view() {
     assert_eq!(receipt.observed_relation_count, 2);
     assert_eq!(
         receipt.factor_graph_generation_digest,
-        factor_graph.generation_digest
+        factor_graph.generation.generation_digest
     );
     assert!(receipt
         .portfolio
@@ -153,6 +159,24 @@ fn candidate_factor_missing_from_complete_graph_fails_closed() {
     let error = optimize_with_factor_graph(request, &graph()).expect_err("missing factor");
     assert!(
         matches!(&error, Error::FactorGraph(message) if message.contains("factor:x")),
+        "unexpected error: {error:?}"
+    );
+}
+
+
+#[test]
+fn registry_snapshot_drift_fails_closed_before_selection() {
+    let request = OptimizationRequest {
+        decision_id: id("decision:stale-registry"),
+        objective_digest: digest("objective"),
+        registry_snapshot_digest: digest("different-registry"),
+        budget: 1,
+        maximum_selected: 1,
+        candidates: vec![candidate("candidate:a", "factor:a", 10)],
+    };
+    let error = optimize_with_factor_graph(request, &graph()).expect_err("stale registry");
+    assert!(
+        matches!(&error, Error::FactorGraph(message) if message.contains("registry snapshot")),
         "unexpected error: {error:?}"
     );
 }
