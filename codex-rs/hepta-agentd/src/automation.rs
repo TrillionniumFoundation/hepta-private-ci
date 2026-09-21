@@ -25,6 +25,11 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 
+#[path = "automation_service.rs"]
+mod service;
+
+pub(crate) use service::spawn_automation_service;
+
 const AUTOMATION_TICK_INTERVAL: Duration = Duration::from_millis(250);
 const AUTOMATION_LEASE_DURATION: Duration = Duration::from_secs(30);
 const AUTOMATION_DISPATCH_TIMEOUT: Duration = Duration::from_secs(5);
@@ -39,11 +44,11 @@ pub(crate) struct AgentdAutomationQueue {
 
 #[derive(Debug)]
 enum QueueFailure {
-    /// The request has not crossed the App Server admission seam.  These
+    /// The request has not crossed the App Server admission seam. These
     /// failures may be retried with the existing bounded dispatch budget.
     BeforeAdmission(AgentdError),
     /// The request may have crossed the seam, but no reliable terminal receipt
-    /// was returned.  Retrying would be a blind duplicate, so the occurrence
+    /// was returned. Retrying would be a blind duplicate, so the occurrence
     /// must be durably quarantined instead.
     OutcomeUnknown,
 }
@@ -115,7 +120,7 @@ impl AgentdAutomationQueue {
             .await
             .map_err(|_| QueueFailure::OutcomeUnknown)?;
         let _ = client.shutdown().await;
-        // The response proves only what the App Server returned.  Any state
+        // The response proves only what the App Server returned. Any state
         // transition observed after the request is still an uncertain local
         // outcome: preserve the occurrence for explicit reconciliation rather
         // than handing it to a retry path.
@@ -203,11 +208,25 @@ pub(crate) async fn run_automation_scheduler(
         Ok(scheduler) => scheduler,
         Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
     };
+    run_scheduler_loop(scheduler, state, cancellation, AUTOMATION_TICK_INTERVAL).await
+}
+
+/// The product scheduler and typed-queue tests use this same loop. Cancellation
+/// stops NEW ticks; it never discards a tick that may have crossed queue entry.
+/// The scheduler's existing timeout records an uncertain result durably. Host
+/// forced-abort remains unacknowledged and uses durable owner recovery.
+async fn run_scheduler_loop<Q: AutomationTurnQueue>(
+    scheduler: AutomationScheduler<Q>,
+    state: Arc<AgentdState>,
+    cancellation: CancellationToken,
+    tick_interval: Duration,
+) -> Result<(), AgentdError> {
     let mut retry_budget = DispatchRetryBudget::default();
     loop {
         tokio::select! {
+            biased;
             _ = cancellation.cancelled() => return Ok(()),
-            _ = tokio::time::sleep(AUTOMATION_TICK_INTERVAL) => {}
+            _ = tokio::time::sleep(tick_interval) => {}
         }
         if !state.automation_is_available()? {
             return wait_for_cancellation(&cancellation).await;
@@ -227,32 +246,23 @@ pub(crate) async fn run_automation_scheduler(
             Ok(now_ms) => now_ms,
             Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
         };
-        tokio::select! {
-            _ = cancellation.cancelled() => return Ok(()),
-            result = scheduler.tick(now_ms) => {
-                match result {
-                    Ok(tick) => {
-                        if handle_automation_tick(
-                            tick,
-                            &mut retry_budget,
-                            &state,
-                            &cancellation,
-                        )
-                        .await?
-                        {
-                            return Ok(());
-                        }
-                    }
-                    Err(error) => {
-                        return stop_after_automation_error(error, &state, &cancellation).await;
-                    }
+        // Do not select cancellation against this future: dropping it can lose
+        // the acknowledgement after durable dispatch admission. A retirement
+        // timeout is not permission to start another owner.
+        match scheduler.tick(now_ms).await {
+            Ok(tick) => {
+                if handle_automation_tick(tick, &mut retry_budget, &state, &cancellation).await? {
+                    return Ok(());
                 }
+            }
+            Err(error) => {
+                return stop_after_automation_error(error, &state, &cancellation).await;
             }
         }
     }
 }
 
-/// Applies the scheduler's fail-stop policy to one tick.  A `true` result
+/// Applies the scheduler's fail-stop policy to one tick. A `true` result
 /// means the caller should terminate its scheduler task after cancellation
 /// has been observed; the Agent itself remains alive for normal turns.
 pub(crate) async fn handle_automation_tick(
@@ -343,6 +353,10 @@ fn unix_time_ms() -> Result<u64, AutomationError> {
         .as_millis();
     u64::try_from(millis).map_err(|_| AutomationError::Unavailable)
 }
+
+#[cfg(test)]
+#[path = "automation_service_tests.rs"]
+mod service_tests;
 
 #[cfg(test)]
 mod tests {

@@ -27,7 +27,7 @@ use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
-use crate::automation::run_automation_scheduler;
+use crate::automation::spawn_automation_service;
 
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
@@ -99,7 +99,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     })
     .await?;
     // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
+    // degraded CognitiveRuntime state. The default/production binary keeps
     // the existing availability-tolerant behavior; only the explicit
     // compile-time qualification profile takes this fail-closed startup gate.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
@@ -140,6 +140,16 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     )
     .await?;
     let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(2))?;
+    // TaskFlow owns construction, cooperative drain and local unpublication.
+    // Register it before starting required tasks so rejected construction cannot
+    // strand already-started core tasks behind a returned startup error.
+    spawn_automation_service(
+        &mut tasks,
+        automation_store,
+        Arc::clone(&state),
+        identity.clone(),
+        cancellation.clone(),
+    )?;
     tasks.spawn_required("runtime.control", control.run())?;
     let app_server = run_app_server(
         identity.clone(),
@@ -152,30 +162,6 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     })?;
     tasks.spawn_required("runtime.generation", monitor_runtime(Arc::clone(&state)))?;
 
-    let automation_cancellation = cancellation.clone();
-    let automation_state = Arc::clone(&state);
-    let quarantine_state = Arc::clone(&state);
-    tasks.spawn_optional(
-        "automation.taskflow",
-        async move {
-            match automation_store {
-                Some(store) => {
-                    run_automation_scheduler(
-                        store,
-                        automation_state,
-                        identity,
-                        automation_cancellation,
-                    )
-                    .await
-                }
-                None => {
-                    automation_cancellation.cancelled().await;
-                    Ok(())
-                }
-            }
-        },
-        move || quarantine_state.mark_automation_unavailable(),
-    )?;
     // These ingress paths retain required status until dependent admission and
     // reconciliation routes can be retired together. Optional does not mean
     // silently weakening a required writer, authorization or generation fence.
