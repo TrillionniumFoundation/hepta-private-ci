@@ -139,11 +139,11 @@ class CargoWorkspaceManifestPolicyTest(unittest.TestCase):
 
     def test_isolated_fuzz_exception_does_not_hide_ordinary_manifest_errors(self) -> None:
         path, manifest = self.manifest("hepta-wire")
-        manifest["package"]["version"] = "0.0.0"
+        manifest.pop("lints", None)
         self.assertFalse(policy.is_isolated_cargo_fuzz_workspace(path, manifest))
         self.assertTrue(
             any(
-                "set `package.version.workspace = true`" in error
+                "set `[lints] workspace = true`" in error
                 for error in self.errors(path, manifest)
             )
         )
