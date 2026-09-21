@@ -308,6 +308,31 @@ pub enum AgentdMethod {
     MemoryFederationStatus {
         capability_id: MemoryFederationCapabilityId,
     },
+    RunStart {
+        now_ms: u64,
+        snapshot: AgentRunSnapshot,
+    },
+    RunAttachContext {
+        expected_revision: u64,
+        attachment: AgentRunContextAttachment,
+    },
+    RunStatus {
+        run_id: String,
+    },
+    RunMarkDispatched {
+        run_id: String,
+        expected_revision: u64,
+    },
+    RunCancel {
+        run_id: String,
+        expected_revision: u64,
+    },
+    RunObserveTerminal {
+        run_id: String,
+        expected_revision: u64,
+        phase: AgentRunPhase,
+        terminal_observed: bool,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -342,10 +367,79 @@ pub enum AgentdPayload {
     MemoryFederationStatus {
         capability: Option<MemoryFederationCapabilitySnapshot>,
     },
+    AgentRunReceipt(AgentRunReceipt),
+    AgentRunStatus {
+        receipt: Option<AgentRunReceipt>,
+    },
+    AgentRunCancelReceipt(AgentRunCancelReceipt),
     Error {
         code: String,
         message: String,
     },
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AgentRunPhase {
+    Admitted,
+    ContextAttached,
+    Dispatched,
+    Cancelling,
+    Cancelled,
+    Succeeded,
+    Failed,
+    Indeterminate,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AgentRunCancellationDisposition {
+    CancelledBeforeDispatch,
+    CancellingAfterDispatch,
+    AlreadyTerminal,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentRunSnapshot {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentRunContextAttachment {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub context_digest: String,
+    pub compilation_receipt_digest: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentRunReceipt {
+    pub run_id: String,
+    pub revision: u64,
+    pub phase: AgentRunPhase,
+    pub context_digest: Option<String>,
+    pub compilation_receipt_digest: Option<String>,
+    pub terminal_observed: bool,
+    pub idempotent: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentRunCancelReceipt {
+    pub disposition: AgentRunCancellationDisposition,
+    pub receipt: AgentRunReceipt,
 }
 
 /// A bounded read from the owning Agent's canonical SQLite store. The digest
