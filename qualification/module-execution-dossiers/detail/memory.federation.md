@@ -42,7 +42,7 @@ For one V2 attempt:
 
 There is no blind retry. Dropping the transport future is the in-flight cancellation boundary; a production transport must stop further adapter I/O when that future is dropped. Any separately authorized retry requires a new nonce/attempt identity.
 
-Product `CognitiveRuntime::AvailableFederatedV2` applies this boundary per currently enrolled owner. Aggregate coverage preserves requested, completed, failed and truncated counts. A scope/transport failure is not relabeled as a successful empty result. A clean discovery with no active grant consumes no request slot. An active grant for a different consumer-workspace digest is filtered before enrollment and never triggers transport. An owner store whose enrollment state cannot be observed contributes a bounded failed slot. Post-I/O revoked/stale terminal attempts also contribute failed aggregate coverage because they produced no admissible evidence.
+Product `CognitiveRuntime::AvailableFederatedV2` applies this boundary per currently enrolled owner. Capability discovery and admitted peer attempts are polled concurrently under one total request horizon, while deterministic sorting/deduplication before admission and after collection prevents completion order from changing output order. Aggregate coverage preserves requested/completed/failed peers, peer truncation, owner-candidate omission, item truncation and typed discovery/deadline-authority/integrity/transport failure counts. A scope/transport failure is not relabeled as a successful empty result. A clean discovery with no active grant consumes no request slot. An active grant for a different consumer-workspace digest is filtered before enrollment and never triggers transport. An owner store whose enrollment state cannot be observed contributes a bounded failed slot. Post-I/O revoked/stale terminal attempts also contribute failed aggregate coverage because they produced no admissible evidence.
 
 Ownership is intentionally split at this boundary: `memory.federation::execute_once` is a **one-peer checked engine** and every native `FederatedResultV2` has `requested_peers = 1`. The `<=16` peer discovery/fan-out/aggregation policy is owned by the product orchestrator in `codex-hepta-memory::CognitiveRuntime::AvailableFederatedV2`, which invokes the canonical engine once per admitted peer under one total request horizon. The canonical crate must not grow a second peer registry or product scheduler; the product orchestrator must not reimplement response integrity or authority admission.
 
@@ -50,7 +50,7 @@ Ownership is intentionally split at this boundary: `memory.federation::execute_o
 
 Canonical V2 accepts at most 512 remote evidence items for one peer and never performs multi-peer orchestration internally. Product federation retains the existing `MAX_FEDERATION_SOURCES_PER_AGENT = 16` source ceiling and the memory retrieval result ceiling. Agentd product composition owns bounded peer iteration/aggregation under one total recall horizon and no engine-owned retry queue.
 
-The <=16-peer / <=512-final-ID values are enforced architecture bounds, not production latency or concurrency claims. The current in-process adapter is not evidence that a future network transport can meet the same budget; cross-host activation still requires measured fan-out, overload and cancellation behavior on the selected host.
+The <=16-peer / <=512-final-ID values are enforced architecture bounds. The current in-process product path now exercises bounded concurrent fan-out under one two-second total horizon, but this is still not target-host latency/backpressure evidence and is not evidence that a future network transport can meet the same budget; cross-host activation still requires measured fan-out, overload and cancellation behavior on the selected host.
 
 ## 6. Concrete verification cases
 
@@ -72,13 +72,15 @@ Source tests now include identities for:
 - FED-12: a grant for another consumer workspace never enters queried coverage or transport dispatch;
 - FED-13: combined local+federated model input preserves the exact federation coverage vector;
 - FED-14: physical-send revalidation is bounded and fails closed on timeout/unavailability;
-- FED-15: the owner memory frontier is read from the same exact-scope SQLite snapshot as candidates; an empty scope may truthfully report frontier zero, while non-empty evidence cannot.
+- FED-15: the owner memory frontier is read from the same exact-scope SQLite snapshot as candidates; an empty scope may truthfully report frontier zero, while non-empty evidence cannot;
+- FED-16: product aggregation preserves peer truncation, owner-candidate omission and typed failure coverage rather than collapsing those states into `failed_peers`;
+- FED-17: admitted peer attempts are concurrently polled under one global horizon and deterministic aggregation does not depend on completion order.
 
 Test source identity is not an execution receipt. Exact-head/merge-candidate outputs determine pass/fail for the candidate revision.
 
 ## 7. Integration, rollback and capability ceiling
 
-Agentd product composition uses `CognitiveRuntime::AvailableFederatedV2`. The host passes the consumer Agent identity and bounded owner-layout candidates. The physical in-process owner read is adapted to the canonical V2 transport; preflight/post-I/O authority rediscoveries bind the current durable capability state. The memory extension performs another capability/memory revalidation at physical model-request assembly, bounded by the product read timeout and fail-closed on timeout/unavailability.
+Agentd product composition uses `CognitiveRuntime::AvailableFederatedV2`. The host passes the consumer Agent identity and bounded owner-layout candidates. The physical in-process owner read is adapted to the canonical V2 transport; preflight/post-I/O authority rediscoveries bind the current durable capability state. The memory extension performs another capability/memory revalidation at physical model-request assembly, bounded by the product read timeout and fail-closed on timeout/unavailability. Repository-wide dispatch semantics define this as a final-use source-currentness fence before transport entry, not retroactive cancellation authority over a provider attempt that has already been admitted.
 
 The legacy `CognitiveRuntime::AvailableFederated` / `FederatedRecallSet` surface remains for compatibility-focused callers and tests. Product model-input registration requires `has_product_federation()` and calls the V2-only `retrieve_product_federated` / `revalidate_product_federated` APIs, which reject the legacy variant. Rollback may restore a legacy caller only as an explicit compatibility rollback; it cannot silently enter the canonical product attachment path or convert failed/unavailable peer observations into claims that V2 executed.
 
