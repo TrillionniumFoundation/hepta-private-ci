@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "37fabb4a76cf0362896aeb6df9a8e0ffdaccce60",
-    "tree": "ee55b0b056339d8c6583629d7457d5663f69c2fc"
+    "commit": "e0d67bf580dbe1b9379ddfe590e0aebf7e78dfdb",
+    "tree": "6ceb1b9d564ca1a2f2754d2afef6e0eab2da6beb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -197,9 +197,9 @@
     "codex-rs/Cargo.lock"
   ],
   "observedAtHead": {
-    "commit": "37fabb4a76cf0362896aeb6df9a8e0ffdaccce60",
-    "tree": "ee55b0b056339d8c6583629d7457d5663f69c2fc",
-    "interpretation": "exact final TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence, schedule-revision claim linearization, producer-owned OperationIntentV1 composition, final-use nonce hardening, revocation-race/compensation-crash coverage, after-provider-contact fault injection, Calendar V2 bounded missed-run/DST coverage, and legacy revision-unknown dispatch reconciliation; later commits are documentation/projection truth updates only, and qualification results remain separate"
+    "commit": "e0d67bf580dbe1b9379ddfe590e0aebf7e78dfdb",
+    "tree": "6ceb1b9d564ca1a2f2754d2afef6e0eab2da6beb",
+    "interpretation": "exact current candidate observation after Agentd control-runtime monotonic integration and workspace hepta-operations dependency registration; later commits may update documentation/projection truth only while the declared observed source paths remain byte-identical"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
