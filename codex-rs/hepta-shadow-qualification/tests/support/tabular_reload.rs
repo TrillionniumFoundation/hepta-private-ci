@@ -162,10 +162,7 @@ fn worker() {
             );
             let model = must(model, "loaded model binding");
             let prediction = must(model.predict(&id("state"), &id("read")), "prediction");
-            assert_eq!(
-                prediction.value.raw(),
-                expected
-            );
+            assert_eq!(prediction.value.raw(), expected);
         }
     }
     println!("OWNER_TABULAR_PID={}", std::process::id());
@@ -234,7 +231,10 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
         );
         must(
             write_candidate_payload(
-                must(CreateOnlyArtifactFile::create(&request.payload), "create-only payload"),
+                must(
+                    CreateOnlyArtifactFile::create(&request.payload),
+                    "create-only payload",
+                ),
                 &registry,
                 &manifest.artifact_id,
                 &bytes,
@@ -245,7 +245,10 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
     }
     let receipt = must(
         write_registry_snapshot(
-            must(CreateOnlyArtifactFile::create(&snapshot), "create-only registry"),
+            must(
+                CreateOnlyArtifactFile::create(&snapshot),
+                "create-only registry",
+            ),
             &registry,
             digest("fixture-current-host-binding"),
         ),
@@ -273,7 +276,10 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
     let revoked_snapshot = directory.path().join("registry-revoked");
     let current = must(
         write_registry_snapshot(
-            must(CreateOnlyArtifactFile::create(&revoked_snapshot), "new registry"),
+            must(
+                CreateOnlyArtifactFile::create(&revoked_snapshot),
+                "new registry",
+            ),
             &registry,
             receipt.binding,
         ),
