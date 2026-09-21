@@ -115,7 +115,7 @@ proposal crate, and that distinction is intentional and now explicit:
 host is now a long-lived `PlasticityRuntimeOwnerV1` supervised by the real Agentd
 `runtime.rs` task set. It exclusively retains the proposal writers, external
 anchor/fence stores, learning-evidence verifier, ArtifactRegistry, DurableLedger and
-owner-evidence resolver behind a bounded typed channel. `AgentdLearningPlasticityProducerV1` is the named non-test in-process learning producer. It holds only `Arc<AgentdState>` and submits through `AgentdState::submit_parameter_plasticity_v1`; it never receives a writer, anchor store, trust root or owner-evidence store. The lifetime E2E now enters through this producer. Target-host execution remains unproved. Every proposal is fenced on
+owner-evidence resolver behind a bounded typed channel. `AgentdLearningPlasticityProducerV1` is the named non-test in-process learning producer retained by `AgentdState`. It holds only the bounded `PlasticityRuntimeHandleV1`; it never receives a writer, anchor store, trust root or owner-evidence store. `AgentdState::submit_parameter_plasticity_v1` routes through this producer, and the lifetime E2E exercises that state-held path. Target-host execution remains unproved. Every proposal is fenced on
 the current Running/ready Agentd generation before it reaches the parameter or topology
 host entrypoint. There is no public Agentd wire method and no ambient/default writer:
 if the owner is not explicitly attached to `AgentdConfig`, plasticity remains absent.
