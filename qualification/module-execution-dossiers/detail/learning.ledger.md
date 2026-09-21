@@ -28,7 +28,7 @@ The product-facing source operation set is:
 
 `LedgerWriter::append_credit_batch(expected_anchor, CreditAllocationBatchV1, signed_allocator)`;
 
-`LedgerWriter::append_unlearning(expected_anchor, UnlearningLineageRequestV1, signed_authority)`;
+`LedgerWriter::append_unlearning(expected_anchor, UnlearningLineageRequestV1, exact_dataset_receipt, signed_authority)`;
 
 `LedgerWriter::freeze_dataset(DatasetFreezePlanV2, signed_evaluator)`;
 
@@ -75,9 +75,15 @@ controller must be independent from generator and observer; and allocations plus
 residual must equal the terminal outcome exactly in Q32 units. A second committed
 batch for the same terminal outcome rejects.
 
-`UnlearningLineageEventV1` explicitly binds source record, dataset snapshot,
-artifact, authority and reason. Publication logically revokes the source record;
-the active projection excludes the source and dependent outcome/credit facts.
+`UnlearningLineageEventV1` durably binds the canonical source event digest, exact
+frozen dataset identity/digest, a cross-owner artifact handoff identity, authority
+and reason. Before append, `LedgerWriter` verifies the self-describing dataset
+receipt and proves that its canonical source digest set actually contains the
+named source record. Replay rechecks the persisted source-event digest against
+canonical history. Publication logically revokes the source record, so the active
+projection excludes it and dependent outcome/credit facts. `artifact_id` is not
+an artifact-registry membership proof: `learning.artifacts` remains authoritative
+for dataset→artifact membership, withdrawal fanout and descendant revocation.
 Audit bytes remain immutable.
 
 ## 4. Deterministic commit, acknowledgement and recovery
@@ -131,7 +137,7 @@ canonical state and derives:
 - current outcome watermark;
 - correction frontier digest;
 - revocation/unlearning frontier digest;
-- pending and censored outcome counts.
+- pending and censored outcome counts, including decisions for which no Outcome row exists yet.
 
 The caller cannot self-report those cuts. `DatasetSnapshotReceiptV3` remains
 self-verifying and deny-all. `LedgerWriter::revalidate_dataset_snapshot` is the
@@ -141,8 +147,10 @@ active projection. A later correction, revocation or unlearning event therefore
 invalidates stale use without rewriting history.
 
 Logical unlearning is distinct from physical erasure and parameter unlearning.
-Source→dataset→artifact lineage prevents use of revoked ancestry in the active
-projection, but deployment owners still owe derived-artifact rebuilding,
+`learning.ledger` proves the source→dataset edge and preserves the artifact handoff
+identity; `learning.artifacts` proves the dataset→artifact/descendant relation and
+owns withdrawal/revocation publication. Neither owner may infer the other's fact.
+Deployment owners still owe the live cross-owner handoff, derived-artifact rebuild,
 physical deletion/backup handling and any model-level unlearning process.
 
 ## 7. Canonical protocol compatibility
@@ -191,8 +199,8 @@ power-loss, longitudinal-efficacy and activation qualification false.
   outcome.
 - LEDGER-06: dataset freeze derives source rows and correction/revocation cuts
   from canonical ledger state.
-- LEDGER-07: unlearning lineage survives replay and prevents causal
-  non-resurrection.
+- LEDGER-07: unlearning requires exact dataset membership, persists the verified
+  source/dataset digests, survives replay and prevents causal non-resurrection.
 - LEDGER-08: canonical protocol adapters reject unknown fields and round-trip
   registered views.
 - LEDGER-09: index checkpoint tampering is detected and canonical replay remains
