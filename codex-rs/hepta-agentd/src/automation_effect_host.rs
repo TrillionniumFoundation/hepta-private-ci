@@ -48,7 +48,6 @@ use crate::AgentdIdentity;
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
-const MAX_AUTOMATION_EFFECT_WIRE_BYTES: usize = 32 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
 
 #[derive(Clone, Debug)]
@@ -339,7 +338,7 @@ impl AgentdAutomationEffectHost {
         intent: &AuthorizedEffectIntent,
         wire_payload: &[u8],
     ) -> Result<(), AgentdError> {
-        if wire_payload.is_empty() || wire_payload.len() > MAX_AUTOMATION_EFFECT_WIRE_BYTES {
+        if wire_payload.is_empty() || wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES {
             return Err(AgentdError::Invalid(
                 "automation effect wire payload is empty or too large".to_string(),
             ));
