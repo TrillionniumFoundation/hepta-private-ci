@@ -6,6 +6,7 @@ use tempfile::TempDir;
 use super::DurableOperationError;
 use super::DurableOperationStore;
 use super::DurableOutboxState;
+use super::OperationContextV1;
 use crate::OperationError;
 use crate::OperationKey;
 use crate::OperationState;
@@ -124,6 +125,58 @@ async fn operation_identity_reuse_with_changed_payload_fails_closed_across_handl
         .begin(key(operation.as_str(), b"two"), generation(3))
         .await
         .expect_err("changed payload must conflict");
+    assert!(matches!(
+        error,
+        DurableOperationError::Operation(OperationError::Conflict(ref value))
+            if value == &operation
+    ));
+}
+
+#[tokio::test]
+async fn immutable_operation_context_survives_reopen_and_rejects_semantic_drift() {
+    let (temp, store) = opened().await;
+    let operation = id("operation.context");
+    let semantic = Digest32::of_bytes(b"semantic-context");
+    store
+        .begin(
+            OperationKey {
+                id: operation.clone(),
+                payload_digest: semantic,
+            },
+            generation(6),
+        )
+        .await
+        .expect("begin");
+    let context = OperationContextV1 {
+        operation_id: operation.clone(),
+        action_id: id("request_retry"),
+        resource_id: id("runtime.agentd"),
+        expected_revision: codex_hepta_types::Revision::new(9).expect("revision"),
+        semantic_digest: semantic,
+    };
+    store.bind_context(&context).await.expect("bind context");
+    store.close().await;
+
+    let reopened = DurableOperationStore::open(temp.path())
+        .await
+        .expect("reopen");
+    assert_eq!(
+        reopened
+            .get_context(&operation)
+            .await
+            .expect("context read")
+            .expect("context exists"),
+        context
+    );
+
+    let changed = OperationContextV1 {
+        action_id: id("runtime_stop"),
+        ..context
+    };
+    let error = reopened
+        .bind_context(&changed)
+        .await
+        .expect_err("context is immutable");
     assert!(matches!(
         error,
         DurableOperationError::Operation(OperationError::Conflict(ref value))
