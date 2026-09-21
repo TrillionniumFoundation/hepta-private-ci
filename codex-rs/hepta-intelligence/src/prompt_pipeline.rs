@@ -19,7 +19,7 @@ use codex_hepta_prompt_optimizer::canonical::{
     PromptExerciseActionV1, PromptExerciseDecisionV1, PromptExerciseRequestV1,
     SelectedPromptPortfolioV1, exercise_v1,
 };
-use codex_hepta_prompt_registry::{PromptRealizationPayloadV2, PromptRegistry, PromptRoleV2};
+use codex_hepta_prompt_registry::{PromptRegistry, PromptRoleV2, RealizationDeliveryV2};
 use codex_hepta_types::{AuthorityPosture, Digest32, FixedQ32, StableId};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -35,7 +35,7 @@ pub struct PromptContextCompileRequestV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptPayloadMaterializationV1 {
-    pub payloads: Vec<PromptRealizationPayloadV2>,
+    pub payloads: Vec<RealizationDeliveryV2>,
     pub bundle_digest: Digest32,
     pub authority: AuthorityPosture,
 }
@@ -321,7 +321,7 @@ fn materialize_prompt_payloads(
     let mut payloads = Vec::with_capacity(portfolio.selected.len());
     for selected in &portfolio.selected {
         let payload = registry
-            .read_realization_payload_v2(
+            .dereference_realization_v2(
                 &snapshot,
                 portfolio.generation_vector_digest,
                 &portfolio.model_tuple,
@@ -331,7 +331,7 @@ fn materialize_prompt_payloads(
             .map_err(|error| PromptPipelineErrorV1::Registry(format!("{error:?}")))?;
         if payload.binding != selected.realization
             || payload.binding.digest() != selected.binding_digest
-            || payload.payload_digest != selected.realization.payload_digest
+            || payload.binding.payload_digest != selected.realization.payload_digest
         {
             return Err(PromptPipelineErrorV1::PayloadMaterializationDrift);
         }
@@ -385,7 +385,7 @@ fn prove_prompt_serialization(
             .ok_or(PromptPipelineErrorV1::Arithmetic)?;
         occurrences.push(PromptSerializationOccurrenceV1 {
             realization_id: item_id.clone(),
-            payload_digest: payload.payload_digest,
+            payload_digest: payload.binding.payload_digest,
             start_offset: u64::try_from(start).map_err(|_| PromptPipelineErrorV1::Arithmetic)?,
             end_offset: u64::try_from(end).map_err(|_| PromptPipelineErrorV1::Arithmetic)?,
         });
@@ -432,14 +432,14 @@ fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
         .position(|window| window == needle)
 }
 
-fn prompt_payload_bundle_digest(payloads: &[PromptRealizationPayloadV2]) -> Digest32 {
+fn prompt_payload_bundle_digest(payloads: &[RealizationDeliveryV2]) -> Digest32 {
     let mut bytes = b"hepta.prompt-pipeline.payload-materialization.v1".to_vec();
     push_len(&mut bytes, payloads.len());
     for payload in payloads {
         push_id(&mut bytes, &payload.binding.factor_id);
         push_id(&mut bytes, &payload.binding.realization_id);
         bytes.extend_from_slice(payload.binding.digest().as_array());
-        bytes.extend_from_slice(payload.payload_digest.as_array());
+        bytes.extend_from_slice(payload.binding.payload_digest.as_array());
         push_len(&mut bytes, payload.payload.len());
         bytes.extend_from_slice(&payload.payload);
     }
