@@ -200,7 +200,8 @@
     {
       "caller": "AgentdIntelligenceProductRunnerV1",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "state": "named_runner_source_present_not_daemon_routed"
+      "state": "named_runner_admits_agentd_run_but_daemon_ingress_not_routed",
+      "entrypoint": "prepare_and_admit"
     },
     {
       "caller": "AppServerModelDriver::run_intelligence",
