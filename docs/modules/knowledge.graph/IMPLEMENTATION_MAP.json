@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "fa676991b4eaa89962f9d57dbad39d557973d65d",
-    "tree": "de49f9de2f1917df2099029093bc25d7282c43dc"
+    "commit": "6a26ccf14b6c40d7ad4be93dc24d6f603ffa65c8",
+    "tree": "f164a117586fd38e8c5a3318e96939084a29d88c"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "composed_cognitive_read_and_candidate_default_agentd_write_pending_exact_head",
+  "productCallerState": "composed_cognitive_read_default_agentd_write_and_prompt_optimizer_pending_exact_head",
   "productionWriterState": "candidate_agentd_default_fail_closed_pending_exact_head",
   "operations": [
     {
@@ -84,20 +84,42 @@
         "codex-rs/hepta-kg/src/generation_tests.rs",
         "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
         "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
-        "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs::qualification_knowledge_graph_capacity_receipt"
+        "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs::qualification_knowledge_graph_capacity_receipt",
+        "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
+        "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "query_relations",
       "mappingClass": "owner_native_with_cognitive_read_adapter",
       "delegatedCallees": [
-        "codex-rs/hepta-memory/src/cognitive_retrieval.rs::graph_channel_tx"
+        "codex-rs/hepta-memory/src/cognitive_retrieval.rs::graph_channel_tx",
+        "codex-rs/hepta-prompt-optimizer/src/graph.rs::optimize_with_factor_graph"
+      ]
+    },
+    {
+      "operation": "build_prompt_factor_projection_v1",
+      "nativeSymbol": "build_prompt_factor_projection_v1",
+      "sourcePath": "codex-rs/hepta-kg/src/prompt_factor.rs",
+      "state": "source_composed_prompt_registry_owner_to_prompt_optimizer_consumer_pending_exact_head",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs::governed_factor_relations_are_owner_bound_and_rebuildable",
+        "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
+        "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "build_prompt_factor_projection",
+      "mappingClass": "owner_native_with_prompt_registry_source_and_optimizer_consumer",
+      "delegatedCallees": [
+        "codex-rs/hepta-prompt-registry/src/lib.rs::PromptRegistry::factor_graph_source_v1",
+        "codex-rs/hepta-prompt-optimizer/src/graph.rs::optimize_with_factor_graph"
       ]
     }
   ],
   "repositoryControlledGaps": [
-    "The Agentd default product profile now selects scoped cognitive mutation tools and fails closed when the cognitive owner store is unavailable, but current exact-head and deterministic synthetic-merge execution receipts must be green before this candidate writer is treated as established.",
-    "The prompt-factor graph projection target is not yet composed through an owner-authenticated prompt.registry relation source and canonical optimizer consumer; this remains a separate stacked convergence task.",
-    "The current durable writer rebuilds a complete bounded generation per logical mutation. The PERF-LIBRARY qualification receipt measures the 4096-node/32768-edge pilot profile; target-host results must determine whether the runtime writer remains full-generation or promotes the already-qualified incremental algorithm."
+    "Current exact-head and deterministic synthetic-merge knowledge.graph qualification receipts must both be green before productionImplementation or productExecutionProved can change.",
+    "The durable cognitive writer currently selects complete bounded generation rebuild per logical mutation. PERF-LIBRARY and target-host results decide whether the already-qualified incremental algorithm should become the runtime writer; no host-independent latency threshold is claimed.",
+    "The prompt-factor source/projection/optimizer chain is source-composed and owner-sealed here, but prompt.registry durability/activation remains that module's separate gate and is not self-certified by knowledge.graph."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -116,9 +138,9 @@
   "sourceRoot": [
     "codex-rs/hepta-kg"
   ],
-  "sourceBaseSemantics": "module_source_snapshot_zero_diff_to_candidate",
   "compositionRoots": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
+    "codex-rs/Cargo.lock",
     "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
     "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
     "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
@@ -140,6 +162,51 @@
     "codex-rs/hepta-memory/src/cognitive_store.rs",
     "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
     "codex-rs/hepta-memory/src/lib.rs",
-    "scripts/hepta-implementation-maps.py"
+    "codex-rs/hepta-prompt-registry/Cargo.toml",
+    "codex-rs/hepta-prompt-registry/src/lib.rs",
+    "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+    "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+    "codex-rs/hepta-prompt-optimizer/src/graph.rs",
+    "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "6a26ccf14b6c40d7ad4be93dc24d6f603ffa65c8",
+    "tree": "f164a117586fd38e8c5a3318e96939084a29d88c",
+    "interpretation": "exact knowledge.graph source observation after latest-main merge, canonical cognitive SQLite V2 convergence, default Agentd cognitive-writer profile, crash/reopen and PERF-LIBRARY probes, sealed prompt.registry factor-relation source, prompt-factor V2 projection, and generation-bound prompt.optimizer consumer; later commits are documentation/claim projection updates only and qualification results remain separate"
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-kg",
+    ".github/workflows/hepta-knowledge-graph-qualification.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+    "codex-rs/hepta-agentd/Cargo.toml",
+    "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/hepta-agentd/src/error.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+    "codex-rs/hepta-contracts/CALLERS.toml",
+    "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
+    "codex-rs/hepta-memory/Cargo.toml",
+    "codex-rs/hepta-memory/migrations/0011_kg_generation_semantics.sql",
+    "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_model.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+    "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-prompt-registry/Cargo.toml",
+    "codex-rs/hepta-prompt-registry/src/lib.rs",
+    "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+    "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+    "codex-rs/hepta-prompt-optimizer/src/graph.rs",
+    "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
   ]
 }
