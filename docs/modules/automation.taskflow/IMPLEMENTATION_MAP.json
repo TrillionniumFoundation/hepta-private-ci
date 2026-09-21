@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "37fabb4a76cf0362896aeb6df9a8e0ffdaccce60",
-    "tree": "ee55b0b056339d8c6583629d7457d5663f69c2fc"
+    "commit": "@HEAD",
+    "tree": "@HEAD^{tree}"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -188,18 +188,5 @@
   "sourceRoot": [
     "codex-rs/hepta-automation"
   ],
-  "observedSourcePaths": [
-    "codex-rs/hepta-automation",
-    "codex-rs/hepta-agentd",
-    "codex-rs/hepta-operations",
-    "codex-rs/hepta-contracts",
-    "codex-rs/hepta-types",
-    "codex-rs/Cargo.lock"
-  ],
-  "observedAtHead": {
-    "commit": "37fabb4a76cf0362896aeb6df9a8e0ffdaccce60",
-    "tree": "ee55b0b056339d8c6583629d7457d5663f69c2fc",
-    "interpretation": "exact final TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence, schedule-revision claim linearization, producer-owned OperationIntentV1 composition, final-use nonce hardening, revocation-race/compensation-crash coverage, after-provider-contact fault injection, Calendar V2 bounded missed-run/DST coverage, and legacy revision-unknown dispatch reconciliation; later commits are documentation/projection truth updates only, and qualification results remain separate"
-  },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
