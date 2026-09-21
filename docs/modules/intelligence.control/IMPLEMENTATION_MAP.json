@@ -27,7 +27,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_product_source_composed_execution_pending",
+  "productCallerState": "named_agentd_runner_present_daemon_route_not_composed",
   "productionWriterState": "none_by_design_composition_facade",
   "operations": [
     {
@@ -37,7 +37,7 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "state": "source_implemented_product_composed",
+      "state": "source_implemented_named_runner_not_daemon_routed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs"
@@ -59,7 +59,7 @@
         "context.compiler",
         "learning.eval"
       ],
-      "state": "source_implemented_product_composed",
+      "state": "source_implemented_named_runner_not_daemon_routed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs",
@@ -74,7 +74,7 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "state": "source_implemented_product_composed",
+      "state": "source_implemented_named_runner_not_daemon_routed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs"
@@ -88,7 +88,7 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "state": "source_implemented_product_composed",
+      "state": "source_implemented_named_runner_not_daemon_routed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs"
@@ -102,7 +102,7 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "state": "source_implemented_product_composed",
+      "state": "source_implemented_named_runner_not_daemon_routed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intelligence/src/canonical_tests.rs",
@@ -200,12 +200,12 @@
     {
       "caller": "AgentdIntelligenceProductRunnerV1",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "state": "named_product_source_composed"
+      "state": "named_runner_source_present_not_daemon_routed"
     },
     {
       "caller": "AppServerModelDriver::run_intelligence",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-      "state": "physical_turn_source_bound_execution_pending"
+      "state": "physical_turn_source_bound_waiting_for_daemon_prepared_binding"
     }
   ],
   "productBoundary": {
@@ -217,6 +217,8 @@
     "currentnessVerifier": "IntelligenceAuthorityVerifierV1"
   },
   "repositoryControlledGaps": [
+    "Wire an actual Agentd daemon ingress/product path that invokes AgentdIntelligenceProductRunnerV1::prepare, appends the durable Decision, freezes the exact run/context envelope, and supplies that binding to the physical App Server caller. Merely storing the runner in AgentdState is not product composition.",
+    "Make ambiguous Decision/Outcome append recovery survive Agentd process loss; PendingIntelligenceLedgerAppendV1 is currently only an in-memory replay object.",
     "Obtain current exact-head and deterministic synthetic-merge green receipts for this candidate; prior candidate receipts are provenance only.",
     "Run the real Agentd/App Server intelligence-bound product E2E, including turn/start lost-ack, dependency outage, restart and revocation races.",
     "Qualify target-host hard resource termination; the pure in-process cognition worker discards late results but spawn_blocking cannot terminate a running blocking stage."
