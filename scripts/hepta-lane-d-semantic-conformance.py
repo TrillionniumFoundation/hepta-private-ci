@@ -340,6 +340,33 @@ def verify() -> int:
         {row["module"] for row in maturity["modules"]} == set(MODULES),
         "maturity module closure",
     )
+    control_map = load(MAPS["control.runtime"])
+    control_boundary = control_map.get("claimBoundary", {})
+    need(
+        control_boundary.get("mappedPlannerOperationSurfaceComplete") is True,
+        "control.runtime planner mapping truth",
+    )
+    need(
+        control_boundary.get("wholeSourceRootClosedWorldMappingComplete") is False,
+        "control.runtime whole-root mapping must remain explicit false",
+    )
+    required_component_profiles = {
+        "globalPlannerKernel",
+        "requestLocalContextPlanner",
+        "plannerDurability",
+        "organRuntime",
+        "organWire",
+        "embodimentCart",
+        "fixedPriorityTiming",
+        "legacyControlState",
+    }
+    need(
+        required_component_profiles.issubset(
+            set((control_map.get("componentMaturity") or {}).keys())
+        ),
+        "control.runtime implementation-map component maturity",
+    )
+
     expected_product_caller = {
         "objective.compiler": "not_established",
         "utility.ndu": "not_established",
@@ -347,6 +374,13 @@ def verify() -> int:
     }
     for row in maturity["modules"]:
         module = row["module"]
+        if module == "control.runtime":
+            need(
+                required_component_profiles.issubset(
+                    set((row.get("componentProfiles") or {}).keys())
+                ),
+                "control.runtime maturity component profiles",
+            )
         need(
             row["dimensions"]["productCaller"]["state"]
             == expected_product_caller[module],
