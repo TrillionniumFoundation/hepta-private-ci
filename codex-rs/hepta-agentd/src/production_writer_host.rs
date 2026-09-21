@@ -152,6 +152,8 @@ pub enum AgentdCompactionCheckpointError {
     Store(#[from] QualifiedCompactStoreError),
     #[error("compact checkpoint trust roots are not attached to this host")]
     CompactionTrustUnavailable,
+    #[error("durable compact checkpoint trust identity no longer matches current host enrollment")]
+    CompactionTrustDrift,
     #[error("authoritative cognitive snapshot provider is not attached to this host")]
     SnapshotProviderUnavailable,
     #[error("system clock is unavailable for snapshot freshness validation: {0}")]
@@ -273,6 +275,34 @@ impl AgentdProductionWriterHost {
         Ok(snapshot)
     }
 
+    fn revalidate_compaction_trust(
+        &self,
+        publication: &QualifiedCompactCheckpointPublication,
+    ) -> Result<(), AgentdCompactionCheckpointError> {
+        let trust = self
+            .compaction_trust
+            .as_ref()
+            .ok_or(AgentdCompactionCheckpointError::CompactionTrustUnavailable)?;
+        let proof = &publication.proof;
+        let tokenizer_matches = publication
+            .checkpoint
+            .source_snapshot
+            .vector
+            .tokenizer_digest
+            == trust.tokenizer.tokenizer_digest
+            && proof.tokenizer_implementation_digest == trust.tokenizer.implementation_digest
+            && proof.tokenizer_attestation_digest == trust.tokenizer.attestation_digest
+            && proof.tokenizer_key_digest == trust.tokenizer.key_digest();
+        let evaluator_matches = proof.evaluator_id == trust.evaluator.evaluator_id
+            && proof.evaluator_implementation_digest == trust.evaluator.implementation_digest
+            && proof.attestation_digest == trust.evaluator.attestation_digest
+            && publication.evaluator_key_digest == trust.evaluator.key_digest();
+        if !tokenizer_matches || !evaluator_matches {
+            return Err(AgentdCompactionCheckpointError::CompactionTrustDrift);
+        }
+        Ok(())
+    }
+
     /// Product composition point for compact.engine.
     ///
     /// The pure engine constructs one canonical candidate/proof pair, then the
@@ -331,7 +361,7 @@ impl AgentdProductionWriterHost {
         compatibility_digest: Digest32,
     ) -> Result<Option<QualifiedCompactSelection>, AgentdCompactionCheckpointError> {
         let source_snapshot = self.acquire_current_snapshot(snapshot_acquisition_request)?;
-        Ok(self
+        let selection = self
             .writer
             .store()
             .select_current_qualified_compact_checkpoint(
@@ -339,7 +369,11 @@ impl AgentdProductionWriterHost {
                 source_snapshot.snapshot().snapshot_digest,
                 compatibility_digest,
             )
-            .await?)
+            .await?;
+        if let Some(selection) = selection.as_ref() {
+            self.revalidate_compaction_trust(&selection.publication)?;
+        }
+        Ok(selection)
     }
 
     /// A rollback never selects historical state in place. It only exposes a
@@ -352,7 +386,7 @@ impl AgentdProductionWriterHost {
         compatibility_digest: Digest32,
     ) -> Result<Option<QualifiedCompactRollbackCandidate>, AgentdCompactionCheckpointError> {
         let source_snapshot = self.acquire_current_snapshot(snapshot_acquisition_request)?;
-        Ok(self
+        let candidate = self
             .writer
             .store()
             .rollback_qualified_compact_payload_candidate(
@@ -361,7 +395,11 @@ impl AgentdProductionWriterHost {
                 source_snapshot.snapshot().snapshot_digest,
                 compatibility_digest,
             )
-            .await?)
+            .await?;
+        if let Some(candidate) = candidate.as_ref() {
+            self.revalidate_compaction_trust(&candidate.publication)?;
+        }
+        Ok(candidate)
     }
 
     pub async fn revoke_compaction_payload(
