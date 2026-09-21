@@ -321,6 +321,9 @@ mod tests {
                 "evaluator-evidence",
             ),
             LearningEvidenceRoleV1::Observer => panic!("observer not used in operator fixture"),
+            LearningEvidenceRoleV1::DatasetOwner => {
+                panic!("dataset owner not used in evaluator fixture")
+            }
         };
         let mut evidence = SignedLearningEvidenceV1 {
             evidence_id: id(evidence_id),
