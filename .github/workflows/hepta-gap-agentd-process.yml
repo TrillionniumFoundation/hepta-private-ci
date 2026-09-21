@@ -175,7 +175,9 @@ jobs:
       fail-fast: false
       matrix:
         candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","merge-candidate"]' || '["source-head"]') }}
-        os: ${{ fromJSON(github.event_name == 'push' && github.ref != 'refs/heads/main' && '["ubuntu-24.04"]' || '["ubuntu-24.04","macos-15"]') }}
+        # Branch feedback uses the available ARM pool; PR/main retain both
+        # required platforms. An ARM source result cannot satisfy those rows.
+        os: ${{ fromJSON(github.event_name == 'push' && github.ref != 'refs/heads/main' && '["ubuntu-24.04-arm"]' || '["ubuntu-24.04","macos-15"]') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     env:
