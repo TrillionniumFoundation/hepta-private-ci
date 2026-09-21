@@ -333,3 +333,34 @@ fn wrong_owner_signature_cannot_substitute_for_bound_owner() {
     .expect("provider construction is structural only");
     assert!(provider.verify_at(fixture.now_ms).is_err());
 }
+
+
+#[test]
+fn enrolled_registry_is_the_only_final_use_trust_root_and_reloads_it() {
+    let fixture = Fixture::new();
+    let registry = AuthenticatedCapabilitySnapshotRegistryV3::new(
+        fixture.identity.clone(),
+        fixture.trust_file.clone(),
+    )
+    .expect("enroll current registry");
+    assert_eq!(registry.trust_file(), fixture.trust_file.as_path());
+
+    let provider = registry
+        .provider(fixture.snapshot.clone(), fixture.attestations())
+        .expect("provider from enrolled registry");
+    provider
+        .verify_at(fixture.now_ms)
+        .expect("current owner attestations");
+
+    fixture.write_trust(
+        /*sequence*/ 12,
+        /*authority_epoch*/ 7,
+        digest("revocation-frontier"),
+        None,
+        false,
+    );
+    assert!(
+        provider.verify_at(fixture.now_ms + 1).is_err(),
+        "final use must reload the enrolled registry and reject stale attestations"
+    );
+}
