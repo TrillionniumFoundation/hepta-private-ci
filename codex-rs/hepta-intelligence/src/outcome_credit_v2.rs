@@ -152,14 +152,10 @@ fn validate_terminal_request(
         ));
     }
     if request.outcome.outcome.watermark.terminality != OutcomeTerminalityV1::Terminal {
-        return Err(OutcomeCreditClosureErrorV2::Binding(
-            "non-terminal outcome",
-        ));
+        return Err(OutcomeCreditClosureErrorV2::Binding("non-terminal outcome"));
     }
     let Some(terminal_value) = request.outcome.outcome.value else {
-        return Err(OutcomeCreditClosureErrorV2::Binding(
-            "non-terminal outcome",
-        ));
+        return Err(OutcomeCreditClosureErrorV2::Binding("non-terminal outcome"));
     };
     if request.credit.episode_id != request.outcome.outcome.episode_id {
         return Err(OutcomeCreditClosureErrorV2::Binding("episode"));
@@ -384,8 +380,8 @@ mod tests {
 
         fn writer(&self) -> LedgerWriter {
             let binding = digest("production-ledger-binding");
-            let ledger = DurableLedger::create(Self::open(&self.ledger_path), binding, 32)
-                .expect("ledger");
+            let ledger =
+                DurableLedger::create(Self::open(&self.ledger_path), binding, 32).expect("ledger");
             let witness = LedgerWitnessStore::create(Self::open(&self.witness_path), binding)
                 .expect("witness");
             let ledger_directory = self.directory();
@@ -539,15 +535,10 @@ mod tests {
 
         let initial = outcome("outcome-record-1", "outcome-1", None, 100);
         let initial_request = observed_request(&writer, decision.chain_digest, initial);
-        let first = append_observed_outcome_v2(&mut writer, initial_request, 50)
-            .expect("initial outcome");
+        let first =
+            append_observed_outcome_v2(&mut writer, initial_request, 50).expect("initial outcome");
 
-        let corrected = outcome(
-            "outcome-record-2",
-            "outcome-2",
-            Some("outcome-1"),
-            120,
-        );
+        let corrected = outcome("outcome-record-2", "outcome-2", Some("outcome-1"), 120);
         let request = closure_request(
             &writer,
             first.chain_digest,
@@ -559,11 +550,20 @@ mod tests {
         assert_eq!(receipt.outcome.disposition, AppendDisposition::Appended);
         assert_eq!(receipt.credit.disposition, AppendDisposition::Appended);
         assert!(!receipt.authority.grants_any());
-        assert_eq!(writer.witness_frontier().expect("frontier").anchor.sequence, 4);
+        assert_eq!(
+            writer.witness_frontier().expect("frontier").anchor.sequence,
+            4
+        );
 
         let replay = append_outcome_credit_v2(&mut writer, request, 50).expect("replay");
-        assert_eq!(replay.outcome.disposition, AppendDisposition::IdempotentReplay);
-        assert_eq!(replay.credit.disposition, AppendDisposition::IdempotentReplay);
+        assert_eq!(
+            replay.outcome.disposition,
+            AppendDisposition::IdempotentReplay
+        );
+        assert_eq!(
+            replay.credit.disposition,
+            AppendDisposition::IdempotentReplay
+        );
         assert_eq!(replay.closure_digest, receipt.closure_digest);
     }
 
@@ -587,7 +587,10 @@ mod tests {
             other => panic!("expected partial credit failure, got {other:?}"),
         };
         assert_eq!(committed.disposition, AppendDisposition::Appended);
-        assert_eq!(writer.witness_frontier().expect("frontier").anchor.sequence, 2);
+        assert_eq!(
+            writer.witness_frontier().expect("frontier").anchor.sequence,
+            2
+        );
 
         let batch_digest = finalize_credit_batch(request.credit.clone(), 50)
             .expect("credit finalize")
@@ -606,7 +609,10 @@ mod tests {
             AppendDisposition::IdempotentReplay
         );
         assert_eq!(reconciled.credit.disposition, AppendDisposition::Appended);
-        assert_eq!(writer.witness_frontier().expect("frontier").anchor.sequence, 3);
+        assert_eq!(
+            writer.witness_frontier().expect("frontier").anchor.sequence,
+            3
+        );
     }
 
     #[test]
@@ -624,6 +630,9 @@ mod tests {
                 ProductionLedgerError::Binding("active decision run/episode binding")
             ))
         ));
-        assert_eq!(writer.witness_frontier().expect("frontier").anchor.sequence, 1);
+        assert_eq!(
+            writer.witness_frontier().expect("frontier").anchor.sequence,
+            1
+        );
     }
 }
