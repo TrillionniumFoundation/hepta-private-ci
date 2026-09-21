@@ -284,9 +284,14 @@ mod tests {
     use super::*;
     use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
     use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
+    use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+    use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+    use codex_hepta_learning_ledger::TrustedLearningSignerV1;
     use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
     use codex_hepta_types::FixedQ32;
     use codex_hepta_types::Generation;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
 
     use crate::DatasetSnapshot;
     use crate::TabularOperatorSampleV1;
@@ -378,6 +383,104 @@ mod tests {
                 ],
             },
         }
+    }
+
+    #[test]
+    fn op_07_authenticated_dataset_requires_exact_trusted_owner() {
+        let owner_key = SigningKey::from_bytes(&[41; 32]);
+        let other_key = SigningKey::from_bytes(&[42; 32]);
+        let principal = |name: &str, key: &SigningKey| AuthenticatedPrincipalV1 {
+            principal_id: id(name),
+            credential_chain_digest: digest(&format!("{name}-credential")),
+            signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+            scope_digest: digest("scope"),
+            authority_epoch: 7,
+            authenticated_at: 10,
+            expires_at: 100,
+        };
+        let owner = principal("dataset-owner", &owner_key);
+        let other = principal("other-dataset-owner", &other_key);
+        let receipt = freeze_dataset_receipt_v3(
+            DatasetFreezeRequestV1 {
+                snapshot_id: id("operator-dataset-authenticated"),
+                producer: owner.clone(),
+                ledger_head_digest: digest("ledger-head"),
+                objective_digest: digest("objective"),
+                eligible_frontier: 3,
+                outcome_watermark: 20,
+                correction_cut_digest: digest("correction-cut"),
+                revocation_cut_digest: digest("revocation-cut"),
+                inclusion_policy_digest: digest("inclusion-policy"),
+                source_record_digests: vec![digest("record-b"), digest("record-a")],
+                pending_outcomes: 0,
+                censored_outcomes: 0,
+            },
+            50,
+        )
+        .unwrap_or_else(|error| panic!("valid receipt: {error:?}"));
+        let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+            scope_digest: digest("scope"),
+            objective_digest: digest("objective"),
+            authority_epoch: 7,
+            signers: vec![
+                TrustedLearningSignerV1 {
+                    principal: owner.clone(),
+                    controller_id: id("dataset-controller"),
+                    verifying_key: owner_key.verifying_key().to_bytes(),
+                    roles: vec![LearningEvidenceRoleV1::DatasetOwner],
+                    revoked_at: None,
+                },
+                TrustedLearningSignerV1 {
+                    principal: other.clone(),
+                    controller_id: id("other-dataset-controller"),
+                    verifying_key: other_key.verifying_key().to_bytes(),
+                    roles: vec![LearningEvidenceRoleV1::DatasetOwner],
+                    revoked_at: None,
+                },
+            ],
+        })
+        .unwrap_or_else(|error| panic!("valid host trust: {error:?}"));
+        let payload = operator_dataset_signing_payload_v2(&receipt, 50)
+            .unwrap_or_else(|error| panic!("dataset payload: {error:?}"));
+        let sign = |principal: &AuthenticatedPrincipalV1,
+                    key: &SigningKey,
+                    evidence_id: &str| {
+            let mut evidence = SignedLearningEvidenceV1 {
+                evidence_id: id(evidence_id),
+                principal_id: principal.principal_id.clone(),
+                role: LearningEvidenceRoleV1::DatasetOwner,
+                trust_digest: verifier.trust_digest(),
+                scope_digest: principal.scope_digest,
+                objective_digest: receipt.snapshot.objective_digest,
+                authority_epoch: principal.authority_epoch,
+                issued_at: 20,
+                expires_at: 90,
+                payload_digest: Digest32::of_bytes(&payload),
+                signature: [0; 64],
+            };
+            evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+            evidence
+        };
+        let owner_evidence = sign(&owner, &owner_key, "dataset-owner-proof");
+        let verified = VerifiedOperatorDatasetV2::from_authenticated_receipt(
+            &receipt,
+            &owner_evidence,
+            &verifier,
+            50,
+        )
+        .unwrap_or_else(|error| panic!("trusted dataset owner: {error:?}"));
+        assert_eq!(verified.dataset_digest(), receipt.snapshot.dataset_digest);
+
+        let wrong_owner = sign(&other, &other_key, "other-dataset-owner-proof");
+        assert_eq!(
+            VerifiedOperatorDatasetV2::from_authenticated_receipt(
+                &receipt,
+                &wrong_owner,
+                &verifier,
+                50,
+            ),
+            Err(OperatorDatasetBindingError::OwnerIdentityBinding)
+        );
     }
 
     #[test]
