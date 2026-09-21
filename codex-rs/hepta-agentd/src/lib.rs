@@ -9,6 +9,7 @@ mod authbus_dispatch;
 mod authbus_ingress;
 mod authbus_trust;
 mod automation;
+mod automation_recovery;
 mod client;
 mod cognitive_context;
 mod cognitive_ranker;
