@@ -16,6 +16,9 @@ pub use capabilities::negotiate_capabilities;
 
 use std::path::PathBuf;
 
+use codex_hepta_automation::AutomationCalendarScheduleV2;
+use codex_hepta_automation::AutomationMissedRunPolicy;
+use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationTask;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
@@ -163,6 +166,27 @@ impl AgentdRequest {
         }
     }
 
+    pub fn automation_create_calendar_v2(
+        request_id: u64,
+        spawn_generation: u64,
+        draft: AutomationTaskDraft,
+        schedule: AutomationCalendarScheduleV2,
+        missed_run: AutomationMissedRunPolicy,
+        overlap: AutomationOverlapPolicy,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationCreateCalendarV2 {
+                draft,
+                schedule,
+                missed_run,
+                overlap,
+            },
+        }
+    }
+
     pub fn automation_list(request_id: u64, spawn_generation: u64, limit: u16) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -282,6 +306,12 @@ pub enum AgentdMethod {
     },
     AutomationCreate {
         draft: AutomationTaskDraft,
+    },
+    AutomationCreateCalendarV2 {
+        draft: AutomationTaskDraft,
+        schedule: AutomationCalendarScheduleV2,
+        missed_run: AutomationMissedRunPolicy,
+        overlap: AutomationOverlapPolicy,
     },
     AutomationList {
         limit: u16,
@@ -633,6 +663,46 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse request"),
             request
+        );
+
+        let schedule = codex_hepta_automation::AutomationCalendarScheduleV2 {
+            timezone_id: "Etc/UTC".to_string(),
+            tzdb_digest: Sha256Digest::for_bytes(b"tzdb-test"),
+            start_at_utc_ms: 123,
+            end_at_utc_ms: Some(86_400_123),
+            every_days: 1,
+            local_time_ms: 123,
+            dst_gap_policy: codex_hepta_automation::AutomationDstGapPolicy::Skip,
+            dst_overlap_policy: codex_hepta_automation::AutomationDstOverlapPolicy::First,
+            clock_profile: codex_hepta_automation::AutomationTimeZoneProfileV1 {
+                timezone_id: "Etc/UTC".to_string(),
+                tzdb_digest: Sha256Digest::for_bytes(b"tzdb-test"),
+                valid_from_utc_ms: 0,
+                valid_until_utc_ms: 172_800_000,
+                initial_offset_seconds: 0,
+                transitions: Vec::new(),
+            },
+        };
+        let calendar = AgentdRequest::automation_create_calendar_v2(
+            10,
+            3,
+            AutomationTaskDraft::new(
+                "019153a4-3088-7e03-a56a-9b1964f75ddd",
+                "calendar task",
+                codex_hepta_automation::AutomationSchedule::Once,
+                123,
+                100,
+            ),
+            schedule,
+            codex_hepta_automation::AutomationMissedRunPolicy::Coalesce,
+            codex_hepta_automation::AutomationOverlapPolicy::Forbid,
+        );
+        let calendar_bytes = serde_json::to_vec(&calendar).expect("serialize calendar request");
+        assert!(calendar_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&calendar_bytes)
+                .expect("parse calendar request"),
+            calendar
         );
     }
 
