@@ -41,27 +41,34 @@ Linearization rules:
 ## 2. Dataset to operator and world-model candidates
 
 ```text
-DatasetSnapshotV2
-  -> validate current objective, lineage and withdrawal state
-  -> fit_transition_model builds an action-conditioned tabular baseline from
-     independently observed rows
+DatasetSnapshotReceiptV3
+  -> independently recompute and verify the frozen DatasetSnapshotV2 identity
+  -> require exact objective/dataset identity and exact source-record evidence
+     equality before constructing an opaque verified training input
+  -> fit_transition_model_verified_v2 builds an action-conditioned tabular
+     baseline; relabelled duplicate evidence rejects before counting
   -> unsupported state/action pairs return OOD instead of extrapolation
-  -> validate_applicability_certificate admits only current, independently
-     evaluated smooth-axis profiles with positive ellipticity and named fallback
+  -> validate_applicability_certificate performs structural checks only
+  -> validate_applicability_with_signed_evidence_v2 additionally requires
+     host-trusted generator/evaluator signatures and role/controller separation
   -> build_sensor_core deterministically selects a fixed farthest-point core
      and measures fill distance, separation radius and mesh ratio
   -> evaluate_bellman_reference requires a complete sensor/action grid and emits
      deterministic targets, greedy actions and action gaps
-  -> optional learned implementations are compared with that reference
-  -> admit_operator_regularity intersects rank, reconstruction gain,
-     monotonicity, positivity, Hölder/Lipschitz residuals, OOD and the complete
-     error-component budget
+  -> verify_tabular_operator_plan_v2 binds exact frozen rows before
+     fit_tabular_operator_verified_v2; canonical fit rejects duplicate evidence
+  -> admit_operator_regularity performs structural regularity checks
+  -> admit_operator_regularity_with_signed_evidence_v2 authenticates the exact
+     assessment including dominant-component approval
   -> candidate bytes and the complete V2 manifest go to learning.artifacts
 ```
 
 The existing `train` API is retained only as a compatibility alias for
-`build_targets`. It is a deterministic target builder, not proof that a learned
-operator, neural network or production inference path exists.
+`build_targets`. The direct fit APIs remain compatibility surfaces for already
+trusted callers; new qualification code uses the receipt-bound V2 constructors.
+An evaluator ID or credential digest alone is structural metadata, not authenticated
+independence. Signed V2 admission authenticates the exact bytes but still does not
+prove scientific validity, future efficacy or selection authority.
 
 World-model predictions are always marked synthetic. They may support planning
 or evaluation models, but they cannot become the independent factual outcome
