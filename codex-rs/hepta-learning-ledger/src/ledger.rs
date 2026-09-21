@@ -511,6 +511,9 @@ impl LearningLedger {
         {
             return Err(LedgerError::UnlearningTargetInvalid);
         }
+        if self.record_digests.get(&value.source_record_id) != Some(&value.source_event_digest) {
+            return Err(LedgerError::UnlearningSourceDigestMismatch);
+        }
         if self.revoked.contains(&value.source_record_id) {
             return Err(LedgerError::TargetAlreadyRevoked(
                 value.source_record_id.to_string(),
@@ -824,6 +827,8 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
             }
         }
         LedgerEvent::UnlearningLineageV1(value) => {
+            require_digest(value.source_event_digest, "unlearning source event")?;
+            require_digest(value.dataset_digest, "unlearning dataset")?;
             require_digest(value.reason_digest, "unlearning reason")?;
             require_digest(value.authentication_digest, "unlearning authentication")?;
         }
@@ -1072,7 +1077,9 @@ fn push_unlearning(bytes: &mut Vec<u8>, value: &UnlearningLineageEventV1) {
     push_id(bytes, &value.record_id);
     push_id(bytes, &value.lineage_id);
     push_id(bytes, &value.source_record_id);
+    push_digest(bytes, value.source_event_digest);
     push_id(bytes, &value.dataset_snapshot_id);
+    push_digest(bytes, value.dataset_digest);
     push_id(bytes, &value.artifact_id);
     push_id(bytes, &value.authority_id);
     push_digest(bytes, value.reason_digest);
