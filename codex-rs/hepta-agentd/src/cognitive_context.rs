@@ -36,6 +36,7 @@ const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read
 #[derive(Debug)]
 pub(crate) enum CognitiveContextError {
     Store(CognitiveStoreError),
+    ReadUnavailable(String),
     RankerUnavailable,
 }
 
@@ -380,21 +381,24 @@ fn read_selected_items(
         maximum_encoded_bytes: MAX_CONTEXT_JSON_BYTES,
     })
     .map_err(map_read_ids_error)
-    .map_err(CognitiveContextError::Store)
 }
 
-fn map_read_ids_error(error: ReadIdsError) -> CognitiveStoreError {
+fn map_read_ids_error(error: ReadIdsError) -> CognitiveContextError {
     let message = error.to_string();
     match error {
-        ReadIdsError::Read(error) => CognitiveStoreError::Corrupt(error.to_string()),
-        ReadIdsError::InvalidCanonicalEncoding => {
-            CognitiveStoreError::Corrupt("invalid canonical exact-id cognitive read".to_string())
+        ReadIdsError::Read(error) => {
+            CognitiveContextError::Store(CognitiveStoreError::Corrupt(error.to_string()))
         }
+        ReadIdsError::InvalidCanonicalEncoding => CognitiveContextError::Store(
+            CognitiveStoreError::Corrupt("invalid canonical exact-id cognitive read".to_string()),
+        ),
         ReadIdsError::TooManyRecordIds { .. }
         | ReadIdsError::DuplicateRecordId
         | ReadIdsError::DuplicateField
-        | ReadIdsError::InvalidMaximumEncodedBytes { .. } => CognitiveStoreError::Invalid(message),
-        ReadIdsError::EncodedResultTooLarge { .. } => CognitiveStoreError::Unavailable(message),
+        | ReadIdsError::InvalidMaximumEncodedBytes { .. } => {
+            CognitiveContextError::Store(CognitiveStoreError::Invalid(message))
+        }
+        ReadIdsError::EncodedResultTooLarge { .. } => CognitiveContextError::ReadUnavailable(message),
     }
 }
 
