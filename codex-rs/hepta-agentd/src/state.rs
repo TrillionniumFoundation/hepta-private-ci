@@ -17,7 +17,8 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
-    plasticity_runtime: std::sync::OnceLock<crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1>,
+    plasticity_runtime:
+        std::sync::OnceLock<crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
