@@ -35,7 +35,7 @@ symbol = "CognitiveStore::select_current_qualified_compact_checkpoint"
 definition_path = "codex-rs/hepta-memory/src/qualified_compact_store.rs"
 definition_markers = ["pub async fn select_current_qualified_compact_checkpoint", "revalidate_current_publication", "resolve_qualified_compact_payload"]
 product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
-caller_markers = ["select_current_compaction_checkpoint", "select_current_qualified_compact_checkpoint"]
+caller_markers = ["select_current_compaction_checkpoint", "select_current_qualified_compact_checkpoint", "revalidate_compaction_trust"]
 
 
 [[boundary]]
@@ -44,7 +44,7 @@ symbol = "CognitiveStore::rollback_qualified_compact_payload_candidate"
 definition_path = "codex-rs/hepta-memory/src/qualified_compact_store.rs"
 definition_markers = ["pub async fn rollback_qualified_compact_payload_candidate", "revalidate_current_publication", "resolve_qualified_compact_payload"]
 product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
-caller_markers = ["rollback_compaction_payload_candidate", "rollback_qualified_compact_payload_candidate"]
+caller_markers = ["rollback_compaction_payload_candidate", "rollback_qualified_compact_payload_candidate", "revalidate_compaction_trust"]
 
 [[boundary]]
 id = "memory_qualified_compact_payload_revoke"
@@ -119,7 +119,7 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier", "AgentdCompactionTrustV1", "TrustedTokenizerV1", "attach_compaction_trust", "attach_snapshot_provider", "acquire_current_snapshot", "select_current_compaction_checkpoint", "rollback_compaction_payload_candidate", "revoke_compaction_payload", "gc_revoked_compaction_payload"]
+required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier", "AgentdCompactionTrustV1", "TrustedTokenizerV1", "attach_compaction_trust", "attach_snapshot_provider", "acquire_current_snapshot", "revalidate_compaction_trust", "CompactionTrustDrift", "select_current_compaction_checkpoint", "rollback_compaction_payload_candidate", "revoke_compaction_payload", "gc_revoked_compaction_payload"]
 forbidden = ["AllowVerifier", "permit_all", "TrustedCompactionEvaluatorV1::default", "TrustedTokenizerV1::default"]
 
 [[protected_file]]
