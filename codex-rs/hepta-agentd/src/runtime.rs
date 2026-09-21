@@ -23,6 +23,7 @@ use crate::AgentdControlServer;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
+use crate::CognitiveRetrievalMode;
 use crate::app_runtime::run_app_server;
 use crate::automation::run_automation_scheduler;
 
@@ -44,6 +45,10 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let retrieval_mode = config.cognitive_retrieval_mode();
+    let retrieval_context = config.cognitive_retrieval_context();
+    let retrieval_learning = config.cognitive_retrieval_learning();
+    require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -63,6 +68,19 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .cognitive_ranker
             .set(ranker)
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
+    }
+    if let Some(current) = retrieval_context {
+        state
+            .cognitive_retrieval_context
+            .set(current)
+            .map_err(|_| {
+                AgentdError::Invalid("cognitive retrieval context already attached".to_string())
+            })?;
+    }
+    if let Some(sink) = retrieval_learning {
+        state.cognitive_retrieval_learning.set(sink).map_err(|_| {
+            AgentdError::Invalid("cognitive retrieval learning sink already attached".to_string())
+        })?;
     }
     if let Some(path) = trust_file {
         state.refresh_generation()?;
@@ -178,6 +196,24 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     )
     .await;
     outcome
+}
+
+fn require_cognitive_retrieval_context_for_mode(
+    mode: CognitiveRetrievalMode,
+    configured: bool,
+) -> Result<(), AgentdError> {
+    match (mode, configured) {
+        (CognitiveRetrievalMode::Compatibility, false)
+        | (CognitiveRetrievalMode::HnmfRequired, true) => Ok(()),
+        (CognitiveRetrievalMode::Compatibility, true) => Err(AgentdError::Invalid(
+            "compatibility retrieval profile forbids an HNMF current context; select HnmfRequired explicitly"
+                .to_string(),
+        )),
+        (CognitiveRetrievalMode::HnmfRequired, false) => Err(AgentdError::Invalid(
+            "HNMF-required retrieval profile requires a current authenticated retrieval context"
+                .to_string(),
+        )),
+    }
 }
 
 #[cfg(feature = "qualification-cognitive-write")]

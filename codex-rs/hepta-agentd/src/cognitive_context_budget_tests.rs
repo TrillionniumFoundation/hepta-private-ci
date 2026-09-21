@@ -197,8 +197,9 @@ async fn stored_candidates(
         .await
         .unwrap();
     let expected_count = contents.len();
+    let mut items = Vec::with_capacity(expected_count);
     for (index, content) in contents.into_iter().enumerate() {
-        store
+        let memory = store
             .remember_memory(
                 &access,
                 &MemoryDraft {
@@ -216,27 +217,13 @@ async fn stored_candidates(
             )
             .await
             .unwrap();
+        items.push(CognitiveContextItem {
+            memory_id: memory.id.memory_id.as_str().to_string(),
+            revision: memory.id.revision,
+            content: memory.content,
+            content_sha256: memory.content_sha256.as_str().to_string(),
+        });
     }
-    let batch = store
-        .retrieve_memory_candidates(
-            &access,
-            &RetrievalRequest::new("lemon", /*now_unix_seconds*/ 100),
-        )
-        .await
-        .unwrap();
-    let items: Vec<_> = batch
-        .candidates
-        .into_iter()
-        .map(|candidate| {
-            let memory = candidate.memory;
-            CognitiveContextItem {
-                memory_id: memory.id.memory_id.as_str().to_string(),
-                revision: memory.id.revision,
-                content: memory.content,
-                content_sha256: memory.content_sha256.as_str().to_string(),
-            }
-        })
-        .collect();
     assert_eq!(items.len(), expected_count);
     (directory, store, owner, items)
 }
@@ -348,4 +335,46 @@ async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstenti
     .await
     .unwrap();
     assert_eq!(selected.items, vec![baseline.items[0].clone()]);
+}
+
+#[tokio::test]
+async fn learned_ranker_can_select_a_candidate_outside_legacy_top_four() {
+    let contents = (0..8)
+        .map(|index| format!("lemon bounded candidate {index}"))
+        .collect::<Vec<_>>();
+    let (_directory, store, owner, items) = stored_candidates(contents).await;
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let legacy = store
+        .retrieve_memory_candidates(
+            &access,
+            &RetrievalRequest::new("lemon", /*now_unix_seconds*/ 100),
+        )
+        .await
+        .unwrap();
+    assert_eq!(legacy.candidates.len(), 4);
+    let legacy_ids = legacy
+        .candidates
+        .iter()
+        .map(|candidate| candidate.memory.id.memory_id.as_str())
+        .collect::<std::collections::BTreeSet<_>>();
+    let winner_index = items
+        .iter()
+        .position(|item| !legacy_ids.contains(item.memory_id.as_str()))
+        .expect("bounded owner observation has candidates outside legacy top four");
+    let winner = items[winner_index].clone();
+    let scores = (0..items.len())
+        .map(|index| if index == winner_index { 100 } else { 0 })
+        .collect::<Vec<_>>();
+    let fixture = fitted_ranker(owner.clone(), &items, &scores);
+    let selected = read(
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 1,
+        Some(&fixture.ranker),
+    )
+    .await
+    .unwrap();
+    assert_eq!(selected.items, vec![winner]);
 }

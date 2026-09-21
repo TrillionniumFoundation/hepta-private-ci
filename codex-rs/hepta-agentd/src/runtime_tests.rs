@@ -54,9 +54,11 @@ use super::cleanup_runtime_tasks;
 use super::monitor_runtime;
 use super::open_automation_store_after_generation_fence;
 use super::open_cognitive_runtime_after_generation_fence;
+use super::require_cognitive_retrieval_context_for_mode;
 use super::require_cognitive_runtime_for_profile;
 use crate::AgentdMethod;
 use crate::AgentdPayload;
+use crate::CognitiveRetrievalMode;
 #[cfg(feature = "qualification-cognitive-write")]
 use crate::app_runtime::app_server_runtime_options_for_agent;
 use crate::automation::DispatchRetryBudget;
@@ -200,6 +202,36 @@ async fn unavailable_cognitive_store_degrades_without_leaking_open_error() {
     };
     assert_eq!(reason.code(), "storage_unavailable");
     assert!(!format!("{reason:?}").contains("/private/raw"));
+}
+
+#[test]
+fn compatibility_retrieval_mode_does_not_require_hnmf_context() {
+    require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::Compatibility, false)
+        .expect("compatibility mode may run without an HNMF context");
+}
+
+#[test]
+fn compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile() {
+    let result =
+        require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::Compatibility, true);
+    assert!(matches!(
+        result,
+        Err(crate::AgentdError::Invalid(message))
+            if message.contains("select HnmfRequired explicitly")
+    ));
+}
+
+#[test]
+fn hnmf_required_retrieval_mode_fails_closed_without_current_context() {
+    let result =
+        require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::HnmfRequired, false);
+    assert!(matches!(
+        result,
+        Err(crate::AgentdError::Invalid(message))
+            if message.contains("HNMF-required retrieval profile")
+    ));
+    require_cognitive_retrieval_context_for_mode(CognitiveRetrievalMode::HnmfRequired, true)
+        .expect("HNMF-required mode accepts an explicitly configured current context");
 }
 
 #[cfg(feature = "qualification-cognitive-write")]
