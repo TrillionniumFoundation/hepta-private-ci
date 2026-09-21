@@ -1153,12 +1153,11 @@ pub(crate) async fn verify_occurrence_store(
     pool: &sqlx::SqlitePool,
     expected_owner: &str,
 ) -> Result<(), AutomationError> {
-    let rows = sqlx::query(
-        "SELECT * FROM automation_occurrence_lifecycle ORDER BY task_id, occurrence",
-    )
-    .fetch_all(pool)
-    .await
-    .map_err(unavailable)?;
+    let rows =
+        sqlx::query("SELECT * FROM automation_occurrence_lifecycle ORDER BY task_id, occurrence")
+            .fetch_all(pool)
+            .await
+            .map_err(unavailable)?;
     for row in &rows {
         occurrence_from_row(row, expected_owner)?;
     }
