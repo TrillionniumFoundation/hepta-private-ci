@@ -16,14 +16,22 @@ def render_python(spec: dict) -> str:
     return f'''# GENERATED from bindings/PLATFORM_TYPES_BINDINGS_V1.json; DO NOT EDIT.
 from __future__ import annotations
 import json
+import re
+from types import MappingProxyType
 
 _SPEC = json.loads(r\'\'\'{packed}\'\'\')
 STABLE_ID_MAX_BYTES = _SPEC["stableIdMaxBytes"]
-ID_PROFILES = {{row["variant"]: row for row in _SPEC["idProfiles"]}}
-AUTHORITY_WIRE_V1 = _SPEC["authorityWireV1"]
-FIXED_Q32 = _SPEC["fixedQ32"]
-NUMERIC_PROFILES = {{row["id"]: row for row in _SPEC["numericProfiles"]}}
-CANONICAL_DIGEST_V1 = _SPEC["canonicalDigestV1"]
+ID_PROFILES = MappingProxyType({{
+    row["variant"]: MappingProxyType(dict(row)) for row in _SPEC["idProfiles"]
+}})
+_authority_wire = dict(_SPEC["authorityWireV1"])
+_authority_wire["bits"] = MappingProxyType(dict(_authority_wire["bits"]))
+AUTHORITY_WIRE_V1 = MappingProxyType(_authority_wire)
+FIXED_Q32 = MappingProxyType(dict(_SPEC["fixedQ32"]))
+NUMERIC_PROFILES = MappingProxyType({{
+    row["id"]: MappingProxyType(dict(row)) for row in _SPEC["numericProfiles"]
+}})
+CANONICAL_DIGEST_V1 = MappingProxyType(dict(_SPEC["canonicalDigestV1"]))
 
 def numeric_profile(profile_id: str) -> dict:
     row = NUMERIC_PROFILES.get(profile_id)
@@ -75,7 +83,7 @@ def render_javascript(spec: dict) -> str:
 const SPEC = {packed};
 export const STABLE_ID_MAX_BYTES = SPEC.stableIdMaxBytes;
 export const ID_PROFILES = Object.freeze(Object.fromEntries(SPEC.idProfiles.map((row) => [row.variant, Object.freeze(row)])));
-export const AUTHORITY_WIRE_V1 = Object.freeze(SPEC.authorityWireV1);
+export const AUTHORITY_WIRE_V1 = Object.freeze({{...SPEC.authorityWireV1, bits: Object.freeze({{...SPEC.authorityWireV1.bits}})}});
 export const FIXED_Q32 = Object.freeze(SPEC.fixedQ32);
 export const NUMERIC_PROFILES = Object.freeze(Object.fromEntries(SPEC.numericProfiles.map((row) => [row.id, Object.freeze(row)])));
 export const CANONICAL_DIGEST_V1 = Object.freeze(SPEC.canonicalDigestV1);
@@ -99,7 +107,8 @@ export function validateIdProfile(value, variant) {{
     return value;
   }}
   if (variant === "Module") {{
-    if (!/^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$/.test(value) || value.split(".").some((part) => part.length === 0)) throw new Error("module identifier grammar");
+    const parts = value.split(".");
+    if (parts.some((part) => !/^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$/.test(part))) throw new Error("module identifier grammar");
     return value;
   }}
   let local;
