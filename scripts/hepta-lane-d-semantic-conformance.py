@@ -213,6 +213,17 @@ def verify() -> int:
             f"{struct_name} output not sealed",
         )
 
+    global_plane = (
+        ROOT / "codex-rs/hepta-control-plane/src/global_plane.rs"
+    ).read_text(encoding="utf-8")
+    for token in [
+        "bind_planner_observation_window_v1",
+        "authenticated_support_digest",
+        "fence.authenticated_support_digest",
+        "bind_admission_support(authenticated_support_digest, grant_digest)",
+    ]:
+        need(token in global_plane, "global plane hardening " + token)
+
     supervisor_global = (
         ROOT / "codex-rs/hepta-supervisor/src/global_control.rs"
     ).read_text(encoding="utf-8")
@@ -222,6 +233,8 @@ def verify() -> int:
         "evaluation_policy_digest",
         "canonical_ndu_planning_policy_digest",
         "planner_clock_origin",
+        "bind_planner_observation_window_v1",
+        "owner_expires_at_micros",
         "issued_plan_receipts",
         "PlanNotIssuedByCurrentHost",
         "PlannerPlanNotCurrent",
@@ -241,6 +254,7 @@ def verify() -> int:
         "revoked_planner_decision_cannot_reach_final_use",
         "pre_restart_plan_requires_replanning_before_final_use",
         "post_rename_directory_sync_failure_poison_requires_reopen",
+        "producer_clock_epoch_cannot_control_host_planner_freshness",
     ]:
         need(
             f"fn {test_symbol}" in supervisor_tests,
@@ -275,6 +289,8 @@ def verify() -> int:
             "RCP-24",
             "RCP-25",
             "RCP-26",
+            "RCP-27",
+            "RCP-28",
         ],
     }
     for path, tokens in headings.items():
