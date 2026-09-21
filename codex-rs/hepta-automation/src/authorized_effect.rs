@@ -251,6 +251,9 @@ pub struct AuthorizedEffectRequest<'a> {
     pub operation_intent: &'a OperationIntentV1,
     pub intent: &'a AuthorizedEffectIntent,
     pub intent_digest: &'a Sha256Digest,
+    /// Exact immutable provider bytes whose digest is bound by `intent` and
+    /// the signed final-use grant. Drivers must send these bytes unchanged.
+    pub wire_payload: &'a [u8],
     pub binding: &'a FinalUseBinding,
 }
 
@@ -324,6 +327,7 @@ impl AutomationStore {
         authority: &FinalUseAuthority,
         driver: &mut D,
         intent: &AuthorizedEffectIntent,
+        wire_payload: &[u8],
         fence: &TaskFlowFence,
         signed_grant: &SignedFinalUseGrant,
         expected_binding: &FinalUseBinding,
@@ -331,6 +335,9 @@ impl AutomationStore {
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
         let operation_intent = intent.operation_intent_v1()?;
+        if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
+            return Err(AuthorizedEffectError::BindingMismatch);
+        }
         let intent_digest = intent.digest()?;
         let payload_digest = &intent.payload_digest;
         let current = self
@@ -430,6 +437,7 @@ impl AutomationStore {
             operation_intent: &operation_intent,
             intent,
             intent_digest: &intent_digest,
+            wire_payload,
             binding: expected_binding,
         };
         let provider = match authority
