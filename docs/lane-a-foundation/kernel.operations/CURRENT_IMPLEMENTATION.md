@@ -27,7 +27,7 @@ Durable integrated owner:
 - production-shaped writer, one-shot effect-entry fence, final-use boundary and reconciliation: `codex-rs/hepta-memory/src/production_writer.rs`;
 - CognitiveStore destination adapter and terminal observer: `codex-rs/hepta-memory/src/production_cognitive_source_target.rs`;
 - Automation destination-owned dedupe/apply + terminal observer: `codex-rs/hepta-automation/src/operation_destination.rs`;
-- named Agentd runtime composition: `codex-rs/hepta-agentd/src/production_writer_host.rs`, `config.rs` and `runtime.rs`.
+- named Agentd runtime composition: `codex-rs/hepta-agentd/src/production_writer_host.rs`, `config.rs` and `runtime.rs`; one writer owns a destination-keyed dispatcher registry, rejects duplicate/empty destination registration, requires explicit destination routing when multiple adapters are attached, and reconciles each registered destination through observer-only bounded batches.
 
 ## Durability and activation
 
@@ -47,7 +47,7 @@ This source composition does **not** claim default Agentd activation, target-hos
 
 The following remain outside the current executable closure:
 
-- enrolled production authority/grant provisioning for a selected Agentd deployment; the runtime path and continuous observer-only reconciler are source-composed but default process-environment startup does not manufacture credentials;
+- enrolled production authority/grant provisioning for a selected Agentd deployment; the multi-destination runtime path and continuous observer-only reconciler are source-composed but default process-environment startup does not manufacture credentials;
 - destination-owned dedupe/apply/terminal-observer adapters for every additional effect destination before that destination is activated;
 - bounded physical compaction/checkpoint retention for the append-only local lease/event/outbox audit journals;
 - target-host power-loss, filesystem/storage-device and clock/rollback qualification;
