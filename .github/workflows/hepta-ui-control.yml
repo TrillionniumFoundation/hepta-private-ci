@@ -75,11 +75,27 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
           fetch-depth: 0
+      - name: Resolve current pull-request base
+        id: current-base
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
+
       - name: Construct deterministic synthetic merge
         id: merge
         uses: ./.github/actions/hepta-synthetic-merge
         with:
-          base-sha: ${{ github.event.pull_request.base.sha }}
+          base-sha: ${{ steps.current-base.outputs.sha }}
           source-sha: ${{ github.event.pull_request.head.sha }}
           pr-number: ${{ github.event.pull_request.number }}
           author-name: Hepta ui.control CI
