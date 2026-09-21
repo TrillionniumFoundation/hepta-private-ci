@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "320585bf96fe8cc443fdc5ed5017cc6e9251644f",
-    "tree": "2f8481ed506aa076c108d74c0b1d6105e440e014"
+    "commit": "877fd06b3a09adad3dbe0f6e12f667d6d17343eb",
+    "tree": "72a240563d461e31b98ce3dbbe8ca76532cfe90f"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -79,9 +79,9 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
     "baseCommit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
-    "candidateHead": "320585bf96fe8cc443fdc5ed5017cc6e9251644f",
-    "candidateTree": "2f8481ed506aa076c108d74c0b1d6105e440e014",
-    "headMeaning": "current_main_merged canonical_v2 integrity ordered_prefix partial_empty live_authority interruptible_transport product_composition batch_final_use current_verifier_and_generated_indexes",
+    "candidateHead": "877fd06b3a09adad3dbe0f6e12f667d6d17343eb",
+    "candidateTree": "72a240563d461e31b98ce3dbbe8ca76532cfe90f",
+    "headMeaning": "current_main_merged canonical_v2 integrity ordered_prefix partial_empty live_authority interruptible_transport product_composition batch_final_use physical_http_final_use_guard current_verifier_and_generated_indexes",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -108,7 +108,8 @@
       "exact_head_and_full_synthetic_merge_same_suite",
       "current_main_head_resolved_at_merge_qualification",
       "current_main_generated_index_preservation",
-      "candidate_or_exact_observation_source_identity"
+      "candidate_or_exact_observation_source_identity",
+      "physical_http_final_use_guard_before_dispatch"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -131,9 +132,10 @@
       "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
       "docs/modules/MODULE_DOCS.json",
       "qualification/module-execution-dossiers/DETAILS.json",
-      "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+      "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs"
     ],
-    "note": "sourceBase uses candidate_or_exact_observation_v1 and is bound to the frozen current-main merge candidate. observedAtHead proves the declared federation source root is byte-unchanged through metadata-only receipt commits. The candidate includes current main, exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, V2-only product attachment, batch final-use revalidation, current implementation-map verifier semantics, and current-main generated indexes/Cargo lock state. productExecutionProved, independent acceptance, activation and release remain false until executable and external gates pass.",
+    "note": "sourceBase uses candidate_or_exact_observation_v1 and is bound to the frozen current-main merge candidate. observedAtHead proves the declared federation source root is byte-unchanged through metadata-only receipt commits. The candidate includes current main, exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, V2-only product attachment, batch final-use revalidation, an HTTP-path regression proving final-use rejection precedes provider dispatch, current implementation-map verifier semantics, and current-main generated indexes/Cargo lock state. productExecutionProved, independent acceptance, activation and release remain false until executable and external gates pass.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
       "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
@@ -141,8 +143,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "320585bf96fe8cc443fdc5ed5017cc6e9251644f",
-    "tree": "2f8481ed506aa076c108d74c0b1d6105e440e014"
+    "commit": "877fd06b3a09adad3dbe0f6e12f667d6d17343eb",
+    "tree": "72a240563d461e31b98ce3dbbe8ca76532cfe90f"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-memory-federation"
