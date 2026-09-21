@@ -21,8 +21,8 @@ use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::LedgerAnchor;
-use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_ledger::LedgerEvent;
+use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_ndu::AggregationOperator;
 use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
@@ -312,11 +312,7 @@ fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
     }
 }
 
-fn write_authority_file(
-    path: &std::path::Path,
-    owners: &[OwnerBindingV1],
-    frontier: Digest32,
-) {
+fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], frontier: Digest32) {
     let file = IntelligenceAuthorityFileV1 {
         schema_version: 1,
         authority_epoch: 11,
@@ -451,8 +447,7 @@ fn fixture() -> Fixture {
         drive_q24: vec![Q24, Q24 / 2, 0, 0, 0],
         prediction_q24: vec![0; 5],
     };
-    let (_, neural_receipt) =
-        sparse_tick(&neural_config, &neural_tick, None).expect("neural tick");
+    let (_, neural_receipt) = sparse_tick(&neural_config, &neural_tick, None).expect("neural tick");
 
     let prompt_registry = digest("prompt-registry");
     let prompt_request = OptimizationRequest {
@@ -638,7 +633,8 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner =
+        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
     let outcome = runner
         .prepare(fixture.request, fixture.inputs)
         .await
@@ -841,7 +837,11 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         panic!("ready");
     };
 
-    write_authority_file(&authority, &fixture.owners, digest("new-revocation-frontier"));
+    write_authority_file(
+        &authority,
+        &fixture.owners,
+        digest("new-revocation-frontier"),
+    );
 
     let file = OpenOptions::new()
         .create_new(true)
@@ -878,7 +878,8 @@ async fn missing_current_owner_fails_before_product_use() {
         &owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner =
+        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
     assert!(matches!(
         runner.prepare(fixture.request, fixture.inputs).await,
         Err(AgentdIntelligenceProductError::Canonical(
@@ -907,7 +908,8 @@ async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner =
+        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
     assert!(matches!(
         runner.prepare(fixture.request, fixture.inputs).await,
         Err(AgentdIntelligenceProductError::TimedOut)
