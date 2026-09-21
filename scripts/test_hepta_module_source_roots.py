@@ -105,6 +105,63 @@ class SourceRootTests(unittest.TestCase):
         self.assertEqual(result["sourceBase"], source_base)
         self.assertFalse(result["claimBoundary"]["activation"])
 
+    def test_exact_rust_observation_requires_workspace_manifest_and_lock(self):
+        spec = importlib.util.spec_from_file_location(
+            "implementation_maps",
+            Path(__file__).with_name("hepta-implementation-maps.py"),
+        )
+        maps = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(maps)
+        rust_root = self.root / "codex-rs"
+        (rust_root / "hepta-automation").mkdir(parents=True)
+        (rust_root / "Cargo.toml").write_text("[workspace]\n", encoding="utf-8")
+        (rust_root / "Cargo.lock").write_text("version = 4\n", encoding="utf-8")
+        commit = "a" * 40
+        tree = "b" * 40
+        row = {
+            "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+            "observedAtHead": {"commit": commit, "tree": tree},
+            "observedSourcePaths": ["codex-rs/hepta-automation"],
+        }
+
+        def fake_git(*args):
+            if args == ("rev-parse", f"{commit}^{{tree}}"):
+                return tree
+            if args == ("merge-base", "--is-ancestor", commit, "HEAD"):
+                return ""
+            if args[:3] == ("diff", "--name-only", commit):
+                return ""
+            raise AssertionError(f"unexpected git call: {args!r}")
+
+        failures = []
+        with mock.patch.object(maps, "ROOT", self.root), mock.patch.object(
+            maps, "git", side_effect=fake_git
+        ):
+            maps.validate_observed_source(
+                row, "automation.taskflow", ["codex-rs/hepta-automation"], failures
+            )
+        self.assertEqual(
+            failures,
+            [
+                "automation.taskflow: observed source paths omit Rust workspace build inputs "
+                "codex-rs/Cargo.lock, codex-rs/Cargo.toml"
+            ],
+        )
+
+        row["observedSourcePaths"] = [
+            "codex-rs/hepta-automation",
+            "codex-rs/Cargo.toml",
+            "codex-rs/Cargo.lock",
+        ]
+        failures = []
+        with mock.patch.object(maps, "ROOT", self.root), mock.patch.object(
+            maps, "git", side_effect=fake_git
+        ):
+            maps.validate_observed_source(
+                row, "automation.taskflow", ["codex-rs/hepta-automation"], failures
+            )
+        self.assertEqual(failures, [])
+
     def test_identity_version_and_authority_mismatches_reject(self):
         original = copy.deepcopy(self.binding)
         for key, value in [
