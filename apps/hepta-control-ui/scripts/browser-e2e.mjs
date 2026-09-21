@@ -113,7 +113,14 @@ const stats = () => fetch("/api/ui-control/e2e-stats", { cache: "no-store" }).th
 try {
   const root = document.querySelector("#app");
   checkpoint("initial-runtime-ready");
-  await waitFor(() => root.getAttribute("data-hepta-ready") === "true", 7000, "initial-runtime-ready");
+  await waitFor(() => {
+    if (root.getAttribute("data-hepta-ready") === "true") return true;
+    const fatal = root.querySelector?.("[role='alert']");
+    if (fatal?.textContent) {
+      throw new Error(`initial runtime failed: ${fatal.textContent}`);
+    }
+    return false;
+  }, 10_000, "initial-runtime-ready");
 
   checkpoint("initial-operation-confirmation");
   const retry = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Retry "));
@@ -337,7 +344,6 @@ const chromeArgs = [
   "--disable-sync",
   "--metrics-recording-only",
   "--no-first-run",
-  "--virtual-time-budget=30000",
   "--dump-dom",
   `http://127.0.0.1:${address.port}/`,
 ];
