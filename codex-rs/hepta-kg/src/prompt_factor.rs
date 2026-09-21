@@ -43,6 +43,7 @@ impl PromptFactorProjectionV1 {
         if self.registry_revision == 0
             || self.registry_snapshot_digest.is_zero()
             || self.source_digest.is_zero()
+            || self.generation.source_snapshot_digest != self.source_digest
             || self.authority.grants_any()
         {
             return Err(PromptFactorProjectionErrorV1::InvalidProjection);
