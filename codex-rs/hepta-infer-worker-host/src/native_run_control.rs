@@ -20,6 +20,16 @@ pub struct NativeAdmission {
     pub maximum_in_flight: usize,
 }
 
+/// Exact Agentd intelligence handoff that must already be attached before a
+/// physical App Server turn can start.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeIntelligenceRunBinding {
+    pub run_id: String,
+    pub expected_revision: u64,
+    pub context_digest: String,
+    pub envelope_digest: String,
+}
+
 impl AppServerModelDriver {
     /// Reserves before any provider call, journals dispatch before `turn/start`,
     /// and commits real observations before returning them to the caller.
@@ -30,6 +40,48 @@ impl AppServerModelDriver {
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_bound(
+            control,
+            admission,
+            prompt,
+            context_query,
+            /*intelligence*/ None,
+            cancellation,
+        )
+        .await
+    }
+
+    /// Execute the physical turn only after the exact Agentd intelligence
+    /// envelope has reached ContextAttached. The worker cannot mint this binding.
+    pub async fn run_intelligence(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        intelligence: NativeIntelligenceRunBinding,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_bound(
+            control,
+            admission,
+            prompt,
+            context_query,
+            Some(&intelligence),
+            cancellation,
+        )
+        .await
+    }
+
+    async fn run_bound(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        intelligence: Option<&NativeIntelligenceRunBinding>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
@@ -82,7 +134,14 @@ impl AppServerModelDriver {
         }
         let request_id = record.request.request_id;
         match self
-            .run_once(control, &request_id, prompt, context_query, cancellation)
+            .run_once(
+                control,
+                &request_id,
+                prompt,
+                context_query,
+                intelligence,
+                cancellation,
+            )
             .await
         {
             Ok(output) => {
