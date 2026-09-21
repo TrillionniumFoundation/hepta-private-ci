@@ -62,6 +62,7 @@ pub struct RunReceipt {
     pub revision: u64,
     pub phase: RunPhase,
     pub context_digest: Option<String>,
+    pub compilation_receipt_digest: Option<String>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -394,6 +395,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         revision: record.revision,
         phase: record.phase,
         context_digest: record.context_digest.clone(),
+        compilation_receipt_digest: record.compilation_receipt_digest.clone(),
         terminal_observed: record.phase.terminal_observed(),
         idempotent,
     }
