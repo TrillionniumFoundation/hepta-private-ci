@@ -130,9 +130,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "P0.7B-B0-VERIFIED-USE",
-      "sha256": "a30acd6635a67a3b191e20617a192ecb0589511a5ac12a2075e2cc6c41fd66e8",
-      "bytes": 20814,
-      "words": 2042,
+      "sha256": "0a706744b5228dc27aa80071633e2784501347a967759545270edb7f43b8ade1",
+      "bytes": 21284,
+      "words": 2084,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -164,7 +164,8 @@
         "ModulePort::kernel.authority::runtime.fleet",
         "ModulePort::kernel.authority::runtime.supervisor",
         "ModulePort::kernel.authority::secrets.heptabao",
-        "VerifiedUseTokenWitnessV1"
+        "VerifiedUseTokenWitnessV1",
+        "ModulePort::kernel.authority::ui.native"
       ],
       "consumedContracts": [
         "ModulePort::platform.types::kernel.authority"
@@ -2601,9 +2602,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "UI-NATIVE-1-SHELL",
-      "sha256": "f420a9e940d1491f27fb552024e821776304fa76b6402d060e2535768936fc30",
-      "bytes": 16231,
-      "words": 1802,
+      "sha256": "5c15b13601cf40eacebff16be596e88c70163845cd7324b88d80c8a82ed23c86",
+      "bytes": 20516,
+      "words": 2286,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -2625,7 +2626,9 @@
       "producedContracts": [],
       "consumedContracts": [
         "DomainRead::runtime_health_observationV1",
-        "ModulePort::runtime.agentd::ui.native"
+        "ModulePort::kernel.authority::ui.native",
+        "ModulePort::runtime.agentd::ui.native",
+        "VerifiedUseTokenWitnessV1"
       ],
       "protocols": [],
       "ownedDomains": [],

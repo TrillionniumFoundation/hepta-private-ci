@@ -556,7 +556,8 @@
       "deputy": "kernel-contracts",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-contracts/**"
+        "codex-rs/hepta-contracts/**",
+        "codex-rs/hepta-private-state/**"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -8730,7 +8731,9 @@
       "coOwnerModules": [],
       "consumesContracts": [
         "DomainRead::runtime_health_observationV1",
-        "ModulePort::runtime.agentd::ui.native"
+        "ModulePort::kernel.authority::ui.native",
+        "ModulePort::runtime.agentd::ui.native",
+        "VerifiedUseTokenWitnessV1"
       ],
       "producesContracts": [],
       "deliverables": [
@@ -8771,11 +8774,14 @@
         ],
         "authoritativeWriteDomains": [],
         "directDependencies": [
+          "kernel.authority",
           "runtime.agentd"
         ],
         "contractInputs": [
           "DomainRead::runtime_health_observationV1",
-          "ModulePort::runtime.agentd::ui.native"
+          "ModulePort::kernel.authority::ui.native",
+          "ModulePort::runtime.agentd::ui.native",
+          "VerifiedUseTokenWitnessV1"
         ],
         "contractOutputs": [],
         "centralSynchronousRpcAllowed": false,
