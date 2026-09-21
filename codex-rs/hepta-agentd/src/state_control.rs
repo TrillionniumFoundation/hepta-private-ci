@@ -62,7 +62,15 @@ impl AgentdState {
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
-                AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
+                let capability = crate::AgentdCapability::new(
+                    crate::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2,
+                    1,
+                    0,
+                )
+                .map_err(AgentdError::Protocol)?;
+                let capabilities = crate::AgentdCapabilitySet::new(vec![capability])
+                    .map_err(AgentdError::Protocol)?;
+                AgentdPayload::Capabilities(capabilities)
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: matches!(
