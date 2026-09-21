@@ -719,6 +719,182 @@ impl AutomationStore {
         }
     }
 
+    /// Async provider variant for exact caller-supplied wire bytes.
+    ///
+    /// The wire payload is hashed inside automation and must equal the durable
+    /// TaskFlow payload digest before a final-use nonce is consumed.  A
+    /// provider-stable logical key is then derived from destination + run +
+    /// step, deliberately excluding the local attempt so a safely retried
+    /// attempt reuses the same provider occurrence identity.
+    pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(
+        &self,
+        authority: &FinalUseAuthority,
+        driver: &mut D,
+        intent: &AuthorizedEffectIntent,
+        wire_payload: &[u8],
+        fence: &TaskFlowFence,
+        signed_grant: &SignedFinalUseGrant,
+        expected_binding: &FinalUseBinding,
+        command_id: &str,
+        now_ms: u64,
+    ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let provider_intent = provider_effect_intent(intent, wire_payload)?;
+        let operation_intent = intent.operation_intent_v1()?;
+        let intent_digest = intent.digest()?;
+        let payload_digest = &intent.payload_digest;
+        let current = self
+            .read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, fence)
+            .await?
+            .ok_or_else(|| {
+                TaskFlowError::Conflict(
+                    "authorized effect requires a prepared and claimed durable step".to_string(),
+                )
+            })?;
+        if current.state != TaskFlowStepState::Claimed
+            || current.intent_digest != intent_digest
+            || current.payload_digest != *payload_digest
+        {
+            return Err(TaskFlowError::Conflict(
+                "authorized effect does not match the claimed durable step".to_string(),
+            )
+            .into());
+        }
+        if expected_binding.subject_id != intent.subject_id
+            || expected_binding.destination_id != intent.destination_id
+            || expected_binding.request_sha256 != digest_bytes(&intent_digest)?
+            || expected_binding.scope_sha256 != digest_bytes(&intent.final_use_scope_digest)?
+            || expected_binding.payload_sha256 != digest_bytes(payload_digest)?
+        {
+            return Err(AuthorizedEffectError::BindingMismatch);
+        }
+        let binding_digest = final_use_binding_digest(expected_binding)?;
+
+        if let Some(existing) = self
+            .effect_dispatch_attempt(&intent.run_id, &intent.step_id, intent.attempt)
+            .await?
+        {
+            ensure_attempt_binding(
+                &existing,
+                &intent_digest,
+                payload_digest,
+                &binding_digest,
+                expected_binding,
+                command_id,
+            )?;
+            return match self
+                .settle_effect_dispatch_attempt(&existing, fence)
+                .await?
+            {
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::ProvenAbsent => {
+                    Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
+                }
+            };
+        }
+
+        let token = authority
+            .claim(signed_grant, expected_binding)
+            .map_err(AuthorizedEffectError::FinalUse)?;
+        let nonce_digest = Sha256Digest::for_bytes(&signed_grant.grant.nonce);
+        let start = self
+            .begin_effect_dispatch_attempt(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                &intent_digest,
+                payload_digest,
+                &binding_digest,
+                &expected_binding.destination_id,
+                signed_grant.grant.authority_epoch,
+                &signed_grant.grant.grant_id,
+                &nonce_digest,
+                command_id,
+                now_ms,
+            )
+            .await?;
+        let durable = match start {
+            EffectDispatchStart::Inserted(durable) => durable,
+            EffectDispatchStart::Existing(durable) => {
+                ensure_attempt_binding(
+                    &durable,
+                    &intent_digest,
+                    payload_digest,
+                    &binding_digest,
+                    expected_binding,
+                    command_id,
+                )?;
+                return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::ProvenAbsent => {
+                        Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
+                    }
+                };
+            }
+        };
+
+        let request = AuthorizedProviderEffectRequest {
+            operation_intent: &operation_intent,
+            intent,
+            intent_digest: &intent_digest,
+            binding: expected_binding,
+            provider_intent,
+            wire_payload,
+        };
+        let provider = match authority
+            .with_verified_use_async(token, expected_binding, || driver.dispatch(request))
+            .await
+        {
+            Ok(Ok(receipt)) => receipt,
+            Ok(Err(error)) => {
+                let proof = no_contact_digest(&durable, "driver_before_provider_contact");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        now_ms,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                return Err(AuthorizedEffectError::Driver(error));
+            }
+            Err(error) => {
+                let proof = no_contact_digest(&durable, "final_use_pre_dispatch_rejection");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        now_ms,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                return Err(AuthorizedEffectError::FinalUse(error));
+            }
+        };
+        validate_receipt_digest(&provider.receipt_digest)?;
+        let durable = self
+            .record_effect_dispatch_observation(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                provider.outcome.ledger_kind(),
+                &provider.receipt_digest,
+                now_ms,
+            )
+            .await?;
+        match self.settle_effect_dispatch_attempt(&durable, fence).await? {
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::ProvenAbsent => {
+                Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
+            }
+        }
+    }
+
     /// Return bounded provider-contact attempts that have no durable provider
     /// observation yet. A restart reconciler must hand these immutable
     /// identities to the registered downstream effect owner; this scan never
