@@ -6,7 +6,7 @@ The durable source implementation reuses the existing per-Agent CognitiveStore S
 
 ## Atomic prepare
 
-`LocalLeaseOutbox::admit_operation` validates the complete `OperationIntent`, acquires `BEGIN IMMEDIATE`, verifies the current lease and journal chains, then inserts the admitted local event, immutable local outbox row and immutable operation row before one commit. Fault injection after every insert proves rollback leaves no partial identity.
+`LocalLeaseOutbox::admit_operation` validates the complete `OperationIntent`, acquires `BEGIN IMMEDIATE`, validates the current lease plus exact occurrence rows, then inserts the admitted local event, immutable local outbox row and immutable operation row before one commit. Full-chain integrity is audited at open/reopen and recovery/terminal audit boundaries rather than replayed on each ordinary mutation. Fault injection after every insert proves rollback leaves no partial identity.
 
 ## Predecessor authority boundary
 
@@ -14,7 +14,7 @@ The durable source implementation reuses the existing per-Agent CognitiveStore S
 
 ## Dispatch and ambiguity
 
-`ProductionDurableWriter` verifies the queued receipt and exact durable operation/destination binding. Before any target call it writes the strict one-shot indeterminate dispatch claim. An exact replay of that claim is rejected. A crash or acknowledgement loss therefore reopens as unresolved work and must reconcile rather than resend.
+`ProductionDurableWriter` verifies the queued receipt and exact durable operation/destination binding. `DurableOperationClaims` first persists a bounded lease/attempt with explicit renewal, expiry, retry backoff and higher-generation takeover. Immediately before target entry the writer persists the strict one-shot indeterminate effect-entry marker and marks the claim entered. Once entered, retry is forbidden; a crash or acknowledgement loss therefore reopens as unresolved work and must reconcile rather than resend.
 
 ## Final-use authority
 
@@ -26,15 +26,15 @@ A queued identity admitted under a terminal predecessor generation can be recove
 
 ## Real destination
 
-`CognitiveSourceOutboxTarget` is the first real destination slice. Apply is destination-owned through the CognitiveStore source ledger. Exact replay returns the same destination fact; payload drift is rejected. `observe_terminal` queries destination-owned state rather than trusting transport acknowledgement.
+`CognitiveSourceOutboxTarget` is a predecessor-aware real destination slice. Apply is destination-owned through the CognitiveStore source ledger; the complete semantic digest and predecessor expectation are verified in the same destination transaction as apply/dedupe. Exact replay returns the same destination fact; payload drift or predecessor mismatch is deterministic. Automation is a second independently owned slice with task mutation + semantic dedupe receipt committed atomically and a terminal observer.
 
 ## Crash and corruption evidence
 
-The source suite contains transaction fault injection, reopen/tamper tests, concurrent-dispatch exclusion, post-send crash/indeterminate recovery and a qualification-only child-process kill/reopen probe. The latter intentionally does not claim physical host power-loss durability.
+The source suite contains transaction fault injection, reopen/tamper tests, concurrent-dispatch exclusion, bounded claim lease/renew/takeover tests, post-send crash/indeterminate recovery, deterministic SQLite `SQLITE_FULL` rollback/reopen, and a qualification-only child-process kill/reopen probe. The latter intentionally does not claim physical host power-loss durability.
 
 ## Retention boundary
 
-The operation metadata is not constrained by the 16,384-record reference-oracle ceiling. The authoritative local lease/event/outbox journals remain immutable hash chains. This V1 does not delete historical journal rows. Physical bounded-history retention requires a separately versioned segment/checkpoint compaction protocol; deleting rows in place would destroy reopen/audit evidence.
+The operation metadata is not constrained by the 16,384-record reference-oracle ceiling. The durable owner rejects before mutation at 100,000 operation/outbox rows and 400,000 event rows per lease. The authoritative local lease/event/outbox journals remain immutable hash chains. This V1 does not delete historical journal rows. Physical bounded-history retention requires a separately versioned segment/checkpoint compaction protocol; deleting rows in place would destroy reopen/audit evidence.
 
 ## Claim ceiling
 
