@@ -28,6 +28,15 @@ The legacy `PreverifiedAuthEnvelope` / `ReplayWindow` API still accepts already
 verified facts and records sequences only in process memory. It does not verify
 signatures or become durable through the addition of the signed API.
 
+For authorization, `AuthPolicyStore` owns a separate
+`hepta_auth_policy_1.sqlite` lineage. Complete policy revisions are immutable,
+monotonically activated and digest-bound to their exact principal/action/resource
+rules. `authorize` requires the caller's expected current revision; a stale
+revision rejects and a missing exact rule is a deny. Reopen revalidates SQLite
+integrity, migration history, immutable-rule triggers, every policy digest and
+the no-rollback current pointer. Authentication remains separate from policy
+authorization, and a positive policy decision is still not effect authority.
+
 ## Public symbols and source bindings
 
 - `IssuerRegistration`, `SignedMessageClaims::signing_bytes`,
@@ -38,22 +47,26 @@ signatures or become durable through the addition of the signed API.
   evidence `src/authbus_store.rs`;
 - outbox APIs and records: evidence `src/authbus_outbox.rs`,
   `src/authbus_outbox_worker.rs`, `src/authbus_outbox_record.rs`;
-- replay and outbox tables: evidence migrations `0009` and `0010`.
+- replay and outbox tables: evidence migrations `0009` and `0010`;
+- `AuthPolicyStore`, `PolicyRevisionDraftV1`, `PolicyRuleV1`, `PolicyDecisionV1`:
+  authbus `src/policy.rs`;
+- policy schema lineage: authbus `migrations/0001_auth_policy.sql`.
 
 ## Durability and activation
 
 The evidence-store admission path preserves replay state across independent
-handles and database reopen. Legacy replay state is lost on restart. The host
-must compose trusted issuer registration and the evidence-store API; production
-enrollment is not established by library tests. Neither path grants effect
-authority.
+handles and database reopen. The auth-policy owner separately preserves current
+policy/revisions across reopen and prevents in-database revision rollback.
+Legacy replay state is lost on restart. The host must compose trusted issuer
+registration, durable replay admission and the policy store; production
+enrollment is not established by library tests. None of these paths grants
+effect authority.
 
 ## Target-only design
 
-Host trust provisioning and key lifecycle management, external replay-store
-rollback protection, authorization policy, quota registry, reservation,
-cancellation, expiry settlement and observed-cost settlement remain outside this
-implemented admission slice.
+Host trust provisioning and key lifecycle management, external replay/policy
+store rollback protection, quota registry, reservation, cancellation, expiry
+settlement and observed-cost settlement remain outside this implemented slice.
 
 ## Known limits and non-claims
 
@@ -67,7 +80,9 @@ its contents.
 ## Verification
 
 `signed_tests.rs` covers signed-field substitution, key epoch, revocation,
-expiry and scope. Evidence `authbus_store_tests.rs` covers real SQLite reopen,
+expiry and scope. `policy_tests.rs` covers exact-scope allow/deny, stale revision,
+monotonic policy activation, crash/reopen decision stability and current-pointer
+rollback detection. Evidence `authbus_store_tests.rs` covers real SQLite reopen,
 the full unsigned sequence range, two-handle contention and failed-admission
 retry. `authbus_outbox_tests.rs` covers atomic insertion rollback, retained
 duplicate admission, competing leases, stale fences, bounded terminal retention
@@ -80,7 +95,8 @@ presence.
 
 The host must supply trusted registration and current revocation, use the durable
 admission API where replay must survive restart, and govern clock/backup recovery.
-Effect-specific policy, quota and the final-use token remain separate checks.
+Quota and the final-use token remain separate checks. The durable policy decision
+is authorization evidence, not a final-use grant.
 No effect adapter may consume `VerificationReceipt` as a grant. See
 [`SIGNED_ADMISSION.md`](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md) and the
 separate legacy [`PREVERIFIED_REPLAY_V1.md`](PREVERIFIED_REPLAY_V1.md) contract.
