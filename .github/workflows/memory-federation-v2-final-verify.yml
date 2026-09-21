@@ -114,11 +114,23 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Resolve current main head for merge qualification
+        id: current-base
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          BASE_SHA="$(git rev-parse "refs/remotes/origin/$BASE_REF")"
+          test -n "$BASE_SHA"
+          echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "qualifying against current $BASE_REF@$BASE_SHA"
+
       - name: Construct deterministic synthetic merge
         id: synthetic
         uses: ./.github/actions/hepta-synthetic-merge
         with:
-          base-sha: ${{ github.event.pull_request.base.sha }}
+          base-sha: ${{ steps.current-base.outputs.sha }}
           source-sha: ${{ github.event.pull_request.head.sha }}
           pr-number: ${{ github.event.pull_request.number }}
           author-name: Hepta Memory Federation CI
