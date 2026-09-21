@@ -33,6 +33,7 @@ use super::authenticate_owner_summary_v1;
 use super::compose_global_plan_with_fleet_v1;
 use super::owner_summary_payload_digest_v1;
 use super::owner_summary_scope_digest_v1;
+use super::revalidate_fleet_allocation_for_plan_v1;
 use crate::NduPlanningInputV1;
 use crate::OwnerReadinessV1;
 use crate::OwnerSummaryV1;
@@ -325,6 +326,17 @@ fn authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request
         result.evaluation.plan.chosen_candidate_id(),
         Some(&id("work"))
     );
+    let request = result
+        .grant_requests
+        .as_ref()
+        .expect("unique plan emits requests")
+        .requests()
+        .first()
+        .expect("effect request")
+        .clone();
+    revalidate_fleet_allocation_for_plan_v1(&ledger, &result, &request, 1_100)
+        .expect("final-use fleet revalidation");
+
     let requests = result.grant_requests.expect("unique plan emits requests");
     assert_eq!(requests.requests().len(), 1);
     assert_eq!(
