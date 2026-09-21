@@ -298,7 +298,6 @@ fn distinct_keys_do_not_make_one_controller_independent() {
     );
 }
 
-
 #[test]
 fn dataset_owner_role_cannot_substitute_for_independent_evaluator() {
     let mut configured = trust();
