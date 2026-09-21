@@ -189,7 +189,7 @@ def embedded_inputs(
     """Read exact-tree includes without executing candidate build scripts.
 
     Literal includes give precise edges. Computed paths conservatively select
-    their consumers for presentation changes. An include! target is Rust source
+    their consumers for any input change. An include! target is Rust source
     regardless of its filename suffix and must be traversed recursively. Text
     and byte payloads are not parsed as Rust. Comments may over-select. Both old
     and new graphs retain removed edges. Cycles are bounded by (path, owner).
@@ -361,6 +361,19 @@ def graph(root: Path, revision: str) -> Graph:
     conservative = bool(root_manifest.get("replace"))
     source_inputs = cargo_source_inputs(manifests, owners)
     inputs, opaque = embedded_inputs(root, revision, owners, source_inputs)
+    # Build scripts are programs, not just include! declarations. They can read
+    # an input under another Cargo owner's directory, even without an include
+    # macro. Do not execute them or trust candidate-declared input lists while
+    # planning. Until trusted dep-info can narrow the set, select these owners
+    # (and their reverse consumers) for every nonempty exact-tree change set.
+    # Cargo's automatic build.rs is disabled only by package.build = false.
+    opaque |= frozenset(
+        owners[folder]
+        for folder, document in manifests.items()
+        if document["package"].get("build") is not False
+        and (document["package"].get("build") is not None
+             or f"{folder}/build.rs" in paths)
+    )
     return Graph(owners, edges, frozenset(owners[p] for p in members), conservative,
                  inputs, opaque)
 
@@ -368,6 +381,7 @@ def graph(root: Path, revision: str) -> Graph:
 def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
     changed = set()
     reasons = set()
+    has_changed_input = False
     input_owners: dict[str, set[str]] = {}
     for path, owner in before.external_inputs | after.external_inputs:
         input_owners.setdefault(path, set()).add(owner)
@@ -377,6 +391,7 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
         parts = path.split("/")
         if not path or path.startswith("/") or ".." in parts or "\\" in path or "\0" in path:
             raise ValueError(f"invalid repository path: {path!r}")
+        has_changed_input = True
         if path in SHARED or path in {f"{WORKSPACE}/{p}" for p in SHARED}:
             reasons.add(f"shared build input: {path}")
             continue
@@ -386,7 +401,6 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
         consumers = input_owners.get(path, set())
         changed.update(consumers)
         if presentation_input(path):
-            changed.update(before.opaque_input_consumers | after.opaque_input_consumers)
             continue
         owned = bool(consumers)
         for mapping in (before.owners, after.owners):
@@ -404,6 +418,12 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
             continue
         if path.endswith("/build.rs"):
             reasons.add(f"build script: {path}")
+    # Opaque means the input path is unknown, not that its suffix must be .md.
+    # A computed include may read another package's JSON, SQL or Rust fragment.
+    # Union once after iterating paths to keep planning linear in changed paths
+    # plus consumers, and leave an empty diff empty even for opaque readers.
+    if has_changed_input:
+        changed.update(before.opaque_input_consumers | after.opaque_input_consumers)
     current = after.targets
     if before.conservative or after.conservative:
         reasons.add("local registry override; full resolver fallback")

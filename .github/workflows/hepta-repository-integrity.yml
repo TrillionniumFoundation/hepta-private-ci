@@ -46,8 +46,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest discover -v -s scripts -p 'test_hepta_workspace.py'
-          python3 -m unittest discover -v -s scripts -p 'test_hepta_implementation_identity.py'
+          # Collect every cheap diagnostic, but retain any failure as a failed
+          # check. A workspace error must not hide source-identity/impact bugs.
+          status=0
+          for suite in test_hepta_workspace.py test_hepta_implementation_identity.py \
+            test_hepta_ci_dependency_scaling.py test_hepta_ci_nested_inputs.py \
+            test_hepta_ci_opaque_inputs.py; do
+            python3 -m unittest discover -v -s scripts -p "$suite" || status=1
+          done
+          exit "$status"
 
       - name: Parse the actual workspace with Cargo
         working-directory: codex-rs
