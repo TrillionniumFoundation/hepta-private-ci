@@ -158,6 +158,41 @@ impl AutomationStore {
             .collect()
     }
 
+    /// Counts durable automation work that has not yet reached a drain-safe
+    /// classification. Durable dispatch uncertainty is already classified as
+    /// indeterminate and is intentionally excluded; it is reconciled after
+    /// restart with the same stable identity rather than relabelled as success
+    /// or failure. Leased work without an uncertainty witness and occurrence
+    /// lifecycle states that can still advance (claimed, admitted, running)
+    /// block a graceful Agentd drain.
+    pub async fn drain_blockers(&self) -> Result<u32, AutomationError> {
+        let count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM (
+                 SELECT r.task_id AS task_id, r.occurrence AS occurrence
+                 FROM automation_runs r
+                 JOIN automation_tasks t ON t.task_id = r.task_id
+                 WHERE t.owner_agent_id = ? AND r.state = 'leased'
+                   AND NOT EXISTS (
+                       SELECT 1 FROM automation_dispatch_outcomes d
+                       WHERE d.task_id = r.task_id
+                         AND d.occurrence = r.occurrence
+                         AND d.outcome = 'uncertain'
+                   )
+                 UNION
+                 SELECT l.task_id AS task_id, l.occurrence AS occurrence
+                 FROM automation_occurrence_lifecycle l
+                 WHERE l.owner_agent_id = ?
+                   AND l.state IN ('claimed', 'admitted', 'running')
+             )",
+        )
+        .bind(self.owner_agent_id.as_str())
+        .bind(self.owner_agent_id.as_str())
+        .fetch_one(&self.pool)
+        .await
+        .map_err(unavailable)?;
+        u32::try_from(count).map_err(|_| AutomationError::Corrupt)
+    }
+
     /// Returns provider admissions whose terminal outcome is not known.
     ///
     /// An uncertain occurrence is deliberately not eligible for automatic

@@ -115,7 +115,9 @@ impl AgentdState {
                 required_ports_ready,
                 admission_open,
             }),
-            crate::AgentdMethod::Drain => AgentdPayload::Drain(self.request_drain()?),
+            crate::AgentdMethod::Drain => {
+                AgentdPayload::Drain(self.request_drain(automation.as_ref()).await?)
+            }
             crate::AgentdMethod::SessionIngress => {
                 if lifecycle != AgentLifecycle::Running
                     || !app_server_ready

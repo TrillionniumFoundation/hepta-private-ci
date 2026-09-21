@@ -279,7 +279,10 @@ impl AgentdState {
         self.app_server_drain.clone()
     }
 
-    pub(crate) fn request_drain(&self) -> Result<DrainSnapshot, AgentdError> {
+    pub(crate) async fn request_drain(
+        &self,
+        automation: Option<&AutomationStore>,
+    ) -> Result<DrainSnapshot, AgentdError> {
         self.refresh_generation()?;
         {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -291,10 +294,23 @@ impl AgentdState {
             }
         }
         self.mark_draining()?;
-        self.drain_snapshot()
+
+        // Automation is optional for ordinary request readiness, but once a
+        // scheduler store exists its durable in-flight records participate in
+        // graceful drain. If the optional store is unavailable we cannot prove
+        // that there is no unclassified work, so fail closed and let the
+        // supervisor's bounded drain timeout choose the force-stop path.
+        let automation_blockers = match automation {
+            Some(store) => store.drain_blockers().await?,
+            None => 1,
+        };
+        self.drain_snapshot(automation_blockers)
     }
 
-    pub(crate) fn drain_snapshot(&self) -> Result<DrainSnapshot, AgentdError> {
+    pub(crate) fn drain_snapshot(
+        &self,
+        automation_blockers: u32,
+    ) -> Result<DrainSnapshot, AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
@@ -308,7 +324,8 @@ impl AgentdState {
             drained: runtime.lifecycle == AgentLifecycle::Draining
                 && !runtime.fenced
                 && self.app_server_drain.drained()
-                && running_turns == 0,
+                && running_turns == 0
+                && automation_blockers == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,
         })
