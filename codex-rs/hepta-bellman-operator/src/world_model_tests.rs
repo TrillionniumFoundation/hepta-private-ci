@@ -81,6 +81,21 @@ fn op_04_prediction_is_synthetic_and_unsupported_pairs_abstain() {
 }
 
 #[test]
+fn op_04_world_model_rejects_relabelled_duplicate_evidence() {
+    let first = sample("sample-1", "state-b", 10);
+    let mut relabelled = sample("sample-2", "state-c", 20);
+    relabelled.evidence_digest = first.evidence_digest;
+    assert_eq!(
+        fit_transition_model(
+            id("world-model-duplicate-evidence"),
+            digest("dataset"),
+            vec![first, relabelled],
+        ),
+        Err(WorldModelError::DuplicateEvidence)
+    );
+}
+
+#[test]
 fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
     let duplicate = sample("sample-1", "state-b", 10);
     assert_eq!(
