@@ -374,12 +374,6 @@
         }
       },
       "componentProfiles": {
-        "globalPlanner": {
-          "source": "implemented",
-          "composition": "runtime.supervisor_named_typed_host_source_composed",
-          "deployment": "daemon_ingress_not_activated",
-          "qualification": "pending_current_exact_head_and_synthetic_merge"
-        },
         "requestLocalContextPlanner": {
           "source": "implemented",
           "composition": "runtime.agentd_composed",
@@ -421,6 +415,12 @@
           "composition": "separate_from_global_planner",
           "deployment": "not_global_planner_activation",
           "qualification": "unit_source_only"
+        },
+        "globalPlannerKernel": {
+          "source": "implemented",
+          "composition": "runtime.supervisor_named_typed_host_source_composed",
+          "deployment": "daemon_ingress_not_activated",
+          "qualification": "pending_current_exact_head_and_synthetic_merge"
         }
       }
     }
