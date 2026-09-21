@@ -57,6 +57,30 @@ fn signed_claim_is_single_use_and_delivers_under_same_owner() {
 }
 
 #[test]
+fn adapter_entry_returns_the_exact_live_revocation_frontier() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    assert_eq!(
+        authority.frontier().unwrap(),
+        FinalUseFrontier {
+            authority_epoch: 9,
+            revision: 1,
+        }
+    );
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    let (value, frontier) = authority
+        .with_verified_use_at_frontier(token, &signed.grant.binding, || 11)
+        .unwrap();
+    assert_eq!(value, 11);
+    assert_eq!(
+        frontier,
+        FinalUseFrontier {
+            authority_epoch: 9,
+            revision: 1,
+        }
+    );
+}
+
+#[test]
 fn changing_signed_data_or_substituting_a_key_does_not_authorize() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.binding.request_sha256 = [6; 32];

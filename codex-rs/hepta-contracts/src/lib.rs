@@ -27,6 +27,7 @@ pub use final_use::FinalUseAuthority;
 pub use final_use::FinalUseBinding;
 pub use final_use::FinalUseError;
 pub use final_use::FinalUseGrant;
+pub use final_use::FinalUseFrontier;
 pub use final_use::FinalUseRevocations;
 pub use final_use::SignedFinalUseGrant;
 pub use final_use::VerifiedUseToken;

@@ -86,6 +86,12 @@ pub struct FinalUseRevocations {
     pub revoked_grant_ids: BTreeSet<String>,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FinalUseFrontier {
+    pub authority_epoch: u64,
+    pub revision: u64,
+}
+
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct State {
@@ -127,6 +133,24 @@ impl fmt::Debug for VerifiedUseToken {
 }
 
 impl FinalUseAuthority {
+    /// Return the exact monotonic revocation frontier currently owned by this verifier.
+    ///
+    /// This is observation only: it grants no authority and exposes no revoked IDs.
+    pub fn frontier(&self) -> Result<FinalUseFrontier, FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(FinalUseFrontier {
+            authority_epoch: state.head.authority_epoch,
+            revision: state.head.revision,
+        })
+    }
+
     pub fn open_state_dir(
         directory: &std::path::Path,
         signer_id: String,
@@ -237,6 +261,23 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
+        self.with_verified_use_at_frontier(token, expected, consumer)
+            .map(|(result, _frontier)| result)
+    }
+
+    /// Enter one final-use adapter and return the exact revocation frontier
+    /// observed at that entry point.
+    ///
+    /// The callback is invoked synchronously while the owner lock is held. It
+    /// should only enter the adapter and return a bounded handle/future; it
+    /// must not await external I/O under this lock. The returned frontier is
+    /// observation metadata, never a replacement authority token.
+    pub fn with_verified_use_at_frontier<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<(T, FinalUseFrontier), FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
@@ -249,9 +290,13 @@ impl FinalUseAuthority {
             return Err(FinalUseError::Unavailable);
         }
         validate_live(&token.grant, &state.head)?;
+        let frontier = FinalUseFrontier {
+            authority_epoch: state.head.authority_epoch,
+            revision: state.head.revision,
+        };
         let result = consumer();
         drop(state);
-        Ok(result)
+        Ok((result, frontier))
     }
 }
 

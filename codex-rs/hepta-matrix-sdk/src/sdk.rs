@@ -26,6 +26,7 @@ use tokio_util::sync::CancellationToken;
 use url::Url;
 
 use crate::MatrixIngress;
+use crate::MatrixOutboundIdentity;
 use crate::MatrixOutboundTransport;
 use crate::MatrixSdkPaths;
 use crate::MatrixSendFuture;
@@ -347,6 +348,17 @@ fn hepta_sync_token(checkpoint: Option<&MatrixSyncCheckpoint>) -> SyncToken {
 }
 
 impl MatrixOutboundTransport for MatrixSdkClient {
+    fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError> {
+        self.verify_authenticated_identity()
+            .map_err(|_| MatrixTransportError::Permanent)?;
+        Ok(MatrixOutboundIdentity {
+            homeserver_id: self.config.binding.homeserver.as_str().to_string(),
+            matrix_user_id: self.config.binding.expected_mxid.as_str().to_string(),
+            device_id: self.config.binding.expected_device_id.as_str().to_string(),
+            session_generation: self.config.matrix_generation,
+        })
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             if !self.config.binding.allowed_rooms.contains(&record.room_id)
@@ -370,8 +382,11 @@ impl MatrixOutboundTransport for MatrixSdkClient {
                 .with_transaction_id(&txn_id)
                 .await
                 .map_err(|error| classify_sdk_send_error(&error))?;
+            // A server response means the request may already have crossed
+            // the effect boundary. If its event id is unusable, preserve the
+            // stable transaction as indeterminate and reconcile/retry it.
             let event_id = MatrixEventId::parse(response.response.event_id.as_str())
-                .map_err(|_| MatrixTransportError::Permanent)?;
+                .map_err(|_| MatrixTransportError::Retryable)?;
             #[cfg(feature = "qualification-failpoints")]
             if crate::qualification::consume_post_send_pre_mark_ack_drop(
                 self.paths.root(),
@@ -418,7 +433,10 @@ fn classify_sdk_send_error(error: &MatrixSdkTransportError) -> MatrixTransportEr
         MatrixSdkTransportError::Timeout | MatrixSdkTransportError::ConcurrentRequestFailed => {
             MatrixTransportError::Retryable
         }
-        _ => MatrixTransportError::Permanent,
+        // Any SDK error not proven pre-dispatch or an explicit server
+        // rejection is conservatively uncertain. Retrying the same Matrix
+        // transaction is idempotent and preserves reconciliation identity.
+        _ => MatrixTransportError::Retryable,
     }
 }
 
