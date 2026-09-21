@@ -145,12 +145,21 @@ pub struct PlannerAxisValueV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EffectBindingV1 {
+    pub subject_id: StableId,
+    pub destination_id: StableId,
+    pub scope_digest: Digest32,
+    pub effect_boundary_id: StableId,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlanCandidateV1 {
     pub candidate_id: StableId,
     pub operation_id: StableId,
     pub plan_digest: Digest32,
     pub required_owner_ids: Vec<StableId>,
     pub final_payload_digests: Vec<Digest32>,
+    pub effect_binding_digest: Option<Digest32>,
     pub resource_costs: Vec<PlannerAxisValueV1>,
 }
 
@@ -501,6 +510,7 @@ pub struct GrantRequestV1 {
     pub candidate_id: StableId,
     pub plan_digest: Digest32,
     pub final_payload_digest: Digest32,
+    pub effect_binding_digest: Digest32,
     pub objective_digest: Digest32,
     pub snapshot_digest: Digest32,
     pub revocation_frontier_digest: Digest32,
@@ -552,6 +562,8 @@ pub enum PlannerError {
     InvalidResourceReservation(String),
     MissingResourceAxis { candidate: String, axis: String },
     UnknownResourceAxis { candidate: String, axis: String },
+    ResourceProfileMismatch,
+    EffectBindingMismatch(String),
     AbstainUnavailable,
     EvaluationBindingMismatch,
     EvaluationCandidateSetMismatch,
@@ -607,6 +619,13 @@ impl fmt::Display for PlannerError {
             Self::UnknownResourceAxis { candidate, axis } => write!(
                 formatter,
                 "candidate {candidate} has unregistered resource axis {axis}"
+            ),
+            Self::ResourceProfileMismatch => {
+                formatter.write_str("resource profile digest does not match canonical reservations")
+            }
+            Self::EffectBindingMismatch(candidate) => write!(
+                formatter,
+                "candidate {candidate} final payloads do not match a sealed effect binding"
             ),
             Self::AbstainUnavailable => {
                 formatter.write_str("abstain must be present and feasible after resource floors")
@@ -759,6 +778,11 @@ pub fn prepare_plan(
         .resource_reservations
         .sort_by(|left, right| left.axis.cmp(&right.axis));
     validate_reservations(&request.resource_reservations)?;
+    let canonical_resource_profile =
+        canonical_resource_profile_digest(&request.resource_reservations)?;
+    if canonical_resource_profile != request.resource_profile_digest {
+        return Err(PlannerError::ResourceProfileMismatch);
+    }
 
     let source_candidate_set_digest = digest_candidates(&request.candidates);
     let reservation_map: BTreeMap<_, _> = request
@@ -1009,6 +1033,13 @@ pub fn request_execution_grants(
         })
         .ok_or(PlannerError::PreparedPlanMismatch)?;
 
+    let effect_binding_digest = if candidate.final_payload_digests.is_empty() {
+        Digest32::ZERO
+    } else {
+        candidate
+            .effect_binding_digest
+            .ok_or(PlannerError::PreparedPlanMismatch)?
+    };
     let requests: Vec<_> = candidate
         .final_payload_digests
         .iter()
@@ -1017,6 +1048,7 @@ pub fn request_execution_grants(
             candidate_id: candidate.candidate_id.clone(),
             plan_digest: candidate.plan_digest,
             final_payload_digest: *payload_digest,
+            effect_binding_digest,
             objective_digest: receipt.objective_digest,
             snapshot_digest: receipt.snapshot_digest,
             revocation_frontier_digest: receipt.revocation_frontier_digest,
@@ -1082,6 +1114,18 @@ fn validate_candidates(
         {
             return Err(PlannerError::EmptyDigest("candidate final payload"));
         }
+        match (
+            candidate.final_payload_digests.is_empty(),
+            candidate.effect_binding_digest,
+        ) {
+            (true, None) => {}
+            (false, Some(digest)) if !digest.is_zero() => {}
+            _ => {
+                return Err(PlannerError::EffectBindingMismatch(
+                    candidate.candidate_id.to_string(),
+                ));
+            }
+        }
         candidate.required_owner_ids.sort();
         reject_duplicate_ids(&candidate.required_owner_ids, PlannerError::DuplicateOwner)?;
         candidate.final_payload_digests.sort();
@@ -1113,6 +1157,44 @@ fn validate_candidates(
         }
     }
     Ok(())
+}
+
+/// Canonical digest of the complete final-use identity selected before planning.
+///
+/// This digest participates in the candidate-set seal. A final-use host may
+/// present the structured binding later, but cannot change subject,
+/// destination, scope or effect boundary without invalidating the plan.
+pub fn canonical_effect_binding_digest_v1(
+    binding: &EffectBindingV1,
+) -> Result<Digest32, PlannerError> {
+    require_digest(binding.scope_digest, "effect scope")?;
+    let mut bytes = b"hepta.control.effect-binding.v1\0".to_vec();
+    push_id(&mut bytes, &binding.subject_id);
+    push_id(&mut bytes, &binding.destination_id);
+    push_digest(&mut bytes, binding.scope_digest);
+    push_id(&mut bytes, &binding.effect_boundary_id);
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+/// Canonical digest of the exact bounded resource reservations consumed by planning.
+pub fn canonical_resource_profile_digest(
+    reservations: &[ResourceReservationV1],
+) -> Result<Digest32, PlannerError> {
+    if reservations.is_empty() || reservations.len() > MAX_RESOURCE_RESERVATIONS {
+        return Err(PlannerError::LimitExceeded("resource reservations"));
+    }
+    let mut canonical = reservations.to_vec();
+    canonical.sort_by(|left, right| left.axis.cmp(&right.axis));
+    validate_reservations(&canonical)?;
+
+    let mut bytes = b"hepta.control.resource-profile.v1\0".to_vec();
+    push_len(&mut bytes, canonical.len());
+    for reservation in canonical {
+        push_id(&mut bytes, &reservation.axis);
+        bytes.extend_from_slice(&reservation.endowment.raw().to_be_bytes());
+        bytes.extend_from_slice(&reservation.essential_floor.raw().to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn validate_reservations(reservations: &[ResourceReservationV1]) -> Result<(), PlannerError> {
@@ -1292,6 +1374,7 @@ fn digest_candidates(candidates: &[PlanCandidateV1]) -> Digest32 {
         for payload in candidate.final_payload_digests {
             push_digest(&mut bytes, payload);
         }
+        push_optional_digest(&mut bytes, candidate.effect_binding_digest);
         candidate.resource_costs.sort();
         push_axis_values(&mut bytes, &candidate.resource_costs);
     }
@@ -1368,6 +1451,7 @@ fn digest_grant_requests(plan_receipt_digest: Digest32, requests: &[GrantRequest
         push_id(&mut bytes, &request.candidate_id);
         push_digest(&mut bytes, request.plan_digest);
         push_digest(&mut bytes, request.final_payload_digest);
+        push_digest(&mut bytes, request.effect_binding_digest);
         push_digest(&mut bytes, request.objective_digest);
         push_digest(&mut bytes, request.snapshot_digest);
         push_digest(&mut bytes, request.revocation_frontier_digest);

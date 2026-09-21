@@ -157,6 +157,11 @@ impl PlannerJournalV1 {
     }
 
     #[must_use]
+    pub fn revoked_decision_digests(&self) -> Vec<Digest32> {
+        self.revoked_digests().into_iter().collect()
+    }
+
+    #[must_use]
     pub fn selected_plan_digest(&self) -> Option<Digest32> {
         let revoked = self.revoked_digests();
         let mut selected = None;
@@ -184,6 +189,7 @@ impl PlannerJournalV1 {
         if identity_digest.is_zero() || payload_digest.is_zero() {
             return Err(PlannerJournalError::EmptyDigest);
         }
+        self.validate_next_semantics(kind, payload_digest)?;
         if let Some((existing_kind, existing_payload)) = self.identities.get(&identity_digest) {
             if *existing_kind == kind && *existing_payload == payload_digest {
                 return self
@@ -326,7 +332,52 @@ impl PlannerJournalV1 {
                 entry_digest,
             });
         }
+        journal.validate_semantic_replay()?;
         Ok(journal)
+    }
+
+    fn validate_next_semantics(
+        &self,
+        kind: PlannerJournalKindV1,
+        payload_digest: Digest32,
+    ) -> Result<(), PlannerJournalError> {
+        if kind != PlannerJournalKindV1::SelectedPlan {
+            return Ok(());
+        }
+        if !self.entries.iter().any(|entry| {
+            entry.kind == PlannerJournalKindV1::Decision && entry.payload_digest == payload_digest
+        }) {
+            return Err(PlannerJournalError::DecisionNotRecorded);
+        }
+        if self.revoked_digests().contains(&payload_digest) {
+            return Err(PlannerJournalError::RevokedPlan);
+        }
+        Ok(())
+    }
+
+    fn validate_semantic_replay(&self) -> Result<(), PlannerJournalError> {
+        let mut decisions = BTreeSet::new();
+        let mut revoked = BTreeSet::new();
+        for entry in &self.entries {
+            match entry.kind {
+                PlannerJournalKindV1::Decision => {
+                    decisions.insert(entry.payload_digest);
+                }
+                PlannerJournalKindV1::SelectedPlan => {
+                    if !decisions.contains(&entry.payload_digest) {
+                        return Err(PlannerJournalError::DecisionNotRecorded);
+                    }
+                    if revoked.contains(&entry.payload_digest) {
+                        return Err(PlannerJournalError::RevokedPlan);
+                    }
+                }
+                PlannerJournalKindV1::Revocation => {
+                    revoked.insert(entry.payload_digest);
+                }
+                PlannerJournalKindV1::Snapshot => {}
+            }
+        }
+        Ok(())
     }
 
     fn revoked_digests(&self) -> BTreeSet<Digest32> {

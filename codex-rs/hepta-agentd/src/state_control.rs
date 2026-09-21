@@ -123,6 +123,7 @@ impl AgentdState {
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
+                    &self.planner_clock,
                 )
                 .await;
                 self.refresh_generation()?;

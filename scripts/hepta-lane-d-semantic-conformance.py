@@ -190,6 +190,8 @@ def verify() -> int:
         "required_owner_set_digest",
         "evaluation_policy_digest",
         "resource_profile_digest",
+        "effect_binding_digest",
+        "canonical_effect_binding_digest_v1",
         "prepared_digest != digest_prepared_plan(prepared)",
         "candidate_set_digest != digest_candidates(&prepared.feasible_candidates)",
         "validate_snapshot_for_planning(snapshot, now_micros)?;",
@@ -211,6 +213,40 @@ def verify() -> int:
             f"{struct_name} output not sealed",
         )
 
+    supervisor_global = (
+        ROOT / "codex-rs/hepta-supervisor/src/global_control.rs"
+    ).read_text(encoding="utf-8")
+    for token in [
+        "GlobalControlHostPolicyV1",
+        "required_owner_ids",
+        "evaluation_policy_digest",
+        "canonical_ndu_planning_policy_digest",
+        "planner_clock_origin",
+        "issued_plan_receipts",
+        "PlanNotIssuedByCurrentHost",
+        "PlannerPlanNotCurrent",
+        "FleetSubjectMismatch",
+        "planner_store.is_poisoned()",
+        "PlannerStoreError::Indeterminate",
+    ]:
+        need(token in supervisor_global, "global host hardening " + token)
+    supervisor_tests = (
+        ROOT / "codex-rs/hepta-supervisor/src/global_control_tests.rs"
+    ).read_text(encoding="utf-8")
+    for test_symbol in [
+        "host_open_rejects_missing_required_owner_trust",
+        "caller_cannot_omit_host_required_owner",
+        "caller_cannot_relax_host_ndu_policy",
+        "final_use_subject_must_match_host_pinned_fleet_principal",
+        "revoked_planner_decision_cannot_reach_final_use",
+        "pre_restart_plan_requires_replanning_before_final_use",
+        "post_rename_directory_sync_failure_poison_requires_reopen",
+    ]:
+        need(
+            f"fn {test_symbol}" in supervisor_tests,
+            "missing global host test " + test_symbol,
+        )
+
     headings = {
         "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md": [
             "## 4. Deterministic compilation algorithm",
@@ -224,7 +260,22 @@ def verify() -> int:
             "## 11. Coding-entry checklist",
             "## Appendix A. Closed gap and protocol mapping",
         ],
-        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md": ["RCP-13", "RCP-14", "RCP-15"],
+        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md": [
+            "RCP-13",
+            "RCP-14",
+            "RCP-15",
+            "RCP-16",
+            "RCP-17",
+            "RCP-18",
+            "RCP-19",
+            "RCP-20",
+            "RCP-21",
+            "RCP-22",
+            "RCP-23",
+            "RCP-24",
+            "RCP-25",
+            "RCP-26",
+        ],
     }
     for path, tokens in headings.items():
         text = (ROOT / path).read_text(encoding="utf-8")
@@ -270,11 +321,22 @@ def verify() -> int:
         {row["module"] for row in maturity["modules"]} == set(MODULES),
         "maturity module closure",
     )
+    expected_product_caller = {
+        "objective.compiler": "not_established",
+        "utility.ndu": "not_established",
+        "control.runtime": "runtime_supervisor_named_typed_host_source_composed_daemon_activation_pending",
+    }
     for row in maturity["modules"]:
-        for key in ["productCaller", "independentAcceptance", "activation", "release"]:
+        module = row["module"]
+        need(
+            row["dimensions"]["productCaller"]["state"]
+            == expected_product_caller[module],
+            f"truth boundary {module} productCaller",
+        )
+        for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
-                f"truth boundary {row['module']} {key}",
+                f"truth boundary {module} {key}",
             )
 
     print(

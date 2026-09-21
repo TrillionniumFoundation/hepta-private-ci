@@ -46,15 +46,17 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs); observed identifiers include `OrganHostV1`, `TrustedReadOnlyOrganV1`, `OrganDeliveryV1`, `OrganFaultRecordV1`, `start_all`, `dispatch_once`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) for the implemented subset and remaining product work.
+The declared source root is `codex-rs/hepta-control-plane`. Runtime-organ hosting remains in [organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs); global planning now spans `planner.rs`, `planner_ndu.rs`, `planner_context.rs`, `global_plane.rs`, `planner_journal.rs`, `planner_store.rs` and `authority_bridge.rs`. `plan_observed_context` has a live Agentd caller; `compose_global_plan_with_fleet_v1` is source-composed into the named `runtime.supervisor::GlobalControlHostV1`; the default supervisord wire protocol still has no activated global-planning ingress. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
-Direct dependencies:
+Direct implementation dependencies:
 
 - `runtime.fleet`
 - `kernel.evidence`
 - `utility.ndu`
+- `auth.authbus` for signed owner-summary admission
+- `kernel.authority` final-use verification boundary; control.runtime never issues its grants
 
 Authoritative write domains:
 
@@ -85,6 +87,8 @@ Ingress validates identity, version, size, scope and revision before domain logi
 Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+
+The named global product host freezes `GlobalControlHostPolicyV1` at construction. Fleet principal and essential floors, the required-owner set, canonical NDU evaluation-policy digest, snapshot-policy digest, maximum owner age and maximum plan lifetime are host-owned facts; a per-request caller cannot relax or replace them. The host owns the monotonic planner clock for that process generation and overwrites request freshness/deadline fields from that clock.
 
 ## 5. Contracts, ports and compatibility
 
@@ -153,13 +157,13 @@ Owned threat entries:
 - `central_RPC_hot_path_dependency`
 - `global_optimizer_local_optimum_claim`
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Effectful candidates prebind subject, destination, scope and effect-boundary identity through `canonical_effect_binding_digest_v1`; the final host may reveal the structured binding but cannot change its sealed digest. Authority is operation-bound, final-payload-bound, effect-identity-bound, short-lived and revocation-aware.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) specifies the algorithm, pilot ceilings and capacity fixtures. Planner collection bounds are enforced in source, but p95/p99 latency, journal fsync/reopen latency and global composition throughput remain target-host claims only after a named host, filesystem, compiler/build profile and exact source are measured.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -178,8 +182,14 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs); named case: `typed_controller_and_plant_replay_the_explicit_euler_q24_golden`.
-- [codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs); named case: `blocking_and_higher_priority_interference_are_included`.
+- `planner_tests.rs`: snapshot/resource/profile sealing and grant-request revalidation.
+- `planner_ndu_tests.rs`: real NDU owner evaluation and policy/candidate binding.
+- `planner_context_tests.rs`: narrow measured-context product composition.
+- `planner_journal_tests.rs`: hash integrity plus semantic replay/non-resurrection.
+- `planner_store_tests.rs`: fsync/reopen, V1→V2 migration, history regression and restored-backup revocation floors.
+- `global_plane_tests.rs` and `runtime.supervisor::global_control_tests`: durable AuthBus-authenticated multi-owner composition, including signed `runtime.fleet` revision/frontier cross-checked against the exact live allocation, plus real NDU composition.
+- `authority_bridge_tests.rs`: independent final-use authority claim and payload-drift rejection.
+- embodiment and organ-runtime/wire fixtures remain separate local-control/reference coverage.
 
 In `codex-rs`, run `just test -p codex-hepta-control-plane`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) separately labels target acceptance designs.
 

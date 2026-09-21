@@ -171,9 +171,10 @@
       "implementationMap": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
       "dimensions": {
         "technicalSpecification": {
-          "state": "candidate_complete",
+          "state": "candidate_complete_current_source_closure",
           "evidence": [
-            "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+            "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
+            "qualification/module-execution-dossiers/detail/control.runtime.md"
           ]
         },
         "canonicalProtocolRegistration": {
@@ -190,25 +191,29 @@
           ]
         },
         "nativeApiMapping": {
-          "state": "candidate_complete",
+          "state": "candidate_complete_current_surface",
           "evidence": [
             "docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
           ]
         },
         "globalPlannerKernel": {
-          "state": "candidate_implemented",
+          "state": "source_implemented",
           "evidence": [
             "collect_snapshot",
             "prepare_plan",
-            "bind_ndu_plan_evaluation_v1",
+            "canonical_resource_profile_digest",
+            "canonical_effect_binding_digest_v1",
+            "evaluate_prepared_plan_with_ndu",
             "finalize_plan",
             "request_execution_grants"
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "owner_store_source_implemented_with_post_rename_indeterminate_poisoning_not_deployed",
           "evidence": [
-            "PlannerJournalV1"
+            "PlannerJournalV1",
+            "PlannerJournalStoreV1",
+            "post_rename_directory_sync_failure_poison_requires_reopen"
           ]
         },
         "effectAuthority": {
@@ -218,16 +223,26 @@
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "pending_current_candidate_workflows",
-          "evidence": []
+          "state": "pending_current_pr_workflows",
+          "evidence": [
+            "PR #932"
+          ]
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "runtime_supervisor_named_typed_host_source_composed_daemon_activation_pending",
+          "evidence": [
+            "codex-rs/hepta-supervisor/src/global_control.rs",
+            "GlobalControlHostV1",
+            "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "plan_observed_context"
+          ]
         },
         "productionWriter": {
-          "state": "not_established",
-          "evidence": []
+          "state": "planner_owner_store_composed_in_named_supervisor_host_source_not_deployed",
+          "evidence": [
+            "PlannerJournalStoreV1",
+            "GlobalControlHostV1"
+          ]
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -245,7 +260,9 @@
           "state": "candidate_implemented",
           "evidence": [
             "tampered_candidate_payload_is_rejected_before_grant_request",
-            "grant_request_revalidates_snapshot_masks_and_digest"
+            "grant_request_revalidates_snapshot_masks_and_digest",
+            "effectful_candidate_requires_a_prebound_effect_identity",
+            "effect_identity_drift_is_rejected_before_authority_claim"
           ]
         },
         "policyPrebinding": {
@@ -253,28 +270,102 @@
           "evidence": [
             "snapshotPolicyDigest",
             "evaluationPolicyDigest",
-            "resourceProfileDigest"
+            "resourceProfileDigest",
+            "effectBindingDigest"
+          ]
+        },
+        "authenticatedOwnerAdmission": {
+          "state": "source_implemented_with_durable_authbus_replay_for_all_global_owners_and_live_fleet_cross_check",
+          "evidence": [
+            "admit_durable_owner_summary_v1",
+            "HeptaEvidenceStore::admit_authbus_message",
+            "admit_fleet_allocation_owner_v1",
+            "signed_fleet_owner_must_match_live_allocation_revision"
+          ]
+        },
+        "globalSourceComposition": {
+          "state": "named_typed_supervisor_host_source_composed_with_authenticated_fleet_owner_not_network_activated",
+          "evidence": [
+            "compose_global_plan_with_fleet_v1",
+            "GlobalControlHostV1",
+            "with_authorized_grant_request_v1",
+            "named_host_persists_plan_and_durable_owner_replay_survives_restart",
+            "signed_fleet_owner_must_match_live_allocation_revision",
+            "named_host_releases_effect_only_inside_final_use_fence"
+          ]
+        },
+        "namedHostPerformance": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "resourceProfileBinding": {
+          "state": "source_implemented",
+          "evidence": [
+            "canonical_resource_profile_digest",
+            "resource_profile_digest_must_match_exact_reservations"
+          ]
+        },
+        "monotonicPlannerClock": {
+          "state": "agentd_and_named_global_host_implemented",
+          "evidence": [
+            "MonotonicClockV1",
+            "GlobalControlHostV1::planner_now_micros"
+          ]
+        },
+        "journalSemanticReplay": {
+          "state": "source_implemented",
+          "evidence": [
+            "validate_semantic_replay",
+            "reopen_rejects_hash_valid_semantically_invalid_selection"
+          ]
+        },
+        "finalUseIdentityPrebinding": {
+          "state": "source_implemented_plan_time_digest_seal_and_final_boundary_revalidation",
+          "evidence": [
+            "EffectBindingV1",
+            "canonical_effect_binding_digest_v1",
+            "GrantRequestV1::effect_binding_digest",
+            "effect_identity_drift_is_rejected_before_authority_claim"
+          ]
+        },
+        "hostOwnedGlobalPolicy": {
+          "state": "source_implemented_host_pinned_not_request_relaxable",
+          "evidence": [
+            "GlobalControlHostPolicyV1",
+            "host_open_rejects_missing_required_owner_trust",
+            "caller_cannot_omit_host_required_owner",
+            "caller_cannot_relax_host_ndu_policy"
+          ]
+        },
+        "currentHostFinalUseFence": {
+          "state": "source_implemented_current_generation_current_selection_required",
+          "evidence": [
+            "issued_plan_receipts",
+            "revoked_planner_decision_cannot_reach_final_use",
+            "pre_restart_plan_requires_replanning_before_final_use",
+            "final_use_subject_must_match_host_pinned_fleet_principal"
           ]
         }
       }
     }
   ],
   "repositoryControlledClosure": {
-    "state": "candidate_pending_exact_head_qualification",
+    "state": "canonical_current_main_convergence_pending_exact_head_and_merge_qualification",
     "requiredChecks": [
-      "Lane D semantic conformance",
+      "Lane D semantic conformance for control.runtime",
       "cargo fmt",
-      "cargo check --locked for all three Lane D packages",
-      "package tests for all three Lane D packages",
-      "strict Clippy for all three Lane D packages",
-      "existing repository integrity and readiness workflows",
-      "synthetic merge qualification"
+      "cargo check --locked for affected control-plane, supervisor, evidence, fleet and Agentd packages",
+      "package tests including supervisor global_control restart and authority fixtures",
+      "strict Clippy",
+      "repository integrity and development-doc workflows",
+      "exact-head source qualification",
+      "deterministic synthetic merge qualification for canonical PR #932"
     ]
   },
   "externalGates": [
+    "selected supervisord global-planning ingress/profile registration and activation",
     "independent non-author review",
-    "production caller and production writer composition",
-    "named-host resource and recovery measurements",
+    "named-host resource, latency and fault/recovery measurements",
     "operator acceptance",
     "deployment and activation",
     "future-window efficacy",

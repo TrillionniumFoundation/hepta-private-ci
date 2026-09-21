@@ -145,6 +145,27 @@ jobs:
             -p codex-hepta-control-plane \
             --all-targets -- -D warnings
 
+      - name: Measure control.runtime named-host profile
+        if: matrix.os == 'ubuntu-24.04'
+        working-directory: codex-rs
+        shell: bash
+        env:
+          PROFILE: dev
+        run: |
+          set -euo pipefail
+          cargo run --locked --quiet \
+            -p codex-hepta-control-plane \
+            --example control_runtime_profile \
+            | tee "$RUNNER_TEMP/control-runtime-profile.jsonl"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: matrix.os == 'ubuntu-24.04'
+        with:
+          name: control-runtime-profile-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/control-runtime-profile.jsonl
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Clean tracked state
         if: always()
         shell: bash
