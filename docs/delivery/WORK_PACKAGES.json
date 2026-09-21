@@ -2715,9 +2715,54 @@
       "deputy": "durability-kernel",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-compact-engine/**"
+        ".github/workflows/hepta-contract-gate.yml",
+        ".github/workflows/hepta-development-docs.yml",
+        "CALLERS.toml",
+        "codex-rs/Cargo.lock",
+        "codex-rs/hepta-agentd/Cargo.toml",
+        "codex-rs/hepta-agentd/src/config.rs",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/production_writer_host.rs",
+        "codex-rs/hepta-agentd/src/production_writer_host_tests.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
+        "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/state.rs",
+        "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+        "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
+        "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs",
+        "codex-rs/hepta-compact-engine/**",
+        "codex-rs/hepta-context-compiler/src/wire.rs",
+        "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+        "codex-rs/hepta-control-plane/src/organ_registry.rs",
+        "codex-rs/hepta-memory/Cargo.toml",
+        "codex-rs/hepta-memory/migrations/0011_qualified_compact_checkpoints.sql",
+        "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "codex-rs/hepta-memory/src/lib.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-memory/src/qualified_compact_store.rs",
+        "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs",
+        "docs/delivery/WORK_PACKAGES.json",
+        "docs/modules/MODULE_DOCS.json",
+        "docs/modules/compact.engine/**",
+        "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+        "docs/modules/runtime.agentd/TECHNICAL.md",
+        "qualification/module-execution-dossiers/DETAILS.json",
+        "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+        "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
+        "qualification/module-execution-dossiers/detail/compact.engine.md",
+        "qualification/module-execution-dossiers/detail/runtime.agentd.md",
+        "scripts/hepta-implementation-maps.py",
+        "scripts/test_hepta_implementation_maps.py"
       ],
-      "coOwnerModules": [],
+      "coOwnerModules": [
+        "cognitive.store",
+        "cognitive.types",
+        "context.compiler",
+        "control.runtime",
+        "runtime.agentd",
+        "runtime.codex"
+      ],
       "consumesContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
@@ -2752,7 +2797,7 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
+        "maxChangedPaths": 48,
         "maxCiMinutes": 30,
         "maxParallelAgents": 2
       },
@@ -2779,7 +2824,10 @@
         ],
         "directDependencies": [
           "cognitive.read",
-          "kernel.operations"
+          "cognitive.store",
+          "cognitive.types",
+          "kernel.operations",
+          "runtime.agentd"
         ],
         "contractInputs": [
           "DomainRead::cross_owner_outboxV1",
