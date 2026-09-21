@@ -241,6 +241,9 @@ fn request_and_trust() -> (
     )
     .expect("candidate used to sign evaluator evidence");
     let mut qualification = CompactionQualificationV2 {
+        tokenizer_implementation_digest: trusted_tokenizer.implementation_digest,
+        tokenizer_attestation_digest: trusted_tokenizer.attestation_digest,
+        tokenizer_key_digest: trusted_tokenizer.key_digest(),
         evaluator_id: trusted_evaluator.evaluator_id.clone(),
         evaluator_implementation_digest: trusted_evaluator.implementation_digest,
         evaluation_artifact_digest: digest("evaluation-artifact:e2e"),
