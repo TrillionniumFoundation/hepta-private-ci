@@ -125,6 +125,7 @@ fn request(with_optional: bool) -> LaneFRunRequestV3 {
         request_digest: digest("request"),
         body_digest: digest("body"),
         artifact_set_digest: digest("artifact-set"),
+        execution_payload_digest: digest("execution-payload"),
         snapshot,
         legal_candidates: candidates,
         budget: LaneFBudgetV3 {
