@@ -160,12 +160,15 @@ impl FleetHarness {
         &mut self,
         agent: &AgentFixture,
         descriptor: &Path,
+        descriptor_digest: &str,
     ) -> Result<()> {
         let command = AgentCommand::new(
             agentd_binary()?,
             vec![
                 "--plasticity-bootstrap-descriptor".into(),
                 descriptor.as_os_str().to_owned(),
+                "--plasticity-bootstrap-descriptor-digest".into(),
+                descriptor_digest.into(),
             ],
         )?;
         self.supervisor
