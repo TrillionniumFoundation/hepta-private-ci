@@ -119,7 +119,11 @@ fn evidence_owner(
 fn sign_owner(summary: &OwnerSummaryV1) -> (SignedMessage, IssuerRegistration) {
     let is_fleet = summary.owner_id.as_str() == "runtime.fleet";
     let signing = SigningKey::from_bytes(&[if is_fleet { 22 } else { 21 }; 32]);
-    let issuer_id = if is_fleet { "issuer:fleet" } else { "issuer:evidence" };
+    let issuer_id = if is_fleet {
+        "issuer:fleet"
+    } else {
+        "issuer:evidence"
+    };
     let message_id = if is_fleet {
         "message:fleet:9"
     } else {
