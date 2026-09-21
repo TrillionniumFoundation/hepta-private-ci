@@ -18,6 +18,8 @@ on:
       - justfile
       - scripts/just-shell.py
       - scripts/hepta_ci_v8.py
+      - scripts/hepta_ci_candidate.py
+      - scripts/tests/test_hepta_ci_candidate.py
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-fleet/**
       - codex-rs/hepta-control-plane/**
@@ -71,7 +73,7 @@ jobs:
           PYTHONDONTWRITEBYTECODE: "1"
         run: |
           set -euo pipefail
-          python3 -m unittest -v scripts.tests.test_hepta_ci_dependencies scripts.tests.test_hepta_ci_scope scripts.test_hepta_module_status_facts scripts.test_hepta_agentd_ci
+          python3 -m unittest -v scripts.tests.test_hepta_ci_dependencies scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_candidate scripts.test_hepta_module_status_facts scripts.test_hepta_agentd_ci
       - name: Verify canonical module projections without rewriting the candidate
         run: python3 scripts/hepta-module-docs.py refresh-derived --check
       - name: Verify source remained unchanged
@@ -94,12 +96,13 @@ jobs:
           ref: ${{ matrix.candidate == 'source-head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
           persist-credentials: false
       - name: Check owner formatting without blocking behavior feedback
+        working-directory: codex-rs
         env:
           EXPECTED_SHA: ${{ matrix.candidate == 'source-head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd --package codex-hepta-fleet --package codex-hepta-control-plane --package codex-hepta-automation -- --check
+          cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd --package codex-hepta-fleet --package codex-hepta-control-plane --package codex-hepta-automation -- --check
       - name: Verify source remained unchanged
         if: always()
         run: |
@@ -129,24 +132,26 @@ jobs:
           git rev-parse HEAD HEAD^{tree}
       - name: Execute catalog and component lifecycle regressions
         id: native
-        run: cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet -p codex-hepta-control-plane --lib
+        working-directory: codex-rs
+        run: cargo test --locked --manifest-path Cargo.toml -p codex-hepta-fleet -p codex-hepta-control-plane --lib
       - name: Retain offline lock-resolution diagnostics without testing modified source
         if: failure() && steps.native.outcome == 'failure'
+        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/hepta-lock-diagnostics"
-          trap 'git restore --source=HEAD --worktree -- codex-rs/Cargo.lock' EXIT
+          trap 'git restore --source=HEAD --worktree -- Cargo.lock' EXIT
           set +e
-          cargo generate-lockfile --offline --manifest-path codex-rs/Cargo.toml >"$RUNNER_TEMP/hepta-lock-diagnostics/resolver.log" 2>&1
+          cargo generate-lockfile --offline --manifest-path Cargo.toml >"$RUNNER_TEMP/hepta-lock-diagnostics/resolver.log" 2>&1
           resolver_status=$?
           set -e
           printf 'offline_resolution_exit=%s\n' "$resolver_status"
           cat "$RUNNER_TEMP/hepta-lock-diagnostics/resolver.log"
-          git diff -- codex-rs/Cargo.lock >"$RUNNER_TEMP/hepta-lock-diagnostics/Cargo.lock.patch"
+          git diff -- Cargo.lock >"$RUNNER_TEMP/hepta-lock-diagnostics/Cargo.lock.patch"
           cat "$RUNNER_TEMP/hepta-lock-diagnostics/Cargo.lock.patch"
           if [ "$resolver_status" -eq 0 ]; then
-            cp codex-rs/Cargo.lock "$RUNNER_TEMP/hepta-lock-diagnostics/Cargo.lock.proposed"
+            cp Cargo.lock "$RUNNER_TEMP/hepta-lock-diagnostics/Cargo.lock.proposed"
           fi
           # Diagnostics never replace the exact source or make the native step pass.
       - name: Retain failed-resolution evidence
@@ -165,10 +170,11 @@ jobs:
 
   process-qualification:
     # Independent of report freshness, formatting and catalog-test outcomes.
-    # Every lane remains mandatory at qualification-result below.
+    # The terminal fan-in requires EVERY source/merge and platform matrix row.
     strategy:
       fail-fast: false
       matrix:
+        candidate: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","merge-candidate"]' || '["source-head"]') }}
         os: ${{ fromJSON(github.event_name == 'push' && github.ref != 'refs/heads/main' && '["ubuntu-24.04"]' || '["ubuntu-24.04","macos-15"]') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
@@ -176,32 +182,54 @@ jobs:
       RUST_BACKTRACE: "1"
       RUST_LOG: "info"
       TMPDIR: /tmp
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      EXPECTED_SHA: ${{ matrix.candidate == 'source-head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ env.EXPECTED_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Bind exact source
+      - name: Bind source or deterministic GitHub prospective merge
+        id: execution
+        env:
+          CANDIDATE: ${{ matrix.candidate }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          git rev-parse HEAD HEAD^{tree}
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          args=(--source "$SOURCE_SHA" --tested "$EXPECTED_SHA" --github-output "$GITHUB_OUTPUT")
+          if [ "$CANDIDATE" = "merge-candidate" ]; then
+            args+=(--base "$BASE_SHA" --lane base-merge)
+            # A matching parent list alone is not enough: bind the actual tree.
+            expected_tree="$(git --no-replace-objects merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            test "$(git rev-parse HEAD^{tree})" = "$expected_tree"
+          else
+            args+=(--lane source-head)
+          fi
+          python3 scripts/hepta_ci_candidate.py "${args[@]}"
+          # Identical trees share native work only because the final matrix
+          # result also requires the source-head row on the SAME platform.
       - name: Validate executable workspace inputs
         run: python3 scripts/hepta_workspace.py
       - name: Install repository test entry point
+        if: steps.execution.outputs.run_native == 'true'
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Resolve verified sandboxed V8 artifacts before Rust execution
+        if: steps.execution.outputs.run_native == 'true'
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
       - name: Exercise local fences, reconciliation and organ lifecycle
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: just test --locked --lib -p codex-hepta-fleet -p codex-hepta-control-plane -p codex-hepta-agentd
       - name: Exercise real optional-service restart and shutdown outcomes
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         shell: bash
         run: |
@@ -210,12 +238,15 @@ jobs:
             --test optional_module_restart --test runtime_shutdown_outcomes \
             -- --nocapture --test-threads=1
       - name: Exercise durable retirement and stale-writer rejection
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-automation --test retirement_recovery --test operation_timer_fence
       - name: Exercise destination recovery identity and payload binding
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-operations --test destination_recovery_binding
       - name: Execute local writer qualification
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         shell: bash
         run: |
@@ -224,6 +255,7 @@ jobs:
             --features qualification-cognitive-write \
             runtime::tests::qualification_ -- --nocapture --test-threads=1
       - name: Execute real Agentd/App Server process suite
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         shell: bash
         run: |
@@ -232,6 +264,7 @@ jobs:
             --features qualification-cognitive-write \
             --test cognitive_product_e2e -- --nocapture --test-threads=1
       - name: Strict Agentd lint
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         shell: bash
         run: |

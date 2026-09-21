@@ -127,6 +127,38 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertNotIn("pull_request_target:", self.text)
         self.assertEqual(self.text.count("persist-credentials: false"), len(self.jobs))
 
+    def test_process_matrix_covers_source_and_merge_on_each_platform(self):
+        process = self.jobs["process-qualification"]
+        self.assertIn('["source-head","merge-candidate"]', process)
+        self.assertIn('["ubuntu-24.04","macos-15"]', process)
+        self.assertIn("ref: ${{ env.EXPECTED_SHA }}", process)
+        self.assertIn("fail-fast: false", process)
+        self.assertNotIn("exclude:", process)
+        self.assertIn('test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"', process)
+        self.assertIn("python3 scripts/hepta_ci_candidate.py", process)
+        self.assertIn("--base \"$BASE_SHA\" --lane base-merge", process)
+        self.assertIn("merge-tree --write-tree", process)
+        self.assertIn('test "$(git rev-parse HEAD^{tree})" = "$expected_tree"', process)
+
+    def test_native_sharing_is_bound_to_the_existing_planner_and_final_fanin(self):
+        process = self.jobs["process-qualification"]
+        self.assertIn("id: execution", process)
+        self.assertIn('--github-output "$GITHUB_OUTPUT"', process)
+        self.assertIn('args+=(--lane source-head)', process)
+        self.assertIn("steps.execution.outputs.run_native == 'true'", process)
+        terminal = self.jobs["qualification-result"]
+        self.assertIn("process-qualification]", terminal)
+        self.assertIn("scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"])
+        self.assertNotIn("continue-on-error", process)
+
+    def test_catalog_and_formatter_use_the_repository_toolchain_directory(self):
+        for name in ("owner-formatting", "catalog-admission"):
+            with self.subTest(name=name):
+                job = self.jobs[name]
+                self.assertIn("working-directory: codex-rs", job)
+                self.assertNotIn("--manifest-path codex-rs/Cargo.toml", job)
+                self.assertIn("--manifest-path Cargo.toml", job)
+
 
 if __name__ == "__main__":
     unittest.main()
