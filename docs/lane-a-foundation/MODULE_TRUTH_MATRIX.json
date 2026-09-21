@@ -168,38 +168,66 @@
     },
     {
       "module": "kernel.operations",
-      "profile": "bounded_operation_reference_model",
+      "profile": "durable_operation_owner_with_reference_model",
       "formalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md",
+      "implementationDetail": "docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_reference_model",
-        "durability": "not_implemented",
-        "qualification": "model_tests_present",
-        "activation": "inactive",
+        "implementation": "durable_sqlite_owner_plus_reference_model",
+        "durability": "sqlite_migration_0001_immutable_event_history",
+        "qualification": "durable_state_machine_tests_present",
+        "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded deterministic operation-state reference model",
-        "bounded in-memory outbox claim and acknowledgement model",
-        "generation-fenced idempotent terminal observation"
+        "bounded deterministic in-memory operation and outbox reference models",
+        "SQLite durable operation ledger with immutable transition history and crash-reopen validation",
+        "leased transactional outbox with live-owner fencing expired takeover and acknowledgement identity",
+        "generation-fenced terminal observation kept distinct from dispatch acknowledgement"
       ],
       "targetOnlyCapabilities": [
-        "durable operation ledger",
-        "transactional durable outbox",
-        "claim lease expiry and crash-reopen takeover",
-        "background reconciliation service"
+        "authenticated named product caller and durable authorization policy composition",
+        "final-use-authorized real owner/effect adapter",
+        "destination-owned deduplication and independently observed product terminal reconciliation",
+        "background product reconciliation service and selected-host qualification",
+        "external anti-rollback and trusted-time evidence"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-operations/src/lib.rs",
           "mustContain": [
-            "In-memory reference model",
-            "does not provide durable storage",
-            "ReferenceAuthorityWitness"
+            "pub use durable::DurableOperationStore;",
+            "pub use model::ReferenceAuthorityWitness;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable.rs",
+          "mustContain": [
+            "pub struct DurableOperationStore",
+            "begin_with(\"BEGIN IMMEDIATE\")",
+            "pub async fn observe_terminal(",
+            "pub async fn claim_outbox("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0001_durable_operations.sql",
+          "mustContain": [
+            "CREATE TABLE operation_records",
+            "CREATE TABLE operation_outbox",
+            "operation_events_no_update",
+            "operation_outbox_events_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable_tests.rs",
+          "mustContain": [
+            "crash_reopen_preserves_indeterminate_and_terminal_reconciliation",
+            "durable_outbox_lease_fences_live_owner_and_allows_expired_takeover",
+            "outbox_acknowledgement_never_promotes_operation_to_terminal",
+            "reopen_rejects_current_projection_without_matching_immutable_event"
           ]
         },
         {
@@ -207,23 +235,14 @@
           "mustContain": [
             "MAX_MODEL_OPERATION_RECORDS",
             "pub struct OperationLedger",
-            "pub fn observe_terminal",
-            "terminal_matches"
+            "pub fn observe_terminal"
           ]
         },
         {
           "path": "codex-rs/hepta-operations/src/outbox.rs",
           "mustContain": [
             "MAX_MODEL_OUTBOX_RECORDS",
-            "InvalidDigest(\"outbox payload\")",
-            "InvalidDigest(\"outbox acknowledgement\")"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-operations/src/model.rs",
-          "mustContain": [
-            "pub struct ReferenceAuthorityWitness",
-            "not a cryptographic credential"
+            "pub struct Outbox"
           ]
         }
       ]
