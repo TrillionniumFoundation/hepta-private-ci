@@ -218,7 +218,7 @@ Source completion requires both source-head and deterministic synthetic-merge co
 
 Applicable work package: `MEM-5-COMPACT`.
 
-The exact cross-owner convergence envelope is canonical in `docs/delivery/WORK_PACKAGES.json`. It explicitly includes the compact-engine root plus the bounded Lane C contract, CognitiveStore migration/store/writer, Agentd product-host, caller-registry, compatibility tests and documentation/evidence tooling touched by this convergence. Co-owner modules are `cognitive.types`, `cognitive.store`, `runtime.agentd`, `runtime.codex` and `context.compiler`. This replaces the former inaccurate statement that MEM-5 could modify only `hepta-compact-engine/**`.
+The exact cross-owner convergence envelope is canonical in `docs/delivery/WORK_PACKAGES.json`. It explicitly includes the compact-engine root plus the bounded Lane C contract, CognitiveStore migration/store/writer, Agentd product-host, caller-registry, compatibility tests and documentation/evidence tooling touched by this convergence. Co-owner modules are `cognitive.types`, `cognitive.store`, `context.compiler`, `control.runtime`, `runtime.agentd` and `runtime.codex`. This replaces the former inaccurate statement that MEM-5 could modify only `hepta-compact-engine/**`.
 
 Development predecessor remains `MEM-0-TYPES`; activation predecessor remains `MEM-1-STORE`. The work package is still `planned` in the canonical delivery state until exact-candidate gates justify a state transition. Source code existing on a PR does not by itself update delivery/activation/acceptance state.
 
