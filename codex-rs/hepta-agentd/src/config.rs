@@ -38,8 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    intelligence_product_runner:
-        Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
+    intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
 }
 
 impl AgentdConfig {
