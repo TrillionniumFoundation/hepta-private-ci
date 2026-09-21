@@ -57,7 +57,7 @@
     "ui.control",
     "ui.native"
   ],
-  "operationCount": 39,
+  "operationCount": 41,
   "modules": [
     {
       "module": "runtime.supervisor",
@@ -84,8 +84,10 @@
       "operationIds": [
         "compose_runtime",
         "start_run",
+        "admit_revalidated_run_start",
         "cancel_run",
-        "attach_context"
+        "attach_context",
+        "daemon_run_lifecycle_control"
       ]
     },
     {
