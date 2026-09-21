@@ -1001,6 +1001,21 @@
             "BEGIN IMMEDIATE",
             "cognitive_operation_ledger"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "mustContain": [
+            "with_production_operations",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "run_production_operation_reconciler",
+            "attach_production_operations",
+            "CompletedRuntimeTask::Operations"
+          ]
         }
       ],
       "positiveTests": [
@@ -1021,8 +1036,8 @@
         }
       ],
       "durability": "sqlite_wal_full_integrated_owner",
-      "activation": "host_composition_required",
-      "productionCaller": "AgentdProductionWriterHost",
+      "activation": "source_composed_external_authority_activation_pending",
+      "productionCaller": "AgentdConfig::with_production_operations -> runtime::run",
       "receiptStatus": "exact_candidate_workflow_required"
     },
     {
@@ -1040,6 +1055,21 @@
             "attempt",
             "lease_expires_at_unix_ms",
             "next_eligible_at_unix_ms"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "mustContain": [
+            "with_production_operations",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "run_production_operation_reconciler",
+            "attach_production_operations",
+            "CompletedRuntimeTask::Operations"
           ]
         }
       ],
@@ -1062,8 +1092,8 @@
         }
       ],
       "durability": "sqlite_migration_0012",
-      "activation": "host_composition_required",
-      "productionCaller": "AgentdProductionWriterHost",
+      "activation": "source_composed_external_authority_activation_pending",
+      "productionCaller": "AgentdConfig::with_production_operations -> runtime::run",
       "receiptStatus": "exact_candidate_workflow_required"
     },
     {
@@ -1090,6 +1120,21 @@
             "ProductionTargetOutcome::NotApplied",
             "observe_terminal"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "mustContain": [
+            "with_production_operations",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "run_production_operation_reconciler",
+            "attach_production_operations",
+            "CompletedRuntimeTask::Operations"
+          ]
         }
       ],
       "positiveTests": [
@@ -1109,8 +1154,8 @@
         }
       ],
       "durability": "sqlite_wal_full_integrated_owner",
-      "activation": "explicit_host_not_default_enrolled",
-      "productionCaller": "AgentdProductionWriterHost",
+      "activation": "source_composed_external_authority_activation_pending",
+      "productionCaller": "AgentdConfig::with_production_operations -> runtime::run",
       "receiptStatus": "exact_candidate_workflow_required"
     }
   ]
