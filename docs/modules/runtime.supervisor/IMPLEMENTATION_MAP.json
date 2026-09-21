@@ -95,7 +95,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement that closes admission for the current spawn/draining generation. Recovery replays the idempotent typed Drain RPC when a crash occurs after the durable Draining transition but before acknowledgement. A process without that typed boundary fails closed; drain never falls back to SIGTERM and never relabels unknown in-flight work as complete.",
+      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut.",
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -197,7 +197,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Transitions through a fsynced unified release transaction that binds exact source/target immutable program manifests, the per-Agent allow/revoke admission frontier, deterministic pair compatibility binding, lifecycle/release-state generations and optional signed production authority. A production daemon configured with a verifier rejects unsigned Upgrade/Rollback.",
+      "sourceSemantics": "Transitions through a fsynced unified release transaction that binds exact source/target immutable manifests/program bytes, the per-Agent allow/revoke admission frontier, the exact source/target pair identity, lifecycle/release-state generations and optional signed production authority. The pair digest is a structural binding, not independent semantic-compatibility approval; runtime compatibility is established by the typed Agentd/Matrixd readiness contract before commit. A production daemon configured with a verifier rejects unsigned Upgrade/Rollback.",
       "operation": "load_next",
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
