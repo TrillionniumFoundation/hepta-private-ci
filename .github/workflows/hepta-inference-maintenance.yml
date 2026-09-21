@@ -1,6 +1,18 @@
 name: Hepta inference maintenance
 
 on:
+  push:
+    branches:
+      - main
+      - work/architecture-scalability-convergence-20260918
+    paths:
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/rust-toolchain*'
+      - 'scripts/hepta_ci_exec.py'
+      - '.github/workflows/hepta-inference-maintenance.yml'
   pull_request:
     paths:
       - 'codex-rs/hepta-infer-core/**'
@@ -137,8 +149,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # This worktree is NEVER executed, committed, pushed or treated as a
-          # candidate. Its patch is diagnostic input for ordinary source review.
           proposal="$RUNNER_TEMP/hepta-format-proposal"
           git worktree add --detach "$proposal" "$TESTED_SHA"
           trap 'git worktree remove --force "$proposal"' EXIT
