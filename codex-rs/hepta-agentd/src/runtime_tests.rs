@@ -759,7 +759,7 @@ async fn runtime_automation_store_failure_stops_only_the_scheduler_plane() {
 }
 
 #[tokio::test]
-async fn dispatch_uncertain_tick_fail_stops_scheduler_until_cancelled() {
+async fn dispatch_uncertain_tick_stays_live_for_durable_reconciliation() {
     let fixture = runtime_fixture();
     fixture
         .registry
@@ -775,57 +775,41 @@ async fn dispatch_uncertain_tick_fail_stops_scheduler_until_cancelled() {
         .expect("open automation store");
     fixture
         .state
-        .attach_automation_store(store.clone())
+        .attach_automation_store(store)
         .expect("attach automation store");
 
     let cancellation = CancellationToken::new();
-    let state = Arc::clone(&fixture.state);
-    let task = tokio::spawn({
-        let cancellation = cancellation.clone();
-        async move {
-            let mut retry_budget = DispatchRetryBudget::default();
-            handle_automation_tick(
-                AutomationTick::DispatchUncertain {
-                    task_id: codex_hepta_automation::AutomationTaskId::parse(
-                        "019153a4-3088-7000-a56a-9b1964f75009",
-                    )
-                    .expect("task id"),
-                    occurrence: 1,
-                },
-                &mut retry_budget,
-                &state,
-                &cancellation,
+    let mut retry_budget = DispatchRetryBudget::default();
+    let should_stop = handle_automation_tick(
+        AutomationTick::DispatchUncertain {
+            task_id: codex_hepta_automation::AutomationTaskId::parse(
+                "019153a4-3088-7000-a56a-9b1964f75009",
             )
-            .await
-        }
-    });
-
-    timeout(Duration::from_secs(2), async {
-        loop {
-            if !fixture
-                .state
-                .automation_is_available()
-                .expect("automation state")
-            {
-                break;
-            }
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
-    })
+            .expect("task id"),
+            occurrence: 1,
+        },
+        &mut retry_budget,
+        &fixture.state,
+        &cancellation,
+    )
     .await
-    .expect("DispatchUncertain did not quarantine automation");
-    assert!(!task.is_finished(), "fail-stop must wait for cancellation");
-    cancellation.cancel();
-    assert!(task.await.expect("handler task").expect("handler result"));
-    let health = fixture
-        .state
-        .response(1, 1, AgentdMethod::Health)
-        .await
-        .expect("health response");
-    assert!(matches!(
-        health.payload,
-        AgentdPayload::Health(ref snapshot) if snapshot.ready && !snapshot.fenced
-    ));
+    .expect("dispatch-unknown handling");
+
+    assert!(
+        !should_stop,
+        "durable dispatch uncertainty must stay live for exact-id reconciliation"
+    );
+    assert!(
+        fixture
+            .state
+            .automation_is_available()
+            .expect("automation state"),
+        "dispatch uncertainty must not quarantine the scheduler plane"
+    );
+    assert!(
+        !cancellation.is_cancelled(),
+        "dispatch uncertainty must not synthesize runtime cancellation"
+    );
 }
 
 #[tokio::test]

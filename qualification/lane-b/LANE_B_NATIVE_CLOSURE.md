@@ -139,27 +139,23 @@ External evidence gates:
 
 ## 8. `automation.taskflow`
 
-Owns schedule, occurrence, claim, and step-orchestration facts without owning downstream domain effects.
+Owns durable legacy and Calendar V2 schedule revisions, deterministic occurrence identity, claim, TaskFlow run/step orchestration, provider-attempt/reconciliation evidence, and terminal occurrence projection without owning downstream domain effects.
 
-The registered effect driver supplies terminal observations; unknown effects block dependent steps and compensation is separately authorized.
+Agentd observes the existing App Server persisted-turn terminal state for Codex activity; registered external effect owners supply their own terminal/reconciliation receipts through the final-use-authorized durable step seam.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `register_schedule` | `owner_native` | `codex-rs/hepta-automation/src/store.rs` — `pub async fn create_task(` |
+| `register_schedule` | `owner_native` | `codex-rs/hepta-automation/src/schedule_v2.rs` — `pub async fn create_calendar_task_v2(` |
 | `materialize_due` | `owner_native` | `codex-rs/hepta-automation/src/scheduler.rs` — `pub async fn tick(` |
-| `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/effect_executor.rs` — `pub fn claim_occurrence(` |
-| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/effect_executor.rs` — `pub fn execute_step(` |
-
-Remaining repository implementation gaps:
-
-- Connect the effect-executor component to the existing durable TaskFlow step outbox and a real final-use authorized effect provider.
-- Implement post-crash effect reconciliation before permitting dependent steps.
+| `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/lifecycle.rs` — `pub async fn materialize_occurrence(` |
+| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/authorized_effect.rs` — `pub async fn execute_authorized_taskflow_effect` |
 
 External evidence gates:
 
-- non-test Codex/App Server caller
-- real downstream effect owner and terminal observer
-- DST/timezone-database and multi-scheduler target qualification
+- selected-host Agentd/App Server execution receipt for the composed durable causal path
+- concrete registered downstream effect owner and trusted terminal/reconciliation evidence for every activated external effect
+- real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification
+- independent acceptance, activation, promotion and release evidence
 
 ## 9. `channel.matrix`
 

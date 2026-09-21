@@ -1,14 +1,13 @@
 use std::fs;
 
 use super::*;
+use crate::AgentdPayload;
+use crate::LifecycleSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
-
-use crate::AgentdPayload;
-use crate::LifecycleSnapshot;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
