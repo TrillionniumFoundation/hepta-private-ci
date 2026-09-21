@@ -149,7 +149,8 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         Arc::clone(&state),
         identity.clone(),
         cancellation.clone(),
-    )?;
+    )
+    .await?;
     tasks.spawn_required("runtime.control", control.run())?;
     let app_server = run_app_server(
         identity.clone(),

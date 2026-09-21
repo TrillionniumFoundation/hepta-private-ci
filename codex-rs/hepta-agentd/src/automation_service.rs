@@ -8,7 +8,9 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_automation::TimerPhase;
 use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -23,7 +25,7 @@ use crate::RuntimeTasks;
 /// Construct one real scheduler through the same versioned lifecycle used by
 /// other admitted optional services. Validation never starts a task. Callers
 /// retain the Agent writer lock; no additional authority is issued here.
-pub(crate) fn spawn_automation_service(
+pub(crate) async fn spawn_automation_service(
     tasks: &mut RuntimeTasks,
     store: Option<AutomationStore>,
     state: Arc<AgentdState>,
@@ -50,6 +52,26 @@ pub(crate) fn spawn_automation_service(
         // as a successful module construction. Core tasks can still serve.
         return Ok(());
     }
+    // Observe durable retirement BEFORE admitting the scheduler. Reopening a
+    // retired owner is read-only; calling its write-recovery path would turn
+    // intentional optional-module retirement into a fatal TimerFenced result.
+    // The host retains its writer lock throughout this admission. A later
+    // unexpected epoch change still takes the existing fail-closed write path.
+    if let Some(owner) = store.as_ref() {
+        let status = owner.timer_status().await;
+        state.refresh_generation()?;
+        let status = status?;
+        if status.phase == TimerPhase::Retired {
+            if status.leased_occurrences != 0 || status.uncertain_dispatches != 0 {
+                return Err(AutomationError::Corrupt.into());
+            }
+            // Unpublish the live task route without deleting the durable owner
+            // or its historical task/dedupe records. Do not resume, hand off,
+            // mint a new generation, or advertise an idle worker as active.
+            state.mark_automation_unavailable()?;
+            return Ok(());
+        }
+    }
     let generation = Generation::new(identity.spawn_generation)
         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
     let selected = state
@@ -71,10 +93,14 @@ pub(crate) fn spawn_automation_service(
         dependencies: selected.dependencies.clone(),
         // Requirements of this compiled scheduler, not a copy of the selected
         // ports. A host offering a different version is rejected before spawn.
-        input_ports: vec![StableId::new("automation.task.v1")
-            .map_err(|error| AgentdError::Invalid(error.to_string()))?],
-        output_ports: vec![StableId::new("codex.thread.queue.add.v1")
-            .map_err(|error| AgentdError::Invalid(error.to_string()))?],
+        input_ports: vec![
+            StableId::new("automation.task.v1")
+                .map_err(|error| AgentdError::Invalid(error.to_string()))?,
+        ],
+        output_ports: vec![
+            StableId::new("codex.thread.queue.add.v1")
+                .map_err(|error| AgentdError::Invalid(error.to_string()))?,
+        ],
         authoritative_domains: selected.authoritative_domains.clone(),
         effect_scope: selected.effect_scope.clone(),
     };

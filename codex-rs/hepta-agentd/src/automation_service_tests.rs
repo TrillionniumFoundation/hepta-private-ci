@@ -9,6 +9,7 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_hepta_automation::AutomationAdmission;
+use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationFuture;
 use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationSchedule;
@@ -76,9 +77,8 @@ async fn fixture() -> Fixture {
         control_socket: record.layout.agentd_control_socket().to_path_buf(),
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
-    let state = Arc::new(
-        AgentdState::new(identity.clone(), registry.clone(), 128).expect("Agentd state"),
-    );
+    let state =
+        Arc::new(AgentdState::new(identity.clone(), registry.clone(), 128).expect("Agentd state"));
     let store = AutomationStore::open(&record.layout).await.expect("owner");
     state
         .attach_automation_store(store.clone())
@@ -98,7 +98,7 @@ fn host() -> (RuntimeTasks, CancellationToken) {
     (tasks, stop)
 }
 
-fn install(fixture: &Fixture, tasks: &mut RuntimeTasks, stop: &CancellationToken) {
+async fn install(fixture: &Fixture, tasks: &mut RuntimeTasks, stop: &CancellationToken) {
     spawn_automation_service(
         tasks,
         Some(fixture.store.clone()),
@@ -106,6 +106,7 @@ fn install(fixture: &Fixture, tasks: &mut RuntimeTasks, stop: &CancellationToken
         fixture.identity.clone(),
         stop.clone(),
     )
+    .await
     .expect("production constructor");
 }
 
@@ -133,6 +134,7 @@ async fn production_constructor_rejects_mismatched_identity_before_spawn() {
             wrong,
             stop.clone(),
         )
+        .await
         .is_err()
     );
     assert_eq!(tasks.active_count(), 0);
@@ -145,21 +147,37 @@ async fn production_service_retirement_drains_owner_then_unpublishes_only_automa
     let fixture = fixture().await;
     let (mut tasks, stop) = host();
     tasks.spawn_required("core", pending()).expect("sibling");
-    install(&fixture, &mut tasks, &stop);
+    install(&fixture, &mut tasks, &stop).await;
     tasks
-        .retire_optional_generation("automation.taskflow", Generation::new(1).expect("generation"))
+        .retire_optional_generation(
+            "automation.taskflow",
+            Generation::new(1).expect("generation"),
+        )
         .await
         .expect("owner-confirmed retirement");
     let status = fixture.store.timer_status().await.expect("durable status");
     assert_eq!(status.phase, TimerPhase::Draining);
     assert!(status.can_handoff());
-    assert!(!fixture.state.automation_is_available().expect("route state"));
+    assert!(
+        !fixture
+            .state
+            .automation_is_available()
+            .expect("route state")
+    );
     assert_eq!(tasks.active_count(), 1);
     assert!(!stop.is_cancelled());
-    let successor = fixture.store.handoff_timer().await.expect("separate handoff");
+    let successor = fixture
+        .store
+        .handoff_timer()
+        .await
+        .expect("separate handoff");
     assert!(fixture.store.create_task(&draft()).await.is_err());
     assert_eq!(
-        successor.timer_status().await.expect("successor").writer_epoch,
+        successor
+            .timer_status()
+            .await
+            .expect("successor")
+            .writer_epoch,
         status.writer_epoch + 1
     );
     tasks.shutdown().await;
@@ -171,7 +189,7 @@ async fn production_service_retirement_drains_owner_then_unpublishes_only_automa
 async fn process_shutdown_does_not_turn_into_durable_timer_retirement() {
     let fixture = fixture().await;
     let (mut tasks, stop) = host();
-    install(&fixture, &mut tasks, &stop);
+    install(&fixture, &mut tasks, &stop).await;
     tasks.shutdown().await;
     assert_eq!(
         fixture.store.timer_status().await.expect("status").phase,
@@ -206,7 +224,7 @@ async fn unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen
         .expect("durable unknown");
     let (mut tasks, stop) = host();
     tasks.spawn_required("core", pending()).expect("sibling");
-    install(&fixture, &mut tasks, &stop);
+    install(&fixture, &mut tasks, &stop).await;
     assert!(
         tasks
             .retire_optional_generation(
@@ -309,5 +327,82 @@ async fn cancellation_preserves_in_flight_queue_ack_before_scheduler_exit() {
     let status = fixture.store.timer_status().await.expect("owner outcome");
     assert_eq!(status.uncertain_dispatches, 0);
     assert_eq!(status.leased_occurrences, 0);
+    fixture.store.close().await;
+}
+
+#[tokio::test]
+async fn production_constructor_keeps_retired_timer_absent_after_reopen() {
+    let fixture = fixture().await;
+    let original = fixture.store.create_task(&draft()).await.expect("task");
+    fixture.store.quiesce_timer().await.expect("quiesce");
+    let retired = fixture.store.retire_timer().await.expect("retire");
+    fixture.store.close().await;
+
+    // This is the same durable owner and the same constructor used at daemon
+    // startup, not an in-memory retirement flag or a separately built scheduler.
+    let reopened = AutomationStore::open(&fixture.identity.layout)
+        .await
+        .expect("reopen retired owner");
+    let state = Arc::new(
+        AgentdState::new(fixture.identity.clone(), fixture.registry.clone(), 128)
+            .expect("restarted host"),
+    );
+    state
+        .attach_automation_store(reopened.clone())
+        .expect("readable owner attachment");
+    let (mut tasks, stop) = host();
+    tasks.spawn_required("core", pending()).expect("sibling");
+    spawn_automation_service(
+        &mut tasks,
+        Some(reopened.clone()),
+        Arc::clone(&state),
+        fixture.identity.clone(),
+        stop.clone(),
+    )
+    .await
+    .expect("retired module must not prevent core startup");
+
+    assert_eq!(tasks.active_count(), 1);
+    assert!(!stop.is_cancelled());
+    assert!(!state.is_fenced().expect("host fence"));
+    assert!(!state.automation_is_available().expect("live route"));
+    assert!(
+        state
+            .runtime_topology_snapshot()
+            .expect("topology")
+            .active
+            .iter()
+            .all(|module| module.module_id.as_str() != "automation.taskflow")
+    );
+    assert_eq!(
+        reopened.timer_status().await.expect("durable status"),
+        retired
+    );
+    assert_eq!(
+        reopened.task(original.task_id).await.expect("history"),
+        Some(original)
+    );
+    assert_eq!(
+        reopened.create_task(&draft()).await,
+        Err(AutomationError::TimerFenced)
+    );
+    tasks.shutdown().await;
+    reopened.close().await;
+}
+
+#[tokio::test]
+async fn production_constructor_never_resumes_a_draining_owner() {
+    let fixture = fixture().await;
+    let before = fixture.store.quiesce_timer().await.expect("drain");
+    let (mut tasks, stop) = host();
+    install(&fixture, &mut tasks, &stop).await;
+    assert_eq!(tasks.active_count(), 1);
+    assert_eq!(fixture.store.timer_status().await.expect("status"), before);
+    assert_eq!(
+        fixture.store.create_task(&draft()).await,
+        Err(AutomationError::Conflict)
+    );
+    tasks.shutdown().await;
+    assert!(!fixture.state.is_fenced().expect("host fence"));
     fixture.store.close().await;
 }
