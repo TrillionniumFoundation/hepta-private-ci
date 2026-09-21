@@ -185,15 +185,19 @@ pub struct Revocation {
     pub reason_digest: Digest32,
 }
 
-/// Explicit source -> frozen dataset -> artifact invalidation lineage. Appending
-/// this event also logically revokes the source record in the active projection;
-/// the immutable audit bytes remain present.
+/// Explicit source -> frozen dataset invalidation lineage. The exact source
+/// event digest and dataset digest are persisted after the product writer verifies
+/// source membership in a self-verifying dataset receipt. `artifact_id` is a
+/// cross-owner handoff identity only; dataset -> artifact membership remains owned
+/// and verified by `learning.artifacts`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct UnlearningLineageEventV1 {
     pub record_id: StableId,
     pub lineage_id: StableId,
     pub source_record_id: StableId,
+    pub source_event_digest: Digest32,
     pub dataset_snapshot_id: StableId,
+    pub dataset_digest: Digest32,
     pub artifact_id: StableId,
     pub authority_id: StableId,
     pub reason_digest: Digest32,
