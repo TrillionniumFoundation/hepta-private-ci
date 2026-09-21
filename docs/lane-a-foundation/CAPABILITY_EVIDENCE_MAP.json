@@ -449,8 +449,8 @@
           ]
         }
       ],
-      "durability": "not_implemented",
-      "activation": "inactive",
+      "durability": "sqlite_migration_0001_plus_in_memory_reference_models",
+      "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -489,8 +489,8 @@
           ]
         }
       ],
-      "durability": "not_implemented",
-      "activation": "inactive",
+      "durability": "sqlite_migration_0001_plus_in_memory_reference_models",
+      "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -528,8 +528,71 @@
           ]
         }
       ],
-      "durability": "not_implemented",
-      "activation": "inactive",
+      "durability": "sqlite_migration_0001_plus_in_memory_reference_models",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.operations.durable-owner.v1",
+      "module": "kernel.operations",
+      "summary": "SQLite operation ledger and leased outbox with immutable transition history",
+      "publicSymbols": [
+        "DurableOperationStore",
+        "DurableOperationError",
+        "DurableOutboxState",
+        "DurableOperationStore::begin",
+        "DurableOperationStore::record_authorized",
+        "DurableOperationStore::record_dispatch",
+        "DurableOperationStore::mark_indeterminate",
+        "DurableOperationStore::observe_terminal",
+        "DurableOperationStore::claim_outbox",
+        "DurableOperationStore::acknowledge_outbox"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable.rs",
+          "mustContain": [
+            "pub struct DurableOperationStore",
+            "begin_with(\"BEGIN IMMEDIATE\")",
+            "pub async fn observe_terminal(",
+            "pub async fn claim_outbox(",
+            "pub async fn acknowledge_outbox("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0001_durable_operations.sql",
+          "mustContain": [
+            "CREATE TABLE operation_records",
+            "CREATE TABLE operation_events",
+            "CREATE TABLE operation_outbox",
+            "CREATE TABLE operation_outbox_events",
+            "operation_events_no_update",
+            "operation_outbox_events_no_delete"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable_tests.rs",
+          "mustContain": [
+            "crash_reopen_preserves_indeterminate_and_terminal_reconciliation",
+            "durable_outbox_lease_fences_live_owner_and_allows_expired_takeover",
+            "outbox_acknowledgement_never_promotes_operation_to_terminal"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable_tests.rs",
+          "mustContain": [
+            "operation_identity_reuse_with_changed_payload_fails_closed_across_handles",
+            "reopen_rejects_current_projection_without_matching_immutable_event"
+          ]
+        }
+      ],
+      "durability": "sqlite_migration_0001_plus_in_memory_reference_models",
+      "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -974,69 +1037,6 @@
         }
       ],
       "durability": "external_authority_plus_local_final_use_state",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "kernel.operations.durable-owner.v1",
-      "module": "kernel.operations",
-      "summary": "SQLite operation ledger and leased outbox with immutable transition history",
-      "publicSymbols": [
-        "DurableOperationStore",
-        "DurableOperationError",
-        "DurableOutboxState",
-        "DurableOperationStore::begin",
-        "DurableOperationStore::record_authorized",
-        "DurableOperationStore::record_dispatch",
-        "DurableOperationStore::mark_indeterminate",
-        "DurableOperationStore::observe_terminal",
-        "DurableOperationStore::claim_outbox",
-        "DurableOperationStore::acknowledge_outbox"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-operations/src/durable.rs",
-          "mustContain": [
-            "pub struct DurableOperationStore",
-            "begin_with(\"BEGIN IMMEDIATE\")",
-            "pub async fn observe_terminal(",
-            "pub async fn claim_outbox(",
-            "pub async fn acknowledge_outbox("
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-operations/migrations/0001_durable_operations.sql",
-          "mustContain": [
-            "CREATE TABLE operation_records",
-            "CREATE TABLE operation_events",
-            "CREATE TABLE operation_outbox",
-            "CREATE TABLE operation_outbox_events",
-            "operation_events_no_update",
-            "operation_outbox_events_no_delete"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-operations/src/durable_tests.rs",
-          "mustContain": [
-            "crash_reopen_preserves_indeterminate_and_terminal_reconciliation",
-            "durable_outbox_lease_fences_live_owner_and_allows_expired_takeover",
-            "outbox_acknowledgement_never_promotes_operation_to_terminal"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-operations/src/durable_tests.rs",
-          "mustContain": [
-            "operation_identity_reuse_with_changed_payload_fails_closed_across_handles",
-            "reopen_rejects_current_projection_without_matching_immutable_event"
-          ]
-        }
-      ],
-      "durability": "sqlite_migration_0001_immutable_event_history",
       "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
