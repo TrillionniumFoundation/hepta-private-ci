@@ -177,16 +177,16 @@
       "states": {
         "source": "implemented",
         "implementation": "durable_sqlite_owner_plus_reference_model",
-        "durability": "sqlite_migration_0001_immutable_event_history",
+        "durability": "sqlite_migration_0001_plus_in_memory_reference_models",
         "qualification": "durable_state_machine_tests_present",
         "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded deterministic in-memory operation and outbox reference models",
-        "SQLite durable operation ledger with immutable transition history and crash-reopen validation",
-        "leased transactional outbox with live-owner fencing expired takeover and acknowledgement identity",
-        "generation-fenced terminal observation kept distinct from dispatch acknowledgement"
+        "bounded deterministic operation-state reference model",
+        "bounded in-memory outbox claim and acknowledgement model",
+        "generation-fenced idempotent terminal observation",
+        "SQLite operation ledger and leased outbox with immutable transition history"
       ],
       "targetOnlyCapabilities": [
         "authenticated named product caller and durable authorization policy composition",
