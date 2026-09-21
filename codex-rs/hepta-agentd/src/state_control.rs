@@ -178,6 +178,23 @@ impl AgentdState {
                     None => automation_unavailable(),
                 }
             }
+            crate::AgentdMethod::AutomationCreateCalendarV2 {
+                draft,
+                schedule,
+                missed_run,
+                overlap,
+            } => {
+                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                match automation {
+                    Some(store) => self.automation_result(
+                        store
+                            .create_calendar_task_v2(&draft, &schedule, missed_run, overlap)
+                            .await,
+                        AgentdPayload::AutomationTask,
+                    )?,
+                    None => automation_unavailable(),
+                }
+            }
             crate::AgentdMethod::AutomationList { limit } => {
                 require_automation_ready(lifecycle, app_server_ready, fenced)?;
                 if !(1..=256).contains(&limit) {
