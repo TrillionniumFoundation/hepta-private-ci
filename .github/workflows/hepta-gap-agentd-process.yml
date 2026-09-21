@@ -12,6 +12,13 @@ on:
       - codex-rs/hepta-automation/**
       - codex-rs/hepta-supervisor/**
       - codex-rs/hepta-memory/**
+      - codex-rs/hepta-plasticity/**
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-learning-artifacts/**
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-runtime/**
       - codex-rs/app-server/**
       - codex-rs/app-server-client/**
       - codex-rs/app-server-transport/**
@@ -77,6 +84,24 @@ jobs:
       - name: Exercise local fences, reconciliation and organ lifecycle
         working-directory: codex-rs
         run: just test --locked --lib -p codex-hepta-fleet -p codex-hepta-control-plane -p codex-hepta-agentd
+
+      - name: Exercise named plasticity lifetime product path
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd --lib \
+            plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently \
+            -- --nocapture --test-threads=1
+
+      - name: Exercise live topology cutover fault and recovery canary
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-runtime \
+            authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics \
+            -- --nocapture --test-threads=1
 
       - name: Exercise durable retirement and reconciliation
         working-directory: codex-rs
