@@ -37,7 +37,8 @@ impl RuntimeExecutableIdentity {
     /// Cache only within this process. Failure remains a startup error; neither
     /// an environment variable nor a registry string is a fallback identity.
     pub fn observe_current() -> Result<&'static Self, AgentdError> {
-        static OBSERVED: OnceLock<Result<RuntimeExecutableIdentity, io::ErrorKind>> = OnceLock::new();
+        static OBSERVED: OnceLock<Result<RuntimeExecutableIdentity, io::ErrorKind>> =
+            OnceLock::new();
         OBSERVED
             .get_or_init(|| observe_current_image().map_err(|error| error.kind()))
             .as_ref()
