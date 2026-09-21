@@ -2,8 +2,8 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `331b81d385a88837e252bd80fda8b8ac35ea4191`
-- frozen candidate implementation head: `8d582460929283a89d7d93809ed82ae44d32ae1f`
-- frozen candidate implementation tree: `c0dc897bc9114be5526578e2ce925376389461e3`
+- frozen candidate implementation head: `bf627bc6ee492246d9e4028fb40b65ccbecc183f`
+- frozen candidate implementation tree: `f5df6dc2bb89ea03a601e0fde7d64b4b448cb96c`
 - status: `pending_exact_current_head_and_merge_candidate_execution`
 - claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
 
@@ -35,7 +35,7 @@ The candidate establishes the following source-level properties without promotin
 
 ## Required executable checks
 
-The current PR head must pass `.github/workflows/memory-federation-v2-final-verify.yml` plus the normal exact-current-head and deterministic merge-candidate gates before `productExecutionProved` can change.
+The current PR head must pass `.github/workflows/memory-federation-v2-final-verify.yml` plus the normal exact-current-head and deterministic merge-candidate gates before `productExecutionProved` can change. The merge job resolves `origin/main` at execution time and must not use the PR object's frozen creation-time `base.sha` as current-main evidence.
 
 Focused execution must cover:
 
