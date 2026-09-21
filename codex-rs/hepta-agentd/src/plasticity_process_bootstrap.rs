@@ -673,7 +673,7 @@ fn read_bounded(path: &Path, maximum: u64, label: &str) -> Result<Vec<u8>, Agent
     if metadata.len() == 0 || metadata.len() > maximum {
         return invalid(&format!("{label} size is outside the allowed bound"));
     }
-    let mut file = File::open(path)?;
+    let file = File::open(path)?;
     let capacity = usize::try_from(metadata.len())
         .map_err(|_| AgentdError::Invalid(format!("{label} is too large")))?;
     let mut bytes = Vec::with_capacity(capacity);
