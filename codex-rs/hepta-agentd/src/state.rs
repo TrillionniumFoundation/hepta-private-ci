@@ -17,7 +17,7 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
-    plasticity_runtime: std::sync::OnceLock<crate::PlasticityRuntimeHandleV1>,
+    plasticity_runtime: std::sync::OnceLock<crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -68,7 +68,11 @@ impl AgentdState {
         handle: crate::PlasticityRuntimeHandleV1,
     ) -> Result<(), AgentdError> {
         self.plasticity_runtime
-            .set(handle)
+            .set(
+                crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::new(
+                    handle,
+                ),
+            )
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
@@ -82,11 +86,11 @@ impl AgentdState {
         codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
         crate::PlasticityRuntimeCallErrorV1,
     > {
-        let handle = self
+        let producer = self
             .plasticity_runtime
             .get()
             .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
-        handle.propose_parameter(request, now).await
+        producer.submit_parameter(request, now).await
     }
 
     pub(crate) fn attach_cognitive_store(
