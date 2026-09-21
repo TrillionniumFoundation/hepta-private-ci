@@ -63,14 +63,8 @@ pub async fn run(
         registry,
         EVENT_CAPACITY,
     )?);
-    let plasticity_runtime = match plasticity_bootstrap {
-        Some(bootstrap) => {
-            let (handle, owner) = bootstrap.into_channel()?;
-            state.attach_plasticity_runtime(handle)?;
-            Some(owner)
-        }
-        None => None,
-    };
+    let plasticity_runtime =
+        crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
     if let Some(ranker) = ranker {
         state
             .cognitive_ranker
@@ -151,19 +145,11 @@ pub async fn run(
         cancellation.clone(),
     ));
 
-    let plasticity_cancellation = cancellation.clone();
-    let plasticity_state = Arc::clone(&state);
-    let mut plasticity_task = tokio::spawn(async move {
-        match plasticity_runtime {
-            Some(owner) => owner.run(plasticity_state, plasticity_cancellation).await,
-            None => {
-                // Plasticity remains opt-in. Absence means no proposal authority
-                // or writer is composed into this Agentd generation.
-                plasticity_cancellation.cancelled().await;
-                Ok(())
-            }
-        }
-    });
+    let mut plasticity_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
+        Arc::clone(&state),
+        plasticity_runtime,
+        cancellation.clone(),
+    );
 
     let (outcome, completed_task) = tokio::select! {
         result = &mut authbus_task => (
