@@ -103,8 +103,16 @@ fn sign_owner_sequence(
 ) -> (SignedMessage, IssuerRegistration) {
     let is_fleet = summary.owner_id.as_str() == "runtime.fleet";
     let signing = SigningKey::from_bytes(&[if is_fleet { 22 } else { 21 }; 32]);
-    let issuer_id = if is_fleet { "issuer:fleet" } else { "issuer:evidence" };
-    let message_prefix = if is_fleet { "message:fleet" } else { "message:evidence" };
+    let issuer_id = if is_fleet {
+        "issuer:fleet"
+    } else {
+        "issuer:evidence"
+    };
+    let message_prefix = if is_fleet {
+        "message:fleet"
+    } else {
+        "message:evidence"
+    };
     let claims = SignedMessageClaims {
         issuer_id: id(issuer_id),
         key_epoch: Generation::new(4).expect("key epoch"),
@@ -552,9 +560,7 @@ async fn named_host_persists_plan_and_durable_owner_replay_survives_restart() {
     )
     .expect("reopened global host");
     assert!(matches!(
-        reopened
-            .plan(plan_request(summary, same_message))
-            .await,
+        reopened.plan(plan_request(summary, same_message)).await,
         Err(GlobalControlHostError::Evidence(_))
     ));
 }
@@ -826,8 +832,11 @@ async fn revoked_planner_decision_cannot_reach_final_use() {
         "grant-revoked-plan",
         test_nonce("grant-revoked-plan"),
     );
-    host.revoke_decision(digest("revoke-current-plan"), plan.evaluation.plan.receipt_digest())
-        .expect("revoke decision");
+    host.revoke_decision(
+        digest("revoke-current-plan"),
+        plan.evaluation.plan.receipt_digest(),
+    )
+    .expect("revoke decision");
 
     assert!(matches!(
         host.with_authorized_request(&plan, &signed, &request, &binding, || "must-not-run"),
@@ -940,24 +949,12 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
     );
 
     assert_eq!(
-        host.with_authorized_request(
-            &plan,
-            &signed,
-            &request,
-            &effect_binding,
-            || "released",
-        )
-        .expect("final-use dispatch"),
+        host.with_authorized_request(&plan, &signed, &request, &effect_binding, || "released",)
+            .expect("final-use dispatch"),
         "released"
     );
     assert!(matches!(
-        host.with_authorized_request(
-            &plan,
-            &signed,
-            &request,
-            &effect_binding,
-            || "must-not-run",
-        ),
+        host.with_authorized_request(&plan, &signed, &request, &effect_binding, || "must-not-run",),
         Err(GlobalControlHostError::Authority(_))
     ));
 
@@ -1034,9 +1031,7 @@ async fn named_host_profile_emits_exact_runner_measurements() {
         let (message, _) = sign_owner_sequence(&summary, sequence);
         let request = plan_request(summary.clone(), message);
         let started = Instant::now();
-        host.plan(request)
-            .await
-            .expect("profile plan");
+        host.plan(request).await.expect("profile plan");
         plan_micros.push(elapsed_micros(started));
     }
     drop(host);
@@ -1071,9 +1066,7 @@ async fn named_host_profile_emits_exact_runner_measurements() {
     )
     .expect("fault probe host");
     let replay_rejected = matches!(
-        reopened
-            .plan(plan_request(summary, replayed_message))
-            .await,
+        reopened.plan(plan_request(summary, replayed_message)).await,
         Err(GlobalControlHostError::Evidence(_))
     );
     assert!(replay_rejected);
