@@ -368,18 +368,24 @@ def claim_assignment(
         ).fetchone()
         attempt = 1
         if previous is not None:
-            if str(previous["state"]) != "retryable":
-                replay_deadline = min(
-                    int(previous["claimed_unix_ns"]) + heartbeat_ttl_ns,
-                    int(lease["expires_unix_ns"]),
-                    int(registration["expires_unix_ns"]),
-                    int(envelope["expires_unix_ns"]),
-                )
-                if (
+            previous_state = str(previous["state"])
+            if previous_state != "retryable":
+                same_assignment = (
                     str(previous["worker_id"]) == worker_id
                     and str(previous["lease_id"]) == lease_id
-                    and int(previous["heartbeat_deadline_unix_ns"]) == replay_deadline
-                ):
+                )
+                if previous_state == "failed":
+                    raise EngineeringError("assignment_already_claimed")
+                if same_assignment and previous_state in {
+                    "claimed",
+                    "running",
+                    "result_submitted",
+                    "completed_observed",
+                }:
+                    # Claim identity is immutable once committed. Heartbeats may
+                    # legitimately advance the persisted heartbeat deadline, so
+                    # an acknowledgement-loss replay must not compare the
+                    # mutable deadline against the original claim request.
                     return _claim(previous)
                 raise EngineeringError("assignment_replay_conflict")
             attempt = int(previous["attempt"]) + 1
