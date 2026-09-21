@@ -79,8 +79,8 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
     "baseCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "candidateHead": "8d582460929283a89d7d93809ed82ae44d32ae1f",
-    "candidateTree": "c0dc897bc9114be5526578e2ce925376389461e3",
+    "candidateHead": "bf627bc6ee492246d9e4028fb40b65ccbecc183f",
+    "candidateTree": "f5df6dc2bb89ea03a601e0fde7d64b4b448cb96c",
     "headMeaning": "frozen canonical_v2 query_bound_ordered_response_integrity live_pre_post_io_authority interruptible_single_attempt_transport agentd_product_composition v2_only_attachment_and_no_legacy_downgrade exact_scope_same_snapshot_frontier explicit_coverage one_peer_engine_multi_peer_product_orchestrator truth_surface_derived_index_sync and canonical_profile_claim_state candidate immediately before qualification metadata",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
@@ -105,7 +105,8 @@
       "module_doc_and_dossier_projection_sync",
       "same_owner_capability_batch_final_revalidation",
       "local_frontier_count_not_remote_cut_witness",
-      "exact_head_and_full_synthetic_merge_same_suite"
+      "exact_head_and_full_synthetic_merge_same_suite",
+      "current_main_head_resolved_at_merge_qualification"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -130,7 +131,7 @@
       "qualification/module-execution-dossiers/DETAILS.json",
       "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
     ],
-    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the frozen current-main convergence candidate before metadata-only attestation commits. Only this implementation map and the module-scoped final-verification receipt may change after that candidate without invalidating the attestation. The dedicated qualification workflow now pins exact source-head identity and constructs the repository-standard deterministic two-parent synthetic merge, then runs the same federation/product Rust suite on both identities. The candidate enforces ordered query-bound response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, exact-scope same-snapshot owner data frontier, V2-only product attachment, and prevention of legacy helper downgrade. The canonical crate is the one-peer checked engine; <=16-peer discovery/aggregation is product-orchestrator policy. Current V2 contracts are in-process Rust contracts, not an authenticated cross-host wire protocol. Physical-send final revalidation batches each owner/capability attachment set through one owner SQLite snapshot under one total bounded deadline; both direct federated and combined contributors delegate to that same batch path. The local observed_frontier is the exact-scope append-only memory-revision count from the retrieval snapshot; it is not an authenticated cut digest or rollback witness. The canonical implementation-profile claim state remains specified_not_product_evidence until execution gates pass. productExecutionProved, productionImplementation, activation, acceptance, promotion and release remain false until their independent evidence gates pass.",
+    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the frozen current-main convergence candidate before metadata-only attestation commits. Only this implementation map and the module-scoped final-verification receipt may change after that candidate without invalidating the attestation. The dedicated qualification workflow now pins exact source-head identity, resolves the current remote-tracking main head at execution time, and constructs the repository-standard deterministic two-parent synthetic merge, then runs the same federation/product Rust suite on both identities. The candidate enforces ordered query-bound response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, exact-scope same-snapshot owner data frontier, V2-only product attachment, and prevention of legacy helper downgrade. The canonical crate is the one-peer checked engine; <=16-peer discovery/aggregation is product-orchestrator policy. Current V2 contracts are in-process Rust contracts, not an authenticated cross-host wire protocol. Physical-send final revalidation batches each owner/capability attachment set through one owner SQLite snapshot under one total bounded deadline; both direct federated and combined contributors delegate to that same batch path. The local observed_frontier is the exact-scope append-only memory-revision count from the retrieval snapshot; it is not an authenticated cut digest or rollback witness. The canonical implementation-profile claim state remains specified_not_product_evidence until execution gates pass. productExecutionProved, productionImplementation, activation, acceptance, promotion and release remain false until their independent evidence gates pass.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
       "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
