@@ -60,10 +60,12 @@ Each `OwnerSummaryV1` binds:
 - immutable objective digest;
 - body generation;
 - configuration digest;
-- observation and expiry times in one declared monotonic domain;
+- planner-local observation and expiry times;
 - readiness posture;
 - source-frontier digest;
 - support digest.
+
+For the named global host, independent producers do **not** supply authority over the planner clock. Their signed payload may contain producer-local timing metadata, but after signature and durable AuthBus receipt verification `bind_planner_observation_window_v1` overwrites the planner-local observation/expiry window from the supervisor process's monotonic `Instant` epoch. All summaries admitted into one named-host snapshot therefore share the same planner clock domain. Lower-level composition helpers remain valid only when their caller can prove one common monotonic domain.
 
 `SnapshotRequestV1` binds the required owner set, objective, body generation, configuration, current revocation frontier, a snapshot-policy digest, collection time, maximum owner age and snapshot expiry. The resulting snapshot additionally binds the required-owner-set digest and the exact maximum-age policy.
 
@@ -253,6 +255,8 @@ Target metrics include snapshot age, stale/missing owner counts, candidate and r
 - `RCP-24`: final use requires a plan receipt issued by the current host generation and still selected in the durable journal; decision revocation, supersession or process restart requires replanning before any effect.
 - `RCP-25`: the plan-sealed effect subject must equal the host-pinned fleet principal before final-use authority can enter the dispatch closure.
 - `RCP-26`: if `planner.state` rename succeeds but directory-sync acknowledgement is lost, the durable writer returns `Indeterminate`, poisons the open handle, blocks final-use dispatch through that host, and may resume only after drop/reopen reconciliation of the durable bytes.
+- `RCP-27`: an authenticated producer-local timestamp from a different monotonic epoch cannot control named-host planner freshness; the host stamps one process-local observation/expiry window after durable authentication.
+- `RCP-28`: runtime.fleet support at final use must preserve both the durable AuthBus admission binding and the unchanged live allocation-grant digest; substituting either digest domain rejects.
 
 Native mappings and tests are recorded in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
@@ -320,8 +324,8 @@ response envelope. Neither helper grants effects or proves long-term improvement
 
 `global_plane.rs` now provides a closed source composition for the broader control path without granting activation:
 
-1. every global owner summary, including `runtime.fleet`, enters through `admit_durable_owner_summary_v1` after `HeptaEvidenceStore::admit_authbus_message` durably consumes the pinned AuthBus issuer/replay sequence; the bounded in-process `authenticate_owner_summary_v1` path remains a source fixture only;
-2. `runtime.fleet` then enters `admit_fleet_allocation_owner_v1` only after that durable authentication. Its signed owner identity, lease-generation revision, readiness and source frontier must match the host-pinned live `LeaseLedger::AllocationGrant`; principal/revocation/expiry are rechecked before CPU, memory and accelerator endowments plus essential floors become the canonical planner resource profile;
+1. every global owner summary, including `runtime.fleet`, enters through `admit_durable_owner_summary_v1` after `HeptaEvidenceStore::admit_authbus_message` durably consumes the pinned AuthBus issuer/replay sequence. The named host then applies `bind_planner_observation_window_v1`, so producer-local clock values cannot control planner freshness; the bounded in-process `authenticate_owner_summary_v1` path remains a source fixture only;
+2. `runtime.fleet` then enters `admit_fleet_allocation_owner_v1` only after that durable authentication. Its signed owner identity, lease-generation revision, readiness and source frontier must match the host-pinned live `LeaseLedger::AllocationGrant`; principal/revocation/expiry are rechecked before CPU, memory and accelerator endowments plus essential floors become the canonical planner resource profile. The snapshot support digest preserves the already authenticated AuthBus support binding and adds the exact live allocation-grant digest as a second domain; final-use revalidation recomputes that same two-layer binding rather than substituting one digest domain for the other;
 3. `compose_global_plan_with_fleet_v1` requires the authenticated admitted-owner set to equal the snapshot required-owner set, then runs `collect_snapshot -> prepare_plan -> evaluate_prepared_plan_with_ndu -> request_execution_grants`;
 4. the NDU step calls the real `utility.ndu` implementation; no caller-supplied selected candidate is accepted;
 5. every effectful plan candidate prebinds an `EffectBindingV1` digest before NDU evaluation. `authority_bridge.rs` maps each deny-all `GrantRequestV1` to an exact `FinalUseBinding` only after the structured subject/destination/scope/effect-boundary identity rehashes to that plan-sealed digest. `with_authorized_grant_request_v1` then accepts only an independently signed grant, durably claims its single-use nonce, and runs the effect closure only inside `FinalUseAuthority::with_verified_use`, which performs the final live time/revocation fence immediately before callback entry. `claim_final_use_for_grant_request_v1` remains the lower-level token-returning primitive.
