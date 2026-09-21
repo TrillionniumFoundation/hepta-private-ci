@@ -75,6 +75,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signature;
+use ed25519_dalek::Verifier;
+use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
 use tokio::time::timeout;
@@ -96,25 +99,45 @@ pub struct IntelligenceAuthorityFileV1 {
     pub authority_epoch: u64,
     pub revocation_frontier_digest: String,
     pub owners: Vec<IntelligenceAuthorityOwnerFileV1>,
+    pub signer_id: String,
+    pub signature: Vec<u8>,
 }
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct IntelligenceAuthorityVerifierV1 {
+    pub signer_id: String,
+    pub verifying_key: [u8; 32],
+}
+
+const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
 
 struct FileBackedFreshnessOracleV1 {
     path: PathBuf,
+    verifier: IntelligenceAuthorityVerifierV1,
 }
 
 impl FileBackedFreshnessOracleV1 {
-    fn new(path: PathBuf) -> Self {
-        Self { path }
+    fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
+        Self { path, verifier }
     }
 
     fn read(
         &self,
         requested: &StableId,
     ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+        validate_authority_file_path(&self.path, requested)?;
+        let metadata = std::fs::metadata(&self.path)
+            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+        if metadata.len() == 0 || metadata.len() > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES {
+            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
+                requested.clone(),
+            ));
+        }
         let bytes = std::fs::read(&self.path)
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
         let file: IntelligenceAuthorityFileV1 = serde_json::from_slice(&bytes)
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+        verify_authority_file(&file, &self.verifier, requested)?;
         if file.schema_version != 1 || file.authority_epoch == 0 {
             return Err(CanonicalIntelligenceError::FreshnessUnavailable(
                 requested.clone(),
@@ -530,6 +553,7 @@ pub enum AgentdIntelligenceProductError {
     TimedOut,
     CandidateSetMismatch,
     Clock,
+    InvalidAuthorityVerifier,
 }
 
 impl fmt::Display for AgentdIntelligenceProductError {
@@ -541,12 +565,26 @@ impl StdError for AgentdIntelligenceProductError {}
 
 pub struct AgentdIntelligenceProductRunnerV1 {
     authority_file: PathBuf,
+    authority_verifier: IntelligenceAuthorityVerifierV1,
 }
 
 impl AgentdIntelligenceProductRunnerV1 {
-    #[must_use]
-    pub fn new(authority_file: PathBuf) -> Self {
-        Self { authority_file }
+    pub fn new(
+        authority_file: PathBuf,
+        authority_verifier: IntelligenceAuthorityVerifierV1,
+    ) -> Result<Self, AgentdIntelligenceProductError> {
+        if !authority_file.is_absolute()
+            || authority_verifier.signer_id.is_empty()
+            || authority_verifier.signer_id.len() > 128
+            || authority_verifier.signer_id.as_bytes().contains(&0)
+            || VerifyingKey::from_bytes(&authority_verifier.verifying_key).is_err()
+        {
+            return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
+        }
+        Ok(Self {
+            authority_file,
+            authority_verifier,
+        })
     }
 
     pub async fn prepare(
@@ -580,7 +618,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         let authority_file = self.authority_file.clone();
         let mut worker = tokio::task::spawn_blocking(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs);
-            let mut oracle = FileBackedFreshnessOracleV1::new(authority_file);
+            let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, self.authority_verifier.clone());
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         });
         let outcome = timeout(
@@ -598,7 +636,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
                 let mut oracle =
-                    FileBackedFreshnessOracleV1::new(self.authority_file.clone());
+                    FileBackedFreshnessOracleV1::new(
+                        self.authority_file.clone(),
+                        self.authority_verifier.clone(),
+                    );
                 validate_current_snapshot(&snapshot, &mut oracle)
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
@@ -722,7 +763,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         snapshot: CanonicalIntelligenceSnapshotV1,
         event: LedgerEvent,
     ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
-        let mut oracle = FileBackedFreshnessOracleV1::new(self.authority_file.clone());
+        let mut oracle = FileBackedFreshnessOracleV1::new(
+                        self.authority_file.clone(),
+                        self.authority_verifier.clone(),
+                    );
         validate_current_snapshot(&snapshot, &mut oracle)
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         match journal.append(expected_predecessor, event.clone()) {
@@ -745,13 +789,89 @@ impl AgentdIntelligenceProductRunnerV1 {
         journal: &mut dyn DurableLearningJournal,
         pending: PendingIntelligenceLedgerAppendV1,
     ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
-        let mut oracle = FileBackedFreshnessOracleV1::new(self.authority_file.clone());
+        let mut oracle = FileBackedFreshnessOracleV1::new(
+                        self.authority_file.clone(),
+                        self.authority_verifier.clone(),
+                    );
         validate_current_snapshot(&pending.snapshot, &mut oracle)
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         journal
             .append(pending.expected_predecessor, pending.event)
             .map_err(AgentdIntelligenceLedgerError::Ledger)
     }
+}
+
+fn authority_signing_payload(
+    file: &IntelligenceAuthorityFileV1,
+) -> Result<Vec<u8>, serde_json::Error> {
+    serde_json::to_vec(&(
+        "hepta.agentd.intelligence-authority.v1",
+        file.schema_version,
+        file.authority_epoch,
+        &file.revocation_frontier_digest,
+        &file.owners,
+        &file.signer_id,
+    ))
+}
+
+fn verify_authority_file(
+    file: &IntelligenceAuthorityFileV1,
+    verifier: &IntelligenceAuthorityVerifierV1,
+    requested: &StableId,
+) -> Result<(), CanonicalIntelligenceError> {
+    if file.signer_id != verifier.signer_id || file.signature.len() != 64 {
+        return Err(CanonicalIntelligenceError::FreshnessUnavailable(
+            requested.clone(),
+        ));
+    }
+    let verifying_key = VerifyingKey::from_bytes(&verifier.verifying_key)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+    let signature_bytes: [u8; 64] = file
+        .signature
+        .as_slice()
+        .try_into()
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+    let signature = Signature::from_bytes(&signature_bytes);
+    let payload = authority_signing_payload(file)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+    verifying_key
+        .verify(&payload, &signature)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))
+}
+
+#[cfg(unix)]
+fn validate_authority_file_path(
+    path: &std::path::Path,
+    requested: &StableId,
+) -> Result<(), CanonicalIntelligenceError> {
+    use std::os::unix::fs::PermissionsExt;
+
+    let metadata = std::fs::symlink_metadata(path)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+    if metadata.file_type().is_symlink()
+        || !metadata.is_file()
+        || metadata.permissions().mode() & 0o022 != 0
+    {
+        return Err(CanonicalIntelligenceError::FreshnessUnavailable(
+            requested.clone(),
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn validate_authority_file_path(
+    path: &std::path::Path,
+    requested: &StableId,
+) -> Result<(), CanonicalIntelligenceError> {
+    let metadata = std::fs::metadata(path)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+    if !metadata.is_file() {
+        return Err(CanonicalIntelligenceError::FreshnessUnavailable(
+            requested.clone(),
+        ));
+    }
+    Ok(())
 }
 
 fn wall_clock_ms() -> Result<u64, AgentdIntelligenceProductError> {
