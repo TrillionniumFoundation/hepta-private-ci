@@ -139,13 +139,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         })?;
         slot.restart_attempt = claim.attempt;
         slot.restart_not_before = Some(deadline(now, claim.backoff)?);
-        let release = slot.active_release.clone().or_else(|| {
-            slot.last_command
-                .clone()
-                .and_then(|command| crate::AgentRelease::unversioned(command).ok())
-        });
-        let release =
-            release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
+        if slot.active_release.is_none() && slot.last_command.is_none() {
+            return Err(SupervisorError::NoPreviousCommand(agent_id.clone()));
+        }
         if slot.runtime.is_none() {
             slot.restart_pending = true;
             let generation = record.lifecycle.generation;

@@ -171,7 +171,10 @@ fn final_use(
     )
     .expect("wall clock milliseconds fit u64");
     let nonce_counter = NEXT_TEST_NONCE.fetch_add(1, Ordering::Relaxed);
-    let nonce_material = format!("{grant_id}:{}:{now}:{nonce_counter}", std::process::id());
+    let nonce_material = format!(
+        "{grant_id}:{}:{now}:{nonce_counter}",
+        std::process::id()
+    );
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "security-owner".to_string(),
@@ -605,10 +608,7 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
             31,
         )
         .await;
-    assert!(matches!(
-        replay,
-        Err(AuthorizedEffectError::RecoveryRequired)
-    ));
+    assert!(matches!(replay, Err(AuthorizedEffectError::RecoveryRequired)));
     assert_eq!(must_not_dispatch.calls, 0);
 
     let recovered = reopened
@@ -625,10 +625,7 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
         )
         .await
         .expect("provider-owned recovery");
-    assert!(matches!(
-        recovered,
-        AuthorizedEffectRecoveryResult::Observed(_)
-    ));
+    assert!(matches!(recovered, AuthorizedEffectRecoveryResult::Observed(_)));
 }
 
 #[tokio::test]
