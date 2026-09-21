@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
+use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 fn main() -> anyhow::Result<()> {
@@ -13,6 +14,7 @@ fn main() -> anyhow::Result<()> {
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust_file: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
+        let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         while let Some(flag) = args.next() {
             if flag == "--authbus-trust-file" {
                 anyhow::ensure!(
@@ -36,6 +38,22 @@ fn main() -> anyhow::Result<()> {
                         })?
                         .into(),
                 );
+            } else if flag == "--plasticity-bootstrap-descriptor-digest" {
+                anyhow::ensure!(
+                    plasticity_bootstrap_descriptor_digest.is_none(),
+                    "--plasticity-bootstrap-descriptor-digest may be supplied at most once"
+                );
+                let value = args.next().ok_or_else(|| {
+                    anyhow::anyhow!("--plasticity-bootstrap-descriptor-digest requires a digest")
+                })?;
+                let value = value.into_string().map_err(|_| {
+                    anyhow::anyhow!("--plasticity-bootstrap-descriptor-digest must be UTF-8")
+                })?;
+                plasticity_bootstrap_descriptor_digest = Some(
+                    value
+                        .parse::<Digest32>()
+                        .map_err(|error| anyhow::anyhow!("invalid plasticity descriptor digest: {error}"))?,
+                );
             } else {
                 anyhow::bail!("unknown Agentd argument");
             }
@@ -44,9 +62,22 @@ fn main() -> anyhow::Result<()> {
         if let Some(path) = authbus_trust_file {
             config = config.with_authbus_trust_file(path);
         }
-        if let Some(path) = plasticity_bootstrap_descriptor {
-            let bootstrap = load_plasticity_process_bootstrap_v1(&path, config.identity())?;
-            config = config.with_plasticity_runtime_bootstrap(bootstrap)?;
+        match (
+            plasticity_bootstrap_descriptor,
+            plasticity_bootstrap_descriptor_digest,
+        ) {
+            (Some(path), Some(expected_digest)) => {
+                let bootstrap = load_plasticity_process_bootstrap_v1(
+                    &path,
+                    expected_digest,
+                    config.identity(),
+                )?;
+                config = config.with_plasticity_runtime_bootstrap(bootstrap)?;
+            }
+            (None, None) => {}
+            _ => anyhow::bail!(
+                "--plasticity-bootstrap-descriptor and its digest must be supplied together"
+            ),
         }
 
         codex_hepta_agentd::run(config, arg0_paths).await?;
