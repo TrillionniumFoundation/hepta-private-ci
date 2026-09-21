@@ -8,7 +8,7 @@
 use std::fs::{File, OpenOptions};
 use std::io::Read;
 #[cfg(unix)]
-use std::os::unix::fs::OpenOptionsExt;
+use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::sync::{Arc, Mutex, RwLock};
@@ -242,10 +242,16 @@ struct RegistryDescriptorV1 {
 /// by its native implementation before a runtime owner is returned.
 pub fn load_plasticity_process_bootstrap_v1(
     path: &Path,
+    expected_descriptor_digest: Digest32,
     identity: &AgentdIdentity,
 ) -> Result<PlasticityRuntimeBootstrapV1, AgentdError> {
     require_absolute_regular_file(path, "plasticity bootstrap descriptor")?;
     let bytes = read_bounded(path, MAX_DESCRIPTOR_BYTES, "plasticity bootstrap descriptor")?;
+    if expected_descriptor_digest.is_zero()
+        || Digest32::of_bytes(&bytes) != expected_descriptor_digest
+    {
+        return invalid("plasticity bootstrap descriptor digest mismatch");
+    }
     let descriptor: ProcessBootstrapDescriptorV1 = serde_json::from_slice(&bytes)?;
     if descriptor.schema != DESCRIPTOR_SCHEMA {
         return invalid("plasticity bootstrap descriptor schema mismatch");
@@ -257,6 +263,7 @@ pub fn load_plasticity_process_bootstrap_v1(
             "plasticity bootstrap descriptor does not match Agentd identity/generation".to_string(),
         ));
     }
+    validate_process_path_separation(&descriptor)?;
 
     let objective_digest = digest(&descriptor.objective_digest, "objective digest")?;
     let artifacts = load_artifacts(&descriptor.artifacts)?;
@@ -707,6 +714,59 @@ fn open_topology_writer(
         ),
     };
     result.map_err(|error| AgentdError::Invalid(format!("topology registry recovery failed: {error}")))
+}
+
+fn validate_process_path_separation(
+    descriptor: &ProcessBootstrapDescriptorV1,
+) -> Result<(), AgentdError> {
+    let paths = [
+        descriptor.ledger.path.as_path(),
+        descriptor.neuron.journal_path.as_path(),
+        descriptor.parameter_registry.registry_path.as_path(),
+        descriptor.parameter_registry.anchor_path.as_path(),
+        descriptor.topology_registry.registry_path.as_path(),
+        descriptor.topology_registry.anchor_path.as_path(),
+    ];
+    for (index, left) in paths.iter().enumerate() {
+        for right in paths.iter().skip(index + 1) {
+            if left == right {
+                return invalid("plasticity mutable owner paths must be distinct");
+            }
+            if existing_paths_alias(left, right)? {
+                return invalid("plasticity mutable owner paths alias the same file");
+            }
+        }
+    }
+    Ok(())
+}
+
+fn existing_paths_alias(left: &Path, right: &Path) -> Result<bool, AgentdError> {
+    let left_metadata = match std::fs::symlink_metadata(left) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(false),
+        Err(error) => return Err(error.into()),
+    };
+    let right_metadata = match std::fs::symlink_metadata(right) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(false),
+        Err(error) => return Err(error.into()),
+    };
+    if left_metadata.file_type().is_symlink() || right_metadata.file_type().is_symlink() {
+        return invalid("plasticity mutable owner paths must not be symlinks");
+    }
+    #[cfg(unix)]
+    {
+        Ok(
+            (left_metadata.dev(), left_metadata.ino())
+                == (right_metadata.dev(), right_metadata.ino()),
+        )
+    }
+    #[cfg(not(unix))]
+    {
+        let left = left.canonicalize()?;
+        let right = right.canonicalize()?;
+        Ok(left == right)
+    }
 }
 
 fn validate_distinct_registry_paths(descriptor: &RegistryDescriptorV1) -> Result<(), AgentdError> {
