@@ -493,8 +493,9 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    # Source identities are module-local.  Requiring every independently owned
+    # module to share one repository sourceBase lets all maps become stale
+    # together and prevents a single module from advancing truthfully.
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
