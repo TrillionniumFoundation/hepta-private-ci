@@ -1106,14 +1106,23 @@ mod tests {
         .expect("contributor")
         .expect("proposal before revoke");
         assert_eq!(first.source().as_str(), FEDERATED_COGNITIVE_SOURCE);
-        let first_content = first.into_content();
+        let (first_content, final_use_guard) = first.into_content_and_final_use_guard();
         assert!(first_content.contains(OWNER_ID));
         assert!(first_content.contains("\"coverage\":[1,1,0,0]"));
+        let final_use_guard = final_use_guard.expect("federated proposal final-use guard");
 
         owner
             .revoke_federated_recall(&owner_access, &capability, now)
             .await
             .expect("revoke");
+        let final_use_error = final_use_guard
+            .revalidate()
+            .await
+            .expect_err("revocation after assembly must fence provider dispatch");
+        assert_eq!(
+            final_use_error.reason_code(),
+            "federated_memory_final_use_stale"
+        );
         let next = EphemeralModelInputContributor::contribute(
             &extension,
             input("model-provider-attempt:v1:after-revoke"),
