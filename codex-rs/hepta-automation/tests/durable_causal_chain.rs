@@ -376,6 +376,120 @@ async fn forbid_overlap_parks_recurrence_until_terminal_observation() {
 }
 
 #[tokio::test]
+async fn terminal_observer_cursor_is_durable_bounded_progress() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75108",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    scheduler.tick(100).await.expect("queue admission");
+
+    let occurrence = store
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("occurrence")
+        .expect("materialized");
+    let payload = Sha256Digest::for_bytes(b"terminal observer payload");
+    let running = store
+        .record_occurrence_turn(
+            task.task_id,
+            1,
+            &occurrence.client_user_message_id,
+            "turn-known-but-old",
+            payload.as_str(),
+            101,
+        )
+        .await
+        .expect("record turn");
+    assert!(running.terminal_scan_cursor.is_none());
+
+    let cursor_one = r#"{"turn_id":"page-anchor-1600","include_anchor":false}"#;
+    let advanced = store
+        .record_terminal_scan_cursor(
+            task.task_id,
+            1,
+            "turn-known-but-old",
+            None,
+            cursor_one,
+            102,
+        )
+        .await
+        .expect("persist first bounded continuation");
+    assert_eq!(advanced.terminal_scan_cursor.as_deref(), Some(cursor_one));
+
+    assert!(matches!(
+        store
+            .record_terminal_scan_cursor(
+                task.task_id,
+                1,
+                "turn-known-but-old",
+                Some(cursor_one),
+                cursor_one,
+                103,
+            )
+            .await,
+        Err(AutomationError::Invalid)
+    ));
+
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen cursor state");
+    let durable = reopened
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("read reopened occurrence")
+        .expect("reopened materialized occurrence");
+    assert_eq!(durable.terminal_scan_cursor.as_deref(), Some(cursor_one));
+
+    let cursor_two = r#"{"turn_id":"page-anchor-3200","include_anchor":false}"#;
+    assert!(matches!(
+        reopened
+            .record_terminal_scan_cursor(
+                task.task_id,
+                1,
+                "turn-known-but-old",
+                None,
+                cursor_two,
+                104,
+            )
+            .await,
+        Err(AutomationError::Conflict)
+    ));
+    let advanced = reopened
+        .record_terminal_scan_cursor(
+            task.task_id,
+            1,
+            "turn-known-but-old",
+            Some(cursor_one),
+            cursor_two,
+            105,
+        )
+        .await
+        .expect("advance exact cursor");
+    assert_eq!(advanced.terminal_scan_cursor.as_deref(), Some(cursor_two));
+
+    let missing = Sha256Digest::for_bytes(b"full history exhausted");
+    let indeterminate = reopened
+        .mark_occurrence_indeterminate(task.task_id, 1, &missing, 106)
+        .await
+        .expect("terminal scan exhaustion");
+    assert_eq!(indeterminate.state, AutomationOccurrenceState::Indeterminate);
+    assert!(indeterminate.terminal_scan_cursor.is_none());
+}
+
+#[tokio::test]
 async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
     let fixture = Fixture::new();
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
