@@ -9,7 +9,7 @@ The current candidate deliberately has two distinct surfaces.
 
 The durable operation identity binds operation ID, exact payload digest, scope, owner, destination and optional predecessor digest. Exact replay is idempotent only for the same semantic tuple. Changed operation semantics conflict.
 
-Dispatch is claimed durably before the external boundary. A claim is represented by a durable indeterminate marker under the current generation/fence; concurrent or reopened dispatchers cannot blindly resend it. A terminal predecessor generation may hand an unresolved queued identity to a newer owner without creating a second event/outbox identity.
+Dispatch has two durable stages. `cognitive_operation_dispatch_claims` persists the bounded claim lease, attempt, renewal/takeover and retry eligibility. Immediately before final-use target entry the writer appends the one-shot indeterminate effect-entry marker. Concurrent/reopened dispatchers therefore cannot blindly resend after boundary ambiguity. A terminal predecessor generation may hand an unresolved queued identity to a newer owner without creating a second event/outbox identity.
 
 ## Public symbols and source bindings
 
@@ -21,11 +21,13 @@ Reference oracle:
 
 Durable integrated owner:
 
-- migration/schema: `codex-rs/hepta-memory/migrations/0011_kernel_operations.sql`;
+- migration/schema: `codex-rs/hepta-memory/migrations/0011_kernel_operations.sql` and `0012_kernel_operation_dispatch_claims.sql`;
 - atomic operation/event/outbox publication, reopen verification and generation handoff: `codex-rs/hepta-memory/src/local_lease_outbox.rs`;
-- production-shaped writer, durable pre-dispatch claim, final-use boundary and reconciliation: `codex-rs/hepta-memory/src/production_writer.rs`;
-- real CognitiveStore destination adapter and terminal observer: `codex-rs/hepta-memory/src/production_cognitive_source_target.rs`;
-- named Agentd host seam: `codex-rs/hepta-agentd/src/production_writer_host.rs`.
+- durable claim lease/attempt owner: `codex-rs/hepta-memory/src/operation_claims.rs`;
+- production-shaped writer, one-shot effect-entry fence, final-use boundary and reconciliation: `codex-rs/hepta-memory/src/production_writer.rs`;
+- CognitiveStore destination adapter and terminal observer: `codex-rs/hepta-memory/src/production_cognitive_source_target.rs`;
+- Automation destination-owned dedupe/apply + terminal observer: `codex-rs/hepta-automation/src/operation_destination.rs`;
+- named Agentd runtime composition: `codex-rs/hepta-agentd/src/production_writer_host.rs`, `config.rs` and `runtime.rs`.
 
 ## Durability and activation
 
@@ -33,11 +35,11 @@ Durable source implementation is present. The existing CognitiveStore SQLite own
 
 `admit_operation` writes the admitted event, local outbox row and `cognitive_operation_ledger` row before one transaction commit. Fault hooks cover failure after the event, after the outbox and after the operation row; every injected failure leaves all three absent.
 
-The production dispatcher persists a one-shot dispatch claim before target entry. From that point a crash reopens as indeterminate and must use status/reconciliation instead of redispatch. A successor owner can recover an inherited queued identity only after the predecessor fence is durably terminal and reuses the same event/outbox identity.
+The production dispatcher first persists a bounded claim lease/attempt. Same-owner replay is idempotent while the lease is live, renewal is explicit, and a strictly newer generation may take over only after expiry/backoff with the attempt budget preserved. It then persists a one-shot effect-entry marker before target entry; from that point a crash reopens as indeterminate and must use observation/reconciliation instead of redispatch. A successor owner can recover an inherited queued identity only after the predecessor fence is durably terminal and reuses the same event/outbox identity.
 
 The real final-use path consumes the non-serializable token owned by `kernel.authority`: `FinalUseAuthority::claim` followed immediately by `with_verified_use(... target.dispatch(...))`. Binding covers subject, destination, scope, exact payload and request/operation digest. A binding failure before adapter entry settles locally without invoking the target.
 
-The real destination slice is `CognitiveSourceOutboxTarget`. It applies through the CognitiveStore source ledger, deduplicates exact operation identity, rejects payload drift, and provides a destination-owned terminal observation. The lost-ack test exercises durable prepare → final-use dispatch → destination commit → source indeterminate → destination observation → source reconcile.
+Two concrete destination slices are source-integrated. `CognitiveSourceOutboxTarget` reconstructs and verifies the full operation semantic digest, enforces predecessor/CAS expectation inside the same `BEGIN IMMEDIATE` destination transaction, and provides destination-owned terminal observation. Automation independently commits task mutation + semantic dedupe receipt in its own transaction and exposes a terminal observer. The lost-ack CognitiveStore test exercises durable prepare → final-use dispatch → destination commit → source indeterminate → destination observation → source reconcile.
 
 This source composition does **not** claim default Agentd activation, target-host qualification, independent acceptance, promotion or release.
 
@@ -45,13 +47,13 @@ This source composition does **not** claim default Agentd activation, target-hos
 
 The following remain outside the current executable closure:
 
-- always-on/default Agentd composition with an enrolled production grant source and hosted dispatcher/reconciler;
-- equivalent destination-owned dedupe/apply/terminal-observer adapters for every registered effect destination;
+- enrolled production authority/grant provisioning for a selected Agentd deployment; the runtime path and continuous observer-only reconciler are source-composed but default process-environment startup does not manufacture credentials;
+- destination-owned dedupe/apply/terminal-observer adapters for every additional effect destination before that destination is activated;
 - bounded physical compaction/checkpoint retention for the append-only local lease/event/outbox audit journals;
 - target-host power-loss, filesystem/storage-device and clock/rollback qualification;
 - independently governed acceptance, canary, promotion and release.
 
-The 16,384-record limits in `hepta-operations` apply only to the in-memory reference oracle. The integrated SQLite owner does not inherit that model ceiling.
+The 16,384-record limits in `hepta-operations` apply only to the in-memory reference oracle. The integrated SQLite owner rejects before mutation at 100,000 operation/outbox rows and 400,000 event rows per lease; these limits preserve room for multiple lifecycle events per operation.
 
 ## Known limits and non-claims
 
@@ -59,7 +61,7 @@ The reference oracle is still not a durability or authority boundary. `Reference
 
 The durable owner intentionally preserves the local lease/event/outbox journals as immutable hash-chained evidence. This candidate does not claim physical bounded-history compaction of those journals. Adding retention by deleting rows would break reopen/audit invariants; bounded compaction requires an explicit segment/checkpoint design with anti-resurrection evidence.
 
-SQLite WAL + FULL is a repository durability implementation, not proof of a particular physical power-loss domain. The child-process kill/reopen probe is process-crash evidence and explicitly makes no physical power-loss claim.
+SQLite WAL + FULL is a repository durability implementation, not proof of a particular physical power-loss domain. Source qualification includes deterministic `SQLITE_FULL` atomic rollback + reopen and a child-process kill/reopen probe; neither substitutes for target-host physical power-loss evidence.
 
 Compensation is always a new authorized operation. Rollback never rewrites an observed external effect into a fictitious success/failure.
 
@@ -68,6 +70,8 @@ Compensation is always a new authorized operation. Rollback never rewrites an ob
 Current source test identities include:
 
 - `operation_event_and_outbox_are_one_atomic_transaction_across_every_fault_boundary`;
+- `durable_sequence_capacity_rejects_before_mutation_boundary`;
+- `sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cleanly`;
 - `qualification_durable_writer_crash_reopen_probe` (qualification-only child-process kill/reopen probe);
 - `expired_owner_handoff_allows_successor_to_reconcile_indeterminate_without_resend`;
 - `crash_after_target_send_reopens_as_indeterminate_and_cannot_redispatch`;
@@ -88,6 +92,6 @@ Claim levels for this candidate are therefore:
 
 - `target`: full cross-owner transaction architecture and deployment requirements are specified;
 - `reference-implemented`: bounded deterministic `hepta-operations` oracle;
-- `production-implemented`: durable SQLite owner, final-use boundary and one real CognitiveStore destination are source-implemented;
+- `production-implemented`: durable SQLite owner, bounded claim lease/attempt state, final-use boundary, CognitiveStore CAS destination and Automation destination are source-implemented;
 - `execution-proved`: **pending current exact-candidate CI**;
 - `activated/released`: false.
