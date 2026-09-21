@@ -123,10 +123,16 @@ fn governed_topology_for_runtime(
     let rollback = Digest32::of_bytes(b"runtime-topology-rollback");
     let handoff = build_writer_handoff_plan_v1(
         StableId::new("runtime.status.adapter").expect("module id"),
-        StableId::new(format!("runtime.owner.generation-{}", current.generation().get()))
-            .expect("from owner"),
-        StableId::new(format!("runtime.owner.generation-{}", successor.generation().get()))
-            .expect("to owner"),
+        StableId::new(format!(
+            "runtime.owner.generation-{}",
+            current.generation().get()
+        ))
+        .expect("from owner"),
+        StableId::new(format!(
+            "runtime.owner.generation-{}",
+            successor.generation().get()
+        ))
+        .expect("to owner"),
         current.generation().get(),
         successor.generation().get(),
         current.hierarchy_digest(),
@@ -275,8 +281,7 @@ fn runtime_canary_observer() -> (
         authority_epoch: 9,
         signers: vec![TrustedLearningSignerV1 {
             principal: principal.clone(),
-            controller_id: StableId::new("controller:runtime-topology-canary")
-                .expect("controller"),
+            controller_id: StableId::new("controller:runtime-topology-canary").expect("controller"),
             verifying_key: key.verifying_key().to_bytes(),
             roles: vec![LearningEvidenceRoleV1::Observer],
             revoked_at: None,
@@ -298,9 +303,8 @@ fn sign_runtime_canary_observation(
     use codex_hepta_learning_ledger::{LearningEvidenceRoleV1, SignedLearningEvidenceV1};
     use ed25519_dalek::Signer;
 
-    let payload =
-        structural_canary_observation_signing_payload_v1(plan_digest, observation)
-            .expect("runtime canary signing payload");
+    let payload = structural_canary_observation_signing_payload_v1(plan_digest, observation)
+        .expect("runtime canary signing payload");
     let mut evidence = SignedLearningEvidenceV1 {
         evidence_id: StableId::new(format!("runtime-canary:evidence:{}", observation.sequence))
             .expect("evidence id"),
@@ -426,11 +430,10 @@ fn revoked_final_use_never_mutates_the_live_topology() -> Result<()> {
     Ok(())
 }
 
-
 #[cfg(unix)]
 #[test]
-fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics(
-) -> Result<()> {
+fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics()
+-> Result<()> {
     use codex_hepta_intelligence::observe_authenticated_structural_canary_v1;
     use codex_hepta_plasticity::{
         DurableTopologyProposalRegistryV1, StructuralCanaryControllerV1,
@@ -438,10 +441,9 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     };
 
     let calls = Arc::new(AtomicUsize::new(0));
-    let root = HeptaStateRoot::parse(std::env::temp_dir().join(format!(
-        "hepta-topology-real-canary-{}",
-        std::process::id()
-    )))?;
+    let root = HeptaStateRoot::parse(
+        std::env::temp_dir().join(format!("hepta-topology-real-canary-{}", std::process::id())),
+    )?;
     let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&calls)));
     let organs = RuntimeOrgans::new(root.clone(), Arc::clone(&state));
     let baseline = organs
@@ -497,9 +499,7 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
             .host
             .lock()
             .map_err(|_| anyhow::anyhow!("test host poisoned"))?;
-        let live = guard
-            .as_mut()
-            .map_err(|error| anyhow::anyhow!("{error}"))?;
+        let live = guard.as_mut().map_err(|error| anyhow::anyhow!("{error}"))?;
         live.host.stop_all()?;
     }
     assert!(organs.status_json().is_err());
@@ -508,13 +508,10 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     let failed = organs
         .topology_snapshot()
         .map_err(|error| anyhow::anyhow!("{error}"))?;
-    let rollback_host =
-        build_host_generation(root, Arc::clone(&state), Generation::new(3)?)?;
-    let rollback_successor = RuntimeTopologySuccessorV1::new(
-        rollback_host.host,
-        rollback_host.route,
-    )
-    .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let rollback_host = build_host_generation(root, Arc::clone(&state), Generation::new(3)?)?;
+    let rollback_successor =
+        RuntimeTopologySuccessorV1::new(rollback_host.host, rollback_host.route)
+            .map_err(|error| anyhow::anyhow!("{error}"))?;
     let rollback_snapshot = rollback_successor.snapshot();
     let (rollback_governed, rollback_candidate_id) =
         governed_topology_for_runtime("canary-rollback", &failed, &rollback_snapshot);
@@ -581,10 +578,7 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     assert_eq!(authenticated.canary.state, StructuralCanaryStateV1::Aborted);
     assert_eq!(authenticated.observer_id, observer.principal_id);
     assert!(!authenticated.observer_authentication_digest.is_zero());
-    assert_eq!(
-        controller.finish()?.state,
-        StructuralCanaryStateV1::Aborted
-    );
+    assert_eq!(controller.finish()?.state, StructuralCanaryStateV1::Aborted);
 
     Ok(())
 }
