@@ -5,7 +5,6 @@
     "commit": "000f7e02de52841eb31d016b6aa69b044cf9526c",
     "tree": "a0ab6d7336a0f18f58aefcbecb67af9731524796"
   },
-  "sourceBasePolicy": "latest_declared_root_commit_v1",
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
   "owner": "kernel-contracts",
@@ -274,6 +273,14 @@
     "release": false
   },
   "sourceRoot": [
+    "codex-rs/hepta-types"
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "000f7e02de52841eb31d016b6aa69b044cf9526c",
+    "tree": "a0ab6d7336a0f18f58aefcbecb67af9731524796"
+  },
+  "observedSourcePaths": [
     "codex-rs/hepta-types"
   ]
 }
