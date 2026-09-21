@@ -2,8 +2,8 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `a74246c4d7657d4c6b09fc50c41f1d715ace5e0e`
-- frozen candidate implementation head: `877fd06b3a09adad3dbe0f6e12f667d6d17343eb`
-- frozen candidate implementation tree: `72a240563d461e31b98ce3dbbe8ca76532cfe90f`
+- frozen candidate implementation head: `c59599f385fddb106867bae61242ca91b102a6b6`
+- frozen candidate implementation tree: `1ee264543599ba29efff9830da29d38db28a69d6`
 - status: `pending_exact_current_head_and_merge_candidate_execution`
 - current main parent: `a74246c4d7657d4c6b09fc50c41f1d715ace5e0e`
 - claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
@@ -29,7 +29,7 @@ The candidate establishes the following source-level properties without promotin
 - Agentd composition through `CognitiveRuntime::AvailableFederatedV2`;
 - V2-only product retrieval/revalidation APIs and a regression preventing `with_federation()` from downgrading an already-composed V2 runtime;
 - explicit requested/completed/failed/truncated aggregate coverage;
-- bounded fail-closed final model-input revalidation, with same-owner/capability bindings sharing one SQLite read snapshot under one total final-use deadline, plus an HTTP-path regression proving a rejecting final-use guard prevents physical provider dispatch;
+- bounded fail-closed final model-input revalidation, with same-owner/capability bindings sharing one SQLite read snapshot under one total final-use deadline, a fresh post-batch wall-clock check that rejects capability expiry crossing or clock regression before provider dispatch, plus an HTTP-path regression proving a rejecting final-use guard prevents physical provider dispatch;
 - one-peer ownership in the canonical checked engine, with <=16-peer discovery/aggregation owned by the product orchestrator;
 - documentation truth that the current V2 structs are in-process Rust contracts, not a registered authenticated cross-host wire protocol.
 - local `observed_frontier` is an exact-scope append-only memory-revision count from the same retrieval snapshot, not an authenticated cut digest or rollback witness.
@@ -72,4 +72,4 @@ The earlier `fix/memory-federation-v2-hardening-final` receipt was a failing dev
 
 This candidate additionally closes a compatibility split-brain edge found during security review: the legacy `with_federation()` helper now preserves `AvailableFederatedV2` rather than replacing it with `AvailableFederated`. The canonical V2 product APIs still reject the legacy variant.
 
-The current frozen candidate also removes the stale per-binding extension final-use path: direct federated proposals now delegate to the same batch revalidation helper used by combined proposals, so same-owner/capability bindings share one SQLite snapshot and the source compiles against the canonical `revalidate_many` surface.
+The current frozen candidate also removes the stale per-binding extension final-use path: direct federated proposals now delegate to the same batch revalidation helper used by combined proposals, so same-owner/capability bindings share one SQLite snapshot and the source compiles against the canonical `revalidate_many` surface. A subsequent security review found that the batch originally reused its start-time wall clock for the whole bounded operation; the candidate now samples the wall clock again after batch revalidation and rejects capability expiry crossing or clock regression before physical provider dispatch.
