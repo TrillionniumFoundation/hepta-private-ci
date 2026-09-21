@@ -124,6 +124,9 @@ jobs:
           cargo test --locked -p codex-hepta-agentd \
             --features qualification-cognitive-write \
             --test cognitive_product_e2e -- --nocapture --test-threads=1
+          cargo test --locked -p codex-hepta-agentd \
+            --features qualification-cognitive-write \
+            --test plasticity_process_e2e -- --nocapture --test-threads=1
 
       - name: Strict Agentd lint
         working-directory: codex-rs
