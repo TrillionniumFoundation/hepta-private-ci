@@ -35,7 +35,8 @@ pub enum ProviderEffectIdempotencyCapability {
     #[default]
     Unsupported,
     /// The provider contract exposes a stable key, same-key conflict rules,
-    /// and durable status lookup.  No current provider is marked this way.
+    /// and durable status lookup.  The attested HTTP adapter can report this
+    /// only after its constructor verifies the pinned provider contract.
     KeyAndStatusLookup,
 }
 
@@ -1166,11 +1167,13 @@ pub fn reconcile_provider_lookup(
     }
 }
 
-/// Async adapter seam for a future provider implementation.
+/// Async adapter seam for provider-backed effects.
 ///
-/// No current HTTP or WebSocket provider implements this trait. An adapter may
-/// report `KeyAndStatusLookup` only after its provider contract proves stable
-/// key transport, same-key conflict/dedupe, and durable lookup semantics.
+/// The repository's HTTP adapter implements this trait only behind a verified
+/// provider-contract attestation. An adapter may report `KeyAndStatusLookup`
+/// only after its provider contract proves stable key transport, same-key
+/// conflict/dedupe, and durable lookup semantics. Source implementation alone
+/// is not a product caller or activation receipt.
 pub type ProviderEffectFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
 pub trait ProviderEffectAdapter: Send + Sync {
