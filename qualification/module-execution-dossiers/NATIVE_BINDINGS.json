@@ -300,10 +300,15 @@
     {
       "module": "compact.engine",
       "path": "codex-rs/hepta-compact-engine/src/lib.rs",
-      "blobSha": "b95dfeb1cf5515190b4093853ab7f070f630ed22",
+      "blobSha": "a505b2810be95487b82a38125d81655abf47ebb7",
       "exports": [
-        "CompactCheckpoint",
-        "compact"
+        "CompactionPolicyV2",
+        "CompactionSemanticPayloadV2",
+        "TokenizationReceiptV1",
+        "TrustedTokenizerV1",
+        "TrustedCompactionEvaluatorV1",
+        "build_qualified_candidate",
+        "prove_compaction"
       ]
     },
     {

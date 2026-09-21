@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs); observed identifiers include `AgentdProductionWriterHost`, `open`, `attach_target`, `dispatch`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md) for the implemented subset and remaining product work.
+The registered production-writer composition sources are [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs) and [codex-rs/hepta-agentd/src/runtime.rs](../../../codex-rs/hepta-agentd/src/runtime.rs); observed identifiers include `AgentdProductionWriterBootstrap`, `AgentdProductionWriterHost`, `attach_production_writer_after_generation_fence`, `attach_target`, and `dispatch`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -73,7 +73,7 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `bootstrap and configuration loader`
+- `bootstrap and configuration loader`, including optional externally supplied `AgentdProductionWriterBootstrap`; default startup carries no production writer authority
 - `supervision loop`
 - `durable state projection`
 - `readiness and shutdown controller`
@@ -199,7 +199,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. For the production-writer seam, `runtime.rs` now composes an explicitly injected external bootstrap against Agentd's CognitiveStore and gates retrieval of the host on Running/Ready/unfenced lifecycle. The default CLI does not enroll that bootstrap, so source composition is not deployment activation. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 

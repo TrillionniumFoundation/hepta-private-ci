@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); observed identifiers include `CompactCheckpoint`, `compact`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
+The registered primary source remains [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs). The current crate exports the canonical `CompactCheckpointV1` / `CompactionProofV2` contracts plus `build_qualified_candidate` and `prove_compaction`; the historical `NATIVE_BINDINGS.json` observation that named the removed `CompactCheckpoint` / `compact` surface is not an exact-head API claim. Exact-head source and test identity comes from the CI-generated implementation evidence described in section 12. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-verification-and-claim-boundary) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -69,24 +69,33 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+The canonical checkpoint subsystem has one product chain:
+
+`host-configured AuthoritativeCognitiveSnapshotProvider::acquire -> validated AuthoritativeSnapshotV1 -> host-trusted tokenizer evidence -> build_qualified_candidate -> host-trusted evaluator signature -> prove_compaction -> ProductionDurableWriter -> CognitiveStore immutable checkpoint + content-addressed payload`.
+
 The bounded components are:
 
-- `bounded input stage`
-- `deterministic algorithm core`
-- `generation publisher`
-- `checkpoint and recovery layer`
+- the host-configured `AuthoritativeCognitiveSnapshotProvider`, which acquires the exact Lane C source cut at final use; requests carry only `SnapshotAcquisitionRequestV1` and cannot inject a pre-built envelope;
+- the deterministic deletion/lineage core, which rejects broken revision chains and `Live -> Tombstone -> Live` resurrection;
+- record, encoded-byte and token-budget selection with hard repository ceilings;
+- `TrustedTokenizerV1` plus signed `TokenizationReceiptV1` for every selected input and semantic payload;
+- `TrustedCompactionEvaluatorV1` plus an Ed25519-signed `CompactionQualificationV2` over the exact candidate and holdout outcomes;
+- the immutable `CompactCheckpointV1` / `CompactionProofV2` metadata publisher;
+- the content-addressed compact-payload owner and its separate immutable revocation/GC lifecycle;
+- current-selection and rollback-candidate re-admission against a fresh authoritative cut.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+Snapshot-provider, tokenizer and evaluator trust belong to Agentd host configuration. They are not request fields. A request may supply signed evidence, but it cannot choose the public key that authenticates its own evidence. The engine remains authority-free and does not call a model, mint production authority or mutate source facts.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+The semantic payload contains its exact bytes as well as its digest, generator provenance, tokenizer identity and signed tokenization accounting. Publication binds those exact bytes to the checkpoint digest and persists them in the same CognitiveStore transaction. Digest-only output is not considered recoverable context.
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+Configuration affecting authority, tokenizer/evaluator identity, schema, compatibility, model identity or resource policy is immutable for one admitted operation/generation. Unknown critical fields, unbounded queues and implicit fallback stores are prohibited.
 
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
 
 - `DomainRead::compact_checkpointV1`
+- native `CompactionProofV2` qualification evidence binding
 
 Consumed contracts:
 
@@ -105,122 +114,141 @@ Rust types and canonical JSON represent identical semantics. Tests cover round t
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Owned authoritative or rebuildable domain:
 
-- `compact_checkpoint`
+- `compact_checkpoint`.
 
-Read-only data dependencies:
+The physical owner remains the existing Agent-local CognitiveStore; compact.engine does not introduce a second database. Migration `0011_qualified_compact_checkpoints.sql` contains three related physical surfaces inside that one domain:
 
-- `cross_owner_outbox`
-- `operation_ledger`
+- `cognitive_qualified_compact_checkpoints`: immutable checkpoint/proof metadata, keyed by owner/scope/purpose/generation with generation/predecessor CAS;
+- `cognitive_qualified_compact_payloads`: content-addressed payload bytes keyed by exact `payload_digest`, source snapshot and tokenizer identity; rows cannot be updated;
+- `cognitive_qualified_compact_payload_revocations`: append-only revocation tombstones binding payload digest, tombstone frontier, authority epoch and revocation digest.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+Publication holds the externally authorized writer lease, enters `BEGIN IMMEDIATE`, revalidates that lease/fence inside the transaction, verifies exact payload bytes against `checkpoint.payload_digest`, inserts or verifies the content-addressed payload, performs checkpoint generation/predecessor CAS, and commits checkpoint/proof metadata atomically. A conflict or crash before commit leaves the prior durable head selected and does not leak a newly usable payload.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+Payload deletion semantics deliberately differ from checkpoint metadata. Revocation first appends an immutable tombstone; resolution then immediately returns no payload. Physical payload bytes may be garbage-collected only after that tombstone exists. Historical checkpoint/proof rows are retained so deletion does not destroy audit lineage, but historical metadata never makes a revoked/deleted payload usable again.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Store open verifies migration checksums, exact required table/trigger/index definitions, checkpoint/proof digests and predecessor continuity, owner identity, and content-addressed payload bytes. Corruption or schema tampering fails closed. Rollback never restores deleted payload bytes or expired authority.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md).
+The named product façade is `AgentdProductionWriterHost`. `AgentdProductionWriterBootstrap` is the only runtime composition seam: it requires an externally verified production lease/verifier, deployment-enrolled tokenizer/evaluator trust, and a host-selected authoritative snapshot provider. `runtime.rs` composes that bootstrap against the already-open Agentd CognitiveStore and retains the host in `AgentdState`; without an explicit bootstrap the default runtime remains read-only. State exposes the host only while Agentd is Running, App Server ready and unfenced.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+The publication call performs, in order:
+
+1. final-use `AuthoritativeCognitiveSnapshotProvider::acquire` followed by `AuthoritativeSnapshotV1::validate_for_request`; caller-supplied snapshot envelopes are not accepted;
+2. policy tokenizer == source snapshot tokenizer == host-trusted tokenizer;
+3. Ed25519 verification of every input/payload tokenization receipt and exact byte/token accounting;
+4. deterministic candidate construction over the complete authoritative memory head set;
+5. Ed25519 verification of independent evaluator qualification over the exact candidate digest;
+6. durable writer authority refresh and a second lease/fence validation inside SQLite `BEGIN IMMEDIATE`;
+7. content-addressed payload publication plus immutable checkpoint/proof generation CAS.
+
+Concurrent candidates may be computed, but SQLite serialization plus predecessor/generation CAS permits only one successor. Stable identical replay is idempotent; semantic drift under the same durable identity conflicts.
+
+Read use is also a product boundary. `select_current_compaction_checkpoint` reacquires a fresh authoritative snapshot from the attached provider and and then requires the durable checkpoint to match the current memory, fact, tombstone, source-ledger, KG, prompt-registry, retrieval, encoder, authority, model, tokenizer, template, tool-schema, memory-snapshot and compatibility cut. It must also resolve the exact non-revoked payload bytes. There is no legacy read path that treats durable existence alone as currentness.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Crash-before-commit leaves both the prior checkpoint and prior payload selection unchanged. Reopen reconstructs every persisted checkpoint/proof contract and verifies the durable predecessor chain before returning a head. Content-addressed payload corruption is detected by recomputing its digest.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+A deletion/revocation race resolves fail-closed: once the payload tombstone commits, `resolve_qualified_compact_payload` and current selection stop returning bytes even if historical checkpoint metadata remains immutable. GC before revocation is rejected; after revocation it may remove only the payload bytes.
+
+Current selection is never inferred from “latest row”. It requires final-use re-admission against the current authoritative cut and compatibility digest. Frontier, authority, model/tokenizer/template/tool-schema, source-memory digest, generation or payload-availability drift makes the checkpoint stale.
+
+Rollback does not select an old checkpoint in place. `rollback_compaction_payload_candidate` may expose a historical payload only after current-cut re-admission and only while the payload still resolves. The caller must then construct, independently qualify and publish a new successor generation through the normal canonical path. Deleted/revoked payloads, stale authority and stale compatibility cannot be resurrected by rollback.
 
 ## 9. Security, privacy and threat controls
 
-Owned threat entries:
+The posture is least authority, bounded input, typed contracts, digest binding and independently authenticated evidence.
 
-None.
+Tokenizer accounting is not caller self-report. `CompactionPolicyV2` binds tokenizer semantic identity and implementation digest; `TrustedTokenizerV1` is host-enrolled; every `TokenizationReceiptV1` is Ed25519-signed over subject digest, tokenizer identity/implementation and exact byte/token counts. Policy tokenizer, snapshot tokenizer and trust-root tokenizer must be identical.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+Independent semantic qualification is also cryptographically authenticated. `TrustedCompactionEvaluatorV1` is host-enrolled; `CompactionQualificationV2` signs the exact candidate digest, evaluator implementation/attestation, evaluation artifact, retained-query/reconstruction/contradiction evidence and all pass/fail outcomes. `prove_compaction` verifies that Ed25519 signature itself and derives the proof's signature and verification-receipt digests. A non-zero digest or caller boolean is not proof.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Production authority remains separate. The engine and proof artifacts are `DENY_ALL`; only the externally verified `ProductionDurableWriter` may publish/revoke/GC. The tokenizer/evaluator keys do not grant write authority, and the production authority verifier cannot substitute for semantic qualification.
+
+Negative tests cover resurrection, stale/missing protected support, forged tokenization receipts, tokenizer substitution, payload-byte drift, evaluator-signature tampering, stale current cuts, revoke/GC ordering, lease/fence drift, concurrent generation conflicts and persisted corruption. Credentials and raw trust secrets never enter general logs, learning artifacts or checkpoint metadata.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs) and the linked implementation components.
+Canonical hard source limits are:
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+- at most 65,536 input revisions;
+- at most 4,096 protected references;
+- at most 64 MiB for bounded encoded compaction input/output;
+- at most 8,000,000 tokenizer-counted tokens.
+
+Each policy may choose stricter retained-record, retained-byte, retained-token, semantic-payload-byte and semantic-payload-token ceilings, but may not raise the repository hard ceilings. Every byte/token figure admitted by the engine is bound to a signed tokenizer receipt. Protected live references must fit all active budgets or planning fails instead of silently omitting them.
+
+The current 4,096-record deterministic regression is a source capacity fixture, not a latency/SLO claim. Target-host qualification must separately measure CPU, RSS, SQLite transaction/reopen cost, payload resolution, p50/p95/p99 and foreground interference on the selected host.
 
 ## 11. Observability and operations
 
-Checkpoint/projection library. Keep source lineage, omissions and deletion frontiers with every compact result and retain the prior complete generation on failed construction. A compact receipt does not implement the entire replay or learned-skill pipeline; lifecycle/storage publication belongs to the composed owner.
+Keep checkpoint generation/predecessor, source snapshot, source-memory digest, support manifest, omissions, resource accounting, generator provenance, tokenizer identity, evaluator provenance, qualification proof, payload digest and deletion frontier queryable for every publication.
 
-Current operating and state-format references:
+The compacted payload body is not embedded in checkpoint JSON. It is separately content-addressed in the same CognitiveStore so it can be revoked and garbage-collected without rewriting historical checkpoint/proof evidence. Operational reads distinguish: metadata present, payload live/resolvable, payload revoked, payload GC'd, and checkpoint stale against current cut.
 
-- [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs).
-- [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs).
+Current operating/state references:
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+- `codex-rs/hepta-compact-engine/src/qualified.rs` — canonical planning/trust/proof kernel;
+- `codex-rs/hepta-memory/src/qualified_compact_store.rs` — checkpoint, payload, revocation, resolver and re-admission owner;
+- `codex-rs/hepta-memory/migrations/0011_qualified_compact_checkpoints.sql` — physical schema;
+- `codex-rs/hepta-memory/src/production_writer.rs` — externally authorized publish/revoke/GC boundary;
+- `codex-rs/hepta-agentd/src/production_writer_host.rs` — named product façade and trust root.
+
+Replay scheduling and learned-skill induction remain separate capabilities; checkpoint subsystem closure does not imply them.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Current focused source tests include:
 
-- [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs); named case: `latest_revision_and_tombstone_are_preserved`.
-- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs); named case: `protected_live_reference_is_retained_before_higher_priority_optional_record`.
+- `hepta-compact-engine/src/qualified_tests.rs`: deletion non-resurrection, complete-source coverage, deterministic ordering, protected-reference behavior, record/byte/token budgets, hard bounded regression, signed tokenizer receipts, policy/snapshot tokenizer equality, exact semantic payload bytes and host-trusted Ed25519 evaluator verification;
+- `hepta-memory/src/qualified_compact_store_tests.rs`: idempotent publication, content-addressed payload reopen/resolution, generation/predecessor CAS, concurrent same-generation winner, exact-current-cut selection, revocation-before-GC, rollback-candidate re-admission, crash-before-commit, raw proof-signature replay/tamper rejection, bounded checkpoint-capacity stop, and schema/data corruption fail-closed behavior;
+- `hepta-agentd/src/production_writer_host_tests.rs`: full authoritative snapshot -> signed tokenizer -> build -> signed evaluator -> prove -> authorized durable publication -> current re-admission -> restart payload-resolution path, plus missing-host-trust rejection;
+- `hepta-cognitive-types/src/lane_c_tests.rs`: canonical checkpoint/proof contract digest invariants.
 
-In `codex-rs`, run `just test -p codex-hepta-compact-engine`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) separately labels target acceptance designs.
+Tracked `IMPLEMENTATION_MAP.sourceBase` is a relevant-source baseline, not an “exact HEAD” claim: the verifier requires that it is an ancestor whose declared module roots/guide/dossier/common mapping inputs have no drift. The map file itself is excluded to avoid self-reference. **Exact-head evidence** means the CI execution receipt records the actual source-head commit/tree being compiled and tested; **synthetic-merge evidence** records the deterministic merge commit/tree. These are distinct concepts and must not be conflated.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+`cognitive_qualified_compact_checkpoints` is bounded to 16,384 immutable rows per owner. Identical replay remains valid at the bound; a new successor at capacity returns `CapacityExceeded` rather than misclassifying a healthy store as corruption. This is an explicit bounded-stop state, not silent truncation or automatic audit-lineage deletion.
+
+Source completion requires both source-head and deterministic synthetic-merge compile/test/lint/format gates to reach terminal success. Target-host qualification, independent semantic acceptance, activation, promotion and release remain later external gates.
 
 ## 13. Implementation sequence and work packages
 
-Applicable work packages:
+Applicable work package: `MEM-5-COMPACT`.
 
-- `MEM-5-COMPACT`
+The exact cross-owner convergence envelope is canonical in `docs/delivery/WORK_PACKAGES.json`. It explicitly includes the compact-engine root plus the bounded Lane C contract, CognitiveStore migration/store/writer, Agentd product-host, caller-registry, compatibility tests and documentation/evidence tooling touched by this convergence. Co-owner modules are `cognitive.types`, `cognitive.store`, `runtime.agentd`, `runtime.codex` and `context.compiler`. This replaces the former inaccurate statement that MEM-5 could modify only `hepta-compact-engine/**`.
 
-The bootstrap package is `MEM-5-COMPACT`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
+Development predecessor remains `MEM-0-TYPES`; activation predecessor remains `MEM-1-STORE`. The work package is still `planned` in the canonical delivery state until exact-candidate gates justify a state transition. Source code existing on a PR does not by itself update delivery/activation/acceptance state.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Required source deliverables remain exact source identity, source inventory, static verification, focused/package tests, all-target compilation, strict lint, clean tracked state, exact-head execution and merge-candidate execution. Cross-owner writes outside the explicit envelope remain a stop condition.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+The single canonical product façade is `AgentdProductionWriterHost`; #959's parallel production-event-journal / publish-only host topology is retired. The canonical durable owner is the qualified checkpoint/payload tables in the existing CognitiveStore.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Source composition does not mean runtime activation. Default Agentd startup still does not mint a production writer or semantic trust root. Activation requires an external production authority lease/verifier plus deployment-enrolled tokenizer/evaluator trust identities and successful target-host qualification.
+
+Compatibility adapters must not recreate the removed legacy `compact()` checkpoint surface. Retirement requires all named callers on the canonical path, no old-path use, current-cut re-admission, restart/reopen qualification, rehearsed rollback-as-new-successor behavior and independent acceptance.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, canonical registry/work-package truth and closed-world validation. Checkpoint-subsystem source completion requires the canonical engine, trust contracts, durable payload owner/resolver, current/rollback re-admission and named product call chain to compile/test at exact source head and deterministic synthetic merge.
 
-For `compact.engine`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+Product composition means the named Agentd façade actually traverses authoritative snapshot -> build -> prove -> durable publication and exposes final-use re-admission; a store method or test helper alone is not composition. Product execution is not claimed until exact-candidate execution evidence passes.
 
-### Work-package execution envelopes
+Replay scheduling and skill induction are later target capabilities and do **not** block checkpoint-subsystem source closure. Independent semantic acceptance, target-host qualification, activation, canary, promotion and release remain separate externally governed states.
 
-#### `MEM-5-COMPACT`
+For `compact.engine`, source changes grant no runtime/model/provider/network/filesystem/secret/release authority. The engine/proofs remain `DENY_ALL`; durable mutation exists only through the externally authorized production writer.
+
+### MEM-5-COMPACT execution envelope
 
 - State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
 - Owner/deputy: `cognitive-platform` / `durability-kernel`.
-- Allowed write paths:
-- `codex-rs/hepta-compact-engine/**`
-- Development predecessors:
-- `MEM-0-TYPES`
-- Activation predecessors:
-- `MEM-1-STORE`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+- Canonical allowed paths and co-owners: see `docs/delivery/WORK_PACKAGES.json`; that machine-readable row is authoritative.
+- Development predecessor: `MEM-0-TYPES`; activation predecessor: `MEM-1-STORE`.
+- Stop conditions remain authority violation, base drift, claim/evidence mismatch, writes outside the explicit cross-owner envelope, and unbounded resource/retry behavior.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 

@@ -38,6 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    production_writer_bootstrap: Option<crate::AgentdProductionWriterBootstrap>,
 }
 
 impl AgentdConfig {
@@ -143,6 +144,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            production_writer_bootstrap: None,
         })
     }
 
@@ -178,6 +180,27 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Attach externally verified production-writer authority and compaction
+    /// trust. No environment/default path constructs this bootstrap.
+    pub fn with_production_writer_bootstrap(
+        mut self,
+        bootstrap: crate::AgentdProductionWriterBootstrap,
+    ) -> Result<Self, AgentdError> {
+        if self.production_writer_bootstrap.is_some() {
+            return Err(AgentdError::Invalid(
+                "production writer bootstrap already configured".to_string(),
+            ));
+        }
+        self.production_writer_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn production_writer_bootstrap(
+        &self,
+    ) -> Option<crate::AgentdProductionWriterBootstrap> {
+        self.production_writer_bootstrap.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

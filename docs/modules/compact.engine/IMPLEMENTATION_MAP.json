@@ -18,28 +18,24 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "runtime_bootstrap_composed_external_enrollment_required",
+  "productionWriterState": "canonical_checkpoint_store_established_in_cognitive_sqlite",
   "operations": [
-    {
-      "operation": "compact",
-      "nativeSymbol": "compact",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "compact",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
     {
       "operation": "build_qualified_candidate",
       "nativeSymbol": "build_qualified_candidate",
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_runtime_host_composed_product_execution_unproved",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs::canonical_path_rejects_live_tombstone_live_resurrection",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs::retained_byte_and_token_budgets_are_enforced",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs::forged_input_tokenization_receipt_is_rejected",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs::policy_tokenizer_must_equal_source_snapshot_tokenizer",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs::semantic_payload_is_snapshot_tokenizer_and_bytes_bound",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs::source_snapshot_coverage_must_match_input_heads",
+        "codex-rs/hepta-agentd/src/production_writer_host_tests.rs::product_path_fails_closed_without_authoritative_snapshot_provider"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
       "mappingClass": "owner_native",
@@ -49,9 +45,14 @@
       "operation": "prove_compaction",
       "nativeSymbol": "prove_compaction",
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_runtime_host_composed_product_execution_unproved",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs::proof_requires_host_trusted_ed25519_evaluator",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs::tampered_evaluator_qualification_signature_is_rejected",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs::failing_deletion_obligation_never_produces_proof",
+        "codex-rs/hepta-agentd/src/production_writer_host_tests.rs::product_path_fails_closed_without_authoritative_snapshot_provider"
+      ],
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
@@ -59,8 +60,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the composed checkpoint path before changing product-execution claims.",
+    "Retain productExecutionProved=false until an externally enrolled bootstrap and target-host execution receipt exercise the runtime-composed host.",
+    "Replay scheduling and skill induction remain separate target capabilities and are not implied by checkpoint publication."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -78,5 +80,34 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-compact-engine"
-  ]
+  ],
+  "productCallers": [
+    "codex-rs/hepta-agentd/src/runtime.rs::attach_production_writer_after_generation_fence",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs::AgentdProductionWriterHost::publish_compaction_checkpoint",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs::AgentdProductionWriterHost::select_current_compaction_checkpoint",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs::AgentdProductionWriterHost::rollback_compaction_payload_candidate",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs::AgentdProductionWriterHost::revoke_compaction_payload",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs::AgentdProductionWriterHost::gc_revoked_compaction_payload"
+  ],
+  "persistenceOwner": [
+    "codex-rs/hepta-memory/src/qualified_compact_store.rs::CognitiveStore::publish_qualified_compact_checkpoint",
+    "codex-rs/hepta-memory/src/qualified_compact_store.rs::CognitiveStore::select_current_qualified_compact_checkpoint",
+    "codex-rs/hepta-memory/src/qualified_compact_store.rs::CognitiveStore::rollback_qualified_compact_payload_candidate",
+    "codex-rs/hepta-memory/src/qualified_compact_store.rs::CognitiveStore::revoke_qualified_compact_payload",
+    "codex-rs/hepta-memory/src/qualified_compact_store.rs::CognitiveStore::gc_revoked_qualified_compact_payload",
+    "codex-rs/hepta-memory/migrations/0011_qualified_compact_checkpoints.sql"
+  ],
+  "sourceBaseSemantics": "tracked documentation generation base; CI emits exact-head implementation/test evidence at source and synthetic-merge heads",
+  "integrationComposition": {
+    "runtimeBootstrap": {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "symbol": "attach_production_writer_after_generation_fence",
+      "state": "source_composed_external_enrollment_required"
+    },
+    "authoritativeSnapshotProvider": {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "symbol": "AgentdProductionWriterHost::acquire_current_snapshot",
+      "state": "host_configured_final_use"
+    }
+  }
 }

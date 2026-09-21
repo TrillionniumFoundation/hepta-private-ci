@@ -44,6 +44,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let production_writer_bootstrap = config.production_writer_bootstrap();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -83,8 +84,14 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     // the existing availability-tolerant behavior; only the explicit
     // compile-time qualification profile takes this fail-closed startup gate.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
+    require_cognitive_runtime_for_writer_bootstrap(
+        &cognitive_runtime,
+        production_writer_bootstrap.is_some(),
+    )?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
+        attach_production_writer_after_generation_fence(&state, store, production_writer_bootstrap)
+            .await?;
     }
     let cognitive_runtime = attach_federation_after_generation_fence(
         &state,
@@ -180,6 +187,19 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     outcome
 }
 
+fn require_cognitive_runtime_for_writer_bootstrap(
+    runtime: &CognitiveRuntime,
+    bootstrap_requested: bool,
+) -> Result<(), AgentdError> {
+    if bootstrap_requested && runtime.available_store().is_none() {
+        return Err(AgentdError::Protocol(
+            "explicit production writer bootstrap requires the authoritative CognitiveStore"
+                .to_string(),
+        ));
+    }
+    Ok(())
+}
+
 #[cfg(feature = "qualification-cognitive-write")]
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
@@ -196,6 +216,37 @@ fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
     Ok(runtime)
+}
+
+async fn attach_production_writer_after_generation_fence(
+    state: &AgentdState,
+    store: &Arc<CognitiveStore>,
+    bootstrap: Option<crate::AgentdProductionWriterBootstrap>,
+) -> Result<(), AgentdError> {
+    let Some(bootstrap) = bootstrap else {
+        return Ok(());
+    };
+    state.refresh_generation()?;
+    let host = bootstrap.open_with_store(store.as_ref().clone()).await?;
+    if let Err(fence_error) = state.refresh_generation() {
+        state.mark_fenced();
+        if let Err(cleanup_error) = host.writer().rollback_lease().await {
+            return Err(AgentdError::Protocol(format!(
+                "{fence_error}; production writer startup rollback failed: {cleanup_error}"
+            )));
+        }
+        return Err(fence_error);
+    }
+    let host = Arc::new(host);
+    if let Err(attach_error) = state.attach_production_writer_host(Arc::clone(&host)) {
+        if let Err(cleanup_error) = host.writer().rollback_lease().await {
+            return Err(AgentdError::Protocol(format!(
+                "{attach_error}; production writer duplicate-attach rollback failed: {cleanup_error}"
+            )));
+        }
+        return Err(attach_error);
+    }
+    Ok(())
 }
 
 async fn open_automation_store_after_generation_fence<Open, OpenFuture>(

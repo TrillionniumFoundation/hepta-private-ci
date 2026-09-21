@@ -22,12 +22,61 @@ product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
 caller_markers = ["ProductionDurableWriter::open", "verifier"]
 
 [[boundary]]
+id = "memory_qualified_compact_checkpoint_publish"
+symbol = "ProductionDurableWriter::publish_qualified_compact_checkpoint"
+definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
+definition_markers = ["pub async fn publish_qualified_compact_checkpoint", "QualifiedCompactCheckpointPublication"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["publish_qualified_compact_checkpoint", "build_qualified_candidate", "prove_compaction"]
+
+[[boundary]]
+id = "memory_qualified_compact_current_select"
+symbol = "CognitiveStore::select_current_qualified_compact_checkpoint"
+definition_path = "codex-rs/hepta-memory/src/qualified_compact_store.rs"
+definition_markers = ["pub async fn select_current_qualified_compact_checkpoint", "revalidate_current_publication", "resolve_qualified_compact_payload"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["select_current_compaction_checkpoint", "select_current_qualified_compact_checkpoint"]
+
+[[boundary]]
+id = "memory_qualified_compact_payload_revoke"
+symbol = "ProductionDurableWriter::revoke_qualified_compact_payload"
+definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
+definition_markers = ["pub async fn revoke_qualified_compact_payload", "revoke_qualified_compact_payload"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["revoke_compaction_payload", "revoke_qualified_compact_payload"]
+
+[[boundary]]
+id = "memory_qualified_compact_payload_gc"
+symbol = "ProductionDurableWriter::gc_revoked_qualified_compact_payload"
+definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
+definition_markers = ["pub async fn gc_revoked_qualified_compact_payload", "gc_revoked_qualified_compact_payload"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["gc_revoked_compaction_payload", "gc_revoked_qualified_compact_payload"]
+
+[[boundary]]
+id = "compact_engine_authoritative_snapshot_final_use"
+symbol = "AuthoritativeCognitiveSnapshotProvider::acquire"
+definition_path = "codex-rs/hepta-cognitive-read/src/authoritative.rs"
+definition_markers = ["pub trait AuthoritativeCognitiveSnapshotProvider", "fn acquire"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["attach_snapshot_provider", "acquire_current_snapshot", "provider.acquire"]
+
+[[boundary]]
+id = "compact_engine_trusted_evaluator_proof"
+symbol = "prove_compaction"
+definition_path = "codex-rs/hepta-compact-engine/src/qualified.rs"
+definition_markers = ["pub fn prove_compaction", "TrustedCompactionEvaluatorV1", "verify_strict"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["prove_compaction", "compaction_trust"]
+
+
+[[boundary]]
 id = "agentd_production_writer_host"
-symbol = "AgentdProductionWriterHost::open_with_store"
+symbol = "AgentdProductionWriterBootstrap::open_with_store"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-definition_markers = ["pub struct AgentdProductionWriterHost", "pub async fn open_with_store", "ProductionAuthorityVerifier"]
-product_callers = []
-caller_markers = []
+definition_markers = ["pub struct AgentdProductionWriterBootstrap", "pub async fn open_with_store", "ProductionAuthorityVerifier"]
+product_callers = ["codex-rs/hepta-agentd/src/runtime.rs"]
+caller_markers = ["production_writer_bootstrap", "attach_production_writer_after_generation_fence", "bootstrap.open_with_store"]
 
 [[boundary]]
 id = "provider_effect_coordinator"
@@ -52,8 +101,13 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
-forbidden = ["AllowVerifier", "permit_all"]
+required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier", "AgentdCompactionTrustV1", "attach_compaction_trust", "attach_snapshot_provider", "acquire_current_snapshot", "select_current_compaction_checkpoint"]
+forbidden = ["AllowVerifier", "permit_all", "TrustedCompactionEvaluatorV1::default", "TrustedTokenizerV1::default"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = ["production_writer_bootstrap", "attach_production_writer_after_generation_fence", "rollback_lease"]
+forbidden = ["ProductionAuthorityLease::from_verified_parts", "ProductionAuthorityToken::from_verified_bytes"]
 
 [[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"

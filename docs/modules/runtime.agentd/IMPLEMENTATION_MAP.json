@@ -134,11 +134,14 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Retain exact-head and deterministic synthetic-merge execution evidence for the newly runtime-composed production-writer bootstrap."
+  ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
     "non-test caller through the full Codex turn path",
-    "target backpressure/restart measurements"
+    "target backpressure/restart measurements",
+    "externally enrolled production-writer bootstrap and target-host execution receipt"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -157,8 +160,8 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "production_writer_bootstrap_source_composed_product_execution_unproved",
+  "productionWriterState": "external_authority_writer_runtime_composition_available_not_default_enrolled",
   "owner": "agent-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",

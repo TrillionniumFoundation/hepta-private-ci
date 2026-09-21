@@ -25,7 +25,14 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
+use codex_hepta_cognitive_types::lane_c::CompactCheckpointV1;
+use codex_hepta_cognitive_types::lane_c::CompactionProofV2;
+use codex_hepta_compact_engine::CompactionProofWitnessV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+
 use crate::CognitiveStore;
+use crate::CompactFence;
 use crate::LocalAdmission;
 use crate::LocalLease;
 use crate::LocalLeaseHeadDisposition;
@@ -34,6 +41,8 @@ use crate::LocalLeaseOutboxError;
 use crate::LocalOutcomeReceipt;
 use crate::LocalOutcomeState;
 use crate::LocalReplayFinalization;
+use crate::QualifiedCompactCheckpointPublication;
+use crate::QualifiedCompactStoreError;
 use crate::QueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
 
@@ -65,6 +74,8 @@ pub enum ProductionWriterError {
     StaleReceipt,
     #[error("production writer already has an active owner for this local lease")]
     WriterBusy,
+    #[error(transparent)]
+    QualifiedCompact(#[from] QualifiedCompactStoreError),
 }
 
 /// Opaque authority token supplied by an external grant verifier.
@@ -455,6 +466,94 @@ impl ProductionDurableWriter {
 
     pub fn store(&self) -> &CognitiveStore {
         &self.store
+    }
+
+    /// Publish one independently-qualified canonical Lane C compact checkpoint
+    /// through the externally-authorized production writer boundary.
+    ///
+    /// The writer revalidates its authority lease before deriving the exact
+    /// compact fence. The store then revalidates that live lease again inside
+    /// the same BEGIN IMMEDIATE transaction that performs generation CAS.
+    pub async fn publish_qualified_compact_checkpoint(
+        &self,
+        checkpoint: &CompactCheckpointV1,
+        proof: &CompactionProofV2,
+        proof_witness: &CompactionProofWitnessV1,
+        payload: &[u8],
+    ) -> Result<QualifiedCompactCheckpointPublication, ProductionWriterError> {
+        self.verify_authority().await?;
+        let fence = self.compact_fence()?;
+        Ok(self
+            .store
+            .publish_qualified_compact_checkpoint(
+                &self.lease,
+                &fence,
+                checkpoint,
+                proof,
+                proof_witness,
+                payload,
+            )
+            .await?)
+    }
+
+    /// Append an immutable payload revocation under the same verified writer
+    /// lease used for checkpoint publication. Resolution fails immediately
+    /// after this commits; physical bytes may be garbage-collected separately.
+    pub async fn revoke_qualified_compact_payload(
+        &self,
+        scope_id: &StableId,
+        purpose_id: &StableId,
+        payload_digest: Digest32,
+        tombstone_frontier: u64,
+        revocation_digest: Digest32,
+    ) -> Result<(), ProductionWriterError> {
+        self.verify_authority().await?;
+        let fence = self.compact_fence()?;
+        Ok(self
+            .store
+            .revoke_qualified_compact_payload(
+                &self.lease,
+                &fence,
+                scope_id,
+                purpose_id,
+                payload_digest,
+                tombstone_frontier,
+                revocation_digest,
+            )
+            .await?)
+    }
+
+    /// Physically remove compacted payload bytes only after an immutable
+    /// revocation tombstone exists. Historical checkpoint/proof metadata is
+    /// retained so audit lineage never depends on deleted content.
+    pub async fn gc_revoked_qualified_compact_payload(
+        &self,
+        scope_id: &StableId,
+        purpose_id: &StableId,
+        payload_digest: Digest32,
+    ) -> Result<bool, ProductionWriterError> {
+        self.verify_authority().await?;
+        let fence = self.compact_fence()?;
+        Ok(self
+            .store
+            .gc_revoked_qualified_compact_payload(
+                &self.lease,
+                &fence,
+                scope_id,
+                purpose_id,
+                payload_digest,
+            )
+            .await?)
+    }
+
+    fn compact_fence(&self) -> Result<CompactFence, ProductionWriterError> {
+        CompactFence::new(
+            self.authority.authority_epoch,
+            self.authority.owner_epoch,
+            self.lease.generation(),
+            self.authority.fencing_token_digest()?.as_str().to_string(),
+        )
+        .map_err(|error| ProductionWriterError::Invalid(error.to_string()))
     }
 
     pub async fn admit(

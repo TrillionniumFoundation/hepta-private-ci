@@ -17,6 +17,7 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
+    production_writer_host: std::sync::OnceLock<Arc<crate::AgentdProductionWriterHost>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -47,6 +48,7 @@ impl AgentdState {
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            production_writer_host: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -78,6 +80,29 @@ impl AgentdState {
         }
         *cognitive = Some(store);
         Ok(())
+    }
+
+    pub(crate) fn attach_production_writer_host(
+        &self,
+        host: Arc<crate::AgentdProductionWriterHost>,
+    ) -> Result<(), AgentdError> {
+        self.production_writer_host.set(host).map_err(|_| {
+            AgentdError::Protocol("production writer host was attached more than once".to_string())
+        })
+    }
+
+    pub(crate) fn production_writer_host(
+        &self,
+    ) -> Result<Option<Arc<crate::AgentdProductionWriterHost>>, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        if runtime.lifecycle != AgentLifecycle::Running
+            || !runtime.app_server_ready
+            || runtime.fenced
+        {
+            return Ok(None);
+        }
+        Ok(self.production_writer_host.get().cloned())
     }
 
     pub(crate) fn attach_automation_store(
