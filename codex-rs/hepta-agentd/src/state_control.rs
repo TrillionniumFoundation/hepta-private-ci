@@ -150,6 +150,88 @@ impl AgentdState {
                     },
                 }
             }
+            crate::AgentdMethod::RunStart { snapshot } => {
+                require_run_control_ready(lifecycle, app_server_ready, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .start_run(now_ms()?, internal_run_snapshot(snapshot))
+                    .map_err(run_control_error)?;
+                AgentdPayload::AgentRunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision,
+                attachment,
+            } => {
+                require_run_control_ready(lifecycle, app_server_ready, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .attach_context(expected_revision, internal_context_attachment(attachment))
+                    .map_err(run_control_error)?;
+                AgentdPayload::AgentRunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunStatus { run_id } => {
+                require_run_control_ready(lifecycle, app_server_ready, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .run(&run_id)
+                    .map(wire_run_receipt);
+                AgentdPayload::AgentRunStatus { receipt }
+            }
+            crate::AgentdMethod::RunMarkDispatched {
+                run_id,
+                expected_revision,
+            } => {
+                require_run_control_ready(lifecycle, app_server_ready, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .mark_dispatched(&run_id, expected_revision)
+                    .map_err(run_control_error)?;
+                AgentdPayload::AgentRunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunCancel {
+                run_id,
+                expected_revision,
+            } => {
+                require_run_control_ready(lifecycle, app_server_ready, fenced)?;
+                let (disposition, receipt) = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .cancel_run(&run_id, expected_revision)
+                    .map_err(run_control_error)?;
+                AgentdPayload::AgentRunCancelReceipt(crate::AgentRunCancelReceipt {
+                    disposition: wire_cancellation_disposition(disposition),
+                    receipt: wire_run_receipt(receipt),
+                })
+            }
+            crate::AgentdMethod::RunObserveTerminal {
+                run_id,
+                expected_revision,
+                phase,
+                terminal_observed,
+            } => {
+                require_run_control_ready(lifecycle, app_server_ready, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .observe_terminal(
+                        &run_id,
+                        expected_revision,
+                        internal_run_phase(phase),
+                        terminal_observed,
+                    )
+                    .map_err(run_control_error)?;
+                AgentdPayload::AgentRunReceipt(wire_run_receipt(receipt))
+            }
             crate::AgentdMethod::Events {
                 after_cursor,
                 limit,
@@ -582,6 +664,104 @@ fn federation_snapshot(
             FederationCapabilityState::Revoked => crate::MemoryFederationCapabilityState::Revoked,
         },
     })
+}
+
+fn internal_run_snapshot(value: crate::AgentRunSnapshot) -> crate::RunSnapshot {
+    crate::RunSnapshot {
+        run_id: value.run_id,
+        request_digest: value.request_digest,
+        objective_digest: value.objective_digest,
+        body_digest: value.body_digest,
+        artifact_set_digest: value.artifact_set_digest,
+        authority_epoch: value.authority_epoch,
+        deadline_ms: value.deadline_ms,
+    }
+}
+
+fn internal_context_attachment(
+    value: crate::AgentRunContextAttachment,
+) -> crate::ContextAttachment {
+    crate::ContextAttachment {
+        run_id: value.run_id,
+        request_digest: value.request_digest,
+        objective_digest: value.objective_digest,
+        body_digest: value.body_digest,
+        artifact_set_digest: value.artifact_set_digest,
+        context_digest: value.context_digest,
+        compilation_receipt_digest: value.compilation_receipt_digest,
+    }
+}
+
+fn internal_run_phase(value: crate::AgentRunPhase) -> crate::RunPhase {
+    match value {
+        crate::AgentRunPhase::Admitted => crate::RunPhase::Admitted,
+        crate::AgentRunPhase::ContextAttached => crate::RunPhase::ContextAttached,
+        crate::AgentRunPhase::Dispatched => crate::RunPhase::Dispatched,
+        crate::AgentRunPhase::Cancelling => crate::RunPhase::Cancelling,
+        crate::AgentRunPhase::Cancelled => crate::RunPhase::Cancelled,
+        crate::AgentRunPhase::Succeeded => crate::RunPhase::Succeeded,
+        crate::AgentRunPhase::Failed => crate::RunPhase::Failed,
+        crate::AgentRunPhase::Indeterminate => crate::RunPhase::Indeterminate,
+    }
+}
+
+fn wire_run_phase(value: crate::RunPhase) -> crate::AgentRunPhase {
+    match value {
+        crate::RunPhase::Admitted => crate::AgentRunPhase::Admitted,
+        crate::RunPhase::ContextAttached => crate::AgentRunPhase::ContextAttached,
+        crate::RunPhase::Dispatched => crate::AgentRunPhase::Dispatched,
+        crate::RunPhase::Cancelling => crate::AgentRunPhase::Cancelling,
+        crate::RunPhase::Cancelled => crate::AgentRunPhase::Cancelled,
+        crate::RunPhase::Succeeded => crate::AgentRunPhase::Succeeded,
+        crate::RunPhase::Failed => crate::AgentRunPhase::Failed,
+        crate::RunPhase::Indeterminate => crate::AgentRunPhase::Indeterminate,
+    }
+}
+
+fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
+    crate::AgentRunReceipt {
+        run_id: value.run_id,
+        revision: value.revision,
+        phase: wire_run_phase(value.phase),
+        context_digest: value.context_digest,
+        compilation_receipt_digest: value.compilation_receipt_digest,
+        terminal_observed: value.terminal_observed,
+        idempotent: value.idempotent,
+    }
+}
+
+fn wire_cancellation_disposition(
+    value: crate::CancellationDisposition,
+) -> crate::AgentRunCancellationDisposition {
+    match value {
+        crate::CancellationDisposition::CancelledBeforeDispatch => {
+            crate::AgentRunCancellationDisposition::CancelledBeforeDispatch
+        }
+        crate::CancellationDisposition::CancellingAfterDispatch => {
+            crate::AgentRunCancellationDisposition::CancellingAfterDispatch
+        }
+        crate::CancellationDisposition::AlreadyTerminal => {
+            crate::AgentRunCancellationDisposition::AlreadyTerminal
+        }
+    }
+}
+
+fn run_control_error(error: crate::AgentRunError) -> AgentdError {
+    AgentdError::Protocol(format!("agent run control rejected request: {error:?}"))
+}
+
+fn require_run_control_ready(
+    lifecycle: AgentLifecycle,
+    app_server_ready: bool,
+    fenced: bool,
+) -> Result<(), AgentdError> {
+    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced {
+        Ok(())
+    } else {
+        Err(AgentdError::Protocol(
+            "agent run control is unavailable until this Agent generation is ready".to_string(),
+        ))
+    }
 }
 
 fn require_automation_ready(
