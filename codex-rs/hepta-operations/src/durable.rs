@@ -253,12 +253,17 @@ impl DurableOperationStore {
             if record.state == target {
                 return Ok(record.state.clone());
             }
-            match &record.state {
-                OperationState::Dispatched { .. } | OperationState::Indeterminate { .. } => {
-                    Ok(target)
-                }
-                state if state.is_terminal() => Err(OperationError::Terminal),
-                state => Err(OperationError::InvalidTransition {
+            match (&record.state, outcome) {
+                (
+                    OperationState::Dispatched { .. } | OperationState::Indeterminate { .. },
+                    _,
+                ) => Ok(target),
+                (
+                    OperationState::Pending | OperationState::Authorized { .. },
+                    ReconciliationOutcome::NotApplied,
+                ) => Ok(target),
+                (state, _) if state.is_terminal() => Err(OperationError::Terminal),
+                (state, _) => Err(OperationError::InvalidTransition {
                     from: state.label(),
                     to: "terminal_observation",
                 }),
