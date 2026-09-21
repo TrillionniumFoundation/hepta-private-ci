@@ -83,12 +83,7 @@ fn graph() -> PromptFactorProjectionV1 {
     .expect("factor graph")
 }
 
-fn candidate(
-    name: &str,
-    factor_id: &str,
-    gain: i64,
-    registry_digest: Digest32,
-) -> PromptCandidate {
+fn candidate(name: &str, factor_id: &str, gain: i64, registry_digest: Digest32) -> PromptCandidate {
     PromptCandidate {
         candidate_id: id(name),
         factor_id: id(factor_id),
@@ -154,15 +149,9 @@ fn candidate_factor_missing_from_complete_graph_fails_closed() {
         registry_snapshot_digest: registry_digest,
         budget: 1,
         maximum_selected: 1,
-        candidates: vec![candidate(
-            "candidate:x",
-            "factor:x",
-            10,
-            registry_digest,
-        )],
+        candidates: vec![candidate("candidate:x", "factor:x", 10, registry_digest)],
     };
-    let error =
-        optimize_with_factor_graph(request, &factor_graph).expect_err("missing factor");
+    let error = optimize_with_factor_graph(request, &factor_graph).expect_err("missing factor");
     assert!(
         matches!(&error, Error::FactorGraph(message) if message.contains("factor:x")),
         "unexpected error: {error:?}"
@@ -185,14 +174,12 @@ fn registry_snapshot_drift_fails_closed_before_selection() {
             factor_graph.registry_snapshot_digest(),
         )],
     };
-    let error =
-        optimize_with_factor_graph(request, &factor_graph).expect_err("stale registry");
+    let error = optimize_with_factor_graph(request, &factor_graph).expect_err("stale registry");
     assert!(
         matches!(&error, Error::FactorGraph(message) if message.contains("registry snapshot")),
         "unexpected error: {error:?}"
     );
 }
-
 
 #[test]
 fn graph_substitutes_are_hard_redundancy_constraints() {
