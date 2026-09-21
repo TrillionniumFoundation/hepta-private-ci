@@ -27,7 +27,7 @@
       "operation": "build_targets",
       "nativeSymbol": "build_targets",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_only_unbound_product_calls_forbidden",
       "authority": "none",
       "tests": [
         {
@@ -120,7 +120,7 @@
       "operation": "fit_tabular_operator",
       "nativeSymbol": "fit_tabular_operator",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/learned.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_only_unbound_product_calls_forbidden",
       "authority": "none",
       "tests": [
         {
@@ -141,7 +141,7 @@
       "operation": "fit_tabular_operator_strict_v2",
       "nativeSymbol": "fit_tabular_operator_strict_v2",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_only_unbound_product_calls_forbidden",
       "authority": "none",
       "tests": [
         {
@@ -158,7 +158,7 @@
       "operation": "encode_tabular_payload_v1",
       "nativeSymbol": "encode_tabular_payload_v1",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_offline_shadow_product_composed",
       "authority": "none",
       "tests": [
         {
@@ -202,7 +202,7 @@
       "operation": "fit_transition_model",
       "nativeSymbol": "fit_transition_model",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_only_unbound_product_calls_forbidden",
       "authority": "none",
       "tests": [
         {
@@ -322,7 +322,7 @@
           "symbol": "op_07_bound_fit_rejects_detached_digest_or_row_set"
         }
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_offline_shadow_product_composed",
       "authority": "none",
       "sourcePathExists": true,
       "designOperation": "verify_operator_dataset_v2",
@@ -360,7 +360,7 @@
           "symbol": "op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows"
         }
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_offline_shadow_product_composed",
       "authority": "none",
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator_bound_v2",
