@@ -9,6 +9,7 @@ use codex_hepta_automation::AutomationStore;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_types::Digest32;
@@ -309,8 +310,17 @@ impl AgentdState {
     /// the sole daemon-owned run coordinator.
     pub(crate) fn start_current_run_start(
         &self,
-        record: &RunStartRecordV1,
+        journal: &DurableRunStartJournal,
+        run_id: &StableId,
     ) -> Result<RunReceipt, AgentdError> {
+        let record = journal
+            .get(run_id)
+            .map_err(|error| {
+                AgentdError::Protocol(format!("durable run-start journal rejected read: {error}"))
+            })?
+            .ok_or_else(|| {
+                AgentdError::Protocol(format!("durable run-start {run_id} is not published"))
+            })?;
         let now_ms = self.require_current_run_start(record)?;
         // Re-read both mutable authority domains immediately before mutation.
         // This is intentionally redundant: a trust/fleet change during the
