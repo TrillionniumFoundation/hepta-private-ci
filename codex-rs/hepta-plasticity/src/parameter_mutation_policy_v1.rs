@@ -168,7 +168,7 @@ pub fn authorize_parameter_mutation_v1(
 fn validate_context(
     selected_artifact_digest: Digest32,
     window: &ProposalWindowV2,
-    rules: &mut Vec<ParameterMutationRuleV1>,
+    rules: &mut [ParameterMutationRuleV1],
 ) -> Result<(), ParameterMutationPolicyErrorV1> {
     if selected_artifact_digest.is_zero() {
         return Err(ParameterMutationPolicyErrorV1::EmptyArtifact);
