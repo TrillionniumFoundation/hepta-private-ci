@@ -2,6 +2,7 @@ use super::*;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::build_snapshot;
 use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
