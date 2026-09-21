@@ -10,7 +10,7 @@
   "current": {
     "sourceRootPresent": true,
     "productionImplementation": false,
-    "productCallerState": "agentd_named_learning_parameter_and_topology_producer_source_composed_via_state_held_handle_not_target_host_executed_or_qualified",
+    "productCallerState": "agentd_process_bootstrap_and_named_learning_producer_source_composed_self_iteration_trigger_not_product_composed_or_target_host_qualified",
     "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved",
     "claimBoundary": {
       "nativeSourceMappingComplete": true,
@@ -109,6 +109,14 @@
       "tests": [
         "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::protected_surface_fails_closed",
         "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::canonical_mutation_grammar_digest_is_mandatory_and_bound"
+      ]
+    },
+    {
+      "operation": "agentd_process_bootstrap",
+      "state": "source_implemented_child_process_reconstructs_owner_native_stores_from_independent_receipts_not_target_host_qualified",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs::supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descriptor"
       ]
     },
     {
@@ -268,6 +276,7 @@
   ],
   "remainingToTarget": {
     "repositoryControlledGaps": [
+      "Compose a real non-test control.engineering/self-iteration coordinator that submits frozen, independently evaluated next-generation parameter/topology requests through AgentdLearningPlasticityProducerV1; the repository now has process bootstrap, the named producer and lifetime E2E, but IterationEnvelopeV1 still has no production caller.",
       "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head."
     ],
     "externalEvidenceGates": [
