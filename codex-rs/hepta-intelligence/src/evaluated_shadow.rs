@@ -339,8 +339,7 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
         request.dataset.snapshot.dataset_digest,
         request.candidate_evidence.payload_digest,
     )?;
-    let decision_payload =
-        decision_signing_payload_v2(&production_decision).map_err(E::Ledger)?;
+    let decision_payload = decision_signing_payload_v2(&production_decision).map_err(E::Ledger)?;
     let generator = ledger
         .verifier()
         .verify(
