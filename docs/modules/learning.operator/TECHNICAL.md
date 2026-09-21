@@ -175,7 +175,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Offline/reference learning library. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
+Offline/reference learning library. Qualification training first verifies a self-describing `DatasetSnapshotReceiptV3` and exact source-record evidence set, then fits through opaque verified inputs. Applicability and regularity qualification reuse the ledger-owned signed-evidence verifier with generator/evaluator role separation. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence. A real Agentd `PinnedCognitiveRanker` consumes an externally selected pinned tabular artifact at the cognitive read boundary, but the default training/evaluation/selection loop remains uncomposed.
 
 Current operating and state-format references:
 
@@ -187,7 +187,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs); named case: `op_05_tabular_operator_fits_complete_grid_deterministically`.
+- [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs); named cases include `op_05_tabular_operator_fits_complete_grid_deterministically` and `op_05_default_fit_rejects_relabelled_duplicate_evidence`.
+- [codex-rs/hepta-bellman-operator/src/world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/world_model_tests.rs); named case: `op_04_world_model_rejects_relabelled_duplicate_evidence`.
+- [codex-rs/hepta-bellman-operator/src/authenticated_tests.rs](../../../codex-rs/hepta-bellman-operator/src/authenticated_tests.rs); signed evaluator and controller-separation cases.
+- [codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs](../../../codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs); exact frozen-dataset binding cases.
+- [codex-rs/hepta-bellman-operator/src/loaded_tests.rs](../../../codex-rs/hepta-bellman-operator/src/loaded_tests.rs); independent pin, corruption and separate-process reload/rollback cases.
 - [codex-rs/hepta-bellman-operator/src/lib_tests.rs](../../../codex-rs/hepta-bellman-operator/src/lib_tests.rs); named case: `deterministic_and_canonical`.
 
 In `codex-rs`, run `just test -p codex-hepta-bellman-operator`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.operator.md) separately labels target acceptance designs.
