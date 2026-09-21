@@ -77,6 +77,9 @@ pub struct UnlearningLineageRequestV1 {
     pub lineage_id: StableId,
     pub source_record_id: StableId,
     pub dataset_snapshot_id: StableId,
+    pub dataset_digest: Digest32,
+    /// Cross-owner handoff identity. learning.artifacts remains authoritative
+    /// for proving dataset -> artifact membership and descendant revocation.
     pub artifact_id: StableId,
     pub reason_digest: Digest32,
 }
@@ -85,7 +88,9 @@ pub struct UnlearningLineageRequestV1 {
 pub struct UnlearningLineageReceiptV1 {
     pub lineage_id: StableId,
     pub source_record_id: StableId,
+    pub source_event_digest: Digest32,
     pub dataset_snapshot_id: StableId,
+    pub dataset_digest: Digest32,
     pub artifact_id: StableId,
     pub append: AppendReceipt,
 }
@@ -445,9 +450,40 @@ impl LedgerWriter {
         &mut self,
         expected_predecessor: Digest32,
         request: UnlearningLineageRequestV1,
+        dataset: &DatasetSnapshotReceiptV3,
         evidence: &SignedLearningEvidenceV1,
         now: u64,
     ) -> Result<UnlearningLineageReceiptV1, ProductionLedgerError> {
+        verify_dataset_snapshot_receipt_v3(dataset, now)?;
+        if request.dataset_snapshot_id != dataset.snapshot.snapshot_id
+            || request.dataset_digest != dataset.snapshot.dataset_digest
+            || dataset.snapshot.objective_digest != self.trust.verifier().objective_digest()
+        {
+            return Err(ProductionLedgerError::Binding(
+                "unlearning dataset identity or objective",
+            ));
+        }
+
+        let snapshot = self.backend.snapshot()?;
+        let source = snapshot
+            .records()
+            .iter()
+            .find(|record| record.event.record_id() == &request.source_record_id)
+            .ok_or_else(|| {
+                ProductionLedgerError::Ledger(LedgerError::TargetNotFound(
+                    request.source_record_id.to_string(),
+                ))
+            })?;
+        if !dataset
+            .snapshot
+            .source_record_digests
+            .contains(&source.event_digest)
+        {
+            return Err(ProductionLedgerError::Binding(
+                "unlearning source not in dataset",
+            ));
+        }
+
         let payload = unlearning_signing_payload_v1(&request);
         let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::UnlearningAuthority,
@@ -460,7 +496,9 @@ impl LedgerWriter {
             record_id: request.record_id,
             lineage_id: request.lineage_id.clone(),
             source_record_id: request.source_record_id.clone(),
+            source_event_digest: source.event_digest,
             dataset_snapshot_id: request.dataset_snapshot_id.clone(),
+            dataset_digest: request.dataset_digest,
             artifact_id: request.artifact_id.clone(),
             authority_id: verified.principal().principal_id.clone(),
             reason_digest: request.reason_digest,
@@ -470,7 +508,9 @@ impl LedgerWriter {
         Ok(UnlearningLineageReceiptV1 {
             lineage_id: request.lineage_id,
             source_record_id: request.source_record_id,
+            source_event_digest: source.event_digest,
             dataset_snapshot_id: request.dataset_snapshot_id,
+            dataset_digest: request.dataset_digest,
             artifact_id: request.artifact_id,
             append,
         })
@@ -689,6 +729,7 @@ pub fn unlearning_signing_payload_v1(request: &UnlearningLineageRequestV1) -> Ve
     push_id(&mut bytes, &request.lineage_id);
     push_id(&mut bytes, &request.source_record_id);
     push_id(&mut bytes, &request.dataset_snapshot_id);
+    bytes.extend_from_slice(request.dataset_digest.as_array());
     push_id(&mut bytes, &request.artifact_id);
     bytes.extend_from_slice(request.reason_digest.as_array());
     bytes
@@ -874,6 +915,7 @@ fn derive_dataset(
     let mut outcome_watermark = 0_u64;
     let mut pending_outcomes = 0_u32;
     let mut censored_outcomes = 0_u32;
+    let mut outcome_episodes = BTreeSet::new();
 
     for record in &active {
         match &record.event {
@@ -882,6 +924,7 @@ fn derive_dataset(
             }
             LedgerEvent::AuthenticatedOutcomeV2(value) if episodes.contains(&value.episode_id) => {
                 source_record_digests.push(record.event_digest);
+                outcome_episodes.insert(value.episode_id.clone());
                 outcome_watermark = outcome_watermark.max(value.latest_observable_at);
                 match value.terminality {
                     AuthenticatedOutcomeTerminality::Pending => {
@@ -903,6 +946,16 @@ fn derive_dataset(
             _ => {}
         }
     }
+
+    let missing_outcomes = episodes
+        .len()
+        .checked_sub(outcome_episodes.len())
+        .ok_or(ProductionLedgerError::Binding("outcome accounting"))?;
+    let missing_outcomes =
+        u32::try_from(missing_outcomes).map_err(|_| ProductionLedgerError::Binding("pending count"))?;
+    pending_outcomes = pending_outcomes
+        .checked_add(missing_outcomes)
+        .ok_or(ProductionLedgerError::Binding("pending count"))?;
 
     for record in snapshot.records() {
         match &record.event {
