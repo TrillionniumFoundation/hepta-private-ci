@@ -764,6 +764,50 @@ mod tests {
     }
 
     #[test]
+    fn run_lifecycle_wire_is_strict_bounded_and_keeps_owner_time_out_of_request() {
+        let snapshot = AgentRunSnapshot {
+            run_id: "run.product.1".to_string(),
+            request_digest: "1".repeat(64),
+            objective_digest: "2".repeat(64),
+            body_digest: "3".repeat(64),
+            artifact_set_digest: "4".repeat(64),
+            authority_epoch: 7,
+            deadline_ms: 9_999_999,
+        };
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 17,
+            spawn_generation: 3,
+            method: AgentdMethod::RunStart {
+                snapshot: snapshot.clone(),
+            },
+        };
+        let bytes = serde_json::to_vec(&request).expect("serialize run start");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        let decoded: AgentdRequest = serde_json::from_slice(&bytes).expect("decode run start");
+        assert_eq!(decoded, request);
+        let json = String::from_utf8(bytes).expect("utf8");
+        assert!(!json.contains("now_ms"));
+
+        let receipt = AgentRunReceipt {
+            run_id: snapshot.run_id,
+            revision: 2,
+            phase: AgentRunPhase::ContextAttached,
+            context_digest: Some("5".repeat(64)),
+            compilation_receipt_digest: Some("6".repeat(64)),
+            terminal_observed: false,
+            idempotent: false,
+        };
+        let payload = AgentdPayload::AgentRunReceipt(receipt.clone());
+        let payload_bytes = serde_json::to_vec(&payload).expect("serialize run receipt");
+        assert!(payload_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdPayload>(&payload_bytes).expect("decode run receipt"),
+            payload
+        );
+    }
+
+    #[test]
     fn host_turn_authority_binding_is_strict_and_fail_closed() {
         let owner = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("owner id");
         let binding = HostTurnAuthorityBinding::new(
