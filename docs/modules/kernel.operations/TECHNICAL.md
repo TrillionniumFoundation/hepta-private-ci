@@ -49,7 +49,8 @@ The exclusive root owns the canonical `OperationIntentV1` semantics and determin
 | final-use CognitiveStore destination | implemented |
 | second current-main OperationIntentV1 consumer | implemented in automation.taskflow |
 | Agentd final-use host primitive | source-composed |
-| default daemon enrollment | not activated |
+| Agentd daemon lifecycle composition | source-composed through explicit host injection |
+| external authority/grant enrollment | not activated; no default authority is manufactured |
 | exact-head / synthetic-merge execution | pending current candidate CI |
 | independent acceptance / release | false |
 
@@ -354,10 +355,11 @@ This receipt is source-navigation evidence for the current durable candidate; ru
 | final-use dispatch | `ProductionFinalUseOutboxDispatcher::dispatch` | `codex-rs/hepta-memory/src/production_writer.rs` | final-use tests |
 | destination CAS/observer | `CognitiveSourceOutboxTarget` | `codex-rs/hepta-memory/src/production_cognitive_source_target.rs` | predecessor/lost-ack tests |
 | Agentd host primitive | `AgentdProductionWriterHost` | `codex-rs/hepta-agentd/src/production_writer_host.rs` | explicit final-use/grant composition |
+| Agentd runtime composition | `AgentdConfig::with_production_operations` + `runtime::run` | `codex-rs/hepta-agentd/src/config.rs`, `runtime.rs` | lifecycle task cleanup/fail-closed default |
 | second current-main consumer | `AutomationStore::dispatch_authorized_effect` | `codex-rs/hepta-automation/src/authorized_effect.rs` | automation authorized-effect tests |
 | reference ledger | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | reference oracle |
 | reference outbox | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | reference oracle |
 
 - Exact mapped source identity is verified through `path_blob_manifest_v1`.
 - `productionImplementation=true` means repository source implementation exists; it does not mean product execution, activation, acceptance or release.
-- Remaining repository gates are current exact-head/synthetic-merge success, current-daemon lifecycle enrollment, remaining destinations and long-lived segment/checkpoint compaction.
+- Remaining repository gates are current exact-head/synthetic-merge success, remaining destination adapters and long-lived segment/checkpoint compaction. External production authority/grant enrollment remains an activation gate and is not manufactured by Agentd.
