@@ -157,6 +157,23 @@ impl AgentdState {
     where
         T: Any + Send + Sync + 'static,
     {
+        self.attach_runtime_module_with_interface(module_id, effect_scope, &[], &[], attachment)
+    }
+
+    /// Attach owner-validated state together with the real, versioned port
+    /// contract. New module constructors can use this boundary without adding
+    /// special cases to the task scheduler or another topology registry.
+    pub(crate) fn attach_runtime_module_with_interface<T>(
+        &self,
+        module_id: &str,
+        effect_scope: &[&str],
+        input_ports: &[&str],
+        output_ports: &[&str],
+        attachment: Arc<T>,
+    ) -> Result<(), AgentdError>
+    where
+        T: Any + Send + Sync + 'static,
+    {
         let stable_id = Self::module_id(module_id)?;
         let mut attachments = self.attachments.lock().map_err(poisoned_state)?;
         if attachments.contains(&stable_id) {
@@ -164,7 +181,7 @@ impl AgentdState {
                 "runtime module {module_id} was attached more than once"
             )));
         }
-        self.activate_builtin_runtime_module(module_id, effect_scope)?;
+        self.activate_builtin_runtime_module(module_id, effect_scope, input_ports, output_ports)?;
         attachments.insert(stable_id, attachment)
     }
 
@@ -228,7 +245,16 @@ impl AgentdState {
                 "automation store owner does not match agentd identity".to_string(),
             ));
         }
-        self.attach_runtime_module(MODULE_AUTOMATION, Arc::new(store))
+        // Host-side contract of the existing AutomationTaskDraft admission and
+        // ThreadQueueAdd adapter. The compiled service declares its requirement
+        // independently and must match before its constructor is scheduled.
+        self.attach_runtime_module_with_interface(
+            MODULE_AUTOMATION,
+            &[],
+            &["automation.task.v1"],
+            &["codex.thread.queue.add.v1"],
+            Arc::new(store),
+        )
     }
 
     pub(crate) fn automation_store(&self) -> Result<Option<Arc<AutomationStore>>, AgentdError> {
@@ -298,6 +324,8 @@ impl AgentdState {
         &self,
         module_id: &str,
         effect_scope: &[&str],
+        input_ports: &[&str],
+        output_ports: &[&str],
     ) -> Result<(), AgentdError> {
         let row = self.runtime_catalog.module(module_id).ok_or_else(|| {
             AgentdError::Protocol(format!(
@@ -330,6 +358,14 @@ impl AgentdState {
                 StableId::new(*value).map_err(|error| AgentdError::Protocol(error.to_string()))
             })
             .collect::<Result<BTreeSet<_>, _>>()?;
+        let input_ports = input_ports
+            .iter()
+            .map(|value| Self::module_id(value))
+            .collect::<Result<Vec<_>, _>>()?;
+        let output_ports = output_ports
+            .iter()
+            .map(|value| Self::module_id(value))
+            .collect::<Result<Vec<_>, _>>()?;
         let state_class = module_state::parse(&row.state)?;
         // The executable is observed once per process, not inferred from a
         // catalog row. This binds bytes and module semantics, NOT independent
@@ -349,8 +385,8 @@ impl AgentdState {
             rollback_predecessor_digest: Digest32::ZERO,
             state_class,
             dependencies,
-            input_ports: Vec::new(),
-            output_ports: Vec::new(),
+            input_ports,
+            output_ports,
             authoritative_domains,
             effect_scope,
         };

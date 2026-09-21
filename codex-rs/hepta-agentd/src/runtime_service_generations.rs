@@ -7,6 +7,8 @@
 
 use std::future::Future;
 
+use codex_hepta_control_plane::ActiveRuntimeModuleV1;
+use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_types::Generation;
 use tokio_util::sync::CancellationToken;
 
@@ -29,6 +31,59 @@ impl RuntimeTasks {
             ));
         }
         Ok(())
+    }
+
+    /// Bind a compiled service to the composition owner's current module ABI.
+    ///
+    /// In particular, port order and versioned port identities must agree before
+    /// the factory can execute. Reuses the existing module ABI and task host;
+    /// there is no second registry or independently writable service manifest.
+    /// The owner must validate its concrete Rust configuration before calling.
+    /// These public DTOs are not capabilities: this compares trusted composition
+    /// inputs, not independent selection, writer handoff or permission to act.
+    pub fn spawn_bound_optional_service<F, S, Q, R>(
+        &mut self,
+        selected: &ActiveRuntimeModuleV1,
+        implementation: &RuntimeModuleAbiV1,
+        start: S,
+        quarantine: Q,
+        retire: R,
+    ) -> Result<(), AgentdError>
+    where
+        F: Future<Output = Result<(), AgentdError>> + Send + 'static,
+        S: FnOnce(CancellationToken) -> F + Send + 'static,
+        Q: FnOnce() -> Result<(), AgentdError> + Send + 'static,
+        R: FnOnce() -> Result<(), AgentdError> + Send + 'static,
+    {
+        implementation
+            .validate()
+            .map_err(|error| AgentdError::Protocol(format!("invalid service ABI: {error}")))?;
+        let compiled = ActiveRuntimeModuleV1 {
+            module_id: implementation.module_id.clone(),
+            generation: implementation.generation,
+            implementation_digest: implementation.implementation_digest,
+            candidate_artifact_digest: implementation.candidate_artifact_digest,
+            owner_id: implementation.owner_id.clone(),
+            state_class: implementation.state_class,
+            dependencies: implementation.dependencies.clone(),
+            input_ports: implementation.input_ports.clone(),
+            output_ports: implementation.output_ports.clone(),
+            authoritative_domains: implementation.authoritative_domains.clone(),
+            effect_scope: implementation.effect_scope.clone(),
+        };
+        if selected != &compiled {
+            return Err(AgentdError::Protocol(
+                "compiled service does not match the selected module ABI".to_string(),
+            ));
+        }
+        self.spawn_optional_service_generation(
+            implementation.module_id.as_str(),
+            implementation.generation,
+            implementation.predecessor_generation,
+            start,
+            quarantine,
+            retire,
+        )
     }
 
     /// Start a separately admitted generation through the SAME task host.
@@ -124,3 +179,7 @@ mod tests;
 #[cfg(test)]
 #[path = "runtime_service_writer_rotation_tests.rs"]
 mod writer_tests;
+
+#[cfg(test)]
+#[path = "runtime_service_abi_tests.rs"]
+mod abi_tests;

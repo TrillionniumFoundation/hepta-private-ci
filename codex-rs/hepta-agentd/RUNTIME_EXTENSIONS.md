@@ -17,6 +17,43 @@ SQLite write transaction as the effect. Historical dedupe receipt replay remains
 read-only after retirement. Uncommitted work cannot acquire a receipt from a
 rejected old writer.
 
+## Binding a real constructor to the module ABI
+
+`spawn_bound_optional_service(selected, implementation, factory, quarantine,
+retire)` connects the existing `RuntimeModuleAbiV1` and
+`ActiveRuntimeModuleV1` to this same task host. It validates the implementation
+ABI and compares the selected module identity, generation, implementation and
+artifact digests, owner, state class, dependencies, ordered versioned ports,
+durable domains and effect scope before scheduling a factory. Rejection cannot
+start a task or consume a service identity slot. Successful admission continues
+through the existing exact-predecessor generation and acknowledged-retirement
+checks; this API does not bypass them.
+
+The production TaskFlow constructor uses this boundary. Its concrete
+`AutomationStore` configuration must match the Agent identity and an attached
+owner must be present in the current runtime topology. The host attachment
+advertises `automation.task.v1` and `codex.thread.queue.add.v1`; the compiled
+scheduler declares those requirements independently rather than copying the
+selected port vectors. A mismatched port version is rejected before its loop can
+start. These names identify the in-process `AutomationTaskDraft` and
+`ThreadQueueAdd` adapter contract, not a newly negotiated remote protocol.
+An unavailable optional owner creates no idle placeholder task. Supplying no
+store while the owner is attached is rejected as inconsistent configuration.
+
+`AgentdState::attach_runtime_module_with_interface` keeps the concrete owner
+attachment and its port-bearing ABI in the existing registry. Module constructors
+can use that boundary without introducing a second registry or changing the core
+task supervision algorithm. Other legacy attachments are not silently advertised
+as having a versioned interface; they retain their existing empty port vectors
+until their own constructors provide real contracts.
+
+These APIs accept trusted compiled product code. Public ABI values are not
+capabilities or independently authenticated selection tokens. The module owner
+validates its concrete configuration and current store state; the Supervisor and
+durable owners retain selection, migration, writer-handoff and restart duties.
+An ABI comparison does not isolate hostile code, authorize an external effect,
+prove independent build provenance or establish cross-schema compatibility.
+
 ## Repeated replacement and capacity
 
 Legacy names remain single-use. New long-lived composition can use
@@ -58,9 +95,10 @@ On Linux `/proc/self/exe` names the loaded image, including after unlink or path
 replacement. Other targets explicitly report `ExecutablePath`, a weaker
 observation that must not be treated as a kernel-attested loaded image. Neither
 kind authenticates build provenance, independent review, selection or release.
-Bootstrap's input/output port vectors still need concrete, versioned owner-port
-bindings before they can be advertised as a general hot-replacement ABI. An
-executable hash alone is not protocol compatibility.
+Concrete versioned ports are now connected for the TaskFlow constructor described
+above. Other module constructors still need their own interface bindings before
+they can be advertised as a general hot-replacement ABI. An executable hash alone
+is not protocol compatibility.
 
 ## Running-service regressions
 
@@ -69,6 +107,8 @@ From the repository root:
 ```sh
 cargo test --locked --manifest-path codex-rs/Cargo.toml \
   -p codex-hepta-agentd --lib runtime_tasks::service_generations -- --nocapture
+cargo test --locked --manifest-path codex-rs/Cargo.toml \
+  -p codex-hepta-agentd --lib automation::service_tests -- --nocapture
 cargo test --locked --manifest-path codex-rs/Cargo.toml \
   -p codex-hepta-agentd --test optional_module_restart forty_first_service -- --nocapture
 cargo test --locked --manifest-path codex-rs/Cargo.toml \
@@ -83,6 +123,11 @@ stale and unversioned requests, failed callbacks, quarantined predecessors and
 unacknowledged drains. Its SQLite test runs 256 service generations through the
 public host and the real timer owner, checks old-writer rejection at each handoff,
 retains one original operation receipt and reopens the durably retired owner.
+The ABI sub-suite rejects incompatible ports, owner, generation, artifact,
+authoritative domains and effects before any factory starts, and defines a
+512-generation replacement regression through the ABI-bound task entry point.
+The TaskFlow service tests exercise its production constructor and actual SQLite
+owner, including cooperative drain and uncertain-dispatch rejection.
 
 The existing process test starts a forty-first optional service using the same
 public host, executes real SQLite schedule mutations, injects a post-commit task
@@ -93,7 +138,8 @@ Retirement survives process restart and rejects new schedule effects. Required
 sibling services exchange real messages before and after lifecycle changes.
 
 The forty required services in that fixture are bounded echo services, not forty
-Codex sessions. Neither suite establishes production App Server integration,
-arbitrary cross-schema migration, multi-host handoff, target-host capacity,
-physical-effect completion, independent credential custody or future-window
-learning efficacy. No command definition or test source is a test-pass receipt.
+Codex sessions. These suites do not establish complete production App Server
+behavior, arbitrary cross-schema migration, multi-host handoff, target-host
+capacity, physical-effect completion, independent credential custody or
+future-window learning efficacy. No command definition or test source is a
+test-pass receipt.

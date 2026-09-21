@@ -9,7 +9,10 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_control_plane::RuntimeModuleAbiV1;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
@@ -37,18 +40,53 @@ pub(crate) fn spawn_automation_service(
         ));
     }
     state.refresh_generation()?;
+    if store.is_none() {
+        if state.automation_is_available()? {
+            return Err(AgentdError::Protocol(
+                "attached automation requires its concrete owner configuration".to_string(),
+            ));
+        }
+        // An unavailable optional module is absent, not an idle task advertised
+        // as a successful module construction. Core tasks can still serve.
+        return Ok(());
+    }
     let generation = Generation::new(identity.spawn_generation)
         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+    let selected = state
+        .runtime_topology_snapshot()?
+        .active
+        .into_iter()
+        .find(|module| module.module_id.as_str() == "automation.taskflow")
+        .ok_or_else(|| AgentdError::Protocol("automation owner is not attached".to_string()))?;
+    let implementation = RuntimeModuleAbiV1 {
+        module_id: StableId::new("automation.taskflow")
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?,
+        owner_id: selected.owner_id.clone(),
+        generation,
+        implementation_digest: selected.implementation_digest,
+        candidate_artifact_digest: selected.candidate_artifact_digest,
+        predecessor_generation: None,
+        rollback_predecessor_digest: Digest32::ZERO,
+        state_class: selected.state_class,
+        dependencies: selected.dependencies.clone(),
+        // Requirements of this compiled scheduler, not a copy of the selected
+        // ports. A host offering a different version is rejected before spawn.
+        input_ports: vec![StableId::new("automation.task.v1")
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?],
+        output_ports: vec![StableId::new("codex.thread.queue.add.v1")
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?],
+        authoritative_domains: selected.authoritative_domains.clone(),
+        effect_scope: selected.effect_scope.clone(),
+    };
     // This acknowledgement is private to the worker and its retirement
     // callback. A caller cannot submit a boolean as durable drain evidence.
     let drained = Arc::new(AtomicBool::new(false));
     let worker_drained = Arc::clone(&drained);
     let quarantine_state = Arc::clone(&state);
     let retirement_state = Arc::clone(&state);
-    tasks.spawn_optional_service_generation(
-        "automation.taskflow",
-        generation,
-        None,
+    tasks.spawn_bound_optional_service(
+        &selected,
+        &implementation,
         move |service_cancellation| async move {
             let owner = store.clone();
             match store {
