@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "61f4fe0d7eeb22bb713e121beef7f7eb3bccc667",
+    "tree": "18e1076a1b7245fe454318838e4521f1af27f108"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -97,7 +97,7 @@
     "codex-rs/hepta-memory/src/qualified_compact_store.rs::CognitiveStore::gc_revoked_qualified_compact_payload",
     "codex-rs/hepta-memory/migrations/0011_qualified_compact_checkpoints.sql"
   ],
-  "sourceBaseSemantics": "tracked documentation generation base; CI emits exact-head implementation/test evidence at source and synthetic-merge heads",
+  "sourceBaseSemantics": "candidate_or_exact_observation_v1: sourceBase equals current candidate when possible; otherwise it equals observedAtHead and all observedSourcePaths must remain byte-identical through candidate HEAD. Exact-head CI evidence is execution evidence, not a self-referential tracked-map commit claim.",
   "integrationComposition": {
     "runtimeBootstrap": {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
@@ -109,5 +109,34 @@
       "symbol": "AgentdProductionWriterHost::acquire_current_snapshot",
       "state": "host_configured_final_use"
     }
-  }
+  },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "61f4fe0d7eeb22bb713e121beef7f7eb3bccc667",
+    "tree": "18e1076a1b7245fe454318838e4521f1af27f108",
+    "interpretation": "exact compact.engine checkpoint-subsystem owner-source observation after current-main rebase, canonical checkpoint unification, authenticated tokenizer/evaluator trust, payload owner/resolver lifecycle, current/rollback re-admission, Agentd product composition, and exact cross-owner persistence integration; later commits may update documentation/projection truth only, and every declared observed source path must remain byte-unchanged through the verified candidate"
+  },
+  "observedSourcePaths": [
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/Cargo.toml",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "codex-rs/hepta-agentd/src/production_writer_host_tests.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
+    "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+    "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs",
+    "codex-rs/hepta-compact-engine/Cargo.toml",
+    "codex-rs/hepta-compact-engine/src/lib.rs",
+    "codex-rs/hepta-compact-engine/src/qualified.rs",
+    "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+    "codex-rs/hepta-memory/migrations/0011_qualified_compact_checkpoints.sql",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
+    "codex-rs/hepta-memory/src/qualified_compact_store.rs",
+    "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs"
+  ]
 }
