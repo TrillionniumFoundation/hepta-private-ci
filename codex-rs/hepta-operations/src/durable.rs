@@ -57,6 +57,15 @@ impl From<OperationError> for DurableOperationError {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OperationContextV1 {
+    pub operation_id: StableId,
+    pub action_id: StableId,
+    pub resource_id: StableId,
+    pub expected_revision: Revision,
+    pub semantic_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DurableOutboxState {
     Pending,
     Claimed {
@@ -256,6 +265,72 @@ impl DurableOperationStore {
             }
         })
         .await
+    }
+
+    pub async fn bind_context(
+        &self,
+        context: &OperationContextV1,
+    ) -> Result<(), DurableOperationError> {
+        if context.semantic_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("operation context").into());
+        }
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let operation = load_operation_tx(&mut transaction, &context.operation_id)
+            .await?
+            .ok_or_else(|| OperationError::Missing(context.operation_id.clone()))?;
+        if operation.key.payload_digest != context.semantic_digest {
+            return Err(OperationError::Conflict(context.operation_id.clone()).into());
+        }
+        let existing = sqlx::query(
+            "SELECT action_id,resource_id,expected_revision,semantic_digest
+             FROM operation_context WHERE operation_id=?",
+        )
+        .bind(context.operation_id.as_str())
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if let Some(row) = existing {
+            let decoded = decode_context_row(&context.operation_id, row)?;
+            if decoded != *context {
+                return Err(OperationError::Conflict(context.operation_id.clone()).into());
+            }
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(());
+        }
+        sqlx::query(
+            "INSERT INTO operation_context
+             (operation_id,action_id,resource_id,expected_revision,semantic_digest)
+             VALUES (?,?,?,?,?)",
+        )
+        .bind(context.operation_id.as_str())
+        .bind(context.action_id.as_str())
+        .bind(context.resource_id.as_str())
+        .bind(to_i64(context.expected_revision.get(), "expected revision")?)
+        .bind(context.semantic_digest.to_string())
+        .execute(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(())
+    }
+
+    pub async fn get_context(
+        &self,
+        operation_id: &StableId,
+    ) -> Result<Option<OperationContextV1>, DurableOperationError> {
+        let row = sqlx::query(
+            "SELECT action_id,resource_id,expected_revision,semantic_digest
+             FROM operation_context WHERE operation_id=?",
+        )
+        .bind(operation_id.as_str())
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(unavailable)?;
+        row.map(|row| decode_context_row(operation_id, row)).transpose()
     }
 
     pub async fn get(
@@ -753,6 +828,30 @@ fn decode_operation_row(
     })
 }
 
+fn decode_context_row(
+    operation_id: &StableId,
+    row: sqlx::sqlite::SqliteRow,
+) -> Result<OperationContextV1, DurableOperationError> {
+    Ok(OperationContextV1 {
+        operation_id: operation_id.clone(),
+        action_id: StableId::new(
+            row.try_get::<String, _>("action_id").map_err(unavailable)?,
+        )
+        .map_err(invalid)?,
+        resource_id: StableId::new(
+            row.try_get::<String, _>("resource_id").map_err(unavailable)?,
+        )
+        .map_err(invalid)?,
+        expected_revision: revision(
+            row.try_get::<i64, _>("expected_revision").map_err(unavailable)?,
+        )?,
+        semantic_digest: parse_digest(
+            &row.try_get::<String, _>("semantic_digest").map_err(unavailable)?,
+            "operation context",
+        )?,
+    })
+}
+
 async fn load_outbox_tx(
     transaction: &mut Transaction<'_, Sqlite>,
     intent_id: &StableId,
@@ -958,6 +1057,19 @@ async fn verify_store(pool: &SqlitePool) -> Result<(), DurableOperationError> {
             "outbox projection is not backed by its immutable event",
         ));
     }
+    let bad_context: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM operation_context AS context
+         JOIN operation_records AS operation
+           ON operation.operation_id = context.operation_id
+         WHERE context.semantic_digest != operation.payload_digest",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if bad_context != 0 {
+        return Err(corrupt("operation context semantic digest drift"));
+    }
     let bad_operation_history: i64 = sqlx::query_scalar(
         "SELECT COUNT(*)
          FROM operation_records AS current
@@ -985,6 +1097,8 @@ async fn verify_store(pool: &SqlitePool) -> Result<(), DurableOperationError> {
     let immutable_trigger_count: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM sqlite_schema
          WHERE type='trigger' AND name IN (
+           'operation_context_no_update',
+           'operation_context_no_delete',
            'operation_events_no_update',
            'operation_events_no_delete',
            'operation_outbox_events_no_update',
@@ -994,7 +1108,7 @@ async fn verify_store(pool: &SqlitePool) -> Result<(), DurableOperationError> {
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if immutable_trigger_count != 4 {
+    if immutable_trigger_count != 6 {
         return Err(corrupt("immutable event triggers are missing"));
     }
     Ok(())
