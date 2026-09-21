@@ -1,0 +1,84 @@
+name: Hepta integration diagnostics
+
+# Read-only, bounded development diagnostics. This job neither resolves a merge
+# nor qualifies a changed tree, installs policy, or grants deployment authority.
+on:
+  push:
+    branches: [work/architecture-scalability-convergence-20260918]
+    paths: [.github/workflows/hepta-integration-diagnostics.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  merge-diagnostics:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Inspect actual three-way integration without changing the candidate
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          TARGET_SHA: a74246c4d7657d4c6b09fc50c41f1d715ace5e0e
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+          import sys
+
+          source, target = os.environ['SOURCE_SHA'], os.environ['TARGET_SHA']
+          def git(*args, check=True):
+              return subprocess.run(
+                  ['git', '--no-replace-objects', *args], check=check,
+                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=120,
+              )
+          for sha in (source, target):
+              if not re.fullmatch('[0-9a-f]{40}', sha):
+                  raise ValueError('exact commit required')
+              git('cat-file', '-e', sha + '^{commit}')
+          base = git('merge-base', source, target).stdout.decode().strip()
+          merged = git('merge-tree', '--write-tree', '--messages', source, target, check=False)
+          if merged.returncode not in (0, 1):
+              print(merged.stderr.decode(errors='replace'))
+              raise SystemExit(merged.returncode)
+          output = merged.stdout.decode('utf-8', 'strict')
+          if len(merged.stdout) > 2_000_000:
+              raise ValueError('merge diagnostics exceed bounded output')
+          print('MERGE_DIAGNOSTIC_BEGIN')
+          print(output)
+          tree = output.splitlines()[0]
+          if not re.fullmatch('[0-9a-f]{40}', tree):
+              raise ValueError('merge did not produce a tree identity')
+          conflicts = sorted(set(re.findall(r'^\d{6} [0-9a-f]{40} [123]\t(.+)$', output, re.M)))
+          paths = git('diff', '--no-ext-diff', '--name-only', '--no-renames', '-z', source, tree).stdout.split(b'\0')
+          entries = []
+          for raw in paths:
+              if not raw:
+                  continue
+              path = raw.decode('utf-8', 'strict')
+              row = git('ls-tree', tree, '--', path).stdout.decode().strip()
+              entries.append({'path': path, 'entry': row, 'conflicted': path in conflicts})
+          print(json.dumps({'source': source, 'target': target, 'base': base,
+                            'tree': tree, 'mergeable': merged.returncode == 0,
+                            'conflicts': conflicts, 'entries': entries}, sort_keys=True))
+          print('MERGE_DIAGNOSTIC_END')
+          for path in conflicts:
+              delta = git('diff', '--no-ext-diff', '--no-textconv', '--no-renames', source, tree, '--', path).stdout
+              print('CONFLICT_PATCH_BEGIN ' + path)
+              if len(delta) > 200_000:
+                  print('CONFLICT_PATCH_OMITTED_TOO_LARGE bytes=' + str(len(delta)))
+              else:
+                  print(delta.decode('utf-8', 'strict'))
+              print('CONFLICT_PATCH_END ' + path)
+          git('diff', '--exit-code')
+          raise SystemExit(merged.returncode)
+          PY
