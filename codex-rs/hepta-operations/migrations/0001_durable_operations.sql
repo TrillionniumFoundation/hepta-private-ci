@@ -13,6 +13,21 @@ CREATE TABLE operation_records (
     outcome_digest TEXT
 ) STRICT;
 
+CREATE TABLE operation_context (
+    operation_id TEXT PRIMARY KEY NOT NULL REFERENCES operation_records(operation_id),
+    action_id TEXT NOT NULL,
+    resource_id TEXT NOT NULL,
+    expected_revision INTEGER NOT NULL CHECK(expected_revision > 0),
+    semantic_digest TEXT NOT NULL CHECK(length(semantic_digest) = 64)
+) STRICT;
+
+CREATE TRIGGER operation_context_no_update BEFORE UPDATE ON operation_context BEGIN
+    SELECT RAISE(ABORT, 'operation context is immutable');
+END;
+CREATE TRIGGER operation_context_no_delete BEFORE DELETE ON operation_context BEGIN
+    SELECT RAISE(ABORT, 'operation context is immutable');
+END;
+
 CREATE TABLE operation_events (
     seq INTEGER PRIMARY KEY AUTOINCREMENT,
     operation_id TEXT NOT NULL REFERENCES operation_records(operation_id),
