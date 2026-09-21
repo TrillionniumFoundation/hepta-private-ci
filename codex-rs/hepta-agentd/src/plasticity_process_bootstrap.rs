@@ -247,11 +247,7 @@ pub fn load_plasticity_process_bootstrap_v1(
 ) -> Result<PlasticityRuntimeBootstrapV1, AgentdError> {
     require_absolute_regular_file(path, "plasticity bootstrap descriptor")?;
     let bytes = read_bounded(path, MAX_DESCRIPTOR_BYTES, "plasticity bootstrap descriptor")?;
-    if expected_descriptor_digest.is_zero()
-        || Digest32::of_bytes(&bytes) != expected_descriptor_digest
-    {
-        return invalid("plasticity bootstrap descriptor digest mismatch");
-    }
+    verify_descriptor_bytes(&bytes, expected_descriptor_digest)?;
     let descriptor: ProcessBootstrapDescriptorV1 = serde_json::from_slice(&bytes)?;
     if descriptor.schema != DESCRIPTOR_SCHEMA {
         return invalid("plasticity bootstrap descriptor schema mismatch");
@@ -834,6 +830,18 @@ fn create_new_rw(path: &Path, label: &str) -> Result<File, AgentdError> {
     options.open(path).map_err(Into::into)
 }
 
+fn verify_descriptor_bytes(
+    bytes: &[u8],
+    expected_descriptor_digest: Digest32,
+) -> Result<(), AgentdError> {
+    if expected_descriptor_digest.is_zero()
+        || Digest32::of_bytes(bytes) != expected_descriptor_digest
+    {
+        return invalid("plasticity bootstrap descriptor digest mismatch");
+    }
+    Ok(())
+}
+
 fn digest(value: &str, label: &str) -> Result<Digest32, AgentdError> {
     Digest32::from_str(value)
         .map_err(|error| AgentdError::Invalid(format!("invalid {label}: {error}")))
@@ -850,4 +858,30 @@ fn parse_hex_32(value: &str, label: &str) -> Result<[u8; 32], AgentdError> {
 
 fn invalid<T>(message: &str) -> Result<T, AgentdError> {
     Err(AgentdError::Invalid(message.to_string()))
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn descriptor_digest_rejects_byte_substitution() {
+        let original = b"{\"schema\":\"hepta.agentd.plasticity-bootstrap.v1\"}";
+        let expected = Digest32::of_bytes(original);
+        assert!(verify_descriptor_bytes(original, expected).is_ok());
+        assert!(verify_descriptor_bytes(b"tampered", expected).is_err());
+        assert!(verify_descriptor_bytes(original, Digest32::ZERO).is_err());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn mutable_owner_hardlink_alias_is_rejected() {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let left = directory.path().join("registry");
+        let right = directory.path().join("anchor");
+        std::fs::write(&left, b"registry").expect("write");
+        std::fs::hard_link(&left, &right).expect("hard link");
+        assert!(existing_paths_alias(&left, &right).expect("identity check"));
+    }
 }
