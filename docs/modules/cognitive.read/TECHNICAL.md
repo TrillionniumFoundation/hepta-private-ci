@@ -36,7 +36,7 @@ The durable source owner is not this crate. Product composition acquires one aut
 
 The canonical work package `MEM-READ-1-SNAPSHOT-PORT` is `source_implemented_execution_pending`. That state means source and composition exist while exact-candidate execution evidence remains pending. It does not imply independent acceptance, activation, promotion or release.
 
-The implementation map keeps the repository-wide generated `sourceBase` baseline intact and separately records the fresh reviewed implementation base. A generated-map baseline is not a claim that no later source exists.
+The implementation map binds `sourceBase`/`observedAtHead` to an exact reviewed product-source commit/tree and separately binds every mapped production operation and composed product caller to its current HEAD blob. Later documentation-only truth commits therefore do not require an impossible self-referential Git commit hash, while any source or caller drift still fails verification.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -128,7 +128,7 @@ That final-use observation is intentionally not described as a lease: a concurre
 
 ## 8. Failure semantics, recovery and rollback
 
-Snapshot integrity, duplicate/oversize requests and malformed typed-local inputs are rejected. Resource exhaustion maps to unavailable; caller/request errors map to invalid; owner-store integrity violations map to corrupt; stale final-use state maps to conflict/request rejection. Agentd no longer classifies every read-port failure as store corruption.
+Snapshot integrity, duplicate/oversize requests and malformed typed-local inputs are rejected. Read-local resource exhaustion maps to a distinct unavailable response without detaching the canonical cognitive owner; caller/request errors map to invalid; actual owner-store unavailable/corrupt failures retain owner-storage failure semantics; stale final-use state maps to conflict/request rejection. Agentd therefore no longer classifies every read-port failure as store corruption or owner loss.
 
 Correction, committed tombstone, validity expiry, snapshot-generation change, wrong principal or selected-content substitution makes an old context fail final-use validation.
 
