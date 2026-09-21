@@ -67,7 +67,7 @@ pub fn build_prompt_factor_projection_v1(
     }
 
     let nodes = source
-        .factors
+        .factors()
         .iter()
         .map(|factor| {
             let mut payload = PROMPT_FACTOR_NODE_DOMAIN.to_vec();
@@ -96,7 +96,7 @@ pub fn build_prompt_factor_projection_v1(
         .collect::<Result<Vec<_>, PromptFactorProjectionErrorV1>>()?;
 
     let edges = source
-        .relations
+        .relations()
         .iter()
         .map(|relation| {
             let relation_kind = match relation.kind {
@@ -174,7 +174,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(&u64::try_from(raw.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
-
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PromptFactorProjectionErrorV1 {
