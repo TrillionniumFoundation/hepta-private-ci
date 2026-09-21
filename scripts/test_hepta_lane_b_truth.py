@@ -96,6 +96,66 @@ class LaneBTruthTests(unittest.TestCase):
             ):
                 MODULE.verify_observed_source(row, "automation.taskflow")
 
+    def test_path_blob_manifest_binds_mapped_operation_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "codex-rs/hepta-automation/src/authorized_effect.rs"
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_text("pub async fn execute() {}\n", encoding="utf-8")
+            blob = "c" * 40
+            row = {
+                "sourceIdentityPolicy": "path_blob_manifest_v1",
+                "exactSourceEvidence": {
+                    "kind": "path_blob_manifest_v1",
+                    "entries": [
+                        {
+                            "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+                            "blobSha": blob,
+                        }
+                    ],
+                },
+                "operations": [
+                    {
+                        "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs"
+                    }
+                ],
+            }
+            with (
+                mock.patch.object(MODULE, "ROOT", root),
+                mock.patch.object(MODULE, "git", return_value=blob),
+            ):
+                MODULE.verify_observed_source(row, "automation.taskflow")
+
+    def test_path_blob_manifest_rejects_blob_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "codex-rs/hepta-automation/src/authorized_effect.rs"
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_text("pub async fn execute() {}\n", encoding="utf-8")
+            row = {
+                "sourceIdentityPolicy": "path_blob_manifest_v1",
+                "exactSourceEvidence": {
+                    "kind": "path_blob_manifest_v1",
+                    "entries": [
+                        {
+                            "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+                            "blobSha": "c" * 40,
+                        }
+                    ],
+                },
+                "operations": [
+                    {
+                        "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs"
+                    }
+                ],
+            }
+            with (
+                mock.patch.object(MODULE, "ROOT", root),
+                mock.patch.object(MODULE, "git", return_value="d" * 40),
+            ):
+                with self.assertRaisesRegex(MODULE.Invalid, "exact source blob drift"):
+                    MODULE.verify_observed_source(row, "automation.taskflow")
+
     def test_pull_request_current_base_override_precedes_event_snapshot(self) -> None:
         event = {
             "pull_request": {
