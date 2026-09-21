@@ -550,6 +550,85 @@ async fn rollback_returns_candidate_only_after_current_cut_re_admission() {
 }
 
 #[tokio::test]
+async fn committed_publication_replays_unchanged_after_restart_and_response_loss() {
+    let (temp, store, lease, fence) = prepared().await;
+    let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "commit-replay");
+    let proof = proof(&checkpoint, "commit-replay");
+    let witness = proof_witness(&proof);
+    let payload = payload("commit-replay");
+    let expires_at = lease
+        .binding()
+        .expect("bound lease")
+        .lease_expires_at_unix_seconds;
+
+    let inserted = store
+        .publish_qualified_compact_checkpoint(
+            &lease,
+            &fence,
+            &checkpoint,
+            &proof,
+            &witness,
+            &payload,
+        )
+        .await
+        .expect("initial publish");
+    assert_eq!(
+        inserted.disposition,
+        QualifiedCompactPublicationDisposition::Inserted
+    );
+    drop(lease);
+    drop(store);
+
+    let owner = agent_id(84);
+    let reopened = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("reopen after committed response loss");
+    let replay_lease = match reopened
+        .acquire_local_lease_bound(
+            "lease:qualified-compact",
+            fence.authority_epoch,
+            fence.owner_epoch,
+            fence.generation,
+            fence.fencing_token.clone(),
+            expires_at,
+        )
+        .await
+        .expect("reacquire exact lease")
+    {
+        LocalLeaseAcquire::Acquired(lease) | LocalLeaseAcquire::Replay(lease) => lease,
+    };
+    let replayed = reopened
+        .publish_qualified_compact_checkpoint(
+            &replay_lease,
+            &fence,
+            &checkpoint,
+            &proof,
+            &witness,
+            &payload,
+        )
+        .await
+        .expect("replay committed publication");
+    assert_eq!(
+        replayed.disposition,
+        QualifiedCompactPublicationDisposition::Unchanged
+    );
+    assert_eq!(replayed.publication_digest, inserted.publication_digest);
+    assert_eq!(replayed.evaluator_key_digest, inserted.evaluator_key_digest);
+
+    let row_count: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM cognitive_qualified_compact_checkpoints
+         WHERE owner_agent_id = ? AND scope_id = ? AND purpose_id = ?",
+    )
+    .bind(reopened.owner_agent_id().as_str())
+    .bind(checkpoint.source_snapshot.vector.scope_id.as_str())
+    .bind(checkpoint.source_snapshot.vector.purpose_id.as_str())
+    .fetch_one(&reopened.pool)
+    .await
+    .expect("count durable checkpoints");
+    assert_eq!(row_count, 1);
+}
+
+#[tokio::test]
 async fn fault_after_payload_write_rolls_back_owner_publication_on_reopen() {
     let (temp, store, lease, fence) = prepared().await;
     let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "fault-payload");
@@ -959,6 +1038,21 @@ fn test_fixture_layout_uses_one_owner_database() {
     let owner = agent_id(84);
     let agent_layout = fleet.layout().agent(&owner);
     assert_eq!(agent_layout.agent_id(), &owner);
+}
+
+#[test]
+fn persisted_proof_rejects_recomputed_tokenizer_trust_tamper() {
+    let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "tokenizer-trust-tamper");
+    let mut proof = proof(&checkpoint, "tokenizer-trust-tamper");
+    let witness = proof_witness(&proof);
+    proof.tokenizer_key_digest = digest("forged-tokenizer-key");
+    proof.proof_digest = proof.compute_proof_digest();
+
+    assert!(matches!(
+        ProofImageV2::from_contract(&proof, &witness),
+        Err(QualifiedCompactStoreError::Invalid(ref message))
+            if message.contains("proof witness")
+    ));
 }
 
 #[test]
