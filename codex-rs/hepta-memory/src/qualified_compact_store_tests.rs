@@ -779,10 +779,8 @@ fn publication_contract_is_authority_free() {
     let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "one");
     let proof = proof(&checkpoint, "one");
     let publication = QualifiedCompactCheckpointPublication {
-        evaluator_key_digest: proof_witness(&proof).verification_receipt_digest(
-            proof.candidate_digest,
-            proof.evaluator_implementation_digest,
-            proof.attestation_digest,
+        evaluator_key_digest: Digest32::of_bytes(
+            &proof_witness(&proof).evaluator_verifying_key,
         ),
         publication_digest: publication_digest(&checkpoint, &proof),
         checkpoint,
