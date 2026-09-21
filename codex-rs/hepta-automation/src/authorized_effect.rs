@@ -7,9 +7,20 @@
 //! without provider-owned recovery evidence. Provider observations are durable
 //! before they are projected into the TaskFlow step/run state.
 
+use std::future::Future;
+use std::pin::Pin;
+
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
+use codex_hepta_contracts::ProviderEffectAck;
+use codex_hepta_contracts::ProviderEffectAckStatus;
+use codex_hepta_contracts::ProviderEffectAdapter;
+use codex_hepta_contracts::ProviderEffectDispatch;
+use codex_hepta_contracts::ProviderEffectIdempotencyCapability;
+use codex_hepta_contracts::ProviderEffectIntent;
+use codex_hepta_contracts::ProviderEffectKey;
+use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_operations::OperationIntentV1;
@@ -264,6 +275,225 @@ pub trait AuthorizedEffectDriver {
         &mut self,
         request: &AuthorizedEffectRequest<'_>,
     ) -> Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError>;
+}
+
+pub struct AuthorizedProviderEffectRequest<'a> {
+    pub operation_intent: &'a OperationIntentV1,
+    pub intent: &'a AuthorizedEffectIntent,
+    pub intent_digest: &'a Sha256Digest,
+    pub binding: &'a FinalUseBinding,
+    pub provider_intent: ProviderEffectIntent,
+    pub wire_payload: &'a [u8],
+}
+
+pub type AuthorizedEffectFuture<'a> = Pin<
+    Box<
+        dyn Future<
+                Output = Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError>,
+            > + Send
+            + 'a,
+    >,
+>;
+
+/// Async provider seam for transports that cannot cross their physical
+/// boundary synchronously. The caller supplies no provider key: automation
+/// derives the key and payload binding from the durable TaskFlow intent.
+pub trait AsyncAuthorizedEffectDriver {
+    fn dispatch<'a>(
+        &'a mut self,
+        request: AuthorizedProviderEffectRequest<'a>,
+    ) -> AuthorizedEffectFuture<'a>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum AuthorizedProviderEffectLookup {
+    ProvenAbsent { proof_digest: Sha256Digest },
+    Observed(AuthorizedEffectProviderReceipt),
+    Unresolved,
+}
+
+/// Bridge from the provider-effect contract to TaskFlow's authorized effect
+/// seam. The provider scope is the exact destination identifier bound by the
+/// final-use grant; a driver cannot silently send a TaskFlow effect through a
+/// differently configured provider.
+pub struct ProviderEffectTaskFlowDriver<A> {
+    provider_scope: String,
+    adapter: A,
+}
+
+impl<A> ProviderEffectTaskFlowDriver<A>
+where
+    A: ProviderEffectAdapter,
+{
+    pub fn new(provider_scope: String, adapter: A) -> Result<Self, AuthorizedEffectDriverError> {
+        ProviderEffectKey::for_logical_effect(&provider_scope, "taskflow:validation")
+            .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
+        Ok(Self {
+            provider_scope,
+            adapter,
+        })
+    }
+
+    pub fn adapter(&self) -> &A {
+        &self.adapter
+    }
+
+    pub fn adapter_mut(&mut self) -> &mut A {
+        &mut self.adapter
+    }
+
+    pub async fn lookup(
+        &self,
+        provider_intent: &ProviderEffectIntent,
+    ) -> AuthorizedProviderEffectLookup {
+        if self.adapter.capability() != ProviderEffectIdempotencyCapability::KeyAndStatusLookup {
+            return AuthorizedProviderEffectLookup::Unresolved;
+        }
+        match self.adapter.lookup_for_intent(provider_intent).await {
+            ProviderEffectLookup::Ack(ack) => {
+                if ack.validate_for(provider_intent).is_err() {
+                    return AuthorizedProviderEffectLookup::Unresolved;
+                }
+                match provider_receipt_from_ack(&ack) {
+                    Some(receipt) => AuthorizedProviderEffectLookup::Observed(receipt),
+                    None => AuthorizedProviderEffectLookup::Unresolved,
+                }
+            }
+            ProviderEffectLookup::NotFound => {
+                AuthorizedProviderEffectLookup::ProvenAbsent {
+                    proof_digest: provider_lookup_digest(provider_intent, b"not_found"),
+                }
+            }
+            ProviderEffectLookup::Conflict { .. } | ProviderEffectLookup::Unknown => {
+                AuthorizedProviderEffectLookup::Unresolved
+            }
+        }
+    }
+}
+
+impl<A> AsyncAuthorizedEffectDriver for ProviderEffectTaskFlowDriver<A>
+where
+    A: ProviderEffectAdapter,
+{
+    fn dispatch<'a>(
+        &'a mut self,
+        request: AuthorizedProviderEffectRequest<'a>,
+    ) -> AuthorizedEffectFuture<'a> {
+        Box::pin(async move {
+            if request.intent.destination_id != self.provider_scope
+                || self.adapter.capability()
+                    != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
+            {
+                return Err(AuthorizedEffectDriverError::BeforeProviderContact);
+            }
+            let provider_intent = request.provider_intent;
+            let wire_payload = request.wire_payload;
+            let dispatch = self
+                .adapter
+                .dispatch_with_payload(&provider_intent, wire_payload)
+                .await;
+            provider_dispatch_receipt(&provider_intent, dispatch)
+        })
+    }
+}
+
+
+fn provider_effect_intent(
+    intent: &AuthorizedEffectIntent,
+    wire_payload: &[u8],
+) -> Result<ProviderEffectIntent, AuthorizedEffectError> {
+    let payload_digest = Sha256Digest::for_bytes(wire_payload);
+    if payload_digest != intent.payload_digest {
+        return Err(AuthorizedEffectError::BindingMismatch);
+    }
+    let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
+    let key = ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
+        .map_err(|_| AuthorizedEffectError::BindingMismatch)?;
+    Ok(ProviderEffectIntent::new(key, payload_digest))
+}
+
+fn provider_dispatch_receipt(
+    intent: &ProviderEffectIntent,
+    dispatch: ProviderEffectDispatch,
+) -> Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError> {
+    match dispatch {
+        ProviderEffectDispatch::Ack(ack) => {
+            if ack.validate_for(intent).is_err() {
+                return Ok(AuthorizedEffectProviderReceipt {
+                    outcome: AuthorizedEffectOutcome::Indeterminate,
+                    receipt_digest: provider_lookup_digest(intent, b"malformed_ack"),
+                });
+            }
+            let outcome = match ack.status {
+                ProviderEffectAckStatus::Accepted => AuthorizedEffectOutcome::Indeterminate,
+                ProviderEffectAckStatus::Completed => AuthorizedEffectOutcome::Succeeded,
+                ProviderEffectAckStatus::Rejected => AuthorizedEffectOutcome::Failed,
+            };
+            Ok(AuthorizedEffectProviderReceipt {
+                outcome,
+                receipt_digest: provider_ack_digest(&ack),
+            })
+        }
+        ProviderEffectDispatch::Rejected { reason_code } => {
+            let mut bytes = provider_receipt_prefix(intent, b"rejected");
+            bytes.extend_from_slice(reason_code.as_bytes());
+            Ok(AuthorizedEffectProviderReceipt {
+                outcome: AuthorizedEffectOutcome::Failed,
+                receipt_digest: Sha256Digest::for_bytes(&bytes),
+            })
+        }
+        ProviderEffectDispatch::NotDispatched { .. } => {
+            Err(AuthorizedEffectDriverError::BeforeProviderContact)
+        }
+        ProviderEffectDispatch::Unknown => Ok(AuthorizedEffectProviderReceipt {
+            outcome: AuthorizedEffectOutcome::Indeterminate,
+            receipt_digest: provider_lookup_digest(intent, b"unknown"),
+        }),
+    }
+}
+
+fn provider_receipt_from_ack(ack: &ProviderEffectAck) -> Option<AuthorizedEffectProviderReceipt> {
+    let outcome = match ack.status {
+        ProviderEffectAckStatus::Accepted => return None,
+        ProviderEffectAckStatus::Completed => AuthorizedEffectOutcome::Succeeded,
+        ProviderEffectAckStatus::Rejected => AuthorizedEffectOutcome::Failed,
+    };
+    Some(AuthorizedEffectProviderReceipt {
+        outcome,
+        receipt_digest: provider_ack_digest(ack),
+    })
+}
+
+fn provider_ack_digest(ack: &ProviderEffectAck) -> Sha256Digest {
+    let mut bytes = b"hepta.automation.provider-effect.ack.v1\0".to_vec();
+    bytes.extend_from_slice(ack.key.as_str().as_bytes());
+    bytes.push(0);
+    bytes.extend_from_slice(ack.payload_sha256.as_str().as_bytes());
+    bytes.push(0);
+    bytes.extend_from_slice(ack.provider_operation_id_sha256.as_str().as_bytes());
+    bytes.push(match ack.status {
+        ProviderEffectAckStatus::Accepted => 1,
+        ProviderEffectAckStatus::Completed => 2,
+        ProviderEffectAckStatus::Rejected => 3,
+    });
+    Sha256Digest::for_bytes(&bytes)
+}
+
+fn provider_lookup_digest(intent: &ProviderEffectIntent, observation: &[u8]) -> Sha256Digest {
+    let mut bytes = provider_receipt_prefix(intent, b"lookup");
+    bytes.extend_from_slice(observation);
+    Sha256Digest::for_bytes(&bytes)
+}
+
+fn provider_receipt_prefix(intent: &ProviderEffectIntent, phase: &[u8]) -> Vec<u8> {
+    let mut bytes = b"hepta.automation.provider-effect.v1\0".to_vec();
+    bytes.extend_from_slice(phase);
+    bytes.push(0);
+    bytes.extend_from_slice(intent.key.as_str().as_bytes());
+    bytes.push(0);
+    bytes.extend_from_slice(intent.payload_sha256.as_str().as_bytes());
+    bytes.push(0);
+    bytes
 }
 
 #[derive(Clone, Debug, Eq, Error, PartialEq)]
