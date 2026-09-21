@@ -386,7 +386,8 @@ mod tests {
             ),
         )
         .expect("prepared input");
-        let (item, binding) = prepared.into_parts();
+        let (item, binding, final_use_guard) = prepared.into_parts();
+        assert!(final_use_guard.is_none());
         let ResponseItem::Message { content, .. } = item else {
             panic!("ephemeral input must be a message");
         };
