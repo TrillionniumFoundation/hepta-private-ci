@@ -6,6 +6,7 @@ const DOC = JSON.parse(
 );
 const DOMAIN = Buffer.from(DOC.domain, "utf8");
 const MAX_BYTES = DOC.maxEncodedBytes;
+const MAX_ID_BYTES = DOC.stableIdMaxBytes;
 const MAX_ITEMS = DOC.maxContainerItems;
 const MAX_DEPTH = DOC.maxDepth;
 const UTF8 = new TextDecoder("utf-8", { fatal: true });
@@ -59,6 +60,7 @@ function validLocal(raw) {
 }
 
 function validNamespaced(raw) {
+  if (raw.length === 0 || raw.length > MAX_ID_BYTES) throw new Error("type id");
   const separator = raw.indexOf(0x3a);
   if (separator <= 0 || separator !== raw.lastIndexOf(0x3a)) {
     throw new Error("type id");
@@ -68,6 +70,7 @@ function validNamespaced(raw) {
 }
 
 function validStable(raw) {
+  if (raw.length === 0 || raw.length > MAX_ID_BYTES) throw new Error("stable id");
   const value = ascii(raw, "stable id");
   if (!/^[A-Za-z0-9._:-]+$/.test(value)) throw new Error("stable id");
 }
