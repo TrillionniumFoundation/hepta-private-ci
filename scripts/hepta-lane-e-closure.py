@@ -518,6 +518,9 @@ def verify_operator_training_boundary(findings: Findings) -> None:
             r"\bfit_tabular_operator_strict_v2\s*\("
         ),
         "fit_transition_model": re.compile(r"\bfit_transition_model\s*\("),
+        "VerifiedOperatorDatasetV2::from_receipt": re.compile(
+            r"\bVerifiedOperatorDatasetV2::from_receipt\s*\("
+        ),
     }
     for path in (ROOT / "codex-rs").rglob("*.rs"):
         if owner_root in path.parents:
@@ -549,7 +552,7 @@ def verify_operator_training_boundary(findings: Findings) -> None:
         return
     host_text = host.read_text(encoding="utf-8")
     for required in (
-        "VerifiedOperatorDatasetV2::from_receipt",
+        "VerifiedOperatorDatasetV2::from_authenticated_receipt",
         "fit_tabular_operator_bound_v2",
     ):
         findings.require(
