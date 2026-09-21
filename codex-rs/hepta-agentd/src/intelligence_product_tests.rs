@@ -650,6 +650,54 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
     assert!(!prepared.dispatch_proposal_digest.is_zero());
     assert!(!prepared.envelope.authority.grants_any());
 
+    let wire_snapshot = prepared.run_snapshot();
+    let wire_attachment = prepared.context_attachment();
+    let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+        agent_id: "agent.product".to_string(),
+        supervisor_generation: 1,
+        agentd_generation: 1,
+        configuration_digest: digest("runtime-config").to_string(),
+        ports_digest: digest("runtime-ports").to_string(),
+    })
+    .expect("runtime coordinator");
+    let admitted = coordinator
+        .start_run(
+            wall_clock_ms().expect("clock"),
+            RunSnapshot {
+                run_id: wire_snapshot.run_id.clone(),
+                request_digest: wire_snapshot.request_digest.clone(),
+                objective_digest: wire_snapshot.objective_digest.clone(),
+                body_digest: wire_snapshot.body_digest.clone(),
+                artifact_set_digest: wire_snapshot.artifact_set_digest.clone(),
+                authority_epoch: wire_snapshot.authority_epoch,
+                deadline_ms: wire_snapshot.deadline_ms,
+            },
+        )
+        .expect("admit exact prepared run");
+    let attached = coordinator
+        .attach_context(
+            admitted.revision,
+            ContextAttachment {
+                run_id: wire_attachment.run_id,
+                request_digest: wire_attachment.request_digest,
+                objective_digest: wire_attachment.objective_digest,
+                body_digest: wire_attachment.body_digest,
+                artifact_set_digest: wire_attachment.artifact_set_digest,
+                context_digest: wire_attachment.context_digest,
+                compilation_receipt_digest: wire_attachment.compilation_receipt_digest,
+            },
+        )
+        .expect("attach exact intelligence envelope");
+    assert_eq!(attached.phase, RunPhase::ContextAttached);
+    assert_eq!(
+        attached.compilation_receipt_digest.as_deref(),
+        Some(prepared.envelope.envelope_digest.to_string().as_str())
+    );
+    let dispatched = coordinator
+        .mark_dispatched(&attached.run_id, attached.revision)
+        .expect("commit dispatch before physical effect");
+    assert_eq!(dispatched.phase, RunPhase::Dispatched);
+
     let ledger_path = temp.path().join("learning-ledger");
     let binding = digest("agentd-intelligence-ledger-binding");
     let file = OpenOptions::new()
@@ -685,6 +733,20 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         )
         .expect("outcome append");
     assert_eq!(outcome.disposition, AppendDisposition::Appended);
+    let terminal = coordinator
+        .observe_terminal(
+            &dispatched.run_id,
+            dispatched.revision,
+            RunPhase::Succeeded,
+            /*terminal_observed*/ true,
+        )
+        .expect("commit independently observed terminal");
+    assert_eq!(terminal.phase, RunPhase::Succeeded);
+    assert!(terminal.terminal_observed);
+    assert_eq!(
+        terminal.compilation_receipt_digest.as_deref(),
+        Some(prepared.envelope.envelope_digest.to_string().as_str())
+    );
     assert_eq!(ledger.records().expect("records").len(), 2);
     assert!(matches!(
         ledger.records().expect("records")[0].event,
@@ -728,6 +790,35 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         )
         .expect("exact outcome retry");
     assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn unsigned_currentness_substitution_fails_before_owner_use() {
+    let fixture = fixture();
+    let temp = tempfile::tempdir().expect("tempdir");
+    let authority = temp.path().join("intelligence-authority.json");
+    write_authority_file(
+        &authority,
+        &fixture.owners,
+        fixture.request.snapshot.revocation_frontier_digest(),
+    );
+    let mut value: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&authority).expect("authority bytes"))
+            .expect("authority json");
+    value["authority_epoch"] = serde_json::json!(12);
+    std::fs::write(
+        &authority,
+        serde_json::to_vec(&value).expect("tampered authority json"),
+    )
+    .expect("tamper authority");
+    let runner =
+        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    assert!(matches!(
+        runner.prepare(fixture.request, fixture.inputs).await,
+        Err(AgentdIntelligenceProductError::Canonical(
+            CanonicalIntelligenceError::FreshnessUnavailable(_)
+        ))
+    ));
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
