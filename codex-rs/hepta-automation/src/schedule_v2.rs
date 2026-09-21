@@ -952,7 +952,12 @@ mod tests {
             1,
         );
         store
-            .create_calendar_task_v2(&draft, schedule, missed_run, AutomationOverlapPolicy::Allow)
+            .create_calendar_task_v2(
+                &draft,
+                schedule,
+                missed_run,
+                AutomationOverlapPolicy::Allow,
+            )
             .await
             .expect("create calendar task")
     }
@@ -1058,13 +1063,15 @@ mod tests {
         let mut scheduled = task.next_run_at_ms.expect("first run");
 
         for expected_day in [2_u64, 3, 4] {
-            let advanced = advance_backlog(&store, task.task_id, scheduled, observed, policy).await;
+            let advanced =
+                advance_backlog(&store, task.task_id, scheduled, observed, policy).await;
             let expected = expected_day * DAY + 2 * HOUR;
             assert_eq!(advanced.next_run_at_ms, Some(expected));
             scheduled = expected;
         }
 
-        let after_budget = advance_backlog(&store, task.task_id, scheduled, observed, policy).await;
+        let after_budget =
+            advance_backlog(&store, task.task_id, scheduled, observed, policy).await;
         assert_eq!(
             after_budget.next_run_at_ms,
             schedule
