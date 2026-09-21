@@ -74,6 +74,30 @@ impl ProviderEffectKey {
         )))
     }
 
+    /// Derives a provider-stable key for a logical effect whose physical
+    /// payload and retry attempt are bound separately.  This is intended for
+    /// orchestration systems such as TaskFlow where one logical step may need
+    /// a new local attempt only after provider-owned absence proof.
+    ///
+    /// Keeping payload bytes and the physical attempt out of this key lets a
+    /// provider reject same-logical-effect/different-payload substitution and
+    /// deduplicate a safely retried send under the original occurrence key.
+    pub fn for_logical_effect(
+        provider_scope: &str,
+        logical_effect_id: &str,
+    ) -> Result<Self, ProviderEffectBindingError> {
+        validate_non_empty("provider scope", provider_scope)?;
+        validate_non_empty("logical effect id", logical_effect_id)?;
+        Ok(Self(format!(
+            "provider-effect:v1:{}",
+            digest_parts([
+                "provider-effect:logical-effect:v1",
+                provider_scope,
+                logical_effect_id,
+            ])
+        )))
+    }
+
     pub fn parse(value: impl Into<String>) -> Result<Self, ProviderEffectBindingError> {
         parse_prefixed_sha256_id(value, "provider-effect:v1:", "provider effect")
             .map(Self)
