@@ -34,12 +34,8 @@ def validate_id_profile(value: str, variant: str) -> str:
             raise ValueError("stable identifier grammar")
         return value
     if variant == "Module":
-        if value.lower() != value or ":" in value:
-            raise ValueError("module identifier grammar")
         parts = value.split(".")
-        if any(not part or not part[0].isalnum() or not part[-1].isalnum() for part in parts):
-            raise ValueError("module identifier grammar")
-        if any(not (ch.islower() or ch.isdigit() or ch in "._-") for ch in value):
+        if any(re.fullmatch(r"[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?", part) is None for part in parts):
             raise ValueError("module identifier grammar")
         return value
     if variant == "Namespaced":
@@ -53,12 +49,6 @@ def validate_id_profile(value: str, variant: str) -> str:
         if prefix is None or not value.startswith(prefix):
             raise ValueError("profile prefix")
         local = value[len(prefix):]
-    if (
-        not local
-        or ":" in local
-        or not local[0].isalnum()
-        or not local[-1].isalnum()
-        or any(not (ch.islower() or ch.isdigit() or ch in "._-") for ch in local)
-    ):
+    if ":" in local or re.fullmatch(r"[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?", local) is None:
         raise ValueError("profile local identifier grammar")
     return value
