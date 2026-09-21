@@ -62,6 +62,7 @@ impl From<crate::TopologyProposalErrorV2> for TopologyGovernanceErrorV1 {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn build_writer_handoff_plan_v1(
     module_id: StableId,
     from_owner: StableId,
