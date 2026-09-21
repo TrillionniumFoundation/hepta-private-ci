@@ -179,7 +179,9 @@
       "state": "source_implemented_child_process_reconstructs_owner_native_stores_from_independent_receipts_not_target_host_qualified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs::supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descriptor"
+        "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs::supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descriptor",
+        "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs::tests::descriptor_digest_rejects_byte_substitution",
+        "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs::tests::mutable_owner_hardlink_alias_is_rejected"
       ],
       "sourcePathExists": true,
       "designOperation": "agentd_process_bootstrap",
