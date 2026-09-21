@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "28b9240e88ab78ccf582bc94057e442511ad123a",
+    "tree": "b4989fd16483a4ff3cd02e14327bf51808821695"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.operations",
@@ -19,7 +19,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionWriterState": "durable_owner_source_implemented_not_activated",
   "operations": [
     {
       "operation": "operationledger",
@@ -44,11 +44,66 @@
       "designOperation": "outbox",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "durable_operation_ledger",
+      "designOperation": "operationledger",
+      "nativeSymbol": "DurableOperationStore",
+      "sourcePath": "codex-rs/hepta-operations/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_not_product_composed",
+      "authority": "none_final_use_consumed_by_product_adapter",
+      "mappingClass": "owner_native_durable",
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable_tests.rs",
+          "kind": "durable_owner_state_machine",
+          "command": "cargo test -p codex-hepta-operations durable::tests"
+        }
+      ]
+    },
+    {
+      "operation": "durable_outbox",
+      "designOperation": "outbox",
+      "nativeSymbol": "DurableOperationStore::claim_outbox",
+      "sourcePath": "codex-rs/hepta-operations/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_not_product_composed",
+      "authority": "none_final_use_consumed_by_product_adapter",
+      "mappingClass": "owner_native_durable",
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable_tests.rs",
+          "kind": "durable_owner_state_machine",
+          "command": "cargo test -p codex-hepta-operations durable::tests"
+        }
+      ]
+    },
+    {
+      "operation": "durable_terminal_observation",
+      "designOperation": "observe_terminal",
+      "nativeSymbol": "DurableOperationStore::observe_terminal",
+      "sourcePath": "codex-rs/hepta-operations/src/durable.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_not_product_composed",
+      "authority": "observer_generation_fenced_no_effect_authority",
+      "mappingClass": "owner_native_durable",
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable_tests.rs",
+          "kind": "durable_owner_state_machine",
+          "command": "cargo test -p codex-hepta-operations durable::tests"
+        }
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose the durable owner into an authenticated named product caller with current policy/RBAC and final-use authority at the real destination boundary.",
+    "Bind destination-owned deduplication and independent terminal observation/reconciliation; acknowledgement alone remains non-terminal.",
+    "Run exact-head and deterministic synthetic-merge native qualification plus disk-full/process-kill/multi-process fault campaigns before production claims."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -66,5 +121,14 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-operations"
-  ]
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "28b9240e88ab78ccf582bc94057e442511ad123a",
+    "tree": "b4989fd16483a4ff3cd02e14327bf51808821695"
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-operations"
+  ],
+  "sourceMaturity": "durable_sqlite_owner_not_product_composed"
 }
