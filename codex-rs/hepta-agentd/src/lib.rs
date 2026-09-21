@@ -51,6 +51,7 @@ pub use codex_hepta_agent_protocol::CognitiveContextSnapshot;
 pub use codex_hepta_agent_protocol::EventBatch;
 pub use codex_hepta_agent_protocol::HealthSnapshot;
 pub use codex_hepta_agent_protocol::LifecycleSnapshot;
+pub use codex_hepta_agent_protocol::MAX_AUTOMATION_EFFECT_WIRE_BYTES;
 pub use codex_hepta_agent_protocol::MAX_CONTROL_FRAME_BYTES;
 pub use codex_hepta_agent_protocol::MAX_EVENT_BATCH;
 pub use codex_hepta_agent_protocol::MAX_FEDERATION_CONTROL_LIST;
