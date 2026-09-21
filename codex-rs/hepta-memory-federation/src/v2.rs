@@ -473,7 +473,7 @@ impl FederatedResultV2 {
             || u64::from(self.coverage.completed_peers) + u64::from(self.coverage.failed_peers) != 1
             || self.coverage.truncated_peers != 0
             || self.coverage.omitted_peer_candidates != 0
-            || self.coverage.failures.total() > u64::from(self.coverage.failed_peers)
+            || self.coverage.failures.total() != u64::from(self.coverage.failed_peers)
         {
             return Err(FederationV2Error::InvalidCoverage);
         }
