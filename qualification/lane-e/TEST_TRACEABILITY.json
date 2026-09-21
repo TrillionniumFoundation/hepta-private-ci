@@ -265,7 +265,7 @@
     {
       "id": "LEDGER-06",
       "module": "learning.ledger",
-      "requirement": "Dataset freeze derives source rows, eligible frontier, outcome watermark and correction/revocation cuts from canonical ledger state.",
+      "requirement": "Dataset freeze derives source rows, eligible frontier, outcome watermark and correction/revocation cuts from canonical ledger state, and counts authenticated decisions with no Outcome row as pending rather than dropping missing observations.",
       "tests": [
         {
           "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
@@ -274,6 +274,10 @@
         {
           "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
           "function": "ledger_dataset_freeze_is_order_independent_and_rejects_duplicates"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "dataset_freeze_counts_decisions_without_any_outcome_as_pending"
         }
       ],
       "status": "native_test_mapped"
@@ -281,7 +285,7 @@
     {
       "id": "LEDGER-07",
       "module": "learning.ledger",
-      "requirement": "Explicit source-to-dataset-to-artifact unlearning lineage survives replay and prevents causal non-resurrection.",
+      "requirement": "Explicit unlearning verifies exact canonical source-to-dataset membership, persists source and dataset digests, survives replay and prevents causal non-resurrection; dataset-to-artifact fanout remains authoritative in learning.artifacts.",
       "tests": [
         {
           "source": "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
@@ -290,6 +294,10 @@
         {
           "source": "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs",
           "function": "checkpoint_revocation_frontier_changes_without_rewriting_history"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit"
         }
       ],
       "status": "native_test_mapped"
