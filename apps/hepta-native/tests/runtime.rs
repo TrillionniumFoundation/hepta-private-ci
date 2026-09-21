@@ -28,6 +28,7 @@ use hepta_native::security::KernelFinalUseGate;
 use hepta_native::security::now_unix_ms;
 use hepta_native::security::platform_final_use_binding;
 use tempfile::TempDir;
+use sha2::Digest as _;
 
 const D1: &str = "1111111111111111111111111111111111111111111111111111111111111111";
 const D2: &str = "2222222222222222222222222222222222222222222222222222222222222222";
@@ -160,8 +161,13 @@ fn write_authority_config(
     path
 }
 
+fn test_signing_key(label: &str) -> SigningKey {
+    let material: [u8; 32] = sha2::Sha256::digest(label.as_bytes()).into();
+    SigningKey::from_bytes(&material)
+}
+
 fn authority_fixture(temp: &TempDir) -> (Arc<KernelFinalUseGate>, SigningKey, std::path::PathBuf) {
-    let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    let signing = test_signing_key("native-runtime-authority-fixture");
     let head = FinalUseRevocations {
         authority_epoch: 1,
         revision: 1,
@@ -430,7 +436,7 @@ fn crash_after_dispatch_before_ack_reconciles_invoking_without_reinvoke() {
 #[test]
 fn restart_reconciles_old_indeterminate_without_reinvoke() {
     let temp = TempDir::new().unwrap();
-    let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    let signing = test_signing_key("native-runtime-authority-fixture");
     let head = FinalUseRevocations {
         authority_epoch: 1,
         revision: 1,
@@ -732,7 +738,7 @@ fn permission_denial_is_terminal_and_never_claims_or_invokes() {
 #[test]
 fn missing_kernel_authority_fails_closed_before_adapter_entry() {
     let temp = TempDir::new().unwrap();
-    let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    let signing = test_signing_key("native-runtime-authority-fixture");
     let platform_state = Arc::new(Mutex::new(PlatformState::default()));
     let session = SessionIncarnation {
         endpoint_id: "runtime.1".to_owned(),
