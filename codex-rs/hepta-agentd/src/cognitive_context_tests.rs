@@ -17,6 +17,20 @@ use super::revalidate;
 #[path = "cognitive_context_budget_tests.rs"]
 mod budget;
 
+#[test]
+fn encoded_read_budget_unavailability_is_local_not_store_failure() {
+    let error = super::map_read_ids_error(
+        codex_hepta_cognitive_read::ReadIdsError::EncodedResultTooLarge {
+            actual: 9,
+            maximum: 8,
+        },
+    );
+    assert!(matches!(
+        error,
+        super::CognitiveContextError::ReadUnavailable(_)
+    ));
+}
+
 #[tokio::test]
 async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     let temp = tempfile::tempdir().unwrap();
