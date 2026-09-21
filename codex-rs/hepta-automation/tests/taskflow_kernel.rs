@@ -389,3 +389,74 @@ async fn structural_replay_rejects_hash_valid_taskflow_event_fence_tamper() {
     ));
     store.close().await;
 }
+
+
+#[tokio::test]
+async fn structural_replay_binds_generation_scoped_claim_identity_to_event_fence() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("open store");
+    let owner = fence(/*generation*/ 1);
+    let definition = definition();
+    store
+        .register_taskflow_definition(&definition, &owner, /*registered_at_ms*/ 10)
+        .await
+        .expect("register definition");
+    store
+        .create_taskflow_run(
+            "structural-claim-identity",
+            &definition.workflow_id,
+            definition.version,
+            definition.definition_digest(),
+            "thread-structural",
+            /*created_at_ms*/ 10,
+        )
+        .await
+        .expect("create run");
+    store
+        .claim_taskflow_run(
+            "structural-claim-identity",
+            &owner,
+            /*now_ms*/ 20,
+            /*lease_duration_ms*/ 1_000,
+        )
+        .await
+        .expect("claim run");
+
+    store
+        .replay_taskflow_structural("structural-claim-identity")
+        .await
+        .expect("generation-scoped claim replays");
+
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root())
+        .expect("absolute sqlite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(store.path())
+        .await
+        .expect("open inspection pool");
+    sqlx::query("DROP TRIGGER taskflow_events_no_update")
+        .execute(&pool)
+        .await
+        .expect("drop event immutability trigger");
+    sqlx::query(
+        "UPDATE taskflow_events
+         SET command_id = 'taskflow:claim:1:2'
+         WHERE owner_agent_id = ? AND run_id = ? AND event_seq = 2",
+    )
+    .bind(AGENT_ID)
+    .bind("structural-claim-identity")
+    .execute(&pool)
+    .await
+    .expect("tamper claim generation identity");
+    pool.close().await;
+
+    assert!(matches!(
+        store
+            .replay_taskflow_structural("structural-claim-identity")
+            .await,
+        Err(TaskFlowError::Corrupt(message))
+            if message.contains("lease replay identity does not match its fence")
+    ));
+    store.close().await;
+}
