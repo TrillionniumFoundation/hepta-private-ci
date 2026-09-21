@@ -834,6 +834,7 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         revision: value.revision,
         phase: wire_run_phase(value.phase),
         context_digest: value.context_digest,
+        compilation_receipt_digest: value.compilation_receipt_digest,
         authority_epoch: value.authority_epoch,
         deadline_ms: value.deadline_ms,
         cancel_reason: value.cancel_reason,
