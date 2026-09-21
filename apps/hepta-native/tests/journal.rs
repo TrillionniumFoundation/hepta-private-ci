@@ -27,7 +27,11 @@ fn killed_operation_journal_owner_releases_lock() {
     let temp = TempDir::new().unwrap();
     let path = temp.path().join("operations.json");
     let mut child = std::process::Command::new(std::env::current_exe().unwrap())
-        .args(["--exact", "killed_operation_journal_owner_releases_lock", "--nocapture"])
+        .args([
+            "--exact",
+            "killed_operation_journal_owner_releases_lock",
+            "--nocapture",
+        ])
         .env(CHILD_PATH, &path)
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())
@@ -38,7 +42,10 @@ fn killed_operation_journal_owner_releases_lock() {
     while !ready.exists() && std::time::Instant::now() < deadline {
         std::thread::sleep(std::time::Duration::from_millis(10));
     }
-    assert!(ready.exists(), "child never acquired operation journal lock");
+    assert!(
+        ready.exists(),
+        "child never acquired operation journal lock"
+    );
     assert!(OperationJournal::open(&path).is_err());
 
     child.kill().unwrap();
@@ -53,8 +60,11 @@ fn group_or_world_readable_operation_journal_fails_closed() {
 
     let temp = TempDir::new().unwrap();
     let path = temp.path().join("operations.json");
-    std::fs::write(&path, br#"{"schema":"hepta.native-operation-journal.v2","operations":[]}"#)
-        .unwrap();
+    std::fs::write(
+        &path,
+        br#"{"schema":"hepta.native-operation-journal.v2","operations":[]}"#,
+    )
+    .unwrap();
     std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).unwrap();
 
     let error = OperationJournal::open(&path).unwrap_err();

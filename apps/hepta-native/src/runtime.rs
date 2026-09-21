@@ -69,10 +69,7 @@ impl NativeShellRuntime {
         Ok(session)
     }
 
-    fn accept_runtime_view(
-        &mut self,
-        view: RuntimeView,
-    ) -> Result<PresentationState, ShellError> {
+    fn accept_runtime_view(&mut self, view: RuntimeView) -> Result<PresentationState, ShellError> {
         let session = self.require_session()?.clone();
         view.validate()?;
         if view.session_id != session.session_id || view.session_generation != session.generation {
@@ -147,13 +144,7 @@ impl NativeShellRuntime {
     ) -> Result<FinalUseBinding, ShellError> {
         let session = self.require_session()?;
         let view = self.require_view()?;
-        platform_final_use_binding(
-            subject_id,
-            session,
-            operation_id,
-            view.revision,
-            payload,
-        )
+        platform_final_use_binding(subject_id, session, operation_id, view.revision, payload)
     }
 
     pub fn request_platform_capability(

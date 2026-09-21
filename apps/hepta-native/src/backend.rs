@@ -131,8 +131,7 @@ impl BackendAdapter for LoopbackGatewayBackend {
         let health = self.get_json("/healthz")?;
         if health.value.get("product").and_then(Value::as_str) != Some("hepta")
             || health.value.get("status").and_then(Value::as_str) != Some("ok")
-            || health.value.get("native_auth").and_then(Value::as_str)
-                != Some("keyring_bearer_v1")
+            || health.value.get("native_auth").and_then(Value::as_str) != Some("keyring_bearer_v1")
         {
             return Err(ShellError::Backend(
                 "gateway health identity is not the expected Hepta product".to_owned(),

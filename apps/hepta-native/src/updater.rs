@@ -382,12 +382,24 @@ pub fn activate_staged_update(
 
     if let Err(error) = copy_and_sync(&pending.staged_package, target_path) {
         let reason = format!("native update activation copy failed: {error}");
-        rollback_after_activation_failure(pending_path, &mut pending, target_path, &backup, &reason)?;
+        rollback_after_activation_failure(
+            pending_path,
+            &mut pending,
+            target_path,
+            &backup,
+            &reason,
+        )?;
         return Err(error);
     }
     if digest_file(target_path)? != pending.manifest.package_digest {
         let reason = "installed native update digest mismatch after replacement";
-        rollback_after_activation_failure(pending_path, &mut pending, target_path, &backup, reason)?;
+        rollback_after_activation_failure(
+            pending_path,
+            &mut pending,
+            target_path,
+            &backup,
+            reason,
+        )?;
         return Err(ShellError::Security(
             "installed native update digest mismatch; predecessor rollback recorded".to_owned(),
         ));
@@ -409,8 +421,14 @@ fn validate_pending(pending: &PendingUpdateV1) -> Result<(), ShellError> {
     }
     let activated = !matches!(pending.status, PendingUpdateStatus::Staged);
     if activated
-        && (!pending.target_path.as_ref().is_some_and(|path| path.is_absolute())
-            || !pending.backup_path.as_ref().is_some_and(|path| path.is_absolute()))
+        && (!pending
+            .target_path
+            .as_ref()
+            .is_some_and(|path| path.is_absolute())
+            || !pending
+                .backup_path
+                .as_ref()
+                .is_some_and(|path| path.is_absolute()))
     {
         return Err(ShellError::Update(
             "activated native update lacks absolute target/backup identity".to_owned(),

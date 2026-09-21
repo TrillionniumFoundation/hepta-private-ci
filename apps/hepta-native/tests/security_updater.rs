@@ -120,7 +120,12 @@ fn kernel_final_use_binding_rejects_session_drift() {
     };
     let binding1 =
         platform_final_use_binding("principal.1", &session1, "operation.1", 11, &payload).unwrap();
-    let signed = signed_final_use_grant(&signing, "grant.binding", test_material("session-drift-nonce"), binding1.clone());
+    let signed = signed_final_use_grant(
+        &signing,
+        "grant.binding",
+        test_material("session-drift-nonce"),
+        binding1.clone(),
+    );
     let _permit = gate.claim_platform(&signed, binding1).unwrap();
 
     let binding2 =
@@ -151,7 +156,12 @@ fn kernel_final_use_reloads_revocation_before_os_entry() {
     let binding =
         platform_final_use_binding("principal.1", &session, "operation.revoked", 11, &payload)
             .unwrap();
-    let signed = signed_final_use_grant(&signing, "grant.revoked", test_material("revocation-nonce"), binding.clone());
+    let signed = signed_final_use_grant(
+        &signing,
+        "grant.revoked",
+        test_material("revocation-nonce"),
+        binding.clone(),
+    );
     let permit = gate.claim_platform(&signed, binding).unwrap();
 
     let mut revoked = std::collections::BTreeSet::new();
@@ -460,7 +470,10 @@ fn interrupted_activation_is_reconciled_to_predecessor_before_restart() {
     while !ready.exists() && std::time::Instant::now() < deadline {
         std::thread::sleep(std::time::Duration::from_millis(10));
     }
-    assert!(ready.exists(), "updater child did not reach activated-unconfirmed state");
+    assert!(
+        ready.exists(),
+        "updater child did not reach activated-unconfirmed state"
+    );
     assert_eq!(std::fs::read(&predecessor).unwrap(), b"candidate");
 
     child.kill().unwrap();

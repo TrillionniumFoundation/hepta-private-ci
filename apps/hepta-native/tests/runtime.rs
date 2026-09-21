@@ -27,8 +27,8 @@ use hepta_native::runtime::NativeShellRuntime;
 use hepta_native::security::KernelFinalUseGate;
 use hepta_native::security::now_unix_ms;
 use hepta_native::security::platform_final_use_binding;
-use tempfile::TempDir;
 use sha2::Digest as _;
+use tempfile::TempDir;
 
 const D1: &str = "1111111111111111111111111111111111111111111111111111111111111111";
 const D2: &str = "2222222222222222222222222222222222222222222222222222222222222222";
@@ -508,8 +508,7 @@ fn repeated_indeterminate_reconciliation_never_reinvokes() {
         session_id: "session.indeterminate".to_owned(),
         generation: 1,
     };
-    let mut runtime =
-        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    let mut runtime = runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let session = runtime.session().unwrap().clone();
@@ -525,8 +524,12 @@ fn repeated_indeterminate_reconciliation_never_reinvokes() {
         11,
     );
 
-    let first = runtime.request_platform_capability(request.clone()).unwrap();
-    let second = runtime.request_platform_capability(request.clone()).unwrap();
+    let first = runtime
+        .request_platform_capability(request.clone())
+        .unwrap();
+    let second = runtime
+        .request_platform_capability(request.clone())
+        .unwrap();
     let third = runtime.request_platform_capability(request).unwrap();
     assert!(!first.terminal_observed);
     assert!(!second.terminal_observed);
@@ -546,8 +549,7 @@ fn reused_operation_with_changed_resource_payload_fails_closed() {
         session_id: "session.resource".to_owned(),
         generation: 1,
     };
-    let mut runtime =
-        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    let mut runtime = runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let session = runtime.session().unwrap().clone();
@@ -626,8 +628,7 @@ fn stale_backend_view_is_rejected_before_authority_or_platform_entry() {
         session_id: "session.stale-view".to_owned(),
         generation: 1,
     };
-    let mut runtime =
-        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    let mut runtime = runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let session = runtime.session().unwrap().clone();
@@ -654,8 +655,7 @@ fn reused_operation_rejects_principal_or_grant_identity_drift() {
         session_id: "session.semantic-reuse".to_owned(),
         generation: 1,
     };
-    let mut runtime =
-        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    let mut runtime = runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let session = runtime.session().unwrap().clone();
@@ -683,14 +683,7 @@ fn reused_operation_rejects_principal_or_grant_identity_drift() {
     let error = runtime.request_platform_capability(second).unwrap_err();
     assert!(error.to_string().contains("changed semantics"));
 
-    let mut changed_principal = request(
-        &signing,
-        &session,
-        "operation.semantic",
-        1,
-        payload,
-        9,
-    );
+    let mut changed_principal = request(&signing, &session, "operation.semantic", 1, payload, 9);
     changed_principal.subject_id = "principal.2".to_owned();
     let error = runtime
         .request_platform_capability(changed_principal)
@@ -712,8 +705,7 @@ fn permission_denial_is_terminal_and_never_claims_or_invokes() {
         session_id: "session.permission".to_owned(),
         generation: 1,
     };
-    let mut runtime =
-        runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
+    let mut runtime = runtime_fixture(&temp, vec![session], platform_state.clone(), final_use);
     runtime.connect_runtime(&manifest()).unwrap();
     render(&mut runtime, 1);
     let session = runtime.session().unwrap().clone();

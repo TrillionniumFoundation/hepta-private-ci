@@ -96,11 +96,7 @@ impl HeptaNativeApp {
             status: None,
             last_error: None,
             operation_subject_id: "operator.local".to_owned(),
-            operation_id: format!(
-                "native.ui.{}.{}",
-                std::process::id(),
-                now_unix_ms()?.max(1)
-            ),
+            operation_id: format!("native.ui.{}.{}", std::process::id(), now_unix_ms()?.max(1)),
             operation_action: PlatformAction::CopyText,
             operation_path: String::new(),
             operation_text: String::new(),
@@ -229,11 +225,7 @@ impl HeptaNativeApp {
                     PlatformAction::CopyText,
                     PlatformAction::Notify,
                 ] {
-                    ui.selectable_value(
-                        &mut self.operation_action,
-                        action,
-                        action.to_string(),
-                    );
+                    ui.selectable_value(&mut self.operation_action, action, action.to_string());
                 }
             });
 
@@ -258,13 +250,19 @@ impl HeptaNativeApp {
         ui.text_edit_singleline(&mut self.operation_grant_path);
         ui.horizontal(|ui| {
             if ui
-                .button(self.locale.text("Prepare exact binding", "生成精确 binding"))
+                .button(
+                    self.locale
+                        .text("Prepare exact binding", "生成精确 binding"),
+                )
                 .clicked()
             {
                 self.prepare_operation_binding();
             }
             if ui
-                .button(self.locale.text("Execute with signed grant", "使用签名 grant 执行"))
+                .button(
+                    self.locale
+                        .text("Execute with signed grant", "使用签名 grant 执行"),
+                )
                 .clicked()
             {
                 self.execute_operation();
@@ -377,17 +375,17 @@ impl HeptaNativeApp {
             let metadata = std::fs::metadata(&grant_path)?;
             if !metadata.is_file() || metadata.len() == 0 || metadata.len() > 16 * 1024 {
                 return Err(ShellError::InvalidInput(
-                    "signed final-use grant must be a non-empty regular file <= 16 KiB"
-                        .to_owned(),
+                    "signed final-use grant must be a non-empty regular file <= 16 KiB".to_owned(),
                 ));
             }
-            let grant: SignedFinalUseGrant =
-                serde_json::from_slice(&std::fs::read(&grant_path)?)?;
-            let displayed_revision = self
-                .runtime
-                .view()
-                .map(|view| view.revision)
-                .ok_or_else(|| ShellError::State("native runtime view is unavailable".to_owned()))?;
+            let grant: SignedFinalUseGrant = serde_json::from_slice(&std::fs::read(&grant_path)?)?;
+            let displayed_revision =
+                self.runtime
+                    .view()
+                    .map(|view| view.revision)
+                    .ok_or_else(|| {
+                        ShellError::State("native runtime view is unavailable".to_owned())
+                    })?;
             let receipt = self.runtime.request_platform_capability(PlatformRequest {
                 subject_id: self.operation_subject_id.trim().to_owned(),
                 operation_id: self.operation_id.trim().to_owned(),
