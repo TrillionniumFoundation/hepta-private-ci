@@ -130,6 +130,9 @@ pub struct LaneFRunRequestV3 {
     pub request_digest: Digest32,
     pub body_digest: Digest32,
     pub artifact_set_digest: Digest32,
+    /// Digest of the exact bytes runtime.codex must submit at the physical
+    /// model-effect boundary for this run.
+    pub execution_payload_digest: Digest32,
     pub snapshot: CapabilitySnapshotV2,
     pub legal_candidates: LegalActionCandidateSetV1,
     pub budget: LaneFBudgetV3,
@@ -482,6 +485,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         ("request", request.request_digest),
         ("body", request.body_digest),
         ("artifact set", request.artifact_set_digest),
+        ("execution payload", request.execution_payload_digest),
     ] {
         if digest.is_zero() {
             return Err(PipelineErrorV3::EmptyDigest(name));
@@ -794,6 +798,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
             prompt_digest,
             intuition_digest,
             context_digest,
+            request.execution_payload_digest,
             prefix,
             request.deadline_unix_micros,
             request.budget.total_micros,
