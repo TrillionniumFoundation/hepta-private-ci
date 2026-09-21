@@ -102,7 +102,7 @@ their own selected-policy propensity and independently observed outcomes.
 
 ## Explicit HNMF memory retrieval composition
 
-`AgentdConfig::with_memory_retrieval_context` attaches an externally supplied
+`AgentdConfig::with_cognitive_retrieval_context` attaches an externally supplied
 `CurrentMemoryRetrievalContext` for one Agent/body generation. The provider
 must return a current Lane C generation vector, objective/context/cue bindings,
 retrieval policy, immutable engram snapshot and dynamics policy. Agentd does not
@@ -136,8 +136,11 @@ planning and final currentness checks. An empty delivered subset is recorded as
 abstained or omitted from being mislabeled as exposure.
 
 This is a named product-host source candidate, not automatic activation. The
-ordinary CLI still does not synthesize or select an HNMF generation, vector
-encoder/vector-index owner, learned model or release decision. The durable SQLite KG
+real Agentd process accepts the explicit `HEPTA_COGNITIVE_RETRIEVAL_MODE`
+profile selector; `hnmf-required` fails startup unless an authenticated current
+retrieval context has also been composed. The ordinary binary does not synthesize
+an HNMF generation/current-context provider, vector encoder/vector-index owner,
+learned model or release decision. The durable SQLite KG
 owner supplies typed causal, procedural and contradiction-support channels; generic
 graph evidence remains separate. Target
 host timing/resource measurements, independent semantic review, longitudinal
