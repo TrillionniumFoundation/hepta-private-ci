@@ -73,7 +73,7 @@ pub fn build_prompt_factor_projection_v1(
             push_id(&mut payload, &factor.factor_id);
             push_id(&mut payload, &factor.semantic_version);
             payload.extend_from_slice(factor.content_digest.as_array());
-            KnowledgeNodeV2 {
+            Ok(KnowledgeNodeV2 {
                 node_id: factor.factor_id.clone(),
                 node_kind_id: stable_id("kind:prompt-factor")?,
                 payload_digest: Digest32::of_bytes(&payload),
@@ -90,8 +90,7 @@ pub fn build_prompt_factor_projection_v1(
                     valid_to_unix_seconds: None,
                     tombstoned: false,
                 }],
-            }
-            .pipe(Ok)
+            })
         })
         .collect::<Result<Vec<_>, PromptFactorProjectionErrorV1>>()?;
 
@@ -175,12 +174,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(raw);
 }
 
-trait Pipe: Sized {
-    fn pipe<T>(self, f: impl FnOnce(Self) -> T) -> T {
-        f(self)
-    }
-}
-impl<T> Pipe for T {}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PromptFactorProjectionErrorV1 {
