@@ -137,6 +137,14 @@ def manifest_errors(
     used_internal_dependency_feature_exceptions: set[tuple[str, str, str]],
 ) -> list[str]:
     manifest = load_manifest(path)
+    # cargo-fuzz crates intentionally use a nested standalone workspace so they
+    # do not become members of the product workspace. Their isolated manifest
+    # cannot inherit package metadata or workspace lints from codex-rs without
+    # changing that build topology. Keep the exception structural and narrow:
+    # only a manifest under a `fuzz` directory with cargo-fuzz metadata and its
+    # own workspace root is exempt from product-workspace inheritance checks.
+    if is_isolated_cargo_fuzz_workspace(path, manifest):
+        return []
     package = manifest.get("package")
     if not isinstance(package, dict) and path != CARGO_RS_ROOT / "Cargo.toml":
         return []
@@ -231,6 +239,16 @@ def manifest_errors(
                 )
 
     return errors
+
+
+def is_isolated_cargo_fuzz_workspace(path: Path, manifest: dict) -> bool:
+    if path.parent.name != "fuzz" or not isinstance(manifest.get("workspace"), dict):
+        return False
+    package = manifest.get("package")
+    if not isinstance(package, dict):
+        return False
+    metadata = package.get("metadata")
+    return isinstance(metadata, dict) and metadata.get("cargo-fuzz") is True
 
 
 def expected_package_name(path: Path) -> str | None:
