@@ -99,6 +99,28 @@ impl EphemeralModelInputFinalUseGuard for FederatedFinalUseGuard {
                     "federated memory changed or was revoked after request assembly",
                 ));
             }
+            let final_use_now = now_unix_seconds().ok_or_else(|| {
+                ModelProviderPolicyError::new(
+                    "federated_memory_final_use_clock_unavailable",
+                    "current wall clock is unavailable after federation revalidation",
+                )
+            })?;
+            if statuses.iter().any(|status| match status {
+                FederatedRevalidationStatus::Current(explanation) => {
+                    !final_use_capability_window_current(
+                        now,
+                        final_use_now,
+                        explanation.capability.effective_at_unix_seconds(),
+                        explanation.capability.expires_at_unix_seconds(),
+                    )
+                }
+                FederatedRevalidationStatus::Stale(_) => true,
+            }) {
+                return Err(ModelProviderPolicyError::new(
+                    "federated_memory_final_use_stale",
+                    "federated memory capability expired or the clock regressed before provider dispatch",
+                ));
+            }
             Ok(())
         })
     }
@@ -724,6 +746,17 @@ fn api_digest(
     ModelProviderSha256Digest::parse(digest.as_str())
 }
 
+fn final_use_capability_window_current(
+    revalidation_started_at: i64,
+    final_use_now: i64,
+    effective_at: i64,
+    expires_at: i64,
+) -> bool {
+    final_use_now >= revalidation_started_at
+        && effective_at <= final_use_now
+        && final_use_now < expires_at
+}
+
 #[cfg(test)]
 mod tests {
     use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES;
@@ -760,6 +793,7 @@ mod tests {
     use super::FederatedCognitiveExtension;
     use super::combine_cognitive_materials;
     use super::federation_source_binding;
+    use super::final_use_capability_window_current;
     use super::now_unix_seconds;
     use crate::cognitive::CognitiveProposalMaterial;
     use crate::extension::HeptaMemoryThreadState;
@@ -768,6 +802,14 @@ mod tests {
     const THREAD_ID: &str = "00000000-0000-4000-8000-000000000711";
     const OWNER_ID: &str = "00000000-0000-4000-8000-000000000712";
     const CONSUMER_ID: &str = "00000000-0000-4000-8000-000000000713";
+
+    #[test]
+    fn final_use_capability_window_rejects_expiry_and_clock_regression() {
+        assert!(final_use_capability_window_current(100, 100, 99, 101));
+        assert!(!final_use_capability_window_current(100, 101, 99, 101));
+        assert!(!final_use_capability_window_current(100, 99, 99, 101));
+        assert!(!final_use_capability_window_current(100, 100, 101, 102));
+    }
 
     #[test]
     fn federated_source_binding_changes_when_coverage_changes() {
