@@ -17,6 +17,7 @@ use std::fmt;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::compile;
@@ -255,6 +256,26 @@ impl AgentdOwnerPortsV1 {
         })
     }
 
+    fn within_budget(
+        input: &CanonicalPortInputV1,
+        started: Instant,
+    ) -> Result<(), CanonicalPortFailureV1> {
+        let elapsed = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+        if elapsed > input.budget_micros {
+            return Err(CanonicalPortFailureV1 {
+                class: CanonicalPortFailureClassV1::TimedOut,
+                evidence_digest: Digest32::of_bytes(
+                    format!(
+                        "hepta.agentd.intelligence.stage-timeout.v1:{:?}:{elapsed}:{}",
+                        input.stage, input.budget_micros
+                    )
+                    .as_bytes(),
+                ),
+            });
+        }
+        Ok(())
+    }
+
     fn take<T>(
         slot: &mut Option<T>,
         stage: CanonicalStageV1,
@@ -272,8 +293,10 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let envelope = Self::take(&mut self.objective_envelope, input.stage, "objective envelope")?;
         let profile = Self::take(&mut self.objective_profile, input.stage, "objective profile")?;
         let context = Self::take(&mut self.objective_context, input.stage, "objective context")?;
+        let started = Instant::now();
         let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
             .map_err(|_| Self::reject(input.stage, "objective admission"))?;
+        Self::within_budget(input, started)?;
         if outcome.receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "objective authority"));
         }
@@ -309,8 +332,10 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         let scalarization =
             Self::take(&mut self.utility_scalarization, input.stage, "utility scalarization")?;
         let policy = Self::take(&mut self.utility_policy, input.stage, "utility policy")?;
+        let started = Instant::now();
         let receipt = evaluate_candidates_with_policy(set, profile, scalarization, policy)
             .map_err(|_| Self::reject(input.stage, "utility evaluation"))?;
+        Self::within_budget(input, started)?;
         if receipt.base.objective_digest != input.objective_digest {
             return Err(Self::reject(input.stage, "utility receipt objective"));
         }
@@ -334,8 +359,10 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         {
             return Err(Self::reject(input.stage, "neural binding"));
         }
+        let started = Instant::now();
         let (_, receipt) = sparse_tick(&config, &tick, previous.as_ref())
             .map_err(|_| Self::reject(input.stage, "neural tick"))?;
+        Self::within_budget(input, started)?;
         if receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "neural authority"));
         }
@@ -355,8 +382,10 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         if request.objective_digest != input.objective_digest {
             return Err(Self::reject(input.stage, "prompt objective"));
         }
+        let started = Instant::now();
         let receipt =
             optimize(request).map_err(|_| Self::reject(input.stage, "prompt optimization"))?;
+        Self::within_budget(input, started)?;
         if receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "prompt authority"));
         }
@@ -376,8 +405,10 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         if request.objective_digest != input.objective_digest {
             return Err(Self::reject(input.stage, "intuition objective"));
         }
+        let started = Instant::now();
         let receipt = decide_calibrated_v2(request)
             .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
+        Self::within_budget(input, started)?;
         if receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "intuition authority"));
         }
@@ -417,7 +448,9 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         {
             return Err(Self::reject(input.stage, "context binding"));
         }
+        let started = Instant::now();
         let receipt = compile(request).map_err(|_| Self::reject(input.stage, "context compile"))?;
+        Self::within_budget(input, started)?;
         if receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "context authority"));
         }
@@ -443,8 +476,10 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         {
             return Err(Self::reject(input.stage, "evaluation binding"));
         }
+        let started = Instant::now();
         let receipt =
             evaluate(request).map_err(|_| Self::reject(input.stage, "evaluation"))?;
+        Self::within_budget(input, started)?;
         if receipt.disposition != EvaluationDisposition::EligibleForFurtherReview {
             return Err(Self::reject(input.stage, "evaluation disposition"));
         }
