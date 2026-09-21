@@ -334,7 +334,9 @@
             "GlobalControlHostPolicyV1",
             "host_open_rejects_missing_required_owner_trust",
             "caller_cannot_omit_host_required_owner",
-            "caller_cannot_relax_host_ndu_policy"
+            "caller_cannot_relax_host_ndu_policy",
+            "revocation_frontier_digest",
+            "caller_cannot_replace_host_revocation_frontier"
           ]
         },
         "currentHostFinalUseFence": {
@@ -361,6 +363,13 @@
             "admit_fleet_allocation_owner_v1",
             "revalidate_fleet_allocation_for_plan_v1",
             "authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request"
+          ]
+        },
+        "revocationFrontierOwnership": {
+          "state": "host_policy_owned_request_override_rejected",
+          "evidence": [
+            "GlobalControlHostPolicyV1::revocation_frontier_digest",
+            "caller_cannot_replace_host_revocation_frontier"
           ]
         }
       },
