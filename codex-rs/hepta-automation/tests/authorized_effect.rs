@@ -608,7 +608,10 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
             31,
         )
         .await;
-    assert!(matches!(replay, Err(AuthorizedEffectError::RecoveryRequired)));
+    assert!(matches!(
+        replay,
+        Err(AuthorizedEffectError::RecoveryRequired)
+    ));
     assert_eq!(must_not_dispatch.calls, 0);
 
     let recovered = reopened
@@ -625,7 +628,10 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
         )
         .await
         .expect("provider-owned recovery");
-    assert!(matches!(recovered, AuthorizedEffectRecoveryResult::Observed(_)));
+    assert!(matches!(
+        recovered,
+        AuthorizedEffectRecoveryResult::Observed(_)
+    ));
 }
 
 #[tokio::test]
