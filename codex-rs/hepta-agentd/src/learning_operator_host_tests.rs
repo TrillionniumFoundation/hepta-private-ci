@@ -9,6 +9,7 @@ use codex_hepta_bellman_operator::TabularOperatorSampleV1;
 use codex_hepta_bellman_operator::VerifiedOperatorDatasetV2;
 use codex_hepta_bellman_operator::encode_tabular_payload_v1;
 use codex_hepta_bellman_operator::fit_tabular_operator_bound_v2;
+use codex_hepta_bellman_operator::operator_dataset_signing_payload_v2;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_intelligence::evaluated_candidate_signing_payload_v1;
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
@@ -124,13 +125,14 @@ fn signed(
 }
 
 fn principals_and_verifier() -> (
-    [SigningKey; 2],
+    [SigningKey; 3],
     Vec<AuthenticatedPrincipalV1>,
     LearningEvidenceVerifierV1,
 ) {
     let keys = [
         SigningKey::from_bytes(&[31; 32]),
         SigningKey::from_bytes(&[32; 32]),
+        SigningKey::from_bytes(&[33; 32]),
     ];
     let principals = keys
         .iter()
@@ -157,10 +159,11 @@ fn principals_and_verifier() -> (
                 principal: principal.clone(),
                 controller_id: principal.principal_id.clone(),
                 verifying_key: key.verifying_key().to_bytes(),
-                roles: vec![if index == 0 {
-                    LearningEvidenceRoleV1::Generator
-                } else {
-                    LearningEvidenceRoleV1::Evaluator
+                roles: vec![match index {
+                    0 => LearningEvidenceRoleV1::Generator,
+                    1 => LearningEvidenceRoleV1::Evaluator,
+                    2 => LearningEvidenceRoleV1::DatasetOwner,
+                    _ => unreachable!("three signer fixture"),
                 }],
                 revoked_at: None,
             })
@@ -196,7 +199,7 @@ fn frozen_dataset(
 }
 
 fn evaluation_fixture(
-    keys: &[SigningKey; 2],
+    keys: &[SigningKey; 3],
     principals: &[AuthenticatedPrincipalV1],
     verifier: LearningEvidenceVerifierV1,
     dataset: &DatasetSnapshotReceiptV3,
@@ -450,7 +453,15 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
         digest("row-1-1"),
     ];
     let (keys, principals, verifier) = principals_and_verifier();
-    let dataset = frozen_dataset(principals[0].clone(), digest("objective"), &evidence);
+    let dataset = frozen_dataset(principals[2].clone(), digest("objective"), &evidence);
+    let dataset_owner_payload = operator_dataset_signing_payload_v2(&dataset, 50).unwrap();
+    let dataset_owner_evidence = signed(
+        &verifier,
+        &principals[2],
+        &keys[2],
+        LearningEvidenceRoleV1::DatasetOwner,
+        &dataset_owner_payload,
+    );
     let plan = TabularOperatorPlanV1 {
         artifact_id: id("policy"),
         producer_id: id("offline-operator-host"),
@@ -477,7 +488,13 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
             })
             .collect(),
     };
-    let verified = VerifiedOperatorDatasetV2::from_receipt(&dataset, 50).unwrap();
+    let verified = VerifiedOperatorDatasetV2::from_authenticated_receipt(
+        &dataset,
+        &dataset_owner_evidence,
+        &verifier,
+        50,
+    )
+    .unwrap();
     let expected_model = fit_tabular_operator_bound_v2(&verified, plan.clone()).unwrap();
     let expected_bytes = encode_tabular_payload_v1(&expected_model).unwrap();
     let eval = evaluation_fixture(
@@ -540,6 +557,7 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
             OfflineOperatorCandidateRequestV1 {
                 operation_id: id("product-operator-run"),
                 dataset: &dataset,
+                dataset_owner_evidence: &dataset_owner_evidence,
                 plan: plan.clone(),
                 register_event_id: id("register-policy"),
                 trained_lifecycle_event_id: id("trained-policy"),
@@ -614,6 +632,7 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
             OfflineOperatorCandidateRequestV1 {
                 operation_id: id("product-operator-run"),
                 dataset: &dataset,
+                dataset_owner_evidence: &dataset_owner_evidence,
                 plan,
                 register_event_id: id("register-policy"),
                 trained_lifecycle_event_id: id("trained-policy"),
