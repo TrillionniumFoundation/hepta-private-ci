@@ -214,7 +214,6 @@ fn exhausted_revision_preserves_realizations_during_retirement_and_revocation() 
     assert_eq!(registry, active);
 }
 
-
 #[test]
 fn governed_factor_relations_are_owner_bound_and_rebuildable() {
     let mut registry = PromptRegistry::new(64).expect("registry");
@@ -230,7 +229,11 @@ fn governed_factor_relations_are_owner_bound_and_rebuildable() {
             })
             .expect("factor");
         registry
-            .admit_factor(&id(factor_id), &id("reviewer:independent"), digest(b"admission"))
+            .admit_factor(
+                &id(factor_id),
+                &id("reviewer:independent"),
+                digest(b"admission"),
+            )
             .expect("admit");
     }
     let relation = PromptFactorRelation {
@@ -276,7 +279,11 @@ fn factor_relation_requires_live_governed_canonical_endpoints() {
         })
         .expect("factor");
     registry
-        .admit_factor(&id("factor:a"), &id("reviewer:independent"), digest(b"admission"))
+        .admit_factor(
+            &id("factor:a"),
+            &id("reviewer:independent"),
+            digest(b"admission"),
+        )
         .expect("admit");
     let missing = PromptFactorRelation {
         relation_id: id("relation:a:b"),

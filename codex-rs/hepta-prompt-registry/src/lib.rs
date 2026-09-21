@@ -161,7 +161,10 @@ impl PromptFactorGraphSourceV1 {
             .iter()
             .map(|factor| factor.factor_id.clone())
             .collect::<std::collections::BTreeSet<_>>();
-        if self.factors.iter().any(|factor| factor.content_digest.is_zero())
+        if self
+            .factors
+            .iter()
+            .any(|factor| factor.content_digest.is_zero())
             || self.relations.iter().any(|relation| {
                 relation.evidence_digest.is_zero()
                     || relation.left_factor_id >= relation.right_factor_id
@@ -394,7 +397,8 @@ impl PromptRegistry {
         }
         self.ensure_capacity(/*additional*/ 1)?;
         let next_revision = self.next_revision()?;
-        self.relations.insert(relation.relation_id.clone(), relation);
+        self.relations
+            .insert(relation.relation_id.clone(), relation);
         self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Inserted))
     }

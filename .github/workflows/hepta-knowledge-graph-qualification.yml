@@ -102,6 +102,15 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Observe repository-wide detailed-design health
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Global design health is still visible and remains enforced by its
+          # owning workflows. Unrelated module drift must not suppress the
+          # exact-candidate knowledge.graph executable evidence below.
           python3 scripts/hepta-technical-closure.py verify
 
       - name: Check KG-owned Rust formatting
