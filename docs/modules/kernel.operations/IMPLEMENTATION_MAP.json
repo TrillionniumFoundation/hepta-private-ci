@@ -17,8 +17,8 @@
     "codex-rs/hepta-operations"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "source_composed_agentd_host_seam_activation_pending",
+  "productionImplementation": true,
+  "productCallerState": "source_composed_agentd_runtime_path_external_authority_activation_pending",
   "productionWriterState": "durable_cognitive_store_owner_implemented_not_activated",
   "operations": [
     {
@@ -39,13 +39,28 @@
       ]
     },
     {
-      "operation": "claim_dispatch",
-      "nativeSymbol": "LocalLeaseOutbox::claim_dispatch",
-      "sourcePath": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
-      "state": "durable_source_implemented_execution_pending",
-      "authority": "generation_and_fence_bound",
+      "operation": "claim_outbox",
+      "nativeSymbol": "DurableOperationClaims::claim",
+      "sourcePath": "codex-rs/hepta-memory/src/operation_claims.rs",
+      "state": "durable_claim_lease_implemented_execution_pending",
+      "authority": "generation_fence_attempt_lease_bound",
       "tests": [
-        "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "claim_outbox",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "cognitive.store"
+      ]
+    },
+    {
+      "operation": "renew_outbox_claim",
+      "nativeSymbol": "DurableOperationClaims::renew",
+      "sourcePath": "codex-rs/hepta-memory/src/operation_claims.rs",
+      "state": "durable_claim_renewal_implemented_execution_pending",
+      "authority": "generation_fence_attempt_lease_bound",
+      "tests": [
         "codex-rs/hepta-memory/src/production_writer.rs"
       ],
       "sourcePathExists": true,
@@ -74,7 +89,7 @@
       ]
     },
     {
-      "operation": "observe_terminal",
+      "operation": "observe_cognitive_terminal",
       "nativeSymbol": "CognitiveSourceOutboxTarget::observe_terminal",
       "sourcePath": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
       "state": "real_destination_observer_source_implemented_execution_pending",
@@ -87,6 +102,54 @@
       "mappingClass": "delegated_owner_native",
       "delegatedCallees": [
         "cognitive.store"
+      ]
+    },
+    {
+      "operation": "automation_destination_apply",
+      "nativeSymbol": "AutomationStore::create_task_from_operation",
+      "sourcePath": "codex-rs/hepta-automation/src/operation_destination.rs",
+      "state": "second_destination_atomic_dedupe_source_implemented_execution_pending",
+      "authority": "destination_owned_transaction",
+      "tests": [
+        "codex-rs/hepta-automation/tests/kernel_operations_destination.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "destination_apply",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "automation.taskflow"
+      ]
+    },
+    {
+      "operation": "automation_terminal_observation",
+      "nativeSymbol": "AutomationStore::observe_task_operation",
+      "sourcePath": "codex-rs/hepta-automation/src/operation_destination.rs",
+      "state": "second_destination_observer_source_implemented_execution_pending",
+      "authority": "destination_owned_terminal_evidence",
+      "tests": [
+        "codex-rs/hepta-automation/tests/kernel_operations_destination.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "observe_terminal",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "automation.taskflow"
+      ]
+    },
+    {
+      "operation": "agentd_runtime_composition",
+      "nativeSymbol": "AgentdProductionOperationRuntimeConfig::open",
+      "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "state": "named_runtime_composition_source_implemented_activation_pending",
+      "authority": "externally_supplied_authority_and_grant_provider",
+      "tests": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "product_composition",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": [
+        "runtime.agentd"
       ]
     },
     {
@@ -120,19 +183,19 @@
   ],
   "repositoryControlledGaps": [
     "Run current exact-head and deterministic synthetic-merge qualification for the durable candidate and close every resulting finding.",
-    "Compose the Agentd host seam with an enrolled production grant source and continuously hosted dispatcher/reconciler before activation.",
-    "Add equivalent destination-owned dedupe/apply/terminal observation for every additional activated effect destination.",
-    "Design and qualify bounded segment/checkpoint compaction for the append-only local lease/event/outbox journals; do not delete hash-chain history in place."
+    "Keep ordinary operation paths incremental; full-chain verification is reserved for open/reopen, recovery and terminal audit boundaries.",
+    "Add destination-owned dedupe/apply/terminal observation before activating each remaining registered effect destination.",
+    "Design and qualify bounded segment/checkpoint compaction for append-only lease/event/outbox history before long-lived capacity qualification."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host crash/power-loss/storage qualification",
+    "enrolled production authority/grant source and target-host crash/power-loss/storage qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -140,5 +203,68 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-operations"
-  ]
+  ],
+  "sourceBaseSemantics": "lineage_anchor_only",
+  "exactSourceEvidence": {
+    "kind": "path_blob_manifest_v1",
+    "entries": [
+      {
+        "path": "codex-rs/hepta-operations/src/model.rs",
+        "blobSha": "717cc0c987698e5c973af0272d07948d98336331"
+      },
+      {
+        "path": "codex-rs/hepta-operations/src/ledger.rs",
+        "blobSha": "22c9943d958bdbf9e1823bcb07a532c2a9e94e37"
+      },
+      {
+        "path": "codex-rs/hepta-operations/src/outbox.rs",
+        "blobSha": "b6665baf62e1a68362466b0e6b56a536ccf9a468"
+      },
+      {
+        "path": "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+        "blobSha": "10c3dc2ed7778837b84bf33705a596ac489507a8"
+      },
+      {
+        "path": "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+        "blobSha": "b8d06d5ca867f6d5b32d78f5276f9a1b4f11f5cc"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+        "blobSha": "954b23329826518f8fd0173026b5bfd41ea4b3e2"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+        "blobSha": "3c168bb2f4e26d80f6a5cd24253c26d44cf4bc87"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_writer.rs",
+        "blobSha": "be0b6c5e92864e0fd8082e4eab30f80d5d9fbb2a"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+        "blobSha": "f7cca8a1ba12d596718094408ad01fb65a647be1"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "blobSha": "e82820d5e4d87ff2245d1df15ce8d9275f35a40e"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "blobSha": "56c2d7111140deba7356459861fba80337a32062"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+        "blobSha": "4ecc71bb890d5815d426170ad5d433104e849414"
+      },
+      {
+        "path": "codex-rs/hepta-automation/migrations/0004_kernel_operation_dedupe.sql",
+        "blobSha": "3d47e652d096cd0e7c75698e201e553a1464969d"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/operation_destination.rs",
+        "blobSha": "b6f23ab57f77cfb7ecc2582d1d574f7d13b9f7c8"
+      }
+    ],
+    "digest": "sha256:6a794cd325b2e5836aa8be653dc645a9b85b96732ff3a840a245ef99f64b7e11"
+  }
 }
