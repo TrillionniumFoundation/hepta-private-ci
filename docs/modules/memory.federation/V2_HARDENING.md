@@ -76,18 +76,18 @@ Production Agentd composition uses `CognitiveRuntime::AvailableFederatedV2`. The
 
 For each physical federated recall:
 
-1. rediscover currently active capabilities from owner stores;
-2. cap enrolled sources at the existing federation source limit;
+1. concurrently rediscover currently active capabilities from the bounded owner-candidate set;
+2. deterministically sort/deduplicate and cap admitted sources at the existing federation source limit, while recording peer truncation and owner-candidate omission;
 3. build a query and lease bound to consumer, peer, scope, purpose, capability generation/revision, query digest, nonce and deadline;
 4. perform canonical live-authority preflight and require `Current` before dispatch;
 5. execute the owner read through `FederationTransportV2`, interruptible at `min(query_deadline, lease_expiry)`;
 6. seal and verify the remote response digest;
 7. rediscover the current owner capability after I/O;
 8. admit evidence only if the final live authority observation is current;
-9. aggregate explicit requested/completed/failed/truncated coverage;
-10. batch-revalidate the prepared attachment at physical model-request assembly: bindings from the same owner/capability share one SQLite read snapshot, the whole batch shares one bounded product deadline, and different owners remain independent federation snapshots; after the batch completes, read the wall clock again and reject if any capability crossed its expiry or the clock regressed; timeout, stale generation, revocation, expiry crossing or owner unavailability drops the federated proposal fail-closed.
+9. deterministically aggregate requested/completed/failed peers, peer truncation, owner-candidate omission, item truncation and typed discovery/deadline-authority/integrity/transport failure counts;
+10. batch-revalidate the prepared attachment at physical model-request assembly: bindings from the same owner/capability share one SQLite read snapshot, the whole batch shares one bounded product deadline, and different owners remain independent federation snapshots; after the batch completes, read the wall clock again and reject if any capability crossed its expiry or the clock regressed; timeout, stale generation, revocation, expiry crossing or owner unavailability drops the federated proposal fail-closed. This fence is evaluated after provider-attempt admission and before transport entry; under the repository-wide dispatch contract it does not claim retroactive cancellation authority over an already admitted effect.
 
-The product adapter is read-only. It does not enroll peers, mint capability grants, mutate remote memory, inherit owner credentials or retry unknown operations.
+The product adapter is read-only. It does not enroll peers, mint capability grants, mutate remote memory, inherit owner credentials or retry unknown operations. Admitted peer attempts are polled concurrently under the same total deadline; completion order never controls result ordering.
 
 ## 6. Legacy compatibility boundary
 
@@ -97,16 +97,23 @@ This distinction is enforced in source, not only by convention: product model-in
 
 ## 7. Coverage semantics
 
-Product aggregation preserves four counters:
+Product aggregation preserves bounded structured coverage:
 
 ```text
 requested_peers
 completed_peers
 failed_peers
+truncated_peers
+omitted_peer_candidates
 truncated_items
+failures.discovery_unavailable
+failures.deadline_or_cancelled
+failures.authority_rejected
+failures.integrity_rejected
+failures.transport_unavailable
 ```
 
-A failed peer is not converted into a successful empty result. `Partial + []` also remains `Partial`; an incomplete peer response with zero returned items must not be relabeled as a valid empty result. Partial coverage remains visible in the prepared federated attachment, in the combined local+federated model-input payload, and in the source-binding digest supplied to the model-input proposal.
+A failed peer is not converted into a successful empty result. `Partial + []` also remains `Partial`; an incomplete peer response with zero returned items must not be relabeled as a valid empty result. Peer-cap truncation and pre-discovery owner-candidate omission are reported separately from failures. Typed failure counts remain bound into the canonical result digest where a result exists and into the prepared product attachment/source binding at aggregation. Partial coverage remains visible in the combined local+federated model-input payload.
 
 A successfully observed owner layout with no active grant remains only an enrollment candidate and does not consume a requested-peer slot. An active grant is enrolled only when its consumer-workspace digest exactly matches the requesting `FederationConsumerAccess`; a grant for another workspace never becomes a queried peer and no transport attempt is made. If the owner capability store cannot be observed at all, enrollment status is indeterminate rather than equivalent to "no grant": the product caller reserves a bounded failed slot from the same <=16 peer budget. Likewise, a terminal transport whose post-I/O authority becomes revoked or generation-stale contributes failed aggregate coverage even though the transport itself completed.
 
@@ -137,7 +144,9 @@ The focused V2 suite includes adversarial cases for:
 - wrong-workspace grants never entering queried coverage or transport dispatch;
 - revoked/stale terminal attempts contributing failed aggregate coverage;
 - combined local+federated model input preserving the federation coverage vector;
-- bounded fail-closed physical-send revalidation, including same-owner/capability batch coherence under one SQLite snapshot, one total final-use deadline, and a fresh post-batch clock check that rejects expiry crossing or clock regression before provider dispatch;
+- bounded fail-closed physical-send revalidation, including same-owner/capability batch coherence under one SQLite snapshot, one total final-use deadline, and a fresh post-batch clock check that rejects expiry crossing or clock regression before provider transport entry;
+- concurrent bounded peer orchestration under one global horizon with deterministic post-aggregation ordering;
+- peer truncation, owner-candidate omission and typed failure coverage propagation into the final attachment;
 - legacy compatibility composition cannot downgrade an already-composed V2 product runtime;
 - cancellation receipts carrying no success assumption;
 - exact-scope owner memory frontier acquired from the same SQLite snapshot, including legitimate empty frontier zero.
