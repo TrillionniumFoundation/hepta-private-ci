@@ -31,14 +31,39 @@ const PROMPT_RELATION_VALIDITY_DOMAIN: &[u8] = b"hepta.knowledge.prompt-relation
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptFactorProjectionV1 {
-    pub registry_revision: u64,
-    pub registry_snapshot_digest: Digest32,
-    pub source_digest: Digest32,
-    pub generation: KnowledgeGenerationV2,
-    pub authority: AuthorityPosture,
+    registry_revision: u64,
+    registry_snapshot_digest: Digest32,
+    source_digest: Digest32,
+    generation: KnowledgeGenerationV2,
+    authority: AuthorityPosture,
 }
 
 impl PromptFactorProjectionV1 {
+    #[must_use]
+    pub const fn registry_revision(&self) -> u64 {
+        self.registry_revision
+    }
+
+    #[must_use]
+    pub const fn registry_snapshot_digest(&self) -> Digest32 {
+        self.registry_snapshot_digest
+    }
+
+    #[must_use]
+    pub const fn source_digest(&self) -> Digest32 {
+        self.source_digest
+    }
+
+    #[must_use]
+    pub fn generation(&self) -> &KnowledgeGenerationV2 {
+        &self.generation
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
     pub fn validate(&self) -> Result<(), PromptFactorProjectionErrorV1> {
         if self.registry_revision == 0
             || self.registry_snapshot_digest.is_zero()
