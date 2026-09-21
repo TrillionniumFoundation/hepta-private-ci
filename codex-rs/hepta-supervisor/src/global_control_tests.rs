@@ -435,6 +435,46 @@ fn plan_request(summary: OwnerSummaryV1, message: SignedMessage) -> GlobalContro
 }
 
 #[tokio::test]
+async fn producer_clock_epoch_cannot_control_host_planner_freshness() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let authority_signing = SigningKey::from_bytes(&[30; 32]);
+    let objective = digest("global-objective");
+    let configuration = digest("global-configuration");
+    let generation = Generation::new(11).expect("generation");
+    let mut summary = evidence_owner(objective, generation, configuration);
+    // An independent producer cannot know the supervisor process Instant epoch.
+    // A hostile/future producer-local timestamp must therefore not enter the
+    // planner's freshness arithmetic after authentication.
+    summary.observed_at_micros = u64::MAX - 1;
+    summary.expires_at_micros = u64::MAX;
+    let producer_observed_at = summary.observed_at_micros;
+    let (message, issuer) = sign_owner(&summary);
+
+    let mut host = GlobalControlHostV1::open(
+        evidence_store(&temporary.path().join("evidence")).await,
+        &temporary.path().join("planner"),
+        &[],
+        authority(&temporary.path().join("authority"), &authority_signing),
+        fleet_state(),
+        host_policy(),
+        owner_trusts(issuer),
+    )
+    .expect("global host");
+    let plan = host
+        .plan(plan_request(summary, message))
+        .await
+        .expect("host-stamped global plan");
+    let admitted = plan
+        .snapshot
+        .owner_summaries()
+        .iter()
+        .find(|owner| owner.owner_id.as_str() == "kernel.evidence")
+        .expect("evidence owner");
+    assert_ne!(admitted.observed_at_micros, producer_observed_at);
+    assert!(admitted.expires_at_micros > admitted.observed_at_micros);
+}
+
+#[tokio::test]
 async fn named_host_persists_plan_and_durable_owner_replay_survives_restart() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let evidence_path = temporary.path().join("evidence");
