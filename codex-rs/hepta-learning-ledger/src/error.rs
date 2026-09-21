@@ -45,6 +45,7 @@ pub enum LedgerError {
     UnlearningLineageIdentityAlreadyExists(String),
     UnlearningLineageAlreadyExists,
     UnlearningTargetInvalid,
+    UnlearningSourceDigestMismatch,
     IdentityConflict(String),
     SequenceOverflow,
     SnapshotHeadMismatch,
@@ -94,6 +95,7 @@ impl LedgerError {
             Self::TargetNotFound(_)
             | Self::TargetAlreadyRevoked(_)
             | Self::UnlearningTargetInvalid
+            | Self::UnlearningSourceDigestMismatch
             | Self::UnlearningLineageAlreadyExists => "LRN-E008",
             Self::RevocationOfRevocation => "LRN-E009",
             Self::SequenceOverflow | Self::Arithmetic => "LRN-E010",
@@ -220,6 +222,9 @@ impl fmt::Display for LedgerError {
             }
             Self::UnlearningTargetInvalid => {
                 formatter.write_str("unlearning source cannot be a revocation or unlearning record")
+            }
+            Self::UnlearningSourceDigestMismatch => {
+                formatter.write_str("unlearning source event digest does not match canonical history")
             }
             Self::IdentityConflict(id) => write!(formatter, "record id reused with drift: {id}"),
             Self::SequenceOverflow => formatter.write_str("ledger sequence overflow"),
