@@ -668,9 +668,9 @@
       "design": "qualification/module-execution-dossiers/detail/automation.taskflow.md",
       "implementationState": "specified_not_product_evidence",
       "apiContract": "register_schedule(spec,principal,revision); materialize_due(schedule,interval,clockProfile); claim_occurrence(id,fence); execute_step(claim,typedIntent). Occurrence key=schedule+revision+canonical instant.",
-      "stateAndEncoding": "Schedule timezone/rule/start/end/missed-run policy; occurrence UTC instant,claim fence,step graph,intents,terminal observation,recovery phase. Orchestration owns no foreign domain facts.",
-      "linearizationAndRecovery": "Idempotently persist occurrence then fence claim. An unknown step effect blocks dependent mutations. Compensation is a new authorized step with its own observed outcome.",
-      "algorithmAndBounds": "Scan<=1024 occurrences, graph<=128 steps, ready<=32. DST gap/overlap choose registered skip/first/second policy; missed runs use bounded skip/coalesce/catch-up. No unlimited recovery backlog.",
+      "stateAndEncoding": "Legacy and Calendar V2 schedules are revisioned in the per-Agent SQLite owner; occurrence identity freezes schedule revision and canonical UTC instant. TaskFlow run/event and step outbox chains are durable. External effects persist immutable pre-contact attempt/grant lineage, first observation and terminal reconciliation.",
+      "linearizationAndRecovery": "Persist occurrence/run/step and provider-attempt identity before contact; compute canonical effect intent inside automation; consume/revalidate signed final-use at adapter entry. Queue/provider unknown remains indeterminate. Restart scans the same identity and appends owner terminal/proven-absent evidence; no blind redispatch.",
+      "algorithmAndBounds": "Due/recovery scans<=1024; catch-up<=1024; timezone transitions<=512; calendar probe<=1032 days; registered TaskFlow graph/step bounds apply. DST gap/overlap uses explicit policy against the supplied tzdb-bound transition profile.",
       "acceptanceOracle": "DST repeated civil time yields distinct explicit UTC occurrence policy. Two schedulers cannot execute one current claim twice. Crash after send cannot blindly rerun a step.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
@@ -678,29 +678,41 @@
       "nativeImplementation": {
         "entrypoints": [
           {
-            "path": "codex-rs/hepta-automation/src/store.rs",
-            "symbol": "create_task"
+            "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+            "symbol": "create_calendar_task_v2"
           },
           {
             "path": "codex-rs/hepta-automation/src/scheduler.rs",
             "symbol": "tick"
           },
           {
-            "path": "codex-rs/hepta-automation/src/effect_executor.rs",
-            "symbol": "execute_step"
+            "path": "codex-rs/hepta-automation/src/lifecycle.rs",
+            "symbol": "materialize_occurrence"
+          },
+          {
+            "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+            "symbol": "execute_authorized_taskflow_effect"
           }
         ],
-        "stateAndRecovery": "The existing SQLite automation owner persists schedule/dispatch facts. EffectExecutor keeps bounded occurrence/claim/step maps and invokes an injected driver; the older assess_local_taskflow_boundary calculator still only returns Unavailable and must not be treated as the executor.",
+        "stateAndRecovery": "AutomationStore schema v13 owns schedule/occurrence/TaskFlow/step/effect-attempt evidence. Agentd uses stable App Server reconciliation for Codex activity. External effects use owner-computed typed intent, kernel final-use and append-only indeterminate-to-terminal reconciliation.",
         "testFiles": [
-          "codex-rs/hepta-automation/src/effect_executor_tests.rs",
-          "codex-rs/hepta-automation/src/scheduler.rs"
+          "codex-rs/hepta-automation/src/schedule_v2.rs",
+          "codex-rs/hepta-automation/src/authorized_effect.rs",
+          "codex-rs/hepta-automation/tests/authorized_effect.rs",
+          "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+          "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+          "codex-rs/hepta-automation/tests/automation.rs",
+          "codex-rs/hepta-automation/tests/taskflow.rs",
+          "codex-rs/hepta-automation/tests/taskflow_step.rs"
         ],
         "runtimeDocuments": [
           "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
-          "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
+          "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md",
+          "docs/readiness/LANE_B_NATIVE_HOST.md"
         ],
         "remainingWork": [
-          "Join effect-executor state to the existing durable step outbox, a real final-use-authorized provider and post-crash reconciliation before allowing dependent effects."
+          "Activate and independently qualify each concrete registered downstream effect owner/terminal observer.",
+          "Qualify authentic/current IANA timezone-profile provenance, DST behavior, multi-scheduler races and target-host restore/capacity."
         ]
       }
     },
