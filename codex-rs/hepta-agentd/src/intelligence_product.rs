@@ -18,6 +18,8 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::compile;
@@ -498,6 +500,20 @@ pub struct PreparedAgentdIntelligenceRunV1 {
     pub dispatch_proposal_digest: Digest32,
     snapshot: CanonicalIntelligenceSnapshotV1,
     candidate_ids: Vec<StableId>,
+    run_snapshot: crate::AgentRunSnapshot,
+    context_attachment: crate::AgentRunContextAttachment,
+}
+
+impl PreparedAgentdIntelligenceRunV1 {
+    #[must_use]
+    pub fn run_snapshot(&self) -> crate::AgentRunSnapshot {
+        self.run_snapshot.clone()
+    }
+
+    #[must_use]
+    pub fn context_attachment(&self) -> crate::AgentRunContextAttachment {
+        self.context_attachment.clone()
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -513,6 +529,7 @@ pub enum AgentdIntelligenceProductError {
     WorkerCrashed,
     TimedOut,
     CandidateSetMismatch,
+    Clock,
 }
 
 impl fmt::Display for AgentdIntelligenceProductError {
@@ -555,6 +572,11 @@ impl AgentdIntelligenceProductRunnerV1 {
 
         let snapshot = request.snapshot.clone();
         let timeout_micros = request.budget.total_micros;
+        let started_ms = wall_clock_ms()?;
+        let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
+        let deadline_ms = started_ms
+            .checked_add(timeout_ms.max(1))
+            .ok_or(AgentdIntelligenceProductError::Clock)?;
         let authority_file = self.authority_file.clone();
         let mut worker = tokio::task::spawn_blocking(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs);
@@ -583,12 +605,36 @@ impl AgentdIntelligenceProductRunnerV1 {
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());
                 bytes.extend_from_slice(snapshot.revocation_frontier_digest().as_array());
                 let dispatch_proposal_digest = Digest32::of_bytes(&bytes);
+                let mut body = b"hepta.agentd.intelligence-body.v1\0".to_vec();
+                body.extend_from_slice(snapshot.digest().as_array());
+                body.extend_from_slice(&snapshot.body_generation().get().to_be_bytes());
+                let body_digest = Digest32::of_bytes(&body);
+                let run_snapshot = crate::AgentRunSnapshot {
+                    run_id: envelope.run_id.to_string(),
+                    request_digest: envelope.trace_digest.to_string(),
+                    objective_digest: envelope.objective_digest.to_string(),
+                    body_digest: body_digest.to_string(),
+                    artifact_set_digest: snapshot.digest().to_string(),
+                    authority_epoch: snapshot.authority_epoch(),
+                    deadline_ms,
+                };
+                let context_attachment = crate::AgentRunContextAttachment {
+                    run_id: run_snapshot.run_id.clone(),
+                    request_digest: run_snapshot.request_digest.clone(),
+                    objective_digest: run_snapshot.objective_digest.clone(),
+                    body_digest: run_snapshot.body_digest.clone(),
+                    artifact_set_digest: run_snapshot.artifact_set_digest.clone(),
+                    context_digest: envelope.context_receipt_digest.to_string(),
+                    compilation_receipt_digest: envelope.envelope_digest.to_string(),
+                };
                 Ok(AgentdIntelligenceProductOutcomeV1::Ready(
                     PreparedAgentdIntelligenceRunV1 {
                         envelope,
                         dispatch_proposal_digest,
                         snapshot,
                         candidate_ids,
+                        run_snapshot,
+                        context_attachment,
                     },
                 ))
             }
@@ -706,6 +752,14 @@ impl AgentdIntelligenceProductRunnerV1 {
             .append(pending.expected_predecessor, pending.event)
             .map_err(AgentdIntelligenceLedgerError::Ledger)
     }
+}
+
+fn wall_clock_ms() -> Result<u64, AgentdIntelligenceProductError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| AgentdIntelligenceProductError::Clock)?
+        .as_millis();
+    u64::try_from(millis).map_err(|_| AgentdIntelligenceProductError::Clock)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
