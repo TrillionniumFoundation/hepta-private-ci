@@ -276,7 +276,7 @@ pub struct CanonicalIntelligenceRunRequestV1 {
     pub budget: CanonicalBudgetV1,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum CanonicalStageV1 {
     ObjectiveValidated,
     UtilityEvaluated,
@@ -651,6 +651,16 @@ pub fn assemble_context(
         assembly_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+pub fn validate_current_snapshot<O: CanonicalFreshnessOracleV1>(
+    snapshot: &CanonicalIntelligenceSnapshotV1,
+    oracle: &mut O,
+) -> Result<(), CanonicalIntelligenceError> {
+    for owner in REQUIRED_OWNERS {
+        require_current(snapshot, oracle, owner)?;
+    }
+    Ok(())
 }
 
 pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessOracleV1>(
