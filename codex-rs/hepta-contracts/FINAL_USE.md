@@ -83,7 +83,8 @@ does not redirect an already opened authority's writes.
 | Entry | Contents and invariant |
 | --- | --- |
 | `authority.lock` | Owner-only regular file; `File::try_lock` held by the shared authority owner |
-| `authority.json` | JSON `{schema:1, signer_id, verifying_key, state:{head, used_nonces}}`; maximum read 8 MiB |
+| `authority.json` | Complete checkpoint: schema 3 with pinned key, or schema 4 with issuer trust-set digest; maximum read 8 MiB |
+| `authority.nonces` | Required delta log for schemas 3/4; fixed 80-byte consumed-nonce records; bounded by 16,384 records |
 | `authority.next` | Temporary complete replacement written with owner-only permissions before rename |
 
 Files must be regular, singly linked, owned by the effective user and have no
@@ -91,12 +92,34 @@ group/world permissions; opens reject symlinks. The lock is held until the
 last authority/token reference disappears. It also releases automatically on
 process death. Concurrent opens fail with `StateLocked`.
 
-Every successful claim or head update serializes the complete next state,
-truncates and writes `authority.next`, fsyncs that file, renames it over
-`authority.json`, and fsyncs the root directory. The operation is not admitted
-until persistence succeeds. On a storage error, the live authority becomes
-unavailable and stays fenced; callers cannot remove a bad temporary file and
-silently retry through that same instance.
+A successful claim appends and fsyncs one 80-byte record without rewriting the
+checkpoint. The record binds authority epoch, revocation revision, nonce and
+an owner/trust-domain checksum. That checksum detects corruption, not authority;
+production still requires its independently held rollback frontier. The claim
+is not admitted until persistence succeeds. A storage error fences the live
+instance, including when the journal disappears or its length changes.
+
+Restart replays the bounded log, then writes `authority.next`, fsyncs it,
+renames it over `authority.json`, and fsyncs the root directory before truncating
+and fsyncing the log. Head updates use the same checkpoint-before-truncate
+order. A surviving already-checkpointed log is replayed idempotently; records
+from a superseded epoch cannot reactivate old grants. Only an incomplete final
+record may be discarded during prefix recovery. A complete corrupt record is
+rejected. An external frontier ahead of that prefix still rejects production
+reopen; truncation never repairs or refunds a witnessed consumed nonce.
+
+Legacy complete snapshots (single-key schema 1 or key-ring schema 2) migrate
+under the owner lock without changing signer trust, revocations or consumed
+nonces. New formats require the journal: a missing journal is not an empty
+registry. A nonempty journal next to a legacy snapshot rejects a partial
+restore. Earlier binaries reject schemas 3/4 rather than ignoring nonce deltas;
+rolling back a binary therefore requires an explicitly compatible recovery
+procedure, never renaming a file or decrementing the schema field.
+
+This reduces per-claim local disk writing to a fixed record plus fsync. State
+cloning and the production frontier digest still process the bounded nonce set;
+no constant-time CPU, unbounded retention or target-host throughput claim is
+made. The independent frontier's own durability cost is unchanged.
 
 The lock file also records that initialization has begun. If a later open
 finds it but no durable state file, it fails closed instead of resetting the
@@ -172,7 +195,7 @@ callback panics occur after the final authority lock has been released.
 | `open_state_dir` | Compatibility/test open using the system clock and local durability only |
 | `open_state_dir_with_clock` | Bind an explicit host clock; still has no external rollback oracle |
 | `open_state_dir_with_trust` | Single-issuer compatibility open binding explicit clock plus external CAS frontier |
-| `open_state_dir_with_issuer_keys` | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V2 pins the complete trust-set digest |
+| `open_state_dir_with_issuer_keys` | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V4 pins the complete trust-set digest and migrates V2 checkpoints |
 | `issuer_key_ids` | Read configured issuer key identifiers for audit/operations; grants no authority |
 | `frontier` | Read the current rollback-protection digest/epoch/revision projection |
 | `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |

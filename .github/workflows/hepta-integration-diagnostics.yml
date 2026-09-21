@@ -82,6 +82,18 @@ jobs:
         run: |
           set -euo pipefail
           cargo metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-source-preflight/cargo-metadata.json" 2> "$RUNNER_TEMP/hepta-source-preflight/cargo-metadata.stderr.log"
+      - name: Check contract formatting
+        if: ${{ !cancelled() && steps.metadata.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --check -p codex-hepta-contracts 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/contracts-format.log"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        id: native-tools
+        if: ${{ !cancelled() && steps.metadata.outcome == 'success' }}
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Compile the durable operation and timer boundary
         if: ${{ !cancelled() && steps.metadata.outcome == 'success' }}
         working-directory: codex-rs
@@ -89,6 +101,27 @@ jobs:
         run: |
           set -euo pipefail
           cargo check --locked --lib -p codex-hepta-contracts -p codex-hepta-operations -p codex-hepta-automation 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/cargo-check.log"
+      - name: Execute contract unit tests
+        if: ${{ !cancelled() && steps.native-tools.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-contracts 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/contracts-tests.log"
+      - name: Execute timer retirement and operation-owner regressions
+        if: ${{ !cancelled() && steps.native-tools.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-automation --test retirement_recovery --test operation_timer_fence --test kernel_operations_destination 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/timer-tests.log"
+      - name: Lint the durable authority without weakening warnings
+        if: ${{ !cancelled() && steps.metadata.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-contracts --lib --tests -- -D warnings 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/contracts-clippy.log"
       - name: Verify no tracked source was changed
         if: ${{ always() && !cancelled() }}
         shell: bash

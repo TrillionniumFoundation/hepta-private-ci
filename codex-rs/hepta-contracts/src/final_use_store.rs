@@ -3,17 +3,22 @@ use super::FinalUseError;
 use super::FinalUseRevocations;
 use super::MAX_CLAIMS;
 use super::State;
+use super::nonce_log;
 use super::valid_head;
 use serde::Deserialize;
 use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct StoredV1 {
+struct StoredSingleKey {
     schema: u32,
     signer_id: String,
     verifying_key: [u8; 32],
@@ -22,7 +27,7 @@ struct StoredV1 {
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct StoredV2 {
+struct StoredKeyRing {
     schema: u32,
     signer_id: String,
     issuer_trust_sha256: [u8; 32],
@@ -40,6 +45,7 @@ pub(super) struct Store {
     signer_id: String,
     trust: StoreTrust,
     _lock: File,
+    log_length: AtomicU64,
 }
 
 impl Store {
@@ -104,6 +110,7 @@ impl Store {
             signer_id: signer_id.to_owned(),
             trust,
             _lock: lock,
+            log_length: AtomicU64::new(0),
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
         let state = if has_state {
@@ -122,10 +129,10 @@ impl Store {
                 .and_then(serde_json::Value::as_u64)
                 .ok_or(FinalUseError::InvalidTrust)?;
             let mut state = match (trust, schema) {
-                (StoreTrust::SingleKey(verifying_key), 1) => {
-                    let stored: StoredV1 =
+                (StoreTrust::SingleKey(verifying_key), 1 | 3) => {
+                    let stored: StoredSingleKey =
                         serde_json::from_value(value).map_err(|_| FinalUseError::InvalidTrust)?;
-                    if stored.schema != 1
+                    if !matches!(stored.schema, 1 | 3)
                         || stored.signer_id != signer_id
                         || stored.verifying_key != verifying_key
                     {
@@ -133,10 +140,10 @@ impl Store {
                     }
                     stored.state
                 }
-                (StoreTrust::IssuerKeyRing(issuer_trust_sha256), 2) => {
-                    let stored: StoredV2 =
+                (StoreTrust::IssuerKeyRing(issuer_trust_sha256), 2 | 4) => {
+                    let stored: StoredKeyRing =
                         serde_json::from_value(value).map_err(|_| FinalUseError::InvalidTrust)?;
-                    if stored.schema != 2
+                    if !matches!(stored.schema, 2 | 4)
                         || stored.signer_id != signer_id
                         || stored.issuer_trust_sha256 != issuer_trust_sha256
                     {
@@ -148,6 +155,20 @@ impl Store {
             };
             if !valid_head(&state.head) || state.used_nonces.len() > MAX_CLAIMS {
                 return Err(FinalUseError::InvalidTrust);
+            }
+            let mut checkpoint_needed = schema <= 2;
+            if schema >= 3 {
+                // The schema commits to the journal's existence. Missing data
+                // is corruption, not a legacy store that may be bootstrapped.
+                let mut bytes = Vec::new();
+                open_private(&store.root, "authority.nonces", Access::Read)?
+                    .take((nonce_log::MAX_LOG_BYTES + nonce_log::RECORD_BYTES) as u64)
+                    .read_to_end(&mut bytes)
+                    .map_err(|_| FinalUseError::Unavailable)?;
+                nonce_log::replay(&bytes, &mut state, store.nonce_trust_digest())?;
+                checkpoint_needed = !bytes.is_empty();
+            } else {
+                store.prepare_nonce_log()?;
             }
             if allow_startup_head_advance {
                 if initial.authority_epoch >= state.head.authority_epoch
@@ -161,7 +182,7 @@ impl Store {
                         state.used_nonces.clear();
                     }
                     state.head = initial;
-                    store.persist(&state)?;
+                    checkpoint_needed = true;
                 } else if state.head.authority_epoch < initial.authority_epoch
                     || state.head.revision < initial.revision
                     || (state.head.authority_epoch == initial.authority_epoch
@@ -174,6 +195,9 @@ impl Store {
                 }
             } else if state.head != initial {
                 return Err(FinalUseError::InvalidTrust);
+            }
+            if checkpoint_needed {
+                store.persist(&state)?;
             }
             state
         } else {
@@ -188,6 +212,7 @@ impl Store {
                 used_nonces: Default::default(),
                 failed: false,
             };
+            store.prepare_nonce_log()?;
             store.persist(&state)?;
             state
         };
@@ -196,14 +221,14 @@ impl Store {
 
     pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
         let bytes = match self.trust {
-            StoreTrust::SingleKey(verifying_key) => serde_json::to_vec(&StoredV1 {
-                schema: 1,
+            StoreTrust::SingleKey(verifying_key) => serde_json::to_vec(&StoredSingleKey {
+                schema: 3,
                 signer_id: self.signer_id.clone(),
                 verifying_key,
                 state: state.clone(),
             }),
-            StoreTrust::IssuerKeyRing(issuer_trust_sha256) => serde_json::to_vec(&StoredV2 {
-                schema: 2,
+            StoreTrust::IssuerKeyRing(issuer_trust_sha256) => serde_json::to_vec(&StoredKeyRing {
+                schema: 4,
                 signer_id: self.signer_id.clone(),
                 issuer_trust_sha256,
                 state: state.clone(),
@@ -216,13 +241,76 @@ impl Store {
             .and_then(|()| file.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
         replace_state(&self.root)?;
+        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        // Never discard deltas before their replacement checkpoint AND its
+        // directory entry are durable. Replaying the old log is idempotent if
+        // a crash lands between that barrier and this truncation.
+        let log = open_private(&self.root, "authority.nonces", Access::Append)?;
+        log.set_len(0)
+            .and_then(|()| log.sync_all())
+            .map_err(|_| FinalUseError::Unavailable)?;
+        self.log_length.store(0, Ordering::Relaxed);
+        Ok(())
+    }
+
+    /// Claim writes append one fixed-size record; head changes checkpoint the
+    /// complete state. The caller holds the authority mutex and advances its
+    /// independent frontier first, preserving the existing fail-stop ordering.
+    pub(super) fn persist_update(&self, old: &State, next: &State) -> Result<(), FinalUseError> {
+        if old.head != next.head {
+            return self.persist(next);
+        }
+        if next.used_nonces.len() != old.used_nonces.len() + 1
+            || !next.used_nonces.is_superset(&old.used_nonces)
+        {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let nonce = next.used_nonces.difference(&old.used_nonces)
+            .next().copied().ok_or(FinalUseError::InvalidTrust)?;
+        let record = nonce_log::encode(next, nonce, self.nonce_trust_digest());
+        let mut log = open_private(&self.root, "authority.nonces", Access::Append)?;
+        let length = log.metadata().map_err(|_| FinalUseError::Unavailable)?.len();
+        if length != self.log_length.load(Ordering::Relaxed)
+            || length % nonce_log::RECORD_BYTES as u64 != 0
+            || length >= nonce_log::MAX_LOG_BYTES as u64
+        {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        log.write_all(&record)
+            .and_then(|()| log.sync_all())
+            .map_err(|_| FinalUseError::Unavailable)?;
+        self.log_length.store(length + nonce_log::RECORD_BYTES as u64, Ordering::Relaxed);
+        Ok(())
+    }
+
+    fn prepare_nonce_log(&self) -> Result<(), FinalUseError> {
+        let log = open_private(&self.root, "authority.nonces", Access::Create)?;
+        // Nonempty deltas under a legacy checkpoint suggest a partial restore;
+        // do not erase them or silently reclassify that store as fresh.
+        if log.metadata().map_err(|_| FinalUseError::Unavailable)?.len() != 0 {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        log.sync_all().map_err(|_| FinalUseError::Unavailable)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
+    }
+
+    fn nonce_trust_digest(&self) -> [u8; 32] {
+        let mut hash = Sha256::new();
+        hash.update(b"hepta.kernel.authority.nonce-owner.v1\0");
+        hash.update((self.signer_id.len() as u64).to_le_bytes());
+        hash.update(self.signer_id.as_bytes());
+        match self.trust {
+            StoreTrust::SingleKey(key) => { hash.update([1]); hash.update(key); }
+            StoreTrust::IssuerKeyRing(digest) => { hash.update([2]); hash.update(digest); }
+        }
+        hash.finalize().into()
     }
 }
 
 enum Access {
     Read,
     Create,
+    Append,
 }
 
 #[cfg(unix)]
@@ -264,6 +352,7 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     let flags = match access {
         Access::Read => OFlags::RDONLY,
         Access::Create => OFlags::RDWR | OFlags::CREATE,
+        Access::Append => OFlags::RDWR | OFlags::APPEND,
     } | OFlags::NOFOLLOW
         | OFlags::CLOEXEC;
     let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)

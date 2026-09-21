@@ -17,6 +17,8 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
+#[path = "final_use_nonce_log.rs"]
+mod nonce_log;
 #[path = "final_use_store.rs"]
 mod store;
 
@@ -337,8 +339,9 @@ impl FinalUseAuthority {
     }
 
     /// Production constructor with a bounded issuer key ring. The complete
-    /// trust-set digest is pinned in durable store schema V2. V1 single-key
-    /// state is not silently migrated into this trust model.
+    /// trust-set digest is pinned in durable store schema V4 (legacy V2 is
+    /// migrated without changing trust). Single-key state is never silently
+    /// migrated into this trust model.
     pub fn open_state_dir_with_issuer_keys(
         directory: &std::path::Path,
         signer_id: String,
@@ -575,7 +578,7 @@ impl FinalUseAuthority {
                 return Err(map_trust_error(error));
             }
         }
-        if self.0.store.persist(&next).is_err() {
+        if self.0.store.persist_update(state, &next).is_err() {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }

@@ -323,12 +323,14 @@ fn external_final_use_frontier_detects_restored_claim_snapshot() {
     )
     .unwrap();
     let initial = std::fs::read(directory.path().join("authority.json")).unwrap();
+    let initial_log = std::fs::read(directory.path().join("authority.nonces")).unwrap();
     let token = authority.claim(&signed, &signed.grant.binding).unwrap();
     drop(token);
     let advanced = frontier_store.load("frontier-owner").unwrap();
     assert_ne!(advanced, FinalUseFrontier::for_initial_head(&head).unwrap());
     drop(authority);
     std::fs::write(directory.path().join("authority.json"), initial).unwrap();
+    std::fs::write(directory.path().join("authority.nonces"), initial_log).unwrap();
     assert_eq!(
         FinalUseAuthority::open_state_dir_with_trust(
             directory.path(),
@@ -513,7 +515,8 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
     )
     .unwrap();
 
-    std::fs::create_dir(directory.path().join("authority.next")).unwrap();
+    std::fs::remove_file(directory.path().join("authority.nonces")).unwrap();
+    std::fs::create_dir(directory.path().join("authority.nonces")).unwrap();
     assert_eq!(
         authority.claim(&signed, &signed.grant.binding).unwrap_err(),
         FinalUseError::Unavailable
@@ -527,7 +530,11 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
         FinalUseFrontier::for_initial_head(&head).unwrap()
     );
 
-    std::fs::remove_dir(directory.path().join("authority.next")).unwrap();
+    std::fs::remove_dir(directory.path().join("authority.nonces")).unwrap();
+    std::fs::write(directory.path().join("authority.nonces"), []).unwrap();
+    std::fs::set_permissions(
+        directory.path().join("authority.nonces"), std::fs::Permissions::from_mode(0o600),
+    ).unwrap();
     drop(authority);
     assert_eq!(
         FinalUseAuthority::open_state_dir_with_trust(
@@ -675,3 +682,6 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
         FinalUseError::Revoked
     );
 }
+
+#[path = "final_use_nonce_tests.rs"]
+mod nonce_storage_tests;
