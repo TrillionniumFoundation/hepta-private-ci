@@ -320,6 +320,7 @@ async fn agentd_compaction_full_path_publishes_resolves_and_re_admits() {
         }
     };
     let (request, trust, expected_payload, source_snapshot) = request_and_trust();
+    let original_trust = trust.clone();
     let (_, current_memory) = source_memory();
     let (current_snapshot, current_request) = authoritative(2, current_memory);
     let provider = Arc::new(FixtureSnapshotProvider::new(vec![
@@ -355,6 +356,36 @@ async fn agentd_compaction_full_path_publishes_resolves_and_re_admits() {
         .expect("re-admit current")
         .expect("selected");
     assert_eq!(selected.payload, expected_payload);
+
+    let mut evaluator_rotated = original_trust.clone();
+    evaluator_rotated.evaluator.verifying_key = SigningKey::from_bytes(&[8_u8; 32])
+        .verifying_key()
+        .to_bytes();
+    let evaluator_rotated_host = host.clone().attach_compaction_trust(evaluator_rotated);
+    assert!(matches!(
+        evaluator_rotated_host
+            .select_current_compaction_checkpoint(
+                &current_request,
+                digest("compatibility:e2e"),
+            )
+            .await,
+        Err(AgentdCompactionCheckpointError::CompactionTrustDrift)
+    ));
+
+    let mut tokenizer_rotated = original_trust;
+    tokenizer_rotated.tokenizer.verifying_key = SigningKey::from_bytes(&[6_u8; 32])
+        .verifying_key()
+        .to_bytes();
+    let tokenizer_rotated_host = host.clone().attach_compaction_trust(tokenizer_rotated);
+    assert!(matches!(
+        tokenizer_rotated_host
+            .select_current_compaction_checkpoint(
+                &current_request,
+                digest("compatibility:e2e"),
+            )
+            .await,
+        Err(AgentdCompactionCheckpointError::CompactionTrustDrift)
+    ));
 
     drop(host);
     drop(store);
