@@ -435,14 +435,20 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             "maximum_records": 32,
         }
     });
-    fs::write(&descriptor_path, serde_json::to_vec_pretty(&descriptor)?)?;
+    let descriptor_bytes = serde_json::to_vec_pretty(&descriptor)?;
+    let descriptor_digest = Digest32::of_bytes(&descriptor_bytes).to_string();
+    fs::write(&descriptor_path, descriptor_bytes)?;
 
     // The child must own every mutable descriptor referenced above.
     drop(neuron);
     drop(ledger);
     drop(artifacts);
 
-    harness.start_with_plasticity_bootstrap_descriptor(&agent, &descriptor_path)?;
+    harness.start_with_plasticity_bootstrap_descriptor(
+        &agent,
+        &descriptor_path,
+        &descriptor_digest,
+    )?;
     let (_control, health) = harness.wait_ready(&agent, 1).await?;
     assert!(health.ready);
     assert!(!health.fenced);
