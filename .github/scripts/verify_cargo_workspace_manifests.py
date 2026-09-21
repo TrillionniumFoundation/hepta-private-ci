@@ -242,7 +242,17 @@ def manifest_errors(
 
 
 def is_isolated_cargo_fuzz_workspace(path: Path, manifest: dict) -> bool:
-    if path.parent.name != "fuzz" or not isinstance(manifest.get("workspace"), dict):
+    try:
+        relative = path.relative_to(CARGO_RS_ROOT)
+    except ValueError:
+        return False
+    # Only <workspace-crate>/fuzz/Cargo.toml is an isolated cargo-fuzz root.
+    if (
+        len(relative.parts) != 3
+        or relative.parts[1] != "fuzz"
+        or relative.parts[2] != "Cargo.toml"
+        or not isinstance(manifest.get("workspace"), dict)
+    ):
         return False
     package = manifest.get("package")
     if not isinstance(package, dict):
