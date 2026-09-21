@@ -35,7 +35,7 @@ END;
 
 CREATE TABLE operation_outbox (
     intent_id TEXT PRIMARY KEY NOT NULL,
-    operation_id TEXT NOT NULL,
+    operation_id TEXT NOT NULL REFERENCES operation_records(operation_id),
     destination TEXT NOT NULL,
     payload_digest TEXT NOT NULL CHECK(length(payload_digest) = 64),
     state TEXT NOT NULL CHECK(state IN ('pending','claimed','acknowledged')),
