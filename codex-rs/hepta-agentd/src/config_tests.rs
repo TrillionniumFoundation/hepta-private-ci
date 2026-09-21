@@ -9,7 +9,6 @@ use codex_hepta_paths::HeptaFleetRoot;
 use super::AgentdConfig;
 use super::CognitiveRetrievalMode;
 use super::parse_cognitive_retrieval_mode;
-use super::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
 use crate::AgentdError;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
