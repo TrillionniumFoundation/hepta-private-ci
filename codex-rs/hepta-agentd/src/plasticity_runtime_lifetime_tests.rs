@@ -764,7 +764,6 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     let state = daemon.state();
     let owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, Some(bootstrap))
         .expect("compose daemon plasticity owner");
-    let producer = state.plasticity_runtime().expect("named Agentd producer");
     let cancellation = CancellationToken::new();
     let owner_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
         Arc::clone(&state),
@@ -772,8 +771,8 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         cancellation.clone(),
     );
 
-    let first = producer
-        .propose_parameter(request.clone(), 50)
+    let first = state
+        .submit_parameter_plasticity_v1(request.clone(), 50)
         .await
         .expect("first product proposal");
     assert_eq!(
@@ -788,7 +787,6 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("owner task join")
         .expect("owner task shutdown");
-    drop(producer);
     drop(state);
 
     let recovered_ledger = DurableLedger::recover(
@@ -832,9 +830,6 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         Some(restarted_bootstrap),
     )
     .expect("compose restarted daemon plasticity owner");
-    let restarted_producer = restarted_state
-        .plasticity_runtime()
-        .expect("restarted named producer");
     let restarted_cancellation = CancellationToken::new();
     let restarted_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
         Arc::clone(&restarted_state),
@@ -842,8 +837,8 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         restarted_cancellation.clone(),
     );
 
-    let second = restarted_producer
-        .propose_parameter(request, 50)
+    let second = restarted_state
+        .submit_parameter_plasticity_v1(request, 50)
         .await
         .expect("idempotent replay after restart");
     assert_eq!(second.registry.sequence, 1);
@@ -858,7 +853,6 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("restart task join")
         .expect("restart task shutdown");
-    drop(restarted_producer);
     drop(restarted_state);
 
     let (reconciled, _anchor_store): (
