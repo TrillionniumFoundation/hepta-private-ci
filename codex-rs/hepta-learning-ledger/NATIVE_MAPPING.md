@@ -38,7 +38,7 @@ Owned logical domains remain:
 | append authenticated decision | `LedgerWriter::append_decision` | `src/production.rs` | implemented |
 | append authenticated/corrected outcome | `LedgerWriter::append_outcome` | `src/production.rs` | implemented |
 | atomically append conserved credit | `LedgerWriter::append_credit_batch` | `src/production.rs` | implemented |
-| append source→dataset→artifact unlearning lineage | `LedgerWriter::append_unlearning` | `src/production.rs` | implemented |
+| append verified source→dataset unlearning lineage plus artifact-owner handoff identity | `LedgerWriter::append_unlearning` | `src/production.rs` | implemented |
 | derive/freeze dataset from current ledger | `LedgerWriter::freeze_dataset`, `freeze_dataset_from_ledger` | `src/production.rs` | implemented |
 | revalidate frozen dataset at final use | `LedgerWriter::revalidate_dataset_snapshot` | `src/production.rs` | implemented |
 | sync containing directory before publication/topology witness | `sync_directory_handle`, `LedgerWriter::rotate_segment` | `src/production.rs` | implemented |
@@ -79,8 +79,9 @@ authentication digest. The ledger enforces:
 
 Because every correction points to the current head and record identities are
 immutable, forks and cycles cannot be admitted. Only the current correction head
-is active for downstream credit/dataset eligibility. Pending and censored states
-never become zero reward.
+is active for downstream credit/dataset eligibility. Pending and censored states never become zero reward. Dataset derivation also
+counts an authenticated Decision with no Outcome row at all as pending, so missing
+observations cannot disappear from accounting.
 
 ## Atomic conserved credit
 
@@ -109,12 +110,16 @@ use, `LedgerWriter::revalidate_dataset_snapshot` verifies the historical receipt
 and requires every frozen source digest to remain in the current canonical active
 projection; later correction, revocation or unlearning therefore fails closed.
 
-`UnlearningLineageEventV1` explicitly records
-source-record → dataset-snapshot → artifact invalidation with authenticated
-authority and reason digests. Appending it logically revokes the source record;
-the active projection then excludes causal descendants. Audit bytes remain
-immutable. This is logical non-resurrection lineage, not physical erasure,
-backup deletion or proof of model unlearning.
+`LedgerWriter::append_unlearning` requires the exact `DatasetSnapshotReceiptV3`,
+verifies its immutable identity at the historical producer authentication point,
+proves that the receipt's source set contains the named canonical source event,
+and persists both source-event and dataset digests in `UnlearningLineageEventV1`.
+Replay rejects source-digest substitution. Appending the event logically revokes
+the source record and the active projection then excludes causal descendants.
+The stored `artifact_id` is only a handoff identity: `learning.artifacts` owns and
+must verify dataset→artifact membership and descendant withdrawal/revocation.
+This is logical non-resurrection lineage, not physical erasure, backup deletion
+or proof of model unlearning.
 
 ## Trust distribution and witness
 
