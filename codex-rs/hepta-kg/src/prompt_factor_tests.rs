@@ -92,8 +92,8 @@ fn registry_revocation_removes_prompt_relation_on_rebuild() {
     let before = registry.factor_graph_source_v1();
     registry.revoke_factor(&id("factor:b")).expect("revoke");
     let after = registry.factor_graph_source_v1();
-    assert_ne!(before.source_digest, after.source_digest);
-    assert!(after.relations.is_empty());
+    assert_ne!(before.source_digest(), after.source_digest());
+    assert!(after.relations().is_empty());
 
     let projection = build_prompt_factor_projection_v1(
         Generation::new(2).expect("generation"),
@@ -116,7 +116,7 @@ fn source_revision_is_preserved_as_projection_support_lineage() {
         &source,
     )
     .expect("projection");
-    let expected = Revision::new(source.registry_revision.get()).expect("revision");
+    let expected = Revision::new(source.registry_revision().get()).expect("revision");
     assert_eq!(
         projection.generation.edges[0].supports[0].source_revision,
         expected
