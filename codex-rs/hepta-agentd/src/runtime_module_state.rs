@@ -7,10 +7,17 @@ use crate::AgentdError;
 
 pub(super) fn parse(state: &str) -> Result<RuntimeModuleStateClassV1, AgentdError> {
     match state {
-        // Ephemeral host state has no persistent migration; declared writer
-        // domains/effect scope still retain their separate handoff requirements.
-        "stateless" | "ephemeral" => Ok(RuntimeModuleStateClassV1::Stateless),
-        "stateful" => Ok(RuntimeModuleStateClassV1::Stateful),
+        // These are explicit catalog spellings, not substring matches. Read-only
+        // modules own no durable writer; declared domains/effects still retain
+        // their separate handoff checks. Remote reads do not imply a remote writer.
+        "stateless" | "stateless_runtime" | "ephemeral" | "ephemeral_isolated"
+        | "read_only" | "read_only_remote" => Ok(RuntimeModuleStateClassV1::Stateless),
+        // A rebuildable projection still has state to drain/fence. Neither
+        // 'shadow' nor 'create_only' is an exemption from the lifecycle protocol.
+        "stateful" | "stateful_projection" | "stateful_rebuildable" | "stateful_append_only"
+        | "stateful_shadow" | "stateful_create_only" | "isolated_stateful" => {
+            Ok(RuntimeModuleStateClassV1::Stateful)
+        }
         "stateful_external" => Ok(RuntimeModuleStateClassV1::ExternalStateful),
         _ => Err(AgentdError::Protocol(
             "unknown runtime module state class; explicit compatibility required".to_string(),
