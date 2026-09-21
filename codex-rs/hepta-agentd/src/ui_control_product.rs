@@ -314,10 +314,11 @@ impl UiControlProductGateway {
         }) {
             Ok(observation) => observation,
             Err(error) => {
+                let error_text = format!("{error:?}");
                 let proof = Digest32::of_parts(&[
                     b"hepta.ui-control.final-use-pre-dispatch-rejection.v1\0",
                     verified.semantic_digest.as_array(),
-                    format!("{error:?}").as_bytes(),
+                    error_text.as_bytes(),
                 ]);
                 let record = self
                     .operations
@@ -425,17 +426,7 @@ impl UiControlProductGateway {
             UiControlDriverObservation::Terminal {
                 outcome,
                 outcome_digest,
-            }
-            | UiControlDriverObservation::NotContacted {
-                proof_digest: outcome_digest,
             } => {
-                let outcome = match observation {
-                    UiControlDriverObservation::NotContacted { .. } => {
-                        ReconciliationOutcome::NotApplied
-                    }
-                    UiControlDriverObservation::Terminal { outcome, .. } => outcome,
-                    _ => unreachable!(),
-                };
                 self.operations
                     .observe_terminal(
                         operation_id,
@@ -450,6 +441,23 @@ impl UiControlProductGateway {
                     semantic_digest: context.semantic_digest,
                     outcome,
                     outcome_digest,
+                })
+            }
+            UiControlDriverObservation::NotContacted { proof_digest } => {
+                self.operations
+                    .observe_terminal(
+                        operation_id,
+                        ReconciliationOutcome::NotApplied,
+                        proof_digest,
+                        self.owner_generation,
+                    )
+                    .await
+                    .map_err(durable)?;
+                Ok(UiControlGatewayDisposition::Terminal {
+                    operation_id: operation_id.clone(),
+                    semantic_digest: context.semantic_digest,
+                    outcome: ReconciliationOutcome::NotApplied,
+                    outcome_digest: proof_digest,
                 })
             }
             UiControlDriverObservation::Accepted { .. }
