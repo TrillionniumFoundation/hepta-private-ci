@@ -144,15 +144,19 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The canonical facade is in-process and ephemeral. Agentd owns the product-call lifetime. Every owner stage is fenced by a before/after reread of owner generation, implementation digest, current key digest/epoch, authority epoch and revocation frontier; selected runs receive another all-owner fence before the host envelope and another Agentd fence before dispatch/ledger use.
+The canonical facade is in-process and ephemeral. Agentd owns the product-call lifetime. Every owner stage is fenced by a before/after reread of owner generation, implementation digest, current key digest/epoch, authority epoch and revocation frontier; selected runs receive another all-owner fence before the host envelope and another Agentd fence before dispatch/ledger use. The currentness manifest is Ed25519-authenticated against a verifier configured outside the manifest; the signed domain includes authority epoch, revocation frontier, all seven owner generation/implementation/key bindings and signer identity. The file is bounded and, on Unix, must be a non-symlink regular file without group/world write permission.
 
-Agentd runs cognition inside an isolated blocking worker that receives no effect or ledger capability. Each real owner call is measured against its stage budget and the full worker is bounded by the total cognition budget. A late computation result is discarded rather than published. Durable Decision/Outcome writes occur only after the worker and final-use fence, through the existing sealed `DurableLearningJournal`.
+Agentd runs cognition inside a blocking worker that receives no effect or ledger capability. Each real owner call is measured against its stage budget and the full worker is bounded by the total cognition budget. A late computation result is discarded rather than published; this isolates effect publication but does not claim that `spawn_blocking` can terminate a running synchronous Rust stage. The daemon separately owns `AgentRunCoordinator`; its control protocol exposes typed start/attach/status/dispatch/cancel/terminal transitions, with admission time taken by Agentd rather than supplied by the client. Durable Decision/Outcome writes occur only after the cognition worker and final-use fence, through the existing sealed `DurableLearningJournal`.
+
+For physical model execution, `AppServerModelDriver::run_intelligence` accepts a non-authorizing exact run binding. Before a `turn/start`, runtime.codex requires the same Agentd run to be `ContextAttached` at the expected revision with matching context and intelligence-envelope digests, persists its native dispatch record, atomically advances Agentd to `Dispatched`, and only then crosses the App Server effect boundary.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at every authoritative owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Owner rejection, unavailable currentness, key/generation/authority/revocation drift, stage timeout and total timeout all fail before dispatch publication. Abstain and slow-path are explicit terminal advisory outcomes and never fabricate context/evaluation/dispatch receipts. Durable ledger `Indeterminate` or ambiguous I/O returns the exact event plus its original predecessor as `PendingIntelligenceLedgerAppendV1`; reconciliation requires a freshly recovered journal and exact replay. No queue/handler result is inferred as terminal external success.
+Owner rejection, unauthenticated/unavailable currentness, key/generation/authority/revocation drift, stage timeout and total timeout all fail before dispatch publication. Abstain and slow-path are explicit terminal advisory outcomes and never fabricate context/evaluation/dispatch receipts. Durable ledger `Indeterminate` or ambiguous I/O returns the exact event plus its original predecessor as `PendingIntelligenceLedgerAppendV1`; reconciliation requires a freshly recovered journal and exact replay.
+
+After the physical dispatch write-ahead, a lost `turn/start` acknowledgement is never replay evidence: the Agentd run is moved to `Indeterminate`. Cancellation or deadline handling first records the Agentd cancellation transition; if the interrupt/grace window still lacks a terminal provider observation, the run also becomes `Indeterminate`. A real terminal App Server observation is committed back to the same Agentd run revision. Failure of that terminal-control RPC is reported as reconciliation-required and does not erase or upgrade the provider observation. No queue/handler/transport acknowledgement is inferred as terminal external success.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -174,7 +178,7 @@ The canonical source enforces at most 128 legal candidates, exactly seven owner 
 
 ## 11. Observability and operations
 
-The canonical product topology is Agentd -> intelligence.control -> seven authoritative owner ports. The facade produces an authority-free host envelope and Agentd derives only a dispatch proposal digest after final currentness. Decision and independently observed Outcome use the existing learning ledger owner. Legacy read-only/evaluated-shadow entrypoints remain observable compatibility surfaces but are not product routing choices.
+The canonical product topology is Agentd -> intelligence.control -> seven authoritative owner ports -> Agentd run lifecycle -> runtime.codex/App Server. The facade produces an authority-free host envelope; Agentd freezes that exact envelope into a `ContextAttached` run record and derives only a dispatch proposal digest after final currentness. The native inference worker can consume the binding programmatically or through the all-or-none `--intelligence-*` CLI arguments; it cannot manufacture a run or bypass the Agentd revision fence. Decision and independently observed Outcome use the existing learning ledger owner. Legacy read-only/evaluated-shadow entrypoints remain observable compatibility surfaces but are not product routing choices.
 
 Current operating and state-format references:
 
@@ -188,7 +192,9 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intelligence/src/canonical_tests.rs](../../../codex-rs/hepta-intelligence/src/canonical_tests.rs): first-class NDU/seven-owner order, abstention, post-call generation drift, key rotation, wrong-owner receipt and candidate closure.
-- [codex-rs/hepta-agentd/src/intelligence_product_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_product_tests.rs): real owner APIs, Agentd dispatch proposal, durable Decision -> independent Outcome, acknowledged reopen/idempotent retry, final-use revocation race, missing owner and total timeout.
+- [codex-rs/hepta-agentd/src/intelligence_product_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_product_tests.rs): real owner APIs, signed-currentness tamper rejection, exact Agentd admit/context/dispatch/terminal lifecycle, durable Decision -> independent Outcome, acknowledged reopen/idempotent retry, final-use revocation race, missing owner and total timeout.
+- [codex-rs/hepta-agent-protocol/src/lib.rs](../../../codex-rs/hepta-agent-protocol/src/lib.rs): strict/bounded run-lifecycle wire round trip and proof that admission time is not client supplied.
+- [codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs) and native-run-control tests: physical turn terminal/cancellation/indeterminate semantics. Exact intelligence-bound real-process execution remains an exact-candidate product-E2E requirement.
 - [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs): compatibility durable evaluated-shadow regression.
 
 In `codex-rs`, run `just test -p codex-hepta-intelligence -p codex-hepta-agentd`. The command is a test invocation, not a stored result. Exact-head and deterministic-merge workflow receipts, skips and target-host measurements must be inspected before elevating the claim boundary.
@@ -209,7 +215,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-The named source-level product caller is `AgentdIntelligenceProductRunnerV1`. This establishes product composition source, not deployment activation. A selected live Agentd/App Server profile must still configure the trusted currentness source, pass exact-candidate and target-host qualification, and satisfy activation predecessors. Shadow and qualification callers remain non-production.
+The named source-level composition caller is `AgentdIntelligenceProductRunnerV1`; the named physical turn caller is `AppServerModelDriver::run_intelligence`, with `hepta-infer-worker` exposing the same exact binding as an all-or-none CLI profile. This establishes product-route source, not deployment activation or real-provider qualification. A selected live Agentd/App Server profile must still provision the trusted currentness signer/verifier, demonstrate exact run-lifecycle execution on the candidate and target host, and satisfy activation predecessors. Shadow and qualification callers remain non-production evidence unless they traverse that same route.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
