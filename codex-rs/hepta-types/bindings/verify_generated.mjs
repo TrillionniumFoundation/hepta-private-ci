@@ -1,7 +1,9 @@
 // Consumer compatibility gate for generated Platform Types JavaScript binding.
 import {
   STABLE_ID_MAX_BYTES,
+  AUTHORITY_WIRE_V1,
   FIXED_Q32,
+  ID_PROFILES,
   NUMERIC_PROFILES,
   admitAuthorityWireV1,
   numericProfile,
@@ -17,6 +19,15 @@ for (const [value, variant] of [["plátform.types", "Module"], ["platform.-types
   if (!rejected) throw new Error(`generated JavaScript binding admitted non-Rust identifier grammar: ${variant} ${value}`);
 }
 admitAuthorityWireV1(new Uint8Array([0]));
+if (!Object.isFrozen(ID_PROFILES) || !Object.isFrozen(ID_PROFILES.Schema)) {
+  throw new Error("generated JavaScript ID profile metadata is mutable");
+}
+if (!Object.isFrozen(AUTHORITY_WIRE_V1) || !Object.isFrozen(AUTHORITY_WIRE_V1.bits)) {
+  throw new Error("generated JavaScript authority metadata is mutable");
+}
+if (!Object.isFrozen(NUMERIC_PROFILES) || !Object.isFrozen(NUMERIC_PROFILES["signed-q32-nearest-ties-even-v1"])) {
+  throw new Error("generated JavaScript numeric profile metadata is mutable");
+}
 for (const value of [1, 128]) {
   let rejected = false;
   try { admitAuthorityWireV1(new Uint8Array([value])); } catch (_) { rejected = true; }
