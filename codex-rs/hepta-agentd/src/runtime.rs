@@ -120,6 +120,15 @@ pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Res
         state.attach_automation_store(store.clone())?;
     }
     let cancellation = CancellationToken::new();
+    let control = AgentdControlServer::bind(
+        identity.control_socket.clone(),
+        Arc::clone(&state),
+        cancellation.clone(),
+    )
+    .await?;
+    // Spawn long-lived owner tasks only after every fallible bind above has
+    // succeeded. Dropping a JoinHandle does not cancel its task, so spawning
+    // before control bind would leak reconciliation on an early-return path.
     let operations_cancellation = cancellation.clone();
     let mut operations_task = tokio::spawn(async move {
         match production_operations {
@@ -132,12 +141,6 @@ pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Res
             }
         }
     });
-    let control = AgentdControlServer::bind(
-        identity.control_socket.clone(),
-        Arc::clone(&state),
-        cancellation.clone(),
-    )
-    .await?;
     let mut control_task = tokio::spawn(control.run());
     let mut app_server_task = tokio::spawn(run_app_server(
         identity.clone(),
