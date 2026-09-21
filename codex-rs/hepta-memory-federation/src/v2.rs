@@ -413,12 +413,35 @@ pub trait FederationAttemptControlV2: Send + Sync {
     ) -> FederationStopFuture<'a>;
 }
 
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct FederatedFailureCoverageV2 {
+    pub discovery_unavailable: u32,
+    pub deadline_or_cancelled: u32,
+    pub authority_rejected: u32,
+    pub integrity_rejected: u32,
+    pub transport_unavailable: u32,
+}
+
+impl FederatedFailureCoverageV2 {
+    #[must_use]
+    pub fn total(&self) -> u64 {
+        u64::from(self.discovery_unavailable)
+            + u64::from(self.deadline_or_cancelled)
+            + u64::from(self.authority_rejected)
+            + u64::from(self.integrity_rejected)
+            + u64::from(self.transport_unavailable)
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederatedCoverageV2 {
     pub requested_peers: u32,
     pub completed_peers: u32,
     pub failed_peers: u32,
+    pub truncated_peers: u32,
+    pub omitted_peer_candidates: u32,
     pub truncated_items: u32,
+    pub failures: FederatedFailureCoverageV2,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -448,6 +471,9 @@ impl FederatedResultV2 {
         }
         if self.coverage.requested_peers != 1
             || u64::from(self.coverage.completed_peers) + u64::from(self.coverage.failed_peers) != 1
+            || self.coverage.truncated_peers != 0
+            || self.coverage.omitted_peer_candidates != 0
+            || self.coverage.failures.total() > u64::from(self.coverage.failed_peers)
         {
             return Err(FederationV2Error::InvalidCoverage);
         }
@@ -533,7 +559,32 @@ impl FederatedResultV2 {
         push_u64(&mut bytes, u64::from(self.coverage.requested_peers));
         push_u64(&mut bytes, u64::from(self.coverage.completed_peers));
         push_u64(&mut bytes, u64::from(self.coverage.failed_peers));
+        push_u64(&mut bytes, u64::from(self.coverage.truncated_peers));
+        push_u64(
+            &mut bytes,
+            u64::from(self.coverage.omitted_peer_candidates),
+        );
         push_u64(&mut bytes, u64::from(self.coverage.truncated_items));
+        push_u64(
+            &mut bytes,
+            u64::from(self.coverage.failures.discovery_unavailable),
+        );
+        push_u64(
+            &mut bytes,
+            u64::from(self.coverage.failures.deadline_or_cancelled),
+        );
+        push_u64(
+            &mut bytes,
+            u64::from(self.coverage.failures.authority_rejected),
+        );
+        push_u64(
+            &mut bytes,
+            u64::from(self.coverage.failures.integrity_rejected),
+        );
+        push_u64(
+            &mut bytes,
+            u64::from(self.coverage.failures.transport_unavailable),
+        );
         bytes.push(completeness_code(self.completeness));
         bytes.push(validity_code(self.validity));
         push_optional_digest(&mut bytes, self.remote_response_digest);
@@ -576,27 +627,45 @@ where
     let query_binding_digest = query.binding_digest();
     let transport_result = send_with_control(transport, control, &query, lease).await?;
     let mut result = match transport_result {
-        FederationTransportResultV2::NonTerminal(_) => FederatedResultV2 {
-            query_id: query.query_id,
-            peer_id: query.peer_id,
-            query_binding_digest,
-            generation_vector_digest: query.generation_vector_digest,
-            observed_frontier: None,
-            expires_unix_ms: query.deadline_unix_ms.min(lease.expires_unix_ms),
-            items: Vec::new(),
-            coverage: FederatedCoverageV2 {
-                requested_peers: 1,
-                completed_peers: 0,
-                failed_peers: 1,
-                truncated_items: 0,
-            },
+        FederationTransportResultV2::NonTerminal(outcome) => {
+            let failures = match outcome {
+                FederationTransportOutcomeV2::TimedOut => FederatedFailureCoverageV2 {
+                    deadline_or_cancelled: 1,
+                    ..FederatedFailureCoverageV2::default()
+                },
+                FederationTransportOutcomeV2::Unavailable
+                | FederationTransportOutcomeV2::NoTerminalObservation => {
+                    FederatedFailureCoverageV2 {
+                        transport_unavailable: 1,
+                        ..FederatedFailureCoverageV2::default()
+                    }
+                }
+            };
+            FederatedResultV2 {
+                query_id: query.query_id,
+                peer_id: query.peer_id,
+                query_binding_digest,
+                generation_vector_digest: query.generation_vector_digest,
+                observed_frontier: None,
+                expires_unix_ms: query.deadline_unix_ms.min(lease.expires_unix_ms),
+                items: Vec::new(),
+                coverage: FederatedCoverageV2 {
+                    requested_peers: 1,
+                    completed_peers: 0,
+                    failed_peers: 1,
+                    truncated_peers: 0,
+                    omitted_peer_candidates: 0,
+                    truncated_items: 0,
+                    failures,
+                },
             completeness: FederatedCompletenessV2::Indeterminate,
             validity: FederatedValidityV2::Indeterminate,
             remote_response_digest: None,
-            authority_observation_digest: None,
-            result_digest: Digest32::ZERO,
-            authority: AuthorityPosture::DENY_ALL,
-        },
+                authority_observation_digest: None,
+                result_digest: Digest32::ZERO,
+                authority: AuthorityPosture::DENY_ALL,
+            }
+        }
         FederationTransportResultV2::Terminal(response) => {
             response.validate_for_query(&query)?;
             let authority_observation =
@@ -680,7 +749,10 @@ where
                     requested_peers: 1,
                     completed_peers: 1,
                     failed_peers: 0,
+                    truncated_peers: 0,
+                    omitted_peer_candidates: 0,
                     truncated_items: u32::try_from(truncated_items).unwrap_or(u32::MAX),
+                    failures: FederatedFailureCoverageV2::default(),
                 },
                 completeness,
                 validity,
