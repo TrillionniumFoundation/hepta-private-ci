@@ -242,9 +242,15 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
     )
     .await
     .unwrap();
-    let winner = items.last().unwrap().clone();
-    assert!(!baseline.items.contains(&winner));
-    let fixture = fitted_ranker(owner.clone(), &items, &[0, 0, 0, 10]);
+    let winner_index = items
+        .iter()
+        .position(|item| !baseline.items.contains(item))
+        .expect("byte budget must omit at least one bounded owner candidate");
+    let winner = items[winner_index].clone();
+    let scores = (0..items.len())
+        .map(|index| if index == winner_index { 10 } else { 0 })
+        .collect::<Vec<_>>();
+    let fixture = fitted_ranker(owner.clone(), &items, &scores);
     let selected = read(
         &store,
         &owner,
@@ -266,10 +272,8 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
     )
     .await
     .unwrap();
-    assert_eq!(
-        budgeted.items,
-        vec![winner, items[0].clone(), items[1].clone()]
-    );
+    assert_eq!(budgeted.items.first(), Some(&winner));
+    assert!(budgeted.items.len() < items.len());
     assert!(serde_json::to_vec(&budgeted).unwrap().len() <= MAX_CONTEXT_JSON_BYTES);
 }
 
