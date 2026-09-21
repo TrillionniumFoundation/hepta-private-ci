@@ -242,5 +242,15 @@
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "repositoryControlledProductCompositionGaps": [
     "External-effect product composition remains open: no registered product caller currently binds the TaskFlow AuthorizedEffectDriver seam to an independently provisioned FinalUseAuthority host and an independently attested concrete provider/terminal observer."
-  ]
+  ],
+  "sourceObservationRequirements": {
+    "policy": "candidate_or_exact_observation_v1",
+    "rustWorkspaceBuildInputs": [
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock"
+    ],
+    "verifier": "scripts/hepta-implementation-maps.py::validate_observed_source",
+    "regression": "scripts/test_hepta_module_source_roots.py::SourceRootTests::test_exact_rust_observation_requires_workspace_manifest_and_lock",
+    "semantics": "Any strict exact observation whose resolved source roots enter codex-rs must include the root Cargo workspace manifest and lockfile; omission is a verification failure."
+  }
 }
