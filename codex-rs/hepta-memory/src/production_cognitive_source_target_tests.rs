@@ -99,9 +99,7 @@ fn test_nonce(label: &str) -> [u8; 32] {
         .as_nanos();
     let material = format!("{label}:{now_nanos}:{}", std::process::id());
     let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
-    let mut nonce = [0_u8; 32];
-    nonce.copy_from_slice(&digest);
-    nonce
+    digest.into()
 }
 
 fn signed_final_use(
