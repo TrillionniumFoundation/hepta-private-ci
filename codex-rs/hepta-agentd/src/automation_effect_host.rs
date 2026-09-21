@@ -8,6 +8,9 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 
@@ -48,6 +51,7 @@ use crate::AgentdIdentity;
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
+const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
 
 #[derive(Clone, Debug)]
@@ -64,6 +68,8 @@ pub(crate) struct AgentdAutomationEffectHost {
     destination_id: String,
     final_use_scope_digest: Sha256Digest,
     authority: FinalUseAuthority,
+    revocations_file: PathBuf,
+    revocation_frontier: Arc<Mutex<(u64, u64)>>,
     adapter: HttpProviderEffectAdapter,
 }
 
@@ -99,7 +105,7 @@ struct AutomationEffectHostFileV1 {
     contract_verifying_key_hex: String,
     final_use_signer_id: String,
     final_use_verifying_key_hex: String,
-    final_use_revocations: FinalUseRevocations,
+    final_use_revocations_file: PathBuf,
 }
 
 impl AgentdAutomationEffectHost {
@@ -174,6 +180,17 @@ impl AgentdAutomationEffectHost {
         let adapter =
             HttpProviderEffectAdapter::new(provider_config).map_err(AgentdError::Invalid)?;
 
+        if !config.final_use_revocations_file.is_absolute() {
+            return Err(AgentdError::Invalid(
+                "final_use_revocations_file must be absolute".to_string(),
+            ));
+        }
+        let initial_revocations = read_revocations_file(&config.final_use_revocations_file)?;
+        let frontier = (
+            initial_revocations.authority_epoch,
+            initial_revocations.revision,
+        );
+
         let authority_root = identity.layout.automation_root().join("final-use-authority");
         fs::create_dir_all(&authority_root)?;
         #[cfg(unix)]
@@ -185,7 +202,7 @@ impl AgentdAutomationEffectHost {
             &authority_root,
             config.final_use_signer_id,
             final_use_verifying_key,
-            config.final_use_revocations,
+            initial_revocations,
         )
         .map_err(|error| {
             AgentdError::Protocol(format!(
@@ -199,6 +216,8 @@ impl AgentdAutomationEffectHost {
             destination_id: config.destination_id,
             final_use_scope_digest,
             authority,
+            revocations_file: config.final_use_revocations_file,
+            revocation_frontier: Arc::new(Mutex::new(frontier)),
             adapter,
         })
     }
@@ -219,6 +238,7 @@ impl AgentdAutomationEffectHost {
             .map_err(|error| AgentdError::Protocol(format!("read effect TaskFlow run: {error}")))?
             .ok_or_else(|| AgentdError::Invalid("effect TaskFlow run does not exist".to_string()))?;
         let fence = self.current_fence(&run, now_ms)?;
+        self.refresh_revocations()?;
         let binding = intent
             .final_use_binding()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
@@ -331,6 +351,34 @@ impl AgentdAutomationEffectHost {
                 Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate)
             }
         }
+    }
+
+    fn refresh_revocations(&self) -> Result<(), AgentdError> {
+        let head = read_revocations_file(&self.revocations_file)?;
+        let mut frontier = self
+            .revocation_frontier
+            .lock()
+            .map_err(|_| AgentdError::Protocol(
+                "automation effect revocation frontier lock is poisoned".to_string(),
+            ))?;
+        let observed = (head.authority_epoch, head.revision);
+        if observed == *frontier {
+            return Ok(());
+        }
+        if observed.0 < frontier.0
+            || (observed.0 == frontier.0 && observed.1 < frontier.1)
+        {
+            return Err(AgentdError::GenerationFenced(
+                "automation effect revocation frontier rolled back".to_string(),
+            ));
+        }
+        self.authority.update_revocations(head).map_err(|error| {
+            AgentdError::GenerationFenced(format!(
+                "automation effect revocation refresh rejected: {error}"
+            ))
+        })?;
+        *frontier = observed;
+        Ok(())
     }
 
     fn validate_intent(
@@ -519,28 +567,58 @@ fn serialized_observation_digest(
 }
 
 fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError> {
+    let bytes = read_protected_file(
+        path,
+        MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES,
+        "automation effect host file",
+    )?;
+    Ok(serde_json::from_slice(&bytes)?)
+}
+
+fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError> {
+    let bytes = read_protected_file(
+        path,
+        MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES,
+        "automation effect revocations file",
+    )?;
+    Ok(serde_json::from_slice(&bytes)?)
+}
+
+fn read_protected_file(
+    path: &Path,
+    max_bytes: u64,
+    label: &str,
+) -> Result<Vec<u8>, AgentdError> {
+    if !path.is_absolute() {
+        return Err(AgentdError::Invalid(format!("{label} must be absolute")));
+    }
+    let canonical = path.canonicalize()?;
+    if canonical != path {
+        return Err(AgentdError::Invalid(format!(
+            "{label} must be canonical and symlink-free"
+        )));
+    }
     let metadata = fs::symlink_metadata(path)?;
     if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(AgentdError::Invalid(
-            "automation effect host file must be a regular non-symlink file".to_string(),
-        ));
+        return Err(AgentdError::Invalid(format!(
+            "{label} must be a regular non-symlink file"
+        )));
     }
-    if metadata.len() == 0 || metadata.len() > MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES {
-        return Err(AgentdError::Invalid(
-            "automation effect host file is empty or too large".to_string(),
-        ));
+    if metadata.len() == 0 || metadata.len() > max_bytes {
+        return Err(AgentdError::Invalid(format!(
+            "{label} is empty or too large"
+        )));
     }
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
         if metadata.permissions().mode() & 0o077 != 0 {
-            return Err(AgentdError::Invalid(
-                "automation effect host file must not be group/world accessible".to_string(),
-            ));
+            return Err(AgentdError::Invalid(format!(
+                "{label} must not be group/world accessible"
+            )));
         }
     }
-    let bytes = fs::read(path)?;
-    Ok(serde_json::from_slice(&bytes)?)
+    Ok(fs::read(path)?)
 }
 
 fn validate_host_identifier(label: &str, value: &str) -> Result<(), AgentdError> {
@@ -892,6 +970,24 @@ mod tests {
             1,
         );
         let contract_signature = contract_signer.sign(&statement).to_bytes();
+        let revocations_file = fixture
+            .identity
+            .layout
+            .automation_root()
+            .join("effect-revocations.json");
+        fs::write(
+            &revocations_file,
+            serde_json::to_vec(&FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            })
+            .expect("revocations json"),
+        )
+        .expect("write revocations file");
+        fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
+            .expect("revocations file permissions");
+
         let host_file = fixture.identity.layout.automation_root().join("effect-host.json");
         let host_json = serde_json::json!({
             "schema_version": 1,
@@ -909,11 +1005,7 @@ mod tests {
             "contract_verifying_key_hex": hex(&contract_signer.verifying_key().to_bytes()),
             "final_use_signer_id": "automation-security-owner",
             "final_use_verifying_key_hex": hex(&final_use_signer.verifying_key().to_bytes()),
-            "final_use_revocations": {
-                "authority_epoch": 9,
-                "revision": 1,
-                "revoked_grant_ids": BTreeSet::<String>::new()
-            }
+            "final_use_revocations_file": revocations_file
         });
         fs::write(
             &host_file,
