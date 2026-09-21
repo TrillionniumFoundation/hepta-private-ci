@@ -157,6 +157,7 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
         objective_digest: digest('2'),
         body_digest: digest('3'),
         artifact_set_digest: digest('4'),
+        execution_payload_digest: digest('5'),
         authority_epoch: 7,
         deadline_ms: u64::MAX - 1,
     };
