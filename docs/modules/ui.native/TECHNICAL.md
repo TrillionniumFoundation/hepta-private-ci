@@ -166,7 +166,8 @@ Current focused test sources (source references, not pass receipts):
 - [apps/hepta-native/tests/security_updater.rs](../../../apps/hepta-native/tests/security_updater.rs); kernel final-use binding and live revocation, stable update-channel admission, predecessor fencing, unsigned update refusal and rollback.
 - [.github/workflows/hepta-native-rust.yml](../../../.github/workflows/hepta-native-rust.yml); exact PR-head Linux execution plus Windows/macOS/Linux merge-candidate build/test/package/self-test and unsigned qualification receipts.
 
-From the repository root, run `cargo fmt --manifest-path apps/hepta-native/Cargo.toml --check`, `cargo clippy --manifest-path apps/hepta-native/Cargo.toml --all-targets --all-features -- -D warnings`, and `cargo test --manifest-path apps/hepta-native/Cargo.toml --all-targets`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
+From the repository root, run `cargo fmt --manifest-path apps/hepta-native/Cargo.toml --check`, `cargo clippy --manifest-path apps/hepta-native/Cargo.toml --all-targets --all-features -- -D warnings`, and `cargo test --manifest-path apps/hepta-native/Cargo.toml --all-targets
+cargo run --manifest-path apps/hepta-native/Cargo.toml --bin hepta-native -- --qualification-e2e`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

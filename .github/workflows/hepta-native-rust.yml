@@ -110,18 +110,25 @@ jobs:
       - name: Headless product smoke contract
         run: cargo run --bin hepta-native -- --self-test
 
+      - name: Product fault qualification contract
+        run: cargo run --bin hepta-native -- --qualification-e2e
+
       - name: Build release binaries
         run: cargo build --release --bins
 
       - name: Smoke release binary (Unix)
         if: runner.os != 'Windows'
         shell: bash
-        run: ./target/release/hepta-native --self-test
+        run: |
+          ./target/release/hepta-native --self-test
+          ./target/release/hepta-native --qualification-e2e
 
       - name: Smoke release binary (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: .\\target\\release\\hepta-native.exe --self-test
+        run: |
+          .\\target\\release\\hepta-native.exe --self-test
+          .\\target\\release\\hepta-native.exe --qualification-e2e
 
       - name: Package unsigned macOS app bundle
         if: runner.os == 'macOS'
@@ -169,12 +176,16 @@ jobs:
       - name: Smoke packaged macOS application
         if: runner.os == 'macOS'
         shell: bash
-        run: '"dist/Hepta Native.app/Contents/MacOS/hepta-native" --self-test'
+        run: |
+          "dist/Hepta Native.app/Contents/MacOS/hepta-native" --self-test
+          "dist/Hepta Native.app/Contents/MacOS/hepta-native" --qualification-e2e | tee dist/packaged-fault-qualification.json
 
       - name: Smoke packaged Linux application
         if: runner.os == 'Linux'
         shell: bash
-        run: ./dist/HeptaNative.AppDir/usr/bin/hepta-native --self-test
+        run: |
+          ./dist/HeptaNative.AppDir/usr/bin/hepta-native --self-test
+          ./dist/HeptaNative.AppDir/usr/bin/hepta-native --qualification-e2e | tee dist/packaged-fault-qualification.json
 
       - name: Smoke packaged Windows application
         if: runner.os == 'Windows'
@@ -183,6 +194,7 @@ jobs:
           Remove-Item -Recurse -Force dist/smoke -ErrorAction SilentlyContinue
           Expand-Archive -Force "dist/hepta-native-$env:RUNNER_OS-$env:RUNNER_ARCH-unsigned.zip" dist/smoke
           .\\dist\\smoke\\hepta-native.exe --self-test
+          .\\dist\\smoke\\hepta-native.exe --qualification-e2e | Tee-Object -FilePath dist/packaged-fault-qualification.json
 
       - name: Write merge-candidate qualification receipt (Unix)
         if: runner.os != 'Windows'
@@ -211,6 +223,7 @@ jobs:
               "production_signing_observed": False,
               "independent_accessibility_acceptance": False,
               "release_authority": False,
+              "packaged_fault_qualification": True,
               "binary_sha256": digests,
           }
           pathlib.Path("dist/qualification-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
@@ -243,6 +256,7 @@ jobs:
               "production_signing_observed": False,
               "independent_accessibility_acceptance": False,
               "release_authority": False,
+              "packaged_fault_qualification": True,
               "binary_sha256": digests,
           }
           pathlib.Path("dist/qualification-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
@@ -319,4 +333,6 @@ jobs:
         run: cargo test -p codex-hepta-native-gateway
 
       - name: Headless exact-head product smoke
-        run: cargo run --bin hepta-native -- --self-test
+        run: |
+          cargo run --bin hepta-native -- --self-test
+          cargo run --bin hepta-native -- --qualification-e2e

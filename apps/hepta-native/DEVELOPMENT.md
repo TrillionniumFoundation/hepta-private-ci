@@ -203,8 +203,11 @@ cargo fmt --check
 cargo clippy --all-targets --all-features -- -D warnings
 cargo test --all-targets
 cargo run --bin hepta-native -- --self-test
+cargo run --bin hepta-native -- --qualification-e2e
 cargo build --release --bins
 ```
+
+The release binary also exposes an explicit authority-free `--qualification-e2e` profile. It uses the product runtime, durable journal, kernel final-use store and updater state machine with deterministic fake backend/platform adapters inside an isolated temporary root; it never invokes real OS effects. The profile forks and kills packaged child processes to prove an `Invoking` parent-death cut reconciles without replay and an `ActivatedUnconfirmed` updater-death cut restores the admitted predecessor. It also verifies authenticated runtime-view composition, same-ID/new-generation fencing, permission denial before dispatch, current grant revocation immediately before effect entry, and durable `RecoveryRequired` when rollback evidence is destroyed.
 
 The runtime tests explicitly cover same-ID/new-session fencing, indeterminate retry without replay, process-restart reconciliation from the durable journal, close-with-pending behavior and no-dispatch when kernel authority is unavailable. Security/update tests cover exact kernel final-use binding, live grant revocation before adapter entry, selector/generator separation, stable-channel admission, stage digest, installed-predecessor fencing, independent updater activation and new-binary confirmation. The merge-candidate matrix starts the release binary again from each packaged artifact and emits an unsigned qualification receipt with checked-out SHA, source-head SHA and binary digests. A separate Ubuntu job checks out the exact PR head and reruns format, Clippy, tests, gateway tests and the product self-test.
 
@@ -212,7 +215,7 @@ CI output is not a production-release receipt. The generated artifacts are inten
 
 ## 10. Remaining external gates
 
-Repository-controlled closure now uses the operator-selected independently issued `SignedFinalUseGrant` as the product authority ingress and includes durable kernel final-use stores for Unix and Windows. Remaining repository gates are reproducible dependency locking, current exact-head/merge-candidate execution receipts, and packaged fault/restart qualification bound to the final candidate.
+Repository-controlled closure now uses the operator-selected independently issued `SignedFinalUseGrant` as the product authority ingress and includes durable kernel final-use stores for Unix and Windows. Remaining repository gates are reproducible dependency locking and current exact-head/merge-candidate execution receipts. The packaged fault/restart profile is now source-composed but does not become evidence until the final packaged artifacts execute it successfully.
 
 Repository implementation cannot self-issue these facts:
 
