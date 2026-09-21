@@ -309,7 +309,6 @@ pub enum AgentdMethod {
         capability_id: MemoryFederationCapabilityId,
     },
     RunStart {
-        now_ms: u64,
         snapshot: AgentRunSnapshot,
     },
     RunAttachContext {
