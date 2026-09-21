@@ -30,6 +30,7 @@ pub use contracts_v1::IntelligenceHostEnvelopeV1;
 pub use contracts_v1::LegalActionCandidateSetV1;
 pub use contracts_v1::LegalActionCandidateV1;
 pub use contracts_v1::build_legal_candidates_v1;
+pub use contracts_v1::execution_payload_digest_v1;
 
 mod native_ports_v3;
 mod outcome_credit;
