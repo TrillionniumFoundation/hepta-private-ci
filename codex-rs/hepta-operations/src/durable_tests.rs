@@ -185,6 +185,53 @@ async fn immutable_operation_context_survives_reopen_and_rejects_semantic_drift(
 }
 
 #[tokio::test]
+async fn successor_owner_generation_can_reconcile_but_predecessor_cannot() {
+    let (_temp, store) = opened().await;
+    let operation = id("operation.successor-reconcile");
+    store
+        .begin(key(operation.as_str(), b"payload"), generation(8))
+        .await
+        .expect("begin");
+    store
+        .record_authorized(
+            &operation,
+            Digest32::of_bytes(b"authorization"),
+            generation(21),
+        )
+        .await
+        .expect("authorize");
+    store
+        .record_dispatch(&operation, Digest32::of_bytes(b"dispatch"))
+        .await
+        .expect("dispatch");
+
+    let stale = store
+        .observe_terminal(
+            &operation,
+            ReconciliationOutcome::NotApplied,
+            Digest32::of_bytes(b"stale-observation"),
+            generation(7),
+        )
+        .await
+        .expect_err("predecessor owner must be fenced");
+    assert!(matches!(
+        stale,
+        DurableOperationError::Operation(OperationError::StaleGeneration)
+    ));
+
+    let terminal = store
+        .observe_terminal(
+            &operation,
+            ReconciliationOutcome::NotApplied,
+            Digest32::of_bytes(b"successor-observation"),
+            generation(9),
+        )
+        .await
+        .expect("successor generation may reconcile");
+    assert!(matches!(terminal.state, OperationState::NotApplied { .. }));
+}
+
+#[tokio::test]
 async fn durable_outbox_lease_fences_live_owner_and_allows_expired_takeover() {
     let (_temp, store) = opened().await;
     let operation = id("operation.outbox-lease");
