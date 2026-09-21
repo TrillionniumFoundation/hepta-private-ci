@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - "work/**"
   workflow_dispatch:
 
 permissions:
@@ -15,7 +16,50 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  source-preflight:
+    # Cheap source feedback also runs on work-branch pushes. GitHub does not
+    # dispatch pull_request workflows while that PR has merge conflicts.
+    # This job is not a replacement for merge-candidate/native qualification.
+    name: Check Cargo manifest and source-identity tooling
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact source for preflight
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate local Cargo graph before dependency downloads
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta_workspace.py
+
+      - name: Exercise preflight and source-identity regressions
+        if: always() && !cancelled() && steps.checkout.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_workspace.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_implementation_identity.py'
+
+      - name: Parse the actual workspace with Cargo
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-manifest.json"
+
   source-integrity:
+    # Preserve the original PR/main/manual policy scope; a work-branch push
+    # gets only the inexpensive preflight, not another global policy suite.
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
     name: Verify ordinary read-only candidate source
     runs-on: ubuntu-24.04
     timeout-minutes: 15
