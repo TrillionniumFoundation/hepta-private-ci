@@ -2,69 +2,104 @@
 
 ## Current executable contract
 
-`codex-rs/hepta-operations` is a bounded **in-memory reference model**, not a
-durable operation service. It models pending, authorized, dispatched,
-indeterminate and terminal states; exact operation/payload identity; monotonic
-revisions; generation-fenced terminal observation; and a bounded in-memory
-outbox.
+`codex-rs/hepta-operations` now contains two deliberately separate layers:
 
-All evidence digests required by transitions are nonzero. Exact command replay
-is idempotent; identity reuse with changed semantics conflicts. The
-`ReferenceAuthorityWitness` is intentionally not a cryptographic credential and
-must never be accepted by a production effect adapter. Its reference digest is
-canonically derived from operation identity, final payload digest, authority
-generation and expiry. Construction rejects a digest for any other semantic
-tuple, and authorization replay revalidates the complete binding and current
-expiry before it is treated as idempotent.
+1. the bounded in-memory `OperationLedger` / `Outbox` reference models used
+   as deterministic transition oracles; and
+2. the kernel-owned `DurableOperationStore` SQLite implementation for
+   crash/reopen-safe operation identity, immutable transition history and
+   leased cross-owner outbox state.
 
-Acknowledged outbox state retains both the claiming owner generation and the
-acknowledgement digest. A terminal replay is idempotent only for that exact
-tuple; a different generation remains stale and a different digest conflicts.
+Both preserve the rule that transport acknowledgement is not terminal effect
+observation. Once dispatch may have crossed an effect boundary, the operation
+is either dispatched or indeterminate until a current-generation observer
+records `applied`, `not_applied` or `quarantined`.
+
+All transition digests are nonzero. Exact replay is idempotent only for the
+same semantic tuple. Reusing one operation ID with another payload or owner
+generation conflicts.
+
+The `ReferenceAuthorityWitness` remains test/reference material only. It is
+not a cryptographic credential and is not accepted by the durable store as
+production authority. A production adapter must consume the
+`kernel.authority` final-use token separately at the actual effect boundary.
 
 ## Public symbols and source bindings
+
+Reference-model symbols:
 
 - `OperationKey`, `OperationState`, `OperationRecord`,
   `ReconciliationOutcome`, `ReferenceAuthorityWitness`: `src/model.rs`;
 - `OperationLedger`, `MAX_MODEL_OPERATION_RECORDS`: `src/ledger.rs`;
 - `Outbox`, `OutboxIntent`, `OutboxState`,
-  `MAX_MODEL_OUTBOX_RECORDS`: `src/outbox.rs`;
-- stable errors, including reference-witness semantic mismatch:
-  `src/error.rs`.
+  `MAX_MODEL_OUTBOX_RECORDS`: `src/outbox.rs`.
 
-## Durability and activation
+Durable-owner symbols:
 
-Durability is **not implemented**. Process exit loses every record and claim.
-There is no database, journal, fsync, interprocess lock, claim lease, dispatcher
-or product caller. The module is inactive.
+- `DurableOperationStore`, `DurableOperationError`,
+  `DurableOutboxState`: `src/durable.rs`;
+- schema lineage: `migrations/0001_durable_operations.sql`;
+- crash/reopen, multi-handle, lease and corruption qualification:
+  `src/durable_tests.rs`.
 
-## Target-only design
+## Durable operation ledger
 
-The target is a transactional durable ledger/outbox with atomic intent
-publication, destination deduplication, bounded claim leases, crash/reopen
-takeover, reconciliation, migrations, corruption handling and rollback.
+The physical lineage is `hepta_operations_1.sqlite`. Mutation paths use
+`BEGIN IMMEDIATE` and atomically update the current projection plus append its
+immutable event.
 
-## Known limits and non-claims
+The durable operation chain is:
 
-Cloning a model is not reopen recovery. An outbox claim has no lease expiry and
-cannot be taken over inside this model. Caller-provided reference time is a test
-input, not trusted production time. A semantically bound reference digest is
-not authentication or a signature. Compensation is a new authorized operation,
-never implicit rollback.
+`pending -> authorized -> dispatched -> indeterminate? -> applied | not_applied | quarantined`.
 
-The reference ledger does not itself enforce final-use authority at an external
-adapter. Product composition must consume the non-serializable token owned by
-`kernel.authority` immediately before the effect boundary.
+Terminal observation is generation fenced. Reopening verifies SQLite
+`quick_check`, foreign keys, the exact SQLx migration ledger, projection/event
+agreement, complete event counts through the current revision and immutable
+event triggers.
 
-## Verification
+## Durable outbox
 
-The shared model tests cover invalid/zero digests, capacity, idempotent replay,
-payload and operation drift, stale/expired reference witnesses, authority
-generation and expiry digest binding, stale outbox acknowledgement generations,
-changed acknowledgement digests, stale terminal generations, dispatch not being
-terminal success and indeterminate reconciliation.
+Every outbox row references an existing durable operation. Claims bind owner
+identity, owner generation and a bounded lease expiry. Another owner is rejected
+while the lease is live and may take over only after expiry. Acknowledgement is
+accepted only from the current claim owner and exact acknowledgement replay is
+idempotent.
 
-## Integration prerequisites
+Outbox acknowledgement does not update the operation to a terminal state.
 
-No production binary may use this crate as a durability or authority boundary.
-A future backend must execute the same transition suite plus crash, disk-full,
-corruption, migration, multi-writer and claim-takeover tests before activation.
+## Capacity
+
+The current source implementation bounds both durable current-operation rows
+and durable current-outbox rows at 16,384. Outbox lease lifetime is bounded to
+300 seconds.
+
+## Qualification implemented in source
+
+The durable suite covers:
+
+- dispatch -> indeterminate -> process/store close -> reopen -> independent
+  terminal observation -> reopen;
+- two opened handles replaying the same operation identity and rejecting changed
+  payload reuse;
+- live outbox owner fencing, expired lease takeover and stale-owner
+  acknowledgement rejection;
+- queue acknowledgement remaining non-terminal for the operation;
+- reopen rejection after the current operation projection is tampered away from
+  its immutable event history.
+
+These are test sources until exact-head and deterministic synthetic-merge jobs
+pass for the candidate.
+
+## Remaining product and external gates
+
+The durable kernel owner is not a product mutation gateway. There is still no
+named ui.control caller, no durable RBAC/policy decision owner composed here,
+no final-use-authorized real Agentd effect dispatch, no independently observed
+product terminal adapter and no background product reconciler.
+
+Trusted time / external anti-rollback, target-host capacity and disk-fault
+campaigns, independent review, deployment acceptance, activation, promotion and
+release also remain separate gates.
+
+The existing in-memory reference models remain useful test oracles but must not
+be confused with the SQLite durability owner.
