@@ -352,7 +352,6 @@ def verify():
     lanes = lane_by_module()
     candidate_source_base = current_source_base()
     failures = []
-    source_bases = set()
     candidate_bound_maps = 0
     exact_observed_fallback_maps = 0
     for module in modules:
@@ -384,10 +383,8 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
-            if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
-                failures.append(f"{mid}: unknown source identity policy")
-            elif policy == "legacy_shared_batch":
-                source_bases.add((source_base["commit"], source_base["tree"]))
+            if policy != "candidate_or_exact_observation_v1":
+                failures.append(f"{mid}: legacy or unknown source identity policy")
             elif source_base == candidate_source_base:
                 candidate_bound_maps += 1
             else:
@@ -439,8 +436,38 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+        if mid == "learning.operator":
+            required_operations = {
+                "build_targets",
+                "build_sensor_core",
+                "evaluate_bellman_reference",
+                "validate_applicability_certificate",
+                "validate_applicability_with_signed_evidence_v2",
+                "fit_tabular_operator",
+                "fit_tabular_operator_strict_v2",
+                "verify_tabular_operator_plan_v2",
+                "fit_tabular_operator_verified_v2",
+                "predict_tabular_operator",
+                "encode_tabular_payload_v1",
+                "load_pinned_tabular_operator_v1",
+                "admit_operator_regularity",
+                "admit_operator_regularity_with_signed_evidence_v2",
+                "fit_transition_model",
+                "verify_world_model_dataset_v2",
+                "fit_transition_model_verified_v2",
+                "predict_transition",
+            }
+            mapped = {op.get("operation") for op in ops}
+            missing = sorted(required_operations - mapped)
+            if missing:
+                failures.append(
+                    "learning.operator: public operation inventory incomplete: "
+                    + ", ".join(missing)
+                )
+            if isinstance(boundary, dict) and boundary.get("nativeSourceMappingComplete") is True and missing:
+                failures.append(
+                    "learning.operator: nativeSourceMappingComplete=true with missing public operations"
+                )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
