@@ -16,6 +16,8 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-bellman-operat
 
 The original `train` function remains a compatibility alias for `build_targets`; it is explicitly a target builder, not a neural trainer. Transition/dynamics estimation and continuation-value estimation have separate artifacts and evidence.
 
+Unbound `build_targets`, `fit_tabular_operator`, `fit_tabular_operator_strict_v2` and `fit_transition_model` are retained only as owner-test/compatibility kernels. The Lane-E verifier rejects their use from non-test repository product source; canonical product training must first verify `DatasetSnapshotReceiptV3` into `VerifiedOperatorDatasetV2` and then call the bound V2 entrypoints.
+
 ## 3. State records and transaction design
 
 There is no production source writer. Training reads immutable ledger-bound datasets and emits deny-all candidate values for `learning.artifacts`. Sensor cores are fixed versioned designs, not replay caches. Artifacts bind axis partition, conditioning snapshot, model and dataset lineage, normalized units, code/runtime/device, error budget, applicability certificate and predecessor through the artifact owner.
