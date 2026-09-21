@@ -59,7 +59,7 @@ pub fn optimize_with_factor_graph(
     factor_graph
         .validate()
         .map_err(|error| Error::FactorGraph(format!("invalid factor graph: {error}")))?;
-    if request.registry_snapshot_digest != factor_graph.registry_snapshot_digest {
+    if request.registry_snapshot_digest != factor_graph.registry_snapshot_digest() {
         return Err(Error::FactorGraph(
             "optimizer registry snapshot diverged from factor graph owner source".to_string(),
         ));
@@ -71,7 +71,7 @@ pub fn optimize_with_factor_graph(
         .map(|candidate| candidate.factor_id.clone())
         .collect::<BTreeSet<_>>();
     let graph_nodes = factor_graph
-        .generation
+        .generation()
         .nodes
         .iter()
         .map(|node| node.node_id.clone())
@@ -87,10 +87,10 @@ pub fn optimize_with_factor_graph(
     let query_id = StableId::new("query:prompt-optimizer-factor-relations-v1")
         .map_err(|error| Error::FactorGraph(format!("invalid query identity: {error}")))?;
     let relation_result = query_relations(
-        &factor_graph.generation,
+        factor_graph.generation(),
         KnowledgeRelationQueryV2 {
             query_id,
-            generation_digest: factor_graph.generation.generation_digest,
+            generation_digest: factor_graph.generation().generation_digest,
             seed_node_ids: factor_ids.iter().cloned().collect(),
             relation_kinds: vec![
                 KnowledgeRelationKindV2::PromptComplements,
@@ -126,7 +126,7 @@ pub fn optimize_with_factor_graph(
     let portfolio = optimize_with_factor_conflicts(request, &conflicts)?;
     let mut result = GraphBoundPromptPortfolioReceipt {
         portfolio,
-        factor_graph_generation_digest: factor_graph.generation.generation_digest,
+        factor_graph_generation_digest: factor_graph.generation().generation_digest,
         relation_result_digest: relation_result.result_digest,
         observed_relation_count: u32::try_from(relation_result.edges.len()).unwrap_or(u32::MAX),
         receipt_digest: Digest32::ZERO,
