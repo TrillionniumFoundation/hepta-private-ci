@@ -1499,25 +1499,117 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     crate::signed_intent::write_intent(record.layout.run_root(), &intent)
         .expect("persist unresolved intent");
 
-    let error = match Supervisor::recover(
+    let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
         FakeControl::default().driver(),
         config(),
         Instant::now(),
-    ) {
-        Ok(_) => panic!("matching target must not infer a signed commit"),
-        Err(error) => error,
-    };
-    assert!(matches!(
-        error,
-        SupervisorError::SignedIntentRecoveryRequired(agent_id) if agent_id == fleet.first
-    ));
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(recovered.production_recovery_required(&fleet.first)?);
     assert_eq!(
         crate::signed_intent::read_intent(record.layout.run_root())
             .expect("read unresolved intent")
             .expect("intent remains durable")
             .status,
-        crate::signed_intent::SignedIntentStatus::Queued
+        crate::signed_intent::SignedIntentStatus::RecoveryRequired
+    );
+    Ok(())
+}
+
+#[test]
+fn recovery_reconciles_terminal_release_transaction_into_signed_intent(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = ReleaseId::parse("signed-terminal-source")?;
+    let target = ReleaseId::parse("signed-terminal-target")?;
+    let source_program = fleet.write_release_source()?;
+    for release_id in [&source, &target] {
+        fleet
+            .registry
+            .install_release(release_id.clone(), &source_program, Vec::new())?;
+        fleet.registry.allow_release(&fleet.first, release_id)?;
+    }
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(target.clone()),
+        Some(source.clone()),
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let grant = Sha256Digest::for_bytes(b"terminal-transaction-grant");
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        4,
+        record.lifecycle.generation,
+        999,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .expect("queued signed intent");
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .expect("write queued intent");
+
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target)?),
+        record.release_state.generation,
+        record.lifecycle.generation,
+    )
+    .expect("release transaction")
+    .with_authority(grant, 999)
+    .expect("bind grant")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::Committed)
+    .expect("terminal release transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write terminal transaction");
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(!recovered.production_recovery_required(&fleet.first)?);
+    let state = recovered
+        .production_mutation_state(&fleet.first)?
+        .expect("production mutation state");
+    assert_eq!(
+        state.receipt.status,
+        crate::ProductionMutationStatus::Committed
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read reconciled intent")
+            .expect("intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::Committed
     );
     Ok(())
 }

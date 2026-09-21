@@ -24,6 +24,7 @@ use crate::SupervisorError;
 use crate::SupervisorEventKind;
 use crate::TickReport;
 use crate::release_transaction::DurableReleaseTransaction;
+use crate::release_transaction::ReleaseTransactionKind;
 use crate::release_transaction::ReleaseTransactionPhase;
 use crate::release_transaction::read_release_transaction;
 use crate::release_transaction::write_release_transaction;
@@ -686,6 +687,64 @@ impl<D: ProcessDriver> Supervisor<D> {
             SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
         ) {
             return Ok(());
+        }
+
+        // A terminal release transaction is the durable owner witness that the
+        // exact signed transition crossed its lifecycle boundary. This closes
+        // the crash cut between terminal transaction publication and the
+        // matching signed-intent update. Matching release state is required so
+        // a detached or unrelated terminal journal cannot close the intent.
+        if let Some(transaction) = read_release_transaction(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            let kind_matches = matches!(
+                (intent.transition, transaction.kind),
+                (
+                    H7H89ProductionTransition::Upgrade,
+                    ReleaseTransactionKind::Upgrade
+                ) | (
+                    H7H89ProductionTransition::Rollback,
+                    ReleaseTransactionKind::ExplicitRollback
+                )
+            );
+            let terminal_status = if kind_matches
+                && transaction.grant_sha256.as_ref() == Some(&intent.grant_sha256)
+                && transaction.source_release == intent.source_release
+                && transaction.target_release == intent.target_release
+            {
+                match transaction.phase {
+                    ReleaseTransactionPhase::Committed
+                        if record
+                            .release_state
+                            .current
+                            .as_ref()
+                            .is_some_and(|release| release.as_str() == intent.target_release) =>
+                    {
+                        Some(SignedIntentStatus::Committed)
+                    }
+                    ReleaseTransactionPhase::RolledBack
+                        if record
+                            .release_state
+                            .current
+                            .as_ref()
+                            .is_some_and(|release| release.as_str() == intent.source_release) =>
+                    {
+                        Some(SignedIntentStatus::RolledBack)
+                    }
+                    _ => None,
+                }
+            } else {
+                None
+            };
+            if let Some(status) = terminal_status {
+                let terminal = intent
+                    .with_status(status)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                write_intent(record.layout.run_root(), &terminal)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.signed_intent = Some(terminal);
+                return Ok(());
+            }
         }
 
         // Keep the daemon reachable for the status/recovery ceremony while
