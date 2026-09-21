@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "fa65c716f3419c1c945b77b7d1b7fadb93cda066",
-    "tree": "a018729784a3a6175ec821e2ee06643e6cdda2ba"
+    "commit": "e759a5bd4382fba9c120cd5bf4b572fda1c96b2b",
+    "tree": "2b03eb460523ce449cb83031dd7bd8592733bf10"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -109,10 +109,10 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain green exact-head and ordered-parent synthetic-merge receipts for the rebased candidate, including package tests, all-target Clippy, formatting and clean source.",
-    "Qualify an authenticated CurrentMemoryRetrievalContext provider for the explicit HnmfRequired Agentd profile; Compatibility remains a separate profile and rejects an attached HNMF context.",
-    "Retain a green qualification-host receipt and repeat the checked-in 512-candidate/4096-node/32768-synapse/four-step probes on an approved named target host before making target-host performance claims.",
-    "Bind and qualify a real current encoder/vector-index owner before enabling the Vector policy channel; lexical, generic graph or learned-ranker scores must never be relabelled as vector evidence."
+    "Obtain green exact-head and ordered-parent synthetic-merge receipts for the exact observed source snapshot, including package tests, all-target Clippy, formatting and clean source.",
+    "Compose and independently qualify an authenticated CurrentMemoryRetrievalContext provider for the real Agentd hnmf-required process profile; the binary now selects the profile explicitly and fails startup when the provider is absent.",
+    "Retain a green exact-head qualification-host receipt and repeat the same checked-in SQLite/revalidation plus 512-candidate/4096-node/32768-synapse/four-step probes on an approved named target host before target-host performance claims.",
+    "Bind and qualify a real current encoder/vector-index owner before enabling the Vector policy channel; no lexical, generic-graph or learned-ranker score may be relabelled as vector evidence."
   ],
   "externalEvidenceGates": [
     "independent semantic review and acceptance",
@@ -152,26 +152,41 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "fa65c716f3419c1c945b77b7d1b7fadb93cda066",
-    "tree": "a018729784a3a6175ec821e2ee06643e6cdda2ba",
-    "interpretation": "exact rebased memory.retrieval source snapshot on current main; the following commit changes only module projection/document truth, and every declared/resolved/composition source path must remain byte-unchanged through the PR head"
+    "commit": "e759a5bd4382fba9c120cd5bf4b572fda1c96b2b",
+    "tree": "2b03eb460523ce449cb83031dd7bd8592733bf10",
+    "interpretation": "exact memory.retrieval source/test/composition snapshot rebased on current main; later commits are documentation/projection-only and every observed source, manifest, test and qualification path must remain byte-unchanged through PR HEAD"
   },
   "observedSourcePaths": [
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-memory-retrieval",
+    "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-memory/src/cognitive_model.rs",
     "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+    "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
     "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/config_tests.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-learning-ledger/Cargo.toml",
     "codex-rs/hepta-learning-ledger/src/model.rs",
     "codex-rs/hepta-learning-ledger/src/ledger.rs",
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
-    "codex-rs/hepta-learning-ledger/src/durable_codec.rs"
+    "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
+    "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+    ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+    "qualification/memory-retrieval/TARGET_HOST.md"
   ]
 }
