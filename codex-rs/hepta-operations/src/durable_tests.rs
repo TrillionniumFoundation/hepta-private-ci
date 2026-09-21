@@ -185,6 +185,49 @@ async fn immutable_operation_context_survives_reopen_and_rejects_semantic_drift(
 }
 
 #[tokio::test]
+async fn pre_dispatch_crash_can_only_reconcile_as_not_applied() {
+    let (_temp, store) = opened().await;
+    let operation = id("operation.pre-dispatch");
+    store
+        .begin(key(operation.as_str(), b"payload"), generation(3))
+        .await
+        .expect("begin");
+    store
+        .record_authorized(
+            &operation,
+            Digest32::of_bytes(b"authorization"),
+            generation(12),
+        )
+        .await
+        .expect("authorize");
+
+    let applied = store
+        .observe_terminal(
+            &operation,
+            ReconciliationOutcome::Applied,
+            Digest32::of_bytes(b"forged-applied"),
+            generation(4),
+        )
+        .await
+        .expect_err("pre-dispatch applied must reject");
+    assert!(matches!(
+        applied,
+        DurableOperationError::Operation(OperationError::InvalidTransition { .. })
+    ));
+
+    let record = store
+        .observe_terminal(
+            &operation,
+            ReconciliationOutcome::NotApplied,
+            Digest32::of_bytes(b"durable-no-dispatch-proof"),
+            generation(4),
+        )
+        .await
+        .expect("pre-dispatch durable proof can settle not-applied");
+    assert!(matches!(record.state, OperationState::NotApplied { .. }));
+}
+
+#[tokio::test]
 async fn successor_owner_generation_can_reconcile_but_predecessor_cannot() {
     let (_temp, store) = opened().await;
     let operation = id("operation.successor-reconcile");
