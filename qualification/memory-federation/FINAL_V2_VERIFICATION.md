@@ -1,16 +1,16 @@
 # memory.federation V2 final verification
 
 - branch: `fix/memory-federation-v2-closure-20260920`
-- base main: `331b81d385a88837e252bd80fda8b8ac35ea4191`
-- frozen candidate implementation head: `320585bf96fe8cc443fdc5ed5017cc6e9251644f`
-- frozen candidate implementation tree: `2f8481ed506aa076c108d74c0b1d6105e440e014`
+- base main: `a74246c4d7657d4c6b09fc50c41f1d715ace5e0e`
+- frozen candidate implementation head: `877fd06b3a09adad3dbe0f6e12f667d6d17343eb`
+- frozen candidate implementation tree: `72a240563d461e31b98ce3dbbe8ca76532cfe90f`
 - status: `pending_exact_current_head_and_merge_candidate_execution`
 - current main parent: `a74246c4d7657d4c6b09fc50c41f1d715ace5e0e`
 - claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
 
 ## Candidate boundary
 
-The frozen candidate is the last non-metadata commit. Commits after it may modify only:
+The frozen candidate is the last non-metadata commit and includes the physical HTTP regression proving a rejecting final-use guard runs after provider-policy admission but before provider dispatch. Commits after it may modify only:
 
 - `docs/modules/memory.federation/IMPLEMENTATION_MAP.json`
 - `qualification/memory-federation/FINAL_V2_VERIFICATION.md`
@@ -29,7 +29,7 @@ The candidate establishes the following source-level properties without promotin
 - Agentd composition through `CognitiveRuntime::AvailableFederatedV2`;
 - V2-only product retrieval/revalidation APIs and a regression preventing `with_federation()` from downgrading an already-composed V2 runtime;
 - explicit requested/completed/failed/truncated aggregate coverage;
-- bounded fail-closed final model-input revalidation, with same-owner/capability bindings sharing one SQLite read snapshot under one total final-use deadline;
+- bounded fail-closed final model-input revalidation, with same-owner/capability bindings sharing one SQLite read snapshot under one total final-use deadline, plus an HTTP-path regression proving a rejecting final-use guard prevents physical provider dispatch;
 - one-peer ownership in the canonical checked engine, with <=16-peer discovery/aggregation owned by the product orchestrator;
 - documentation truth that the current V2 structs are in-process Rust contracts, not a registered authenticated cross-host wire protocol.
 - local `observed_frontier` is an exact-scope append-only memory-revision count from the same retrieval snapshot, not an authenticated cut digest or rollback witness.
