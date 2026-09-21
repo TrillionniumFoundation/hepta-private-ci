@@ -21,9 +21,16 @@ use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdRequest;
+use codex_hepta_automation::AutomationCalendarScheduleV2;
+use codex_hepta_automation::AutomationDstGapPolicy;
+use codex_hepta_automation::AutomationDstOverlapPolicy;
+use codex_hepta_automation::AutomationMissedRunPolicy;
+use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationTaskDraft;
+use codex_hepta_automation::AutomationTimeZoneProfileV1;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_supervisor::AgentCommand;
 use codex_hepta_supervisor::AgentRelease;
@@ -137,15 +144,48 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
     let mut peer_tasks = Vec::new();
     for ((agent, thread_id), index) in agents[1..].iter().zip(thread_ids.iter()).zip(1_u64..) {
         let control = fleet.control_client(agent, 1)?;
-        let task = control
-            .automation_create(AutomationTaskDraft::new(
-                thread_id,
-                format!("peer {index} automation continues while Agent A is stopped"),
-                AutomationSchedule::Once,
-                now_ms,
-                now_ms,
-            ))
-            .await?;
+        let draft = AutomationTaskDraft::new(
+            thread_id,
+            format!("peer {index} automation continues while Agent A is stopped"),
+            AutomationSchedule::Once,
+            now_ms,
+            now_ms,
+        );
+        let task = if index == 1 {
+            let tzdb_digest = Sha256Digest::for_bytes(b"five-agent-calendar-v2-utc-profile");
+            let schedule = AutomationCalendarScheduleV2 {
+                timezone_id: "Etc/UTC".to_string(),
+                tzdb_digest: tzdb_digest.clone(),
+                start_at_utc_ms: now_ms,
+                end_at_utc_ms: Some(now_ms),
+                every_days: 1,
+                local_time_ms: u32::try_from(now_ms % 86_400_000)
+                    .context("UTC local time fits u32")?,
+                dst_gap_policy: AutomationDstGapPolicy::Skip,
+                dst_overlap_policy: AutomationDstOverlapPolicy::First,
+                clock_profile: AutomationTimeZoneProfileV1 {
+                    timezone_id: "Etc/UTC".to_string(),
+                    tzdb_digest,
+                    valid_from_utc_ms: now_ms.saturating_sub(86_400_000),
+                    valid_until_utc_ms: now_ms
+                        .checked_add(172_800_000)
+                        .context("Calendar V2 fixture horizon overflow")?,
+                    initial_offset_seconds: 0,
+                    transitions: Vec::new(),
+                },
+            };
+            control
+                .automation_create_calendar_v2(
+                    draft,
+                    schedule,
+                    AutomationMissedRunPolicy::Coalesce,
+                    AutomationOverlapPolicy::Forbid,
+                )
+                .await
+                .context("Calendar V2 product control creation")?
+        } else {
+            control.automation_create(draft).await?
+        };
         peer_tasks.push((control, task.task_id));
     }
     wait_peer_automation_materialized(&peer_tasks).await?;
