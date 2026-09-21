@@ -55,7 +55,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/*.test.js
+          for test_file in apps/hepta-browser/test/*.test.js; do
+            echo "::group::browser-node-test $test_file"
+            timeout 90s node --test "$test_file"
+            echo "::endgroup::"
+          done
           node --check apps/hepta-browser/src/*.js
 
       - name: Verify Agentd Browser formatting
