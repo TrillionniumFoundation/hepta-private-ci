@@ -52,6 +52,13 @@ const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
 const MAX_AUTOMATION_EFFECT_WIRE_BYTES: usize = 32 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
 
+#[derive(Clone, Debug)]
+pub(crate) enum AgentdAutomationEffectReconcileOutcome {
+    Observed(TaskFlowStepReceipt),
+    Indeterminate,
+    ProvenAbsent,
+}
+
 #[derive(Clone)]
 pub(crate) struct AgentdAutomationEffectHost {
     agent_id: codex_hepta_contracts::AgentId,
@@ -247,7 +254,7 @@ impl AgentdAutomationEffectHost {
         step_id: &str,
         attempt: u32,
         now_ms: u64,
-    ) -> Result<Option<TaskFlowStepReceipt>, AgentdError> {
+    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
         let pending = store
             .authorized_taskflow_effect_attempt(run_id, step_id, attempt)
             .await
@@ -281,9 +288,11 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(Some(receipt));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
                 }
-                AuthorizedEffectRecoveryResult::ProvenAbsent => return Ok(None),
+                AuthorizedEffectRecoveryResult::ProvenAbsent => {
+                    return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
+                }
                 AuthorizedEffectRecoveryResult::Observed(_) => {}
             }
         }
@@ -291,7 +300,7 @@ impl AgentdAutomationEffectHost {
         match self.adapter.lookup_for_intent(&provider_intent).await {
             ProviderEffectLookup::Ack(ack) => {
                 let Some(receipt) = terminal_receipt_from_ack(&ack) else {
-                    return Ok(None);
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
                 };
                 match store
                     .recover_authorized_taskflow_effect(
@@ -309,7 +318,9 @@ impl AgentdAutomationEffectHost {
                         ))
                     })?
                 {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(Some(receipt)),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
+                    }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
                     )),
@@ -318,7 +329,9 @@ impl AgentdAutomationEffectHost {
             ProviderEffectLookup::Conflict { .. } => Err(AgentdError::Protocol(
                 "provider reports a same-key payload conflict".to_string(),
             )),
-            ProviderEffectLookup::NotFound | ProviderEffectLookup::Unknown => Ok(None),
+            ProviderEffectLookup::NotFound | ProviderEffectLookup::Unknown => {
+                Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate)
+            }
         }
     }
 
