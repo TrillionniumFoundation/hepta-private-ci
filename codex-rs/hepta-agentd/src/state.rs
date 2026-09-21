@@ -5,8 +5,11 @@ use codex_hepta_automation::AutomationStore;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_memory::CognitiveStore;
+use codex_hepta_types::Digest32;
 
+use crate::AgentRunCoordinator;
 use crate::AgentdError;
+use crate::RuntimeComposition;
 use crate::AgentdEventKind;
 use crate::AgentdIdentity;
 use crate::EventBuffer;
@@ -20,6 +23,7 @@ pub(crate) struct AgentdState {
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
+    runs: Mutex<AgentRunCoordinator>,
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
@@ -44,6 +48,24 @@ impl AgentdState {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
+        let mut configuration = b"hepta.agentd.runtime-composition.v1\0".to_vec();
+        configuration.extend_from_slice(identity.agent_id.to_string().as_bytes());
+        configuration.extend_from_slice(&identity.spawn_generation.to_be_bytes());
+        configuration.extend_from_slice(identity.workspace.to_string_lossy().as_bytes());
+        configuration.extend_from_slice(identity.home_root.to_string_lossy().as_bytes());
+        configuration.extend_from_slice(identity.run_root.to_string_lossy().as_bytes());
+        let mut ports = b"hepta.agentd.runtime-ports.v1\0".to_vec();
+        ports.extend_from_slice(identity.control_socket.to_string_lossy().as_bytes());
+        ports.extend_from_slice(identity.app_server_socket.to_string_lossy().as_bytes());
+        let runs = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+            agent_id: identity.agent_id.to_string(),
+            supervisor_generation: identity.spawn_generation,
+            agentd_generation: identity.spawn_generation,
+            configuration_digest: Digest32::of_bytes(&configuration).to_string(),
+            ports_digest: Digest32::of_bytes(&ports).to_string(),
+        })
+        .map_err(|error| AgentdError::Protocol(format!("compose run coordinator: {error:?}")))?;
+
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
@@ -55,6 +77,7 @@ impl AgentdState {
             }),
             identity,
             registry,
+            runs: Mutex::new(runs),
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
