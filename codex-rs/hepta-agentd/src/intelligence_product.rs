@@ -315,9 +315,21 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let envelope = Self::take(&mut self.objective_envelope, input.stage, "objective envelope")?;
-        let profile = Self::take(&mut self.objective_profile, input.stage, "objective profile")?;
-        let context = Self::take(&mut self.objective_context, input.stage, "objective context")?;
+        let envelope = Self::take(
+            &mut self.objective_envelope,
+            input.stage,
+            "objective envelope",
+        )?;
+        let profile = Self::take(
+            &mut self.objective_profile,
+            input.stage,
+            "objective profile",
+        )?;
+        let context = Self::take(
+            &mut self.objective_context,
+            input.stage,
+            "objective context",
+        )?;
         let started = Instant::now();
         let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
             .map_err(|_| Self::reject(input.stage, "objective admission"))?;
@@ -354,8 +366,11 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             return Err(Self::reject(input.stage, "utility objective"));
         }
         let profile = Self::take(&mut self.utility_profile, input.stage, "utility profile")?;
-        let scalarization =
-            Self::take(&mut self.utility_scalarization, input.stage, "utility scalarization")?;
+        let scalarization = Self::take(
+            &mut self.utility_scalarization,
+            input.stage,
+            "utility scalarization",
+        )?;
         let policy = Self::take(&mut self.utility_policy, input.stage, "utility policy")?;
         let started = Instant::now();
         let receipt = evaluate_candidates_with_policy(set, profile, scalarization, policy)
@@ -426,7 +441,11 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let request = Self::take(&mut self.intuition_request, input.stage, "intuition request")?;
+        let request = Self::take(
+            &mut self.intuition_request,
+            input.stage,
+            "intuition request",
+        )?;
         if request.objective_digest != input.objective_digest {
             return Err(Self::reject(input.stage, "intuition objective"));
         }
@@ -455,12 +474,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             CalibratedDispositionV1::Abstained(_) => CanonicalPortDecisionV1::Abstained,
             CalibratedDispositionV1::SlowPath(_) => CanonicalPortDecisionV1::SlowPath,
         };
-        Self::receipt(
-            input,
-            "intuition.policy",
-            receipt.receipt_digest,
-            decision,
-        )
+        Self::receipt(input, "intuition.policy", receipt.receipt_digest, decision)
     }
 
     fn compile_context(
@@ -502,8 +516,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             return Err(Self::reject(input.stage, "evaluation binding"));
         }
         let started = Instant::now();
-        let receipt =
-            evaluate(request).map_err(|_| Self::reject(input.stage, "evaluation"))?;
+        let receipt = evaluate(request).map_err(|_| Self::reject(input.stage, "evaluation"))?;
         Self::within_budget(input, started)?;
         if receipt.disposition != EvaluationDisposition::EligibleForFurtherReview {
             return Err(Self::reject(input.stage, "evaluation disposition"));
@@ -622,25 +635,21 @@ impl AgentdIntelligenceProductRunnerV1 {
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         });
-        let outcome = timeout(
-            Duration::from_micros(timeout_micros),
-            &mut worker,
-        )
-        .await
-        .map_err(|_| {
-            worker.abort();
-            AgentdIntelligenceProductError::TimedOut
-        })?
-        .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
-        .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
+            .await
+            .map_err(|_| {
+                worker.abort();
+                AgentdIntelligenceProductError::TimedOut
+            })?
+            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
+            .map_err(AgentdIntelligenceProductError::Canonical)?;
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
-                let mut oracle =
-                    FileBackedFreshnessOracleV1::new(
-            self.authority_file.clone(),
-            self.authority_verifier.clone(),
-        );
+                let mut oracle = FileBackedFreshnessOracleV1::new(
+                    self.authority_file.clone(),
+                    self.authority_verifier.clone(),
+                );
                 validate_current_snapshot(&snapshot, &mut oracle)
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
@@ -683,9 +692,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             CanonicalRunOutcomeV1::Abstained(_) => {
                 Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
             }
-            CanonicalRunOutcomeV1::SlowPath(_) => {
-                Ok(AgentdIntelligenceProductOutcomeV1::SlowPath)
-            }
+            CanonicalRunOutcomeV1::SlowPath(_) => Ok(AgentdIntelligenceProductOutcomeV1::SlowPath),
         }
     }
 
@@ -772,15 +779,13 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         match journal.append(expected_predecessor, event.clone()) {
             Ok(receipt) => Ok(receipt),
-            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => {
-                Err(AgentdIntelligenceLedgerError::Indeterminate(
-                    PendingIntelligenceLedgerAppendV1 {
-                        expected_predecessor,
-                        snapshot,
-                        event,
-                    },
-                ))
-            }
+            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => Err(
+                AgentdIntelligenceLedgerError::Indeterminate(PendingIntelligenceLedgerAppendV1 {
+                    expected_predecessor,
+                    snapshot,
+                    event,
+                }),
+            ),
             Err(error) => Err(AgentdIntelligenceLedgerError::Ledger(error)),
         }
     }
