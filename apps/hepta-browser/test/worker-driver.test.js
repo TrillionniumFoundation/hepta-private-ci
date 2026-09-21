@@ -53,7 +53,7 @@ function startInput(overrides = {}) {
     grantDigest: D1,
     generation: 1,
     expiresAtMs: Date.now() + 60_000,
-    allowedOrigins: ["https://example.com"],
+    allowedOrigins: [],
     ...overrides,
   };
 }
