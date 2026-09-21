@@ -82,7 +82,7 @@ The hardened V2 boundary has no writer or outbox. Its bounded components are:
 - `RemoteFederatedResponseV2`: query-bound response whose domain-separated digest is recomputed over all security-relevant fields before admission;
 - `FederationAttemptControlV2`: cancellation/deadline boundary; the product adapter stops at the earlier of query deadline and lease expiry;
 - `FederatedResultV2`: deny-all, provenance-bearing result with explicit completeness, validity, coverage and effective expiry;
-- product adapter/aggregator in `hepta-memory::CognitiveRuntime::AvailableFederatedV2`: discovers scoped grants, invokes the canonical V2 boundary per admitted peer and preserves aggregate coverage;
+- product adapter/aggregator in `hepta-memory::CognitiveRuntime::AvailableFederatedV2`: discovers scoped grants, starts the admitted peer attempts concurrently under one shared request horizon, invokes the canonical V2 boundary once per peer and deterministically aggregates typed coverage;
 - physical-send revalidator in the Memory extension: rechecks capability and exact memory binding immediately before model-input delivery.
 
 No component in this module enrolls peers, mutates a remote store, owns credentials, issues grants, writes cognitive facts or maintains a retry queue. Current owner/capability facts stay in their existing owners. Hidden mutable singletons, unbounded queues, blind retries and implicit fallback to the legacy federation path are prohibited on the Agentd product composition.
@@ -142,7 +142,7 @@ The canonical V2 engine is stateless across attempts. One call performs:
 5. a second live-authority observation;
 6. final validity/completeness/expiry calculation and result-digest sealing.
 
-The engine holds no global lock across I/O and owns no transaction. Product `CognitiveRuntime::AvailableFederatedV2` keeps only bounded owner-layout candidates plus the consumer identity, rediscovers current read-only grants for each physical retrieval, and caps total source slots at the existing federation bound. The product budget includes discovery; individual attempts share the request's global horizon rather than each receiving a fresh unbounded timeout.
+The engine holds no global lock across I/O and owns no transaction. Product `CognitiveRuntime::AvailableFederatedV2` keeps only bounded owner-layout candidates plus the consumer identity, rediscovers current read-only grants for each physical retrieval, and caps total source slots at the existing federation bound. Discovery is concurrent across the bounded owner-candidate set; admitted peer attempts are then polled concurrently with `join_all` under one shared request horizon. Deterministic sorting/deduplication occurs before admission and again after results return, so completion order cannot change aggregate candidate order. The product budget includes discovery; individual attempts share the request's global horizon rather than each receiving a fresh unbounded timeout.
 
 The local in-process adapter may temporarily hold the retrieved batch in request-local memory until canonical V2 admission completes. Stale/revoked/failed results never release that captured batch to downstream attachment. Final model-input revalidation is another bounded read and drops the federated proposal on timeout or drift.
 
@@ -158,7 +158,7 @@ Failures are not collapsed into a successful empty read:
 - post-I/O revoke or generation drift suppresses all remote items and contributes failed aggregate coverage;
 - an unobservable owner capability store contributes a bounded failed discovery slot, while a successfully observed owner with no active matching grant is simply not enrolled;
 - a grant for a different consumer workspace is filtered before a query is formed;
-- final physical-send revalidation timeout, capability drift, memory drift, capability expiry crossing during the bounded batch, clock regression, or secret-like content removes the federated proposal rather than blocking the turn or sending stale evidence.
+- final physical-send revalidation timeout, capability drift, memory drift, capability expiry crossing during the bounded batch, clock regression, or secret-like content removes the federated proposal rather than blocking the turn or sending stale evidence. This is a final-use source-currentness fence, not retroactive cancellation authority over a provider attempt already admitted by the host: repository-wide dispatch semantics permit an admitted effect to remain in flight while later revocation blocks new admission.
 
 The module has no durable local state to replay after restart. Rollback may stop using the V2 product caller and discard ephemeral results, but it must not restore revoked authority or reinterpret stale cached evidence as current. The compatibility `AvailableFederated` path is not an automatic product fallback.
 
@@ -176,7 +176,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The canonical V2 result bound is `MAX_FEDERATED_RESULTS_V2 = 512`. The product caller preserves the existing `MAX_FEDERATION_SOURCES_PER_AGENT = 16` bound; owner-layout enrollment candidates are additionally bounded before discovery. The current in-process product read uses one total bounded federation budget that includes capability discovery and physical attempts, so adding peers does not multiply an unbounded per-peer wall-clock allowance. Result aggregation is deterministic and final candidate selection is capped again by the existing memory retrieval result bound.
+The canonical V2 result bound is `MAX_FEDERATED_RESULTS_V2 = 512`. The product caller preserves the existing `MAX_FEDERATION_SOURCES_PER_AGENT = 16` admitted-peer bound; owner-layout enrollment candidates are additionally bounded at 128 before discovery. The current in-process product read uses one total bounded federation budget that includes concurrent capability discovery and concurrent physical attempts, so adding peers does not multiply an unbounded per-peer wall-clock allowance. Coverage explicitly reports admitted `requested/completed/failed`, peer truncation after discovery, owner candidates omitted before discovery, result truncation, and bounded typed failure classes. Result aggregation is deterministic and final candidate selection is capped again by the existing memory retrieval result bound.
 
 These are enforced source limits, not deployment latency/SLO measurements. A cross-host profile still requires measured transport budgets, authenticated peer limits and target-host overload evidence.
 
@@ -186,7 +186,7 @@ These are enforced source limits, not deployment latency/SLO measurements. A cro
 
 The native federation contract validates scoped remote observations; its result does not enroll a peer or establish a general network service. The current Agentd product caller supplies bounded owner-layout candidates, rediscovers active grants, filters the exact consumer workspace before enrollment, and adapts the local owner read through canonical V2. Unobservable owner capability stores remain explicit bounded failed coverage; revoked or generation-stale post-I/O observations cannot contribute admissible evidence.
 
-The Memory extension preserves requested/completed/failed/truncated coverage through pure federated and combined local+federated model-input payloads, revalidates capability plus memory again under a bounded timeout at physical model-request assembly, and then takes a fresh wall-clock observation so a capability that expires during the batch cannot reach provider dispatch.
+The Memory extension preserves structured coverage through pure federated and combined local+federated model-input payloads: requested/completed/failed peers, truncated peers, owner candidates omitted by the composition bound, truncated items, and typed discovery/deadline-authority/integrity/transport failure counts. It revalidates capability plus memory again under a bounded timeout at physical model-request assembly, and then takes a fresh wall-clock observation so a capability that expires during the batch cannot reach provider dispatch.
 
 The in-process adapter reads `observed_frontier` from the same exact-scope SQLite snapshot that produces the candidate set; capability revision is not substituted for a data frontier. A truly empty scope may report frontier `0`, while non-empty evidence cannot. A multi-process or multi-host profile must authenticate this real remote data frontier/snapshot witness. Preserve partial coverage/unavailable on timeout and invalidate evidence on revocation, generation drift or deletion.
 
@@ -206,7 +206,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-memory-federation/src/lib_tests.rs](../../../codex-rs/hepta-memory-federation/src/lib_tests.rs).
 - [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), covering response-binding tamper/replay, prefix-sensitive item-order integrity, `Partial + []` preservation, expiry ceilings, preflight/post-I/O authority drift, true in-flight cancellation/deadline interruption, duplicate identities and bounded partial results.
-- [codex-rs/hepta-memory/src/cognitive_runtime_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_runtime_tests.rs), covering product composition, explicit discovery failure coverage and wrong-workspace non-enrollment.
+- [codex-rs/hepta-memory/src/cognitive_runtime_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_runtime_tests.rs), covering product composition, explicit typed discovery failure coverage, owner-candidate omission, peer truncation and wrong-workspace non-enrollment.
 - [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs), whose focused tests cover physical-send revalidation, post-batch capability-expiry/clock-regression rejection, and coverage-preserving combined model input.
 
 The candidate also carries a read-only focused workflow at [`.github/workflows/memory-federation-v2-final-verify.yml`](../../../.github/workflows/memory-federation-v2-final-verify.yml). Commands and workflow definitions are not pass receipts: inspect exact-current-head and merge-candidate outputs before changing `productExecutionProved` or any activation/release claim. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) separately labels target acceptance designs.
