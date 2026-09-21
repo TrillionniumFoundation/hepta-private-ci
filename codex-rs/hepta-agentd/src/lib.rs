@@ -22,7 +22,7 @@ mod production_writer_host;
 mod qualification_writer;
 mod runtime;
 mod state;
-#[cfg(feature = "test-support")]
+#[doc(hidden)]
 pub mod test_support;
 
 pub use authbus_ingress::authbus_text_claims;
