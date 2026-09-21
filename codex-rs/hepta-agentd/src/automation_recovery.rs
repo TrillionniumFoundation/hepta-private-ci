@@ -15,8 +15,6 @@ use codex_app_server_protocol::ThreadQueueReconcileMode;
 use codex_app_server_protocol::ThreadQueueReconcileOutcome;
 use codex_app_server_protocol::ThreadQueueReconcileParams;
 use codex_app_server_protocol::ThreadQueueReconcileResponse;
-use codex_app_server_protocol::ThreadReadParams;
-use codex_app_server_protocol::ThreadReadResponse;
 use codex_app_server_protocol::ThreadTurnsListParams;
 use codex_app_server_protocol::ThreadTurnsListResponse;
 use codex_app_server_protocol::Turn;
@@ -471,34 +469,7 @@ async fn find_turn(
         };
         cursor = Some(next);
     }
-    // The bounded recent-history scan is the normal recovery hot path. If the
-    // exact persisted turn is older than that window, do one authoritative
-    // full-history read instead of permanently converting "outside the recent
-    // window" into an indeterminate occurrence. App Server reconstructs the
-    // complete persisted turn history for include_turns=true, including
-    // paginated history.
-    let response: ThreadReadResponse = client
-        .request_handle()
-        .request_typed(ClientRequest::ThreadRead {
-            request_id: RequestId::Integer(
-                i64::try_from(MAX_TURN_PAGES + 2).unwrap_or(i64::MAX),
-            ),
-            params: ThreadReadParams {
-                thread_id: thread_id.to_string(),
-                include_turns: true,
-            },
-        })
-        .await
-        .map_err(|error| {
-            AgentdError::Protocol(format!(
-                "automation full-history turn observation failed: {error}"
-            ))
-        })?;
-    Ok(response
-        .thread
-        .turns
-        .into_iter()
-        .find(|turn| turn.id == turn_id))
+    Ok(None)
 }
 
 fn prompt_input(prompt: &str) -> Vec<UserInput> {
