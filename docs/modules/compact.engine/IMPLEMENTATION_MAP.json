@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f37353070a099a5d0e1490ba1b99e132d5bdd500",
-    "tree": "c6134fad3b87d6fe1302080be89d1767396be4f0"
+    "commit": "7a60f02a30d898beca327aeb6b77a0c0662e5492",
+    "tree": "3d6f89581c4ffafb261be145e0b3613221d95b04"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -112,9 +112,9 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "f37353070a099a5d0e1490ba1b99e132d5bdd500",
-    "tree": "c6134fad3b87d6fe1302080be89d1767396be4f0",
-    "interpretation": "exact compact.engine checkpoint-subsystem owner-source observation after canonical #943 convergence, signed tokenizer/evaluator trust binding, durable evaluator witness replay, current/rollback deployment-trust re-admission, content-addressed payload revoke/GC, exact migration-schema verification, real owner-path transaction fault cuts, restart/idempotent replay, runtime Agentd composition, caller-registry closure and cross-owner persistence integration; later commits may update documentation/projection truth only, and every declared observedSourcePath must remain byte-identical through the verified candidate"
+    "commit": "7a60f02a30d898beca327aeb6b77a0c0662e5492",
+    "tree": "3d6f89581c4ffafb261be145e0b3613221d95b04",
+    "interpretation": "exact compact.engine checkpoint-subsystem owner-source observation after canonical #943 convergence, signed tokenizer/evaluator trust binding, durable evaluator witness replay, current/rollback deployment-trust re-admission, content-addressed payload revoke/GC, exact migration-schema verification, real owner-path transaction fault cuts with test-only production-lint isolation, restart/idempotent replay, runtime Agentd composition, caller-registry closure and cross-owner persistence integration; later commits may update documentation/projection truth only, and every declared observedSourcePath must remain byte-identical through the verified candidate"
   },
   "observedSourcePaths": [
     "CALLERS.toml",
