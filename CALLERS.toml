@@ -37,6 +37,15 @@ definition_markers = ["pub async fn select_current_qualified_compact_checkpoint"
 product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
 caller_markers = ["select_current_compaction_checkpoint", "select_current_qualified_compact_checkpoint"]
 
+
+[[boundary]]
+id = "memory_qualified_compact_rollback_candidate"
+symbol = "CognitiveStore::rollback_qualified_compact_payload_candidate"
+definition_path = "codex-rs/hepta-memory/src/qualified_compact_store.rs"
+definition_markers = ["pub async fn rollback_qualified_compact_payload_candidate", "revalidate_current_publication", "resolve_qualified_compact_payload"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["rollback_compaction_payload_candidate", "rollback_qualified_compact_payload_candidate"]
+
 [[boundary]]
 id = "memory_qualified_compact_payload_revoke"
 symbol = "ProductionDurableWriter::revoke_qualified_compact_payload"
@@ -60,6 +69,15 @@ definition_path = "codex-rs/hepta-cognitive-read/src/authoritative.rs"
 definition_markers = ["pub trait AuthoritativeCognitiveSnapshotProvider", "fn acquire"]
 product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
 caller_markers = ["attach_snapshot_provider", "acquire_current_snapshot", "provider.acquire"]
+
+
+[[boundary]]
+id = "compact_engine_trusted_tokenizer_accounting"
+symbol = "build_qualified_candidate"
+definition_path = "codex-rs/hepta-compact-engine/src/qualified.rs"
+definition_markers = ["pub fn build_qualified_candidate", "TrustedTokenizerV1", "TokenizationReceiptV1", "verify_strict"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["build_qualified_candidate", "compaction_trust", "TrustedTokenizerV1"]
 
 [[boundary]]
 id = "compact_engine_trusted_evaluator_proof"
@@ -101,7 +119,7 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier", "AgentdCompactionTrustV1", "attach_compaction_trust", "attach_snapshot_provider", "acquire_current_snapshot", "select_current_compaction_checkpoint"]
+required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier", "AgentdCompactionTrustV1", "TrustedTokenizerV1", "attach_compaction_trust", "attach_snapshot_provider", "acquire_current_snapshot", "select_current_compaction_checkpoint", "rollback_compaction_payload_candidate", "revoke_compaction_payload", "gc_revoked_compaction_payload"]
 forbidden = ["AllowVerifier", "permit_all", "TrustedCompactionEvaluatorV1::default", "TrustedTokenizerV1::default"]
 
 [[protected_file]]
