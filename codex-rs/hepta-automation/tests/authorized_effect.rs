@@ -385,12 +385,20 @@ impl RevocationRaceDriver {
     }
 
     fn join_revoker(&mut self) {
-        self.revoker
+        let result = self
+            .revoker
             .take()
             .expect("revocation thread")
             .join()
-            .expect("revocation thread join")
-            .expect("revocation update after dispatch");
+            .expect("revocation thread join");
+        assert_eq!(result, Err(FinalUseError::DispatchInProgress));
+        self.authority
+            .update_revocations(FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from([self.grant_id.clone()]),
+            })
+            .expect("revocation update after dispatch fence leaves");
     }
 }
 
@@ -433,10 +441,13 @@ impl AuthorizedEffectDriver for RevocationRaceDriver {
         started_rx
             .recv_timeout(Duration::from_secs(1))
             .expect("revocation thread reached final-use fence");
-        thread::sleep(Duration::from_millis(25));
+        let deadline = std::time::Instant::now() + Duration::from_secs(1);
+        while !revoker.is_finished() && std::time::Instant::now() < deadline {
+            thread::sleep(Duration::from_millis(1));
+        }
         assert!(
-            !revoker.is_finished(),
-            "revocation update must not enter while provider dispatch owns the final-use fence"
+            revoker.is_finished(),
+            "revocation update must fail explicitly instead of blocking the provider runtime"
         );
         self.revoker = Some(revoker);
         Ok(AuthorizedEffectProviderReceipt {
