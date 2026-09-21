@@ -17,6 +17,8 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
+    pub(crate) production_operations:
+        std::sync::OnceLock<Arc<crate::AgentdProductionWriterHost>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -47,6 +49,7 @@ impl AgentdState {
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            production_operations: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -78,6 +81,22 @@ impl AgentdState {
         }
         *cognitive = Some(store);
         Ok(())
+    }
+
+    pub(crate) fn attach_production_operations(
+        &self,
+        host: Arc<crate::AgentdProductionWriterHost>,
+    ) -> Result<(), AgentdError> {
+        if host.writer().authority().agent_id != self.identity.agent_id {
+            return Err(AgentdError::GenerationFenced(
+                "production operation host authority does not match agentd identity".to_string(),
+            ));
+        }
+        self.production_operations.set(host).map_err(|_| {
+            AgentdError::Protocol(
+                "production operation host was attached more than once".to_string(),
+            )
+        })
     }
 
     pub(crate) fn attach_automation_store(
