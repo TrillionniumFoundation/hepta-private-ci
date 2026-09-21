@@ -152,7 +152,7 @@ fn candidate_factor_missing_from_complete_graph_fails_closed() {
     };
     let error = optimize_with_factor_graph(request, &graph()).expect_err("missing factor");
     assert!(
-        matches!(error, Error::FactorGraph(message) if message.contains("factor:x")),
+        matches!(&error, Error::FactorGraph(message) if message.contains("factor:x")),
         "unexpected error: {error:?}"
     );
 }
