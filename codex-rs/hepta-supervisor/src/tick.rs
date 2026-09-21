@@ -18,6 +18,7 @@ use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+use crate::restart_budget::RestartBudgetError;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn tick_slot(
@@ -26,7 +27,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        let mut post_exit_fault = None;
         if let Some(mut runtime) = slot.runtime.take() {
+            let unexpected_running_exit =
+                !runtime.fenced && matches!(runtime.phase, RuntimePhase::Running);
             let keep = match self.tick_runtime(agent_id, slot, &mut runtime, now) {
                 Ok(keep) => keep,
                 Err(error) => {
@@ -37,7 +41,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             if keep {
                 slot.runtime = Some(runtime);
             } else {
-                let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
+                let release_change_continued =
+                    self.continue_release_change_after_exit(agent_id, slot, now)?;
+                if unexpected_running_exit
+                    && !release_change_continued
+                    && slot.release_change.is_none()
+                    && !slot.restart_pending
+                {
+                    post_exit_fault =
+                        self.queue_automatic_restart_after_exit(agent_id, slot, now);
+                }
             }
         }
         if slot.runtime.is_none()
@@ -64,7 +77,53 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             slot.restart_pending = false;
         }
-        self.tick_matrix_companion(agent_id, slot, now)
+        self.tick_matrix_companion(agent_id, slot, now)?;
+        if let Some(error) = post_exit_fault {
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    fn queue_automatic_restart_after_exit(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Option<SupervisorError> {
+        let record = match self.record(agent_id) {
+            Ok(record) => record,
+            Err(error) => return Some(error),
+        };
+        match crate::restart_budget::claim_restart(
+            record.layout.run_root(),
+            self.config.restart_max_attempts,
+            self.config.restart_window,
+            self.config.restart_backoff_base,
+        ) {
+            Ok(claim) => {
+                slot.restart_attempt = claim.attempt;
+                slot.restart_not_before = match deadline(now, claim.backoff) {
+                    Ok(value) => Some(value),
+                    Err(error) => return Some(error),
+                };
+                slot.restart_pending = true;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::RestartQueued,
+                );
+                None
+            }
+            Err(RestartBudgetError::Exhausted) => {
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+                Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
+            }
+            Err(error) => {
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+                Some(SupervisorError::Invalid(error.to_string()))
+            }
+        }
     }
 
     fn tick_runtime(

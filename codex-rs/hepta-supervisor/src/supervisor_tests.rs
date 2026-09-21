@@ -574,6 +574,90 @@ fn restart_drains_one_agent_and_spawns_a_new_generation() -> Result<(), Supervis
 }
 
 #[test]
+fn unexpected_running_exit_uses_durable_restart_budget_and_backoff(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let crashed = supervisor.snapshot(&fleet.first).expect("crash snapshot");
+    assert!(!crashed.active);
+    assert!(crashed.restart_pending);
+    assert_eq!(crashed.restart_attempt, 1);
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(0)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(2)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    assert!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("replacement snapshot")
+            .active
+    );
+    Ok(())
+}
+
+#[test]
+fn flapping_running_agent_stops_after_restart_budget_is_exhausted(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let start = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), start)?;
+    supervisor.start(&fleet.first, command()?, start)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(start), TickReport::default());
+
+    let mut now = start;
+    for expected_attempt in 1..=3 {
+        control.set_exit(&fleet.first);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        let failed = supervisor.snapshot(&fleet.first).expect("failed snapshot");
+        assert!(failed.restart_pending);
+        assert_eq!(failed.restart_attempt, expected_attempt);
+
+        now += Duration::from_millis(20);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        control.set_healthy(&fleet.first);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+    }
+
+    control.set_exit(&fleet.first);
+    let exhausted = supervisor.tick(now);
+    assert_eq!(exhausted.faults.len(), 1);
+    assert_eq!(exhausted.faults[0].agent_id, fleet.first);
+    assert!(exhausted.faults[0].message.contains("restart budget"));
+    let stopped = supervisor.snapshot(&fleet.first).expect("exhausted snapshot");
+    assert!(!stopped.active);
+    assert!(!stopped.restart_pending);
+    assert_eq!(stopped.restart_attempt, 3);
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(20)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+    Ok(())
+}
+
+#[test]
 fn recovered_running_restart_settles_pending_budget_before_next_claim(
 ) -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
