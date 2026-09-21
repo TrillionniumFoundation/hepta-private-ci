@@ -34,6 +34,7 @@ const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
 const COGNITIVE_CONTROL_UNAVAILABLE_CODE: &str = "cognitive_control_unavailable";
 const COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private cognitive control storage is unavailable";
+const COGNITIVE_READ_UNAVAILABLE_CODE: &str = "cognitive_read_unavailable";
 
 impl AgentdState {
     pub(crate) async fn response(
@@ -151,6 +152,12 @@ impl AgentdState {
                             error,
                         );
                     }
+                    Err(CognitiveContextError::ReadUnavailable(message)) => {
+                        AgentdPayload::Error {
+                            code: COGNITIVE_READ_UNAVAILABLE_CODE.to_string(),
+                            message,
+                        }
+                    }
                     Err(CognitiveContextError::RankerUnavailable) => AgentdPayload::Error {
                         code: "cognitive_ranker_unavailable".to_string(),
                         message: "selected ranker is unavailable; explicit reload required"
@@ -201,6 +208,12 @@ impl AgentdState {
                             current_generation,
                             error,
                         );
+                    }
+                    Err(CognitiveContextError::ReadUnavailable(message)) => {
+                        AgentdPayload::Error {
+                            code: COGNITIVE_READ_UNAVAILABLE_CODE.to_string(),
+                            message,
+                        }
                     }
                     Err(CognitiveContextError::RankerUnavailable) => {
                         return self.response_with_payload(
