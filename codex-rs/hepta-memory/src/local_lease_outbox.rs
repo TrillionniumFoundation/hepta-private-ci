@@ -3967,7 +3967,7 @@ fn verify_operation_row_binding(
         || stored.payload_sha256 != payload_sha256.as_str()
         || stored.expected_predecessor_sha256
             != operation
-                .expected_predecessor
+                .expected_predecessor()
                 .map(|digest| digest.to_string())
         || stored.lease_id != handle.lease_id
         || stored.event_id != event.event_id
