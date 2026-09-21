@@ -1,33 +1,30 @@
 //! Named non-test learning/self-iteration producer for governed plasticity.
 //!
 //! This adapter is intentionally internal to Agentd. It owns no mutable writer,
-//! trust root, owner-evidence store or authority. It only forwards an already
-//! typed/signed product request through AgentdState, where the long-lived
-//! plasticity owner re-resolves current owner frontiers, revalidates independent
+//! trust root, owner-evidence store or authority. AgentdState retains it as the
+//! only product-side producer façade; the long-lived runtime owner still
+//! re-resolves current owner frontiers, revalidates independent
 //! Generator/Observer/Evaluator evidence and withholds success until the
 //! rollback-domain anchor commit succeeds.
-
-use std::sync::Arc;
 
 use codex_hepta_intelligence::{
     ParameterPlasticityProductReceiptV1, ParameterPlasticityProductRequestV1,
 };
 
-use crate::{AgentdState, PlasticityRuntimeCallErrorV1};
+use crate::{PlasticityRuntimeCallErrorV1, PlasticityRuntimeHandleV1};
 
 /// Product-side learning producer bound to one Agentd generation.
 ///
-/// The producer deliberately holds only Agentd state, never the proposal
-/// registry writer or anchor store. Consequently it cannot bypass generation
-/// readiness, owner-evidence refresh, trust verification or durable anchoring.
+/// It contains only the bounded runtime handle and cannot access proposal
+/// writers, anchor stores, trust roots or authoritative owner stores.
 #[derive(Clone)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
-    state: Arc<AgentdState>,
+    handle: PlasticityRuntimeHandleV1,
 }
 
 impl AgentdLearningPlasticityProducerV1 {
-    pub(crate) fn new(state: Arc<AgentdState>) -> Self {
-        Self { state }
+    pub(crate) fn new(handle: PlasticityRuntimeHandleV1) -> Self {
+        Self { handle }
     }
 
     pub(crate) async fn submit_parameter(
@@ -35,6 +32,6 @@ impl AgentdLearningPlasticityProducerV1 {
         request: ParameterPlasticityProductRequestV1,
         now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        self.state.submit_parameter_plasticity_v1(request, now).await
+        self.handle.propose_parameter(request, now).await
     }
 }
