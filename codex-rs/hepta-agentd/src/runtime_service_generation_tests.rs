@@ -14,11 +14,7 @@ fn generation(value: u64) -> Generation {
     Generation::new(value).expect("nonzero generation")
 }
 
-fn start(
-    host: &mut RuntimeTasks,
-    epoch: u64,
-    previous: Option<u64>,
-) -> Result<(), AgentdError> {
+fn start(host: &mut RuntimeTasks, epoch: u64, previous: Option<u64>) -> Result<(), AgentdError> {
     host.spawn_optional_service_generation(
         "optional.timer",
         generation(epoch),
@@ -79,13 +75,8 @@ async fn stale_and_unversioned_requests_cannot_stop_or_resurrect_a_successor() {
     );
     assert!(host.retire_optional("optional.timer").await.is_err());
     assert!(
-        host.spawn_optional_service(
-            "optional.timer",
-            |_| async { Ok(()) },
-            || Ok(()),
-            || Ok(()),
-        )
-        .is_err()
+        host.spawn_optional_service("optional.timer", |_| async { Ok(()) }, || Ok(()), || Ok(()),)
+            .is_err()
     );
     assert!(start(&mut host, 3, Some(1)).is_err());
     assert_eq!(host.active_count(), 1);
@@ -200,7 +191,11 @@ async fn failed_retirement_callback_fences_host_without_releasing_identity() {
             Ok(())
         },
         || Ok(()),
-        || Err(AgentdError::Protocol("unresolved owner effects".to_string())),
+        || {
+            Err(AgentdError::Protocol(
+                "unresolved owner effects".to_string(),
+            ))
+        },
     )
     .unwrap();
     assert!(

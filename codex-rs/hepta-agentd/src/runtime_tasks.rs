@@ -68,7 +68,10 @@ pub struct RuntimeTasks {
 }
 
 impl RuntimeTasks {
-    pub fn new(cancellation: CancellationToken, shutdown_grace: Duration) -> Result<Self, AgentdError> {
+    pub fn new(
+        cancellation: CancellationToken,
+        shutdown_grace: Duration,
+    ) -> Result<Self, AgentdError> {
         if shutdown_grace.is_zero() || shutdown_grace > Duration::from_secs(30) {
             return Err(AgentdError::Invalid(
                 "runtime shutdown grace must be in (0, 30s]".to_string(),
@@ -93,7 +96,9 @@ impl RuntimeTasks {
         F: Future<Output = Result<(), AgentdError>> + Send + 'static,
     {
         self.reject_versioned_name(name)?;
-        self.spawn(name, future, /*quarantine*/ None, /*retirement*/ None)
+        self.spawn(
+            name, future, /*quarantine*/ None, /*retirement*/ None,
+        )
     }
 
     /// Optional means failure-isolated, not permission to ignore owner errors.
@@ -110,7 +115,12 @@ impl RuntimeTasks {
         Q: FnOnce() -> Result<(), AgentdError> + Send + 'static,
     {
         self.reject_versioned_name(name)?;
-        self.spawn(name, future, Some(Box::new(quarantine)), /*retirement*/ None)
+        self.spawn(
+            name,
+            future,
+            Some(Box::new(quarantine)),
+            /*retirement*/ None,
+        )
     }
 
     /// Register a cooperatively removable, already-admitted optional service.
@@ -176,7 +186,9 @@ impl RuntimeTasks {
             return Ok(());
         }
         if self.stopped || self.cancellation.is_cancelled() {
-            return Err(AgentdError::Protocol("runtime host is stopping".to_string()));
+            return Err(AgentdError::Protocol(
+                "runtime host is stopping".to_string(),
+            ));
         }
         let entry = self
             .entries
@@ -220,7 +232,9 @@ impl RuntimeTasks {
         F: Future<Output = Result<(), AgentdError>> + Send + 'static,
     {
         if self.stopped || self.cancellation.is_cancelled() {
-            return Err(AgentdError::Protocol("runtime host is stopping".to_string()));
+            return Err(AgentdError::Protocol(
+                "runtime host is stopping".to_string(),
+            ));
         }
         if name.is_empty()
             || name.len() > MAX_NAME_BYTES
@@ -228,7 +242,9 @@ impl RuntimeTasks {
                 .bytes()
                 .any(|byte| byte.is_ascii_control() || byte.is_ascii_whitespace())
         {
-            return Err(AgentdError::Invalid("invalid runtime task name".to_string()));
+            return Err(AgentdError::Invalid(
+                "invalid runtime task name".to_string(),
+            ));
         }
         if self.admitted_names.len() >= MAX_TASKS || !self.admitted_names.insert(name.to_string()) {
             return Err(AgentdError::Invalid(
@@ -260,7 +276,9 @@ impl RuntimeTasks {
     /// JoinSet preserves task identity across panic and select cancellation.
     pub async fn observe_next(&mut self) -> Result<(), AgentdError> {
         if self.stopped {
-            return Err(AgentdError::Protocol("runtime host is stopping".to_string()));
+            return Err(AgentdError::Protocol(
+                "runtime host is stopping".to_string(),
+            ));
         }
         let result = match self.tasks.join_next_with_id().await {
             Some(completion) => self.observe(completion),
@@ -284,7 +302,9 @@ impl RuntimeTasks {
             Ok((id, result)) => (id, result),
             Err(error) => (
                 error.id(),
-                Err(AgentdError::Protocol(format!("runtime task failed: {error}"))),
+                Err(AgentdError::Protocol(format!(
+                    "runtime task failed: {error}"
+                ))),
             ),
         };
         let entry = self.entries.remove(&id).ok_or_else(|| {
@@ -294,15 +314,16 @@ impl RuntimeTasks {
             let (_, retire) = entry.retirement.ok_or_else(|| {
                 AgentdError::Protocol("runtime retirement contract was lost".to_string())
             })?;
-            std::panic::catch_unwind(std::panic::AssertUnwindSafe(retire))
-                .map_err(|_| {
-                    AgentdError::Protocol("runtime retirement callback panicked".to_string())
-                })??;
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(retire)).map_err(|_| {
+                AgentdError::Protocol("runtime retirement callback panicked".to_string())
+            })??;
             self.retired_names.insert(entry.name);
             return Ok(());
         }
         let error = match result {
-            Ok(()) => AgentdError::Protocol(format!("{} exited before agentd shutdown", entry.name)),
+            Ok(()) => {
+                AgentdError::Protocol(format!("{} exited before agentd shutdown", entry.name))
+            }
             Err(error) => error,
         };
         if matches!(
@@ -316,7 +337,11 @@ impl RuntimeTasks {
         let Some(quarantine) = entry.quarantine else {
             return Err(error);
         };
-        let diagnostic = error.to_string().chars().take(MAX_DIAGNOSTIC_CHARS).collect();
+        let diagnostic = error
+            .to_string()
+            .chars()
+            .take(MAX_DIAGNOSTIC_CHARS)
+            .collect();
         if self.failures.len() == MAX_TASKS {
             self.failures.pop_front();
         }
@@ -324,10 +349,9 @@ impl RuntimeTasks {
             name: entry.name.clone(),
             diagnostic,
         });
-        std::panic::catch_unwind(std::panic::AssertUnwindSafe(quarantine))
-            .map_err(|_| {
-                AgentdError::Protocol("runtime quarantine callback panicked".to_string())
-            })??;
+        std::panic::catch_unwind(std::panic::AssertUnwindSafe(quarantine)).map_err(|_| {
+            AgentdError::Protocol("runtime quarantine callback panicked".to_string())
+        })??;
         lifecycle_warning(&entry.name, "optional runtime component quarantined");
         Ok(())
     }
@@ -406,7 +430,11 @@ impl RuntimeTasks {
             lifecycle_warning(&name, "runtime owner failure retained during shutdown");
             self.failures.push_back(RuntimeTaskFailure {
                 name,
-                diagnostic: error.to_string().chars().take(MAX_DIAGNOSTIC_CHARS).collect(),
+                diagnostic: error
+                    .to_string()
+                    .chars()
+                    .take(MAX_DIAGNOSTIC_CHARS)
+                    .collect(),
             });
         }
     }
@@ -437,7 +465,10 @@ impl RuntimeTasks {
 
 fn lifecycle_warning(name: &str, message: &str) {
     use std::io::Write;
-    let _ = writeln!(std::io::stderr().lock(), "hepta-agentd module={name}: {message}");
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "hepta-agentd module={name}: {message}"
+    );
 }
 
 impl Drop for RuntimeTasks {

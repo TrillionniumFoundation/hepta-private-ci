@@ -48,23 +48,16 @@ fn draft(prompt: &str) -> AutomationTaskDraft {
 }
 
 async fn apply(store: &AutomationStore, request: Request) {
-    let intent = automation_task_operation_intent(
-        store.owner_agent_id(),
-        &request.draft,
-        generation(1),
-    )
-    .unwrap();
+    let intent =
+        automation_task_operation_intent(store.owner_agent_id(), &request.draft, generation(1))
+            .unwrap();
     let result = store
         .create_task_from_operation(&intent, &request.draft)
         .await;
     let _ = request.reply.send(result);
 }
 
-fn attach(
-    host: &mut RuntimeTasks,
-    store: AutomationStore,
-    epoch: u64,
-) -> mpsc::Sender<Request> {
+fn attach(host: &mut RuntimeTasks, store: AutomationStore, epoch: u64) -> mpsc::Sender<Request> {
     let (send, mut receive) = mpsc::channel::<Request>(4);
     host.spawn_optional_service_generation(
         NAME,
@@ -95,7 +88,10 @@ fn attach(
     send
 }
 
-async fn ask(send: &mpsc::Sender<Request>, draft: AutomationTaskDraft) -> AutomationOperationReceipt {
+async fn ask(
+    send: &mpsc::Sender<Request>,
+    draft: AutomationTaskDraft,
+) -> AutomationOperationReceipt {
     let (reply, response) = oneshot::channel();
     send.send(Request { draft, reply }).await.unwrap();
     timeout(Duration::from_secs(10), response)
@@ -132,7 +128,10 @@ async fn sqlite_writer_rotates_256_times_without_consuming_new_service_identitie
         let client = attach(&mut host, store.clone(), epoch);
         let receipt = ask(&client, original.clone()).await;
         if epoch > 1 {
-            assert_eq!(receipt.disposition, DestinationApplyDisposition::AlreadyApplied);
+            assert_eq!(
+                receipt.disposition,
+                DestinationApplyDisposition::AlreadyApplied
+            );
             assert!(
                 host.retire_optional_generation(NAME, generation(epoch - 1))
                     .await
@@ -152,7 +151,10 @@ async fn sqlite_writer_rotates_256_times_without_consuming_new_service_identitie
         assert!(!stop.is_cancelled());
         if epoch < 256 {
             let next = store.handoff_timer().await.unwrap();
-            assert_eq!(next.timer_status().await.unwrap().phase, TimerPhase::Draining);
+            assert_eq!(
+                next.timer_status().await.unwrap().phase,
+                TimerPhase::Draining
+            );
             next.resume_timer().await.unwrap();
             let new_effect = draft("stale owner must not create a new effect");
             let intent = automation_task_operation_intent(
@@ -168,23 +170,32 @@ async fn sqlite_writer_rotates_256_times_without_consuming_new_service_identitie
             store = next;
         }
     }
-    assert_eq!(store.retire_timer().await.unwrap().phase, TimerPhase::Retired);
+    assert_eq!(
+        store.retire_timer().await.unwrap().phase,
+        TimerPhase::Retired
+    );
     host.shutdown().await;
     store.close().await;
     let reopened = AutomationStore::open(&layout).await.unwrap();
-    assert_eq!(reopened.timer_status().await.unwrap().phase, TimerPhase::Retired);
-    assert_eq!(reopened.resume_timer().await, Err(AutomationError::TimerFenced));
-    let intent = automation_task_operation_intent(
-        reopened.owner_agent_id(),
-        &original,
-        generation(1),
-    )
-    .unwrap();
+    assert_eq!(
+        reopened.timer_status().await.unwrap().phase,
+        TimerPhase::Retired
+    );
+    assert_eq!(
+        reopened.resume_timer().await,
+        Err(AutomationError::TimerFenced)
+    );
+    let intent =
+        automation_task_operation_intent(reopened.owner_agent_id(), &original, generation(1))
+            .unwrap();
     let retained = reopened
         .create_task_from_operation(&intent, &original)
         .await
         .unwrap();
-    assert_eq!(retained.disposition, DestinationApplyDisposition::AlreadyApplied);
+    assert_eq!(
+        retained.disposition,
+        DestinationApplyDisposition::AlreadyApplied
+    );
     assert_eq!(reopened.list_tasks(10).await.unwrap().len(), 1);
     drop(first_writer);
     reopened.close().await;
