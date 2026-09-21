@@ -77,6 +77,27 @@
       ]
     },
     {
+      "protocolId": "hepta.kernel.operations.durable-owner.v1",
+      "module": "kernel.operations",
+      "kind": "sqlite_durable_operation_outbox_and_reconciliation",
+      "source": [
+        "codex-rs/hepta-operations/src/model.rs",
+        "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+        "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-memory/src/production_cognitive_source_target.rs"
+      ],
+      "invariants": [
+        "OperationIntentV1 semantic digest binds operation subject destination payload scope policy generation and optional predecessor",
+        "operation intent event and local outbox identity commit atomically before dispatch",
+        "durable dispatch claims have bounded attempts lease expiry renewal backoff and stale claimant fencing",
+        "dispatch request carries full semantic digest and predecessor expectation to the destination",
+        "final-use authority is consumed immediately before destination entry",
+        "destination predecessor mismatch is deterministic not-applied inside the destination transaction",
+        "transport acknowledgement is not terminality and lost acknowledgement reconciles through an independent destination observer"
+      ]
+    },
+    {
       "protocolId": "hepta.kernel.evidence.sqlite-lineage.v1",
       "module": "kernel.evidence",
       "kind": "append_only_sqlite_evidence_lineage",
