@@ -390,7 +390,6 @@ async fn structural_replay_rejects_hash_valid_taskflow_event_fence_tamper() {
     store.close().await;
 }
 
-
 #[tokio::test]
 async fn structural_replay_binds_generation_scoped_claim_identity_to_event_fence() {
     let fixture = Fixture::new();
