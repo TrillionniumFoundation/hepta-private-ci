@@ -506,6 +506,59 @@ def verify_authority_posture(findings: Findings) -> None:
         )
 
 
+
+def verify_operator_training_boundary(findings: Findings) -> None:
+    """Keep unbound compatibility trainers out of repository product source."""
+
+    owner_root = ROOT / "codex-rs/hepta-bellman-operator"
+    raw_calls = {
+        "build_targets": re.compile(r"\bbuild_targets\s*\("),
+        "fit_tabular_operator": re.compile(r"\bfit_tabular_operator\s*\("),
+        "fit_tabular_operator_strict_v2": re.compile(
+            r"\bfit_tabular_operator_strict_v2\s*\("
+        ),
+        "fit_transition_model": re.compile(r"\bfit_transition_model\s*\("),
+    }
+    for path in (ROOT / "codex-rs").rglob("*.rs"):
+        if owner_root in path.parents:
+            continue
+        relative = path.relative_to(ROOT).as_posix()
+        if "/tests/" in relative or relative.endswith("_tests.rs") or "/benches/" in relative:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            findings.add(
+                "operator_training_boundary_unreadable",
+                f"cannot inspect {relative}: {error}",
+            )
+            continue
+        for symbol, pattern in raw_calls.items():
+            if pattern.search(text):
+                findings.add(
+                    "operator_unbound_training_product_call",
+                    f"{relative} calls legacy unbound {symbol}; product source must consume VerifiedOperatorDatasetV2 and a *_bound_v2 entrypoint",
+                )
+
+    host = ROOT / "codex-rs/hepta-agentd/src/learning_operator_host.rs"
+    if not host.is_file():
+        findings.add(
+            "operator_product_host_missing",
+            "Agentd learning.operator product source host is missing",
+        )
+        return
+    host_text = host.read_text(encoding="utf-8")
+    for required in (
+        "VerifiedOperatorDatasetV2::from_receipt",
+        "fit_tabular_operator_bound_v2",
+    ):
+        findings.require(
+            required in host_text,
+            "operator_product_host_unbound",
+            f"Agentd learning.operator host must use {required}",
+        )
+
+
 def verify_workflow(findings: Findings) -> None:
     findings.require(
         WORKFLOW_PATH.is_file(),
@@ -622,6 +675,7 @@ def verify() -> Findings:
     modules = verify_matrix(matrix, findings)
     verify_traceability(trace, modules, findings)
     verify_authority_posture(findings)
+    verify_operator_training_boundary(findings)
     verify_workflow(findings)
     return findings
 
