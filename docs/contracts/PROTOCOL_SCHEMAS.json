@@ -307,6 +307,96 @@
       ]
     },
     {
+      "id": "IntelligenceHostEnvelopeV1",
+      "contractId": "IntelligenceHostEnvelopeV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_derived_envelope_digest_and_detached_signature",
+      "fields": [
+        {
+          "name": "runId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "snapshotDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "candidateSetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "utilityReceiptDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "neuralReceiptDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "promptReceiptDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "decision",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "contextReceiptDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "contextBindingDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "evaluationReceiptDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "traceDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "all_owner_receipt_digests_nonzero",
+        "decision_is_advisory_and_authority_free",
+        "currentness_revalidated_before_runtime_agentd_use",
+        "unknown_critical_fields_rejected"
+      ]
+    },
+    {
       "id": "LearningArtifactManifestV1",
       "contractId": "LearningArtifactManifestV1",
       "canonicalEncoding": "canonical_json_utf8",
