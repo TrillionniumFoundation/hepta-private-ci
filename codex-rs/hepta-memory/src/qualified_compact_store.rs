@@ -41,6 +41,14 @@ const MAX_QUALIFIED_COMPACT_PAYLOAD_BYTES: usize = 64 * 1024 * 1024;
 const PUBLICATION_DOMAIN: &[u8] = b"hepta-memory:qualified-compact-publication:v1";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum QualifiedCompactFaultPoint {
+    None,
+    AfterPayloadWrite,
+    AfterCheckpointWrite,
+    AfterRevocationWrite,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum QualifiedCompactPublicationDisposition {
     Inserted,
     Unchanged,
@@ -84,6 +92,8 @@ pub enum QualifiedCompactStoreError {
     Corrupt(String),
     #[error("qualified compact checkpoint capacity exhausted at {maximum} rows")]
     CapacityExceeded { maximum: usize },
+    #[error("qualified compact fault injected at {0}")]
+    FaultInjected(&'static str),
     #[error(transparent)]
     Store(#[from] CognitiveStoreError),
     #[error(transparent)]
@@ -399,6 +409,28 @@ impl CognitiveStore {
         proof_witness: &CompactionProofWitnessV1,
         payload: &[u8],
     ) -> Result<QualifiedCompactCheckpointPublication, QualifiedCompactStoreError> {
+        self.publish_qualified_compact_checkpoint_with_fault(
+            lease,
+            fence,
+            checkpoint,
+            proof,
+            proof_witness,
+            payload,
+            QualifiedCompactFaultPoint::None,
+        )
+        .await
+    }
+
+    async fn publish_qualified_compact_checkpoint_with_fault(
+        &self,
+        lease: &LocalLeaseOutbox,
+        fence: &CompactFence,
+        checkpoint: &CompactCheckpointV1,
+        proof: &CompactionProofV2,
+        proof_witness: &CompactionProofWitnessV1,
+        payload: &[u8],
+        fault_point: QualifiedCompactFaultPoint,
+    ) -> Result<QualifiedCompactCheckpointPublication, QualifiedCompactStoreError> {
         validate_pair(checkpoint, proof)?;
         proof_witness
             .verify_proof(proof)
@@ -522,6 +554,12 @@ impl CognitiveStore {
             return Err(QualifiedCompactStoreError::Conflict(
                 "content-addressed compact payload identity was reused with different provenance or bytes"
                     .to_string(),
+            ));
+        }
+        if fault_point == QualifiedCompactFaultPoint::AfterPayloadWrite {
+            transaction.rollback().await.map_err(unavailable)?;
+            return Err(QualifiedCompactStoreError::FaultInjected(
+                "after_payload_write",
             ));
         }
 
@@ -649,6 +687,13 @@ impl CognitiveStore {
                 "qualified checkpoint insert failed: {error}"
             ))
         })?;
+
+        if fault_point == QualifiedCompactFaultPoint::AfterCheckpointWrite {
+            transaction.rollback().await.map_err(unavailable)?;
+            return Err(QualifiedCompactStoreError::FaultInjected(
+                "after_checkpoint_write",
+            ));
+        }
 
         transaction.commit().await.map_err(unavailable)?;
         Ok(QualifiedCompactCheckpointPublication {
@@ -849,6 +894,30 @@ impl CognitiveStore {
         tombstone_frontier: u64,
         revocation_digest: Digest32,
     ) -> Result<(), QualifiedCompactStoreError> {
+        self.revoke_qualified_compact_payload_with_fault(
+            lease,
+            fence,
+            scope_id,
+            purpose_id,
+            payload_digest,
+            tombstone_frontier,
+            revocation_digest,
+            QualifiedCompactFaultPoint::None,
+        )
+        .await
+    }
+
+    async fn revoke_qualified_compact_payload_with_fault(
+        &self,
+        lease: &LocalLeaseOutbox,
+        fence: &CompactFence,
+        scope_id: &StableId,
+        purpose_id: &StableId,
+        payload_digest: Digest32,
+        tombstone_frontier: u64,
+        revocation_digest: Digest32,
+        fault_point: QualifiedCompactFaultPoint,
+    ) -> Result<(), QualifiedCompactStoreError> {
         ensure_digest_value(revocation_digest, "payload revocation digest")?;
         let binding = verify_mutation_lease(self, lease, fence)?;
         let mut transaction = self
@@ -937,6 +1006,13 @@ impl CognitiveStore {
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
+
+        if fault_point == QualifiedCompactFaultPoint::AfterRevocationWrite {
+            transaction.rollback().await.map_err(unavailable)?;
+            return Err(QualifiedCompactStoreError::FaultInjected(
+                "after_revocation_write",
+            ));
+        }
 
         transaction.commit().await.map_err(unavailable)?;
         Ok(())
