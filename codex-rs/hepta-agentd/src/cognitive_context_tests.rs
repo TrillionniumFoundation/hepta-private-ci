@@ -198,10 +198,7 @@ async fn final_use_binds_complete_owner_cut_not_only_memory_snapshot() {
         .await
         .unwrap();
     assert_eq!(context.items.len(), 1);
-    let before = store
-        .lane_c_snapshot(&access, &scope, 200)
-        .await
-        .unwrap();
+    let before = store.lane_c_snapshot(&access, &scope, 200).await.unwrap();
     assert_eq!(
         before.snapshot().snapshot_digest.to_string(),
         context.snapshot_digest
@@ -223,10 +220,7 @@ async fn final_use_binds_complete_owner_cut_not_only_memory_snapshot() {
         )
         .await
         .unwrap();
-    let after = store
-        .lane_c_snapshot(&access, &scope, 200)
-        .await
-        .unwrap();
+    let after = store.lane_c_snapshot(&access, &scope, 200).await.unwrap();
     assert_eq!(
         after.snapshot().snapshot_digest,
         before.snapshot().snapshot_digest,

@@ -197,13 +197,18 @@ pub enum SchemaAdmissionError {
 impl fmt::Display for SchemaAdmissionError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::InvalidVersionRange => formatter.write_str("schema wire version range is invalid"),
+            Self::InvalidVersionRange => {
+                formatter.write_str("schema wire version range is invalid")
+            }
             Self::InvalidPayloadLimit(limit) => {
                 write!(formatter, "schema payload limit is invalid: {limit}")
             }
             Self::UnknownSchema(schema) => write!(formatter, "unknown wire schema {schema}"),
             Self::ConflictingRegistration(schema) => {
-                write!(formatter, "conflicting wire schema registration for {schema}")
+                write!(
+                    formatter,
+                    "conflicting wire schema registration for {schema}"
+                )
             }
             Self::UnsupportedSchemaVersion { schema, version } => write!(
                 formatter,
