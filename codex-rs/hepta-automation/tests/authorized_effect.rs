@@ -6,7 +6,9 @@
 
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicU64;
+use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;
 use std::thread;
@@ -23,7 +25,9 @@ use codex_hepta_automation::AuthorizedEffectProviderReceipt;
 use codex_hepta_automation::AuthorizedEffectRecovery;
 use codex_hepta_automation::AuthorizedEffectRecoveryResult;
 use codex_hepta_automation::AuthorizedEffectRequest;
+use codex_hepta_automation::AuthorizedProviderEffectLookup;
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_automation::ProviderEffectTaskFlowDriver;
 use codex_hepta_automation::TaskFlowCommand;
 use codex_hepta_automation::TaskFlowDefinition;
 use codex_hepta_automation::TaskFlowEdgeSpec;
@@ -41,6 +45,15 @@ use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::ProviderEffectAck;
+use codex_hepta_contracts::ProviderEffectAckStatus;
+use codex_hepta_contracts::ProviderEffectAdapter;
+use codex_hepta_contracts::ProviderEffectDispatch;
+use codex_hepta_contracts::ProviderEffectFuture;
+use codex_hepta_contracts::ProviderEffectIdempotencyCapability;
+use codex_hepta_contracts::ProviderEffectIntent;
+use codex_hepta_contracts::ProviderEffectKey;
+use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_fleet::AgentManifest;
@@ -367,6 +380,72 @@ impl AuthorizedEffectDriver for RecordingDriver {
     }
 }
 
+struct RecordingProviderEffectAdapter {
+    dispatch_calls: AtomicUsize,
+    seen_key: Mutex<Option<String>>,
+    dispatch_result: ProviderEffectDispatch,
+    lookup_result: ProviderEffectLookup,
+}
+
+impl RecordingProviderEffectAdapter {
+    fn new(dispatch_result: ProviderEffectDispatch, lookup_result: ProviderEffectLookup) -> Self {
+        Self {
+            dispatch_calls: AtomicUsize::new(0),
+            seen_key: Mutex::new(None),
+            dispatch_result,
+            lookup_result,
+        }
+    }
+}
+
+impl ProviderEffectAdapter for RecordingProviderEffectAdapter {
+    fn capability(&self) -> ProviderEffectIdempotencyCapability {
+        ProviderEffectIdempotencyCapability::KeyAndStatusLookup
+    }
+
+    fn dispatch<'a>(
+        &'a self,
+        _intent: &'a ProviderEffectIntent,
+    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        Box::pin(async {
+            ProviderEffectDispatch::NotDispatched {
+                reason_code: "wire_payload_required".to_string(),
+            }
+        })
+    }
+
+    fn dispatch_with_payload<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+        wire_payload: &'a [u8],
+    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        self.dispatch_calls.fetch_add(1, Ordering::Relaxed);
+        *self.seen_key.lock().expect("seen key lock") = Some(intent.key.as_str().to_string());
+        let expected_payload = intent.payload_sha256.clone();
+        let result = self.dispatch_result.clone();
+        Box::pin(async move {
+            assert_eq!(Sha256Digest::for_bytes(wire_payload), expected_payload);
+            result
+        })
+    }
+
+    fn lookup<'a>(
+        &'a self,
+        _key: &'a ProviderEffectKey,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        let result = self.lookup_result.clone();
+        Box::pin(async move { result })
+    }
+
+    fn lookup_for_intent<'a>(
+        &'a self,
+        _intent: &'a ProviderEffectIntent,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        let result = self.lookup_result.clone();
+        Box::pin(async move { result })
+    }
+}
+
 struct RevocationRaceDriver {
     calls: usize,
     authority: FinalUseAuthority,
@@ -455,6 +534,129 @@ impl AuthorizedEffectDriver for RevocationRaceDriver {
             receipt_digest: Sha256Digest::for_bytes(b"revocation-race-success"),
         })
     }
+}
+
+#[tokio::test]
+async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-wire-binding");
+    let logical_id = format!("taskflow:{}:{}", effect.run_id, effect.step_id);
+    let key = ProviderEffectKey::for_logical_effect(&effect.destination_id, &logical_id)
+        .expect("provider effect key");
+    let ack = ProviderEffectAck::new(
+        key.clone(),
+        effect.payload_digest.clone(),
+        Sha256Digest::for_bytes(b"provider-operation"),
+        ProviderEffectAckStatus::Completed,
+    );
+    let adapter = RecordingProviderEffectAdapter::new(
+        ProviderEffectDispatch::Ack(ack),
+        ProviderEffectLookup::NotFound,
+    );
+    let mut driver =
+        ProviderEffectTaskFlowDriver::new(effect.destination_id.clone(), adapter).expect("driver");
+
+    assert!(matches!(
+        store
+            .execute_authorized_taskflow_effect_async(
+                &authority,
+                &mut driver,
+                &effect,
+                b"wrong-payload",
+                &owner,
+                &signed,
+                &expected,
+                "authorized-effect-async-dispatch",
+                30,
+            )
+            .await,
+        Err(AuthorizedEffectError::BindingMismatch)
+    ));
+    assert_eq!(
+        driver.adapter().dispatch_calls.load(Ordering::Relaxed),
+        0,
+        "payload substitution must fail before provider entry"
+    );
+
+    let receipt = store
+        .execute_authorized_taskflow_effect_async(
+            &authority,
+            &mut driver,
+            &effect,
+            b"effect-payload",
+            &owner,
+            &signed,
+            &expected,
+            "authorized-effect-async-dispatch",
+            31,
+        )
+        .await
+        .expect("exact wire payload dispatch");
+    assert_eq!(
+        receipt.observation,
+        Some(TaskFlowStepObservation::Succeeded)
+    );
+    assert_eq!(driver.adapter().dispatch_calls.load(Ordering::Relaxed), 1);
+    assert_eq!(
+        driver
+            .adapter()
+            .seen_key
+            .lock()
+            .expect("seen key")
+            .as_deref(),
+        Some(key.as_str())
+    );
+}
+
+#[tokio::test]
+async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_absent() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-unknown");
+    let logical_id = format!("taskflow:{}:{}", effect.run_id, effect.step_id);
+    let key = ProviderEffectKey::for_logical_effect(&effect.destination_id, &logical_id)
+        .expect("provider effect key");
+    let provider_intent = ProviderEffectIntent::new(key, effect.payload_digest.clone());
+    let adapter = RecordingProviderEffectAdapter::new(
+        ProviderEffectDispatch::Unknown,
+        ProviderEffectLookup::NotFound,
+    );
+    let mut driver =
+        ProviderEffectTaskFlowDriver::new(effect.destination_id.clone(), adapter).expect("driver");
+
+    let receipt = store
+        .execute_authorized_taskflow_effect_async(
+            &authority,
+            &mut driver,
+            &effect,
+            b"effect-payload",
+            &owner,
+            &signed,
+            &expected,
+            "authorized-effect-async-unknown",
+            30,
+        )
+        .await
+        .expect("unknown provider dispatch is durable");
+    assert_eq!(
+        receipt.observation,
+        Some(TaskFlowStepObservation::Indeterminate)
+    );
+    assert_eq!(
+        store
+            .taskflow_run(&effect.run_id)
+            .await
+            .expect("read run")
+            .expect("run")
+            .state,
+        TaskFlowRunState::Indeterminate
+    );
+
+    assert!(matches!(
+        driver.lookup(&provider_intent).await,
+        AuthorizedProviderEffectLookup::ProvenAbsent { .. }
+    ));
 }
 
 #[tokio::test]
