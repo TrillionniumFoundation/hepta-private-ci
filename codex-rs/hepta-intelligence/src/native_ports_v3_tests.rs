@@ -516,6 +516,7 @@ fn native_v3_traverses_admitted_owner_apis_and_real_durable_ledger() {
             request_digest: digest("native-v3-request"),
             body_digest,
             artifact_set_digest: digest("native-v3-artifact-set"),
+            execution_payload_digest: digest("native-v3-execution-payload"),
             snapshot,
             legal_candidates: legal,
             budget: LaneFBudgetV3 {
