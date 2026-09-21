@@ -1921,6 +1921,7 @@ impl ModelClientSession {
                 session_telemetry_for_request(session_telemetry, &request);
             let mut effective_request = None;
             let mut has_ephemeral_input = false;
+            let mut ephemeral_final_use_guard = None;
             let mut recovery_checkpoint_authorized = false;
             let mut admitted_provider_attempt = if let Some((context, active_policies)) =
                 provider_policy_context
@@ -1961,7 +1962,6 @@ impl ModelClientSession {
                 )
                 .await
                 .map_err(model_provider_policy_error)?;
-                let mut ephemeral_final_use_guard = None;
                 let ephemeral_binding = ephemeral_input.map(|prepared| {
                     let (item, binding, final_use_guard) = prepared.into_parts();
                     ephemeral_final_use_guard = final_use_guard;
