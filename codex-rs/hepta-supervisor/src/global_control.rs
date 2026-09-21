@@ -80,6 +80,7 @@ pub struct GlobalControlHostPolicyV1 {
     pub fleet_floors: FleetEssentialFloorsV1,
     pub required_owner_ids: Vec<StableId>,
     pub evaluation_policy_digest: Digest32,
+    pub revocation_frontier_digest: Digest32,
     pub maximum_owner_age_micros: u64,
     pub maximum_plan_lifetime_micros: u64,
     pub snapshot_policy_digest: Digest32,
@@ -182,6 +183,7 @@ impl GlobalControlHostV1 {
             || policy.maximum_plan_lifetime_micros == 0
             || policy.snapshot_policy_digest.is_zero()
             || policy.evaluation_policy_digest.is_zero()
+            || policy.revocation_frontier_digest.is_zero()
             || policy.required_owner_ids.is_empty()
             || policy.required_owner_ids.len() > MAX_OWNER_TRUSTS
         {
@@ -274,6 +276,7 @@ impl GlobalControlHostV1 {
         snapshot_request.maximum_owner_age_micros = self.policy.maximum_owner_age_micros;
         snapshot_request.expires_at_micros = expires_at_micros;
         snapshot_request.snapshot_policy_digest = self.policy.snapshot_policy_digest;
+        snapshot_request.revocation_frontier_digest = self.policy.revocation_frontier_digest;
         snapshot_request.required_owner_ids = self.policy.required_owner_ids.clone();
         planning_request.now_micros = now_micros;
         planning_request.deadline_micros = expires_at_micros;
