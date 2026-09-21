@@ -93,6 +93,8 @@ caller that can directly rewrite its connection, modules or database.
 - `orchestration_generations`: immutable normalized resource-aware plan and semantic digest;
 - `worker_registrations`: authenticated worker profile, signing identity, scope, expiry and revision;
 - `worker_claims`: fenced assignment claims, heartbeat/result state, bounded attempts and observed completion;
+- `worker_heartbeat_observations`: immutable signed heartbeat receipt digests and prior/resulting revisions for acknowledgement-loss replay;
+- `worker_result_observations`: immutable signed worker-result receipt digests, outcome and result binding for acknowledgement-loss replay;
 - `worker_completion_observations`: immutable accepted CI completion receipt digests used for acknowledgement-loss replay after reopen;
 - `integration_queue_generations`: durable orchestration/base-bound integration queue generation and invalidation state;
 - `integration_queue_items`: revisioned candidate/review/CI observations, ready-external-merge state and terminal outcome;
