@@ -574,6 +574,109 @@ fn restart_drains_one_agent_and_spawns_a_new_generation() -> Result<(), Supervis
 }
 
 #[test]
+fn recovered_running_restart_settles_pending_budget_before_next_claim(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .expect("registered agent")
+        .clone();
+    let first_claim = crate::restart_budget::claim_restart(
+        record.layout.run_root(),
+        config().restart_max_attempts,
+        config().restart_window,
+        config().restart_backoff_base,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    assert_eq!(first_claim.attempt, 1);
+    drop(supervisor);
+
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    let adopted = recovered.snapshot(&fleet.first).expect("adopted replacement");
+    assert!(adopted.active);
+    assert_eq!(adopted.restart_attempt, 1);
+
+    // Exact adoption is not enough to settle the attempt; a fresh ready
+    // observation of the running replacement is required.
+    assert_eq!(recovered.tick(now), TickReport::default());
+    recovered.restart(&fleet.first, now)?;
+    assert_eq!(
+        recovered
+            .snapshot(&fleet.first)
+            .expect("second restart claim")
+            .restart_attempt,
+        2
+    );
+    Ok(())
+}
+
+#[test]
+fn failed_restart_spawn_does_not_retry_forever_on_one_budget_claim(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    supervisor.restart(&fleet.first, now)?;
+    control.set_drained(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.reject_spawn_program(fake_program("hepta-agentd"));
+
+    let failed = supervisor.tick(now + Duration::from_millis(2));
+    assert_eq!(failed.faults.len(), 1);
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert!(
+        !supervisor
+            .snapshot(&fleet.first)
+            .expect("failed restart snapshot")
+            .restart_pending
+    );
+
+    // A later tick cannot silently retry the same durable claim.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(20)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+
+    // A new explicit restart obtains the next bounded attempt.
+    control
+        .world
+        .lock()
+        .expect("fake world lock")
+        .reject_spawn_programs
+        .clear();
+    supervisor.restart(&fleet.first, now + Duration::from_millis(20))?;
+    assert_eq!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("second restart claim")
+            .restart_attempt,
+        2
+    );
+    Ok(())
+}
+
+#[test]
 fn recovery_adopts_one_orphan_and_rejects_another() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();

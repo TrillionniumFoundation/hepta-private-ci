@@ -54,7 +54,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             });
             let release =
                 release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
-            self.start_release_slot(agent_id, slot, release, now)?;
+            if let Err(error) = self.start_release_slot(agent_id, slot, release, now) {
+                let record = self.record(agent_id)?;
+                crate::restart_budget::complete_restart(record.layout.run_root())
+                    .map_err(|persist| SupervisorError::Invalid(persist.to_string()))?;
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+                return Err(error);
+            }
             slot.restart_pending = false;
         }
         self.tick_matrix_companion(agent_id, slot, now)
@@ -157,6 +164,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .kill()
                     .map_err(|error| driver_error(agent_id, error))?;
                 slot.event(runtime.generation, SupervisorEventKind::KillRequested);
+            }
+            RuntimePhase::Running if healthy && slot.restart_not_before.is_some() => {
+                let record = self.record(agent_id)?;
+                crate::restart_budget::complete_restart(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.restart_not_before = None;
             }
             RuntimePhase::AwaitingHealth { .. }
             | RuntimePhase::Running

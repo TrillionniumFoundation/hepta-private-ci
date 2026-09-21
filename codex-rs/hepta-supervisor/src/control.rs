@@ -125,6 +125,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
         let record = self.record(agent_id)?;
+        if slot.active_release.is_none() && slot.last_command.is_none() {
+            return Err(SupervisorError::NoPreviousCommand(agent_id.clone()));
+        }
         let claim = claim_restart(
             record.layout.run_root(),
             self.config.restart_max_attempts,
@@ -139,9 +142,6 @@ impl<D: ProcessDriver> Supervisor<D> {
         })?;
         slot.restart_attempt = claim.attempt;
         slot.restart_not_before = Some(deadline(now, claim.backoff)?);
-        if slot.active_release.is_none() && slot.last_command.is_none() {
-            return Err(SupervisorError::NoPreviousCommand(agent_id.clone()));
-        }
         if slot.runtime.is_none() {
             slot.restart_pending = true;
             let generation = record.lifecycle.generation;
