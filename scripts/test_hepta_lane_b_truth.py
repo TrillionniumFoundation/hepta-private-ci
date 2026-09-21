@@ -49,6 +49,73 @@ class LaneBTruthTests(unittest.TestCase):
                 with self.assertRaisesRegex(MODULE.Invalid, "owner-root escape"):
                     MODULE.verify_anchor("fixture", ["owned"], anchor, True)
 
+    def test_observed_source_rejects_product_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in ("codex-rs/hepta-automation", "codex-rs/hepta-agentd"):
+                (root / relative).mkdir(parents=True, exist_ok=True)
+            row = {
+                "resolvedRoots": ["codex-rs/hepta-automation"],
+                "observedSourcePaths": [
+                    "codex-rs/hepta-automation",
+                    "codex-rs/hepta-agentd",
+                ],
+                "observedAtHead": {"commit": "a" * 40, "tree": "b" * 40},
+            }
+            with (
+                mock.patch.object(MODULE, "ROOT", root),
+                mock.patch.object(
+                    MODULE, "verify_source_base", return_value=("a" * 40, "b" * 40)
+                ),
+                mock.patch.object(
+                    MODULE, "git", return_value="codex-rs/hepta-agentd/src/automation.rs"
+                ),
+            ):
+                with self.assertRaisesRegex(MODULE.Invalid, "observed source drift"):
+                    MODULE.verify_observed_source(row, "automation.taskflow")
+
+    def test_observed_source_accepts_document_only_followup(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in ("codex-rs/hepta-automation", "codex-rs/hepta-agentd"):
+                (root / relative).mkdir(parents=True, exist_ok=True)
+            row = {
+                "resolvedRoots": ["codex-rs/hepta-automation"],
+                "observedSourcePaths": [
+                    "codex-rs/hepta-automation",
+                    "codex-rs/hepta-agentd",
+                ],
+                "observedAtHead": {"commit": "a" * 40, "tree": "b" * 40},
+            }
+            with (
+                mock.patch.object(MODULE, "ROOT", root),
+                mock.patch.object(
+                    MODULE, "verify_source_base", return_value=("a" * 40, "b" * 40)
+                ),
+                mock.patch.object(MODULE, "git", return_value=""),
+            ):
+                MODULE.verify_observed_source(row, "automation.taskflow")
+
+    def test_pull_request_current_base_override_precedes_event_snapshot(self) -> None:
+        event = {
+            "pull_request": {
+                "base": {"sha": "a" * 40},
+                "head": {"sha": "c" * 40},
+            }
+        }
+        pull_request = event["pull_request"]
+        with mock.patch.dict(
+            MODULE.os.environ,
+            {"HEPTA_CANDIDATE_BASE_SHA": "b" * 40},
+            clear=False,
+        ):
+            event_base = pull_request["base"]["sha"]
+            actual_base = (
+                MODULE.os.environ.get("HEPTA_CANDIDATE_BASE_SHA") or event_base
+            )
+        self.assertEqual("b" * 40, actual_base)
+        self.assertNotEqual(event_base, actual_base)
+
     def test_traceability_preserves_external_claim_boundary(self) -> None:
         truth = {
             "sourceBase": {"commit": "a" * 40, "tree": "b" * 40},

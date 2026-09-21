@@ -467,12 +467,13 @@
   "sourceRoot": [
     "tools/hepta-engineering-control"
   ],
-  "sourceBaseRole": "observed_default_branch_integration_base_for_this_candidate",
+  "sourceBaseRole": "integration_baseline",
   "currentCandidateIdentityAuthority": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
     "embeddedCommit": false,
-    "reason": "sourceBase binds the observed main integration base; the evolving candidate head is established by CI/product execution receipts to avoid self-reference."
+    "reason": "sourceBase is integration provenance; current operation bytes are exact Git blobs and current candidate/merge identity is established externally by CI execution receipts."
   },
-  "mappingSourceIdentityMode": "exact_blob"
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "integration_baseline_exact_blob_v1"
 }
