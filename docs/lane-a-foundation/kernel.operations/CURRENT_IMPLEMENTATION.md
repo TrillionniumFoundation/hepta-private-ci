@@ -43,7 +43,7 @@ The in-memory `OperationLedger` and `Outbox` remain useful as deterministic orac
 
 `AgentdProductionWriterHost` is now final-use-only: targets are attached with a `FinalUseAuthority`, and product dispatch requires either an externally supplied signed grant or an `AgentdFinalUseGrantProvider` that receives the exact derived `FinalUseBinding`. Multiple destinations are registered by stable destination id; observer-only reconciliation is bounded.
 
-This is a named source-composition primitive, not default daemon activation. Current Agentd process startup does not synthesize authority, signing keys or a production grant source.
+The current Agentd lifecycle now accepts this host only through `AgentdConfig::with_production_operations(...)`. When explicitly supplied, runtime construction requires an available CognitiveStore, retains the verified host in `AgentdState`, starts an immediate-then-periodic observer-only reconciler, and cancels that task with the daemon lifetime. Default process-environment startup still supplies no production-operation configuration and never synthesizes authority, signing keys or a grant source.
 
 ## Capacity and verification cost
 
@@ -71,9 +71,8 @@ Exact-head and deterministic synthetic-merge execution receipts remain separate 
 
 The remaining repository-controlled gates are:
 
-1. wire the final-use Agentd host into the current daemon lifecycle only through explicit externally enrolled authority/grant configuration, while default startup remains fail-closed;
-2. add destination-owned dedupe/apply/terminal observation before each remaining registered effect destination is activated;
-3. design and qualify bounded segment/checkpoint compaction for long-lived append-only history;
-4. obtain current exact-head and deterministic synthetic-merge success for this current-main convergence candidate.
+1. add destination-owned dedupe/apply/terminal observation before each remaining registered effect destination is activated;
+2. design and qualify bounded segment/checkpoint compaction for long-lived append-only history;
+3. obtain current exact-head and deterministic synthetic-merge success for this current-main convergence candidate.
 
 Target-host power-loss/storage qualification, independent semantic acceptance, operator acceptance, canary, promotion and release remain externally governed and false.
