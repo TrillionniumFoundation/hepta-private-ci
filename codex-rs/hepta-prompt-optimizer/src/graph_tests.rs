@@ -132,7 +132,7 @@ fn graph_conflicts_are_hard_constraints_and_receipt_binds_relation_view() {
     assert_eq!(receipt.observed_relation_count, 2);
     assert_eq!(
         receipt.factor_graph_generation_digest,
-        factor_graph.generation.generation_digest
+        factor_graph.generation().generation_digest
     );
     assert!(receipt
         .portfolio
