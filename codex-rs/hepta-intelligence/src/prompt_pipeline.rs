@@ -19,7 +19,7 @@ use codex_hepta_prompt_optimizer::canonical::{
     PromptExerciseActionV1, PromptExerciseDecisionV1, PromptExerciseRequestV1,
     SelectedPromptPortfolioV1, exercise_v1,
 };
-use codex_hepta_prompt_registry::{PromptRegistry, PromptRoleV2, RealizationDeliveryV2};
+use codex_hepta_prompt_registry::{DurablePromptRegistry, PromptRoleV2, RealizationDeliveryV2};
 use codex_hepta_types::{AuthorityPosture, Digest32, FixedQ32, StableId};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -151,13 +151,16 @@ impl fmt::Display for PromptPipelineErrorV1 {
 impl StdError for PromptPipelineErrorV1 {}
 
 pub fn compile_exercised_prompt_context_v1(
-    registry: &PromptRegistry,
+    registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     request: PromptContextCompileRequestV1,
 ) -> Result<PreparedPromptContextV1, PromptPipelineErrorV1> {
     ensure_model_tuple_matches(portfolio, &request.model_profile)?;
     let now_unix_ms = request.exercise.now_unix_ms;
-    let exercise = exercise_v1(registry, portfolio, request.exercise)
+    let current_registry = registry
+        .registry()
+        .map_err(|error| PromptPipelineErrorV1::Registry(format!("{error:?}")))?;
+    let exercise = exercise_v1(current_registry, portfolio, request.exercise)
         .map_err(|error| PromptPipelineErrorV1::Optimizer(format!("{error:?}")))?;
     ensure_exercisable(exercise.decision)?;
     let materialization = materialize_prompt_payloads(registry, portfolio, now_unix_ms)?;
@@ -238,7 +241,7 @@ pub fn compile_exercised_prompt_context_v1(
 }
 
 pub fn prepare_prompt_delivery_v1(
-    registry: &PromptRegistry,
+    registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     prepared: &PreparedPromptContextV1,
     request: PromptDeliveryPrepareRequestV1,
@@ -259,7 +262,10 @@ pub fn prepare_prompt_delivery_v1(
 
     // The second check closes the selection->compile->dispatch revocation window.
     let now_unix_ms = exercise_request.now_unix_ms;
-    let exercise = exercise_v1(registry, portfolio, exercise_request)
+    let current_registry = registry
+        .registry()
+        .map_err(|error| PromptPipelineErrorV1::Registry(format!("{error:?}")))?;
+    let exercise = exercise_v1(current_registry, portfolio, exercise_request)
         .map_err(|error| PromptPipelineErrorV1::Optimizer(format!("{error:?}")))?;
     ensure_exercisable(exercise.decision)?;
 
@@ -311,7 +317,7 @@ pub fn observe_prompt_delivery_v1(
 }
 
 fn materialize_prompt_payloads(
-    registry: &PromptRegistry,
+    registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     now_unix_ms: u64,
 ) -> Result<PromptPayloadMaterializationV1, PromptPipelineErrorV1> {
