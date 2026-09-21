@@ -20,7 +20,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "explicit_read_consumer_composed_default_learning_loop_not_wired",
+  "productCallerState": "offline_shadow_host_source_composed_external_selection_required_default_daemon_activation_not_proved",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -420,8 +420,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "The explicit Agentd read-ranking consumer is composed, but the default train → evaluate → independently select → new-process reload product loop is not wired.",
-    "Exact-head and deterministic synthetic-merge qualification must pass before changing the source-qualified claim boundary."
+    "Bind explicit AgentdOfflineOperatorHostV1 invocation to the selected deployed-daemon/runtime profile; the offline/shadow source composition exists but startup scheduling and target-host activation are not established.",
+    "Current exact-head and deterministic synthetic-merge qualification must pass before advancing the source-qualified claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic and mathematical review",
@@ -452,6 +452,20 @@
         "LoadedTabularOperatorV1::predict"
       ],
       "currentness": "revalidates learning.artifacts registry/revocation before every ranking use"
+    }
+  ],
+  "productConsumers": [
+    {
+      "caller": "runtime.agentd::AgentdOfflineOperatorHostV1",
+      "source": "codex-rs/hepta-agentd/src/learning_operator_host.rs",
+      "state": "offline_shadow_coordination_source_composed",
+      "semantics": "consumes a verified frozen dataset, performs replay-resistant deny-all fitting, publishes create-only candidate bytes, consumes signed independent evaluation, refuses to infer selection, observes an externally-authored Selector transition, and reloads the exact pinned candidate through PinnedCognitiveRanker; coordination phases are durably hash-chained and reopenable"
+    },
+    {
+      "caller": "runtime.agentd::PinnedCognitiveRanker",
+      "source": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "state": "selected_pinned_read_consumer",
+      "semantics": "loads an independently selected pinned tabular operator, revalidates current registry/revocation on every read, and can only reorder already-admitted cognitive records"
     }
   ]
 }

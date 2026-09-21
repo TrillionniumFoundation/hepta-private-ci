@@ -326,18 +326,28 @@
         "codex-rs/hepta-bellman-operator",
         "codex-rs/hepta-operator-acceptance"
       ],
-      "productCallerState": "explicit_read_consumer_composed_default_learning_loop_not_wired",
+      "productCallerState": "offline_shadow_host_source_composed_external_selection_required_default_daemon_activation_not_proved",
       "productionImplementation": false,
       "productConsumers": [
+        {
+          "caller": "runtime.agentd::AgentdOfflineOperatorHostV1",
+          "source": "codex-rs/hepta-agentd/src/learning_operator_host.rs",
+          "state": "offline_shadow_coordination_source_composed",
+          "semantics": "verified DatasetSnapshotReceiptV3 → replay-resistant tabular fit → create-only artifact publication → signed independent evaluation → externally authored Selector observation → exact pinned reload; durable coordination reopens and semantic reuse conflicts",
+          "notProved": [
+            "default deployed-daemon scheduling/activation",
+            "external selector decision itself",
+            "future-window longitudinal task benefit",
+            "target-host qualification"
+          ]
+        },
         {
           "caller": "runtime.agentd::PinnedCognitiveRanker",
           "source": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
           "state": "explicit_read_ranking_consumer",
-          "semantics": "loads a selected pinned tabular operator, revalidates current registry/revocation on each read, and can only reorder already-admitted cognitive records",
+          "semantics": "loads the externally selected pinned tabular operator, revalidates current registry/revocation on each read, and can only reorder already-admitted cognitive records",
           "notProved": [
-            "automatic training",
-            "independent selection",
-            "default App Server learning loop",
+            "production activation",
             "longitudinal task benefit"
           ]
         }
