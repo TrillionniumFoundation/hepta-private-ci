@@ -18,7 +18,7 @@
       "stableGuide": "docs/modules/learning.ledger/TECHNICAL.md",
       "dossier": "qualification/module-execution-dossiers/detail/learning.ledger.md",
       "nativeMapping": "codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md",
-      "implementationState": "source_converged_source_anchor_qualified_live_product_external",
+      "implementationState": "source_converged_current_candidate_qualification_pending_live_product_external",
       "compatibility": "stable_v1_read_compatibility_retained_authenticated_v2_product_writer_additive",
       "operations": [
         {
@@ -43,7 +43,7 @@
           "operation": "LedgerWriter::append_unlearning",
           "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::append_unlearning",
           "source": "codex-rs/hepta-learning-ledger/src/production.rs",
-          "status": "implemented"
+          "status": "implemented_verified_source_dataset_membership_artifact_handoff"
         },
         {
           "operation": "LedgerWriter::freeze_dataset",
@@ -118,25 +118,28 @@
         "directory_durability_requires_an_actual_directory_handle",
         "product_path_records_outcome_correction_then_conserved_credit",
         "credit_failure_preserves_outcome_for_exact_reconciliation",
-        "run_episode_mismatch_rejects_before_any_outcome_append"
+        "run_episode_mismatch_rejects_before_any_outcome_append",
+        "dataset_freeze_counts_decisions_without_any_outcome_as_pending"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
         "named_live_product_caller_and_exclusive_physical_writer",
         "production_root_provisioning_rotation_trust_distribution_transport_key_custody_and_witness_placement",
         "live_independent_outcomes_and_target_host_measurements",
-        "physical_erasure_backup_and_model_unlearning_evidence_where_claimed"
+        "physical_erasure_backup_and_model_unlearning_evidence_where_claimed",
+        "live_learning_artifacts_dataset_withdrawal_descendant_revocation_and_rebuild_handoff"
       ],
       "statusDimensions": {
         "planning": "lrn_0_and_lrn_1_source_implemented",
         "source": "converged_source_implemented",
         "composition": "decision_and_terminal_closure_source_composed_live_daemon_binding_pending",
-        "qualification": "source_anchor_qualified_current_candidate_execution_required",
+        "qualification": "current_candidate_exact_head_and_synthetic_merge_pending",
         "liveProduct": "external_not_established"
       },
       "crossLaneRepositoryDependencies": [
         "runtime.agentd daemon-owned terminal observation must consume the authenticated LedgerWriter closure after its lifecycle owner line converges",
-        "intelligence.control canonical V3 must migrate any legacy Outcome/Credit compatibility caller to append_outcome_credit_v2 before product activation"
+        "intelligence.control canonical V3 must migrate any legacy Outcome/Credit compatibility caller to append_outcome_credit_v2 before product activation",
+        "learning.artifacts owns authoritative dataset-to-artifact membership, withdrawal fanout and descendant revocation for UnlearningLineage handoff"
       ],
       "productCallsites": [
         {
