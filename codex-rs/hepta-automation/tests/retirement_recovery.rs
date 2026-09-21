@@ -276,11 +276,7 @@ async fn receipt_replay_retains_later_control_decisions_and_rejects_substitution
 
 #[tokio::test]
 async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
-    for assignment in [
-        "client_user_message_id = 'substituted.client'",
-        "queued_submission_id = 'substituted.queue'",
-        "submitted_at_ms = submitted_at_ms + 1",
-    ] {
+    for mutation in ["client_user_message_id", "queued_submission_id", "submitted_at_ms"] {
         let (_temp, layout, store, lease) = leased_store().await?;
         store
             .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 101)
@@ -300,11 +296,30 @@ async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
         )?)
         .open_durable_evidence_pool(&path)
         .await?;
-        sqlx::query(&format!(
-            "UPDATE automation_dispatch_outcomes SET {assignment}"
-        ))
-        .execute(&pool)
-        .await?;
+        match mutation {
+            "client_user_message_id" => {
+                sqlx::query(
+                    "UPDATE automation_dispatch_outcomes SET client_user_message_id = 'substituted.client'",
+                )
+                .execute(&pool)
+                .await?;
+            }
+            "queued_submission_id" => {
+                sqlx::query(
+                    "UPDATE automation_dispatch_outcomes SET queued_submission_id = 'substituted.queue'",
+                )
+                .execute(&pool)
+                .await?;
+            }
+            "submitted_at_ms" => {
+                sqlx::query(
+                    "UPDATE automation_dispatch_outcomes SET submitted_at_ms = submitted_at_ms + 1",
+                )
+                .execute(&pool)
+                .await?;
+            }
+            _ => unreachable!("closed mutation fixture"),
+        }
         pool.close().await;
         assert!(matches!(
             AutomationStore::open(&layout).await,
