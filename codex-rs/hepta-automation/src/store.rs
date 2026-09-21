@@ -491,8 +491,8 @@ impl AutomationStore {
                     row.try_get("client_user_message_id").map_err(unavailable)?,
                 )
             } else {
-            let row = sqlx::query(
-                "SELECT t.task_id, t.next_occurrence, t.next_run_at_ms,
+                let row = sqlx::query(
+                    "SELECT t.task_id, t.next_occurrence, t.next_run_at_ms,
                         m.revision AS schedule_revision
                  FROM automation_tasks t
                  JOIN automation_schedule_metadata m
@@ -504,50 +504,51 @@ impl AutomationStore {
                        WHERE r.task_id = t.task_id AND r.state IN ('pending', 'leased')
                    )
                  ORDER BY t.next_run_at_ms, t.task_id LIMIT 1",
-            )
-            .bind(self.owner_agent_id.as_str())
-            .bind(to_i64(now_ms)?)
-            .fetch_optional(&mut *transaction)
-            .await
-            .map_err(unavailable)?;
-            let Some(row) = row else {
-                transaction.commit().await.map_err(unavailable)?;
-                return Ok(None);
-            };
-            let task_id =
-                AutomationTaskId::parse(&row.try_get::<String, _>("task_id").map_err(unavailable)?)
-                    .map_err(|_| AutomationError::Corrupt)?;
-            let occurrence = to_u64(row.try_get("next_occurrence").map_err(unavailable)?)?;
-            let schedule_revision =
-                to_u64(row.try_get("schedule_revision").map_err(unavailable)?)?;
-            let scheduled_for_ms = to_u64(row.try_get("next_run_at_ms").map_err(unavailable)?)?;
-            let client_id = client_message_id(&self.owner_agent_id, task_id, occurrence);
-            sqlx::query(
-                "INSERT INTO automation_runs (
+                )
+                .bind(self.owner_agent_id.as_str())
+                .bind(to_i64(now_ms)?)
+                .fetch_optional(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                let Some(row) = row else {
+                    transaction.commit().await.map_err(unavailable)?;
+                    return Ok(None);
+                };
+                let task_id = AutomationTaskId::parse(
+                    &row.try_get::<String, _>("task_id").map_err(unavailable)?,
+                )
+                .map_err(|_| AutomationError::Corrupt)?;
+                let occurrence = to_u64(row.try_get("next_occurrence").map_err(unavailable)?)?;
+                let schedule_revision =
+                    to_u64(row.try_get("schedule_revision").map_err(unavailable)?)?;
+                let scheduled_for_ms = to_u64(row.try_get("next_run_at_ms").map_err(unavailable)?)?;
+                let client_id = client_message_id(&self.owner_agent_id, task_id, occurrence);
+                sqlx::query(
+                    "INSERT INTO automation_runs (
                     task_id, occurrence, schedule_revision, scheduled_for_ms,
                     client_user_message_id, state
                  ) VALUES (?, ?, ?, ?, ?, 'pending')",
-            )
-            .bind(task_id.to_string())
-            .bind(to_i64(occurrence)?)
-            .bind(to_i64(schedule_revision)?)
-            .bind(to_i64(scheduled_for_ms)?)
-            .bind(&client_id)
-            .execute(&mut *transaction)
-            .await
-            .map_err(unavailable)?;
-            let advanced = sqlx::query(
-                "UPDATE automation_tasks SET next_occurrence = next_occurrence + 1
+                )
+                .bind(task_id.to_string())
+                .bind(to_i64(occurrence)?)
+                .bind(to_i64(schedule_revision)?)
+                .bind(to_i64(scheduled_for_ms)?)
+                .bind(&client_id)
+                .execute(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                let advanced = sqlx::query(
+                    "UPDATE automation_tasks SET next_occurrence = next_occurrence + 1
                  WHERE task_id = ? AND next_occurrence = ?",
-            )
-            .bind(task_id.to_string())
-            .bind(to_i64(occurrence)?)
-            .execute(&mut *transaction)
-            .await
-            .map_err(unavailable)?;
-            if advanced.rows_affected() != 1 {
-                return Err(AutomationError::Conflict);
-            }
+                )
+                .bind(task_id.to_string())
+                .bind(to_i64(occurrence)?)
+                .execute(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if advanced.rows_affected() != 1 {
+                    return Err(AutomationError::Conflict);
+                }
                 (
                     task_id,
                     occurrence,
