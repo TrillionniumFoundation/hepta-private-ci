@@ -591,7 +591,7 @@ fn hex_nibble(value: u8) -> Option<u8> {
 }
 
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod tests {
     use std::collections::BTreeSet;
     use std::os::unix::fs::PermissionsExt;
@@ -652,7 +652,7 @@ mod tests {
                 agent_id.clone(),
                 WorkspaceBinding::new(workspace.clone(), &fleet_root)
                     .expect("workspace binding"),
-                resources,
+                resources.clone(),
             )
             .expect("manifest");
             let layout = registry.register(manifest).expect("register agent").layout;
