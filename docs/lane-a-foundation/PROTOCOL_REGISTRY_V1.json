@@ -79,18 +79,27 @@
       "kind": "sqlite_integrated_operation_owner",
       "source": [
         "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+        "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
         "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+        "codex-rs/hepta-memory/src/operation_claims.rs",
         "codex-rs/hepta-memory/src/production_writer.rs",
         "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+        "codex-rs/hepta-automation/src/operation_destination.rs",
+        "codex-rs/hepta-agentd/src/production_writer_host.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
         "docs/lane-a-foundation/kernel.operations/DURABLE_OWNER_V1.md"
       ],
       "invariants": [
         "operation event and local outbox identity commit in one BEGIN IMMEDIATE transaction",
-        "dispatch becomes durably indeterminate before target entry so crash recovery reconciles rather than blindly resends",
+        "complete OperationIntent semantic digest and optional predecessor remain bound through dispatch and final-use",
+        "destination owner checks predecessor/CAS in the same transaction as mutation and dedupe when the destination contract supports predecessors",
+        "dispatch claim attempts, leases, renewal, retry eligibility and newer-generation takeover are durable and bounded",
+        "effect entry is durably indeterminate before target invocation so crash recovery reconciles rather than blindly resends",
         "successor owner handoff reuses the same immutable event and outbox identity",
         "real FinalUseAuthority claim and with_verified_use guard the actual target entry",
-        "CognitiveStore destination apply and terminal observation are destination-owned",
-        "append-only journal compaction and default product activation are not claimed"
+        "CognitiveStore and Automation destination facts and terminal observations remain destination-owned",
+        "ordinary operation paths use exact-occurrence incremental checks after open/reopen full-chain audit",
+        "append-only journal compaction, deployment authority enrollment and product activation are not claimed"
       ]
     },
     {
