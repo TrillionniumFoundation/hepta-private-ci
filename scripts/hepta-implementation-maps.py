@@ -24,6 +24,36 @@ def current_source_base() -> dict[str, str]:
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
+def source_root_object(commit: str, root: str) -> str:
+    """Resolve one declared source root at an immutable commit."""
+    return git("rev-parse", f"{commit}:{root}")
+
+
+def public_rust_functions(root: str) -> set[str]:
+    """Return root-exported public free functions for one Rust crate.
+
+    Direct functions in lib.rs and single-name pub-use re-exports are included.
+    Types, associated methods and private helpers are deliberately excluded.
+    """
+    src = ROOT / root / "src"
+    lib = src / "lib.rs"
+    if not lib.is_file():
+        return set()
+    text = lib.read_text(encoding="utf-8")
+    functions = set(re.findall(r"\bpub\s+fn\s+([A-Za-z_][A-Za-z0-9_]*)\b", text))
+    for module, name in re.findall(
+        r"\bpub\s+use\s+([A-Za-z_][A-Za-z0-9_]*)::([A-Za-z_][A-Za-z0-9_]*)\s*;",
+        text,
+    ):
+        source = src / f"{module}.rs"
+        if source.is_file() and re.search(
+            rf"\bpub\s+fn\s+{re.escape(name)}\b",
+            source.read_text(encoding="utf-8"),
+        ):
+            functions.add(name)
+    return functions
+
+
 def load(rel: str):
     return json.loads((ROOT / rel).read_text(encoding="utf-8"))
 
@@ -436,6 +466,30 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+        if row.get("closedWorldPublicFunctions") is True:
+            rust_roots = [
+                root
+                for root in roots
+                if (ROOT / root / "Cargo.toml").is_file()
+            ]
+            exported = set()
+            for root in rust_roots:
+                exported.update(public_rust_functions(root))
+            mapped = {
+                op.get("nativeSymbol")
+                for op in ops
+                if isinstance(op.get("nativeSymbol"), str)
+            }
+            missing = sorted(exported - mapped)
+            extra = sorted(mapped - exported)
+            if missing:
+                failures.append(
+                    f"{mid}: unmapped public Rust functions: {', '.join(missing)}"
+                )
+            if extra:
+                failures.append(
+                    f"{mid}: mapped symbols are not public root functions: {', '.join(extra)}"
+                )
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
