@@ -719,6 +719,9 @@ impl CompactionProofV1 {
 pub struct CompactionProofV2 {
     pub checkpoint_digest: Digest32,
     pub candidate_digest: Digest32,
+    pub tokenizer_implementation_digest: Digest32,
+    pub tokenizer_attestation_digest: Digest32,
+    pub tokenizer_key_digest: Digest32,
     pub evaluator_id: StableId,
     pub evaluator_implementation_digest: Digest32,
     pub evaluation_artifact_digest: Digest32,
@@ -740,6 +743,12 @@ impl CompactionProofV2 {
         for (name, digest) in [
             ("proof_checkpoint", self.checkpoint_digest),
             ("proof_candidate", self.candidate_digest),
+            (
+                "proof_tokenizer_implementation",
+                self.tokenizer_implementation_digest,
+            ),
+            ("proof_tokenizer_attestation", self.tokenizer_attestation_digest),
+            ("proof_tokenizer_key", self.tokenizer_key_digest),
             (
                 "proof_evaluator_implementation",
                 self.evaluator_implementation_digest,
@@ -780,6 +789,9 @@ impl CompactionProofV2 {
         bytes.extend_from_slice(COMPACTION_PROOF_V2_DOMAIN);
         push_digest(&mut bytes, self.checkpoint_digest);
         push_digest(&mut bytes, self.candidate_digest);
+        push_digest(&mut bytes, self.tokenizer_implementation_digest);
+        push_digest(&mut bytes, self.tokenizer_attestation_digest);
+        push_digest(&mut bytes, self.tokenizer_key_digest);
         push_id(&mut bytes, &self.evaluator_id);
         push_digest(&mut bytes, self.evaluator_implementation_digest);
         push_digest(&mut bytes, self.evaluation_artifact_digest);
