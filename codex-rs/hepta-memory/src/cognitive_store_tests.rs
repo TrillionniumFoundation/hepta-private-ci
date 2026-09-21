@@ -344,7 +344,9 @@ const KG_CRASH_CHILD_TEST: &str = "cognitive_store_tests::kg_projection_crash_ch
 const KG_CRASH_OWNER_SUFFIX: u8 = 184;
 
 fn kg_layout_from_fleet_root(fleet_root: &Path) -> codex_hepta_paths::HeptaAgentLayout {
-    let canonical = fleet_root.canonicalize().expect("canonical KG crash fleet root");
+    let canonical = fleet_root
+        .canonicalize()
+        .expect("canonical KG crash fleet root");
     let fleet = HeptaFleetRoot::parse(canonical).expect("KG crash fleet root");
     fleet.layout().agent(&agent_id(KG_CRASH_OWNER_SUFFIX))
 }
@@ -468,7 +470,9 @@ async fn qualification_kg_projection_crash_windows_restore_exact_predecessor() {
             );
             thread::sleep(Duration::from_millis(5));
         }
-        child.kill().expect("kill KG crash child at transaction rendezvous");
+        child
+            .kill()
+            .expect("kill KG crash child at transaction rendezvous");
         let status = child.wait().expect("wait killed KG crash child");
         assert!(!status.success(), "killed KG crash child reported success");
         assert_kg_crash_predecessor_only(&fleet_root).await;
