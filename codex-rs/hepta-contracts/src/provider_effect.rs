@@ -74,6 +74,30 @@ impl ProviderEffectKey {
         )))
     }
 
+    /// Derives a stable key for an operation-oriented effect without binding
+    /// the exact payload bytes into the key. The payload digest remains a
+    /// separate field on `ProviderEffectIntent`, so a safe retry of the same
+    /// logical operation uses the same provider key and a changed payload is
+    /// observed as a same-key conflict rather than a new effect.
+    pub fn for_operation(
+        provider_scope: &str,
+        occurrence_id: &str,
+        operation_id: &str,
+    ) -> Result<Self, ProviderEffectBindingError> {
+        validate_non_empty("provider scope", provider_scope)?;
+        validate_non_empty("occurrence id", occurrence_id)?;
+        validate_non_empty("operation id", operation_id)?;
+        Ok(Self(format!(
+            "provider-effect:v1:{}",
+            digest_parts([
+                "provider-effect-operation:v1",
+                provider_scope,
+                occurrence_id,
+                operation_id,
+            ])
+        )))
+    }
+
     pub fn parse(value: impl Into<String>) -> Result<Self, ProviderEffectBindingError> {
         parse_prefixed_sha256_id(value, "provider-effect:v1:", "provider effect")
             .map(Self)
@@ -1539,6 +1563,41 @@ mod tests {
     use crate::ProviderRequestBinding;
     use crate::ProviderRequestKind;
     use crate::ProviderTransport;
+
+    #[test]
+    fn operation_effect_key_is_stable_across_payload_changes() {
+        let first = ProviderEffectKey::for_operation(
+            "provider/config-v1",
+            "run-1/step-1",
+            "operation-1",
+        )
+        .expect("operation key");
+        let second = ProviderEffectKey::for_operation(
+            "provider/config-v1",
+            "run-1/step-1",
+            "operation-1",
+        )
+        .expect("same operation key");
+        let changed_operation = ProviderEffectKey::for_operation(
+            "provider/config-v1",
+            "run-1/step-1",
+            "operation-2",
+        )
+        .expect("changed operation key");
+        assert_eq!(first, second);
+        assert_ne!(first, changed_operation);
+
+        let payload_a = ProviderEffectIntent::new(
+            first.clone(),
+            Sha256Digest::for_bytes(b"payload-a"),
+        );
+        let payload_b = ProviderEffectIntent::new(
+            first,
+            Sha256Digest::for_bytes(b"payload-b"),
+        );
+        assert_eq!(payload_a.key, payload_b.key);
+        assert_ne!(payload_a.payload_sha256, payload_b.payload_sha256);
+    }
 
     fn request_binding_id() -> RequestBindingId {
         RequestBindingId::for_request(&ProviderRequestBinding {
