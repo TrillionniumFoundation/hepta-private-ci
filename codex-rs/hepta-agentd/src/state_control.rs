@@ -62,7 +62,20 @@ impl AgentdState {
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
-                AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
+                let capabilities = if self.intelligence_product.get().is_some() {
+                    crate::AgentdCapabilitySet::new(vec![
+                        crate::AgentdCapability::new(
+                            "intelligence.control.canonical",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    ])
+                    .map_err(AgentdError::Protocol)?
+                } else {
+                    crate::AgentdCapabilitySet::empty()
+                };
+                AgentdPayload::Capabilities(capabilities)
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: matches!(
