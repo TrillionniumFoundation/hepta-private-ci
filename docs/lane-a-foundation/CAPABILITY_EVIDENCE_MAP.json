@@ -402,6 +402,13 @@
           "mustContain": [
             "operation_event_and_outbox_are_one_atomic_transaction_across_every_fault_boundary"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+          "mustContain": [
+            "durable_sequence_capacity_rejects_before_mutation_boundary",
+            "sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cleanly"
+          ]
         }
       ],
       "negativeTests": [
@@ -422,16 +429,33 @@
     {
       "capabilityId": "kernel.operations.fenced-handoff-reconcile.v1",
       "module": "kernel.operations",
-      "summary": "fenced dispatch claim, owner-generation handoff and indeterminate reconciliation without blind resend",
+      "summary": "persisted bounded claim lease/attempt/takeover, one-shot effect-entry fencing, owner handoff and indeterminate reconciliation without blind resend",
       "publicSymbols": [
-        "LocalLeaseOutbox::claim_dispatch",
+        "ProductionDurableWriter::claim_dispatch_lease",
+        "ProductionDurableWriter::renew_dispatch_claim",
         "ProductionDurableWriter::reconcile"
       ],
       "sourceEvidence": [
         {
+          "path": "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+          "mustContain": [
+            "CREATE TABLE cognitive_operation_dispatch_claims",
+            "lease_expires_at_unix_ms",
+            "next_eligible_at_unix_ms"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+          "mustContain": [
+            "pub(crate) async fn claim(",
+            "pub(crate) async fn renew(",
+            "mark_entered",
+            "MAX_DURABLE_DISPATCH_ATTEMPTS"
+          ]
+        },
+        {
           "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
           "mustContain": [
-            "pub(crate) async fn claim_dispatch(",
             "pub(crate) async fn claim_inherited_dispatch(",
             "pub async fn reconcile("
           ]
@@ -442,6 +466,13 @@
           "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
           "mustContain": [
             "expired_owner_handoff_allows_successor_to_reconcile_indeterminate_without_resend"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "mustContain": [
+            "same_owner_claim_replay_and_renewal_are_durable",
+            "queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use"
           ]
         }
       ],
@@ -462,10 +493,12 @@
     {
       "capabilityId": "kernel.operations.final-use-real-destination.v1",
       "module": "kernel.operations",
-      "summary": "real final-use-gated dispatch with destination-owned CognitiveStore dedupe and lost-ack observation",
+      "summary": "real final-use-gated dispatch with full semantic/predecessor binding, CognitiveStore CAS observation and Automation destination-owned dedupe",
       "publicSymbols": [
         "ProductionFinalUseOutboxDispatcher",
-        "CognitiveSourceOutboxTarget"
+        "CognitiveSourceOutboxTarget",
+        "AutomationStore::create_task_from_operation",
+        "AutomationStore::observe_task_operation"
       ],
       "sourceEvidence": [
         {
@@ -482,6 +515,14 @@
             "CognitiveSourceOutboxTarget",
             "observe_terminal"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/operation_destination.rs",
+          "mustContain": [
+            "create_task_from_operation",
+            "BEGIN IMMEDIATE",
+            "observe_task_operation"
+          ]
         }
       ],
       "positiveTests": [
@@ -489,6 +530,12 @@
           "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
           "mustContain": [
             "full_durable_final_use_slice_reconciles_lost_ack_from_real_destination"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/kernel_operations_destination.rs",
+          "mustContain": [
+            "reopen_retains_task_and_operation_dedupe_receipt"
           ]
         }
       ],
@@ -503,6 +550,12 @@
           "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
           "mustContain": [
             "real_cognitive_destination_deduplicates_same_operation_and_rejects_payload_drift"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+          "mustContain": [
+            "predecessor_mismatch_is_not_applied_without_destination_mutation"
           ]
         }
       ],
