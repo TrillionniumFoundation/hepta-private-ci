@@ -29,7 +29,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 5)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 5)),
     *(f"ART-{index:02d}" for index in range(1, 5)),
 }
@@ -53,11 +53,17 @@ EXPECTED_OPERATIONS = {
     "learning.operator": {
         "build_targets",
         "validate_applicability_certificate",
+        "validate_applicability_with_signed_evidence_v2",
         "build_sensor_core",
         "evaluate_bellman_reference",
         "admit_operator_regularity",
+        "admit_operator_regularity_with_signed_evidence_v2",
         "fit_transition_model",
         "predict_transition",
+        "verify_tabular_operator_plan_v2",
+        "fit_tabular_operator_verified_v2",
+        "verify_world_model_dataset_v2",
+        "fit_transition_model_verified_v2",
     },
     "learning.eval": {
         "estimate_ope",
@@ -450,6 +456,7 @@ def verify_authority_posture(findings: Findings) -> None:
         ROOT / "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
         ROOT / "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/reference.rs",
+        ROOT / "codex-rs/hepta-bellman-operator/src/authenticated.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/world_model.rs",
         ROOT / "codex-rs/hepta-intelligence-eval/src/closure.rs",
     ]
@@ -546,7 +553,12 @@ def verify_workflow(findings: Findings) -> None:
         "workflow_gate_missing",
         "workflow is missing synthetic-merge job",
     )
+
     findings.require(
+        "BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}" in text,
+        "workflow_push_base_missing",
+        "workflow must bind push-main synthetic merge to github.event.before",
+    )    findings.require(
         not TEMPORARY_WORKFLOW_PATH.exists(),
         "temporary_workflow_present",
         "temporary generated-file materializer must not remain in the candidate",
