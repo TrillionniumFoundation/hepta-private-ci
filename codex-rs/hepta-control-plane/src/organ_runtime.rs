@@ -515,7 +515,7 @@ impl OrganHostV1 {
     /// predecessor is stopped. Failed rollback quarantines the predecessor;
     /// it must never keep serving state whose restoration is uncertain. These
     /// callbacks do not implement a durable writer handoff or runtime sandbox.
-    pub fn replace_read_only_generation_with_migration<M: OrganStateMigrationV1>(
+    pub fn replace_read_only_generation_with_migration<M: OrganStateMigrationV1 + ?Sized>(
         &mut self,
         expected: Generation,
         graph: OrganGraphsV1,
@@ -523,7 +523,95 @@ impl OrganHostV1 {
         migration: &mut M,
     ) -> Result<(), OrganRuntimeError> {
         self.validate_read_only_successor(expected, graph.generation)?;
-        let mut candidate = Self::new(graph, handlers)?;
+        let candidate = Self::new(graph, handlers)?;
+        self.activate_read_only_successor_with_migration(candidate, migration)
+    }
+
+    /// Execute the same owner-provided migration for an already admitted
+    /// successor host. This keeps product topology cutover on the exact
+    /// validated host instead of rebuilding it from caller-supplied pieces.
+    pub(crate) fn replace_admitted_read_only_generation_with_migration<
+        M: OrganStateMigrationV1 + ?Sized,
+    >(
+        &mut self,
+        expected: Generation,
+        candidate: Self,
+        migration: &mut M,
+    ) -> Result<(), OrganRuntimeError> {
+        self.validate_read_only_successor(expected, candidate.generation())?;
+        self.activate_read_only_successor_with_migration(candidate, migration)
+    }
+
+    /// Recover an inactive predecessor through an owner-provided state
+    /// migration before publishing the exact admitted successor. Recovery
+    /// remains a forward generation transition; rollback only restores the
+    /// migration owner's predecessor state if candidate preparation fails.
+    pub(crate) fn recover_admitted_read_only_generation_with_migration<
+        M: OrganStateMigrationV1 + ?Sized,
+    >(
+        &mut self,
+        expected: Generation,
+        mut candidate: Self,
+        migration: &mut M,
+    ) -> Result<(), OrganRuntimeError> {
+        self.validate_recovery_successor(expected, candidate.generation())?;
+        let snapshot = migration
+            .snapshot(expected)
+            .map_err(|error| OrganRuntimeError::MigrationSnapshotFailed { error })?;
+        if snapshot.len() > MAX_ORGAN_MESSAGE_BYTES {
+            return Err(OrganRuntimeError::MigrationSnapshotFailed {
+                error: OrganMigrationError::SnapshotTooLarge {
+                    actual: snapshot.len(),
+                },
+            });
+        }
+        if let Err(error) = candidate.start_all() {
+            let rollback_error = migration
+                .rollback(&snapshot, expected, candidate.generation())
+                .err();
+            if rollback_error.is_some() {
+                for slot in &mut self.slots {
+                    slot.state = HostedOrganStateV1::Quarantined;
+                }
+            }
+            return Err(OrganRuntimeError::CandidateStartFailed {
+                error: Box::new(error),
+                rollback_error,
+            });
+        }
+        if let Err(error) = migration.migrate(&snapshot, expected, candidate.generation()) {
+            let candidate_cleanup_faults = candidate.stop_indices(
+                candidate
+                    .validated
+                    .initialization_order
+                    .clone()
+                    .into_iter()
+                    .rev(),
+            );
+            let rollback_error = migration
+                .rollback(&snapshot, expected, candidate.generation())
+                .err();
+            if rollback_error.is_some() {
+                for slot in &mut self.slots {
+                    slot.state = HostedOrganStateV1::Quarantined;
+                }
+            }
+            return Err(OrganRuntimeError::CandidateMigrationFailed {
+                error,
+                rollback_error,
+                candidate_cleanup_faults,
+            });
+        }
+        *self = candidate;
+        Ok(())
+    }
+
+    fn activate_read_only_successor_with_migration<M: OrganStateMigrationV1 + ?Sized>(
+        &mut self,
+        mut candidate: Self,
+        migration: &mut M,
+    ) -> Result<(), OrganRuntimeError> {
+        let expected = self.generation();
         let snapshot = migration
             .snapshot(expected)
             .map_err(|error| OrganRuntimeError::MigrationSnapshotFailed { error })?;
