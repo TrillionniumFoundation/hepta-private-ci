@@ -604,8 +604,7 @@ fn product_loop_requires_external_selection_then_reloads_into_agentd_consumer() 
             .unwrap(),
     )
     .unwrap();
-    let mut fresh_host =
-        AgentdOfflineOperatorHostV1::new(owner(), 1, reopened_journal).unwrap();
+    let mut fresh_host = AgentdOfflineOperatorHostV1::new(owner(), 1, reopened_journal).unwrap();
     let retry_snapshot_path = directory.path().join("snapshot-retry");
     let retry_candidate = fresh_host
         .train_evaluate_publish(
