@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8eaf1d8ea4d5239c308825667dcc4e0b9b705b3b",
-    "tree": "a60ae77e5325a6978bb8231eef20cb6eb5c4b82e"
+    "commit": "f37353070a099a5d0e1490ba1b99e132d5bdd500",
+    "tree": "c6134fad3b87d6fe1302080be89d1767396be4f0"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -60,9 +60,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge tests for the composed checkpoint path before changing product-execution claims.",
-    "Retain productExecutionProved=false until an externally enrolled bootstrap and target-host execution receipt exercise the runtime-composed host.",
-    "Replay scheduling and skill induction remain separate target capabilities and are not implied by checkpoint publication."
+    "Run exact-head and deterministic synthetic-merge compile/test/strict-lint/format for the observed checkpoint-subsystem source, including the real owner-path fault/reopen and trust-rotation tests, before changing product-execution claims.",
+    "Retain productExecutionProved=false until an externally enrolled production bootstrap and selected target-host execution receipt measure the runtime-composed host.",
+    "Retain independentAcceptance/activation/release=false until their external review and deployment gates pass."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -112,9 +112,9 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8eaf1d8ea4d5239c308825667dcc4e0b9b705b3b",
-    "tree": "a60ae77e5325a6978bb8231eef20cb6eb5c4b82e",
-    "interpretation": "exact compact.engine checkpoint-subsystem owner-source observation after current-main rebase, canonical checkpoint unification, authenticated tokenizer/evaluator trust, payload owner/resolver lifecycle, current/rollback re-admission, Agentd product composition, closed-world tokenizer/rollback caller registration, and exact cross-owner persistence integration; later commits may update documentation/projection truth only, and every declared observed source path must remain byte-unchanged through the verified candidate"
+    "commit": "f37353070a099a5d0e1490ba1b99e132d5bdd500",
+    "tree": "c6134fad3b87d6fe1302080be89d1767396be4f0",
+    "interpretation": "exact compact.engine checkpoint-subsystem owner-source observation after canonical #943 convergence, signed tokenizer/evaluator trust binding, durable evaluator witness replay, current/rollback deployment-trust re-admission, content-addressed payload revoke/GC, exact migration-schema verification, real owner-path transaction fault cuts, restart/idempotent replay, runtime Agentd composition, caller-registry closure and cross-owner persistence integration; later commits may update documentation/projection truth only, and every declared observedSourcePath must remain byte-identical through the verified candidate"
   },
   "observedSourcePaths": [
     "CALLERS.toml",
@@ -138,5 +138,19 @@
     "codex-rs/hepta-memory/src/production_writer.rs",
     "codex-rs/hepta-memory/src/qualified_compact_store.rs",
     "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs"
-  ]
+  ],
+  "nonBlockingFutureCapabilities": [
+    "plan_replay / replay scheduling",
+    "skill induction"
+  ],
+  "integrationTests": [
+    "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs::committed_publication_replays_unchanged_after_restart_and_response_loss",
+    "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs::fault_after_payload_write_rolls_back_owner_publication_on_reopen",
+    "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs::fault_after_checkpoint_write_rolls_back_owner_publication_on_reopen",
+    "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs::fault_after_revocation_write_leaves_payload_live_on_reopen",
+    "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs::persisted_proof_rejects_recomputed_tokenizer_trust_tamper",
+    "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs::keyword_preserving_trigger_tamper_fails_store_reopen",
+    "codex-rs/hepta-agentd/src/production_writer_host_tests.rs::agentd_compaction_full_path_publishes_resolves_and_re_admits"
+  ],
+  "candidateEvidenceState": "exact_head_and_synthetic_merge_execution_pending"
 }
