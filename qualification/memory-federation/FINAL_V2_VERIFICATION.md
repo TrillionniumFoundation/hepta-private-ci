@@ -2,8 +2,8 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `331b81d385a88837e252bd80fda8b8ac35ea4191`
-- frozen candidate implementation head: `bf627bc6ee492246d9e4028fb40b65ccbecc183f`
-- frozen candidate implementation tree: `f5df6dc2bb89ea03a601e0fde7d64b4b448cb96c`
+- frozen candidate implementation head: `8ff3c4a646d42c55fcd93288b9ae5d01668d895d`
+- frozen candidate implementation tree: `f1722ca0e1fdec0971763595cfe19a657043cd4d`
 - status: `pending_exact_current_head_and_merge_candidate_execution`
 - claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
 
@@ -32,6 +32,8 @@ The candidate establishes the following source-level properties without promotin
 - one-peer ownership in the canonical checked engine, with <=16-peer discovery/aggregation owned by the product orchestrator;
 - documentation truth that the current V2 structs are in-process Rust contracts, not a registered authenticated cross-host wire protocol.
 - local `observed_frontier` is an exact-scope append-only memory-revision count from the same retrieval snapshot, not an authenticated cut digest or rollback witness.
+
+The module implementation map now uses `sourceIdentityPolicy = candidate_or_exact_observation_v1`: its `sourceBase` and `observedAtHead` are the frozen candidate above, and the declared federation source root must remain byte-unchanged through metadata-only receipt commits. The branch also preserves current-main generated indexes, Cargo lock state, and the current implementation-map verifier before adding federation-specific deltas.
 
 ## Required executable checks
 
