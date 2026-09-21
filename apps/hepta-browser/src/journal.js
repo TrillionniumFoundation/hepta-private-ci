@@ -57,10 +57,26 @@ function foldObservation(prior, record) {
 
 async function ensureCanonicalPrivateParent(path) {
   const parent = dirname(path);
-  await mkdir(parent, { recursive: true, mode: 0o700 });
+  const created = await mkdir(parent, { recursive: true, mode: 0o700 });
   const actual = await realpath(parent);
   if (actual !== resolve(parent)) {
     throw new TypeError("browser journal parent path contains a symlink");
+  }
+  return created !== undefined;
+}
+
+async function syncDirectory(path) {
+  // A file fsync does not persist the directory entry created by O_CREAT.
+  // A host without directory-sync support must reject, not silently weaken it.
+  const flags = constants.O_RDONLY | (constants.O_DIRECTORY ?? 0) | (constants.O_NOFOLLOW ?? 0);
+  const handle = await open(path, flags);
+  try {
+    if (!(await handle.stat()).isDirectory()) {
+      throw new TypeError("browser journal parent is not a directory");
+    }
+    await handle.sync();
+  } finally {
+    await handle.close();
   }
 }
 
@@ -96,6 +112,8 @@ export class MemoryBrowserOperationJournal {
 export class FileBrowserOperationJournal {
   #path;
   #tail = Promise.resolve();
+  #parentReady = false;
+  #requiresRecovery = false;
 
   constructor(path) {
     if (typeof path !== "string" || !isAbsolute(path)) {
@@ -139,11 +157,35 @@ export class FileBrowserOperationJournal {
     return records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null;
   }
 
+  async #prepareParent() {
+    try {
+      const created = await ensureCanonicalPrivateParent(this.#path);
+      if (!this.#parentReady || created) {
+        // Persist every newly linked ancestor. The first use also covers a
+        // process restart after mkdir succeeded but its earlier sync failed.
+        // This initialization is not repeated on ordinary subsequent appends.
+        let directory = dirname(this.#path);
+        while (true) {
+          await syncDirectory(directory);
+          const parent = dirname(directory);
+          if (parent === directory) break;
+          directory = parent;
+        }
+        this.#parentReady = true;
+      }
+    } catch (error) {
+      this.#requiresRecovery = true;
+      throw error;
+    }
+  }
+
   async #load() {
     const noFollow = constants.O_NOFOLLOW ?? 0;
     let handle;
+    // Only an absent journal leaf can mean an empty ledger. A failed parent
+    // durability barrier must not be swallowed by the ENOENT handling below.
+    await this.#prepareParent();
     try {
-      await ensureCanonicalPrivateParent(this.#path);
       handle = await open(this.#path, constants.O_RDONLY | noFollow);
     } catch (error) {
       if (error?.code === "ENOENT") return new Map();
@@ -213,30 +255,46 @@ export class FileBrowserOperationJournal {
     if (lineBytes > MAX_LINE_BYTES) {
       throw new TypeError("browser journal record exceeds line limit");
     }
-    await ensureCanonicalPrivateParent(this.#path);
+    await this.#prepareParent();
     const noFollow = constants.O_NOFOLLOW ?? 0;
     const flags = constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
-    const handle = await open(this.#path, flags, 0o600);
+    let writeStarted = false;
     try {
-      const info = await handle.stat();
-      if (!info.isFile()) {
-        throw new TypeError("browser journal is not a regular file");
+      const handle = await open(this.#path, flags, 0o600);
+      try {
+        const info = await handle.stat();
+        if (!info.isFile()) {
+          throw new TypeError("browser journal is not a regular file");
+        }
+        if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
+          throw new TypeError("browser journal permissions are too broad");
+        }
+        if (info.size + lineBytes > MAX_FILE_BYTES) {
+          throw new TypeError("browser journal capacity exhausted");
+        }
+        writeStarted = true;
+        await handle.writeFile(line, "utf8");
+        await handle.sync();
+        await syncDirectory(dirname(this.#path));
+      } finally {
+        await handle.close();
       }
-      if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
-        throw new TypeError("browser journal permissions are too broad");
-      }
-      if (info.size + lineBytes > MAX_FILE_BYTES) {
-        throw new TypeError("browser journal capacity exhausted");
-      }
-      await handle.writeFile(line, "utf8");
-      await handle.sync();
-    } finally {
-      await handle.close();
+    } catch (error) {
+      // Bytes may already be visible after a failed write/sync/close. Do not
+      // let dedupe, reads or queued work turn that uncertainty into success.
+      // Recovery belongs to the owner; this instance cannot reset the fence.
+      if (writeStarted) this.#requiresRecovery = true;
+      throw error;
     }
   }
 
   #serialize(operation) {
-    const run = this.#tail.catch(() => {}).then(operation);
+    const run = this.#tail.catch(() => {}).then(() => {
+      if (this.#requiresRecovery) {
+        throw new Error("browser journal requires owner recovery after a persistence failure");
+      }
+      return operation();
+    });
     this.#tail = run.catch(() => {});
     return run;
   }
