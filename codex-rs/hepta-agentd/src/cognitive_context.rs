@@ -398,7 +398,9 @@ fn map_read_ids_error(error: ReadIdsError) -> CognitiveContextError {
         | ReadIdsError::InvalidMaximumEncodedBytes { .. } => {
             CognitiveContextError::Store(CognitiveStoreError::Invalid(message))
         }
-        ReadIdsError::EncodedResultTooLarge { .. } => CognitiveContextError::ReadUnavailable(message),
+        ReadIdsError::EncodedResultTooLarge { .. } => {
+            CognitiveContextError::ReadUnavailable(message)
+        }
     }
 }
 
