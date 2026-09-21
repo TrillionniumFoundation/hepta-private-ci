@@ -465,6 +465,8 @@ pub struct QualifiedCompactionCandidateV2 {
     source_memory_snapshot_digest: Digest32,
     policy: CompactionPolicyV2,
     semantic_payload: CompactionSemanticPayloadV2,
+    tokenizer_attestation_digest: Digest32,
+    tokenizer_key_digest: Digest32,
     retained_records: Vec<MemoryRecord>,
     retained_input_digests: Vec<Digest32>,
     omitted_input_digests: Vec<Digest32>,
@@ -522,6 +524,11 @@ impl QualifiedCompactionCandidateV2 {
             .map_err(QualifiedCompactionError::Contract)?;
         self.policy.validate()?;
         ensure_digest("source_memory_snapshot", self.source_memory_snapshot_digest)?;
+        ensure_digest(
+            "candidate_tokenizer_attestation",
+            self.tokenizer_attestation_digest,
+        )?;
+        ensure_digest("candidate_tokenizer_key", self.tokenizer_key_digest)?;
         // Signature verification occurs during construction against the host-trusted
         // tokenizer. Candidate revalidation remains structural/digest-only.
         self.semantic_payload.validate_shape(
@@ -618,6 +625,8 @@ impl QualifiedCompactionCandidateV2 {
         push_digest(&mut bytes, self.source_memory_snapshot_digest);
         push_digest(&mut bytes, self.policy.digest());
         push_digest(&mut bytes, self.semantic_payload.digest());
+        push_digest(&mut bytes, self.tokenizer_attestation_digest);
+        push_digest(&mut bytes, self.tokenizer_key_digest);
         push_digest(&mut bytes, self.checkpoint.checkpoint_digest);
         push_digest(&mut bytes, self.loss_report.loss_report_digest);
         push_len(&mut bytes, self.retained_records.len());
@@ -957,6 +966,8 @@ pub fn build_qualified_candidate(
         source_memory_snapshot_digest: source_memory_snapshot.snapshot_digest,
         policy: policy.clone(),
         semantic_payload: semantic_payload.clone(),
+        tokenizer_attestation_digest: trusted_tokenizer.attestation_digest,
+        tokenizer_key_digest: trusted_tokenizer.key_digest(),
         retained_records,
         retained_input_digests,
         omitted_input_digests,
@@ -1020,6 +1031,9 @@ pub fn prove_compaction(
     let mut proof = CompactionProofV2 {
         checkpoint_digest: candidate.checkpoint.checkpoint_digest,
         candidate_digest: candidate.candidate_digest,
+        tokenizer_implementation_digest: candidate.policy.tokenizer_implementation_digest,
+        tokenizer_attestation_digest: candidate.tokenizer_attestation_digest,
+        tokenizer_key_digest: candidate.tokenizer_key_digest,
         evaluator_id: qualification.evaluator_id,
         evaluator_implementation_digest: qualification.evaluator_implementation_digest,
         evaluation_artifact_digest: qualification.evaluation_artifact_digest,
