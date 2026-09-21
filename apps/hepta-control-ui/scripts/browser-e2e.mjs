@@ -117,7 +117,7 @@ try {
     if (root.getAttribute("data-hepta-ready") === "true") return true;
     const fatal = root.querySelector?.("[role='alert']");
     if (fatal?.textContent) {
-      throw new Error(`initial runtime failed: ${fatal.textContent}`);
+      throw new Error("initial runtime failed: " + fatal.textContent);
     }
     return false;
   }, 10_000, "initial-runtime-ready");
