@@ -641,8 +641,9 @@
         {
           "path": "codex-rs/hepta-memory/src/operation_claims.rs",
           "mustContain": [
-            "AttemptLimitExceeded",
-            "LeaseExpired"
+            "MAX_DURABLE_DISPATCH_ATTEMPTS",
+            "dispatch claim lease already expired",
+            "expired durable dispatch claim requires a strictly newer owner generation"
           ]
         }
       ],
