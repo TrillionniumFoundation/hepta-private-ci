@@ -524,7 +524,10 @@
     "ambiguousPlannerPublicationPoisonsWriter": true,
     "mappedPlannerOperationSurfaceComplete": true,
     "wholeSourceRootClosedWorldMappingComplete": false,
-    "sourceRootContainsMultipleRuntimeProfiles": true
+    "sourceRootContainsMultipleRuntimeProfiles": true,
+    "hostOwnsRevocationFrontier": true,
+    "producerClockCannotControlPlannerFreshness": true,
+    "fleetSupportDualBindingImplemented": true
   },
   "sourceBase": {
     "commit": "da7744f047f9e584f8c1ae44826ab5989c9113ee",
@@ -544,7 +547,7 @@
     "note": "frozen source candidate; descendant commits may update documentation/receipts only while registered source roots remain byte-identical"
   },
   "integrationEvidenceHead": {
-    "commit": "6d2ac15ed7ccdf0dc629d401f9327695ef265de7",
+    "commit": "64bc4f3bbdd3f1257635c34271c21f60b4c0b29b",
     "note": "control/runtime and supervisor host source closure including ambiguous-publication poisoning and current-host final-use fence"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
@@ -561,7 +564,8 @@
     "globalPlannerKernel": {
       "source": "implemented",
       "composition": "runtime.supervisor_named_host_source_composed_not_activated",
-      "qualification": "pending_current_exact_head_and_synthetic_merge"
+      "qualification": "pending_current_exact_head_and_synthetic_merge",
+      "integrationEvidenceHead": "64bc4f3bbdd3f1257635c34271c21f60b4c0b29b"
     },
     "requestLocalContextPlanner": {
       "source": "implemented",
