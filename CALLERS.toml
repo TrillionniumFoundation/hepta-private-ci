@@ -65,7 +65,7 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/global_control.rs"
-required = ["HeptaEvidenceStore", "PlannerJournalStoreV1", "FinalUseAuthority", "with_authorized_grant_request_v1", "GlobalControlHostPolicyV1", "planner_clock_origin", "issued_plan_receipts"]
+required = ["HeptaEvidenceStore", "PlannerJournalStoreV1", "FinalUseAuthority", "with_authorized_grant_request_v1", "GlobalControlHostPolicyV1", "revocation_frontier_digest", "planner_clock_origin", "bind_planner_observation_window_v1", "owner_expires_at_micros", "issued_plan_receipts"]
 forbidden = ["AllowVerifier", "PermitAll", "permit_all"]
 
 [[protected_file]]
