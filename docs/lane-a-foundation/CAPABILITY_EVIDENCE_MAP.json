@@ -601,7 +601,7 @@
       "summary": "bounded durable dispatch attempts expiry renewal backoff and takeover",
       "publicSymbols": [
         "ProductionDurableWriter::claim_dispatch_lease",
-        "ProductionDurableWriter::renew_dispatch_lease"
+        "ProductionDurableWriter::renew_dispatch_claim"
       ],
       "sourceEvidence": [
         {
@@ -633,7 +633,7 @@
           "path": "codex-rs/hepta-memory/src/production_writer.rs",
           "mustContain": [
             "claim_dispatch_lease",
-            "renew_dispatch_lease"
+            "renew_dispatch_claim"
           ]
         }
       ],
