@@ -81,6 +81,7 @@ def render_javascript(spec: dict) -> str:
     packed = min_json(spec)
     return f'''// GENERATED from bindings/PLATFORM_TYPES_BINDINGS_V1.json; DO NOT EDIT.
 const SPEC = {packed};
+const UTF8 = new TextEncoder();
 export const STABLE_ID_MAX_BYTES = SPEC.stableIdMaxBytes;
 export const ID_PROFILES = Object.freeze(Object.fromEntries(SPEC.idProfiles.map((row) => [row.variant, Object.freeze(row)])));
 export const AUTHORITY_WIRE_V1 = Object.freeze({{...SPEC.authorityWireV1, bits: Object.freeze({{...SPEC.authorityWireV1.bits}})}});
@@ -98,7 +99,7 @@ export function admitAuthorityWireV1(raw) {{
   if (raw[0] !== AUTHORITY_WIRE_V1.trustedMask) throw new Error("authority grant bits are not representable by platform.types");
 }}
 export function validateIdProfile(value, variant) {{
-  const encoded = Buffer.from(value, "utf8");
+  const encoded = UTF8.encode(value);
   if (encoded.length === 0 || encoded.length > STABLE_ID_MAX_BYTES || value.includes("\\0")) throw new Error("identifier bound");
   const row = ID_PROFILES[variant];
   if (!row) throw new Error("unknown identifier profile");
