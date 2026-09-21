@@ -74,6 +74,7 @@ pub struct FleetExecutionFenceV1 {
     allocation_id: String,
     principal_id: String,
     grant_digest: Digest32,
+    authenticated_support_digest: Digest32,
 }
 
 impl FleetExecutionFenceV1 {
@@ -334,12 +335,21 @@ pub fn admit_fleet_allocation_owner_v1(
     {
         return Err(GlobalPlaneError::InvalidOwnerBinding);
     }
-    let admission_digest = fleet_grant_digest_v1(grant);
+    // Preserve both trust domains. `admit_durable_owner_summary_v1` already
+    // bound the owner-declared support to the durable AuthBus envelope. The
+    // fleet admission adds the exact live AllocationGrant digest without
+    // replacing that authenticated support identity.
+    let authenticated_support_digest = owner.summary.support_digest;
+    let grant_digest = fleet_grant_digest_v1(grant);
     let execution_fence = FleetExecutionFenceV1 {
         allocation_id: grant.allocation_id.clone(),
         principal_id: grant.principal_id.clone(),
-        grant_digest: admission_digest,
+        grant_digest,
+        authenticated_support_digest,
     };
+    let mut owner = owner;
+    owner.summary.support_digest =
+        bind_admission_support(authenticated_support_digest, grant_digest);
 
     let memory_endowment_mib = grant.resources.memory_bytes / MIB;
     let memory_floor_mib = ceil_div(floors.memory_bytes, MIB)?;
@@ -484,7 +494,10 @@ pub fn revalidate_fleet_allocation_for_plan_v1(
     if fleet_summary.revision.get() != grant.lease_generation
         || fleet_summary.source_frontier_digest != semantic_digest
         || fleet_summary.support_digest
-            != bind_admission_support(semantic_digest, fence.grant_digest)
+            != bind_admission_support(
+                fence.authenticated_support_digest,
+                fence.grant_digest,
+            )
         || request.snapshot_digest != plan.snapshot.snapshot_digest()
     {
         return Err(GlobalPlaneError::FleetExecutionBindingMismatch);
