@@ -122,7 +122,10 @@ impl ProductionRecoveryDecision {
         for (digest, label) in [
             (&self.grant_sha256, "recovery grant"),
             (&self.intent_sha256, "recovery intent"),
-            (&self.release_transaction_sha256, "recovery release transaction"),
+            (
+                &self.release_transaction_sha256,
+                "recovery release transaction",
+            ),
             (&self.observed_manifest_sha256, "recovery observed manifest"),
             (&self.observed_agentd_sha256, "recovery observed agentd"),
             (&self.decision_sha256, "recovery decision"),

@@ -492,11 +492,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.upgrade_slot(
-                agent_id,
-                slot,
-                target,
-                now,
-                /*explicit_rollback*/ false,
+                agent_id, slot, target, now, /*explicit_rollback*/ false,
                 /*authority*/ None,
             )
         })
@@ -509,11 +505,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .clone()
                 .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
             supervisor.upgrade_slot(
-                agent_id,
-                slot,
-                target,
-                now,
-                /*explicit_rollback*/ true,
+                agent_id, slot, target, now, /*explicit_rollback*/ true,
                 /*authority*/ None,
             )
         })
@@ -575,16 +567,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
             supervisor.preflight_upgrade(agent_id, &target)?;
-            if slot
-                .signed_intent
-                .as_ref()
-                .is_some_and(|intent| {
-                    !matches!(
-                        intent.status,
-                        SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-                    )
-                })
-            {
+            if slot.signed_intent.as_ref().is_some_and(|intent| {
+                !matches!(
+                    intent.status,
+                    SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+                )
+            }) {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
                 ));
@@ -607,16 +595,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             Self::set_control_revision_for_slot(slot, next_control_revision)?;
             slot.signed_intent = Some(intent.clone());
             let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
-            if let Err(error) =
-                supervisor.upgrade_slot(
-                    agent_id,
-                    slot,
-                    target,
-                    now,
-                    explicit_rollback,
-                    Some((grant.digest().clone(), expected_authority_epoch)),
-                )
-            {
+            if let Err(error) = supervisor.upgrade_slot(
+                agent_id,
+                slot,
+                target,
+                now,
+                explicit_rollback,
+                Some((grant.digest().clone(), expected_authority_epoch)),
+            ) {
                 let recovery = intent
                     .with_status(SignedIntentStatus::RecoveryRequired)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -656,10 +642,14 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         let terminal_status = if active.identity() == intent.target_release {
             SignedIntentStatus::Committed
-        } else if slot.release_transaction.as_ref().is_some_and(|transaction| {
-            transaction.phase == ReleaseTransactionPhase::RolledBack
-                && active.identity() == intent.source_release
-        }) {
+        } else if slot
+            .release_transaction
+            .as_ref()
+            .is_some_and(|transaction| {
+                transaction.phase == ReleaseTransactionPhase::RolledBack
+                    && active.identity() == intent.source_release
+            })
+        {
             SignedIntentStatus::RolledBack
         } else {
             return Ok(());

@@ -9,13 +9,13 @@ use crate::ProcessDriver;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
-use crate::runtime::AgentSlot;
-use crate::runtime::ReleaseChange;
 use crate::release_transaction::DurableReleaseTransaction;
 use crate::release_transaction::ReleaseTransactionKind;
 use crate::release_transaction::ReleaseTransactionPhase;
 use crate::release_transaction::read_release_transaction;
 use crate::release_transaction::write_release_transaction;
+use crate::runtime::AgentSlot;
+use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
 
 impl<D: ProcessDriver> Supervisor<D> {
@@ -28,7 +28,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         release: &AgentRelease,
     ) -> Result<AgentRelease, SupervisorError> {
-        match self.registry.resolve_release(agent_id, release.release_id()) {
+        match self
+            .registry
+            .resolve_release(agent_id, release.release_id())
+        {
             Ok(current) => AgentRelease::try_from(current),
             Err(FleetRegistryError::UnknownRelease(_)) => Ok(release.clone()),
             Err(error) => Err(error.into()),
@@ -75,8 +78,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .resolve_release_binding(agent_id, release.release_id())?;
         if expected.release_id != actual.release_id.to_string()
             || expected.manifest_sha256.as_str() != actual.manifest_sha256.as_str()
-            || expected.agentd_program_sha256.as_str()
-                != actual.agentd_program_sha256.as_str()
+            || expected.agentd_program_sha256.as_str() != actual.agentd_program_sha256.as_str()
             || expected.matrixd_program_sha256.as_deref()
                 != actual.matrixd_program_sha256.as_deref()
             || expected.admission_frontier_sha256.as_str()
@@ -205,12 +207,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             lifecycle.generation,
         )?;
         if let Some((grant_sha256, authority_epoch)) = authority {
-            self.bind_release_transaction_authority(
-                agent_id,
-                slot,
-                grant_sha256,
-                authority_epoch,
-            )?;
+            self.bind_release_transaction_authority(agent_id, slot, grant_sha256, authority_epoch)?;
         }
         slot.release_change = Some(ReleaseChange {
             origin: current.clone(),
@@ -348,10 +345,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             ReleaseChangePhase::WaitingForTargetExit => {
                 let target = self.refresh_release_for_transition(agent_id, &change.target)?;
                 self.verify_release_binding_against_transaction(
-                    agent_id,
-                    slot,
-                    &target,
-                    /*target*/ true,
+                    agent_id, slot, &target, /*target*/ true,
                 )?;
                 change.target = target.clone();
                 self.advance_release_transaction(
@@ -425,21 +419,13 @@ impl<D: ProcessDriver> Supervisor<D> {
 
         let source_id = codex_hepta_fleet::ReleaseId::parse(transaction.source_release.clone())?;
         let target_id = codex_hepta_fleet::ReleaseId::parse(transaction.target_release.clone())?;
-        let source =
-            AgentRelease::try_from(self.registry.resolve_release(agent_id, &source_id)?)?;
+        let source = AgentRelease::try_from(self.registry.resolve_release(agent_id, &source_id)?)?;
         self.verify_release_binding_against_transaction(
-            agent_id,
-            slot,
-            &source,
-            /*target*/ false,
+            agent_id, slot, &source, /*target*/ false,
         )?;
-        let target =
-            AgentRelease::try_from(self.registry.resolve_release(agent_id, &target_id)?)?;
+        let target = AgentRelease::try_from(self.registry.resolve_release(agent_id, &target_id)?)?;
         self.verify_release_binding_against_transaction(
-            agent_id,
-            slot,
-            &target,
-            /*target*/ true,
+            agent_id, slot, &target, /*target*/ true,
         )?;
         let prior_previous = transaction
             .rollback_predecessor
@@ -450,8 +436,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .transpose()?
             .map(AgentRelease::try_from)
             .transpose()?;
-        let explicit_rollback =
-            transaction.kind == ReleaseTransactionKind::ExplicitRollback;
+        let explicit_rollback = transaction.kind == ReleaseTransactionKind::ExplicitRollback;
 
         match transaction.phase {
             ReleaseTransactionPhase::Prepared | ReleaseTransactionPhase::Draining => {
@@ -534,10 +519,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         );
         let rollback = self.refresh_release_for_transition(agent_id, &change.origin)?;
         self.verify_release_binding_against_transaction(
-            agent_id,
-            slot,
-            &rollback,
-            /*target*/ false,
+            agent_id, slot, &rollback, /*target*/ false,
         )?;
         change.origin = rollback.clone();
         self.advance_release_transaction(

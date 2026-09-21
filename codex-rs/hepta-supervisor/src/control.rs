@@ -8,13 +8,13 @@ use crate::ProcessDriver;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::restart_budget::RestartBudgetError;
+use crate::restart_budget::claim_restart;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
-use crate::restart_budget::RestartBudgetError;
-use crate::restart_budget::claim_restart;
 use crate::runtime::driver_error;
 
 impl<D: ProcessDriver> Supervisor<D> {

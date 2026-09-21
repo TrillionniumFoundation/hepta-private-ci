@@ -43,7 +43,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_none()
             && slot.release_change.is_none()
             && slot.restart_pending
-            && slot.restart_not_before.is_none_or(|eligible| now >= eligible)
+            && slot
+                .restart_not_before
+                .is_none_or(|eligible| now >= eligible)
         {
             let release = slot.active_release.clone().or_else(|| {
                 slot.last_command

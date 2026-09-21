@@ -24,11 +24,11 @@ use crate::DrainSnapshot;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
-use crate::ReadinessSnapshot;
 use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
+use crate::ReadinessSnapshot;
 use crate::SessionIngress;
 
 pub struct AgentdClient {

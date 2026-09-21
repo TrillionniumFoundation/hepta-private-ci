@@ -89,8 +89,7 @@ pub(crate) fn app_server_runtime_options_for_agent(
     state: Arc<AgentdState>,
     cognitive_runtime: CognitiveRuntime,
 ) -> std::io::Result<AppServerRuntimeOptions> {
-    let writer =
-        qualification_turn_writer_host(identity, Arc::clone(&state), &cognitive_runtime);
+    let writer = qualification_turn_writer_host(identity, Arc::clone(&state), &cognitive_runtime);
     let mut options = app_server_runtime_options_with_writer(identity, cognitive_runtime, writer)?;
     options.graceful_drain = Some(state.app_server_drain_handle());
     Ok(options)

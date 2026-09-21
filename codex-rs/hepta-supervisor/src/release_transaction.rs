@@ -268,8 +268,10 @@ impl DurableReleaseTransaction {
                 ));
             }
         }
-        let expected_compatibility =
-            compatibility_binding_digest(self.source_binding.as_ref(), self.target_binding.as_ref())?;
+        let expected_compatibility = compatibility_binding_digest(
+            self.source_binding.as_ref(),
+            self.target_binding.as_ref(),
+        )?;
         if self.compatibility_binding_sha256 != expected_compatibility {
             return Err(ReleaseTransactionError::Invalid(
                 "release compatibility binding digest mismatch".to_string(),

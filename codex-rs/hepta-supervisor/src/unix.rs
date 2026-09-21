@@ -195,15 +195,14 @@ impl ProcessDriver for UnixProcessDriver {
             .stderr(Stdio::piped());
         let mut child = command.spawn()?;
         let agent_control = AgentHealthProbeIdentity::from_spawn(spec, child.id());
-        let health_probe = match HealthProbe::spawn(HealthProbeIdentity::Agentd(
-            agent_control.clone(),
-        )) {
-            Ok(probe) => probe,
-            Err(error) => {
-                let _ = child.kill();
-                return Err(error);
-            }
-        };
+        let health_probe =
+            match HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone())) {
+                Ok(probe) => probe,
+                Err(error) => {
+                    let _ = child.kill();
+                    return Err(error);
+                }
+            };
         let Some(stdout) = child.stdout.take() else {
             let _ = child.kill();
             return Err(ProcessDriverError::new("child stdout pipe is missing"));

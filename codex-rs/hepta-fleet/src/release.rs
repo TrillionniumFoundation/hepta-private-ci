@@ -354,8 +354,7 @@ impl FleetRegistry {
         })?;
         let path = revocation_path(record.layout.releases_root(), release_id);
         if path.exists() {
-            let actual: ReleaseRevocation =
-                read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
+            let actual: ReleaseRevocation = read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
             let manifest = release_manifest_path(self.layout().releases_root(), release_id);
             let manifest_sha256 = sha256_file(&manifest)?;
             if actual.schema_version == RELEASE_METADATA_SCHEMA_VERSION
@@ -763,10 +762,10 @@ fn release_admission_frontier_sha256(root: &Path) -> Result<String, FleetRegistr
                 "release admission marker filename is not UTF-8".to_string(),
             ));
         };
-        let is_allow = name.starts_with(RELEASE_ALLOW_PREFIX)
-            && name.ends_with(RELEASE_ALLOW_SUFFIX);
-        let is_revoke = name.starts_with(RELEASE_REVOKE_PREFIX)
-            && name.ends_with(RELEASE_REVOKE_SUFFIX);
+        let is_allow =
+            name.starts_with(RELEASE_ALLOW_PREFIX) && name.ends_with(RELEASE_ALLOW_SUFFIX);
+        let is_revoke =
+            name.starts_with(RELEASE_REVOKE_PREFIX) && name.ends_with(RELEASE_REVOKE_SUFFIX);
         if !is_allow && !is_revoke {
             continue;
         }

@@ -78,9 +78,7 @@ pub fn claim_restart(
         // Exact replay of a pending restart does not consume another attempt.
         return Ok(RestartClaim {
             attempt: state.attempts,
-            backoff: Duration::from_millis(
-                state.next_eligible_unix_ms.saturating_sub(now_ms),
-            ),
+            backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
         });
     }
     if state.attempts >= maximum_attempts {
@@ -121,9 +119,7 @@ pub fn restart_available(
     let Some(state) = read_restart_budget(run_root)? else {
         return Ok(true);
     };
-    if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION
-        || state.attempts > maximum_attempts
-    {
+    if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION || state.attempts > maximum_attempts {
         return Err(RestartBudgetError::Invalid(
             "restart budget state is outside configured bounds".to_string(),
         ));
@@ -134,8 +130,10 @@ pub fn restart_available(
     let window_ms = u64::try_from(window.as_millis())
         .map_err(|_| RestartBudgetError::Invalid("restart window exceeds u64".to_string()))?;
     let now_ms = unix_ms()?;
-    Ok(now_ms.saturating_sub(state.window_started_unix_ms) >= window_ms
-        || state.attempts < maximum_attempts)
+    Ok(
+        now_ms.saturating_sub(state.window_started_unix_ms) >= window_ms
+            || state.attempts < maximum_attempts,
+    )
 }
 
 pub fn pending_restart(
@@ -145,9 +143,7 @@ pub fn pending_restart(
     let Some(state) = read_restart_budget(run_root)? else {
         return Ok(None);
     };
-    if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION
-        || state.attempts > maximum_attempts
-    {
+    if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION || state.attempts > maximum_attempts {
         return Err(RestartBudgetError::Invalid(
             "restart budget state is outside configured bounds".to_string(),
         ));
@@ -158,9 +154,7 @@ pub fn pending_restart(
     let now_ms = unix_ms()?;
     Ok(Some(RestartClaim {
         attempt: state.attempts,
-        backoff: Duration::from_millis(
-            state.next_eligible_unix_ms.saturating_sub(now_ms),
-        ),
+        backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
     }))
 }
 
@@ -176,9 +170,7 @@ fn backoff_for(attempt: u32, base: Duration) -> Result<Duration, RestartBudgetEr
         .ok_or_else(|| RestartBudgetError::Invalid("restart backoff overflow".to_string()))
 }
 
-fn read_restart_budget(
-    run_root: &Path,
-) -> Result<Option<RestartBudgetState>, RestartBudgetError> {
+fn read_restart_budget(run_root: &Path) -> Result<Option<RestartBudgetState>, RestartBudgetError> {
     let bytes = match std::fs::read(run_root.join(RESTART_BUDGET_FILE)) {
         Ok(bytes) => bytes,
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
@@ -195,7 +187,10 @@ fn write_restart_budget(
     let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
     let temp = run_root.join(format!(".{RESTART_BUDGET_FILE}.{sequence}.tmp"));
     let final_path = run_root.join(RESTART_BUDGET_FILE);
-    let mut file = OpenOptions::new().write(true).create_new(true).open(&temp)?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&temp)?;
     file.write_all(&serde_json::to_vec(state)?)?;
     file.sync_all()?;
     drop(file);
