@@ -127,16 +127,9 @@ pub fn optimize_with_factor_graph(
     let mut substitute_count = 0_u32;
     let mut conflict_count = 0_u32;
     for edge in &relation_result.edges {
-        if !factor_ids.contains(&edge.identity.source_node_id)
-            || !factor_ids.contains(&edge.identity.target_node_id)
-        {
-            continue;
-        }
-        let pair = canonical_factor_pair(
-            &edge.identity.source_node_id,
-            &edge.identity.target_node_id,
-        );
-        match edge.identity.relation {
+        let candidate_pair = factor_ids.contains(&edge.identity.source_node_id)
+            && factor_ids.contains(&edge.identity.target_node_id);
+        match &edge.identity.relation {
             KnowledgeRelationKindV2::PromptComplements => {
                 // The relation carries no calibrated marginal magnitude. Bind
                 // the evidence, but do not manufacture additive utility.
@@ -144,11 +137,21 @@ pub fn optimize_with_factor_graph(
             }
             KnowledgeRelationKindV2::PromptSubstitutes => {
                 substitute_count = substitute_count.saturating_add(1);
-                substitutes.insert(pair);
+                if candidate_pair {
+                    substitutes.insert(canonical_factor_pair(
+                        &edge.identity.source_node_id,
+                        &edge.identity.target_node_id,
+                    ));
+                }
             }
             KnowledgeRelationKindV2::PromptConflicts => {
                 conflict_count = conflict_count.saturating_add(1);
-                conflicts.insert(pair);
+                if candidate_pair {
+                    conflicts.insert(canonical_factor_pair(
+                        &edge.identity.source_node_id,
+                        &edge.identity.target_node_id,
+                    ));
+                }
             }
             _ => {}
         }
