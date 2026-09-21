@@ -80,7 +80,6 @@ pub enum CapabilitySnapshotErrorV2 {
     StaleSnapshot,
 }
 
-
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CurrentCapabilitySnapshotErrorV3 {
     Unavailable,
@@ -272,10 +271,7 @@ impl CapabilitySnapshotV2 {
     /// generation, configuration, revocation frontier and every capability
     /// owner/contract/implementation/generation binding. The provider of
     /// `current` remains responsible for authenticating those owner facts.
-    pub fn revalidate_current(
-        &self,
-        current: &Self,
-    ) -> Result<(), CapabilitySnapshotErrorV2> {
+    pub fn revalidate_current(&self, current: &Self) -> Result<(), CapabilitySnapshotErrorV2> {
         if self.snapshot_digest != current.snapshot_digest {
             return Err(CapabilitySnapshotErrorV2::StaleSnapshot);
         }
