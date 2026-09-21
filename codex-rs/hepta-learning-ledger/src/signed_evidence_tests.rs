@@ -297,3 +297,48 @@ fn distinct_keys_do_not_make_one_controller_independent() {
         Ok(())
     );
 }
+
+
+#[test]
+fn dataset_owner_role_cannot_substitute_for_independent_evaluator() {
+    let mut configured = trust();
+    configured.signers.push(signer(
+        "dataset-owner",
+        "controller-c",
+        3,
+        LearningEvidenceRoleV1::DatasetOwner,
+    ));
+    let verifier = LearningEvidenceVerifierV1::new(configured).expect("host trust");
+    let generator = verifier
+        .verify(
+            LearningEvidenceRoleV1::Generator,
+            &sign(
+                &verifier,
+                "generator",
+                LearningEvidenceRoleV1::Generator,
+                1,
+                b"plan",
+            ),
+            b"plan",
+            50,
+        )
+        .expect("generator");
+    let dataset_owner = verifier
+        .verify(
+            LearningEvidenceRoleV1::DatasetOwner,
+            &sign(
+                &verifier,
+                "dataset-owner",
+                LearningEvidenceRoleV1::DatasetOwner,
+                3,
+                b"dataset",
+            ),
+            b"dataset",
+            50,
+        )
+        .expect("dataset owner");
+    assert_eq!(
+        verify_signed_role_separation(&generator, &dataset_owner, 50),
+        Err(SignedEvidenceError::RoleMismatch)
+    );
+}
