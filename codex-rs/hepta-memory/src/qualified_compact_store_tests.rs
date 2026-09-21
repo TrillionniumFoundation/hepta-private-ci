@@ -991,7 +991,7 @@ async fn unknown_checkpoint_image_field_fails_store_reopen() {
 }
 
 #[tokio::test]
-async fn tampered_immutable_trigger_fails_store_reopen() {
+async fn keyword_preserving_trigger_tamper_fails_store_reopen() {
     let (temp, store, _lease, _fence) = prepared().await;
     sqlx::query("DROP TRIGGER cognitive_qualified_compact_checkpoints_no_update")
         .execute(&store.pool)
@@ -1000,6 +1000,7 @@ async fn tampered_immutable_trigger_fails_store_reopen() {
     sqlx::query(
         "CREATE TRIGGER cognitive_qualified_compact_checkpoints_no_update
          BEFORE UPDATE ON cognitive_qualified_compact_checkpoints BEGIN
+             /* RAISE(ABORT, 'qualified compact checkpoints are immutable') */
              SELECT 1;
          END",
     )
