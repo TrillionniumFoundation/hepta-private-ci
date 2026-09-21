@@ -20,6 +20,13 @@ use crate::runtime::deadline;
 use crate::runtime::driver_error;
 use crate::restart_budget::RestartBudgetError;
 
+enum RuntimeTickOutcome {
+    Keep,
+    Exited {
+        restart_fault: Option<SupervisorError>,
+    },
+}
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn tick_slot(
         &mut self,
@@ -29,27 +36,18 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         let mut post_exit_fault = None;
         if let Some(mut runtime) = slot.runtime.take() {
-            let unexpected_running_exit =
-                !runtime.fenced && matches!(runtime.phase, RuntimePhase::Running);
-            let keep = match self.tick_runtime(agent_id, slot, &mut runtime, now) {
-                Ok(keep) => keep,
+            let outcome = match self.tick_runtime(agent_id, slot, &mut runtime, now) {
+                Ok(outcome) => outcome,
                 Err(error) => {
                     slot.runtime = Some(runtime);
                     return Err(error);
                 }
             };
-            if keep {
-                slot.runtime = Some(runtime);
-            } else {
-                let release_change_continued =
-                    self.continue_release_change_after_exit(agent_id, slot, now)?;
-                if unexpected_running_exit
-                    && !release_change_continued
-                    && slot.release_change.is_none()
-                    && !slot.restart_pending
-                {
-                    post_exit_fault =
-                        self.queue_automatic_restart_after_exit(agent_id, slot, now);
+            match outcome {
+                RuntimeTickOutcome::Keep => slot.runtime = Some(runtime),
+                RuntimeTickOutcome::Exited { restart_fault } => {
+                    let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
+                    post_exit_fault = restart_fault;
                 }
             }
         }
@@ -84,7 +82,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
-    fn queue_automatic_restart_after_exit(
+    fn queue_automatic_restart_before_exit(
         &self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
@@ -132,7 +130,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         runtime: &mut AgentRuntime<D::Process>,
         now: Instant,
-    ) -> Result<bool, SupervisorError> {
+    ) -> Result<RuntimeTickOutcome, SupervisorError> {
         let registry_generation = self.record(agent_id)?.lifecycle.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
             self.kill_matrix_now(agent_id, slot)?;
@@ -156,11 +154,24 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| driver_error(agent_id, error))?;
         self.push_logs(slot, observation.logs);
         if let ProcessState::Exited(exit) = observation.state {
+            // Persist the automatic-restart claim before the lifecycle/lease
+            // exit finalization. If supervisord crashes between these durable
+            // boundaries, recovery reuses the same pending attempt rather than
+            // losing the restart intent after publishing Failed.
+            let restart_fault = if !runtime.fenced
+                && matches!(runtime.phase, RuntimePhase::Running)
+                && slot.release_change.is_none()
+                && !slot.restart_pending
+            {
+                self.queue_automatic_restart_before_exit(agent_id, slot, now)
+            } else {
+                None
+            };
             self.finalize_exit(agent_id, slot, runtime, exit)?;
-            return Ok(false);
+            return Ok(RuntimeTickOutcome::Exited { restart_fault });
         }
         if runtime.fenced {
-            return Ok(true);
+            return Ok(RuntimeTickOutcome::Keep);
         }
         let ProcessState::Running { healthy, drained } = observation.state else {
             unreachable!("exited state returned above")
@@ -252,7 +263,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             | RuntimePhase::Stopping { .. }
             | RuntimePhase::Killing => {}
         }
-        Ok(true)
+        Ok(RuntimeTickOutcome::Keep)
     }
 
     fn finalize_exit(

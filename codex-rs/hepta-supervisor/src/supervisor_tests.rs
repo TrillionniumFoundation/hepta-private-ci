@@ -574,6 +574,69 @@ fn restart_drains_one_agent_and_spawns_a_new_generation() -> Result<(), Supervis
 }
 
 #[test]
+fn recovery_reuses_restart_claim_persisted_before_exit_finalize(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let claim = crate::restart_budget::claim_restart(
+        record.layout.run_root(),
+        config().restart_max_attempts,
+        config().restart_window,
+        config().restart_backoff_base,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    assert_eq!(claim.attempt, 1);
+    control.set_exit(&fleet.first);
+
+    // Crash before the old daemon gets to remove the lease or publish Failed.
+    drop(supervisor);
+
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    let snapshot = recovered.snapshot(&fleet.first).expect("recovered snapshot");
+    assert!(!snapshot.active);
+    assert!(snapshot.restart_pending);
+    assert_eq!(snapshot.restart_attempt, 1);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
+
+    assert_eq!(
+        recovered.tick(now + Duration::from_millis(20)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    assert!(
+        recovered
+            .snapshot(&fleet.first)
+            .expect("replacement snapshot")
+            .active
+    );
+    Ok(())
+}
+
+#[test]
 fn unexpected_running_exit_uses_durable_restart_budget_and_backoff(
 ) -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
