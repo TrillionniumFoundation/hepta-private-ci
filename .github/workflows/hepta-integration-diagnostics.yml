@@ -10,6 +10,7 @@ on:
       - .github/workflows/hepta-integration-diagnostics.yml
       - scripts/hepta_integration_diagnostics.py
       - scripts/test_hepta_integration_feedback.py
+      - scripts/test_hepta_preflight_logging.py
       - scripts/hepta_workspace.py
       - scripts/test_hepta_workspace.py
       - scripts/hepta-implementation-maps.py
@@ -61,12 +62,16 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m unittest discover -s scripts -p 'test_hepta_integration_feedback.py' -v
+          python3 -m unittest discover -s scripts -p 'test_hepta_preflight_logging.py' -v
           python3 -m unittest discover -s scripts -p 'test_hepta_workspace.py' -v
           python3 -m unittest discover -s scripts -p 'test_hepta_implementation_identity.py' -v
       - name: Check structural workspace before native work
         id: manifest
         if: ${{ !cancelled() }}
-        run: python3 scripts/hepta_workspace.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_workspace.py 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/workspace-preflight.log"
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         if: ${{ !cancelled() && steps.manifest.outcome == 'success' }}
       - name: Resolve the exact checkout without updating the lockfile
@@ -76,7 +81,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-source-preflight/cargo-metadata.json"
+          cargo metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-source-preflight/cargo-metadata.json" 2> "$RUNNER_TEMP/hepta-source-preflight/cargo-metadata.stderr.log"
       - name: Compile the durable operation and timer boundary
         if: ${{ !cancelled() && steps.metadata.outcome == 'success' }}
         working-directory: codex-rs
