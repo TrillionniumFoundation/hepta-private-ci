@@ -253,6 +253,9 @@ impl CheckpointImageV1 {
 struct ProofImageV2 {
     checkpoint_digest: String,
     candidate_digest: String,
+    tokenizer_implementation_digest: String,
+    tokenizer_attestation_digest: String,
+    tokenizer_key_digest: String,
     evaluator_id: String,
     evaluator_implementation_digest: String,
     evaluation_artifact_digest: String,
@@ -281,6 +284,9 @@ impl ProofImageV2 {
         Ok(Self {
             checkpoint_digest: proof.checkpoint_digest.to_string(),
             candidate_digest: proof.candidate_digest.to_string(),
+            tokenizer_implementation_digest: proof.tokenizer_implementation_digest.to_string(),
+            tokenizer_attestation_digest: proof.tokenizer_attestation_digest.to_string(),
+            tokenizer_key_digest: proof.tokenizer_key_digest.to_string(),
             evaluator_id: proof.evaluator_id.to_string(),
             evaluator_implementation_digest: proof.evaluator_implementation_digest.to_string(),
             evaluation_artifact_digest: proof.evaluation_artifact_digest.to_string(),
@@ -305,6 +311,18 @@ impl ProofImageV2 {
         let proof = CompactionProofV2 {
             checkpoint_digest: parse_digest(&self.checkpoint_digest, "proof checkpoint digest")?,
             candidate_digest: parse_digest(&self.candidate_digest, "candidate digest")?,
+            tokenizer_implementation_digest: parse_digest(
+                &self.tokenizer_implementation_digest,
+                "tokenizer implementation digest",
+            )?,
+            tokenizer_attestation_digest: parse_digest(
+                &self.tokenizer_attestation_digest,
+                "tokenizer attestation digest",
+            )?,
+            tokenizer_key_digest: parse_digest(
+                &self.tokenizer_key_digest,
+                "tokenizer key digest",
+            )?,
             evaluator_id: parse_id(&self.evaluator_id, "evaluator id")?,
             evaluator_implementation_digest: parse_digest(
                 &self.evaluator_implementation_digest,
