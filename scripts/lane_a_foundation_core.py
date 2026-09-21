@@ -272,14 +272,41 @@ def validate_source_specific(root: Path = ROOT) -> None:
             "claim_inherited_dispatch",
             "verify_operation_ledger",
         ],
+        "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql": [
+            "CREATE TABLE cognitive_operation_dispatch_claims",
+            "lease_expires_at_unix_ms",
+            "next_eligible_at_unix_ms",
+        ],
+        "codex-rs/hepta-memory/src/operation_claims.rs": [
+            "pub(crate) async fn claim(",
+            "pub(crate) async fn renew(",
+            "mark_entered",
+            "MAX_DURABLE_DISPATCH_ATTEMPTS",
+        ],
         "codex-rs/hepta-memory/src/production_writer.rs": [
             "ProductionFinalUseOutboxDispatcher",
+            "operation_semantic_sha256",
+            "expected_predecessor_sha256",
             "with_verified_use",
             "pub async fn final_use_binding(",
         ],
         "codex-rs/hepta-memory/src/production_cognitive_source_target.rs": [
             "pub struct CognitiveSourceOutboxTarget",
+            "expected_predecessor_sha256",
             "observe_terminal",
+        ],
+        "codex-rs/hepta-automation/src/operation_destination.rs": [
+            "create_task_from_operation",
+            "observe_task_operation",
+        ],
+        "codex-rs/hepta-agentd/src/runtime.rs": [
+            "take_production_operations",
+            "run_production_operation_reconciler",
+        ],
+        "codex-rs/hepta-agentd/src/production_writer_host.rs": [
+            "AgentdProductionOperationRuntimeConfig",
+            "AgentdFinalUseGrantProvider",
+            "dispatch_with_grant_provider",
         ],
         "codex-rs/hepta-authbus/src/lib.rs": [
             "pub use signed::SignedMessage;",
