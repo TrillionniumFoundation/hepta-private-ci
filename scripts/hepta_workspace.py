@@ -88,6 +88,13 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
     if not isinstance(settings, dict):
         return 0, [f"{workspace}: missing [workspace]"]
     inherited = settings.get("dependencies", {})
+    # Cargo rejects optional workspace definitions even when no member happens
+    # to inherit them. Optionality belongs to the individual consumer.
+    for dependency, declaration in inherited.items():
+        if isinstance(declaration, dict) and declaration.get("optional") is True:
+            errors.append(
+                f"{workspace}: workspace.dependencies.{dependency} cannot be optional"
+            )
     queue: deque[Path] = deque()
     # An external-looking dependency can be replaced by a local package. Follow
     # every local candidate: choosing versions would require a Cargo resolver.
@@ -145,6 +152,15 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
             if isinstance(value, dict) and value.get("workspace") is True:
                 if key not in settings.get("package", {}):
                     errors.append(f"{path}: workspace.package.{key} is missing")
+        lints = manifest.get("lints", {})
+        if isinstance(lints, dict) and lints.get("workspace") is True:
+            if "lints" not in settings:
+                errors.append(f"{path}: workspace.lints is missing")
+            if set(lints) - {"workspace"}:
+                errors.append(f"{path}: cannot override workspace.lints in member lints")
+        edition = package.get("edition", "2015")
+        if isinstance(edition, dict) and edition.get("workspace") is True:
+            edition = settings.get("package", {}).get("edition")
         groups = [manifest, *manifest.get("target", {}).values()]
         for group in groups:
             for kind in ("dependencies", "dev-dependencies", "build-dependencies"):
@@ -159,7 +175,25 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
                                 f"{path}: workspace.dependencies.{dependency} is missing"
                             )
                             continue
-                        declaration = inherited[dependency]
+                        workspace_declaration = inherited[dependency]
+                        # This is a hard manifest error in edition 2024, but a
+                        # warning in older editions. Do not invent a stricter
+                        # policy or silently change the consumer's feature set.
+                        # See the Rust edition guide's inherited-default-features.
+                        if (
+                            edition == "2024"
+                            and declaration.get("default-features") is False
+                            and not (
+                                isinstance(workspace_declaration, dict)
+                                and workspace_declaration.get("default-features") is False
+                            )
+                        ):
+                            errors.append(
+                                f"{path}: inherited dependency {dependency} disables "
+                                "default-features in edition 2024, but "
+                                f"workspace.dependencies.{dependency} does not disable them"
+                            )
+                        declaration = workspace_declaration
                         origin = workspace
                     target_name = (
                         declaration.get("package", dependency)
