@@ -183,6 +183,12 @@ impl AutomationStore {
                  FROM automation_occurrence_lifecycle l
                  WHERE l.owner_agent_id = ?
                    AND l.state IN ('claimed', 'admitted', 'running')
+                   AND NOT EXISTS (
+                       SELECT 1 FROM automation_dispatch_outcomes d
+                       WHERE d.task_id = l.task_id
+                         AND d.occurrence = l.occurrence
+                         AND d.outcome = 'uncertain'
+                   )
              )",
         )
         .bind(self.owner_agent_id.as_str())
