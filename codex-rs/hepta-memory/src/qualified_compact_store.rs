@@ -50,6 +50,9 @@ pub enum QualifiedCompactPublicationDisposition {
 pub struct QualifiedCompactCheckpointPublication {
     pub checkpoint: CompactCheckpointV1,
     pub proof: CompactionProofV2,
+    /// Digest of the evaluator verification key that authenticated the durable
+    /// qualification. This is evidence identity only; it grants no authority.
+    pub evaluator_key_digest: Digest32,
     pub publication_digest: Digest32,
     pub disposition: QualifiedCompactPublicationDisposition,
     pub authority: AuthorityPosture,
@@ -532,6 +535,9 @@ impl CognitiveStore {
                     return Ok(QualifiedCompactCheckpointPublication {
                         checkpoint: checkpoint.clone(),
                         proof: proof.clone(),
+                        evaluator_key_digest: Digest32::of_bytes(
+                            &proof_witness.evaluator_verifying_key,
+                        ),
                         publication_digest: expected_publication_digest,
                         disposition: QualifiedCompactPublicationDisposition::Unchanged,
                         authority: AuthorityPosture::DENY_ALL,
@@ -629,6 +635,9 @@ impl CognitiveStore {
         Ok(QualifiedCompactCheckpointPublication {
             checkpoint: checkpoint.clone(),
             proof: proof.clone(),
+            evaluator_key_digest: Digest32::of_bytes(
+                &proof_witness.evaluator_verifying_key,
+            ),
             publication_digest,
             disposition: QualifiedCompactPublicationDisposition::Inserted,
             authority: AuthorityPosture::DENY_ALL,
@@ -1352,6 +1361,7 @@ fn decode_row(
         .map_err(|error| corrupt(format!("checkpoint JSON is invalid: {error}")))?;
     let proof_image: ProofImageV2 = serde_json::from_str(&proof_json)
         .map_err(|error| corrupt(format!("proof JSON is invalid: {error}")))?;
+    let evaluator_key_digest = Digest32::of_bytes(&proof_image.evaluator_verifying_key);
     let checkpoint = checkpoint_image.to_contract()?;
     let proof = proof_image.to_contract()?;
     validate_pair(&checkpoint, &proof)?;
@@ -1384,6 +1394,7 @@ fn decode_row(
     Ok(QualifiedCompactCheckpointPublication {
         checkpoint,
         proof,
+        evaluator_key_digest,
         publication_digest: expected_publication_digest,
         disposition: QualifiedCompactPublicationDisposition::Inserted,
         authority: AuthorityPosture::DENY_ALL,
