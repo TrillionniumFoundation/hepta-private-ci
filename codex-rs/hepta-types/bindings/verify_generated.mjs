@@ -11,6 +11,12 @@ import {
 } from "../generated/javascript/hepta_platform_types_v1.mjs";
 
 if (STABLE_ID_MAX_BYTES !== 128) throw new Error("stable ID bound drift");
+validateIdProfile("a".repeat(128), "Stable");
+{
+  let rejected = false;
+  try { validateIdProfile("a".repeat(129), "Stable"); } catch (_) { rejected = true; }
+  if (!rejected) throw new Error("generated JavaScript binding admitted a 129-byte StableId");
+}
 validateIdProfile("schema:numeric-signal", "Schema");
 validateIdProfile("normalization:identity", "Normalization");
 for (const [value, variant] of [["plátform.types", "Module"], ["platform.-types", "Module"], ["schema:naïve", "Schema"]]) {
