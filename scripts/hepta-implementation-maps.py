@@ -19,6 +19,30 @@ from hepta_module_source_roots import resolve_source_roots
 ROOT = Path(__file__).resolve().parents[1]
 HEX40 = re.compile(r"[0-9a-f]{40}")
 
+CLOSED_WORLD_OPERATION_SURFACES = {
+    "learning.operator": {
+        "build_targets",
+        "validate_applicability_certificate",
+        "validate_applicability_with_signed_evidence_v2",
+        "build_sensor_core",
+        "evaluate_bellman_reference",
+        "admit_operator_regularity",
+        "admit_operator_regularity_with_signed_evidence_v2",
+        "fit_tabular_operator",
+        "fit_tabular_operator_strict_v2",
+        "verify_tabular_operator_plan_v2",
+        "fit_tabular_operator_verified_v2",
+        "predict_tabular_operator",
+        "predict_tabular_operator_indexed_v2",
+        "encode_tabular_payload_v1",
+        "LoadedTabularOperatorV1::from_pinned_payload",
+        "verify_world_model_dataset_v2",
+        "fit_transition_model",
+        "fit_transition_model_verified_v2",
+        "predict_transition",
+    },
+}
+
 
 def current_source_base() -> dict[str, str]:
     """Return the immutable source identity used by generated maps."""
@@ -402,6 +426,23 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+        required_surfaces = CLOSED_WORLD_OPERATION_SURFACES.get(mid)
+        if required_surfaces is not None:
+            mapped_surfaces = {
+                op.get("nativeSymbol")
+                for op in ops
+                if isinstance(op, dict) and isinstance(op.get("nativeSymbol"), str)
+            }
+            if mapped_surfaces != required_surfaces:
+                missing = sorted(required_surfaces - mapped_surfaces)
+                unexpected = sorted(mapped_surfaces - required_surfaces)
+                failures.append(
+                    f"{mid}: closed-world operation inventory mismatch "
+                    f"(missing={missing}, unexpected={unexpected})"
+                )
+            boundary_candidate = row.get("claimBoundary") or row.get("completion") or {}
+            if boundary_candidate.get("nativeSourceMappingComplete") is not True:
+                failures.append(f"{mid}: closed-world mapping must be marked complete")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
