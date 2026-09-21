@@ -151,7 +151,7 @@ pub(crate) fn verify_ui_control_request(
         .collect(),
     );
     let canonical = canonical_json(&semantics)?;
-    let observed = Digest32::new(Sha256::digest(&canonical).into());
+    let observed = Digest32::from_array(Sha256::digest(&canonical).into());
     if observed != semantic_digest {
         return Err(UiControlWireError::DigestMismatch);
     }
