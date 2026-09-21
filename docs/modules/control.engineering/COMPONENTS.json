@@ -540,7 +540,7 @@
         "expire_stale_claims"
       ],
       "state": "source_implemented",
-      "physicalState": "SQLite v9 orchestration_generations, worker_registrations, worker_claims and worker_completion_observations",
+      "physicalState": "SQLite v9 orchestration_generations, worker_registrations, worker_claims, worker_heartbeat_observations, worker_result_observations and worker_completion_observations",
       "failureModel": [
         "worker_profile_drift",
         "claim_lease_invalid",
