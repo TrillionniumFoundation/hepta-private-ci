@@ -431,7 +431,7 @@ fn provider_dispatch_receipt(
             if ack.validate_for(intent).is_err() {
                 return Ok(AuthorizedEffectProviderReceipt {
                     outcome: AuthorizedEffectOutcome::Indeterminate,
-                    receipt_digest: provider_lookup_digest(intent, b"malformed_ack"),
+                    receipt_digest: provider_ack_digest(&ack),
                 });
             }
             let outcome = match ack.status {
