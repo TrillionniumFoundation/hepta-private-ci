@@ -61,6 +61,8 @@ use codex_hepta_objective::canonical_objective_intent_digest_v1;
 use codex_hepta_prompt_optimizer::PromptCandidate;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 const Q24: i64 = 1 << 24;
 const OBSERVED_MICROS: u64 = 1_788_861_600_000_000;
@@ -298,6 +300,18 @@ fn owner_bindings() -> Vec<OwnerBindingV1> {
     .collect()
 }
 
+fn authority_signing_key() -> SigningKey {
+    SigningKey::from_bytes(&[7_u8; 32])
+}
+
+fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
+    let signing = authority_signing_key();
+    IntelligenceAuthorityVerifierV1 {
+        signer_id: "qualification.intelligence-authority".to_string(),
+        verifying_key: signing.verifying_key().to_bytes(),
+    }
+}
+
 fn write_authority_file(
     path: &std::path::Path,
     owners: &[OwnerBindingV1],
@@ -317,7 +331,15 @@ fn write_authority_file(
                 key_epoch: owner.key_epoch,
             })
             .collect(),
+        signer_id: "qualification.intelligence-authority".to_string(),
+        signature: Vec::new(),
     };
+    let mut file = file;
+    let signing = authority_signing_key();
+    file.signature = signing
+        .sign(&authority_signing_payload(&file).expect("authority payload"))
+        .to_bytes()
+        .to_vec();
     std::fs::write(path, serde_json::to_vec(&file).expect("authority json"))
         .expect("write authority");
 }
@@ -616,7 +638,7 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority);
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
     let outcome = runner
         .prepare(fixture.request, fixture.inputs)
         .await
@@ -718,7 +740,8 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone());
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
+        .expect("runner");
     let outcome = runner
         .prepare(fixture.request, fixture.inputs)
         .await
@@ -764,7 +787,7 @@ async fn missing_current_owner_fails_before_product_use() {
         &owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority);
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
     assert!(matches!(
         runner.prepare(fixture.request, fixture.inputs).await,
         Err(AgentdIntelligenceProductError::Canonical(
@@ -793,7 +816,7 @@ async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner = AgentdIntelligenceProductRunnerV1::new(authority);
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
     assert!(matches!(
         runner.prepare(fixture.request, fixture.inputs).await,
         Err(AgentdIntelligenceProductError::TimedOut)
