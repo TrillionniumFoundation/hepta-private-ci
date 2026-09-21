@@ -25,6 +25,7 @@ mod outbox;
 pub use durable::DurableOperationError;
 pub use durable::DurableOperationStore;
 pub use durable::DurableOutboxState;
+pub use durable::OperationContextV1;
 pub use error::OperationError;
 pub use ledger::MAX_MODEL_OPERATION_RECORDS;
 pub use ledger::OperationLedger;
