@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d9d853d685ebf044364b85a6933b38fd6f3513fb",
-    "tree": "56d531457e93260744abe47148c02ed70dcff8c1"
+    "commit": "2c1ff9b087d5bbe176d2c0876fbee600851dc668",
+    "tree": "c823fa522d86c4531b2b7ea39d2132990aace607"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -471,5 +471,15 @@
       "state": "selected_pinned_read_consumer",
       "semantics": "loads an independently selected pinned tabular operator, revalidates current registry/revocation on every read, and can only reorder already-admitted cognitive records"
     }
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "2c1ff9b087d5bbe176d2c0876fbee600851dc668",
+    "tree": "c823fa522d86c4531b2b7ea39d2132990aace607",
+    "interpretation": "exact learning.operator owner-source observation after dataset-owner authentication; later candidate commits change only cross-crate tests, canonical maps, matrices and documentation"
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-bellman-operator",
+    "codex-rs/hepta-operator-acceptance"
   ]
 }
