@@ -13,6 +13,7 @@ DOC = json.loads(
 )
 DOMAIN = DOC["domain"].encode("utf-8")
 MAX_BYTES = DOC["maxEncodedBytes"]
+MAX_ID_BYTES = DOC["stableIdMaxBytes"]
 MAX_ITEMS = DOC["maxContainerItems"]
 MAX_DEPTH = DOC["maxDepth"]
 
@@ -73,7 +74,7 @@ def valid_local(raw: bytes) -> None:
 
 
 def valid_namespaced(raw: bytes) -> None:
-    if raw.count(b":") != 1:
+    if not raw or len(raw) > MAX_ID_BYTES or raw.count(b":") != 1:
         raise ValueError("type id")
     namespace, local = raw.split(b":", 1)
     valid_module(namespace)
@@ -81,8 +82,10 @@ def valid_namespaced(raw: bytes) -> None:
 
 
 def valid_stable(raw: bytes) -> None:
+    if not raw or len(raw) > MAX_ID_BYTES:
+        raise ValueError("stable id")
     value = ascii_text(raw, "stable id")
-    if not value or any(not (ch.isalnum() or ch in "._-:") for ch in value):
+    if any(not (ch.isalnum() or ch in "._-:") for ch in value):
         raise ValueError("stable id")
 
 
