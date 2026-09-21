@@ -138,7 +138,7 @@
       "dossier": "qualification/module-execution-dossiers/detail/learning.operator.md",
       "nativeMapping": "codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md",
       "implementationState": "source_implemented_ci_pending",
-      "compatibility": "legacy train/build_targets remain readable; canonical qualification target/tabular/world-model training uses verified DatasetSnapshotReceiptV3 binding, replay-unique evidence, signed evaluator admission, and independently pinned loads",
+      "compatibility": "legacy train/build_targets remain readable; canonical qualification target/tabular/world-model training uses host-trusted DatasetOwner-signed DatasetSnapshotReceiptV3 binding, replay-unique evidence, signed evaluator admission, and independently pinned loads",
       "operations": [
         {
           "operation": "build_targets",
@@ -232,9 +232,9 @@
         },
         {
           "operation": "verify_operator_dataset_v2",
-          "nativeSymbol": "codex_hepta_bellman_operator::VerifiedOperatorDatasetV2::from_receipt",
+          "nativeSymbol": "codex_hepta_bellman_operator::VerifiedOperatorDatasetV2::from_authenticated_receipt",
           "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
-          "status": "implemented"
+          "status": "implemented_owner_authenticated"
         },
         {
           "operation": "build_targets_bound_v2",
@@ -312,7 +312,8 @@
         "op_07_bound_world_model_takes_dataset_identity_from_receipt",
         "relabelled_support_evidence_fails",
         "op_07_bound_target_builder_consumes_exact_v3_dataset_rows",
-        "op_07_bound_target_builder_rejects_detached_head_or_relabelled_evidence"
+        "op_07_bound_target_builder_rejects_detached_head_or_relabelled_evidence",
+        "op_07_authenticated_dataset_requires_exact_trusted_owner"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
@@ -333,7 +334,7 @@
           "caller": "runtime.agentd::AgentdOfflineOperatorHostV1",
           "source": "codex-rs/hepta-agentd/src/learning_operator_host.rs",
           "state": "offline_shadow_coordination_source_composed",
-          "semantics": "verified DatasetSnapshotReceiptV3 → replay-resistant tabular fit → create-only artifact publication → signed independent evaluation → externally authored Selector observation → exact pinned reload; durable coordination reopens and semantic reuse conflicts",
+          "semantics": "host-trusted DatasetOwner-signed DatasetSnapshotReceiptV3 → exact-row replay-resistant tabular fit → create-only artifact publication → signed independent evaluation → externally authored Selector observation → exact pinned reload; durable coordination reopens and semantic reuse conflicts",
           "notProved": [
             "default deployed-daemon scheduling/activation",
             "external selector decision itself",
