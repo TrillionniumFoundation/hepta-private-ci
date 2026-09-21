@@ -37,6 +37,8 @@ fn attachment() -> ContextAttachment {
         body_digest: digest('5'),
         artifact_set_digest: digest('6'),
         authority_epoch: 7,
+        generation: 3,
+        fence_digest: digest('9'),
         deadline_ms: 10_000,
         context_digest: digest('7'),
         compilation_receipt_digest: digest('8'),
