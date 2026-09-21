@@ -345,6 +345,73 @@
             "pre_restart_plan_requires_replanning_before_final_use",
             "final_use_subject_must_match_host_pinned_fleet_principal"
           ]
+        },
+        "ownerPlannerClockDomain": {
+          "state": "host_monotonic_observation_window_implemented",
+          "evidence": [
+            "bind_planner_observation_window_v1",
+            "GlobalControlHostV1::planner_now_micros",
+            "producer_clock_epoch_cannot_control_host_planner_freshness"
+          ]
+        },
+        "fleetSupportBinding": {
+          "state": "durable_authbus_support_and_live_fleet_grant_dual_bound",
+          "evidence": [
+            "admit_durable_owner_summary_v1",
+            "admit_fleet_allocation_owner_v1",
+            "revalidate_fleet_allocation_for_plan_v1",
+            "authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request"
+          ]
+        }
+      },
+      "componentProfiles": {
+        "globalPlanner": {
+          "source": "implemented",
+          "composition": "runtime.supervisor_named_typed_host_source_composed",
+          "deployment": "daemon_ingress_not_activated",
+          "qualification": "pending_current_exact_head_and_synthetic_merge"
+        },
+        "requestLocalContextPlanner": {
+          "source": "implemented",
+          "composition": "runtime.agentd_composed",
+          "deployment": "request_local_read_only",
+          "qualification": "pending_current_exact_head_and_synthetic_merge"
+        },
+        "plannerDurability": {
+          "source": "local_unix_durable_store_implemented",
+          "composition": "runtime.supervisor_named_host_source_composed",
+          "deployment": "not_selected_or_activated",
+          "qualification": "named_host_fault_recovery_pending"
+        },
+        "organRuntime": {
+          "source": "read_only_compiled_in_host_implemented",
+          "composition": "runtime_status_consumer_composed",
+          "deployment": "separate_runtime_profile",
+          "qualification": "separate_lane_b_evidence"
+        },
+        "organWire": {
+          "source": "native_handoff_admission_implemented",
+          "composition": "host_side_source_composed",
+          "deployment": "separate_protocol_profile",
+          "qualification": "separate_protocol_evidence"
+        },
+        "embodimentCart": {
+          "source": "deterministic_simulation_reference_implemented",
+          "composition": "simulation_only",
+          "deployment": "not_physical",
+          "qualification": "no_hil_or_device_claim"
+        },
+        "fixedPriorityTiming": {
+          "source": "bounded_reference_implemented",
+          "composition": "reference_only",
+          "deployment": "not_runtime_scheduler",
+          "qualification": "reference_only"
+        },
+        "legacyControlState": {
+          "source": "desired_state_fsm_implemented",
+          "composition": "separate_from_global_planner",
+          "deployment": "not_global_planner_activation",
+          "qualification": "unit_source_only"
         }
       }
     }
