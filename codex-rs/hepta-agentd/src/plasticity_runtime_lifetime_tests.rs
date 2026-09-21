@@ -8,7 +8,10 @@ use codex_hepta_fleet::{
 };
 use codex_hepta_intelligence::{
     ParameterPlasticityDispositionV1, ParameterPlasticityProductRequestV1,
+    TopologyAdmissionEvidenceV1, TopologyPlasticityProductRequestV1,
     no_change_disposition_signing_payload_v1, plasticity_admission_signing_payload_v1,
+    topology_admission_signing_payload_v1, topology_evaluation_signing_payload_v1,
+    topology_generation_signing_payload_v1,
 };
 use codex_hepta_learning_artifacts::{
     ArtifactEvent, ArtifactKind, ArtifactManifest, ArtifactRegistry,
@@ -25,8 +28,9 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_plasticity::{
     AppendDisposition, LayerNormDenominatorV2, ParameterGeneratorProfileV3,
     ParameterMutationRuleV1, ParameterMutationSurfaceV1, ParameterPlasticitySignalV3,
-    ProposalWindowV2, build_parameter_mutation_policy_v1, generate_parameter_candidates_v3,
-    parameter_generator_signing_payload_v3,
+    ProposalWindowV2, TopologyChangeV2, TopologyOperationV2,
+    build_parameter_mutation_policy_v1, build_writer_handoff_plan_v1,
+    generate_parameter_candidates_v3, parameter_generator_signing_payload_v3,
 };
 use codex_hepta_types::{Digest32, FixedQ32, Generation, ProbabilityQ32, StableId};
 use ed25519_dalek::{Signer, SigningKey};
@@ -41,8 +45,8 @@ use crate::{
     bootstrap_agentd_plasticity_writer_v1, bootstrap_agentd_topology_writer_v1,
     plasticity_eligibility_digest_v1, plasticity_modulator_broadcast_digest_v1,
     plasticity_modulator_digest_v1, plasticity_parameter_signal_digest_v1,
-    reopen_agentd_plasticity_writer_v1, resolve_agentd_plasticity_admission_v1,
-    resume_agentd_topology_writer_v1,
+    reopen_agentd_plasticity_writer_v1, reopen_agentd_topology_writer_v1,
+    resolve_agentd_plasticity_admission_v1, resolve_agentd_topology_admission_v1,
 };
 
 const Q24: i64 = 1_i64 << 24;
@@ -679,6 +683,132 @@ fn signed_request(
     }
 }
 
+fn signed_topology_request(
+    sources: &OwnerSources,
+    ledger: &DurableLedger,
+    signing: &SigningFixture,
+    verifier: &LearningEvidenceVerifierV1,
+) -> TopologyPlasticityProductRequestV1 {
+    let selected_artifact_digest = sources.profile.selected_artifact_digest;
+    let window = ProposalWindowV2 {
+        window_id: id("window:topology:lifetime"),
+        window_digest: digest("window:topology:lifetime"),
+    };
+    let handoff = build_writer_handoff_plan_v1(
+        id("module:topology:lifetime"),
+        id("owner:topology:current"),
+        id("owner:topology:next"),
+        1,
+        2,
+        digest("topology:source-store:lifetime"),
+        digest("topology:migration:lifetime"),
+        digest("topology:rollback:lifetime"),
+        digest("topology:ack:lifetime"),
+    )
+    .expect("topology handoff");
+    let change = TopologyChangeV2 {
+        module_id: id("module:topology:lifetime"),
+        operation: TopologyOperationV2::Replace,
+        predecessor_digest: Some(digest("topology:predecessor:lifetime")),
+        candidate_digest: Some(digest("topology:candidate:lifetime")),
+        capability_typing_digest: digest("topology:capability:lifetime"),
+        compatibility_plan_digest: digest("topology:compatibility:lifetime"),
+        lesion_ablation_digest: digest("topology:lesion:lifetime"),
+        resource_review_digest: digest("topology:resource:lifetime"),
+        security_review_digest: digest("topology:security:lifetime"),
+        migration_digest: handoff.migration_digest,
+        rollback_digest: handoff.rollback_digest,
+        writer_handoff_digest: handoff.plan_digest,
+        evidence_digest: digest("topology:evidence:lifetime"),
+    };
+    let mut request = TopologyPlasticityProductRequestV1 {
+        proposal_id: id("proposal:topology:agentd-lifetime"),
+        proposer_generation_id: signing.principals[0].principal_id.clone(),
+        selected_artifact_digest,
+        window: window.clone(),
+        baseline_generation: generation(1),
+        candidate_generation: generation(2),
+        rollback_predecessor_digest: selected_artifact_digest,
+        changes: vec![change],
+        handoffs: vec![handoff],
+        admission: TopologyAdmissionEvidenceV1 {
+            baseline_id: id("artifact:baseline"),
+            objective_digest: sources.objective_digest,
+            selected_artifact_digest,
+            artifact_registry_head_digest: Digest32::ZERO,
+            qualification_evidence_head_digest: Digest32::ZERO,
+            window: window.clone(),
+            baseline_generation: generation(1),
+            candidate_generation: generation(2),
+            generation_digest: Digest32::ZERO,
+            evaluation_receipt_digest: digest("topology:evaluation:lifetime"),
+        },
+        generator_attestation: signing.sign(
+            verifier,
+            sources.objective_digest,
+            0,
+            LearningEvidenceRoleV1::Generator,
+            b"topology-placeholder",
+        ),
+        observer_attestation: signing.sign(
+            verifier,
+            sources.objective_digest,
+            1,
+            LearningEvidenceRoleV1::Observer,
+            b"topology-placeholder",
+        ),
+        evaluator_attestation: signing.sign(
+            verifier,
+            sources.objective_digest,
+            2,
+            LearningEvidenceRoleV1::Evaluator,
+            b"topology-placeholder",
+        ),
+        expected_registry_predecessor: Digest32::ZERO,
+    };
+
+    let generation_payload =
+        topology_generation_signing_payload_v1(&request).expect("topology generation payload");
+    let generation_digest = Digest32::of_bytes(&generation_payload);
+    request.admission = resolve_agentd_topology_admission_v1(
+        &crate::AgentdTopologyAdmissionInputV1 {
+            baseline_id: id("artifact:baseline"),
+            objective_digest: sources.objective_digest,
+            selected_artifact_digest,
+            window,
+            baseline_generation: generation(1),
+            candidate_generation: generation(2),
+            generation_digest,
+            evaluation_receipt_digest: request.admission.evaluation_receipt_digest,
+        },
+        &sources.artifacts,
+        ledger,
+    )
+    .expect("resolve topology admission");
+    request.generator_attestation = signing.sign(
+        verifier,
+        sources.objective_digest,
+        0,
+        LearningEvidenceRoleV1::Generator,
+        &generation_payload,
+    );
+    request.observer_attestation = signing.sign(
+        verifier,
+        sources.objective_digest,
+        1,
+        LearningEvidenceRoleV1::Observer,
+        &topology_admission_signing_payload_v1(&request.admission),
+    );
+    request.evaluator_attestation = signing.sign(
+        verifier,
+        sources.objective_digest,
+        2,
+        LearningEvidenceRoleV1::Evaluator,
+        &topology_evaluation_signing_payload_v1(&request.admission),
+    );
+    request
+}
+
 struct RuntimeFiles {
     ledger: PathBuf,
     parameter_registry: PathBuf,
@@ -728,6 +858,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     let signing = SigningFixture::new();
     let verifier = signing.verifier(sources.objective_digest);
     let request = signed_request(&sources, &ledger, &signing, &verifier);
+    let topology_request = signed_topology_request(&sources, &ledger, &signing, &verifier);
 
     let parameter_scope = digest("parameter-registry:scope");
     let topology_scope = digest("topology-registry:scope");
@@ -780,6 +911,13 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     assert_eq!(first.registry.sequence, 1);
     assert_eq!(first.registry.disposition, AppendDisposition::Inserted);
 
+    let first_topology = state
+        .submit_topology_plasticity_v1(topology_request.clone(), 50)
+        .await
+        .expect("first topology product proposal");
+    assert_eq!(first_topology.durable.sequence, 1);
+    assert_eq!(first_topology.durable.disposition, AppendDisposition::Inserted);
+
     cancellation.cancel();
     owner_task
         .await
@@ -801,13 +939,13 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         32,
     )
     .expect("reopen parameter writer");
-    let (topology_writer, topology_anchor_store) = resume_agentd_topology_writer_v1(
+    let (topology_writer, topology_anchor_store) = reopen_agentd_topology_writer_v1(
         existing_file(&files.topology_registry),
         existing_file(&files.topology_anchor),
         topology_scope,
         32,
     )
-    .expect("resume unused topology generation");
+    .expect("reopen acknowledged topology writer");
 
     let restarted_state = daemon.state();
     let restarted_bootstrap = PlasticityRuntimeBootstrapV1::new(
@@ -844,6 +982,17 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     assert_eq!(
         second.committed_registry_anchor,
         first.committed_registry_anchor
+    );
+
+    let second_topology = restarted_state
+        .submit_topology_plasticity_v1(topology_request, 50)
+        .await
+        .expect("idempotent topology replay after restart");
+    assert_eq!(second_topology.durable.sequence, 1);
+    assert_eq!(second_topology.durable.disposition, AppendDisposition::Unchanged);
+    assert_eq!(
+        second_topology.next_registry_anchor,
+        first_topology.next_registry_anchor
     );
 
     restarted_cancellation.cancel();

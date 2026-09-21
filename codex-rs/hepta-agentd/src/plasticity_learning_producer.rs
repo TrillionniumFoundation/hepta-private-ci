@@ -9,6 +9,7 @@
 
 use codex_hepta_intelligence::{
     ParameterPlasticityProductReceiptV1, ParameterPlasticityProductRequestV1,
+    TopologyPlasticityProductReceiptV1, TopologyPlasticityProductRequestV1,
 };
 
 use crate::{PlasticityRuntimeCallErrorV1, PlasticityRuntimeHandleV1};
@@ -33,5 +34,13 @@ impl AgentdLearningPlasticityProducerV1 {
         now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
         self.handle.propose_parameter(request, now).await
+    }
+
+    pub(crate) async fn submit_topology(
+        &self,
+        request: TopologyPlasticityProductRequestV1,
+        now: u64,
+    ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        self.handle.propose_topology(request, now).await
     }
 }
