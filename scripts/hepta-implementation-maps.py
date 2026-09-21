@@ -17,6 +17,7 @@ from pathlib import Path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
+HEX40 = re.compile(r"[0-9a-f]{40}")
 
 
 def current_source_base() -> dict[str, str]:
@@ -35,69 +36,71 @@ def git(*args: str) -> str:
     return p.stdout.strip()
 
 
-def validate_observed_source(
-    row: dict, mid: str, resolved_roots: list[str], failures: list[str]
-) -> None:
-    """Validate an optional exact product-source observation against HEAD.
+def verify_source_base(value: object, label: str) -> tuple[str, str]:
+    """Validate one module map's immutable source snapshot.
 
-    sourceBase remains historical batch provenance. observedAtHead is stronger:
-    when present, every declared observed source path must be byte-unchanged
-    from that exact commit through the current candidate. This permits later
-    documentation-only projection commits without making the observation float.
+    A static file cannot contain the hash of the commit that contains itself.
+    Therefore a map binds the last source snapshot for that module. Any later
+    change beneath the module's resolved source roots invalidates the map.
     """
-    observed = row.get("observedAtHead")
-    if observed is None:
-        return
-    if not isinstance(observed, dict):
-        failures.append(f"{mid}: observed source identity")
-        return
-    commit, tree = observed.get("commit"), observed.get("tree")
-    if not (
-        isinstance(commit, str)
-        and bool(re.fullmatch(r"[0-9a-f]{40}", commit))
-        and isinstance(tree, str)
-        and bool(re.fullmatch(r"[0-9a-f]{40}", tree))
+    if not isinstance(value, dict) or set(value) not in (
+        {"commit"},
+        {"commit", "tree"},
     ):
-        failures.append(f"{mid}: observed source identity")
-        return
-    try:
-        if git("rev-parse", f"{commit}^{{tree}}") != tree:
-            failures.append(f"{mid}: observed source tree")
-            return
-        git("merge-base", "--is-ancestor", commit, "HEAD")
-    except subprocess.CalledProcessError:
-        failures.append(f"{mid}: observed source is not current history")
-        return
+        raise ValueError(f"{label}: sourceBase must contain commit and optional tree")
+    commit = value.get("commit")
+    if not isinstance(commit, str) or not HEX40.fullmatch(commit):
+        raise ValueError(f"{label}: invalid source commit")
+    actual_commit = git("rev-parse", "--verify", f"{commit}^{{commit}}")
+    if actual_commit != commit:
+        raise ValueError(f"{label}: source commit does not resolve exactly")
+    tree = git("rev-parse", f"{commit}^{{tree}}")
+    recorded_tree = value.get("tree")
+    if recorded_tree is not None:
+        if not isinstance(recorded_tree, str) or not HEX40.fullmatch(recorded_tree):
+            raise ValueError(f"{label}: invalid source tree")
+        if recorded_tree != tree:
+            raise ValueError(f"{label}: source tree mismatch")
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+    )
+    if ancestor.returncode != 0:
+        raise ValueError(f"{label}: source commit is not an ancestor of HEAD")
+    return commit, tree
 
-    paths = row.get("observedSourcePaths", resolved_roots)
-    if not (
-        isinstance(paths, list)
-        and paths
-        and all(isinstance(path, str) and path for path in paths)
-    ):
-        failures.append(f"{mid}: observed source paths")
-        return
-    if not set(resolved_roots).issubset(set(paths)):
-        failures.append(f"{mid}: observed source paths omit resolved roots")
-        return
-    root = ROOT.resolve()
-    for path in paths:
-        candidate = (ROOT / path).resolve()
-        try:
-            candidate.relative_to(root)
-        except ValueError:
-            failures.append(f"{mid}: observed source path escape {path}")
-            return
-        if not candidate.exists():
-            failures.append(f"{mid}: missing observed source path {path}")
-            return
-    try:
-        changed = git("diff", "--name-only", commit, "HEAD", "--", *paths)
-    except subprocess.CalledProcessError:
-        failures.append(f"{mid}: observed source diff failed")
-        return
-    if changed:
-        failures.append(f"{mid}: observed source drift since {commit}")
+
+def source_root_drift(commit: str, roots: list[str]) -> list[str]:
+    """Return source-root paths changed after the map's bound snapshot."""
+    unique = sorted(set(roots))
+    if not unique:
+        return []
+    output = git(
+        "diff",
+        "--name-only",
+        "-z",
+        "--no-renames",
+        commit,
+        "HEAD",
+        "--",
+        *unique,
+    )
+    return [path for path in output.split("\0") if path]
+
+
+def verify_map_source_freshness(
+    value: object, label: str, roots: list[str]
+) -> tuple[str, str]:
+    commit, tree = verify_source_base(value, label)
+    drift = source_root_drift(commit, roots)
+    if drift:
+        raise ValueError(
+            f"{label}: mapped source changed after sourceBase {commit}: "
+            + ", ".join(drift[:8])
+        )
+    return commit, tree
+
 
 def lane_by_module():
     return {
@@ -245,7 +248,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -350,11 +353,7 @@ def generate():
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    candidate_source_base = current_source_base()
     failures = []
-    source_bases = set()
-    candidate_bound_maps = 0
-    exact_observed_fallback_maps = 0
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -376,39 +375,6 @@ def verify():
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
-        if (
-            not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
-        ):
-            failures.append(f"{mid}: source base")
-        else:
-            policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
-            if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
-                failures.append(f"{mid}: unknown source identity policy")
-            elif policy == "legacy_shared_batch":
-                source_bases.add((source_base["commit"], source_base["tree"]))
-            elif source_base == candidate_source_base:
-                candidate_bound_maps += 1
-            else:
-                observed = row.get("observedAtHead")
-                observed_identity = (
-                    {
-                        "commit": observed.get("commit"),
-                        "tree": observed.get("tree"),
-                    }
-                    if isinstance(observed, dict)
-                    else None
-                )
-                if source_base == observed_identity:
-                    # validate_observed_source below proves that this exact
-                    # owner-source commit/tree is in current history and every
-                    # declared observed path is byte-unchanged through HEAD.
-                    exact_observed_fallback_maps += 1
-                else:
-                    failures.append(
-                        f"{mid}: source base is neither current candidate nor exact observed source"
-                    )
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -416,11 +382,11 @@ def verify():
         if declared != roots:
             failures.append(f"{mid}: declared roots")
         try:
-            resolved_roots = resolve_source_roots(ROOT, module)
-            if row.get("resolvedRoots") != resolved_roots:
+            resolved = resolve_source_roots(ROOT, module)
+            if row.get("resolvedRoots") != resolved:
                 failures.append(f"{mid}: resolved source roots")
-            validate_observed_source(row, mid, resolved_roots, failures)
-        except (ValueError, OSError) as exc:
+            verify_map_source_freshness(source_base, mid, roots + resolved)
+        except (ValueError, OSError, subprocess.SubprocessError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")
         if not isinstance(ops, list) or not ops:
@@ -439,8 +405,6 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -450,8 +414,6 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
-                "candidateBoundMaps": candidate_bound_maps,
-                "exactObservedFallbackMaps": exact_observed_fallback_maps,
             },
             sort_keys=True,
         )
