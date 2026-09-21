@@ -359,5 +359,20 @@
     "codex-rs/hepta-supervisor"
   ],
   "sourceBaseSemantics": "historical_provenance_only_exact_candidate_derived_from_git_at_verification_time",
-  "candidateIdentity": "derived_from_git_head_or_deterministic_merge_at_verification_time"
+  "candidateIdentity": "derived_from_git_head_or_deterministic_merge_at_verification_time",
+  "observedSourcePaths": [
+    "codex-rs/hepta-supervisor",
+    "codex-rs/hepta-fleet",
+    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-agent-protocol",
+    "codex-rs/hepta-automation",
+    "codex-rs/app-server",
+    "codex-rs/Cargo.lock"
+  ],
+  "observedAtHead": {
+    "commit": "f73a1e308dbd00a410d5be6edc30db3a5769f194",
+    "tree": "f32481f6d676bde12225e2b58a015616249be75b",
+    "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+  },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }

@@ -380,7 +380,7 @@ This receipt records repository source bindings for the current documentation ca
 | `signed_rollback` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 | `reconcile_signed_intent` | `pub fn resolve_production_recovery(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 
-- `sourceBase` in the implementation map is historical provenance. The exact source-head or deterministic merge candidate is derived from Git by Lane B verification and is never hard-coded into a self-referential candidate file.
+- `sourceBase` in the implementation map is historical provenance. The exact source-head or deterministic merge candidate is derived from Git by Lane B verification and is never hard-coded into a self-referential candidate file. The final repository-controlled implementation observation is separately pinned in `IMPLEMENTATION_MAP.json.observedAtHead`; verification accepts it only while every declared `observedSourcePaths` path is unchanged at the candidate head.
 - The daemon product never executes unsigned `Upgrade` or `Rollback`; those wire variants are compatibility rejection surfaces. Ordinary `Supervisor::upgrade/rollback` remain library-level qualification/fault-injection APIs.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
