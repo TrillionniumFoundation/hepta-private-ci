@@ -315,7 +315,7 @@
     },
     {
       "module": "auth.authbus",
-      "profile": "signed_admission_with_legacy_replay",
+      "profile": "signed_admission_with_durable_policy",
       "formalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md",
@@ -323,9 +323,9 @@
       "implementationDetail": "codex-rs/hepta-authbus/SIGNED_ADMISSION.md",
       "states": {
         "source": "implemented",
-        "implementation": "signed_admission_with_legacy_replay",
-        "durability": "sqlite_admission_outbox_and_process_local_legacy",
-        "qualification": "source_tests_present",
+        "implementation": "signed_admission_with_durable_policy",
+        "durability": "sqlite_policy_admission_outbox_and_process_local_legacy",
+        "qualification": "source_tests_present_policy_reopen_tests_present",
         "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
@@ -333,12 +333,12 @@
         "bounded SQLite replay admission keyed by issuer epoch subject and scope",
         "strict Ed25519 authentication with trusted issuer expiry revocation scope and payload checks",
         "deny-all admission receipts and legacy preverified in-process replay",
-        "transactional bounded AuthBus message outbox with recoverable fenced delivery"
+        "transactional bounded AuthBus message outbox with recoverable fenced delivery",
+        "durable exact-scope versioned authorization policy with fail-closed current revision"
       ],
       "targetOnlyCapabilities": [
         "host trust provisioning and key lifecycle management",
-        "external replay-store rollback protection",
-        "authorization policy evaluation",
+        "external replay and policy-store rollback protection",
         "quota registry",
         "quota reservation and settlement"
       ],
@@ -399,6 +399,33 @@
             "pub async fn renew_authbus_delivery(",
             "pub async fn retry_authbus_delivery(",
             "pub async fn ack_authbus_delivery("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/policy.rs",
+          "mustContain": [
+            "pub struct AuthPolicyStore",
+            "begin_with(\"BEGIN IMMEDIATE\")",
+            "pub async fn publish_revision(",
+            "pub async fn authorize(",
+            "current policy is not the latest immutable revision"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/migrations/0001_auth_policy.sql",
+          "mustContain": [
+            "CREATE TABLE auth_policy_revisions",
+            "CREATE TABLE auth_policy_rules",
+            "CREATE TABLE auth_policy_current",
+            "auth_policy_rules_no_update"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/policy_tests.rs",
+          "mustContain": [
+            "exact_principal_action_resource_is_allowed_and_missing_rule_denies",
+            "stale_revision_and_policy_rollback_fail_closed",
+            "reopen_rejects_rolled_back_current_pointer"
           ]
         }
       ]
