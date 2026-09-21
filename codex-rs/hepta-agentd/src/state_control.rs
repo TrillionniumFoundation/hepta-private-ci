@@ -660,7 +660,10 @@ fn effect_snapshot(
 }
 
 fn decode_effect_wire_hex(value: &str) -> Result<Vec<u8>, AgentdError> {
-    if value.is_empty() || value.len() > 64 * 1024 || value.len() % 2 != 0 {
+    if value.is_empty()
+        || value.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES.saturating_mul(2)
+        || value.len() % 2 != 0
+    {
         return Err(AgentdError::Invalid(
             "automation effect wire payload hex is empty, odd, or too large".to_string(),
         ));
