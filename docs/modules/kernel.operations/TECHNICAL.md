@@ -326,9 +326,15 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `pending` |
-| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `pending` |
+| `prepare_intent` | `ProductionDurableWriter::prepare_operation` | `codex-rs/hepta-memory/src/production_writer.rs` | `local_lease_outbox_tests.rs`, `production_writer.rs` |
+| `claim_outbox` | `operation_claims::claim` / `operation_claims::renew` | `codex-rs/hepta-memory/src/operation_claims.rs` | `production_writer.rs` |
+| `authorized_dispatch` | `ProductionFinalUseOutboxDispatcher::dispatch` | `codex-rs/hepta-memory/src/production_writer.rs` | `production_writer.rs`, `production_cognitive_source_target_tests.rs` |
+| `observe_terminal` | `CognitiveSourceOutboxTarget::observe_terminal` | `codex-rs/hepta-memory/src/production_cognitive_source_target.rs` | `production_cognitive_source_target_tests.rs` |
+| `destination_apply` | `AutomationStore::create_task_from_operation` | `codex-rs/hepta-automation/src/operation_destination.rs` | `kernel_operations_destination.rs` |
+| `product_composition` | `AgentdProductionOperationRuntimeConfig::open` | `codex-rs/hepta-agentd/src/production_writer_host.rs` | `production_writer_host.rs` |
+| `reference_operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `ledger_tests.rs` |
+| `reference_outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `outbox_tests.rs` |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- Exact implementation identity is the self-reference-safe `exactSourceEvidence` path/blob manifest in `IMPLEMENTATION_MAP.json`; `sourceBase` is a lineage anchor only.
+- The production-shaped source path is composed through the existing CognitiveStore owner, two destination-owned transaction slices (CognitiveStore and Automation), and the named Agentd multi-destination runtime path.
+- Current exact-head plus deterministic synthetic-merge execution, additional destination adapters before their activation, bounded history compaction, target-host qualification, independent acceptance, activation, and release remain separate evidence gates.
