@@ -559,6 +559,29 @@ async fn retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurren
         store.task(task.task_id).await.expect("task").unwrap().state,
         AutomationTaskState::Disabled
     );
+
+    drop(scheduler);
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen after provider-absence cancellation");
+    let reopened_occurrence = reopened
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("reopened occurrence")
+        .expect("reopened materialized occurrence");
+    assert_eq!(reopened_occurrence.state, AutomationOccurrenceState::Cancelled);
+    assert_eq!(
+        reopened_occurrence.terminal_receipt_digest.as_ref(),
+        Some(&proof)
+    );
+    let reopened_run = reopened
+        .taskflow_run(&reopened_occurrence.taskflow_run_id)
+        .await
+        .expect("reopened run")
+        .expect("reopened TaskFlow run");
+    assert_eq!(reopened_run.state, TaskFlowRunState::Cancelled);
+    reopened.close().await;
 }
 
 #[tokio::test]
