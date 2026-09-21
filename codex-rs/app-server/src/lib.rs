@@ -574,16 +574,19 @@ impl PartialEq for AppServerRuntimeOptions {
                         store: left_store,
                         consumer_agent_id: left_consumer_agent_id,
                         owner_layouts: left_owner_layouts,
+                        omitted_owner_candidates: left_omitted_owner_candidates,
                     },
                     codex_hepta_memory::CognitiveRuntime::AvailableFederatedV2 {
                         store: right_store,
                         consumer_agent_id: right_consumer_agent_id,
                         owner_layouts: right_owner_layouts,
+                        omitted_owner_candidates: right_omitted_owner_candidates,
                     },
                 ) => {
                     Arc::ptr_eq(left_store, right_store)
                         && left_consumer_agent_id == right_consumer_agent_id
                         && left_owner_layouts.as_slice() == right_owner_layouts.as_slice()
+                        && left_omitted_owner_candidates == right_omitted_owner_candidates
                 }
                 (
                     codex_hepta_memory::CognitiveRuntime::Unavailable(left),
