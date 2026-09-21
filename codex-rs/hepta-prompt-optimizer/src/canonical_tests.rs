@@ -63,7 +63,7 @@ fn candidate(factor: &str, realization: &str, tokens: u32) -> PromptCandidateBin
 
 fn dummy_snapshot(tuple: &PromptModelTupleV2, generation_vector: Digest32) -> PromptRegistrySnapshotV2 {
     PromptRegistrySnapshotV2 {
-        revision: Revision::new(1).unwrap_or_else(|| panic!("revision")),
+        revision: Revision::new(1).unwrap_or_else(|error| panic!("revision: {error}")),
         registry_digest: digest("registry"),
         lifecycle_frontier: 1,
         revocation_frontier: 0,
@@ -143,7 +143,7 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
 fn support(label: &str) -> KnowledgeSupportV2 {
     KnowledgeSupportV2 {
         source_id: id(&format!("support:{label}")),
-        source_revision: Revision::new(1).unwrap_or_else(|| panic!("revision")),
+        source_revision: Revision::new(1).unwrap_or_else(|error| panic!("revision: {error}")),
         source_fact_digest: digest(&format!("fact:{label}")),
         validity_digest: digest(&format!("validity:{label}")),
         tombstoned: false,
@@ -177,7 +177,7 @@ fn graph(
         })
         .collect();
     build_complete_generation(
-        Generation::new(1).unwrap_or_else(|| panic!("generation")),
+        Generation::new(1).unwrap_or_else(|error| panic!("generation: {error}")),
         KnowledgeProjectionInputV2 {
             source_snapshot_digest: digest("kg-source"),
             generation_vector_digest: digest("generation-vector"),
