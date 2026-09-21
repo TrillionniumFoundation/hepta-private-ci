@@ -4,6 +4,7 @@
 //! Server execution path, and exposes a small local lifecycle/control socket.
 //! It does not implement a second runtime kernel or a fleet-wide message bus.
 
+mod ui_control_wire;
 mod app_runtime;
 mod authbus_dispatch;
 mod authbus_ingress;
