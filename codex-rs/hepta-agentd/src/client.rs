@@ -260,6 +260,13 @@ impl AgentdClient {
         signed_grant: SignedFinalUseGrant,
         command_id: String,
     ) -> Result<AutomationEffectSnapshot, AgentdError> {
+        if wire_payload.is_empty()
+            || wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES
+        {
+            return Err(AgentdError::Invalid(
+                "automation effect wire payload is empty or too large".to_string(),
+            ));
+        }
         let capabilities = self.capabilities().await?;
         let supported = capabilities.capabilities.iter().any(|capability| {
             capability.id == crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT
