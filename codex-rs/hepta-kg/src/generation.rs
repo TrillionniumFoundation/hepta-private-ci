@@ -378,11 +378,7 @@ pub fn query_relations(
         ));
     }
     ensure_unique_ids("query_seed", &query.seed_node_ids)?;
-    let seeds = query
-        .seed_node_ids
-        .iter()
-        .cloned()
-        .collect::<BTreeSet<_>>();
+    let seeds = query.seed_node_ids.iter().cloned().collect::<BTreeSet<_>>();
     let mut relation_kinds = BTreeSet::new();
     for kind in query.relation_kinds.iter().cloned() {
         if !relation_kinds.insert(kind) {
