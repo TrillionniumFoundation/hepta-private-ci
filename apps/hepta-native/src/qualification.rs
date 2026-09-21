@@ -592,10 +592,7 @@ pub fn run_packaged_e2e() -> Result<PackagedQualificationReceipt, ShellError> {
     }
     kill_child(&mut updater_child)?;
 
-    let reopened = UpdateManager::new(
-        TrustedKeySet::from_path(&trusted_keys_path)?,
-        update_root,
-    )?;
+    let reopened = UpdateManager::new(TrustedKeySet::from_path(&trusted_keys_path)?, update_root)?;
     let updater_death_rolled_back = reopened.recover_interrupted_activation()?
         && digest_file(&target)? == predecessor_digest
         && reopened
