@@ -180,6 +180,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         let record = self.record(agent_id)?;
         let current = record.release_state.current.as_ref().map(|release| release.as_str());
+        let previous = record
+            .release_state
+            .previous
+            .as_ref()
+            .map(|release| release.as_str());
         let next_generation = transaction
             .expected_release_state_generation
             .checked_add(1)
@@ -188,6 +193,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             })?;
 
         let terminal = if current == Some(transaction.target_release.as_str())
+            && previous == Some(transaction.source_release.as_str())
             && record.release_state.generation == next_generation
         {
             Some(match transaction.kind {

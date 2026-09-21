@@ -653,15 +653,22 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         };
         let terminal_status = if active.identity() == intent.target_release {
-            SignedIntentStatus::Committed
-        } else if slot
-            .release_transaction
-            .as_ref()
-            .is_some_and(|transaction| {
-                transaction.phase == ReleaseTransactionPhase::RolledBack
-                    && active.identity() == intent.source_release
-            })
+            match intent.transition {
+                H7H89ProductionTransition::Upgrade => SignedIntentStatus::Committed,
+                H7H89ProductionTransition::Rollback => SignedIntentStatus::RolledBack,
+            }
+        } else if intent.transition == H7H89ProductionTransition::Upgrade
+            && slot
+                .release_transaction
+                .as_ref()
+                .is_some_and(|transaction| {
+                    transaction.kind == ReleaseTransactionKind::Upgrade
+                        && transaction.phase == ReleaseTransactionPhase::RolledBack
+                        && active.identity() == intent.source_release
+                })
         {
+            // A signed upgrade whose target failed may complete through the
+            // supervisor's automatic rollback to its source release.
             SignedIntentStatus::RolledBack
         } else {
             return Ok(());
@@ -723,22 +730,29 @@ impl<D: ProcessDriver> Supervisor<D> {
                 && transaction.source_release == intent.source_release
                 && transaction.target_release == intent.target_release
             {
-                match transaction.phase {
-                    ReleaseTransactionPhase::Committed
-                        if record
-                            .release_state
-                            .current
-                            .as_ref()
-                            .is_some_and(|release| release.as_str() == intent.target_release) =>
+                let current = record.release_state.current.as_ref().map(|release| release.as_str());
+                let previous =
+                    record.release_state.previous.as_ref().map(|release| release.as_str());
+                match (intent.transition, transaction.phase) {
+                    (
+                        H7H89ProductionTransition::Upgrade,
+                        ReleaseTransactionPhase::Committed,
+                    ) if current == Some(intent.target_release.as_str())
+                        && previous == Some(intent.source_release.as_str()) =>
                     {
                         Some(SignedIntentStatus::Committed)
                     }
-                    ReleaseTransactionPhase::RolledBack
-                        if record
-                            .release_state
-                            .current
-                            .as_ref()
-                            .is_some_and(|release| release.as_str() == intent.source_release) =>
+                    (
+                        H7H89ProductionTransition::Upgrade,
+                        ReleaseTransactionPhase::RolledBack,
+                    ) if current == Some(intent.source_release.as_str()) => {
+                        Some(SignedIntentStatus::RolledBack)
+                    }
+                    (
+                        H7H89ProductionTransition::Rollback,
+                        ReleaseTransactionPhase::RolledBack,
+                    ) if current == Some(intent.target_release.as_str())
+                        && previous == Some(intent.source_release.as_str()) =>
                     {
                         Some(SignedIntentStatus::RolledBack)
                     }
@@ -905,9 +919,27 @@ impl<D: ProcessDriver> Supervisor<D> {
                 ));
             }
 
-            let expected_release = match decision.outcome {
-                ProductionRecoveryOutcome::Committed => intent.target_release.as_str(),
-                ProductionRecoveryOutcome::RolledBack => intent.source_release.as_str(),
+            let expected_release = match (intent.transition, decision.outcome) {
+                (
+                    H7H89ProductionTransition::Upgrade,
+                    ProductionRecoveryOutcome::Committed,
+                ) => intent.target_release.as_str(),
+                (
+                    H7H89ProductionTransition::Upgrade,
+                    ProductionRecoveryOutcome::RolledBack,
+                ) => intent.source_release.as_str(),
+                (
+                    H7H89ProductionTransition::Rollback,
+                    ProductionRecoveryOutcome::RolledBack,
+                ) => intent.target_release.as_str(),
+                (
+                    H7H89ProductionTransition::Rollback,
+                    ProductionRecoveryOutcome::Committed,
+                ) => {
+                    return Err(SupervisorError::Invalid(
+                        "a rollback transition cannot recover as a committed upgrade".to_string(),
+                    ));
+                }
             };
             let expected_release_id = ReleaseId::parse(expected_release.to_string())?;
             if record.release_state.current.as_ref() != Some(&expected_release_id) {
@@ -918,9 +950,23 @@ impl<D: ProcessDriver> Supervisor<D> {
             let binding = supervisor
                 .registry
                 .resolve_release_binding(agent_id, &expected_release_id)?;
-            let expected_wire = match decision.outcome {
-                ProductionRecoveryOutcome::Committed => transaction.target_binding.as_ref(),
-                ProductionRecoveryOutcome::RolledBack => transaction.source_binding.as_ref(),
+            let expected_wire = match (intent.transition, decision.outcome) {
+                (
+                    H7H89ProductionTransition::Upgrade,
+                    ProductionRecoveryOutcome::Committed,
+                )
+                | (
+                    H7H89ProductionTransition::Rollback,
+                    ProductionRecoveryOutcome::RolledBack,
+                ) => transaction.target_binding.as_ref(),
+                (
+                    H7H89ProductionTransition::Upgrade,
+                    ProductionRecoveryOutcome::RolledBack,
+                ) => transaction.source_binding.as_ref(),
+                (
+                    H7H89ProductionTransition::Rollback,
+                    ProductionRecoveryOutcome::Committed,
+                ) => None,
             }
             .ok_or_else(|| {
                 SupervisorError::Invalid(
@@ -969,13 +1015,45 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
 
-            let terminal_phase = match decision.outcome {
-                ProductionRecoveryOutcome::Committed => ReleaseTransactionPhase::Committed,
-                ProductionRecoveryOutcome::RolledBack => ReleaseTransactionPhase::RolledBack,
+            let terminal_phase = match (intent.transition, decision.outcome) {
+                (
+                    H7H89ProductionTransition::Upgrade,
+                    ProductionRecoveryOutcome::Committed,
+                ) => ReleaseTransactionPhase::Committed,
+                (
+                    H7H89ProductionTransition::Upgrade,
+                    ProductionRecoveryOutcome::RolledBack,
+                )
+                | (
+                    H7H89ProductionTransition::Rollback,
+                    ProductionRecoveryOutcome::RolledBack,
+                ) => ReleaseTransactionPhase::RolledBack,
+                (
+                    H7H89ProductionTransition::Rollback,
+                    ProductionRecoveryOutcome::Committed,
+                ) => {
+                    return Err(SupervisorError::Invalid(
+                        "a rollback transition cannot recover as a committed upgrade".to_string(),
+                    ));
+                }
             };
-            let terminal_intent_status = match decision.outcome {
-                ProductionRecoveryOutcome::Committed => SignedIntentStatus::Committed,
-                ProductionRecoveryOutcome::RolledBack => SignedIntentStatus::RolledBack,
+            let terminal_intent_status = match (intent.transition, decision.outcome) {
+                (
+                    H7H89ProductionTransition::Upgrade,
+                    ProductionRecoveryOutcome::Committed,
+                ) => SignedIntentStatus::Committed,
+                (
+                    H7H89ProductionTransition::Upgrade,
+                    ProductionRecoveryOutcome::RolledBack,
+                )
+                | (
+                    H7H89ProductionTransition::Rollback,
+                    ProductionRecoveryOutcome::RolledBack,
+                ) => SignedIntentStatus::RolledBack,
+                (
+                    H7H89ProductionTransition::Rollback,
+                    ProductionRecoveryOutcome::Committed,
+                ) => unreachable!("invalid rollback recovery outcome rejected above"),
             };
             let terminal_transaction = transaction
                 .with_recovery_resolution(terminal_phase, decision.digest().clone())
@@ -999,13 +1077,23 @@ impl<D: ProcessDriver> Supervisor<D> {
                 source_release: terminal_intent.source_release,
                 target_release: terminal_intent.target_release,
                 control_revision: next_control_revision,
-                status: match decision.outcome {
-                    ProductionRecoveryOutcome::Committed => {
-                        crate::ProductionMutationStatus::Committed
-                    }
-                    ProductionRecoveryOutcome::RolledBack => {
-                        crate::ProductionMutationStatus::RolledBack
-                    }
+                status: match (terminal_intent.transition, decision.outcome) {
+                    (
+                        H7H89ProductionTransition::Upgrade,
+                        ProductionRecoveryOutcome::Committed,
+                    ) => crate::ProductionMutationStatus::Committed,
+                    (
+                        H7H89ProductionTransition::Upgrade,
+                        ProductionRecoveryOutcome::RolledBack,
+                    )
+                    | (
+                        H7H89ProductionTransition::Rollback,
+                        ProductionRecoveryOutcome::RolledBack,
+                    ) => crate::ProductionMutationStatus::RolledBack,
+                    (
+                        H7H89ProductionTransition::Rollback,
+                        ProductionRecoveryOutcome::Committed,
+                    ) => unreachable!("invalid rollback recovery outcome rejected above"),
                 },
                 production_authority: true,
                 external_effects: true,

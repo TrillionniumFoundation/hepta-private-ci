@@ -1935,6 +1935,200 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent(
     Ok(())
 }
 
+#[test]
+fn recovery_reconciles_terminal_signed_rollback_to_target(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = ReleaseId::parse("signed-rollback-source")?;
+    let target = ReleaseId::parse("signed-rollback-target")?;
+    let source_program = fleet.write_release_source()?;
+    for release_id in [&source, &target] {
+        fleet
+            .registry
+            .install_release(release_id.clone(), &source_program, Vec::new())?;
+        fleet.registry.allow_release(&fleet.first, release_id)?;
+    }
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(target.clone()),
+        Some(source.clone()),
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let grant = Sha256Digest::for_bytes(b"signed-rollback-terminal-grant");
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Rollback,
+        source.to_string(),
+        target.to_string(),
+        4,
+        record.lifecycle.generation,
+        999,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .expect("queued signed rollback");
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .expect("write queued rollback intent");
+
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::ExplicitRollback,
+        source.to_string(),
+        target.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target)?),
+        0,
+        record.lifecycle.generation,
+    )
+    .expect("rollback transaction")
+    .with_authority(grant, 999)
+    .expect("bind rollback grant")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::RolledBack)
+    .expect("terminal rollback transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write terminal rollback transaction");
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(!recovered.production_recovery_required(&fleet.first)?);
+    let state = recovered
+        .production_mutation_state(&fleet.first)?
+        .expect("production rollback state");
+    assert_eq!(
+        state.receipt.status,
+        crate::ProductionMutationStatus::RolledBack
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read reconciled rollback intent")
+            .expect("rollback intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::RolledBack
+    );
+    Ok(())
+}
+
+#[test]
+fn recovery_reconciles_signed_upgrade_automatic_rollback_to_source(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = ReleaseId::parse("signed-upgrade-rollback-source")?;
+    let target = ReleaseId::parse("signed-upgrade-rollback-target")?;
+    let source_program = fleet.write_release_source()?;
+    for release_id in [&source, &target] {
+        fleet
+            .registry
+            .install_release(release_id.clone(), &source_program, Vec::new())?;
+        fleet.registry.allow_release(&fleet.first, release_id)?;
+    }
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(source.clone()),
+        None,
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let grant = Sha256Digest::for_bytes(b"signed-upgrade-auto-rollback-grant");
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        8,
+        record.lifecycle.generation,
+        1001,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .expect("queued signed upgrade");
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .expect("write queued upgrade intent");
+
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target)?),
+        record.release_state.generation,
+        record.lifecycle.generation,
+    )
+    .expect("upgrade transaction")
+    .with_authority(grant, 1001)
+    .expect("bind upgrade grant")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::RolledBack)
+    .expect("automatic rollback transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write automatic rollback transaction");
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(!recovered.production_recovery_required(&fleet.first)?);
+    let state = recovered
+        .production_mutation_state(&fleet.first)?
+        .expect("production auto-rollback state");
+    assert_eq!(
+        state.receipt.status,
+        crate::ProductionMutationStatus::RolledBack
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read reconciled upgrade intent")
+            .expect("upgrade intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::RolledBack
+    );
+    Ok(())
+}
+
 fn write_matrix_binding(
     registry: &FleetRegistry,
     agent_id: &AgentId,
