@@ -75,12 +75,27 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The bounded global-planning components are:
 
 - `snapshot loader`
 - `candidate builder`
 - `bounded solver`
 - `decision receipt emitter`
+
+The crate also carries independently matured profiles that must not be collapsed into one module-complete boolean:
+
+| profile | source state | composition / claim boundary |
+|---|---|---|
+| global planner kernel | implemented | named `runtime.supervisor::GlobalControlHostV1` source composition; daemon ingress/activation pending |
+| request-local context planner | implemented | live Agentd read-only caller |
+| planner durability | local-Unix durable store implemented | named supervisor host source-composed; deployment/target-filesystem qualification pending |
+| organ runtime | read-only compiled-in host implemented | runtime status consumer exists; separate runtime-profile evidence |
+| organ wire | native handoff admission implemented | separate protocol/profile qualification |
+| embodiment cart | deterministic simulator/reference implemented | no HIL or physical-device claim |
+| fixed-priority timing | bounded timing reference implemented | not a product runtime scheduler |
+| legacy `ControlState` FSM | desired-state transitions implemented | separate from the global planner and does not establish its product maturity |
+
+Accordingly, `nativeSourceMappingComplete` in the compatibility implementation-map vocabulary means the declared planner/global-control operation mapping is present. It must not be interpreted as a closed-world mapping of every public item under `codex-rs/hepta-control-plane`; the explicit `wholeSourceRootClosedWorldMappingComplete=false` claim is authoritative for that question.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -88,7 +103,7 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
-The named global product host freezes `GlobalControlHostPolicyV1` at construction. Fleet principal and essential floors, the required-owner set, canonical NDU evaluation-policy digest, snapshot-policy digest, maximum owner age and maximum plan lifetime are host-owned facts; a per-request caller cannot relax or replace them. The host owns the monotonic planner clock for that process generation and overwrites request freshness/deadline fields from that clock.
+The named global product host freezes `GlobalControlHostPolicyV1` at construction. Fleet principal and essential floors, the required-owner set, canonical NDU evaluation-policy digest, snapshot-policy digest, maximum owner age and maximum plan lifetime are host-owned facts; a per-request caller cannot relax or replace them. The host owns the monotonic planner clock for that process generation and overwrites request freshness/deadline fields from that clock. Independently signed owner facts do not have to share the supervisor process's `Instant` epoch: after durable AuthBus verification, `bind_planner_observation_window_v1` projects each admitted fact into the host-owned monotonic observation/expiry window while preserving the signed payload receipt and support binding.
 
 ## 5. Contracts, ports and compatibility
 
