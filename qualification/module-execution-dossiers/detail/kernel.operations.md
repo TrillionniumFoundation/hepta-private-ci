@@ -21,7 +21,7 @@ Implemented durable flow:
 
 `prepare_operation(intent, topic, payload) -> queued receipt`;
 `claim_dispatch_lease(operation, generation, now) -> durable claim`;
-`renew_dispatch_lease(...)`;
+`renew_dispatch_claim(...)`;
 `final_use_binding(receipt, destination) -> FinalUseBinding`;
 `ProductionFinalUseOutboxDispatcher::dispatch(...)`;
 destination-owned `observe_terminal(request)`;
