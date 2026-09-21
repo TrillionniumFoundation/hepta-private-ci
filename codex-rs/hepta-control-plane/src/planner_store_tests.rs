@@ -173,7 +173,6 @@ fn corrupt_v1_migration_leaves_predecessor_bytes_unchanged() {
     );
 }
 
-
 #[test]
 fn post_rename_directory_sync_failure_poison_requires_reopen() {
     let temporary = tempfile::tempdir().expect("tempdir");
