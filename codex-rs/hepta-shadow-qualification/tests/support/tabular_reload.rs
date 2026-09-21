@@ -1,4 +1,4 @@
-//! Cross-owner engineering test: real tabular fit, existing artifact storage,
+#![allow(clippy::expect_used)]\n//! Cross-owner engineering test: real tabular fit, existing artifact storage,
 //! independent process loading and revocation-safe rollback. Fixture pins are
 //! not deployment authorization or scientific evidence of task improvement.
 use std::fs::File;
