@@ -4740,17 +4740,12 @@ async fn next_event_sequence(
     .fetch_one(&mut **transaction)
     .await
     .map_err(crate::cognitive_store::unavailable)?;
-    let current = value.unwrap_or(0);
-    if usize::try_from(current).unwrap_or(usize::MAX) >= MAX_EVENT_ROWS {
-        return Err(LocalLeaseOutboxError::CapacityExceeded {
-            resource: "durable event journal",
-            maximum: MAX_EVENT_ROWS,
-        });
-    }
-    Ok(current
-        .checked_add(1)
-        .ok_or_else(|| LocalLeaseOutboxError::Invalid("event sequence overflow".to_string()))?
-        as u64)
+    bounded_next_sequence(
+        value.unwrap_or(0),
+        MAX_EVENT_ROWS,
+        "durable event journal",
+        "event sequence",
+    )
 }
 
 async fn next_outbox_sequence(
@@ -4764,17 +4759,27 @@ async fn next_outbox_sequence(
     .fetch_one(&mut **transaction)
     .await
     .map_err(crate::cognitive_store::unavailable)?;
-    let current = value.unwrap_or(0);
-    if usize::try_from(current).unwrap_or(usize::MAX) >= MAX_OUTBOX_ROWS {
-        return Err(LocalLeaseOutboxError::CapacityExceeded {
-            resource: "durable outbox",
-            maximum: MAX_OUTBOX_ROWS,
-        });
+    bounded_next_sequence(
+        value.unwrap_or(0),
+        MAX_OUTBOX_ROWS,
+        "durable outbox",
+        "outbox sequence",
+    )
+}
+
+fn bounded_next_sequence(
+    current: i64,
+    maximum: usize,
+    resource: &'static str,
+    sequence_label: &'static str,
+) -> Result<u64, LocalLeaseOutboxError> {
+    let current = usize::try_from(current)
+        .map_err(|_| LocalLeaseOutboxError::Invalid(format!("{sequence_label} is negative")))?;
+    if current >= maximum {
+        return Err(LocalLeaseOutboxError::CapacityExceeded { resource, maximum });
     }
-    Ok(current
-        .checked_add(1)
-        .ok_or_else(|| LocalLeaseOutboxError::Invalid("outbox sequence overflow".to_string()))?
-        as u64)
+    u64::try_from(current + 1)
+        .map_err(|_| LocalLeaseOutboxError::Invalid(format!("{sequence_label} overflow")))
 }
 
 async fn event_head(
