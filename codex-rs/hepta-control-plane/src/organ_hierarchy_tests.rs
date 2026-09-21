@@ -778,10 +778,7 @@ fn recovery_requires_inactive_predecessor_and_publishes_exact_successor() {
     let active_candidate = next_fixture(previous.generation.next().unwrap(), false);
     let active_events = Arc::clone(&active_candidate.events);
     assert!(matches!(
-        host.recover_read_only_generation(
-            previous.generation,
-            active_candidate.host().unwrap()
-        ),
+        host.recover_read_only_generation(previous.generation, active_candidate.host().unwrap()),
         Err(CnsHierarchyError::Runtime(
             OrganRuntimeError::RecoveryPredecessorActive { .. }
         ))
