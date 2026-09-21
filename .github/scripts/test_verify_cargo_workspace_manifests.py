@@ -143,7 +143,7 @@ class CargoWorkspaceManifestPolicyTest(unittest.TestCase):
         self.assertFalse(policy.is_isolated_cargo_fuzz_workspace(path, manifest))
         self.assertTrue(
             any(
-                "set `[lints] workspace = true`" in error
+                "add `[lints]` with `workspace = true`" in error
                 for error in self.errors(path, manifest)
             )
         )
