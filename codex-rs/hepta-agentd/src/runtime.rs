@@ -66,10 +66,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
     }
     if let Some(runner) = intelligence_product {
-        state
-            .intelligence_product
-            .set(runner)
-            .map_err(|_| AgentdError::Invalid("intelligence product runner already attached".to_string()))?;
+        state.intelligence_product.set(runner).map_err(|_| {
+            AgentdError::Invalid("intelligence product runner already attached".to_string())
+        })?;
     }
     if let Some(path) = trust_file {
         state.refresh_generation()?;
