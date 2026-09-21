@@ -1220,14 +1220,16 @@ pub async fn run_main_with_transport_options(
                             connections.len(),
                             running_turn_count,
                         );
-                        // Close every existing RPC admission gate immediately and
-                        // wait for handlers that already crossed the gate. Without
-                        // this barrier, a thread/queue/reconcile handler could persist
-                        // new durable work after running_turn_count was observed as
-                        // zero and after the embedded drain had already been reported
-                        // terminal. Queued/new handlers are rejected while admitted
-                        // handlers finish; their resulting turns are then covered by
-                        // the running-turn drain below.
+                        // Close every existing RPC admission gate before waiting
+                        // on any one connection. A one-pass shutdown loop could block
+                        // on the first in-flight handler while later connection gates
+                        // were still accepting queued work. The first pass establishes
+                        // the global no-new-admission cut; the second pass waits for
+                        // handlers that already crossed a gate. Their resulting turns
+                        // are then covered by the running-turn drain below.
+                        for connection_state in connections.values() {
+                            connection_state.session.rpc_gate.close().await;
+                        }
                         for connection_state in connections.values() {
                             connection_state.session.rpc_gate.shutdown().await;
                         }
