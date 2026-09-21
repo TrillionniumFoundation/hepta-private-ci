@@ -678,6 +678,138 @@ fn recovery_closes_running_release_state_crash_window() -> Result<(), Supervisor
 }
 
 #[test]
+fn recovery_ignores_revoked_previous_release_and_adopts_current() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = fleet.write_release_source()?;
+    let first_release = ReleaseId::parse("recovery-previous-v1")?;
+    let current_release = ReleaseId::parse("recovery-current-v2")?;
+    fleet
+        .registry
+        .install_release(first_release.clone(), &source, Vec::new())?;
+    fleet
+        .registry
+        .install_release(current_release.clone(), &source, Vec::new())?;
+    fleet
+        .registry
+        .allow_release(&fleet.first, &first_release)?;
+    fleet
+        .registry
+        .allow_release(&fleet.first, &current_release)?;
+
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let first =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &first_release)?)?;
+    supervisor.start_release(&fleet.first, first, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let target =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &current_release)?)?;
+    supervisor.upgrade(&fleet.first, target, now)?;
+    finish_release_drain(&mut supervisor, &control, &fleet.first, now);
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("upgraded snapshot")
+            .previous_release
+            .as_deref(),
+        Some(first_release.as_str())
+    );
+    drop(supervisor);
+
+    fleet
+        .registry
+        .revoke_release(&fleet.first, &first_release)?;
+    let (recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    let snapshot = recovered
+        .snapshot(&fleet.first)
+        .expect("recovered current release");
+    assert!(snapshot.active);
+    assert!(snapshot.healthy == false);
+    assert_eq!(
+        snapshot.active_release.as_deref(),
+        Some(current_release.as_str())
+    );
+    assert_eq!(snapshot.previous_release, None);
+    assert_eq!(control.counts(&fleet.first).2, 0);
+    Ok(())
+}
+
+#[test]
+fn recovery_fences_current_release_revoked_while_supervisor_is_down(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = fleet.write_release_source()?;
+    let release_id = ReleaseId::parse("recovery-revoked-current")?;
+    fleet
+        .registry
+        .install_release(release_id.clone(), &source, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &release_id)?;
+
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let release =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &release_id)?)?;
+    supervisor.start_release(&fleet.first, release, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    drop(supervisor);
+
+    fleet.registry.revoke_release(&fleet.first, &release_id)?;
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report.faults.len(), 1);
+    assert_eq!(report.faults[0].agent_id, fleet.first);
+    assert_eq!(control.counts(&fleet.first).2, 1);
+    let snapshot = recovered
+        .snapshot(&fleet.first)
+        .expect("fenced revoked current release");
+    assert!(snapshot.active);
+    assert!(snapshot.runtime_fenced);
+    assert!(!snapshot.healthy);
+    assert_eq!(snapshot.active_release, None);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
+
+    control.set_exit(&fleet.first);
+    assert_eq!(recovered.tick(now), TickReport::default());
+    assert!(
+        !recovered
+            .snapshot(&fleet.first)
+            .expect("post-exit snapshot")
+            .active
+    );
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
+    Ok(())
+}
+
+#[test]
 fn stale_runtime_is_fenced_without_touching_peer() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
