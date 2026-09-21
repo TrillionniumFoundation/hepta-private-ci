@@ -153,18 +153,29 @@ impl AutomationStore {
         &self,
     ) -> Result<(Transaction<'_, Sqlite>, TimerPhase), AutomationError> {
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-        let phase: Option<String> = sqlx::query_scalar(
-            "UPDATE automation_timer_lifecycle SET writer_epoch = writer_epoch
-             WHERE singleton = 1 AND writer_epoch = ? AND phase != 'retired'
-             RETURNING phase",
-        )
-        .bind(self.timer_epoch)
-        .fetch_optional(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        let phase = phase.ok_or(AutomationError::TimerFenced)?;
-        Ok((transaction, TimerPhase::parse(&phase)?))
+        let phase = check_timer_writer(&mut transaction, self.timer_epoch).await?;
+        Ok((transaction, phase))
     }
+}
+
+/// Check the SAME writer fence inside a destination-owned transaction. An
+/// operation arriving through kernel.operations still mutates timer schedules;
+/// its dedupe transaction must not bypass quiesce, handoff or retirement.
+/// Read-only replay of an already committed receipt does not call this helper.
+pub(super) async fn check_timer_writer(
+    transaction: &mut Transaction<'_, Sqlite>,
+    expected_epoch: i64,
+) -> Result<TimerPhase, AutomationError> {
+    let phase: Option<String> = sqlx::query_scalar(
+        "UPDATE automation_timer_lifecycle SET writer_epoch = writer_epoch
+         WHERE singleton = 1 AND writer_epoch = ? AND phase != 'retired'
+         RETURNING phase",
+    )
+    .bind(expected_epoch)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    TimerPhase::parse(&phase.ok_or(AutomationError::TimerFenced)?)
 }
 
 pub(super) async fn read_status(

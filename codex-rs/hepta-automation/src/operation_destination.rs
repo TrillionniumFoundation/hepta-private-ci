@@ -15,6 +15,8 @@ use crate::AutomationSchedule;
 use crate::AutomationStore;
 use crate::AutomationTask;
 use crate::AutomationTaskDraft;
+use crate::TimerPhase;
+use crate::timer_lifecycle::check_timer_writer;
 
 pub const AUTOMATION_OPERATION_DESTINATION: &str = "automation.taskflow";
 const TASK_CREATE_DOMAIN: &[u8] = b"hepta.automation.task-create.v1\0";
@@ -111,6 +113,18 @@ impl AutomationStore {
                 })
             }
             DestinationApplyStart::Apply(mut apply) => {
+                // Check and mutate under the destination's existing write lock.
+                // A separate read or a nested owner transaction would permit a
+                // handoff race or deadlock. Exact historical receipt replay above
+                // remains read-only, including after permanent retirement.
+                let phase = check_timer_writer(
+                    apply.transaction().map_err(map_operation_error)?,
+                    self.timer_epoch,
+                )
+                .await?;
+                if phase != TimerPhase::Active {
+                    return Err(AutomationError::Conflict);
+                }
                 draft.validate()?;
                 let (schedule_kind, interval_ms) = match draft.schedule {
                     AutomationSchedule::Once => ("once", None),

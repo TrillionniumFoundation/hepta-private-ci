@@ -331,22 +331,20 @@ impl AgentdState {
             })
             .collect::<Result<BTreeSet<_>, _>>()?;
         let state_class = module_state::parse(&row.state)?;
-        // This bootstrap binding intentionally names the reviewed runtime
-        // manifest, not executable provenance. Candidate replacement uses the
-        // independently evaluated implementation/artifact digests carried by
-        // RuntimeModuleAbiV1 and supervisor selection evidence.
-        let manifest_binding = format!(
-            "hepta.runtime-module-manifest.v1:{}:{}",
-            self.runtime_catalog.digest(),
-            row.manifest_digest
-        );
-        let implementation_digest = Digest32::of_bytes(manifest_binding.as_bytes());
+        // The executable is observed once per process, not inferred from a
+        // catalog row. This binds bytes and module semantics, NOT independent
+        // build provenance, acceptance or permission to activate a replacement.
+        let executable = crate::RuntimeExecutableIdentity::observe_current()?;
+        let manifest_digest: Digest32 = row.manifest_digest.parse().map_err(|error| {
+            AgentdError::Protocol(format!("invalid runtime manifest digest: {error}"))
+        })?;
+        let implementation_digest = executable.implementation_digest(&module_id, manifest_digest);
         let abi = RuntimeModuleAbiV1 {
             module_id: module_id.clone(),
             owner_id,
             generation,
             implementation_digest,
-            candidate_artifact_digest: implementation_digest,
+            candidate_artifact_digest: executable.artifact_digest(),
             predecessor_generation: None,
             rollback_predecessor_digest: Digest32::ZERO,
             state_class,

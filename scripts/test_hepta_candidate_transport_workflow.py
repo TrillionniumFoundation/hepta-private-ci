@@ -19,6 +19,27 @@ STEP = "      - name: Observe candidate Git write denial without mutating reposi
 
 
 class CandidateTransportWorkflowTests(unittest.TestCase):
+    def test_permission_failure_does_not_prevent_behavior_execution_or_turn_green(self):
+        workflow = (ROOT / ".github/workflows/hepta-architecture-convergence.yml").read_text()
+        probe = workflow.index(STEP)
+        for name in ("Inference owner regressions and streaming digest",
+                     "Module lifecycle generations and migration rollback",
+                     "Selected-artifact adoption and explicit rollback"):
+            self.assertLess(workflow.index("      - name: " + name), probe)
+        block = workflow[probe:].split("      - name:", 2)[1]
+        self.assertIn("!cancelled()", block)
+        self.assertIn("steps.scope.outcome == 'success'", block)
+        self.assertNotIn("continue-on-error", workflow)
+        self.assertIn("needs: qualification", workflow)
+        self.assertIn('test "$RESULT" = success', workflow)
+
+    def test_prerequisites_and_lock_check_precede_native_builds(self):
+        workflow = (ROOT / ".github/workflows/hepta-architecture-convergence.yml").read_text()
+        first_native = workflow.index("      - name: Inference owner regressions and streaming digest")
+        for name in ("Prepare native prerequisites", "Resolve verified V8 artifacts",
+                     "Verify Cargo lock resolution and print exact resolver drift"):
+            self.assertLess(workflow.index("      - name: " + name), first_native)
+
     def run_step(self, status: int, body: str, *, timeout: bool = False):
         workflow = (ROOT / ".github/workflows/hepta-architecture-convergence.yml").read_text()
         block = workflow.split(STEP, 1)[1].split("      - name:", 1)[0]
