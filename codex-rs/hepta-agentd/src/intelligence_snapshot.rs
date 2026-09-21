@@ -42,6 +42,43 @@ pub struct CapabilityOwnerAttestationV3 {
     pub message: SignedMessage,
 }
 
+#[derive(Clone)]
+pub struct AuthenticatedCapabilitySnapshotRegistryV3 {
+    identity: AgentdIdentity,
+    trust_file: PathBuf,
+}
+
+impl AuthenticatedCapabilitySnapshotRegistryV3 {
+    /// Enroll the only owner-controlled trust registry that product intelligence
+    /// composition may use in this Agentd process. Enrollment validates the
+    /// current file once; every final-use provider reloads and revalidates it.
+    pub fn new(identity: AgentdIdentity, trust_file: PathBuf) -> Result<Self, AgentdError> {
+        CapabilityTrustFileV3::load(&trust_file, &identity)?;
+        Ok(Self {
+            identity,
+            trust_file,
+        })
+    }
+
+    pub fn provider(
+        &self,
+        snapshot: CapabilitySnapshotV2,
+        attestations: Vec<CapabilityOwnerAttestationV3>,
+    ) -> Result<AuthenticatedCapabilitySnapshotProviderV3, AgentdError> {
+        AuthenticatedCapabilitySnapshotProviderV3::new(
+            self.identity.clone(),
+            self.trust_file.clone(),
+            snapshot,
+            attestations,
+        )
+    }
+
+    #[must_use]
+    pub fn trust_file(&self) -> &Path {
+        &self.trust_file
+    }
+}
+
 pub struct AuthenticatedCapabilitySnapshotProviderV3 {
     identity: AgentdIdentity,
     trust_file: PathBuf,
