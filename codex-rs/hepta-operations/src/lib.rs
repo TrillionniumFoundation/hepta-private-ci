@@ -1,22 +1,30 @@
-//! In-memory reference model for Hepta operation, outbox and reconciliation
-//! semantics.
+//! Canonical Hepta operation, outbox and reconciliation semantics.
+//!
+//! The in-memory `OperationLedger` / `Outbox` remain deterministic reference
+//! models. `DurableOperationStore` is the kernel-owned SQLite implementation
+//! for crash/reopen-safe operation identity, immutable transition history and
+//! leased outbox state.
 //!
 //! Queue acknowledgement is deliberately separate from terminal effect
 //! observation. Once dispatch may have crossed an external boundary, the
 //! operation cannot be blindly retried; it remains indeterminate until a
-//! current-fence observer reconciles it.
+//! current-generation observer reconciles it.
 //!
-//! This crate does not provide durable storage, crash/reopen recovery, a
-//! background dispatcher or production authority. Product code must not infer
-//! durability from cloning this model.
+//! This crate does not mint authority or dispatch external effects. Product
+//! adapters must authenticate independently and consume final-use authority
+//! immediately before the actual downstream boundary.
 
 #![forbid(unsafe_code)]
 
+mod durable;
 mod error;
 mod ledger;
 mod model;
 mod outbox;
 
+pub use durable::DurableOperationError;
+pub use durable::DurableOperationStore;
+pub use durable::DurableOutboxState;
 pub use error::OperationError;
 pub use ledger::MAX_MODEL_OPERATION_RECORDS;
 pub use ledger::OperationLedger;
