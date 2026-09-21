@@ -4,6 +4,7 @@ use std::time::Duration;
 use codex_hepta_automation::AutomationAdmission;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationFuture;
+use codex_hepta_automation::AutomationLease;
 use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationScheduler;
@@ -13,7 +14,9 @@ use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_automation::AutomationTaskState;
 use codex_hepta_automation::AutomationTick;
 use codex_hepta_automation::AutomationTurnQueue;
+use codex_hepta_automation::AUTOMATION_SCHEMA_VERSION;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
@@ -255,6 +258,21 @@ fn draft(id: &str, schedule: AutomationSchedule, due: u64) -> AutomationTaskDraf
     draft
 }
 
+async fn prepare_direct_dispatch(store: &AutomationStore, lease: &AutomationLease, now_ms: u64) {
+    let occurrence = store
+        .materialize_occurrence(lease, now_ms)
+        .await
+        .expect("materialize occurrence before dispatch");
+    store
+        .prepare_occurrence_taskflow(&occurrence, lease, now_ms, 60_000)
+        .await
+        .expect("prepare durable TaskFlow intent before dispatch");
+    store
+        .record_dispatch_uncertain(lease, now_ms)
+        .await
+        .expect("persist uncertainty before provider contact");
+}
+
 #[tokio::test]
 async fn one_shot_periodic_disable_and_cancel_are_durable() {
     let fixture = FleetFixture::new(1);
@@ -399,7 +417,7 @@ async fn pre_admission_dispatch_error_clears_intent_and_allows_next_generation_r
         .expect("reopen store");
     assert_eq!(
         restarted
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover generation"),
         0,
@@ -410,8 +428,9 @@ async fn pre_admission_dispatch_error_clears_intent_and_allows_next_generation_r
         .await
         .expect("claim retry")
         .expect("retry remains due");
+    prepare_direct_dispatch(&restarted, &lease, 102).await;
     restarted
-        .mark_submitted(
+        .record_occurrence_admitted(
             &lease,
             &AutomationQueueReceipt {
                 queued_submission_id: "retry-after-abort".to_string(),
@@ -420,7 +439,7 @@ async fn pre_admission_dispatch_error_clears_intent_and_allows_next_generation_r
             102,
         )
         .await
-        .expect("complete retry");
+        .expect("complete retry through causal admission");
 }
 
 #[tokio::test]
@@ -515,7 +534,7 @@ async fn crash_after_external_acceptance_keeps_unknown_intent_across_reopen() {
         .expect("reopen store");
     assert_eq!(
         reopened
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover generation"),
         0,
@@ -573,7 +592,7 @@ async fn in_flight_unknown_intent_fences_stale_generation_and_second_claim() {
 
     assert_eq!(
         store
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover while request is in flight"),
         0,
@@ -651,7 +670,7 @@ async fn unknown_provider_outcome_is_quarantined_across_store_recovery_until_rec
         .expect("reopen store");
     assert_eq!(
         reopened
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover generation"),
         0,
@@ -670,10 +689,15 @@ async fn unknown_provider_outcome_is_quarantined_across_store_recovery_until_rec
         queued_submission_id: "provider-receipt-unknown-recovered".to_string(),
         client_user_message_id: uncertain[0].client_user_message_id.clone(),
     };
-    let completed = reopened
-        .reconcile_dispatch(task.task_id, 1, &receipt, 200)
+    reopened
+        .reconcile_uncertain_occurrence_admitted(task.task_id, 1, &receipt, 200)
         .await
         .expect("reconcile provider receipt");
+    let completed = reopened
+        .task(task.task_id)
+        .await
+        .expect("read reconciled task")
+        .expect("task exists");
     assert_eq!(completed.state, AutomationTaskState::Completed);
     assert!(
         reopened
@@ -751,7 +775,7 @@ async fn stale_generation_recovery_is_owner_fenced() {
 
     assert_eq!(
         store
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover stale generation"),
         1,
@@ -808,9 +832,16 @@ async fn uncertain_dispatch_requires_explicit_negative_provider_proof_before_ret
         .expect("uncertain list")
         .pop()
         .expect("uncertain occurrence");
+    let absence_proof = Sha256Digest::for_bytes(b"automation-test-provider-absence");
     assert_eq!(
         store
-            .release_uncertain_for_retry(task.task_id, 1, "wrong-client-id")
+            .reconcile_uncertain_occurrence_absent(
+                task.task_id,
+                1,
+                "wrong-client-id",
+                &absence_proof,
+                100_001,
+            )
             .await,
         Err(AutomationError::Conflict),
         "a retry cannot be released without the exact fenced client id"
@@ -823,7 +854,13 @@ async fn uncertain_dispatch_requires_explicit_negative_provider_proof_before_ret
             .is_none()
     );
     store
-        .release_uncertain_for_retry(task.task_id, 1, &uncertain.client_user_message_id)
+        .reconcile_uncertain_occurrence_absent(
+            task.task_id,
+            1,
+            &uncertain.client_user_message_id,
+            &absence_proof,
+            100_002,
+        )
         .await
         .expect("explicit negative provider proof");
     let lease = store
@@ -836,17 +873,18 @@ async fn uncertain_dispatch_requires_explicit_negative_provider_proof_before_ret
         lease.client_user_message_id,
         uncertain.client_user_message_id
     );
+    prepare_direct_dispatch(&store, &lease, 100_003).await;
     store
-        .mark_submitted(
+        .record_occurrence_admitted(
             &lease,
             &AutomationQueueReceipt {
                 queued_submission_id: "negative-proof-retry-receipt".to_string(),
                 client_user_message_id: lease.client_user_message_id.clone(),
             },
-            101,
+            100_004,
         )
         .await
-        .expect("retry submission");
+        .expect("retry admission through causal boundary");
     assert_eq!(
         store
             .task(task.task_id)
@@ -892,9 +930,30 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop v2 table");
-    // The current opener also applies the qualification-only TaskFlow
-    // migration. Remove that schema and rewind its migration ledger so this
-    // test still exercises a genuine v1 -> latest upgrade path.
+    // The current opener applies the full durable causal-chain schema.
+    // Remove every post-v1 object in reverse dependency order, then rewind the
+    // migration ledger so reopening exercises the real v1 -> latest path.
+    for statement in [
+        "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_update",
+        "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_delete",
+        "DROP TABLE IF EXISTS automation_legacy_dispatch_reconciliations",
+        "DROP VIEW IF EXISTS automation_occurrence",
+        "DROP VIEW IF EXISTS automation_schedule",
+        "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_required_insert",
+        "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_no_update",
+        "DROP TRIGGER IF EXISTS automation_task_default_policy",
+        "DROP TABLE IF EXISTS taskflow_effect_dispatch_observations",
+        "DROP TABLE IF EXISTS taskflow_effect_dispatch_attempts",
+        "DROP TABLE IF EXISTS automation_occurrence_events",
+        "DROP TABLE IF EXISTS taskflow_step_outbox",
+        "DROP TABLE IF EXISTS automation_occurrence_lifecycle",
+        "DROP TABLE IF EXISTS automation_schedule_metadata",
+    ] {
+        sqlx::query(statement)
+            .execute(&mut *rewind)
+            .await
+            .expect("drop post-v1 causal object");
+    }
     sqlx::query("DROP TRIGGER taskflow_events_no_update")
         .execute(&mut *rewind)
         .await
@@ -923,6 +982,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow definitions");
+    sqlx::query("ALTER TABLE automation_runs DROP COLUMN schedule_revision")
+        .execute(&mut *rewind)
+        .await
+        .expect("remove v14 run revision from v1 fixture");
     sqlx::query("DELETE FROM _sqlx_migrations WHERE version >= 2")
         .execute(&mut *rewind)
         .await
@@ -966,17 +1029,22 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .await
         .expect("claim migrated task")
         .expect("migrated task due");
+    assert_eq!(
+        lease.schedule_revision, 1,
+        "the first post-migration claim must freeze the authoritative schedule revision"
+    );
+    prepare_direct_dispatch(&migrated, &lease, 101).await;
     migrated
-        .mark_submitted(
+        .record_occurrence_admitted(
             &lease,
             &AutomationQueueReceipt {
                 queued_submission_id: "migration-receipt".to_string(),
                 client_user_message_id: lease.client_user_message_id.clone(),
             },
-            101,
+            102,
         )
         .await
-        .expect("write migrated outcome");
+        .expect("write migrated causal outcome");
     migrated.close().await;
 
     let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
@@ -990,7 +1058,29 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
             .fetch_one(&pool)
             .await
             .expect("read migrated schema version");
-    assert_eq!(schema, 3);
+    assert_eq!(schema, i64::from(AUTOMATION_SCHEMA_VERSION));
+    let frozen_revision: Option<i64> = sqlx::query_scalar(
+        "SELECT schedule_revision FROM automation_runs
+         WHERE task_id = ? AND occurrence = ?",
+    )
+    .bind(task.task_id.to_string())
+    .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+    .fetch_one(&pool)
+    .await
+    .expect("read frozen schedule revision");
+    assert_eq!(frozen_revision, Some(1));
+    assert!(
+        sqlx::query(
+            "UPDATE automation_runs SET schedule_revision = 2
+             WHERE task_id = ? AND occurrence = ?",
+        )
+        .bind(task.task_id.to_string())
+        .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+        .execute(&pool)
+        .await
+        .is_err(),
+        "migrated schedule revision must be immutable"
+    );
     let outcomes: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE task_id = ?")
             .bind(task.task_id.to_string())
@@ -1004,6 +1094,171 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
             .await
             .is_err(),
         "migration must restore the immutable metadata trigger"
+    );
+    pool.close().await;
+}
+
+#[tokio::test]
+async fn legacy_unknown_without_frozen_revision_requires_absence_proof_before_new_claim() {
+    let fixture = FleetFixture::new(1);
+    let layout = &fixture.layouts[0];
+    let store = AutomationStore::open(layout).await.expect("open store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75019",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let lease = store
+        .claim_due(100, 1, 60_000)
+        .await
+        .expect("claim")
+        .expect("due lease");
+    let database_path = store.path().to_path_buf();
+    store.close().await;
+
+    // Recreate the exact compatibility shape left by migration 0014 for a
+    // pre-v14 dispatch-unknown row: the provider identity is durable, but the
+    // historical schedule revision was never frozen and no qualified
+    // occurrence exists. Never guess the current revision for this row.
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
+        .expect("absolute sqlite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(&database_path)
+        .await
+        .expect("open compatibility fixture");
+    sqlx::query("DROP TRIGGER automation_runs_schedule_revision_no_update")
+        .execute(&pool)
+        .await
+        .expect("drop revision immutability for fixture");
+    sqlx::query(
+        "UPDATE automation_runs SET schedule_revision = NULL
+         WHERE task_id = ? AND occurrence = ?",
+    )
+    .bind(task.task_id.to_string())
+    .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+    .execute(&pool)
+    .await
+    .expect("erase historical revision");
+    sqlx::query(
+        "CREATE TRIGGER automation_runs_schedule_revision_no_update
+         BEFORE UPDATE OF schedule_revision ON automation_runs
+         WHEN NEW.schedule_revision IS NOT OLD.schedule_revision
+         BEGIN
+             SELECT RAISE(ABORT, 'automation run schedule revision is immutable');
+         END",
+    )
+    .execute(&pool)
+    .await
+    .expect("restore revision immutability");
+    sqlx::query(
+        "INSERT INTO automation_dispatch_outcomes (
+            task_id, occurrence, client_user_message_id, outcome, observed_at_ms
+         ) VALUES (?, ?, ?, 'uncertain', ?)",
+    )
+    .bind(task.task_id.to_string())
+    .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+    .bind(&lease.client_user_message_id)
+    .bind(101_i64)
+    .execute(&pool)
+    .await
+    .expect("insert legacy uncertainty");
+    pool.close().await;
+
+    let store = AutomationStore::open(layout)
+        .await
+        .expect("reopen preserved legacy ambiguity");
+    let uncertain = store
+        .uncertain_dispatches(8)
+        .await
+        .expect("list uncertainty");
+    assert_eq!(uncertain.len(), 1);
+    assert_eq!(uncertain[0].client_user_message_id, lease.client_user_message_id);
+
+    let admitted = store
+        .reconcile_uncertain_occurrence_admitted(
+            task.task_id,
+            lease.occurrence,
+            &AutomationQueueReceipt {
+                queued_submission_id: "legacy-admitted".to_string(),
+                client_user_message_id: lease.client_user_message_id.clone(),
+            },
+            102,
+        )
+        .await;
+    assert_eq!(
+        admitted,
+        Err(AutomationError::DispatchUnknown),
+        "provider admission cannot manufacture a missing historical schedule revision"
+    );
+    assert_eq!(
+        store
+            .uncertain_dispatches(8)
+            .await
+            .expect("uncertainty remains")
+            .len(),
+        1
+    );
+
+    let proof = Sha256Digest::for_bytes(b"legacy-provider-proven-absent");
+    store
+        .reconcile_uncertain_occurrence_absent(
+            task.task_id,
+            lease.occurrence,
+            &lease.client_user_message_id,
+            &proof,
+            103,
+        )
+        .await
+        .expect("reconcile legacy absence");
+    assert!(
+        store
+            .uncertain_dispatches(8)
+            .await
+            .expect("uncertainty cleared")
+            .is_empty()
+    );
+
+    // The old unqualified run is retired. A subsequent claim does not reuse
+    // its occurrence/client identity and freezes the current schedule revision.
+    let next = store
+        .claim_due(104, 2, 60_000)
+        .await
+        .expect("claim after proven absence")
+        .expect("task remains due");
+    assert_eq!(next.occurrence, lease.occurrence + 1);
+    assert_eq!(next.schedule_revision, 1);
+    assert_ne!(next.client_user_message_id, lease.client_user_message_id);
+    store.close().await;
+
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
+        .expect("absolute sqlite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(&database_path)
+        .await
+        .expect("inspect reconciliation evidence");
+    let stored_proof: String = sqlx::query_scalar(
+        "SELECT proof_digest FROM automation_legacy_dispatch_reconciliations
+         WHERE task_id = ? AND occurrence = ?",
+    )
+    .bind(task.task_id.to_string())
+    .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+    .fetch_one(&pool)
+    .await
+    .expect("read legacy proof");
+    assert_eq!(stored_proof, proof.as_str());
+    assert!(
+        sqlx::query(
+            "UPDATE automation_legacy_dispatch_reconciliations
+             SET proof_digest = ? WHERE task_id = ? AND occurrence = ?",
+        )
+        .bind(Sha256Digest::for_bytes(b"forged-proof").as_str())
+        .bind(task.task_id.to_string())
+        .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+        .execute(&pool)
+        .await
+        .is_err(),
+        "legacy reconciliation evidence must remain append-only"
     );
     pool.close().await;
 }
@@ -1095,13 +1350,15 @@ async fn duplicate_provider_receipt_is_rejected_by_local_outcome_fence() {
         queued_submission_id: "provider-receipt-shared".to_string(),
         client_user_message_id: lease.client_user_message_id.clone(),
     };
+    prepare_direct_dispatch(&store, &first_lease, 101).await;
+    prepare_direct_dispatch(&store, &second_lease, 101).await;
     store
-        .mark_submitted(&first_lease, &receipt(&first_lease), 101)
+        .record_occurrence_admitted(&first_lease, &receipt(&first_lease), 102)
         .await
         .expect("first receipt");
     assert_eq!(
         store
-            .mark_submitted(&second_lease, &receipt(&second_lease), 102)
+            .record_occurrence_admitted(&second_lease, &receipt(&second_lease), 103)
             .await,
         Err(AutomationError::Conflict)
     );
@@ -1154,7 +1411,7 @@ async fn restart_reclaims_same_occurrence_with_same_core_client_id_and_fences_ol
         .expect("reopen");
     assert_eq!(
         restarted
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover"),
         1
@@ -1197,31 +1454,37 @@ async fn disabling_an_inflight_lease_never_resurrects_the_task() {
         .expect("claim")
         .expect("due lease");
 
+    prepare_direct_dispatch(&store, &lease, 101).await;
     let disabled = store
-        .set_enabled(task.task_id, false, None, 101)
+        .set_enabled(task.task_id, false, None, 102)
         .await
         .expect("disable in-flight task");
     assert_eq!(disabled.state, AutomationTaskState::Disabled);
     assert!(matches!(
-        store.set_enabled(task.task_id, true, Some(200), 102).await,
+        store.set_enabled(task.task_id, true, Some(200), 103).await,
         Err(AutomationError::Conflict)
     ));
 
-    let submitted = store
-        .mark_submitted(
+    store
+        .record_occurrence_admitted(
             &lease,
             &AutomationQueueReceipt {
                 queued_submission_id: "queue-in-flight".to_string(),
                 client_user_message_id: lease.client_user_message_id.clone(),
             },
-            103,
+            104,
         )
         .await
         .expect("finish admitted occurrence");
+    let submitted = store
+        .task(task.task_id)
+        .await
+        .expect("read disabled task")
+        .expect("disabled task exists");
     assert_eq!(submitted.state, AutomationTaskState::Disabled);
     assert_eq!(submitted.next_run_at_ms, None);
     let resumed = store
-        .set_enabled(task.task_id, true, Some(200), 104)
+        .set_enabled(task.task_id, true, Some(200), 105)
         .await
         .expect("resume after admitted occurrence finishes");
     assert_eq!(resumed.state, AutomationTaskState::Enabled);
