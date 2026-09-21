@@ -384,11 +384,40 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         .revalidate_dataset_snapshot(&dataset, 50)
         .expect("fresh dataset remains current");
 
+    let stale_source = UnlearningLineageRequestV1 {
+        record_id: id("unlearning-stale-record"),
+        lineage_id: id("unlearning-stale-lineage"),
+        source_record_id: id("outcome-record-1"),
+        dataset_snapshot_id: dataset.snapshot.snapshot_id.clone(),
+        dataset_digest: dataset.snapshot.dataset_digest,
+        artifact_id: id("artifact-a"),
+        reason_digest: digest("withdrawal"),
+    };
+    let stale_evidence = sign(
+        writer.verifier(),
+        "privacy-owner",
+        LearningEvidenceRoleV1::UnlearningAuthority,
+        &unlearning_signing_payload_v1(&stale_source),
+    );
+    assert!(matches!(
+        writer.append_unlearning(
+            credit_receipt.chain_digest,
+            stale_source,
+            &dataset,
+            &stale_evidence,
+            50,
+        ),
+        Err(ProductionLedgerError::Binding(
+            "unlearning source not in dataset"
+        ))
+    ));
+
     let unlearning = UnlearningLineageRequestV1 {
         record_id: id("unlearning-record"),
         lineage_id: id("unlearning-lineage"),
         source_record_id: id("outcome-record-2"),
         dataset_snapshot_id: dataset.snapshot.snapshot_id.clone(),
+        dataset_digest: dataset.snapshot.dataset_digest,
         artifact_id: id("artifact-a"),
         reason_digest: digest("withdrawal"),
     };
@@ -402,6 +431,7 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         .append_unlearning(
             credit_receipt.chain_digest,
             unlearning,
+            &dataset,
             &unlearning_evidence,
             50,
         )
@@ -410,6 +440,13 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
     let frontier = writer.witness_frontier().unwrap();
     assert_eq!(frontier.anchor.sequence, 5);
     assert_eq!(frontier.anchor.chain_digest, receipt.append.chain_digest);
+    assert_eq!(receipt.dataset_digest, dataset.snapshot.dataset_digest);
+    assert!(
+        dataset
+            .snapshot
+            .source_record_digests
+            .contains(&receipt.source_event_digest)
+    );
 
     assert!(matches!(
         writer.revalidate_dataset_snapshot(&dataset, 50),
@@ -425,6 +462,80 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         .map(|record| record.event.record_id().to_string())
         .collect();
     assert_eq!(active, vec!["decision-record", "unlearning-record"]);
+}
+
+#[test]
+fn dataset_freeze_counts_decisions_without_any_outcome_as_pending() {
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+
+    let first = decision();
+    let first_payload = decision_signing_payload_v2(&first).unwrap();
+    let first_evidence = sign(
+        writer.verifier(),
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &first_payload,
+    );
+    let first_receipt = writer
+        .append_decision(Digest32::ZERO, first, &first_evidence, 50)
+        .unwrap();
+
+    let observed = outcome("outcome-record-pending-test", "outcome-pending-test", None, 100);
+    let observed_evidence = sign(
+        writer.verifier(),
+        "observer",
+        LearningEvidenceRoleV1::Observer,
+        &outcome_signing_payload_v2(&observed),
+    );
+    let observed_receipt = writer
+        .append_outcome(
+            first_receipt.chain_digest,
+            observed,
+            &observed_evidence,
+            50,
+        )
+        .unwrap();
+
+    let mut pending = decision();
+    pending.record_id = id("decision-record-without-outcome");
+    pending.episode_id = id("episode-without-outcome");
+    pending.completeness.set_id = id("candidate-set-without-outcome");
+    pending.support_digest = digest("decision-support-without-outcome");
+    let pending_payload = decision_signing_payload_v2(&pending).unwrap();
+    let pending_evidence = sign(
+        writer.verifier(),
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &pending_payload,
+    );
+    writer
+        .append_decision(
+            observed_receipt.chain_digest,
+            pending,
+            &pending_evidence,
+            50,
+        )
+        .unwrap();
+
+    let plan = DatasetFreezePlanV2 {
+        snapshot_id: id("dataset-with-missing-outcome"),
+        objective_digest: digest("objective"),
+        inclusion_policy_digest: digest("inclusion-policy"),
+    };
+    let freeze_payload =
+        dataset_freeze_signing_payload_v2(&writer.snapshot().unwrap(), &plan).unwrap();
+    let freeze_evidence = sign(
+        writer.verifier(),
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        &freeze_payload,
+    );
+    let dataset = writer.freeze_dataset(plan, &freeze_evidence, 50).unwrap();
+
+    assert_eq!(dataset.snapshot.pending_outcomes, 1);
+    assert_eq!(dataset.snapshot.censored_outcomes, 0);
+    assert_eq!(dataset.snapshot.source_record_digests.len(), 3);
 }
 
 #[test]
