@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8ff3c4a646d42c55fcd93288b9ae5d01668d895d",
-    "tree": "f1722ca0e1fdec0971763595cfe19a657043cd4d"
+    "commit": "320585bf96fe8cc443fdc5ed5017cc6e9251644f",
+    "tree": "2f8481ed506aa076c108d74c0b1d6105e440e014"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -78,10 +78,10 @@
   ],
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
-    "baseCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "candidateHead": "8ff3c4a646d42c55fcd93288b9ae5d01668d895d",
-    "candidateTree": "f1722ca0e1fdec0971763595cfe19a657043cd4d",
-    "headMeaning": "frozen canonical_v2 query_bound_ordered_response_integrity live_pre_post_io_authority interruptible_single_attempt_transport agentd_product_composition v2_only_attachment_and_no_legacy_downgrade exact_scope_same_snapshot_frontier explicit_coverage one_peer_engine_multi_peer_product_orchestrator truth_surface_derived_index_sync and canonical_profile_claim_state candidate immediately before qualification metadata",
+    "baseCommit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
+    "candidateHead": "320585bf96fe8cc443fdc5ed5017cc6e9251644f",
+    "candidateTree": "2f8481ed506aa076c108d74c0b1d6105e440e014",
+    "headMeaning": "current_main_merged canonical_v2 integrity ordered_prefix partial_empty live_authority interruptible_transport product_composition batch_final_use current_verifier_and_generated_indexes",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -133,7 +133,7 @@
       "qualification/module-execution-dossiers/DETAILS.json",
       "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
     ],
-    "note": "sourceBase uses candidate_or_exact_observation_v1 for this module and is bound to the frozen candidate; observedAtHead proves the declared federation source root is byte-unchanged through metadata-only receipt commits. candidateHead/candidateTree attest the frozen current-main convergence candidate before metadata-only attestation commits. Only this implementation map and the module-scoped final-verification receipt may change after that candidate without invalidating the attestation. The dedicated qualification workflow now pins exact source-head identity, resolves the current remote-tracking main head at execution time, and constructs the repository-standard deterministic two-parent synthetic merge, then runs the same federation/product Rust suite on both identities. The candidate enforces ordered query-bound response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, exact-scope same-snapshot owner data frontier, V2-only product attachment, and prevention of legacy helper downgrade. The canonical crate is the one-peer checked engine; <=16-peer discovery/aggregation is product-orchestrator policy. Current V2 contracts are in-process Rust contracts, not an authenticated cross-host wire protocol. Physical-send final revalidation batches each owner/capability attachment set through one owner SQLite snapshot under one total bounded deadline; both direct federated and combined contributors delegate to that same batch path. The local observed_frontier is the exact-scope append-only memory-revision count from the retrieval snapshot; it is not an authenticated cut digest or rollback witness. The canonical implementation-profile claim state remains specified_not_product_evidence until execution gates pass. productExecutionProved, productionImplementation, activation, acceptance, promotion and release remain false until their independent evidence gates pass.",
+    "note": "sourceBase uses candidate_or_exact_observation_v1 and is bound to the frozen current-main merge candidate. observedAtHead proves the declared federation source root is byte-unchanged through metadata-only receipt commits. The candidate includes current main, exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, V2-only product attachment, batch final-use revalidation, current implementation-map verifier semantics, and current-main generated indexes/Cargo lock state. productExecutionProved, independent acceptance, activation and release remain false until executable and external gates pass.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
       "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
@@ -141,8 +141,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8ff3c4a646d42c55fcd93288b9ae5d01668d895d",
-    "tree": "f1722ca0e1fdec0971763595cfe19a657043cd4d"
+    "commit": "320585bf96fe8cc443fdc5ed5017cc6e9251644f",
+    "tree": "2f8481ed506aa076c108d74c0b1d6105e440e014"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-memory-federation"
