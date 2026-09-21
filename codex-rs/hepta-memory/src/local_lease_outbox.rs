@@ -1837,6 +1837,20 @@ impl LocalLeaseOutbox {
             &admission,
             &outbox,
         )?;
+        let operation = find_operation(&mut transaction, occurrence_key)
+            .await?
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::StaleFence(
+                    "inherited queued recovery requires a durable operation ledger row".to_string(),
+                )
+            })?;
+        verify_operation_row_incremental(
+            &operation,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &admission,
+            &outbox,
+        )?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -1997,12 +2011,18 @@ impl LocalLeaseOutbox {
                     "dispatch claim requires a durable operation ledger row".to_string(),
                 )
             })?;
-        let operation_semantic_sha256 = Sha256Digest::parse(&operation.semantic_sha256)
+        let intent = verify_operation_row_incremental(
+            &operation,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &admission,
+            &outbox,
+        )?;
+        let operation_semantic_sha256 = Sha256Digest::parse(intent.semantic_digest().to_string())
             .map_err(|_| corrupt("dispatch claim operation semantic digest is invalid"))?;
-        let expected_predecessor_sha256 = operation
-            .expected_predecessor_sha256
-            .as_deref()
-            .map(Sha256Digest::parse)
+        let expected_predecessor_sha256 = intent
+            .expected_predecessor
+            .map(|digest| Sha256Digest::parse(digest.to_string()))
             .transpose()
             .map_err(|_| corrupt("dispatch claim predecessor digest is invalid"))?;
         let expected = dispatch_operation_digest(
