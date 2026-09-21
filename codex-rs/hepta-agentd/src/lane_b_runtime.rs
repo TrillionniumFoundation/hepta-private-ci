@@ -82,6 +82,7 @@ pub struct RunSnapshot {
     pub objective_digest: String,
     pub body_digest: String,
     pub artifact_set_digest: String,
+    pub execution_payload_digest: String,
     pub authority_epoch: u64,
     pub deadline_ms: u64,
 }
@@ -116,6 +117,7 @@ pub struct RunReceipt {
     pub phase: RunPhase,
     pub context_digest: Option<String>,
     pub compilation_receipt_digest: Option<String>,
+    pub execution_payload_digest: String,
     pub authority_epoch: u64,
     pub deadline_ms: u64,
     pub cancel_reason: Option<String>,
@@ -511,6 +513,8 @@ impl AgentRunCoordinator {
             || record.snapshot.objective_digest != envelope.objective_digest.to_string()
             || record.snapshot.body_digest != envelope.body_digest.to_string()
             || record.snapshot.artifact_set_digest != envelope.artifact_set_digest.to_string()
+            || record.snapshot.execution_payload_digest
+                != envelope.execution_payload_digest.to_string()
             || record.snapshot.authority_epoch != envelope.authority_epoch
             || record.snapshot.deadline_ms != deadline_ms
         {
@@ -1025,6 +1029,7 @@ fn validate_snapshot_fields(value: &RunSnapshot) -> Result<(), AgentRunError> {
         (&value.objective_digest, "objective"),
         (&value.body_digest, "body"),
         (&value.artifact_set_digest, "artifact set"),
+        (&value.execution_payload_digest, "execution payload"),
     ] {
         validate_digest(digest, field)?;
     }
@@ -1190,6 +1195,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         phase: record.phase,
         context_digest: record.context_digest.clone(),
         compilation_receipt_digest: record.compilation_receipt_digest.clone(),
+        execution_payload_digest: record.snapshot.execution_payload_digest.clone(),
         authority_epoch: record.snapshot.authority_epoch,
         deadline_ms: record.snapshot.deadline_ms,
         cancel_reason: record.cancel_reason.clone(),
