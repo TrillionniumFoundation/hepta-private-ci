@@ -46,6 +46,8 @@ struct MatrixSyncMutationIdentityV2<'a> {
     source_event_id: &'a MatrixEventId,
     room_id: &'a MatrixRoomId,
     sender: &'a MatrixUserId,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    transaction_id: Option<&'a MatrixTransactionId>,
     binding_revision: u64,
     generation: u64,
     origin_server_ts_ms: u64,
@@ -338,6 +340,9 @@ impl MatrixDurableStore {
         {
             return Err(MatrixDurableError::AccessDenied);
         }
+        if mutation.transaction_id.is_some() && mutation.sender != bound_user {
+            return Err(MatrixDurableError::AccessDenied);
+        }
         if !matches!(&mutation.body, MatrixSyncMutationBodyV2::Timeline { .. }) {
             let source_exists: i64 =
                 sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM inbox_events WHERE event_id = ?)")
@@ -388,7 +393,21 @@ impl MatrixDurableStore {
                 event_type,
                 payload,
             } => {
-                if is_tombstoned_tx(
+                if let Some(txn_id) = &mutation.transaction_id {
+                    // Egress terminality is committed in the exact same owner
+                    // transaction as the sync cursor. A crash can therefore
+                    // never advance past the only terminal observation.
+                    self.observe_outbound_event_tx(
+                        transaction,
+                        txn_id,
+                        &mutation.room_id,
+                        &mutation.source_event_id,
+                        &semantic_digest,
+                        mutation.received_at_ms,
+                    )
+                    .await?;
+                    MatrixSyncMutationDispositionV2::Applied
+                } else if is_tombstoned_tx(
                     transaction,
                     &mutation.room_id,
                     &mutation.source_event_id,
@@ -441,6 +460,14 @@ impl MatrixDurableStore {
                     Some(&mutation.room_id),
                     Some(target_event_id),
                     /*txn_id*/ None,
+                    mutation.received_at_ms,
+                )
+                .await?;
+                self.apply_dispatch_redaction_tx(
+                    transaction,
+                    &mutation.source_event_id,
+                    target_event_id,
+                    &semantic_digest,
                     mutation.received_at_ms,
                 )
                 .await?;
@@ -687,6 +714,7 @@ fn mutation_identity(
         source_event_id: &mutation.source_event_id,
         room_id: &mutation.room_id,
         sender: &mutation.sender,
+        transaction_id: mutation.transaction_id.as_ref(),
         binding_revision: mutation.binding_revision,
         generation: mutation.generation,
         origin_server_ts_ms: mutation.origin_server_ts_ms,
