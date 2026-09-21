@@ -141,6 +141,9 @@ fn proof(checkpoint: &CompactCheckpointV1, candidate_seed: &str) -> CompactionPr
     let mut proof = CompactionProofV2 {
         checkpoint_digest: checkpoint.checkpoint_digest,
         candidate_digest,
+        tokenizer_implementation_digest: digest("tokenizer-implementation"),
+        tokenizer_attestation_digest: digest("tokenizer-attestation"),
+        tokenizer_key_digest: digest("tokenizer-key"),
         evaluator_id: qualification.evaluator_id,
         evaluator_implementation_digest,
         evaluation_artifact_digest: qualification.evaluation_artifact_digest,
