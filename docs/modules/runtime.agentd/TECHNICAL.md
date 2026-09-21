@@ -144,6 +144,10 @@ The run map is intentionally ephemeral and is not a second durable execution led
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
+### Durable run-start projection
+
+The daemon coordinator exposes the owner-internal `start_revalidated_run_start` bridge for a `RunStartRecordV1` that has already been revalidated by the product owner against current trust. The bridge fixes the durable-owner → daemon-owner mapping: `admission.admitted_source_digest` is the runtime request identity, and objective/body/artifact/authority/generation/fence/deadline are copied from the durable record. `ExplicitAbstain` is terminal at objective admission and is never inserted as an executable run. A retained journal record is not, by itself, proof that its signer remains current; raw-record authentication is intentionally outside this bridge.
+
 ## 8. Failure semantics, recovery and rollback
 
 Run deadlines remain live after admission: expiration before dispatch becomes a local terminal cancellation; expiration after dispatch moves the run to `Cancelling` and still requires owner terminal observation. Shutdown closes new admission before teardown, converts pre-dispatch work to local cancellation, moves dispatched work to cancelling, and keeps the control path running for a bounded drain. After the drain deadline, unresolved dispatched/cancelling work becomes `Indeterminate`; a second bounded reconciliation window accepts exact terminal observations. If uncertainty remains, shutdown reports recovery-required rather than fabricating success/failure.
