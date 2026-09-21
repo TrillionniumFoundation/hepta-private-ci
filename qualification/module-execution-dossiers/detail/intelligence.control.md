@@ -26,9 +26,11 @@ Implemented canonical operations:
 
 The facade owns ephemeral orchestration only: run identity, frozen owner bindings, candidate-set identity, per-stage predecessor/output digests and advisory decision/context bindings. Each frozen owner binding includes generation, implementation digest and current-key identity. The snapshot additionally binds authority epoch, revocation frontier, body generation and configuration digest.
 
-Agentd owns the product-call lifetime but not the facts. The seven owner APIs are invoked directly from their authoritative crates. A successful cognition worker has no dispatch or ledger capability; after it returns, Agentd performs another full currentness check before publishing a dispatch-proposal digest. Decision and Outcome are appended only through the existing sealed `DurableLearningJournal`.
+Agentd owns the product-call lifetime but not the facts. The seven owner APIs are invoked directly from their authoritative crates. A successful cognition worker has no dispatch or ledger capability; after it returns, Agentd performs another full currentness check before publishing a dispatch-proposal digest. Currentness comes from an Ed25519-signed manifest whose verifier key is configured outside the manifest and whose signed domain includes the authority epoch, revocation frontier and all seven owner generation/implementation/key identities.
 
-Ledger append uncertainty never becomes success. `Indeterminate` or ambiguous I/O returns `PendingIntelligenceLedgerAppendV1`, preserving the exact event and original predecessor. Reconciliation requires a freshly recovered journal and exact replay.
+The daemon-owned `AgentRunCoordinator` freezes the exact prepared envelope into a typed run snapshot plus context attachment. runtime.codex accepts that binding only at the exact `ContextAttached` revision, persists its native dispatch identity, advances Agentd to `Dispatched`, and only then calls App Server `turn/start`. Decision and independently observed Outcome are appended only through the existing sealed `DurableLearningJournal`.
+
+Ledger append uncertainty never becomes success. `Indeterminate` or ambiguous I/O returns `PendingIntelligenceLedgerAppendV1`, preserving the exact event and original predecessor. Reconciliation requires a freshly recovered journal and exact replay. Physical after-send uncertainty is also explicit: lost turn/start acknowledgement or a cancellation/deadline grace window without terminal provider evidence transitions the same Agentd run to `Indeterminate`; no automatic redispatch is permitted.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -41,10 +43,12 @@ Ledger append uncertainty never becomes success. `Indeterminate` or ambiguous I/
 7. Run `intuition.policy::decide_calibrated_v2`; retain the exact positive propensity for a selected candidate. Abstain/slow-path terminates before context/evaluation/dispatch.
 8. Compile context through `context.compiler::compile` bound to the canonical snapshot/objective.
 9. Admit the selected candidate through `learning.eval::evaluate`; non-eligible dispositions stop the product path.
-10. Revalidate every owner again, return an authority-free `IntelligenceHostEnvelopeV1`, then let Agentd perform one further final-use currentness fence before deriving a dispatch proposal.
-11. Only after that boundary may Agentd append the durable Decision. Independently observed terminal Outcome is a separate ledger event.
+10. Revalidate every owner again, return an authority-free `IntelligenceHostEnvelopeV1`, then let Agentd perform one further final-use currentness fence before deriving a dispatch proposal and freezing the exact envelope into `ContextAttached`.
+11. runtime.codex rechecks that exact Agentd run/context/envelope revision, persists its native dispatch write-ahead, advances the run to `Dispatched`, and only then crosses App Server `turn/start`.
+12. Provider terminal observation returns to the same run revision. Lost turn-start acknowledgement, transport loss or no-terminal cancellation grace becomes `Indeterminate`, never safe replay.
+13. Durable Decision and independently observed terminal Outcome remain separate learning-ledger events and still require currentness at append/reconcile time.
 
-Each real owner call is measured with a monotonic `Instant` and rejected when it exceeds its stage budget. The entire cognition run also has a total timeout around an isolated blocking worker. Late worker results have no effect/ledger capability and are discarded.
+Each real owner call is measured with a monotonic `Instant` and rejected when it exceeds its stage budget. The entire cognition run also has a total timeout around a blocking worker. Late worker results have no effect/ledger capability and are discarded; this is effect isolation, not a claim that `spawn_blocking` can kill a running synchronous Rust instruction.
 
 ## 5. Capacity and performance profile
 
@@ -58,25 +62,28 @@ Source tests now include:
 
 - `codex-rs/hepta-intelligence/src/canonical_tests.rs`: seven-owner order with first-class NDU, abstention truncation, post-call generation drift, key rotation, wrong-owner receipt and duplicate candidate rejection.
 - `codex-rs/hepta-agentd/src/intelligence_product_tests.rs`: real objective/NDU/neuron/prompt/intuition/context/evaluation APIs, Agentd dispatch proposal, real durable Decision -> independent terminal Outcome, acknowledged reopen and idempotent retry.
-- The Agentd product tests also cover missing current owner, final-use revocation-frontier race and total-budget timeout before any ledger capability is exposed.
+- The Agentd product tests also cover missing current owner, signed-currentness substitution, final-use revocation-frontier race, exact admit/context/dispatch/terminal lifecycle and total-budget timeout before any ledger capability is exposed.
+- Agent protocol tests cover strict bounded run-lifecycle DTO round trips with owner-controlled admission time.
+- Native inference source binds physical turn dispatch and terminal/indeterminate reconciliation to the exact Agentd intelligence run; a real-process App Server E2E for the exact candidate remains required before `productExecutionProved` can become true.
 - Existing vertical/evaluated-shadow tests remain compatibility regression coverage.
 
 These are executable source tests. They become exact-candidate evidence only when the repository workflows execute them on the exact head and deterministic merge candidate. Target-host resource evidence remains a separate receipt.
 
 ## 7. Integration, rollback and capability ceiling
 
-The product topology is now explicit: Agentd is the product caller; `intelligence.control` is an in-process composition facade; the seven facts remain with their owners; dispatch remains a proposal until the existing runtime/effect boundary authorizes and observes it.
+The product topology is now explicit: Agentd is the composition caller; `intelligence.control` is an in-process composition facade; the seven facts remain with their owners; `AppServerModelDriver::run_intelligence` is the named physical turn caller and the worker binary exposes the same exact binding. Dispatch is not a model success claim: it is a durable/Agentd transition that precedes the physical App Server effect boundary.
 
-Currentness is final-use, not admission-only. Key rotation, owner generation drift, authority-epoch drift or revocation-frontier drift invalidates the frozen run before publication. An exact durable Decision/Outcome retry may replay after restart only when currentness still permits use.
+Currentness is final-use, not admission-only. Key rotation, owner generation drift, authority-epoch drift or revocation-frontier drift invalidates the frozen run before publication. The currentness manifest itself must verify under the separately configured signer key, so rewriting JSON fields cannot substitute a new current key. An exact durable Decision/Outcome retry may replay after restart only when currentness still permits use.
 
 This source grants no model/provider/tool/effect authority, no production activation, no selection/promotion/release authority and no independent acceptance. C1 prompted-memory retrieval remains a distinct planned capability and is not closed by the basic product composition.
 
 ## 8. Current native implementation
 
 - **Canonical entrypoints:** `build_legal_candidates`, `prepare_intelligence_run`, `decide_boundary`, `assemble_context`, `validate_current_snapshot` in [codex-rs/hepta-intelligence/src/canonical.rs](../../../codex-rs/hepta-intelligence/src/canonical.rs).
-- **Named product caller:** `AgentdIntelligenceProductRunnerV1` in [codex-rs/hepta-agentd/src/intelligence_product.rs](../../../codex-rs/hepta-agentd/src/intelligence_product.rs), with concrete adapters to objective, NDU, neuron, prompt, intuition, context, evaluation and the sealed learning ledger.
+- **Named composition caller:** `AgentdIntelligenceProductRunnerV1` in [codex-rs/hepta-agentd/src/intelligence_product.rs](../../../codex-rs/hepta-agentd/src/intelligence_product.rs), with concrete adapters to objective, NDU, neuron, prompt, intuition, context, evaluation and the sealed learning ledger.
+- **Named physical caller:** `AppServerModelDriver::run_intelligence` in `codex-rs/hepta-infer-worker-host/src/native_run_control.rs`, backed by the real App Server driver and exact Agentd run-lifecycle RPCs. The `hepta-infer-worker` binary exposes the same binding through all-or-none intelligence arguments.
 - **Compatibility/reference entrypoints:** `run_read_only_vertical`, `run_shadow_pipeline`, `run_shadow_pipeline_v2`, `run_evaluated_shadow_v1` and the bounded `compose` helper. They retain their historical receipt domains but are not the product facade.
-- **State and recovery:** no new intelligence store. File-backed Agentd freshness state is reread for every currentness query. Learning durability remains in `DurableLearningJournal`; ambiguous append returns an explicit pending exact-replay object.
+- **State and recovery:** no new intelligence fact store. The currentness manifest is reread and signature-verified for every query. Agentd owns ephemeral run lifecycle state; runtime.codex owns its existing durable native dispatch journal; learning durability remains in `DurableLearningJournal`. Ambiguous ledger append preserves an exact pending replay object, while ambiguous physical dispatch is an Agentd `Indeterminate` run and is never redispatched automatically.
 - **Source tests:** [codex-rs/hepta-intelligence/src/canonical_tests.rs](../../../codex-rs/hepta-intelligence/src/canonical_tests.rs), [codex-rs/hepta-agentd/src/intelligence_product_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_product_tests.rs), plus existing vertical/evaluated-shadow suites.
 - **Operating references:** [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md) for the legacy evaluated-shadow surface and this dossier for the canonical product path.
-- **Remaining work:** current exact-head and deterministic-merge execution receipts; target-host latency/RSS/cancellation measurements; activation wiring into the selected live Agentd/App Server deployment profile; independent semantic/security acceptance; and the separate C1 prompted-memory retrieval milestone. Live provider/model/effect execution is outside this facade.
+- **Remaining work:** current exact-head and deterministic-merge execution receipts; exact-candidate real-process Agentd/App Server intelligence-bound E2E including lost-ack/restart/revocation races; target-host latency/RSS and hard-termination measurements; independent semantic/security acceptance; and the separate C1 prompted-memory retrieval milestone. Source integration of the physical model route does not itself prove a live provider, target host, activation, promotion or release.
