@@ -2,8 +2,9 @@
 //!
 //! The host must supply an externally verified authority lease and verifier.
 //! Nothing in Agentd startup installs this capability automatically; the
-//! default runtime remains read-only. A dispatcher target is likewise an
-//! explicit attachment and dispatch fails closed while it is absent.
+//! default runtime remains read-only. Destination adapters are explicitly
+//! registered by stable destination id and dispatch fails closed when the
+//! requested destination is absent or ambiguous.
 
 use std::collections::BTreeMap;
 use std::fmt;
@@ -144,18 +145,28 @@ impl AgentdProductionOperationRuntimeConfig {
         self,
         store: CognitiveStore,
     ) -> Result<(Arc<AgentdProductionWriterHost>, Duration), AgentdError> {
-        let reconcile_interval = self.reconcile_interval;
+        let Self {
+            authority,
+            verifier,
+            lease_id,
+            lease_generation,
+            final_use,
+            target,
+            grants,
+            reconcile_interval,
+            additional_targets,
+        } = self;
         let mut host = AgentdProductionWriterHost::open_with_store(
             store,
-            self.authority,
-            self.verifier.as_ref(),
-            self.lease_id,
-            self.lease_generation,
+            authority,
+            verifier.as_ref(),
+            lease_id,
+            lease_generation,
         )
         .await?
-        .attach_target(self.final_use, self.target, Arc::clone(&self.grants));
-        for (final_use, target) in self.additional_targets {
-            host = host.attach_additional_target(final_use, target)?;
+        .attach_target(final_use, target, Arc::clone(&grants))?;
+        for (additional_final_use, additional_target) in additional_targets {
+            host = host.attach_additional_target(additional_final_use, additional_target)?;
         }
         Ok((Arc::new(host), reconcile_interval))
     }
@@ -244,14 +255,20 @@ impl AgentdProductionWriterHost {
         final_use: FinalUseAuthority,
         target: Arc<dyn FinalUseProductionOutboxTarget>,
         grants: Arc<dyn AgentdFinalUseGrantProvider>,
-    ) -> Self {
+    ) -> Result<Self, AgentdError> {
         let destination = target.destination_id().to_string();
+        if destination.is_empty() || !self.dispatchers.is_empty() {
+            return Err(AgentdError::Invalid(
+                "primary production operation destination must be non-empty and attached exactly once"
+                    .to_string(),
+            ));
+        }
         self.dispatchers.insert(
             destination,
             ProductionFinalUseOutboxDispatcher::attach(final_use, target),
         );
         self.grants = Some(grants);
-        self
+        Ok(self)
     }
 
     pub fn attach_additional_target(
