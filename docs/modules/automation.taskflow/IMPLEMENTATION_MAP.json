@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "900365834c8f19c6b7dee794f139e9c95325bf3c",
-    "tree": "629501b8f621ac2774f9efb6a7fccf706acc9c90"
+    "commit": "70d2b0edca4e723e24ca9041f6cbcafde6096363",
+    "tree": "d72810898cbc6169d0fdd2dfb5f3edf12846f80f"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -39,11 +39,25 @@
           "command": "cargo test -p codex-hepta-automation"
         }
       ],
-      "sourceSemantics": "Persists append-only Calendar V2 revisions with explicit timezone/tzdb identity, start/end, DST gap/overlap policy and bounded recurrence while preserving Once/FixedInterval compatibility records.",
+      "sourceSemantics": "Persists append-only Calendar V2 revisions with explicit timezone/tzdb identity, start/end, DST gap/overlap policy and bounded recurrence while preserving Once/FixedInterval compatibility records; Agentd advertises automation.calendar_v2@1.0 and generation-fences the typed creation call.",
       "operation": "register_schedule",
       "nativeSymbol": "pub async fn create_calendar_task_v2(",
       "sourcePath": "codex-rs/hepta-automation/src/schedule_v2.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "productCallers": [
+        {
+          "role": "product_control_dispatch",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "AgentdMethod::AutomationCreateCalendarV2",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "typed_product_client",
+          "path": "codex-rs/hepta-agentd/src/client.rs",
+          "symbol": "pub async fn automation_create_calendar_v2(",
+          "ownerModule": "runtime.agentd"
+        }
+      ]
     },
     {
       "designOperation": "materialize_due",
@@ -153,13 +167,17 @@
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "productCallers": [],
+      "productCompositionState": "pending_independent_final_use_host_and_attested_provider_product_caller"
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "External-effect product composition remains open: no registered product caller currently binds the TaskFlow AuthorizedEffectDriver seam to an independently provisioned FinalUseAuthority host and an independently attested concrete provider/terminal observer."
+  ],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",
-    "concrete registered downstream effect owner and trusted terminal/reconciliation evidence for every activated external effect",
+    "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect",
     "real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification",
     "independent acceptance, activation, promotion and release evidence"
   ],
@@ -176,11 +194,15 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "repositoryControlledProductCompositionGapsClosed": false,
+    "calendarV2ProductControlComplete": true,
+    "externalEffectProductCompositionComplete": false,
+    "agedTurnRecoveryLivenessGapClosed": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_composed_for_codex_activity_operation_intent_v1_and_final_use_effect_seam_composed_concrete_effect_owner_pending",
+  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
   "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
@@ -190,10 +212,15 @@
   ],
   "observedSourcePaths": [
     "codex-rs/hepta-automation",
+    "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd/src/automation.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/app-server/src/request_processors/thread_processor.rs",
+    "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
     "codex-rs/hepta-operations",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-types",
@@ -201,9 +228,9 @@
     "codex-rs/Cargo.lock"
   ],
   "observedAtHead": {
-    "commit": "900365834c8f19c6b7dee794f139e9c95325bf3c",
-    "tree": "629501b8f621ac2774f9efb6a7fccf706acc9c90",
-    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence, workspace dependency restoration, Calendar V2 creation repair, canonical provider-absence identity, dispatch-attempt-scoped restart identity, generation-scoped immutable TaskFlow lease-claim identity, current-schema recovery/migration fixtures, repository-current rustfmt normalization, reopen-safe provider-proven-absence cancellation, and canonical occurrence identity revalidation on store open; later commits may update documentation/projection truth only, and every declared observed source path must remain byte-unchanged through the verified candidate Agentd observation is intentionally scoped to the concrete automation scheduler, recovery, runtime composition, and runtime qualification files rather than the whole Agentd crate."
+    "commit": "70d2b0edca4e723e24ca9041f6cbcafde6096363",
+    "tree": "d72810898cbc6169d0fdd2dfb5f3edf12846f80f",
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity, canonical provider-absence recovery identity, reopen-safe absence verification, capability-negotiated Calendar V2 Agentd product control, and exact full-history fallback when a known persisted turn ages beyond the bounded recent scan; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
