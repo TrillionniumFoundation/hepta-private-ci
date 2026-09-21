@@ -777,7 +777,7 @@ fn federation_source_binding(
     let serialized = serde_json::to_vec(bindings).ok()?;
     let serialized_coverage = serde_json::to_vec(coverage).ok()?;
     Some(digest_many(
-        b"hepta:cognitive:federated-ephemeral-source-binding:v1",
+        b"hepta:cognitive:federated-ephemeral-source-binding:v2",
         &[
             thread_id.as_bytes(),
             turn_id.as_bytes(),
