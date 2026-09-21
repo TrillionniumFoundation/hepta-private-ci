@@ -996,12 +996,7 @@ mod tests {
             recover
         );
 
-        let release = AgentdRequest::run_release_closed(
-            16,
-            4,
-            "run.1".to_string(),
-            10,
-        );
+        let release = AgentdRequest::run_release_closed(16, 4, "run.1".to_string(), 10);
         let release_bytes = serde_json::to_vec(&release).expect("serialize release");
         assert!(release_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
