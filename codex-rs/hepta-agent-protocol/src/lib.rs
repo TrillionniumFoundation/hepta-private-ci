@@ -938,6 +938,7 @@ mod tests {
             objective_digest: "2".repeat(64),
             body_digest: "3".repeat(64),
             artifact_set_digest: "4".repeat(64),
+            execution_payload_digest: "5".repeat(64),
             authority_epoch: 7,
             deadline_ms: 9_999,
         };
