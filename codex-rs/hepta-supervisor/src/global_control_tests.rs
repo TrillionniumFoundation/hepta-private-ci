@@ -230,6 +230,7 @@ fn host_policy() -> GlobalControlHostPolicyV1 {
         required_owner_ids: owners,
         evaluation_policy_digest: canonical_ndu_planning_policy_digest(&ndu)
             .expect("host NDU policy"),
+        revocation_frontier_digest: digest("host-revocation-frontier"),
         maximum_owner_age_micros: 60_000_000,
         maximum_plan_lifetime_micros: 5_000_000,
         snapshot_policy_digest: digest("supervisor-global-control-policy"),
@@ -622,6 +623,34 @@ async fn caller_cannot_omit_host_required_owner() {
             GlobalPlaneError::OwnerSetMismatch
         ))
     ));
+}
+
+#[tokio::test]
+async fn caller_cannot_replace_host_revocation_frontier() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let authority_signing = SigningKey::from_bytes(&[29; 32]);
+    let objective = digest("global-objective");
+    let configuration = digest("global-configuration");
+    let generation = Generation::new(11).expect("generation");
+    let summary = evidence_owner(objective, generation, configuration);
+    let (message, issuer) = sign_owner(&summary);
+    let mut host = GlobalControlHostV1::open(
+        evidence_store(&temporary.path().join("evidence")).await,
+        &temporary.path().join("planner"),
+        &[],
+        authority(&temporary.path().join("authority"), &authority_signing),
+        fleet_state(),
+        host_policy(),
+        owner_trusts(issuer),
+    )
+    .expect("global host");
+    let mut request = plan_request(summary, message);
+    request.snapshot_request.revocation_frontier_digest = digest("caller-stale-frontier");
+    let plan = host.plan(request).await.expect("host-owned frontier");
+    assert_eq!(
+        plan.snapshot.revocation_frontier_digest(),
+        digest("host-revocation-frontier")
+    );
 }
 
 #[tokio::test]
