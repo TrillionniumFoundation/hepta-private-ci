@@ -298,6 +298,94 @@
       "capabilityCeiling": "durable SQLite v9 worker registration/lease/claim/heartbeat/result/completion lifecycle with bounded retry, immutable accepted completion receipt digest, and revision/audit-stable acknowledgement-loss replay; no worker self-completion or merge authority"
     },
     {
+      "designOperation": "durable_worker_registration",
+      "nativeSymbol": "register_worker",
+      "ownerSymbol": "EngineeringControlProduct.register_worker",
+      "tests": [
+        "WorkerLifecycleTests.test_claim_heartbeat_worker_result_and_independent_completion",
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation",
+        "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "signed durable worker registration bound to product owner; no execution or merge authority"
+    },
+    {
+      "designOperation": "durable_worker_claim",
+      "nativeSymbol": "claim_assignment",
+      "ownerSymbol": "EngineeringControlProduct.claim",
+      "tests": [
+        "WorkerLifecycleTests.test_claim_requires_registered_assigned_worker_and_fenced_lease",
+        "WorkerLifecycleTests.test_ack_loss_replays_are_idempotent_across_reopen",
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "fenced durable assignment claim with acknowledgement-loss replay; no self-completion"
+    },
+    {
+      "designOperation": "durable_worker_heartbeat",
+      "nativeSymbol": "heartbeat_claim",
+      "ownerSymbol": "EngineeringControlProduct.heartbeat",
+      "tests": [
+        "WorkerLifecycleTests.test_claim_heartbeat_worker_result_and_independent_completion",
+        "WorkerLifecycleTests.test_ack_loss_replays_are_idempotent_across_reopen",
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "signed heartbeat observation may extend only the bounded claim window"
+    },
+    {
+      "designOperation": "durable_worker_result",
+      "nativeSymbol": "submit_worker_result",
+      "ownerSymbol": "EngineeringControlProduct.submit_result",
+      "tests": [
+        "WorkerLifecycleTests.test_claim_heartbeat_worker_result_and_independent_completion",
+        "WorkerLifecycleTests.test_timeout_requeues_but_semantic_failure_never_retries",
+        "WorkerLifecycleTests.test_ack_loss_replays_are_idempotent_across_reopen",
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "signed worker result is durable but success remains non-terminal until independent completion observation"
+    },
+    {
+      "designOperation": "durable_worker_completion_observation",
+      "nativeSymbol": "observe_claim_completion",
+      "ownerSymbol": "EngineeringControlProduct.observe_completion",
+      "tests": [
+        "WorkerLifecycleTests.test_claim_heartbeat_worker_result_and_independent_completion",
+        "WorkerLifecycleTests.test_ack_loss_replays_are_idempotent_across_reopen",
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation",
+        "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "independent ci_executor completion observation closes the worker claim; replay is revision/audit stable"
+    },
+    {
+      "designOperation": "durable_integration_queue_publication",
+      "nativeSymbol": "publish_integration_queue",
+      "ownerSymbol": "EngineeringControlProduct.publish_integration_queue",
+      "tests": [
+        "IntegrationControllerTests.test_evidence_progression_reopen_and_terminal_observation",
+        "IntegrationControllerTests.test_base_drift_invalidates_generation_and_requires_replan",
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "publishes a base-bound durable integration queue generation without merge authority"
+    },
+    {
+      "designOperation": "durable_integration_reconciliation",
+      "nativeSymbol": "observe_integration_stage / reconcile_integration_item",
+      "ownerSymbol": "EngineeringControlProduct.reconcile_integration",
+      "tests": [
+        "IntegrationControllerTests.test_authenticated_stage_observations_gate_product_readiness_projection",
+        "IntegrationControllerTests.test_identical_observation_retry_is_revision_stable_noop",
+        "IntegrationControllerTests.test_terminal_retry_is_idempotent_but_conflicting_terminal_is_rejected",
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation",
+        "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path"
+      ],
+      "state": "source_implemented_authenticated_stage_boundary",
+      "capabilityCeiling": "signed candidate/review/CI observations reach ready_external_merge; terminal outcomes require a separate authenticated observer"
+    },
+    {
       "designOperation": "named_product_owner_composition",
       "nativeModule": "control_engineering_v2.product_runtime",
       "nativeSymbol": "EngineeringControlProduct",
