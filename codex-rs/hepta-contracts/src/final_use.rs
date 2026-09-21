@@ -3,8 +3,11 @@
 
 use std::collections::BTreeSet;
 use std::fmt;
+use std::future::Future;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -99,6 +102,7 @@ struct Inner {
     signer_id: String,
     key: VerifyingKey,
     state: Mutex<State>,
+    active_dispatches: AtomicUsize,
     store: store::Store,
 }
 
@@ -143,6 +147,7 @@ impl FinalUseAuthority {
             signer_id,
             key,
             state: Mutex::new(state),
+            active_dispatches: AtomicUsize::new(0),
             store,
         })))
     }
@@ -167,6 +172,14 @@ impl FinalUseAuthority {
                     .is_superset(&state.head.revoked_grant_ids))
         {
             return Err(FinalUseError::StaleRevocationHead);
+        }
+        // A successful revocation update must linearize either before a
+        // provider dispatch enters its final-use fence or after that dispatch
+        // leaves it. Do not block a runtime thread on an async provider future:
+        // callers retry the trusted update once the bounded dispatch fence is
+        // released.
+        if self.0.active_dispatches.load(Ordering::Acquire) != 0 {
+            return Err(FinalUseError::DispatchInProgress);
         }
         let mut next = state.clone();
         if head.authority_epoch > next.head.authority_epoch {
@@ -228,15 +241,52 @@ impl FinalUseAuthority {
         })
     }
 
-    /// Revalidate live authority after asynchronous work and before releasing a
-    /// secret to its consumer. The consumer runs under the revocation fence, so
-    /// a successful revocation update cannot race between check and delivery.
+    /// Revalidate live authority immediately before a synchronous consumer
+    /// enters its external-effect boundary. A successful revocation update
+    /// cannot interleave with this consumer; concurrent trusted updates fail
+    /// with `DispatchInProgress` and may be retried after the bounded fence
+    /// leaves.
     pub fn with_verified_use<T>(
         &self,
         token: VerifiedUseToken,
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
+        let guard = self.enter_verified_use(token, expected)?;
+        let result = consumer();
+        drop(guard);
+        Ok(result)
+    }
+
+    /// Async counterpart used by provider transports whose physical entry
+    /// crosses an await boundary. The mutex itself is never held across await;
+    /// instead an in-memory active-dispatch fence makes a trusted revocation
+    /// update fail explicitly until the future completes or is cancelled.
+    ///
+    /// This is intentionally stricter than "check, unlock, await": a
+    /// revocation update can succeed before this method enters (and then the
+    /// grant is rejected), or after the returned future leaves the fence, but
+    /// never in between.
+    pub async fn with_verified_use_async<T, F>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce() -> F,
+    ) -> Result<T, FinalUseError>
+    where
+        F: Future<Output = T>,
+    {
+        let guard = self.enter_verified_use(token, expected)?;
+        let result = consumer().await;
+        drop(guard);
+        Ok(result)
+    }
+
+    fn enter_verified_use(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+    ) -> Result<ActiveDispatchGuard, FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
@@ -249,9 +299,22 @@ impl FinalUseAuthority {
             return Err(FinalUseError::Unavailable);
         }
         validate_live(&token.grant, &state.head)?;
-        let result = consumer();
+        self.0.active_dispatches.fetch_add(1, Ordering::AcqRel);
         drop(state);
-        Ok(result)
+        Ok(ActiveDispatchGuard {
+            owner: Arc::clone(&self.0),
+        })
+    }
+}
+
+struct ActiveDispatchGuard {
+    owner: Arc<Inner>,
+}
+
+impl Drop for ActiveDispatchGuard {
+    fn drop(&mut self) {
+        let previous = self.owner.active_dispatches.fetch_sub(1, Ordering::AcqRel);
+        debug_assert!(previous != 0, "final-use dispatch fence underflow");
     }
 }
 
@@ -303,6 +366,7 @@ pub enum FinalUseError {
     Expired,
     AlreadyClaimed,
     CapacityExceeded,
+    DispatchInProgress,
     Unavailable,
     UnsafeStateDirectory,
     StateLocked,
