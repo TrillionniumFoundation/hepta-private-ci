@@ -443,7 +443,6 @@ fn adversarial_mixed_delta_matches_full_rebuild_canonically() {
     assert_eq!(incremental.generation_digest, full.generation_digest);
 }
 
-
 #[test]
 fn query_result_digest_binds_complete_request_even_when_edges_match() {
     let graph = build_complete_generation(
@@ -470,22 +469,14 @@ fn query_result_digest_binds_complete_request_even_when_edges_match() {
         .unwrap_or_else(|error| panic!("valid query: {error}"))
     };
 
-    let baseline = run(
-        vec![id("node:a")],
-        vec![KnowledgeRelationKindV2::Causes],
-        8,
-    );
+    let baseline = run(vec![id("node:a")], vec![KnowledgeRelationKindV2::Causes], 8);
     let broader_seed = run(
         vec![id("node:a"), id("node:b")],
         vec![KnowledgeRelationKindV2::Causes],
         8,
     );
     let broader_filter = run(vec![id("node:a")], Vec::new(), 8);
-    let broader_limit = run(
-        vec![id("node:a")],
-        vec![KnowledgeRelationKindV2::Causes],
-        9,
-    );
+    let broader_limit = run(vec![id("node:a")], vec![KnowledgeRelationKindV2::Causes], 9);
 
     for changed in [&broader_seed, &broader_filter, &broader_limit] {
         assert_eq!(baseline.edges, changed.edges);
