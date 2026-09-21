@@ -1079,94 +1079,31 @@ pub(crate) async fn verify_qualified_compact_store(
     pool: &SqlitePool,
     owner: &codex_hepta_contracts::AgentId,
 ) -> Result<(), CognitiveStoreError> {
-    let expected_objects: [(&str, &str, &[&str]); 10] = [
-        (
-            "cognitive_qualified_compact_checkpoints",
-            "table",
-            &[
-                "CREATE TABLE cognitive_qualified_compact_checkpoints",
-                "source_memory_snapshot_digest TEXT NOT NULL",
-                "PRIMARY KEY (owner_agent_id, scope_id, purpose_id, generation)",
-                "UNIQUE (owner_agent_id, scope_id, purpose_id, checkpoint_digest)",
-                ") STRICT",
-            ],
-        ),
-        (
-            "cognitive_qualified_compact_checkpoints_no_update",
-            "trigger",
-            &[
-                "BEFORE UPDATE ON cognitive_qualified_compact_checkpoints",
-                "RAISE(ABORT, 'qualified compact checkpoints are immutable')",
-            ],
-        ),
-        (
-            "cognitive_qualified_compact_checkpoints_no_delete",
-            "trigger",
-            &[
-                "BEFORE DELETE ON cognitive_qualified_compact_checkpoints",
-                "RAISE(ABORT, 'qualified compact checkpoints are immutable')",
-            ],
-        ),
-        (
-            "cognitive_qualified_compact_checkpoints_latest",
-            "index",
-            &[
-                "CREATE INDEX cognitive_qualified_compact_checkpoints_latest",
-                "owner_agent_id, scope_id, purpose_id, generation DESC",
-            ],
-        ),
-        (
-            "cognitive_qualified_compact_payloads",
-            "table",
-            &[
-                "CREATE TABLE cognitive_qualified_compact_payloads",
-                "payload_bytes BLOB NOT NULL",
-                "PRIMARY KEY (owner_agent_id, scope_id, purpose_id, payload_digest)",
-            ],
-        ),
-        (
-            "cognitive_qualified_compact_payloads_no_update",
-            "trigger",
-            &[
-                "BEFORE UPDATE ON cognitive_qualified_compact_payloads",
-                "content-addressed and immutable",
-            ],
-        ),
+    let expected_objects: [(&str, &str); 10] = [
+        ("cognitive_qualified_compact_checkpoints", "table"),
+        ("cognitive_qualified_compact_checkpoints_no_update", "trigger"),
+        ("cognitive_qualified_compact_checkpoints_no_delete", "trigger"),
+        ("cognitive_qualified_compact_checkpoints_latest", "index"),
+        ("cognitive_qualified_compact_payloads", "table"),
+        ("cognitive_qualified_compact_payloads_no_update", "trigger"),
         (
             "cognitive_qualified_compact_payloads_delete_requires_revocation",
             "trigger",
-            &[
-                "BEFORE DELETE ON cognitive_qualified_compact_payloads",
-                "qualified compact payload delete requires revocation",
-            ],
         ),
-        (
-            "cognitive_qualified_compact_payload_revocations",
-            "table",
-            &[
-                "CREATE TABLE cognitive_qualified_compact_payload_revocations",
-                "revocation_digest TEXT NOT NULL",
-                "PRIMARY KEY (owner_agent_id, scope_id, purpose_id, payload_digest)",
-            ],
-        ),
+        ("cognitive_qualified_compact_payload_revocations", "table"),
         (
             "cognitive_qualified_compact_payload_revocations_no_update",
             "trigger",
-            &[
-                "BEFORE UPDATE ON cognitive_qualified_compact_payload_revocations",
-                "payload revocations are immutable",
-            ],
         ),
         (
             "cognitive_qualified_compact_payload_revocations_no_delete",
             "trigger",
-            &[
-                "BEFORE DELETE ON cognitive_qualified_compact_payload_revocations",
-                "payload revocations are immutable",
-            ],
         ),
     ];
-    for (name, expected_type, required_fragments) in expected_objects {
+    let canonical_schema = normalize_qualified_compact_schema(include_str!(
+        "../migrations/0011_qualified_compact_checkpoints.sql"
+    ));
+    for (name, expected_type) in expected_objects {
         let object = sqlx::query("SELECT type, sql FROM sqlite_schema WHERE name = ?")
             .bind(name)
             .fetch_optional(pool)
@@ -1184,14 +1121,13 @@ pub(crate) async fn verify_qualified_compact_store(
                 "qualified compact schema object {name} has no SQL definition"
             )));
         };
+        let normalized_sql = normalize_qualified_compact_schema(&sql);
         if actual_type != expected_type
-            || required_fragments
-                .iter()
-                .copied()
-                .any(|fragment| !sql.contains(fragment))
+            || normalized_sql.is_empty()
+            || !canonical_schema.contains(&normalized_sql)
         {
             return Err(CognitiveStoreError::Corrupt(format!(
-                "qualified compact schema object {name} has the wrong definition"
+                "qualified compact schema object {name} differs from migration 0011"
             )));
         }
     }
@@ -1278,6 +1214,14 @@ pub(crate) async fn verify_qualified_compact_store(
             .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
     }
     Ok(())
+}
+
+fn normalize_qualified_compact_schema(sql: &str) -> String {
+    sql.split_whitespace()
+        .map(|token| token.trim_end_matches(';'))
+        .filter(|token| !token.is_empty())
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 fn ensure_checkpoint_capacity(current_rows: usize) -> Result<(), QualifiedCompactStoreError> {
