@@ -89,12 +89,13 @@
       "sourceEvidenceRoots": [
         "codex-rs/hepta-operations",
         "codex-rs/hepta-memory",
-        "codex-rs/hepta-agentd"
+        "codex-rs/hepta-agentd",
+        "codex-rs/hepta-automation"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7D-FAULT-MATRIX",
       "technicalDocument": "docs/modules/kernel.operations/TECHNICAL.md",
-      "interpretation": "exclusive contract root is hepta-operations; production implementation is delegated into the existing CognitiveStore/Agentd owners, while activation and release remain separate"
+      "interpretation": "exclusive contract root is hepta-operations; production implementation is delegated into the existing CognitiveStore/Agentd owners with CognitiveStore and Automation destination integrations, while external authority enrollment, activation and release remain separate"
     },
     {
       "module": "kernel.evidence",
