@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The canonical source is [codex-rs/hepta-intelligence/src/canonical.rs](../../../codex-rs/hepta-intelligence/src/canonical.rs); root exports include `build_legal_candidates`, `prepare_intelligence_run`, `decide_boundary`, `assemble_context` and `validate_current_snapshot`. The named product caller is [codex-rs/hepta-agentd/src/intelligence_product.rs](../../../codex-rs/hepta-agentd/src/intelligence_product.rs). It supplies concrete adapters to the seven authoritative owner crates and retains no replacement store. Historical `run_read_only_vertical`, `run_shadow_pipeline{,_v2}`, `run_evaluated_shadow_v1` and `compose` remain compatibility/reference surfaces, not parallel product facades. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation) for the exact claim boundary.
+The canonical source is [codex-rs/hepta-intelligence/src/canonical.rs](../../../codex-rs/hepta-intelligence/src/canonical.rs); root exports include `build_legal_candidates`, `prepare_intelligence_run`, `decide_boundary`, `assemble_context` and `validate_current_snapshot`. The named product-runner implementation is [codex-rs/hepta-agentd/src/intelligence_product.rs](../../../codex-rs/hepta-agentd/src/intelligence_product.rs). It supplies concrete adapters to the seven authoritative owner crates and retains no replacement store. The current daemon only configures/stores this runner; no Agentd request or App Server ingress invokes it yet, so this source must not be described as a composed product caller. Historical `run_read_only_vertical`, `run_shadow_pipeline{,_v2}`, `run_evaluated_shadow_v1` and `compose` remain compatibility/reference surfaces, not parallel product facades. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation) for the exact claim boundary.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -409,6 +409,6 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation remains implemented by `INTELLIGENCE-A0-Q0.63` in `codex-rs/hepta-intelligence`. The canonical product-composition candidate additionally binds the named Agentd caller in `codex-rs/hepta-agentd/src/intelligence_product.rs`.
+The bootstrap source-location obligation remains implemented by `INTELLIGENCE-A0-Q0.63` in `codex-rs/hepta-intelligence`. The current candidate additionally contains a named Agentd runner in `codex-rs/hepta-agentd/src/intelligence_product.rs`, but product composition remains pending until a daemon/App Server ingress actually calls it and binds the resulting envelope to the physical turn.
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and the Agentd process qualification, including package tests, all-target compilation, strict Clippy, formatting and deterministic merge qualification. Until exact-current-candidate receipts are terminal green, this guide claims source code presence only. It grants no production-writer, model/provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
