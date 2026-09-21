@@ -533,8 +533,10 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
     std::fs::remove_dir(directory.path().join("authority.nonces")).unwrap();
     std::fs::write(directory.path().join("authority.nonces"), []).unwrap();
     std::fs::set_permissions(
-        directory.path().join("authority.nonces"), std::fs::Permissions::from_mode(0o600),
-    ).unwrap();
+        directory.path().join("authority.nonces"),
+        std::fs::Permissions::from_mode(0o600),
+    )
+    .unwrap();
     drop(authority);
     assert_eq!(
         FinalUseAuthority::open_state_dir_with_trust(

@@ -10,11 +10,7 @@ use sha2::Sha256;
 pub(super) const RECORD_BYTES: usize = 80;
 pub(super) const MAX_LOG_BYTES: usize = MAX_CLAIMS * RECORD_BYTES;
 
-pub(super) fn encode(
-    state: &State,
-    nonce: [u8; 32],
-    trust_digest: [u8; 32],
-) -> [u8; RECORD_BYTES] {
+pub(super) fn encode(state: &State, nonce: [u8; 32], trust_digest: [u8; 32]) -> [u8; RECORD_BYTES] {
     let mut record = [0; RECORD_BYTES];
     record[..8].copy_from_slice(&state.head.authority_epoch.to_le_bytes());
     record[8..16].copy_from_slice(&state.head.revision.to_le_bytes());
@@ -41,17 +37,19 @@ pub(super) fn replay(
             return Err(FinalUseError::InvalidTrust);
         }
         let epoch = u64::from_le_bytes(
-            record[..8].try_into().map_err(|_| FinalUseError::InvalidTrust)?,
+            record[..8]
+                .try_into()
+                .map_err(|_| FinalUseError::InvalidTrust)?,
         );
         let revision = u64::from_le_bytes(
-            record[8..16].try_into().map_err(|_| FinalUseError::InvalidTrust)?,
+            record[8..16]
+                .try_into()
+                .map_err(|_| FinalUseError::InvalidTrust)?,
         );
         let nonce: [u8; 32] = record[16..48]
             .try_into()
             .map_err(|_| FinalUseError::InvalidTrust)?;
-        if epoch == 0 || revision == 0 || nonce == [0; 32]
-            || epoch > state.head.authority_epoch
-        {
+        if epoch == 0 || revision == 0 || nonce == [0; 32] || epoch > state.head.authority_epoch {
             return Err(FinalUseError::InvalidTrust);
         }
         if epoch < state.head.authority_epoch {

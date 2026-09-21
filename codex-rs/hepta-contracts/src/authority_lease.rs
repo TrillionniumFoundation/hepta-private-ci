@@ -1385,8 +1385,8 @@ mod tests {
         drop(registry);
         let bytes = std::fs::read(directory.path().join("authority-leases.json")).unwrap();
         let old = AuthorityLeaseFrontier {
-            authority_epoch: frontier.authority_epoch,
             store_revision: frontier.store_revision + 1,
+            ..frontier
         };
         assert_eq!(
             AuthorityLeaseRegistry::open_state_dir(

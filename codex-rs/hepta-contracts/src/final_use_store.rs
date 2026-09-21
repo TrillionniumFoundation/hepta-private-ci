@@ -241,7 +241,9 @@ impl Store {
             .and_then(|()| file.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
         replace_state(&self.root)?;
-        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        self.root
+            .sync_all()
+            .map_err(|_| FinalUseError::Unavailable)?;
         // Never discard deltas before their replacement checkpoint AND its
         // directory entry are durable. Replaying the old log is idempotent if
         // a crash lands between that barrier and this truncation.
@@ -265,11 +267,18 @@ impl Store {
         {
             return Err(FinalUseError::InvalidTrust);
         }
-        let nonce = next.used_nonces.difference(&old.used_nonces)
-            .next().copied().ok_or(FinalUseError::InvalidTrust)?;
+        let nonce = next
+            .used_nonces
+            .difference(&old.used_nonces)
+            .next()
+            .copied()
+            .ok_or(FinalUseError::InvalidTrust)?;
         let record = nonce_log::encode(next, nonce, self.nonce_trust_digest());
         let mut log = open_private(&self.root, "authority.nonces", Access::Append)?;
-        let length = log.metadata().map_err(|_| FinalUseError::Unavailable)?.len();
+        let length = log
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?
+            .len();
         if length != self.log_length.load(Ordering::Relaxed)
             || length % nonce_log::RECORD_BYTES as u64 != 0
             || length >= nonce_log::MAX_LOG_BYTES as u64
@@ -279,7 +288,8 @@ impl Store {
         log.write_all(&record)
             .and_then(|()| log.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
-        self.log_length.store(length + nonce_log::RECORD_BYTES as u64, Ordering::Relaxed);
+        self.log_length
+            .store(length + nonce_log::RECORD_BYTES as u64, Ordering::Relaxed);
         Ok(())
     }
 
@@ -287,7 +297,12 @@ impl Store {
         let log = open_private(&self.root, "authority.nonces", Access::Create)?;
         // Nonempty deltas under a legacy checkpoint suggest a partial restore;
         // do not erase them or silently reclassify that store as fresh.
-        if log.metadata().map_err(|_| FinalUseError::Unavailable)?.len() != 0 {
+        if log
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?
+            .len()
+            != 0
+        {
             return Err(FinalUseError::InvalidTrust);
         }
         log.sync_all().map_err(|_| FinalUseError::Unavailable)?;
@@ -300,8 +315,14 @@ impl Store {
         hash.update((self.signer_id.len() as u64).to_le_bytes());
         hash.update(self.signer_id.as_bytes());
         match self.trust {
-            StoreTrust::SingleKey(key) => { hash.update([1]); hash.update(key); }
-            StoreTrust::IssuerKeyRing(digest) => { hash.update([2]); hash.update(digest); }
+            StoreTrust::SingleKey(key) => {
+                hash.update([1]);
+                hash.update(key);
+            }
+            StoreTrust::IssuerKeyRing(digest) => {
+                hash.update([2]);
+                hash.update(digest);
+            }
         }
         hash.finalize().into()
     }
