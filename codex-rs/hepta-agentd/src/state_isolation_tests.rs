@@ -1,13 +1,29 @@
 use std::fs;
+use std::fs::OpenOptions;
+use std::os::unix::fs::PermissionsExt;
+use std::sync::Arc;
 
 use super::*;
 use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
+use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_learning_ledger::DurableRunStartJournal;
+use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_learning_ledger::RunStartSnapshotV1;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
@@ -352,4 +368,164 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
         panic!("expected run status");
     };
     assert!(run.is_none());
+}
+
+
+#[tokio::test]
+async fn current_durable_run_start_requires_live_owner_trust() {
+    let (temp, _registry, state) = fixture().expect("runtime fixture");
+    fs::set_permissions(
+        &state.identity.home_root,
+        fs::Permissions::from_mode(0o700),
+    )
+    .expect("private home");
+
+    let key = SigningKey::from_bytes(&[77; 32]);
+    let trust_file = state.identity.home_root.join("run-start-trust.json");
+    let write_trust = |revoked: bool| {
+        let public_key_hex = key
+            .verifying_key()
+            .as_bytes()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        let value = serde_json::json!({
+            "schema_version": 1,
+            "agent_id": state.identity.agent_id.as_str(),
+            "issuer_id": "issuer:run-start",
+            "key_epoch": 1,
+            "public_key_hex": public_key_hex,
+            "revoked": revoked,
+            "thread_ids": []
+        });
+        fs::write(&trust_file, serde_json::to_vec(&value).expect("trust json"))
+            .expect("write trust");
+        fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600))
+            .expect("private trust");
+    };
+    write_trust(false);
+    let ingress = crate::authbus_ingress::TextIngress::open(
+        state.identity(),
+        trust_file.clone(),
+    )
+    .await
+    .expect("open trust");
+    state
+        .authbus
+        .set(Arc::new(ingress))
+        .map_err(|_| ())
+        .expect("attach trust");
+
+    let now_ms = crate::authbus_ingress::now_ms().expect("clock");
+    let scope = objective_run_scope(state.identity());
+    let signed_body_digest = Digest32::of_bytes(b"signed objective body");
+    let claims = SignedMessageClaims {
+        issuer_id: StableId::new("issuer:run-start").expect("issuer"),
+        key_epoch: Generation::new(1).expect("key epoch"),
+        message_id: StableId::new("message:run-start:1").expect("message"),
+        subject_id: StableId::new(state.identity.agent_id.as_str()).expect("subject"),
+        scope_digest: scope,
+        payload_digest: signed_body_digest,
+        sequence: 1,
+        expires_at_ms: now_ms + 300_000,
+    };
+    let objective_bytes = b"compiled objective".to_vec();
+    let objective_protocol_bytes = b"objective protocol v1".to_vec();
+    let run_id = StableId::new("run.durable.current").expect("run id");
+    let record = RunStartRecordV1 {
+        authentication: RunStartAuthenticationV1 {
+            issuer_id: claims.issuer_id.clone(),
+            key_epoch: claims.key_epoch.get(),
+            message_id: claims.message_id.clone(),
+            sequence: claims.sequence,
+            expires_at_ms: claims.expires_at_ms,
+            scope_digest: claims.scope_digest,
+            signed_body_digest,
+            signature: key.sign(&claims.signing_bytes()).to_bytes(),
+        },
+        admission: RunStartAdmissionBindingV1 {
+            profile_id: StableId::new("profile.run-start").expect("profile"),
+            profile_revision: 1,
+            profile_digest: Digest32::of_bytes(b"profile"),
+            supplied_source_digest: Digest32::of_bytes(b"source"),
+            intent_digest: Digest32::of_bytes(b"intent"),
+            admitted_source_digest: Digest32::of_bytes(b"admitted source"),
+            observed_at_unix_micros: now_ms * 1_000,
+            deadline_unix_micros: (now_ms + 60_000) * 1_000,
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        disposition: RunStartObjectiveDispositionV1::Compiled,
+        snapshot: RunStartSnapshotV1 {
+            run_id: run_id.clone(),
+            objective_digest: Digest32::of_bytes(&objective_bytes),
+            hard_constraint_digest: Digest32::of_bytes(b"hard"),
+            preference_state_digest: Digest32::of_bytes(b"preference"),
+            model_tuple_digest: Digest32::of_bytes(b"model"),
+            prompt_registry_digest: Digest32::of_bytes(b"prompt"),
+            artifact_set_digest: Digest32::of_bytes(b"artifacts"),
+            authority_epoch: 7,
+            generation: 2,
+            fence_digest: objective_run_fence(state.identity(), 2)
+                .parse()
+                .expect("fence digest"),
+        },
+        runtime_body_digest: Digest32::of_bytes(b"body"),
+        objective_semantic_bytes: objective_bytes,
+        objective_function_v1_digest: Digest32::of_bytes(&objective_protocol_bytes),
+        objective_function_v1_bytes: objective_protocol_bytes,
+    };
+    let journal_path = temp.path().join("run-start-current.journal");
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(&journal_path)
+        .expect("journal file");
+    let mut journal = DurableRunStartJournal::create(
+        file,
+        Digest32::of_bytes(b"agentd run-start owner"),
+        4,
+    )
+    .expect("create journal");
+    journal
+        .append(Digest32::ZERO, record)
+        .expect("append run start");
+
+    let admitted = state
+        .start_current_run_start(&journal, &run_id)
+        .expect("current signed durable admission");
+    assert_eq!(admitted.phase, RunPhase::Admitted);
+    assert_eq!(admitted.generation, 2);
+
+    write_trust(true);
+    let second_id = StableId::new("run.durable.revoked").expect("run id");
+    let mut second = journal
+        .get(&run_id)
+        .expect("journal")
+        .expect("first record")
+        .clone();
+    second.snapshot.run_id = second_id.clone();
+    second.authentication.message_id =
+        StableId::new("message:run-start:2").expect("message");
+    second.authentication.sequence = 2;
+    let second_claims = SignedMessageClaims {
+        issuer_id: second.authentication.issuer_id.clone(),
+        key_epoch: Generation::new(second.authentication.key_epoch).expect("key epoch"),
+        message_id: second.authentication.message_id.clone(),
+        subject_id: StableId::new(state.identity.agent_id.as_str()).expect("subject"),
+        scope_digest: second.authentication.scope_digest,
+        payload_digest: second.authentication.signed_body_digest,
+        sequence: second.authentication.sequence,
+        expires_at_ms: second.authentication.expires_at_ms,
+    };
+    second.authentication.signature = key.sign(&second_claims.signing_bytes()).to_bytes();
+    let predecessor = journal.head_digest();
+    journal.append(predecessor, second).expect("append revoked candidate");
+    assert!(state.start_current_run_start(&journal, &second_id).is_err());
+    assert!(state
+        .runs
+        .lock()
+        .expect("runs")
+        .run(second_id.as_str())
+        .is_none());
 }
