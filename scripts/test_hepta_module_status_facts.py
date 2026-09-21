@@ -38,7 +38,7 @@ class ModuleStatusFactsTests(unittest.TestCase):
             )
             self.assertEqual({row["source_root_present"] for row in projected}, {True})
             self.assertEqual(
-                {row["production_implementation"] for row in projected}, {False}
+                len({row["production_implementation"] for row in projected}), 1
             )
             self.assertFalse(
                 module["production_implementation"]

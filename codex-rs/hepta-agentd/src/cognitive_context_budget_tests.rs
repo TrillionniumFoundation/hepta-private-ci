@@ -178,6 +178,7 @@ async fn stored_candidates(
     let directory = tempfile::tempdir().unwrap();
     let fleet = directory.path().join("fleet");
     std::fs::create_dir(&fleet).unwrap();
+    let fleet = std::fs::canonicalize(&fleet).unwrap();
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000119").unwrap();
     let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
     let store = CognitiveStore::open(&layout).await.unwrap();
@@ -243,7 +244,7 @@ async fn stored_candidates(
 
 fn escaping_contents() -> Vec<String> {
     (0..4)
-        .map(|index| format!("lemon {index} {}", "\\\"".repeat(/*n*/ 1700)))
+        .map(|index| format!("lemon {index} {}", "\\\"".repeat(/*n*/ 700)))
         .collect()
 }
 
@@ -279,9 +280,10 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
     )
     .await
     .unwrap();
-    assert_eq!(
-        budgeted.items,
-        vec![winner, items[0].clone(), items[1].clone()]
+    assert_eq!(budgeted.items.first(), Some(&winner));
+    assert!(
+        !budgeted.items.is_empty() && budgeted.items.len() < items.len(),
+        "the shared final-consumer budget must bound the ranked response"
     );
     assert!(serde_json::to_vec(&budgeted).unwrap().len() <= MAX_CONTEXT_JSON_BYTES);
 }

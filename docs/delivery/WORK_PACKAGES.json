@@ -8409,7 +8409,7 @@
       "id": "MEM-READ-1-SNAPSHOT-PORT",
       "module": "cognitive.read",
       "priority": 2,
-      "state": "planned",
+      "state": "source_implemented_execution_pending",
       "parallelClass": "contract_coordinated",
       "authorityDelta": "none",
       "developmentAfter": [
@@ -8425,9 +8425,20 @@
       "deputy": "agent-runtime",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-cognitive-read/**"
+        "codex-rs/hepta-cognitive-read/**",
+        "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+        "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "codex-rs/hepta-agentd/**",
+        "codex-rs/hepta-infer-core/**",
+        "codex-rs/hepta-infer-worker-host/**",
+        ".github/workflows/hepta-gap-agentd-process.yml"
       ],
-      "coOwnerModules": [],
+      "coOwnerModules": [
+        "runtime.agentd",
+        "inference.control",
+        "inference.worker"
+      ],
       "consumesContracts": [
         "ModulePort::cognitive.types::cognitive.read"
       ],
@@ -8444,18 +8455,30 @@
         "exact_source_identity",
         "static_verification",
         "focused_tests",
-        "clean_worktree"
+        "clean_worktree",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "real_product_final_use_e2e"
       ],
       "acceptanceCriteria": [
         "exact_source_identity",
         "static_verification",
         "focused_tests",
-        "clean_worktree"
+        "clean_worktree",
+        "package_tests",
+        "all_target_check",
+        "strict_lint",
+        "exact_head_execution",
+        "merge_candidate_execution",
+        "real_product_final_use_e2e"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
-        "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxChangedPaths": 64,
+        "maxCiMinutes": 90,
+        "maxParallelAgents": 3
       },
       "rollback": {
         "required": true,

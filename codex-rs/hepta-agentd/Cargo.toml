@@ -14,6 +14,8 @@ doctest = false
 default = []
 # Qualification-only host profile. Default binaries keep the writer disabled.
 qualification-cognitive-write = []
+# Cross-crate product qualification helper. Disabled in normal and production builds.
+test-support = []
 
 [[bin]]
 name = "codex-hepta-agentd"

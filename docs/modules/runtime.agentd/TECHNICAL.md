@@ -190,6 +190,7 @@ In `codex-rs`, run `just test -p codex-hepta-agentd`. The command is a test invo
 
 Applicable work packages:
 
+- `MEM-READ-1-SNAPSHOT-PORT` (co-owned `cognitive.read` final-use integration)
 - `P0.8B-READINESS`
 - `P0.8D-VERTICAL-SLICE`
 

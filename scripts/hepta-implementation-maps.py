@@ -35,6 +35,25 @@ def git(*args: str) -> str:
     return p.stdout.strip()
 
 
+def head_blob_sha(rel: str) -> str:
+    """Return the exact Git blob identity for one tracked path at HEAD."""
+    return git("rev-parse", f"HEAD:{rel}")
+
+
+def is_ancestor(commit: str) -> bool:
+    """True only when commit is a real ancestor of the exact candidate HEAD."""
+    return (
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+            cwd=ROOT,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        ).returncode
+        == 0
+    )
+
+
 def validate_observed_source(
     row: dict, mid: str, resolved_roots: list[str], failures: list[str]
 ) -> None:
@@ -436,6 +455,103 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+        if row.get("productionImplementation"):
+            if row.get("sourceIdentityMode") != "repository_baseline_plus_exact_head_objects":
+                failures.append(
+                    f"{mid}: production implementation requires exact-head sourceIdentityMode"
+                )
+            observed_base = row.get("observedImplementationBase")
+            if (
+                not isinstance(observed_base, dict)
+                or not observed_base.get("commit")
+                or not is_ancestor(observed_base["commit"])
+            ):
+                failures.append(
+                    f"{mid}: production implementation requires an observed ancestor base"
+                )
+            source_objects = row.get("sourceObjects")
+            if not isinstance(source_objects, list) or not source_objects:
+                failures.append(f"{mid}: production implementation requires sourceObjects")
+            else:
+                seen_objects = set()
+                for source_object in source_objects:
+                    if not isinstance(source_object, dict):
+                        failures.append(f"{mid}: invalid sourceObject")
+                        continue
+                    source_path = source_object.get("path")
+                    expected_blob = source_object.get("blobSha")
+                    if not source_path or not expected_blob:
+                        failures.append(f"{mid}: incomplete sourceObject")
+                        continue
+                    if source_path in seen_objects:
+                        failures.append(f"{mid}: duplicate sourceObject {source_path}")
+                        continue
+                    seen_objects.add(source_path)
+                    try:
+                        actual_blob = head_blob_sha(source_path)
+                    except subprocess.CalledProcessError:
+                        failures.append(f"{mid}: missing sourceObject {source_path}")
+                        continue
+                    if actual_blob != expected_blob:
+                        failures.append(
+                            f"{mid}: stale sourceObject {source_path} "
+                            f"(expected {expected_blob}, HEAD has {actual_blob})"
+                        )
+
+                required_exact_paths = {
+                    op.get("sourcePath")
+                    for op in ops
+                    if isinstance(op, dict) and op.get("sourcePath")
+                }
+                missing_exact_paths = sorted(required_exact_paths - seen_objects)
+                if missing_exact_paths:
+                    failures.append(
+                        f"{mid}: mapped operation paths missing exact HEAD objects "
+                        + ",".join(missing_exact_paths)
+                    )
+
+            caller_state = str(row.get("productCallerState", ""))
+            if "composed" in caller_state and not caller_state.startswith("not_"):
+                callers = row.get("productCallers")
+                if not isinstance(callers, list) or not callers:
+                    failures.append(f"{mid}: composed production implementation requires productCallers")
+                else:
+                    caller_paths = set()
+                    for caller in callers:
+                        if not isinstance(caller, dict):
+                            failures.append(f"{mid}: invalid productCaller")
+                            continue
+                        caller_path = caller.get("path")
+                        symbol = caller.get("symbol")
+                        expected_blob = caller.get("blobSha")
+                        if not caller_path or not symbol or not expected_blob:
+                            failures.append(f"{mid}: incomplete productCaller")
+                            continue
+                        caller_paths.add(caller_path)
+                        try:
+                            actual_blob = head_blob_sha(caller_path)
+                        except subprocess.CalledProcessError:
+                            failures.append(f"{mid}: missing product caller {caller_path}")
+                            continue
+                        if actual_blob != expected_blob:
+                            failures.append(
+                                f"{mid}: stale product caller {caller_path} "
+                                f"(expected {expected_blob}, HEAD has {actual_blob})"
+                            )
+                            continue
+                        source_text = (ROOT / caller_path).read_text(encoding="utf-8")
+                        if symbol not in source_text:
+                            failures.append(
+                                f"{mid}: product caller symbol {symbol!r} missing from {caller_path}"
+                            )
+                    if isinstance(source_objects, list) and source_objects:
+                        missing_caller_objects = sorted(caller_paths - seen_objects)
+                        if missing_caller_objects:
+                            failures.append(
+                                f"{mid}: product caller paths missing exact HEAD objects "
+                                + ",".join(missing_caller_objects)
+                            )
+
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
@@ -450,6 +566,7 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "exactCandidateSourceBase": candidate_source_base,
                 "candidateBoundMaps": candidate_bound_maps,
                 "exactObservedFallbackMaps": exact_observed_fallback_maps,
             },

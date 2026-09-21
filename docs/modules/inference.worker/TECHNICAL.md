@@ -182,6 +182,7 @@ Applicable work packages:
 
 - `INFER-V4-T4`
 - `INFER-V4-T5`
+- `MEM-READ-1-SNAPSHOT-PORT` (co-owned cognitive final-use revalidation)
 - `NEU-1-LOCAL-MODEL-BAKEOFF`
 
 The bootstrap package is `INFER-V4-T4`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
