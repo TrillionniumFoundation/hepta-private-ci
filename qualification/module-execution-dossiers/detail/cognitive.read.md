@@ -67,12 +67,12 @@ Exact-ID validation builds one canonical current-head map and then performs keye
 
 ## 6. Concrete verification cases
 
-- **READ-01 stale-final-use:** obtain context, then correct/forget/expire a selected memory; final-use revalidation rejects the old context. The real native-worker race fixture injects both correction and tombstone after durable dispatch and before final revalidation; deterministic owner-cut tests cover validity expiry.
-- **READ-02 exact-ID beyond prefix:** request a current memory whose canonical ID lies after 1,024 other records; exact-ID read still returns it.
-- **READ-03 scope/no-cache:** a different principal cannot acquire the owner cut; the module has no cross-principal cache surface.
-- **READ-04 exact-ID resource bound:** duplicate IDs, >512 IDs or an encoded result over the selected bound fail instead of returning a partial exact-ID set.
-- **READ-05 capability/generation gate:** model attachment with cognitive context requires `cognitive.context.revalidate@1`; absence of the capability or a stale Agentd spawn generation fails before provider dispatch/store use.
-- **READ-06 tombstone lineage:** a complete tombstone-to-live resurrection fails closed and a committed terminal tombstone cannot be attached.
+- READ-01: stale-final-use — obtain context, then correct/forget/expire a selected memory; final-use revalidation rejects the old context. The real native-worker race fixture injects both correction and tombstone after durable dispatch and before final revalidation; deterministic owner-cut tests cover validity expiry.
+- READ-02: exact-ID beyond prefix — request a current memory whose canonical ID lies after 1,024 other records; exact-ID read still returns it.
+- READ-03: scope/no-cache — a different principal cannot acquire the owner cut; the module has no cross-principal cache surface.
+- READ-04: exact-ID resource bound — duplicate IDs, >512 IDs or an encoded result over the selected bound fail instead of returning a partial exact-ID set.
+- READ-05: capability/generation gate — model attachment with cognitive context requires `cognitive.context.revalidate@1`; absence of the capability or a stale Agentd spawn generation fails before provider dispatch/store use.
+- READ-06: tombstone lineage — a complete tombstone-to-live resurrection fails closed and a committed terminal tombstone cannot be attached.
 
 These are source test obligations. A test identity is not an exact-candidate pass receipt or independent acceptance.
 
