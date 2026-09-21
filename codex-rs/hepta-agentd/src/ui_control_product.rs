@@ -677,11 +677,12 @@ fn durable(error: impl fmt::Display) -> UiControlProductError {
 }
 
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod tests {
     use std::collections::BTreeSet;
     use std::collections::VecDeque;
     use std::os::unix::fs::PermissionsExt;
+    use std::str::FromStr;
     use std::sync::atomic::AtomicUsize;
     use std::sync::atomic::Ordering;
 
