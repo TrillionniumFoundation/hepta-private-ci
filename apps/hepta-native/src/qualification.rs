@@ -49,6 +49,7 @@ use crate::updater::digest_file;
 
 const SUBJECT: &str = "qualification.operator";
 const SIGNER: &str = "authority.qualification";
+const QUALIFICATION_SCHEMA: &str = "hepta.native-packaged-fault-qualification.v1";
 
 #[derive(Debug, Serialize)]
 pub struct PackagedQualificationReceipt {
@@ -638,7 +639,7 @@ pub fn run_packaged_e2e() -> Result<PackagedQualificationReceipt, ShellError> {
     }
 
     Ok(PackagedQualificationReceipt {
-        schema: "hepta.native-packaged-fault-qualification.v1",
+        schema: QUALIFICATION_SCHEMA,
         platform: std::env::consts::OS,
         architecture: std::env::consts::ARCH,
         authenticated_view: true,
