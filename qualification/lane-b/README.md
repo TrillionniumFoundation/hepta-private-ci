@@ -1,10 +1,10 @@
 # Lane B runtime source closure
 
-This directory contains the closed-world, repository-controlled truth for `LANE-B-RUNTIME` at immutable source base `f278a89eea18fccb6d37b876aa5679863a64139d`. Exact candidate identity is always derived from Git HEAD by the verifier.
+This directory contains the closed-world, repository-controlled truth for `LANE-B-RUNTIME` at immutable source base `7e8379b3954808d4138a7bd2f3773f75691291a3` / tree `ff9fa6baf95a35fd2f49816e0a80097688f2aeeb`. Exact candidate identity is always derived from Git HEAD by the verifier.
 
 ## Authoritative files
 
-- `LANE_B_IMPLEMENTATION_TRUTH.json` — closed index of eleven modules and 39 design operations.
+- `LANE_B_IMPLEMENTATION_TRUTH.json` — closed index of eleven modules and 41 design operations.
 - `docs/modules/<module>/IMPLEMENTATION_MAP.json` — authoritative module roots, ownership, owner entrypoints, delegated callees, tests, source semantics and external evidence gates.
 - `LANE_B_NATIVE_CLOSURE.md` — generated human projection of the eleven module maps.
 - `TEST_TRACEABILITY.json` — generated operation-to-test/workflow projection.
