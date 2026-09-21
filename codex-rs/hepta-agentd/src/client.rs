@@ -3,6 +3,9 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
+use codex_hepta_automation::AutomationCalendarScheduleV2;
+use codex_hepta_automation::AutomationMissedRunPolicy;
+use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationTask;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
@@ -200,6 +203,30 @@ impl AgentdClient {
                 self.request_id(),
                 self.spawn_generation,
                 draft,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AutomationTask(task) => Ok(task),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn automation_create_calendar_v2(
+        &self,
+        draft: AutomationTaskDraft,
+        schedule: AutomationCalendarScheduleV2,
+        missed_run: AutomationMissedRunPolicy,
+        overlap: AutomationOverlapPolicy,
+    ) -> Result<AutomationTask, AgentdError> {
+        match self
+            .send(AgentdRequest::automation_create_calendar_v2(
+                self.request_id(),
+                self.spawn_generation,
+                draft,
+                schedule,
+                missed_run,
+                overlap,
             ))
             .await?
             .payload
