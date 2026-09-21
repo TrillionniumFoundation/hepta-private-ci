@@ -30,7 +30,7 @@ class LaneBTruthTests(unittest.TestCase):
 
     def test_closed_module_and_operation_sets(self) -> None:
         self.assertEqual(11, len(MODULE.MODULES))
-        self.assertEqual(39, sum(map(len, MODULE.OPS.values())))
+        self.assertEqual(46, sum(map(len, MODULE.OPS.values())))
         self.assertEqual(len(MODULE.MODULES), len(set(MODULE.MODULES)))
 
     def test_owner_anchor_cannot_escape_resolved_root(self) -> None:
