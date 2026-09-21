@@ -19,7 +19,7 @@ use codex_hepta_learning_artifacts::{
 use codex_hepta_learning_ledger::{
     AuthenticatedPrincipalV1, DatasetSnapshotReceiptV3, DatasetSnapshotV2, DurableLedger,
     LearningEvidenceRoleV1, LearningEvidenceTrustV1, LearningEvidenceVerifierV1, LedgerAnchor,
-    LedgerRecovery, TrustedLearningSignerV1,
+    LedgerRecovery, TrustedLearningSignerV1, verify_dataset_snapshot_receipt_v3,
 };
 use codex_hepta_ndu::NduProjectionJournalV1;
 use codex_hepta_neuron::{
@@ -265,6 +265,15 @@ pub fn load_plasticity_process_bootstrap_v1(
     if dataset.snapshot.objective_digest != objective_digest {
         return invalid("dataset objective does not match plasticity descriptor");
     }
+    verify_dataset_snapshot_receipt_v3(&dataset, descriptor.artifacts.observed_at)
+        .map_err(|error| AgentdError::Invalid(format!("invalid dataset receipt: {error}")))?;
+    let ledger_head = ledger
+        .snapshot()
+        .map_err(|error| AgentdError::Invalid(format!("learning ledger snapshot failed: {error}")))?
+        .head_digest;
+    if dataset.snapshot.ledger_head_digest != ledger_head {
+        return invalid("dataset receipt does not bind the recovered learning ledger head");
+    }
 
     let ndu_bytes = read_bounded(
         &descriptor.ndu.journal_path,
@@ -357,6 +366,7 @@ pub fn load_plasticity_process_bootstrap_v1(
     .map_err(|error| AgentdError::Invalid(format!("invalid owner evidence composition: {error}")))?;
 
     let verifier = build_verifier(&descriptor.trust, objective_digest)?;
+    verify_owner_policy_bindings(&descriptor, &artifacts, &dataset)?;
     let owner_policy = build_owner_policy(&descriptor.owner_policy)?;
     let (parameter_writer, parameter_anchor_store) =
         open_parameter_writer(&descriptor.parameter_registry)?;
@@ -542,6 +552,48 @@ fn build_verifier(
         signers,
     })
     .map_err(|error| AgentdError::Invalid(format!("invalid learning evidence trust: {error}")))
+}
+
+fn verify_owner_policy_bindings(
+    descriptor: &ProcessBootstrapDescriptorV1,
+    artifacts: &ArtifactRegistry,
+    dataset: &DatasetSnapshotReceiptV3,
+) -> Result<(), AgentdError> {
+    let policy = &descriptor.owner_policy;
+    if policy.dataset_owner_id != dataset.producer.principal_id.as_str()
+        || policy.modulator_owner_id != descriptor.ndu.owner_id
+        || policy.eligibility_owner_id != descriptor.neuron.owner_id
+        || policy.parameter_signal_owner_id != descriptor.neuron.owner_id
+    {
+        return invalid("plasticity owner policy does not match authoritative owner identity");
+    }
+
+    for (artifact_id, expected_owner, label) in [
+        (
+            descriptor.artifacts.update_rule_artifact_id.as_str(),
+            policy.update_rule_owner_id.as_str(),
+            "update rule",
+        ),
+        (
+            descriptor.artifacts.mutation_policy_artifact_id.as_str(),
+            policy.mutation_policy_owner_id.as_str(),
+            "mutation policy",
+        ),
+        (
+            descriptor.artifacts.broadcast_artifact_id.as_str(),
+            policy.modulator_broadcast_owner_id.as_str(),
+            "modulator broadcast",
+        ),
+    ] {
+        let artifact_id = stable_id(artifact_id, label)?;
+        let manifest = artifacts
+            .manifest(&artifact_id)
+            .ok_or_else(|| AgentdError::Invalid(format!("{label} artifact is missing")))?;
+        if manifest.producer_id.as_str() != expected_owner {
+            return invalid(&format!("{label} owner policy does not match artifact producer"));
+        }
+    }
+    Ok(())
 }
 
 fn build_owner_policy(
