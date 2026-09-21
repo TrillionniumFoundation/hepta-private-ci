@@ -37,6 +37,12 @@ const TURN_PAGE_SIZE: u32 = 100;
 const MAX_TURN_PAGES: usize = 16;
 const RECOVERY_RUN_LEASE_MS: u64 = 30_000;
 
+enum TurnLookup {
+    Found(Turn),
+    Continue(String),
+    Exhausted,
+}
+
 pub(crate) async fn reconcile_one(
     store: &AutomationStore,
     state: &AgentdState,
@@ -186,22 +192,45 @@ async fn reconcile_work(
         .map_err(taskflow_error)?;
     if let Some(turn_id) = work.occurrence.turn_id.as_deref() {
         let client = connect(state, identity).await?;
-        let observed = find_turn(&client, &work.admission.thread_id, turn_id).await;
+        let observed = find_turn(
+            &client,
+            &work.admission.thread_id,
+            turn_id,
+            work.occurrence.terminal_scan_cursor.as_deref(),
+        )
+        .await;
         let _ = client.shutdown().await;
-        let Some(turn) = observed? else {
-            let mut bytes = b"hepta.automation.turn-history-miss.v1\0".to_vec();
-            bytes.extend_from_slice(work.occurrence.occurrence_id.as_bytes());
-            bytes.extend_from_slice(turn_id.as_bytes());
-            let digest = Sha256Digest::for_bytes(&bytes);
-            store
-                .mark_occurrence_indeterminate(
-                    work.occurrence.task_id,
-                    work.occurrence.occurrence,
-                    &digest,
-                    now_ms,
-                )
-                .await?;
-            return Ok(());
+        let turn = match observed? {
+            TurnLookup::Found(turn) => turn,
+            TurnLookup::Continue(next_cursor) => {
+                store
+                    .record_terminal_scan_cursor(
+                        work.occurrence.task_id,
+                        work.occurrence.occurrence,
+                        turn_id,
+                        work.occurrence.terminal_scan_cursor.as_deref(),
+                        &next_cursor,
+                        now_ms,
+                    )
+                    .await?;
+                return Ok(());
+            }
+            TurnLookup::Exhausted => {
+                let mut bytes = b"hepta.automation.turn-history-exhausted.v1\0".to_vec();
+                bytes.extend_from_slice(work.occurrence.occurrence_id.as_bytes());
+                bytes.push(0);
+                bytes.extend_from_slice(turn_id.as_bytes());
+                let digest = Sha256Digest::for_bytes(&bytes);
+                store
+                    .mark_occurrence_indeterminate(
+                        work.occurrence.task_id,
+                        work.occurrence.occurrence,
+                        &digest,
+                        now_ms,
+                    )
+                    .await?;
+                return Ok(());
+            }
         };
         match turn.status {
             TurnStatus::InProgress => Ok(()),
@@ -442,8 +471,9 @@ async fn find_turn(
     client: &RemoteAppServerClient,
     thread_id: &str,
     turn_id: &str,
-) -> Result<Option<Turn>, AgentdError> {
-    let mut cursor = None;
+    start_cursor: Option<&str>,
+) -> Result<TurnLookup, AgentdError> {
+    let mut cursor = start_cursor.map(str::to_owned);
     for page_index in 0..MAX_TURN_PAGES {
         let response: ThreadTurnsListResponse = client
             .request_handle()
@@ -451,7 +481,7 @@ async fn find_turn(
                 request_id: RequestId::Integer(i64::try_from(page_index + 2).unwrap_or(i64::MAX)),
                 params: ThreadTurnsListParams {
                     thread_id: thread_id.to_string(),
-                    cursor,
+                    cursor: cursor.clone(),
                     limit: Some(TURN_PAGE_SIZE),
                     sort_direction: Some(SortDirection::Desc),
                     items_view: Some(TurnItemsView::NotLoaded),
@@ -462,14 +492,23 @@ async fn find_turn(
                 AgentdError::Protocol(format!("automation turn observation failed: {error}"))
             })?;
         if let Some(turn) = response.data.into_iter().find(|turn| turn.id == turn_id) {
-            return Ok(Some(turn));
+            return Ok(TurnLookup::Found(turn));
         }
         let Some(next) = response.next_cursor else {
-            return Ok(None);
+            return Ok(TurnLookup::Exhausted);
         };
+        if cursor.as_deref() == Some(next.as_str()) {
+            return Err(AgentdError::Protocol(
+                "automation turn observation returned a repeated cursor".to_string(),
+            ));
+        }
         cursor = Some(next);
     }
-    Ok(None)
+    cursor.map(TurnLookup::Continue).ok_or_else(|| {
+        AgentdError::Protocol(
+            "automation bounded turn observation ended without a continuation cursor".to_string(),
+        )
+    })
 }
 
 fn prompt_input(prompt: &str) -> Vec<UserInput> {
