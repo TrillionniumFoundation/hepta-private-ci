@@ -76,7 +76,8 @@ fn kg_projection_crash_rendezvous(stage: &str) {
         .write(true)
         .open(&temporary)
         .expect("create KG crash marker");
-    file.write_all(stage.as_bytes()).expect("write KG crash marker");
+    file.write_all(stage.as_bytes())
+        .expect("write KG crash marker");
     file.sync_all().expect("sync KG crash marker");
     drop(file);
     std::fs::rename(&temporary, &marker).expect("publish KG crash marker");
