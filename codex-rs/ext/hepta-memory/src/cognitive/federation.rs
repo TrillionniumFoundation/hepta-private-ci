@@ -965,9 +965,16 @@ mod tests {
         let payload =
             serde_json::from_str::<serde_json::Value>(&boundary.content).expect("combined payload");
         assert_eq!(
-            payload["f"],
-            serde_json::json!([2, 1, 1, 0]),
-            "combined payload must preserve explicit federated coverage",
+            payload["f"]["requested_peers"],
+            serde_json::json!(2),
+            "combined payload must preserve requested peer coverage",
+        );
+        assert_eq!(payload["f"]["completed_peers"], serde_json::json!(1));
+        assert_eq!(payload["f"]["failed_peers"], serde_json::json!(1));
+        assert_eq!(
+            payload["f"]["failures"]["transport_unavailable"],
+            serde_json::json!(1),
+            "combined payload must preserve typed failure coverage",
         );
         let memories = payload["m"].as_array().expect("combined memories");
         assert_eq!(memories.len(), 2);
@@ -1046,9 +1053,23 @@ mod tests {
         padding: usize,
     ) -> CognitiveProposalMaterial {
         let content = serde_json::to_string(&serde_json::json!({
-            "schema_version": 1,
+            "schema_version": 2,
             "source": "explicit_federated_verified_memory",
-            "coverage": [2, 1, 1, 0],
+            "coverage": {
+                "requested_peers": 2,
+                "completed_peers": 1,
+                "failed_peers": 1,
+                "truncated_peers": 0,
+                "omitted_peer_candidates": 0,
+                "truncated_items": 0,
+                "failures": {
+                    "discovery_unavailable": 0,
+                    "deadline_or_cancelled": 0,
+                    "authority_rejected": 0,
+                    "integrity_rejected": 0,
+                    "transport_unavailable": 1
+                }
+            },
             "memories": [{
                 "source_agent_id": owner_agent_id,
                 "capability_id": capability_id,
@@ -1215,7 +1236,9 @@ mod tests {
         assert_eq!(first.source().as_str(), FEDERATED_COGNITIVE_SOURCE);
         let (first_content, final_use_guard) = first.into_content_and_final_use_guard();
         assert!(first_content.contains(OWNER_ID));
-        assert!(first_content.contains("\"coverage\":[1,1,0,0]"));
+        assert!(first_content.contains("\"requested_peers\":1"));
+        assert!(first_content.contains("\"completed_peers\":1"));
+        assert!(first_content.contains("\"failed_peers\":0"));
         let final_use_guard = final_use_guard.expect("federated proposal final-use guard");
 
         owner
