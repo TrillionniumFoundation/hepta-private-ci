@@ -332,7 +332,7 @@ For `learning.artifacts`, this document grants no runtime, production, model, pr
 
 #### `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `learning-platform` / `durability-kernel`.
 - Allowed write paths:
 - `codex-rs/hepta-learning-artifacts/**`
@@ -369,7 +369,7 @@ For `learning.artifacts`, this document grants no runtime, production, model, pr
 
 #### `HBO-1-OPERATOR-SENSOR-CORE`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `learning-platform` / `durability-kernel`.
 - Allowed write paths:
 - `codex-rs/hepta-learning-artifacts/**`

@@ -50,10 +50,11 @@ def validate_observed_source(
 ) -> None:
     """Validate an optional exact product-source observation against HEAD.
 
-    sourceBase remains historical batch provenance. observedAtHead is stronger:
-    when present, every declared observed source path must be byte-unchanged
-    from that exact commit through the current candidate. This permits later
-    documentation-only projection commits without making the observation float.
+    sourceBase resolves to the runtime-current candidate. observedAtHead is an
+    additional source observation: when present, every declared observed source
+    path must be byte-unchanged from that exact commit through the current
+    candidate. This permits later documentation-only projection commits without
+    making the observed source evidence float.
     """
     observed = row.get("observedAtHead")
     if observed is None:
