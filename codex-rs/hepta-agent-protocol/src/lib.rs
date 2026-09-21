@@ -9,6 +9,7 @@ pub use authbus::AuthBusTextIngress;
 pub use authbus::AuthBusTextState;
 pub use authbus::AuthBusTextStatus;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
+pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
 pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;
@@ -17,6 +18,7 @@ pub use capabilities::negotiate_capabilities;
 
 use std::path::PathBuf;
 
+use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AutomationCalendarScheduleV2;
 use codex_hepta_automation::AutomationMissedRunPolicy;
 use codex_hepta_automation::AutomationOverlapPolicy;
@@ -25,6 +27,7 @@ use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
 use serde::Serialize;
@@ -188,6 +191,46 @@ impl AgentdRequest {
         }
     }
 
+    pub fn automation_execute_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        intent: AuthorizedEffectIntent,
+        wire_payload_hex: String,
+        signed_grant: SignedFinalUseGrant,
+        command_id: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationExecuteEffect {
+                intent,
+                wire_payload_hex,
+                signed_grant,
+                command_id,
+            },
+        }
+    }
+
+    pub fn automation_reconcile_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        step_id: String,
+        attempt: u32,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationReconcileEffect {
+                run_id,
+                step_id,
+                attempt,
+            },
+        }
+    }
+
     pub fn automation_list(request_id: u64, spawn_generation: u64, limit: u16) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -314,6 +357,17 @@ pub enum AgentdMethod {
         missed_run: AutomationMissedRunPolicy,
         overlap: AutomationOverlapPolicy,
     },
+    AutomationExecuteEffect {
+        intent: AuthorizedEffectIntent,
+        wire_payload_hex: String,
+        signed_grant: SignedFinalUseGrant,
+        command_id: String,
+    },
+    AutomationReconcileEffect {
+        run_id: String,
+        step_id: String,
+        attempt: u32,
+    },
     AutomationList {
         limit: u16,
     },
@@ -341,6 +395,40 @@ pub enum AgentdMethod {
     },
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationEffectObservation {
+    Succeeded,
+    Failed,
+    Indeterminate,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationEffectSnapshot {
+    pub run_id: String,
+    pub step_id: String,
+    pub attempt: u32,
+    pub event_seq: u64,
+    pub receipt_digest: Option<Sha256Digest>,
+    pub observation: AutomationEffectObservation,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationEffectReconcileState {
+    Terminal,
+    Indeterminate,
+    ProvenAbsent,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationEffectReconcileSnapshot {
+    pub state: AutomationEffectReconcileState,
+    pub effect: Option<AutomationEffectSnapshot>,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AgentdResponse {
@@ -363,6 +451,8 @@ pub enum AgentdPayload {
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),
+    AutomationEffect(AutomationEffectSnapshot),
+    AutomationEffectReconcile(AutomationEffectReconcileSnapshot),
     AutomationTasks {
         tasks: Vec<AutomationTask>,
     },
