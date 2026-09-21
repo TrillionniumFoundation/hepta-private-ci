@@ -292,8 +292,20 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "pub use durable::DurableOperationStore;",
+            "does not mint authority",
+        ],
+        "codex-rs/hepta-operations/src/durable.rs": [
+            "pub struct DurableOperationStore",
+            'begin_with("BEGIN IMMEDIATE")',
+            "pub async fn observe_terminal(",
+            "pub async fn claim_outbox(",
+        ],
+        "codex-rs/hepta-operations/migrations/0001_durable_operations.sql": [
+            "CREATE TABLE operation_records",
+            "CREATE TABLE operation_outbox",
+            "operation_events_no_update",
+            "operation_outbox_events_no_delete",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",
