@@ -306,7 +306,9 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-agentd/src/production_writer_host.rs": [
             "AgentdProductionOperationRuntimeConfig",
             "AgentdFinalUseGrantProvider",
-            "dispatch_with_grant_provider",
+            "with_additional_target",
+            "attach_additional_target",
+            "dispatch_to_with_grant_provider",
         ],
         "codex-rs/hepta-authbus/src/lib.rs": [
             "pub use signed::SignedMessage;",
