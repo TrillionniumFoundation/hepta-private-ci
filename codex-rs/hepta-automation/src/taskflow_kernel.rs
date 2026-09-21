@@ -559,7 +559,6 @@ fn is_terminal_state(state: TaskFlowRunState) -> bool {
     )
 }
 
-
 fn validate_lease_claim_envelope(
     command_id: &str,
     payload: &str,
