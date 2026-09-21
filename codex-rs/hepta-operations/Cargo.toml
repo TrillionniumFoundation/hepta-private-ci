@@ -15,3 +15,11 @@ workspace = true
 
 [dependencies]
 codex-hepta-types = { workspace = true }
+codex-state = { workspace = true }
+codex-utils-absolute-path = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true, features = ["fs"] }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["fs", "macros", "rt-multi-thread"] }
