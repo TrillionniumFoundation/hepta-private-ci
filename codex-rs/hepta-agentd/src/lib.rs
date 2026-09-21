@@ -81,6 +81,7 @@ pub use intelligence_product::AgentdIntelligenceProductOutcomeV1;
 pub use intelligence_product::AgentdIntelligenceProductRunnerV1;
 pub use intelligence_product::IntelligenceAuthorityFileV1;
 pub use intelligence_product::IntelligenceAuthorityOwnerFileV1;
+pub use intelligence_product::IntelligenceAuthorityVerifierV1;
 pub use intelligence_product::PendingIntelligenceLedgerAppendV1;
 pub use intelligence_product::PreparedAgentdIntelligenceRunV1;
 pub use lane_b_runtime::AgentRunCoordinator;
