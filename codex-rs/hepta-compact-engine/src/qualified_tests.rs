@@ -203,6 +203,9 @@ fn signed_qualification(
     signing_key: &SigningKey,
 ) -> CompactionQualificationV2 {
     let mut qualification = CompactionQualificationV2 {
+        tokenizer_implementation_digest: candidate.policy.tokenizer_implementation_digest,
+        tokenizer_attestation_digest: candidate.tokenizer_attestation_digest,
+        tokenizer_key_digest: candidate.tokenizer_key_digest,
         evaluator_id: evaluator.evaluator_id.clone(),
         evaluator_implementation_digest: evaluator.implementation_digest,
         evaluation_artifact_digest: digest("evaluation-artifact"),
