@@ -470,6 +470,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         release: tokio::sync::Notify::new(),
     });
     install_final_revalidation_test_hook(Arc::clone(&correction_hook));
+    let correction_cancellation = CancellationToken::new();
     let correction_worker = driver.run(
         &mut durable,
         NativeAdmission {
@@ -478,7 +479,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         },
         "answer using the verified corrected context".to_string(),
         Some("kumquat".to_string()),
-        &CancellationToken::new(),
+        &correction_cancellation,
     );
     let correction = async {
         correction_hook.reached.notified().await;
