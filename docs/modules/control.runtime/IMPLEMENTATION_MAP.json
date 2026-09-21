@@ -495,11 +495,14 @@
     "finalUseIdentitySealedBeforePlanning": true,
     "hostOwnedGlobalPolicyPinned": true,
     "finalUseRequiresCurrentHostPlan": true,
-    "ambiguousPlannerPublicationPoisonsWriter": true
+    "ambiguousPlannerPublicationPoisonsWriter": true,
+    "mappedPlannerOperationSurfaceComplete": true,
+    "wholeSourceRootClosedWorldMappingComplete": false,
+    "sourceRootContainsMultipleRuntimeProfiles": true
   },
   "sourceBase": {
-    "commit": "fd54ded55e264707e641d691877f63c1ce69a1c6",
-    "tree": "45db888d652b691124658c52c72118dd8a81d6ab"
+    "commit": "da7744f047f9e584f8c1ae44826ab5989c9113ee",
+    "tree": "8ae77bdcb2623cf9da12ac0220faa024a4f8fd53"
   },
   "repositoryControlledGaps": [
     "Register and activate a selected supervisord global-planning ingress profile before treating the named host source as deployed product execution.",
@@ -511,20 +514,63 @@
     "operator acceptance, canary, promotion and release"
   ],
   "implementationHead": {
-    "commit": "fd54ded55e264707e641d691877f63c1ce69a1c6",
+    "commit": "da7744f047f9e584f8c1ae44826ab5989c9113ee",
     "note": "frozen source candidate; descendant commits may update documentation/receipts only while registered source roots remain byte-identical"
   },
   "integrationEvidenceHead": {
-    "commit": "fd54ded55e264707e641d691877f63c1ce69a1c6",
+    "commit": "6d2ac15ed7ccdf0dc629d401f9327695ef265de7",
     "note": "control/runtime and supervisor host source closure including ambiguous-publication poisoning and current-host final-use fence"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "fd54ded55e264707e641d691877f63c1ce69a1c6",
-    "tree": "45db888d652b691124658c52c72118dd8a81d6ab",
+    "commit": "da7744f047f9e584f8c1ae44826ab5989c9113ee",
+    "tree": "8ae77bdcb2623cf9da12ac0220faa024a4f8fd53",
     "interpretation": "exact current-main control.runtime/runtime.supervisor source closure; descendant changes are documentation/qualification truth only while registered source roots remain byte-identical"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-control-plane"
-  ]
+  ],
+  "nativeSourceMappingScope": "mapped planner/global-control operations only; the crate also contains independently matured organ-runtime, organ-wire, embodiment/timing and legacy desired-state profiles",
+  "componentMaturity": {
+    "globalPlannerKernel": {
+      "source": "implemented",
+      "composition": "runtime.supervisor_named_host_source_composed_not_activated",
+      "qualification": "pending_current_exact_head_and_synthetic_merge"
+    },
+    "requestLocalContextPlanner": {
+      "source": "implemented",
+      "composition": "runtime.agentd_composed",
+      "qualification": "pending_current_exact_head_and_synthetic_merge"
+    },
+    "plannerDurability": {
+      "source": "local_unix_durable_store_implemented",
+      "composition": "runtime.supervisor_named_host_source_composed_not_deployed",
+      "qualification": "named_host_fault_and_recovery_evidence_pending"
+    },
+    "organRuntime": {
+      "source": "read_only_compiled_in_host_implemented",
+      "composition": "runtime_status_consumer_composed",
+      "qualification": "separate_runtime_profile_evidence"
+    },
+    "organWire": {
+      "source": "native_handoff_admission_implemented",
+      "composition": "host_side_source_composed",
+      "qualification": "separate_protocol_profile_evidence"
+    },
+    "embodimentCart": {
+      "source": "deterministic_simulation_reference_implemented",
+      "composition": "simulation_only",
+      "qualification": "no_hil_or_physical_device_claim"
+    },
+    "fixedPriorityTiming": {
+      "source": "bounded_timing_reference_implemented",
+      "composition": "reference_only",
+      "qualification": "not_a_product_runtime_scheduler_claim"
+    },
+    "legacyControlState": {
+      "source": "desired_state_fsm_implemented",
+      "composition": "separate_from_global_planner",
+      "qualification": "does_not_establish_global_control_product_maturity"
+    }
+  }
 }
