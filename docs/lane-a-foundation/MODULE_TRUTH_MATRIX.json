@@ -182,7 +182,7 @@
         "one-shot effect-entry fencing plus owner-generation handoff and indeterminate reconciliation without blind resend",
         "full OperationIntent semantic and predecessor binding through final-use dispatch",
         "destination-owned CognitiveStore predecessor/CAS apply and Automation atomic dedupe/apply with terminal observation",
-        "Agentd runtime composition with an immediate-then-periodic observer-only reconciler when externally configured",
+        "Agentd runtime composition with destination-keyed explicit routing and an immediate-then-periodic observer-only reconciler when externally configured",
         "bounded deterministic operation/outbox reference oracle"
       ],
       "targetOnlyCapabilities": [
@@ -264,9 +264,10 @@
           "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
           "mustContain": [
             "AgentdProductionOperationRuntimeConfig",
-            "AgentdFinalUseGrantProvider",
-            "dispatch_with_grant_provider",
-            "pub async fn reconcile"
+            "with_additional_target",
+            "attach_additional_target",
+            "dispatch_to_with_grant_provider",
+            "destination_count"
           ]
         },
         {
