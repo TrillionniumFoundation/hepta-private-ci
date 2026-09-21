@@ -44,6 +44,7 @@ codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
 codex-hepta-memory = { workspace = true }
 codex-hepta-memory-extension = { workspace = true }
+codex-hepta-operations = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-protocol = { workspace = true }
 codex-uds = { workspace = true }
@@ -54,6 +55,7 @@ codex-state = { workspace = true }
 ed25519-dalek = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = [
     "fs",
