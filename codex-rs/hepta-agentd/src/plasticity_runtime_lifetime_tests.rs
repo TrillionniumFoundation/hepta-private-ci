@@ -769,8 +769,12 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         cancellation.clone(),
     );
 
-    let first = state
-        .submit_parameter_plasticity_v1(request.clone(), 50)
+    let producer =
+        crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::new(
+            Arc::clone(&state),
+        );
+    let first = producer
+        .submit_parameter(request.clone(), 50)
         .await
         .expect("first product proposal");
     assert_eq!(
@@ -835,8 +839,12 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         restarted_cancellation.clone(),
     );
 
-    let second = restarted_state
-        .submit_parameter_plasticity_v1(request, 50)
+    let restarted_producer =
+        crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::new(
+            Arc::clone(&restarted_state),
+        );
+    let second = restarted_producer
+        .submit_parameter(request, 50)
         .await
         .expect("idempotent replay after restart");
     assert_eq!(second.registry.sequence, 1);
