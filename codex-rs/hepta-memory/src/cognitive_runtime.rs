@@ -10,11 +10,14 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use futures::future::join_all;
+
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory_federation::FederatedCompletenessV2;
 use codex_hepta_memory_federation::FederatedCoverageV2;
 use codex_hepta_memory_federation::FederatedEvidenceItemV2;
+use codex_hepta_memory_federation::FederatedFailureCoverageV2;
 use codex_hepta_memory_federation::FederatedLeaseV2;
 use codex_hepta_memory_federation::FederatedQueryV2;
 use codex_hepta_memory_federation::FederatedValidityV2;
@@ -120,6 +123,7 @@ pub enum CognitiveRuntime {
         store: Arc<CognitiveStore>,
         consumer_agent_id: AgentId,
         owner_layouts: Arc<Vec<HeptaAgentLayout>>,
+        omitted_owner_candidates: u32,
     },
     Unavailable(CognitiveUnavailableReason),
 }
@@ -173,6 +177,12 @@ impl CognitiveRuntime {
     ) -> Self {
         owner_layouts.sort_by(|left, right| left.agent_id().cmp(right.agent_id()));
         owner_layouts.dedup_by(|left, right| left.agent_id() == right.agent_id());
+        let omitted_owner_candidates = u32::try_from(
+            owner_layouts
+                .len()
+                .saturating_sub(MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS),
+        )
+        .unwrap_or(u32::MAX);
         owner_layouts.truncate(MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS);
         if owner_layouts.is_empty() {
             return self;
@@ -184,6 +194,7 @@ impl CognitiveRuntime {
                 store,
                 consumer_agent_id,
                 owner_layouts: Arc::new(owner_layouts),
+                omitted_owner_candidates,
             },
             Self::Absent | Self::Unavailable(_) => self,
         }
@@ -246,18 +257,23 @@ impl CognitiveRuntime {
                         requested_peers: 1,
                         completed_peers: 1,
                         failed_peers: 0,
+                        truncated_peers: 0,
+                        omitted_peer_candidates: 0,
                         truncated_items: 0,
+                        failures: FederatedFailureCoverageV2::default(),
                     },
                 ))
             }
             Self::AvailableFederatedV2 {
                 consumer_agent_id,
                 owner_layouts,
+                omitted_owner_candidates,
                 ..
             } => {
                 retrieve_federated_product(
                     consumer_agent_id,
                     owner_layouts.as_slice(),
+                    *omitted_owner_candidates,
                     access,
                     request,
                 )
@@ -454,6 +470,7 @@ impl CognitiveRuntime {
 async fn retrieve_federated_product(
     consumer_agent_id: &AgentId,
     owner_layouts: &[HeptaAgentLayout],
+    omitted_owner_candidates: u32,
     access: &FederationConsumerAccess,
     request: &RetrievalRequest,
 ) -> Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError> {
@@ -470,24 +487,24 @@ async fn retrieve_federated_product(
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
     let discovery = async {
+        let outcomes = join_all(owner_layouts.iter().map(|owner_layout| async move {
+            (
+                owner_layout.clone(),
+                FederatedMemoryReader::discover(
+                    owner_layout,
+                    consumer_agent_id,
+                    request.now_unix_seconds(),
+                )
+                .await,
+            )
+        }))
+        .await;
         let mut readers = Vec::new();
         let mut discovery_failures = 0usize;
-        for owner_layout in owner_layouts {
-            if readers.len() >= MAX_FEDERATION_SOURCES_PER_AGENT {
-                break;
-            }
-            match FederatedMemoryReader::discover(
-                owner_layout,
-                consumer_agent_id,
-                request.now_unix_seconds(),
-            )
-            .await
-            {
+        for (owner_layout, outcome) in outcomes {
+            match outcome {
                 Ok(discovered) => {
                     for reader in discovered {
-                        if readers.len() >= MAX_FEDERATION_SOURCES_PER_AGENT {
-                            break;
-                        }
                         if reader.capability().scope().consumer_workspace_sha256()
                             != access.workspace_sha256()
                         {
@@ -518,6 +535,9 @@ async fn retrieve_federated_product(
             .then_with(|| left.capability().id().cmp(right.capability().id()))
     });
     readers.dedup_by(|(_, left), (_, right)| left.capability().id() == right.capability().id());
+    let observable_peer_slots = readers.len().saturating_add(discovery_failures);
+    let truncated_peers =
+        observable_peer_slots.saturating_sub(MAX_FEDERATION_SOURCES_PER_AGENT);
     readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
 
     let discovery_failure_slots =
@@ -528,14 +548,22 @@ async fn retrieve_federated_product(
         requested_peers: u32::try_from(requested_peer_slots).unwrap_or(u32::MAX),
         completed_peers: 0,
         failed_peers: u32::try_from(discovery_failure_slots).unwrap_or(u32::MAX),
+        truncated_peers: u32::try_from(truncated_peers).unwrap_or(u32::MAX),
+        omitted_peer_candidates: omitted_owner_candidates,
         truncated_items: 0,
+        failures: FederatedFailureCoverageV2 {
+            discovery_unavailable: u32::try_from(discovery_failure_slots).unwrap_or(u32::MAX),
+            ..FederatedFailureCoverageV2::default()
+        },
     };
     let mut candidates = Vec::new();
 
-    for (owner_layout, reader) in &readers {
+    let attempts = join_all(readers.iter().map(|(owner_layout, reader)| async move {
         if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
-            coverage.failed_peers = coverage.failed_peers.saturating_add(1);
-            continue;
+            return Ok((
+                Err(FederationV2Error::DeadlineExpired),
+                Arc::new(Mutex::new(None)),
+            ));
         }
         let (query, lease) = build_product_query_and_lease(
             reader,
@@ -571,9 +599,19 @@ async fn retrieve_federated_product(
             &lease,
         )
         .await;
-        let Ok(result) = result else {
-            coverage.failed_peers = coverage.failed_peers.saturating_add(1);
-            continue;
+        Ok::<_, CognitiveStoreError>((result, captured))
+    }))
+    .await;
+
+    for attempt in attempts {
+        let (result, captured) = attempt?;
+        let result = match result {
+            Ok(result) => result,
+            Err(error) => {
+                coverage.failed_peers = coverage.failed_peers.saturating_add(1);
+                record_product_failure(&mut coverage.failures, &error);
+                continue;
+            }
         };
         merge_product_coverage(&mut coverage, &result.coverage, result.validity);
         if result.validity != FederatedValidityV2::Valid {
@@ -649,9 +687,16 @@ fn merge_product_coverage(
     attempt: &FederatedCoverageV2,
     validity: FederatedValidityV2,
 ) {
+    aggregate.truncated_peers = aggregate
+        .truncated_peers
+        .saturating_add(attempt.truncated_peers);
+    aggregate.omitted_peer_candidates = aggregate
+        .omitted_peer_candidates
+        .saturating_add(attempt.omitted_peer_candidates);
     aggregate.truncated_items = aggregate
         .truncated_items
         .saturating_add(attempt.truncated_items);
+    merge_failure_coverage(&mut aggregate.failures, &attempt.failures);
     if validity == FederatedValidityV2::Valid {
         aggregate.completed_peers = aggregate
             .completed_peers
@@ -662,6 +707,71 @@ fn merge_product_coverage(
             .failed_peers
             .saturating_add(attempt.failed_peers)
             .saturating_add(attempt.completed_peers);
+        aggregate.failures.authority_rejected = aggregate
+            .failures
+            .authority_rejected
+            .saturating_add(attempt.completed_peers);
+    }
+}
+
+fn merge_failure_coverage(
+    aggregate: &mut FederatedFailureCoverageV2,
+    attempt: &FederatedFailureCoverageV2,
+) {
+    aggregate.discovery_unavailable = aggregate
+        .discovery_unavailable
+        .saturating_add(attempt.discovery_unavailable);
+    aggregate.deadline_or_cancelled = aggregate
+        .deadline_or_cancelled
+        .saturating_add(attempt.deadline_or_cancelled);
+    aggregate.authority_rejected = aggregate
+        .authority_rejected
+        .saturating_add(attempt.authority_rejected);
+    aggregate.integrity_rejected = aggregate
+        .integrity_rejected
+        .saturating_add(attempt.integrity_rejected);
+    aggregate.transport_unavailable = aggregate
+        .transport_unavailable
+        .saturating_add(attempt.transport_unavailable);
+}
+
+fn record_product_failure(
+    failures: &mut FederatedFailureCoverageV2,
+    error: &FederationV2Error,
+) {
+    match error {
+        FederationV2Error::DeadlineExpired
+        | FederationV2Error::AttemptCancelled
+        | FederationV2Error::LeaseExpired
+        | FederationV2Error::ResponseExpired => {
+            failures.deadline_or_cancelled = failures.deadline_or_cancelled.saturating_add(1);
+        }
+        FederationV2Error::LeaseRevoked
+        | FederationV2Error::LeaseEpochMismatch
+        | FederationV2Error::AuthorityObservationRegressed
+        | FederationV2Error::AuthorityExpired
+        | FederationV2Error::LeaseAuthorityHorizonExceeded
+        | FederationV2Error::AuthorityNotCurrent(_)
+        | FederationV2Error::AuthorityGranted
+        | FederationV2Error::AuthorityRevalidationFailed => {
+            failures.authority_rejected = failures.authority_rejected.saturating_add(1);
+        }
+        FederationV2Error::TransportRejected => {
+            failures.transport_unavailable = failures.transport_unavailable.saturating_add(1);
+        }
+        FederationV2Error::ZeroValue(_)
+        | FederationV2Error::EmptyDigest(_)
+        | FederationV2Error::InvalidMaximumResults
+        | FederationV2Error::IdentityMismatch(_)
+        | FederationV2Error::DigestMismatch(_)
+        | FederationV2Error::MissingTerminalObservation
+        | FederationV2Error::ResultLimitExceeded
+        | FederationV2Error::DuplicateResultIdentity
+        | FederationV2Error::InvalidCompleteness
+        | FederationV2Error::InvalidCoverage
+        | FederationV2Error::StaleEvidenceExposed => {
+            failures.integrity_rejected = failures.integrity_rejected.saturating_add(1);
+        }
     }
 }
 
@@ -1070,13 +1180,19 @@ mod product_nonce_tests {
             requested_peers: 1,
             completed_peers: 0,
             failed_peers: 0,
+            truncated_peers: 0,
+            omitted_peer_candidates: 0,
             truncated_items: 0,
+            failures: FederatedFailureCoverageV2::default(),
         };
         let attempt = FederatedCoverageV2 {
             requested_peers: 1,
             completed_peers: 1,
             failed_peers: 0,
+            truncated_peers: 0,
+            omitted_peer_candidates: 0,
             truncated_items: 0,
+            failures: FederatedFailureCoverageV2::default(),
         };
         merge_product_coverage(&mut aggregate, &attempt, FederatedValidityV2::Revoked);
         assert_eq!(aggregate.completed_peers, 0);
