@@ -108,8 +108,10 @@ pub fn build_legal_candidates_v1(
                 candidate.candidate_id.to_string(),
             ));
         }
-        if matches!(candidate.candidate_id.as_str(), "abstain" | "shadow:slow-path")
-            || candidate.action_digest.is_zero()
+        if matches!(
+            candidate.candidate_id.as_str(),
+            "abstain" | "shadow:slow-path"
+        ) || candidate.action_digest.is_zero()
             || candidate.support_digest.is_zero()
             || candidate.support_ppm > MAX_SUPPORT_PPM
             || candidate.support_ppm < support_floor_ppm
@@ -445,7 +447,9 @@ mod tests {
         )
         .expect("zero external candidates leaves intrinsic abstain");
         assert!(abstain_only.candidates.is_empty());
-        abstain_only.validate().expect("valid abstain-only candidate set");
+        abstain_only
+            .validate()
+            .expect("valid abstain-only candidate set");
 
         let too_many = (0..128)
             .map(|index| candidate(&format!("action-{index}")))
