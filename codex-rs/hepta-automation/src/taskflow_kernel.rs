@@ -586,11 +586,10 @@ fn validate_lease_claim_envelope(
         .next()
         .and_then(|value| value.parse::<u64>().ok())
         .ok_or_else(|| corrupt("TaskFlow lease replay generation is malformed"))?;
-    if parts.next().is_some()
-        || encoded_epoch != owner_epoch
-        || encoded_generation != generation
-    {
-        return Err(corrupt("TaskFlow lease replay identity does not match its fence"));
+    if parts.next().is_some() || encoded_epoch != owner_epoch || encoded_generation != generation {
+        return Err(corrupt(
+            "TaskFlow lease replay identity does not match its fence",
+        ));
     }
     Ok(())
 }
