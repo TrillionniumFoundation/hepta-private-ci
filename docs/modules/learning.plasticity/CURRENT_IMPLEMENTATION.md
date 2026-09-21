@@ -13,7 +13,7 @@ This block is generated only from `IMPLEMENTATION_MAP.json`. Run
 changing the map. Hand-written sections below explain semantics but do not
 override these machine status facts.
 
-- Product caller: `agentd_named_runtime_bootstrap_creates_owner_handle_pair_and_agentd_state_holds_producer_source_composed_not_target_host_executed_or_qualified`
+- Product caller: `agentd_state_named_parameter_submission_uses_shared_daemon_bootstrap_owner_source_composed_not_target_host_executed_or_qualified`
 - Production writer: `agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved`
 - Production implementation: `false`
 - Product execution proved: `false`
@@ -34,6 +34,7 @@ override these machine status facts.
 | `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
 | `parameter_mutation_policy` | `source_implemented_typed_parameter_projection_bound_to_control_engineering_mutation_grammar` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 2 |
 | `agentd_plasticity_runtime_owner` | `named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_runtime.rs` | 2 |
+| `agentd_named_parameter_submission` | `named_internal_product_caller_submits_through_agentd_state_without_exposing_writer_or_second_owner_handle_not_target_host_qualified` | `codex-rs/hepta-agentd/src/state.rs` | 1 |
 | `agentd_parameter_host` | `host_entrypoint_called_by_long_lived_agentd_owner_with_real_append_ack_crash_registry_only_rollback_rejection_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 4 |
 | `agentd_owner_evidence_resolution` | `host_enforced_live_frontier_exact_signal_value_owner_allowlist_and_dynamic_ndu_neuron_broadcast_resolution` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 5 |
 | `concrete_owner_evidence_adapters` | `dataset_policy_ndu_neuron_broadcast_and_parameter_signal_adapters_bind_live_frontiers_and_exact_values_fail_closed` | `codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs` | 5 |
