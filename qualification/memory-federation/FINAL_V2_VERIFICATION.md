@@ -2,8 +2,8 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `a74246c4d7657d4c6b09fc50c41f1d715ace5e0e`
-- frozen candidate implementation head: `c59599f385fddb106867bae61242ca91b102a6b6`
-- frozen candidate implementation tree: `1ee264543599ba29efff9830da29d38db28a69d6`
+- frozen candidate implementation head: `1644afc86fb50a572cd7d89d10a7d9a75c9f607f`
+- frozen candidate implementation tree: `0c09497880937437dbc655b79e21f0015106ede3`
 - status: `pending_exact_current_head_and_merge_candidate_execution`
 - current main parent: `a74246c4d7657d4c6b09fc50c41f1d715ace5e0e`
 - claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
@@ -28,8 +28,10 @@ The candidate establishes the following source-level properties without promotin
 - exact-scope owner data frontier acquired from the same SQLite snapshot as candidates;
 - Agentd composition through `CognitiveRuntime::AvailableFederatedV2`;
 - V2-only product retrieval/revalidation APIs and a regression preventing `with_federation()` from downgrading an already-composed V2 runtime;
-- explicit requested/completed/failed/truncated aggregate coverage;
-- bounded fail-closed final model-input revalidation, with same-owner/capability bindings sharing one SQLite read snapshot under one total final-use deadline, a fresh post-batch wall-clock check that rejects capability expiry crossing or clock regression before provider dispatch, plus an HTTP-path regression proving a rejecting final-use guard prevents physical provider dispatch;
+- concurrent bounded peer fan-out under one global horizon with deterministic post-aggregation ordering;
+- explicit requested/completed/failed peers, peer truncation, owner-candidate omission, item truncation and typed discovery/deadline-authority/integrity/transport failure coverage;
+- bounded fail-closed final model-input revalidation, with same-owner/capability bindings sharing one SQLite read snapshot under one total final-use deadline, a fresh post-batch wall-clock check that rejects capability expiry crossing or clock regression before provider transport entry, plus an HTTP-path regression proving a rejecting final-use guard prevents physical provider dispatch;
+- final-use revocation semantics aligned to the repository-wide dispatch contract: the guard fences source currentness before transport entry but does not claim retroactive cancellation authority over an already admitted provider attempt;
 - one-peer ownership in the canonical checked engine, with <=16-peer discovery/aggregation owned by the product orchestrator;
 - documentation truth that the current V2 structs are in-process Rust contracts, not a registered authenticated cross-host wire protocol.
 - local `observed_frontier` is an exact-scope append-only memory-revision count from the same retrieval snapshot, not an authenticated cut digest or rollback witness.
@@ -45,7 +47,8 @@ Focused execution must cover:
 - formatting;
 - `codex-hepta-memory-federation` contract and adversarial/race tests;
 - `codex-hepta-memory` product runtime and legacy-downgrade regression;
-- Memory extension federation attachment and physical-send revalidation;
+- Memory extension federation attachment, structured coverage propagation and physical-send revalidation;
+- concurrent product peer orchestration plus peer-truncation/owner-omission regressions;
 - Agentd product composition;
 - implementation-map/source-attestation verification;
 - all-target compilation and strict Clippy;
@@ -73,3 +76,7 @@ The earlier `fix/memory-federation-v2-hardening-final` receipt was a failing dev
 This candidate additionally closes a compatibility split-brain edge found during security review: the legacy `with_federation()` helper now preserves `AvailableFederatedV2` rather than replacing it with `AvailableFederated`. The canonical V2 product APIs still reject the legacy variant.
 
 The current frozen candidate also removes the stale per-binding extension final-use path: direct federated proposals now delegate to the same batch revalidation helper used by combined proposals, so same-owner/capability bindings share one SQLite snapshot and the source compiles against the canonical `revalidate_many` surface. A subsequent security review found that the batch originally reused its start-time wall clock for the whole bounded operation; the candidate now samples the wall clock again after batch revalidation and rejects capability expiry crossing or clock regression before physical provider dispatch.
+
+## Remaining repository-controlled observability gap
+
+Product turn cancellation currently inherits the host's future-drop semantics: Core wraps turn-input contribution in the turn cancellation token and drops the federation future when cancellation wins, which drops in-flight authority/transport futures and prevents attachment. The canonical engine also supports `FederationStopReasonV2::Cancelled`, but the product caller does not currently attribute that outer drop to an observable canonical cancellation receipt. This gap does not authorize post-cancel attachment or retry; it remains explicit until a product-level receipt path is wired without making the generic extension API tokio-specific.
