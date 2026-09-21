@@ -44,10 +44,25 @@
       "designOperation": "learningevidenceverifierv1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "durable_run_start_journal",
+      "nativeSymbol": "DurableRunStartJournal",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "state": "source_implemented_destination_owned_run_start_durability",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/run_start_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "durable_run_start_journal",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind the durable run-start owner to the authenticated canonical objective/product producer and current-trust Agentd consumer; raw retained records are not self-authenticating current evidence.",
+    "Keep restart recovery non-redispatchable after possible external dispatch and reconcile terminal observations through the existing execution owner.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
@@ -62,9 +77,22 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "durableRunStartJournalSourceImplemented": true,
+    "authenticatedProductRunStartComposition": false
   },
   "sourceRoot": [
     "codex-rs/hepta-learning-ledger"
-  ]
+  ],
+  "currentSourceEvidence": {
+    "commit": "cbb3cee084a4caf4702dd4e575cae5504486c176",
+    "tree": "e22806b086240bb2015344dfb545734342c7fdb3",
+    "meaning": "exact_durable_run_start_owner_and_agentd_projection_anchor",
+    "evidencePaths": [
+      "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
+    ]
+  }
 }
