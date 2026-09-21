@@ -17,8 +17,11 @@ invoking the adapter. Every owner query binds the live artifact/ledger heads; pa
 separately from resolver authentication, so a valid receipt from the wrong owner
 cannot satisfy admission. The owner is attached explicitly through `AgentdConfig`, uses a bounded in-process
 queue and is fenced by the current Running/ready Agentd generation. No public plasticity
-wire method or fallback writer is created. This source composition is not evidence that
-a deployed target host executed or accepted it, so product execution remains unproved.
+wire method or fallback writer is created. `AgentdState::submit_parameter_plasticity_v1`
+currently has source-lifetime-test callers only; a real non-test learning/self-iteration
+producer remains a required composition step and must not be replaced by caller-authored
+owner evidence. This source composition is not evidence that a deployed target host
+executed or accepted it, so product execution remains unproved.
 
 The selected host owns four independent facts: current learning-evidence trust state,
 current artifact/evidence frontier witness, authoritative owner-evidence resolution,
