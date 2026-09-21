@@ -21,6 +21,7 @@ use codex_extension_api::TurnInputContributor;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::CognitiveRuntime;
+use codex_hepta_memory::FederatedCoverageV2;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::FederatedMemoryExplanation;
 use codex_hepta_memory::FederatedMemoryRevalidationBinding;
@@ -47,9 +48,49 @@ use crate::framing::workspace_digest;
 
 const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
 const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
-const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 1;
+const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTO_CITATIONS_PER_MEMORY: usize = 8;
 const MAX_COMBINED_CITATIONS_PER_MEMORY: usize = 1;
+
+#[derive(Clone, Default, Serialize)]
+struct FederatedAttachmentFailureCoverage {
+    discovery_unavailable: u32,
+    deadline_or_cancelled: u32,
+    authority_rejected: u32,
+    integrity_rejected: u32,
+    transport_unavailable: u32,
+}
+
+#[derive(Clone, Default, Serialize)]
+struct FederatedAttachmentCoverage {
+    requested_peers: u32,
+    completed_peers: u32,
+    failed_peers: u32,
+    truncated_peers: u32,
+    omitted_peer_candidates: u32,
+    truncated_items: u32,
+    failures: FederatedAttachmentFailureCoverage,
+}
+
+impl From<&FederatedCoverageV2> for FederatedAttachmentCoverage {
+    fn from(coverage: &FederatedCoverageV2) -> Self {
+        Self {
+            requested_peers: coverage.requested_peers,
+            completed_peers: coverage.completed_peers,
+            failed_peers: coverage.failed_peers,
+            truncated_peers: coverage.truncated_peers,
+            omitted_peer_candidates: coverage.omitted_peer_candidates,
+            truncated_items: coverage.truncated_items,
+            failures: FederatedAttachmentFailureCoverage {
+                discovery_unavailable: coverage.failures.discovery_unavailable,
+                deadline_or_cancelled: coverage.failures.deadline_or_cancelled,
+                authority_rejected: coverage.failures.authority_rejected,
+                integrity_rejected: coverage.failures.integrity_rejected,
+                transport_unavailable: coverage.failures.transport_unavailable,
+            },
+        }
+    }
+}
 
 #[derive(Clone)]
 struct PreparedFederatedAttachment {
@@ -57,7 +98,7 @@ struct PreparedFederatedAttachment {
     turn_id: String,
     workspace: std::path::PathBuf,
     query_sha256: Sha256Digest,
-    coverage: [u32; 4],
+    coverage: FederatedAttachmentCoverage,
     bindings: Vec<FederatedMemoryRevalidationBinding>,
     source_binding_sha256: Sha256Digest,
     content_sha256: Sha256Digest,
@@ -143,20 +184,12 @@ impl FederatedCognitiveExtension {
         &self,
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
-    ) -> Result<(FederatedRetrievalBatch, [u32; 4]), CognitiveStoreError> {
+    ) -> Result<(FederatedRetrievalBatch, FederatedAttachmentCoverage), CognitiveStoreError> {
         let (batch, coverage) = self
             .runtime
             .retrieve_product_federated(access, request)
             .await?;
-        Ok((
-            batch,
-            [
-                coverage.requested_peers,
-                coverage.completed_peers,
-                coverage.failed_peers,
-                coverage.truncated_items,
-            ],
-        ))
+        Ok((batch, FederatedAttachmentCoverage::from(&coverage)))
     }
 
     async fn revalidate_many(
@@ -241,7 +274,7 @@ impl FederatedCognitiveExtension {
             }
             explanations.push(*explanation);
         }
-        let content = compile_explanations(&explanations, prepared.coverage)?;
+        let content = compile_explanations(&explanations, &prepared.coverage)?;
         let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
@@ -390,7 +423,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             let item_budget =
                 usize::try_from(thread_state.limits.max_item_tokens()).unwrap_or(usize::MAX);
             let Some((bindings, content)) =
-                compile_retrieval_batch(&batch, byte_budget, item_budget, coverage)
+                compile_retrieval_batch(&batch, byte_budget, item_budget, &coverage)
             else {
                 return Vec::new();
             };
@@ -447,7 +480,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
 struct FederatedAttachment<'a> {
     schema_version: u32,
     source: &'static str,
-    coverage: [u32; 4],
+    coverage: &'a FederatedAttachmentCoverage,
     memories: &'a [FederatedAttachmentMemory],
 }
 
@@ -482,17 +515,34 @@ fn combine_cognitive_materials(
     let local_memory = compact_local_memory(local_value.get("memories")?.as_array()?.first()?)?;
     let federated_memory =
         compact_federated_memory(federated_value.get("memories")?.as_array()?.first()?)?;
-    let federation_coverage = federated_value.get("coverage")?.as_array()?;
-    if federation_coverage.len() != 4
-        || federation_coverage
-            .iter()
-            .any(|value| value.as_u64().is_none())
-    {
-        return None;
+    let federation_coverage = federated_value.get("coverage")?.as_object()?;
+    for field in [
+        "requested_peers",
+        "completed_peers",
+        "failed_peers",
+        "truncated_peers",
+        "omitted_peer_candidates",
+        "truncated_items",
+    ] {
+        if federation_coverage.get(field)?.as_u64().is_none() {
+            return None;
+        }
+    }
+    let failures = federation_coverage.get("failures")?.as_object()?;
+    for field in [
+        "discovery_unavailable",
+        "deadline_or_cancelled",
+        "authority_rejected",
+        "integrity_rejected",
+        "transport_unavailable",
+    ] {
+        if failures.get(field)?.as_u64().is_none() {
+            return None;
+        }
     }
     let content = serde_json::to_string(&json!({
         "s": "verified_cognitive_v1",
-        "f": federation_coverage,
+        "f": federated_value.get("coverage")?,
         "m": [local_memory, federated_memory],
     }))
     .ok()?;
@@ -594,7 +644,7 @@ fn compile_retrieval_batch(
     batch: &FederatedRetrievalBatch,
     max_bytes: usize,
     max_item_bytes: usize,
-    coverage: [u32; 4],
+    coverage: &FederatedAttachmentCoverage,
 ) -> Option<(Vec<FederatedMemoryRevalidationBinding>, String)> {
     let max_bytes = max_bytes
         .min(EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES as usize)
@@ -635,7 +685,7 @@ fn compile_retrieval_batch(
 
 fn compile_explanations(
     explanations: &[FederatedMemoryExplanation],
-    coverage: [u32; 4],
+    coverage: &FederatedAttachmentCoverage,
 ) -> Option<String> {
     let memories = explanations
         .iter()
@@ -705,7 +755,7 @@ fn attachment_record(
 
 fn serialize_attachment(
     memories: &[FederatedAttachmentMemory],
-    coverage: [u32; 4],
+    coverage: &FederatedAttachmentCoverage,
 ) -> Result<String, serde_json::Error> {
     serde_json::to_string(&FederatedAttachment {
         schema_version: FEDERATED_ATTACHMENT_SCHEMA_VERSION,
@@ -720,7 +770,7 @@ fn federation_source_binding(
     turn_id: &str,
     workspace: &Path,
     query_sha256: &Sha256Digest,
-    coverage: &[u32; 4],
+    coverage: &FederatedAttachmentCoverage,
     bindings: &[FederatedMemoryRevalidationBinding],
     content_sha256: &Sha256Digest,
 ) -> Option<Sha256Digest> {
@@ -817,22 +867,37 @@ mod tests {
         let workspace = temp.path().canonicalize().expect("workspace");
         let query_sha256 = Sha256Digest::for_bytes(b"same query");
         let content_sha256 = Sha256Digest::for_bytes(b"same content");
+        let complete_coverage = FederatedAttachmentCoverage {
+            requested_peers: 1,
+            completed_peers: 1,
+            ..FederatedAttachmentCoverage::default()
+        };
         let complete = federation_source_binding(
             "thread",
             "turn",
             &workspace,
             &query_sha256,
-            &[1, 1, 0, 0],
+            &complete_coverage,
             &[],
             &content_sha256,
         )
         .expect("complete binding");
+        let partial_coverage = FederatedAttachmentCoverage {
+            requested_peers: 2,
+            completed_peers: 1,
+            failed_peers: 1,
+            failures: FederatedAttachmentFailureCoverage {
+                transport_unavailable: 1,
+                ..FederatedAttachmentFailureCoverage::default()
+            },
+            ..FederatedAttachmentCoverage::default()
+        };
         let partial = federation_source_binding(
             "thread",
             "turn",
             &workspace,
             &query_sha256,
-            &[2, 1, 1, 0],
+            &partial_coverage,
             &[],
             &content_sha256,
         )
