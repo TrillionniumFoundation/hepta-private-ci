@@ -1,7 +1,8 @@
 //! Strict admission wrapper for the simplest-sufficient tabular operator.
 //!
-//! The original V1 functions remain available. This additive surface rejects
-//! duplicate underlying evidence even when callers relabel samples, and uses
+//! The original V1 functions remain available, but evidence uniqueness is now
+//! enforced by the canonical fit itself. This additive surface preserves the V2
+//! error contract and uses
 //! the artifact's canonical cell ordering for binary lookup after an O(n)
 //! validation on every call. Use LoadedTabularOperatorV1 for once-validated
 //! persisted candidates and O(log n) repeated lookups.
@@ -20,19 +21,13 @@ use crate::fit_tabular_operator;
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
 ) -> Result<TabularOperatorArtifactV1, StrictLearnedOperatorError> {
-    let mut evidence = plan
-        .samples
-        .iter()
-        .map(|sample| sample.evidence_digest)
-        .collect::<Vec<_>>();
-    evidence.sort_unstable();
-    if evidence
-        .windows(2)
-        .any(|adjacent| adjacent[0] == adjacent[1])
-    {
-        return Err(StrictLearnedOperatorError::DuplicateEvidence);
+    match fit_tabular_operator(plan) {
+        Ok(artifact) => Ok(artifact),
+        Err(LearnedOperatorError::DuplicateEvidence) => {
+            Err(StrictLearnedOperatorError::DuplicateEvidence)
+        }
+        Err(error) => Err(StrictLearnedOperatorError::Learned(error)),
     }
-    Ok(fit_tabular_operator(plan)?)
 }
 
 pub fn predict_tabular_operator_indexed_v2(
