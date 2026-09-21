@@ -110,6 +110,67 @@ pub struct HttpProviderEffectConfig {
     pub attestation: Option<HttpProviderEffectContractAttestation>,
 }
 
+impl HttpProviderEffectConfig {
+    /// Canonical digest of the exact HTTP effect contract selected by the host.
+    ///
+    /// The attestation binds endpoints, timeout and every configured header
+    /// byte. Binding header values means credential/header rotation requires a
+    /// fresh external attestation instead of silently changing the selected
+    /// provider contract behind an already-signed digest.
+    pub fn contract_sha256(&self) -> Result<Sha256Digest, String> {
+        if self.dispatch_url.trim().is_empty()
+            || self.dispatch_url.contains("{key}")
+            || self.lookup_url_template.matches("{key}").count() != 1
+        {
+            return Err("invalid dispatch/lookup URL template".to_string());
+        }
+        if !valid_contract_id(&self.contract_id) {
+            return Err("contract_id must be a bounded identifier".to_string());
+        }
+        if self.timeout.is_zero() || self.timeout > Duration::from_secs(300) {
+            return Err("timeout must be between 1ms and 300s".to_string());
+        }
+        let dispatch_endpoint = validate_effect_endpoint(&self.dispatch_url)?;
+        let lookup_endpoint =
+            validate_effect_endpoint(&self.lookup_url_template.replace("{key}", "hepta-key"))?;
+        if dispatch_endpoint.scheme() != lookup_endpoint.scheme()
+            || dispatch_endpoint.host_str() != lookup_endpoint.host_str()
+            || dispatch_endpoint.port_or_known_default() != lookup_endpoint.port_or_known_default()
+        {
+            return Err("dispatch and lookup endpoints must share one origin".to_string());
+        }
+
+        let mut bytes = b"hepta.provider-effect.http-contract.v1\0".to_vec();
+        push_contract_field(&mut bytes, "contract_id", self.contract_id.as_bytes())?;
+        push_contract_field(&mut bytes, "dispatch_url", self.dispatch_url.as_bytes())?;
+        push_contract_field(
+            &mut bytes,
+            "lookup_url_template",
+            self.lookup_url_template.as_bytes(),
+        )?;
+        push_contract_field(
+            &mut bytes,
+            "timeout_nanos",
+            self.timeout.as_nanos().to_string().as_bytes(),
+        )?;
+
+        let mut headers = self
+            .headers
+            .iter()
+            .map(|(name, value)| (name.as_str().as_bytes().to_vec(), value.as_bytes().to_vec()))
+            .collect::<Vec<_>>();
+        headers.sort();
+        let header_count = u32::try_from(headers.len())
+            .map_err(|_| "too many provider contract headers".to_string())?;
+        bytes.extend_from_slice(&header_count.to_be_bytes());
+        for (name, value) in headers {
+            push_contract_field(&mut bytes, "header_name", &name)?;
+            push_contract_field(&mut bytes, "header_value", &value)?;
+        }
+        Ok(Sha256Digest::for_bytes(&bytes))
+    }
+}
+
 /// An externally verified provider contract statement.
 ///
 /// The fields are private on purpose: callers cannot construct an attestation
@@ -151,8 +212,8 @@ impl HttpProviderEffectContractAttestation {
         pinned_key: &[u8; 32],
     ) -> Result<Self, String> {
         let contract_id = contract_id.into();
-        if contract_id.trim().is_empty() || contract_id.len() > 128 {
-            return Err("contract_id must be 1..=128 bytes".to_string());
+        if !valid_contract_id(&contract_id) {
+            return Err("contract_id must be a bounded identifier".to_string());
         }
         if authority_epoch == 0 {
             return Err("authority_epoch must be non-zero".to_string());
@@ -229,15 +290,7 @@ impl HttpProviderEffectAdapter {
     /// endpoint contract. HTTP is accepted solely for loopback test fixtures;
     /// non-loopback production endpoints must use HTTPS.
     pub fn new(config: HttpProviderEffectConfig) -> Result<Self, String> {
-        if config.dispatch_url.trim().is_empty()
-            || config.dispatch_url.contains("{key}")
-            || config.lookup_url_template.matches("{key}").count() != 1
-        {
-            return Err("invalid dispatch/lookup URL template".to_string());
-        }
-        if config.contract_id.trim().is_empty() || config.contract_id.len() > 128 {
-            return Err("contract_id must be 1..=128 bytes".to_string());
-        }
+        let contract_sha256 = config.contract_sha256()?;
         let attestation = config
             .attestation
             .as_ref()
@@ -245,22 +298,9 @@ impl HttpProviderEffectAdapter {
         if !attestation.is_verified()
             || attestation.contract_id() != config.contract_id
             || attestation.authority_epoch() == 0
+            || attestation.contract_sha256() != &contract_sha256
         {
             return Err("contract attestation binding is invalid".to_string());
-        }
-        Sha256Digest::parse(attestation.contract_sha256().as_str().to_string())
-            .map_err(|error| format!("invalid contract digest: {error}"))?;
-        if config.timeout.is_zero() || config.timeout > Duration::from_secs(300) {
-            return Err("timeout must be between 1ms and 300s".to_string());
-        }
-        let dispatch_endpoint = validate_effect_endpoint(&config.dispatch_url)?;
-        let lookup_endpoint =
-            validate_effect_endpoint(&config.lookup_url_template.replace("{key}", "hepta-key"))?;
-        if dispatch_endpoint.scheme() != lookup_endpoint.scheme()
-            || dispatch_endpoint.host_str() != lookup_endpoint.host_str()
-            || dispatch_endpoint.port_or_known_default() != lookup_endpoint.port_or_known_default()
-        {
-            return Err("dispatch and lookup endpoints must share one origin".to_string());
         }
         let factory = HttpClientFactory::new(OutboundProxyPolicy::ReqwestDefault);
         let client = HttpClientBuilder::new()
@@ -505,6 +545,30 @@ fn encode_path_segment(value: &str) -> String {
         .collect()
 }
 
+fn valid_contract_id(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 128
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+}
+
+fn push_contract_field(
+    bytes: &mut Vec<u8>,
+    label: &str,
+    value: &[u8],
+) -> Result<(), String> {
+    let label_len =
+        u32::try_from(label.len()).map_err(|_| "provider contract label is too long".to_string())?;
+    let value_len =
+        u32::try_from(value.len()).map_err(|_| "provider contract field is too long".to_string())?;
+    bytes.extend_from_slice(&label_len.to_be_bytes());
+    bytes.extend_from_slice(label.as_bytes());
+    bytes.extend_from_slice(&value_len.to_be_bytes());
+    bytes.extend_from_slice(value);
+    Ok(())
+}
+
 fn validate_effect_endpoint(raw: &str) -> Result<Url, String> {
     let url = Url::parse(raw).map_err(|error| format!("invalid effect endpoint URL: {error}"))?;
     if !url.username().is_empty() || url.password().is_some() {
@@ -580,6 +644,42 @@ mod tests {
     use wiremock::matchers::method;
     use wiremock::matchers::path;
     use wiremock::matchers::path_regex;
+
+    fn attested_fixture_config(
+        server_uri: &str,
+        contract_id: &str,
+        authority_epoch: u64,
+        signing_seed: u8,
+    ) -> HttpProviderEffectConfig {
+        let signing_key = SigningKey::from_bytes(&[signing_seed; 32]);
+        let verifying_key = signing_key.verifying_key();
+        let mut config = HttpProviderEffectConfig {
+            dispatch_url: format!("{server_uri}/dispatch"),
+            lookup_url_template: format!("{server_uri}/status/{{key}}"),
+            headers: HeaderMap::new(),
+            timeout: Duration::from_secs(5),
+            contract_id: contract_id.to_string(),
+            attestation: None,
+        };
+        let contract_digest = config.contract_sha256().expect("contract digest");
+        let statement = HttpProviderEffectContractAttestation::statement_for(
+            contract_id,
+            &contract_digest,
+            authority_epoch,
+        );
+        let signature = signing_key.sign(&statement);
+        config.attestation = Some(
+            HttpProviderEffectContractAttestation::verify_signed(
+                contract_id,
+                contract_digest,
+                authority_epoch,
+                &signature.to_bytes(),
+                &verifying_key.to_bytes(),
+            )
+            .expect("fixture attestation"),
+        );
+        config
+    }
 
     fn intent() -> ProviderEffectIntent {
         let binding = ProviderRequestBinding {
@@ -710,6 +810,36 @@ mod tests {
         );
     }
 
+    #[test]
+    fn attested_http_adapter_rejects_config_drift_after_signature() {
+        let mut config = attested_fixture_config(
+            "http://127.0.0.1:9",
+            "drift-contract",
+            1,
+            13,
+        );
+        config.dispatch_url = "http://127.0.0.1:9/different-dispatch".to_string();
+        assert_eq!(
+            HttpProviderEffectAdapter::new(config).unwrap_err(),
+            "contract attestation binding is invalid"
+        );
+
+        let mut config = attested_fixture_config(
+            "http://127.0.0.1:9",
+            "header-drift-contract",
+            1,
+            14,
+        );
+        config.headers.insert(
+            HeaderName::from_static("x-provider-mode"),
+            HeaderValue::from_static("changed-after-signature"),
+        );
+        assert_eq!(
+            HttpProviderEffectAdapter::new(config).unwrap_err(),
+            "contract attestation binding is invalid"
+        );
+    }
+
     #[tokio::test]
     async fn attested_http_adapter_binds_dispatch_and_lookup_on_fixture() {
         let server = MockServer::start().await;
@@ -745,31 +875,12 @@ mod tests {
             .mount(&server)
             .await;
 
-        let signing_key = SigningKey::from_bytes(&[9_u8; 32]);
-        let verifying_key = signing_key.verifying_key();
-        let contract_digest = Sha256Digest::for_bytes(b"fixture-contract");
-        let statement = HttpProviderEffectContractAttestation::statement_for(
+        let adapter = HttpProviderEffectAdapter::new(attested_fixture_config(
+            &server.uri(),
             "fixture-contract",
-            &contract_digest,
             1,
-        );
-        let signature = signing_key.sign(&statement);
-        let attestation = HttpProviderEffectContractAttestation::verify_signed(
-            "fixture-contract",
-            contract_digest,
-            1,
-            &signature.to_bytes(),
-            &verifying_key.to_bytes(),
-        )
-        .expect("fixture attestation");
-        let adapter = HttpProviderEffectAdapter::new(HttpProviderEffectConfig {
-            dispatch_url: format!("{}/dispatch", server.uri()),
-            lookup_url_template: format!("{}/status/{{key}}", server.uri()),
-            headers: HeaderMap::new(),
-            timeout: Duration::from_secs(5),
-            contract_id: "fixture-contract".to_string(),
-            attestation: Some(attestation),
-        })
+            9,
+        ))
         .expect("fixture adapter");
         assert_eq!(
             adapter.capability(),
@@ -826,31 +937,12 @@ mod tests {
             .mount(&server)
             .await;
 
-        let signing_key = SigningKey::from_bytes(&[10_u8; 32]);
-        let verifying_key = signing_key.verifying_key();
-        let contract_digest = Sha256Digest::for_bytes(b"sandbox-reconcile-contract");
-        let statement = HttpProviderEffectContractAttestation::statement_for(
+        let adapter = HttpProviderEffectAdapter::new(attested_fixture_config(
+            &server.uri(),
             "sandbox-reconcile-contract",
-            &contract_digest,
             2,
-        );
-        let signature = signing_key.sign(&statement);
-        let attestation = HttpProviderEffectContractAttestation::verify_signed(
-            "sandbox-reconcile-contract",
-            contract_digest,
-            2,
-            &signature.to_bytes(),
-            &verifying_key.to_bytes(),
-        )
-        .expect("fixture attestation");
-        let adapter = HttpProviderEffectAdapter::new(HttpProviderEffectConfig {
-            dispatch_url: format!("{}/dispatch", server.uri()),
-            lookup_url_template: format!("{}/status/{{key}}", server.uri()),
-            headers: HeaderMap::new(),
-            timeout: Duration::from_secs(5),
-            contract_id: "sandbox-reconcile-contract".to_string(),
-            attestation: Some(attestation),
-        })
+            10,
+        ))
         .expect("fixture adapter");
 
         assert_eq!(
@@ -894,31 +986,12 @@ mod tests {
             .mount(&server)
             .await;
 
-        let signing_key = SigningKey::from_bytes(&[11_u8; 32]);
-        let verifying_key = signing_key.verifying_key();
-        let contract_digest = Sha256Digest::for_bytes(b"sandbox-wrong-key-contract");
-        let statement = HttpProviderEffectContractAttestation::statement_for(
+        let adapter = HttpProviderEffectAdapter::new(attested_fixture_config(
+            &server.uri(),
             "sandbox-wrong-key-contract",
-            &contract_digest,
             3,
-        );
-        let signature = signing_key.sign(&statement);
-        let attestation = HttpProviderEffectContractAttestation::verify_signed(
-            "sandbox-wrong-key-contract",
-            contract_digest,
-            3,
-            &signature.to_bytes(),
-            &verifying_key.to_bytes(),
-        )
-        .expect("fixture attestation");
-        let adapter = HttpProviderEffectAdapter::new(HttpProviderEffectConfig {
-            dispatch_url: format!("{}/dispatch", server.uri()),
-            lookup_url_template: format!("{}/status/{{key}}", server.uri()),
-            headers: HeaderMap::new(),
-            timeout: Duration::from_secs(5),
-            contract_id: "sandbox-wrong-key-contract".to_string(),
-            attestation: Some(attestation),
-        })
+            11,
+        ))
         .expect("fixture adapter");
 
         // A 2xx response is not sufficient: the returned ACK must bind to
@@ -955,31 +1028,12 @@ mod tests {
             .mount(&server)
             .await;
 
-        let signing_key = SigningKey::from_bytes(&[12_u8; 32]);
-        let verifying_key = signing_key.verifying_key();
-        let contract_digest = Sha256Digest::for_bytes(b"sandbox-wrong-payload-contract");
-        let statement = HttpProviderEffectContractAttestation::statement_for(
+        let adapter = HttpProviderEffectAdapter::new(attested_fixture_config(
+            &server.uri(),
             "sandbox-wrong-payload-contract",
-            &contract_digest,
             4,
-        );
-        let signature = signing_key.sign(&statement);
-        let attestation = HttpProviderEffectContractAttestation::verify_signed(
-            "sandbox-wrong-payload-contract",
-            contract_digest,
-            4,
-            &signature.to_bytes(),
-            &verifying_key.to_bytes(),
-        )
-        .expect("fixture attestation");
-        let adapter = HttpProviderEffectAdapter::new(HttpProviderEffectConfig {
-            dispatch_url: format!("{}/dispatch", server.uri()),
-            lookup_url_template: format!("{}/status/{{key}}", server.uri()),
-            headers: HeaderMap::new(),
-            timeout: Duration::from_secs(5),
-            contract_id: "sandbox-wrong-payload-contract".to_string(),
-            attestation: Some(attestation),
-        })
+            12,
+        ))
         .expect("fixture adapter");
 
         // A matching key is insufficient: the intent-bound query must reject
