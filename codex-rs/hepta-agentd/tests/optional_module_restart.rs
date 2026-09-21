@@ -5,6 +5,7 @@
 //! or deployed-host performance claim is made by this fixture.
 use std::fs::File;
 use std::path::Path;
+use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
 use std::sync::Arc;
@@ -258,6 +259,68 @@ async fn worker(root: &Path, stage: &str) {
             host.retire_optional(&next_name).await.expect("close local route");
             next.close().await;
         }
+        "crash-quiesced" => {
+            assert_eq!(initial.phase, TimerPhase::Active);
+            let draining = store.quiesce_timer().await.expect("durable quiesce");
+            assert!(draining.can_handoff());
+            assert_eq!(draining.writer_epoch, initial.writer_epoch);
+            // No handoff, resume or normal host cleanup occurs after this cut.
+            std::process::exit(CRASH_EXIT);
+        }
+        "crash-cutover" => {
+            assert_eq!(initial.phase, TimerPhase::Active);
+            assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
+            host.retire_optional(&name).await.expect("old route drained");
+            let next = store.handoff_timer().await.expect("committed successor epoch");
+            let cutover = next.timer_status().await.expect("successor state");
+            assert_eq!(cutover.phase, TimerPhase::Draining);
+            assert_eq!(cutover.writer_epoch, initial.writer_epoch + 1);
+            let fresh = new_draft("fenced even before successor publication");
+            let intent = automation_task_operation_intent(
+                store.owner_agent_id(),
+                &fresh,
+                Generation::new(1).expect("original generation"),
+            )
+            .expect("intent");
+            assert_eq!(
+                store.create_task_from_operation(&intent, &fresh).await,
+                Err(AutomationError::TimerFenced)
+            );
+            // Deliberately lose the process after durable cutover but before
+            // installing/resuming the successor. Recovery must not reset epoch.
+            std::process::exit(CRASH_EXIT);
+        }
+        "recover-draining" => {
+            assert_eq!(initial.phase, TimerPhase::Draining);
+            assert!(initial.can_handoff());
+            assert!(
+                ask(&client, new_draft("must not bypass durable drain"), Fault::None)
+                    .await
+                    .expect("draining service responded")
+                    .is_err()
+            );
+            assert!(
+                store
+                    .claim_due(40_000, initial.writer_epoch, 1_000)
+                    .await
+                    .expect("bounded scheduler read while draining")
+                    .is_none()
+            );
+            for draft in [first.clone(), second.clone()] {
+                let receipt = ask(&client, draft, Fault::None)
+                    .await
+                    .expect("recovery reply")
+                    .expect("historical committed receipt remains readable");
+                assert_eq!(receipt.disposition, DestinationApplyDisposition::AlreadyApplied);
+            }
+            assert_eq!(store.list_tasks(10).await.expect("exact retained tasks").len(), 2);
+            // Explicit trusted-host resume is distinct from merely reopening.
+            // It preserves the committed writer epoch and operation identities.
+            let resumed = store.resume_timer().await.expect("explicit compatible resume");
+            assert_eq!(resumed.phase, TimerPhase::Active);
+            assert_eq!(resumed.writer_epoch, initial.writer_epoch);
+            host.retire_optional(&name).await.expect("close recovered local route");
+        }
         "retire" => {
             assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
             host.retire_optional(&name).await.expect("drain route");
@@ -330,6 +393,19 @@ fn optional_module_process_entrypoint() {
         .block_on(worker(Path::new(&root), &stage));
 }
 
+struct ChildGuard(Child);
+
+impl Drop for ChildGuard {
+    fn drop(&mut self) {
+        // A test assertion or wait error must not leave an orphaned owner
+        // process holding the SQLite pool beyond the isolated test lifetime.
+        if !matches!(self.0.try_wait(), Ok(Some(_))) {
+            let _ = self.0.kill();
+            let _ = self.0.wait();
+        }
+    }
+}
+
 fn run_process(root: &Path, stage: &str, exit: i32) -> Option<serde_json::Value> {
     let report = root.join("report.json");
     if report.exists() {
@@ -337,28 +413,28 @@ fn run_process(root: &Path, stage: &str, exit: i32) -> Option<serde_json::Value>
     }
     let log = root.join(format!("{stage}.log"));
     let output = File::create(&log).expect("log");
-    let mut child = Command::new(std::env::current_exe().expect("test executable"))
-        .args([
-            "--ignored",
-            "--exact",
-            "optional_module_process_entrypoint",
-            "--nocapture",
-        ])
-        .env(ROOT_ENV, root)
-        .env(STAGE_ENV, stage)
-        .stdin(Stdio::null())
-        .stdout(Stdio::from(output.try_clone().expect("stdout")))
-        .stderr(Stdio::from(output))
-        .spawn()
-        .expect("real subprocess");
+    let mut child = ChildGuard(
+        Command::new(std::env::current_exe().expect("test executable"))
+            .args([
+                "--ignored",
+                "--exact",
+                "optional_module_process_entrypoint",
+                "--nocapture",
+            ])
+            .env(ROOT_ENV, root)
+            .env(STAGE_ENV, stage)
+            .stdin(Stdio::null())
+            .stdout(Stdio::from(output.try_clone().expect("stdout")))
+            .stderr(Stdio::from(output))
+            .spawn()
+            .expect("real subprocess"),
+    );
     let deadline = Instant::now() + Duration::from_secs(60);
     let status = loop {
-        if let Some(status) = child.try_wait().expect("wait") {
+        if let Some(status) = child.0.try_wait().expect("wait") {
             break status;
         }
         if Instant::now() >= deadline {
-            let _ = child.kill();
-            let _ = child.wait();
             panic!("optional module subprocess timed out: {stage}");
         }
         std::thread::sleep(Duration::from_millis(20));
@@ -415,10 +491,20 @@ fn forty_first_service_survives_faults_replacement_retirement_and_real_process_r
         assert_eq!(result["writer_epoch"], epoch);
         assert_eq!(result["task_count"], 2);
     }
+    assert!(run_process(&root, "crash-quiesced", CRASH_EXIT).is_none());
+    let recovered = run_process(&root, "recover-draining", 0).expect("recover quiesce");
+    assert_eq!(recovered["writer_epoch"], 5);
+    assert_eq!(recovered["task_count"], 2);
+    for epoch in 6..=9 {
+        assert!(run_process(&root, "crash-cutover", CRASH_EXIT).is_none());
+        let recovered = run_process(&root, "recover-draining", 0).expect("recover cutover");
+        assert_eq!(recovered["writer_epoch"], epoch);
+        assert_eq!(recovered["task_count"], 2);
+    }
     let retired = run_process(&root, "retire", 0).expect("retired");
-    assert_eq!(retired["writer_epoch"], 6);
+    assert_eq!(retired["writer_epoch"], 10);
     let recovered = run_process(&root, "reopen-retired", 0).expect("recovered retirement");
-    assert_eq!(recovered["writer_epoch"], 6);
+    assert_eq!(recovered["writer_epoch"], 10);
     assert_eq!(recovered["task_count"], 2);
     assert_eq!(recovered["retired"], true);
 }
