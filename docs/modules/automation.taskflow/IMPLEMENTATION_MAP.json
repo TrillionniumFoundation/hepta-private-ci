@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "bea88cf8789186778d6229670fadc84f1c61755c",
-    "tree": "89d1908ead4d8f162e20ea56fe112373075ca881"
+    "commit": "c20f9b341c0162bb1cfc3c0e5778aff447837d92",
+    "tree": "b58a236a72c01c1e27d194c23d9ca7e1d79e25a8"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -37,6 +37,11 @@
           "path": "codex-rs/hepta-automation/tests/automation.rs",
           "kind": "legacy_schedule_compatibility",
           "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+          "kind": "real_agentd_calendar_v2_capability_negotiation_and_product_control",
+          "command": "cargo test -p codex-hepta-agentd --test five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers"
         }
       ],
       "sourceSemantics": "Persists append-only Calendar V2 revisions with explicit timezone/tzdb identity, start/end, DST gap/overlap policy and bounded recurrence while preserving Once/FixedInterval compatibility records; Agentd advertises automation.calendar_v2@1.0 and generation-fences the typed creation call.",
@@ -226,12 +231,13 @@
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-types",
     "codex-rs/Cargo.toml",
-    "codex-rs/Cargo.lock"
+    "codex-rs/Cargo.lock",
+    "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs"
   ],
   "observedAtHead": {
-    "commit": "bea88cf8789186778d6229670fadc84f1c61755c",
-    "tree": "89d1908ead4d8f162e20ea56fe112373075ca881",
-    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd product control, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, reopen/CAS regression coverage, Calendar V2 capability type export, and repository-current rustfmt; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
+    "commit": "c20f9b341c0162bb1cfc3c0e5778aff447837d92",
+    "tree": "b58a236a72c01c1e27d194c23d9ca7e1d79e25a8",
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd control, real five-Agent process coverage that creates one Calendar V2 task through AgentdClient and executes it through the existing scheduler/App Server spine, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, reopen/CAS regression coverage, Calendar V2 capability type export, and repository-current rustfmt; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "repositoryControlledProductCompositionGaps": [
