@@ -65,6 +65,15 @@ fn graph() -> PromptFactorProjectionV1 {
             evidence_digest: digest("evidence:a-c-complement"),
         })
         .expect("register complement");
+    registry
+        .register_factor_relation(PromptFactorRelation {
+            relation_id: id("relation:b-c-substitute"),
+            left_factor_id: id("factor:b"),
+            right_factor_id: id("factor:c"),
+            kind: PromptFactorRelationKind::Substitutes,
+            evidence_digest: digest("evidence:b-c-substitute"),
+        })
+        .expect("register substitute");
     let source = registry.factor_graph_source_v1();
     build_prompt_factor_projection_v1(
         Generation::new(1).expect("generation"),
@@ -114,10 +123,18 @@ fn graph_conflicts_are_hard_constraints_and_receipt_binds_relation_view() {
         receipt.portfolio.selected,
         vec![id("candidate:a"), id("candidate:c")]
     );
-    assert_eq!(receipt.observed_relation_count, 2);
+    assert_eq!(receipt.observed_relation_count, 3);
+    assert_eq!(receipt.observed_complement_count, 1);
+    assert_eq!(receipt.observed_substitute_count, 1);
+    assert_eq!(receipt.observed_conflict_count, 1);
+    assert!(!receipt.relation_request_digest.is_zero());
     assert_eq!(
         receipt.factor_graph_generation_digest,
         factor_graph.generation().generation_digest
+    );
+    assert_eq!(
+        receipt.portfolio.total_expected_gain,
+        FixedQ32::from_raw(40)
     );
     assert!(receipt.portfolio.decisions.iter().any(|decision| {
         decision.candidate_id == id("candidate:b")
@@ -174,4 +191,29 @@ fn registry_snapshot_drift_fails_closed_before_selection() {
         matches!(&error, Error::FactorGraph(message) if message.contains("registry snapshot")),
         "unexpected error: {error:?}"
     );
+}
+
+
+#[test]
+fn graph_substitutes_are_hard_redundancy_constraints() {
+    let factor_graph = graph();
+    let registry_digest = factor_graph.registry_snapshot_digest();
+    let request = OptimizationRequest {
+        decision_id: id("decision:substitute"),
+        objective_digest: digest("objective"),
+        registry_snapshot_digest: registry_digest,
+        budget: 2,
+        maximum_selected: 2,
+        candidates: vec![
+            candidate("candidate:b", "factor:b", 20, registry_digest),
+            candidate("candidate:c", "factor:c", 10, registry_digest),
+        ],
+    };
+    let receipt = optimize_with_factor_graph(request, &factor_graph).expect("graph optimize");
+    assert_eq!(receipt.portfolio.selected, vec![id("candidate:b")]);
+    assert_eq!(receipt.observed_substitute_count, 1);
+    assert!(receipt.portfolio.decisions.iter().any(|decision| {
+        decision.candidate_id == id("candidate:c")
+            && decision.disposition == CandidateDisposition::GraphSubstitute
+    }));
 }

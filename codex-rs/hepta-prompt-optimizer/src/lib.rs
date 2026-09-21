@@ -56,6 +56,7 @@ pub enum CandidateDisposition {
     OverBudget,
     SelectionLimit,
     GraphConflict,
+    GraphSubstitute,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -99,12 +100,13 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 pub fn optimize(request: OptimizationRequest) -> Result<PromptPortfolioReceipt, Error> {
-    optimize_with_factor_conflicts(request, &BTreeSet::new())
+    optimize_with_factor_graph_constraints(request, &BTreeSet::new(), &BTreeSet::new())
 }
 
-pub(crate) fn optimize_with_factor_conflicts(
+pub(crate) fn optimize_with_factor_graph_constraints(
     mut request: OptimizationRequest,
     conflicts: &BTreeSet<(StableId, StableId)>,
+    substitutes: &BTreeSet<(StableId, StableId)>,
 ) -> Result<PromptPortfolioReceipt, Error> {
     validate_request(&request)?;
     request.candidates.sort_by(|left, right| {
@@ -154,6 +156,11 @@ pub(crate) fn optimize_with_factor_conflicts(
             conflicts.contains(&pair)
         }) {
             CandidateDisposition::GraphConflict
+        } else if selected_factor_ids.iter().any(|selected_factor| {
+            let pair = canonical_factor_pair(&candidate.factor_id, selected_factor);
+            substitutes.contains(&pair)
+        }) {
+            CandidateDisposition::GraphSubstitute
         } else if selected.len() >= request.maximum_selected {
             marginal_excluded_gain = marginal_excluded_gain.max(candidate.expected_gain);
             CandidateDisposition::SelectionLimit
@@ -282,6 +289,7 @@ fn disposition_code(value: CandidateDisposition) -> u8 {
         CandidateDisposition::OverBudget => 4,
         CandidateDisposition::SelectionLimit => 5,
         CandidateDisposition::GraphConflict => 6,
+        CandidateDisposition::GraphSubstitute => 7,
     }
 }
 

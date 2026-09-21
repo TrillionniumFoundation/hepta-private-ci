@@ -442,3 +442,55 @@ fn adversarial_mixed_delta_matches_full_rebuild_canonically() {
     assert_eq!(incremental, full);
     assert_eq!(incremental.generation_digest, full.generation_digest);
 }
+
+
+#[test]
+fn query_result_digest_binds_complete_request_even_when_edges_match() {
+    let graph = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b")],
+            vec![edge("a", "b", KnowledgeRelationKindV2::Causes, "edge-ab")],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid graph: {error}"));
+
+    let run = |seeds: Vec<StableId>, kinds: Vec<KnowledgeRelationKindV2>, maximum_edges| {
+        query_relations(
+            &graph,
+            KnowledgeRelationQueryV2 {
+                query_id: id("query:request-binding"),
+                generation_digest: graph.generation_digest,
+                seed_node_ids: seeds,
+                relation_kinds: kinds,
+                valid_at_unix_seconds: None,
+                maximum_edges,
+            },
+        )
+        .unwrap_or_else(|error| panic!("valid query: {error}"))
+    };
+
+    let baseline = run(
+        vec![id("node:a")],
+        vec![KnowledgeRelationKindV2::Causes],
+        8,
+    );
+    let broader_seed = run(
+        vec![id("node:a"), id("node:b")],
+        vec![KnowledgeRelationKindV2::Causes],
+        8,
+    );
+    let broader_filter = run(vec![id("node:a")], Vec::new(), 8);
+    let broader_limit = run(
+        vec![id("node:a")],
+        vec![KnowledgeRelationKindV2::Causes],
+        9,
+    );
+
+    for changed in [&broader_seed, &broader_filter, &broader_limit] {
+        assert_eq!(baseline.edges, changed.edges);
+        assert_eq!(baseline.omitted_count, changed.omitted_count);
+        assert_ne!(baseline.request_digest, changed.request_digest);
+        assert_ne!(baseline.result_digest, changed.result_digest);
+    }
+}

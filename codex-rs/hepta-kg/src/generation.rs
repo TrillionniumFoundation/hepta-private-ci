@@ -29,6 +29,7 @@ pub const MAX_KNOWLEDGE_EDGES_V2: usize = 262_144;
 pub const MAX_SUPPORTS_PER_RELATION_V2: usize = 50_000;
 const GENERATION_DOMAIN: &[u8] = b"hepta.knowledge-generation.v2";
 const PUBLICATION_DOMAIN: &[u8] = b"hepta.knowledge-publication.v2";
+const QUERY_REQUEST_DOMAIN: &[u8] = b"hepta.knowledge-query-request.v2";
 const QUERY_DOMAIN: &[u8] = b"hepta.knowledge-query-result.v2";
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -357,6 +358,9 @@ pub struct KnowledgeRelationResultV2 {
     pub query_id: StableId,
     pub generation_digest: Digest32,
     pub valid_at_unix_seconds: Option<i64>,
+    /// Canonical digest of the complete request, including seeds, relation
+    /// filters, temporal cut and edge bound.
+    pub request_digest: Digest32,
     pub edges: Vec<KnowledgeEdgeV2>,
     pub omitted_count: u32,
     pub result_digest: Digest32,
@@ -374,8 +378,13 @@ pub fn query_relations(
         ));
     }
     ensure_unique_ids("query_seed", &query.seed_node_ids)?;
+    let seeds = query
+        .seed_node_ids
+        .iter()
+        .cloned()
+        .collect::<BTreeSet<_>>();
     let mut relation_kinds = BTreeSet::new();
-    for kind in query.relation_kinds {
+    for kind in query.relation_kinds.iter().cloned() {
         if !relation_kinds.insert(kind) {
             return Err(KnowledgeGenerationErrorV2::DuplicateRelationKind);
         }
@@ -384,7 +393,7 @@ pub fn query_relations(
     if maximum_edges == 0 || maximum_edges > MAX_KNOWLEDGE_EDGES_V2 {
         return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
     }
-    let seeds = query.seed_node_ids.into_iter().collect::<BTreeSet<_>>();
+    let request_digest = compute_query_request_digest(&query, &seeds, &relation_kinds);
     let visible_nodes = query.valid_at_unix_seconds.map(|at| {
         generation
             .nodes
@@ -422,6 +431,7 @@ pub fn query_relations(
         query_id: query.query_id,
         generation_digest: generation.generation_digest,
         valid_at_unix_seconds: query.valid_at_unix_seconds,
+        request_digest,
         edges,
         omitted_count: u32::try_from(omitted_count).unwrap_or(u32::MAX),
         result_digest: Digest32::ZERO,
@@ -626,11 +636,40 @@ fn compute_publication_digest(receipt: &KnowledgePublicationReceiptV2) -> Digest
     Digest32::of_bytes(&bytes)
 }
 
+fn compute_query_request_digest(
+    query: &KnowledgeRelationQueryV2,
+    seeds: &BTreeSet<StableId>,
+    relation_kinds: &BTreeSet<KnowledgeRelationKindV2>,
+) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(QUERY_REQUEST_DOMAIN);
+    push_id(&mut bytes, &query.query_id);
+    push_digest(&mut bytes, query.generation_digest);
+    push_len(&mut bytes, seeds.len());
+    for seed in seeds {
+        push_id(&mut bytes, seed);
+    }
+    push_len(&mut bytes, relation_kinds.len());
+    for relation in relation_kinds {
+        push_relation_kind(&mut bytes, relation);
+    }
+    match query.valid_at_unix_seconds {
+        Some(valid_at) => {
+            bytes.push(1);
+            push_i64(&mut bytes, valid_at);
+        }
+        None => bytes.push(0),
+    }
+    push_u64(&mut bytes, u64::from(query.maximum_edges));
+    Digest32::of_bytes(&bytes)
+}
+
 fn compute_query_result_digest(result: &KnowledgeRelationResultV2) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(QUERY_DOMAIN);
     push_id(&mut bytes, &result.query_id);
     push_digest(&mut bytes, result.generation_digest);
+    push_digest(&mut bytes, result.request_digest);
     match result.valid_at_unix_seconds {
         Some(valid_at) => {
             bytes.push(1);

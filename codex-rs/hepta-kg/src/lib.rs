@@ -34,8 +34,8 @@ pub use generation::apply_incremental_delta;
 pub use generation::build_complete_generation;
 pub use generation::publish_generation;
 pub use generation::query_relations;
-pub use prompt_factor::PromptFactorProjectionV1;
 pub use prompt_factor::PromptFactorProjectionErrorV1;
+pub use prompt_factor::PromptFactorProjectionV1;
 pub use prompt_factor::build_prompt_factor_projection_v1;
 
 const MAX_EDGES: usize = 65_536;
