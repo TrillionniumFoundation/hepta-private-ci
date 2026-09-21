@@ -45,6 +45,7 @@ These are source bounds, not target-host measurements. A coordinate failing assu
 - OP-05: relabelled duplicate evidence is rejected by target construction and both tabular/world-model fitting paths, and persisted tabular/world-model inference rejects stale or tampered independently pinned payloads.
 - OP-06: applicability/regularity evaluator evidence must authenticate the exact payload under the expected evaluator role, principal, credential chain, trust epoch and revocation state.
 - OP-07: target construction, tabular fitting and world-model fitting consume a verified V3 dataset receipt and require the exact frozen snapshot/objective/ledger-head/source-record binding; a detached identity, omitted row, foreign row or replayed evidence rejects.
+- OP-08: `AgentdOfflineOperatorHostV1` durably binds one operation identity through prepare → train → create-only publish → signed independent evaluation; changed-semantic replay conflicts, reload fails before an externally authored `Selector` transition, and after selection the exact persisted candidate is pinned into `PinnedCognitiveRanker` without granting Agentd selector authority.
 
 Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. Additional learned-grid tests verify order independence, complete-cell admission, minimum samples and domain-bounded prediction.
 
