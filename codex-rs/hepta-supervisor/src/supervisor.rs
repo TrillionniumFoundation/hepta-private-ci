@@ -391,7 +391,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        if slot.release_change.is_some() || slot.restart_pending {
+        if slot.release_change.is_some()
+            || slot.restart_pending
+            || slot
+                .release_transaction
+                .as_ref()
+                .is_some_and(|transaction| !transaction.phase.terminal())
+        {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
         let current = slot.active_release.as_ref().ok_or_else(|| {

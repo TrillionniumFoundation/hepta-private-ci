@@ -913,6 +913,187 @@ fn recovery_fences_current_release_revoked_while_supervisor_is_down(
 }
 
 #[test]
+fn recovery_terminalizes_unsigned_target_from_exact_release_state_cas(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let program = fleet.write_release_source()?;
+    let source_id = ReleaseId::parse("unsigned-crash-source")?;
+    let target_id = ReleaseId::parse("unsigned-crash-target")?;
+    fleet
+        .registry
+        .install_release(source_id.clone(), &program, Vec::new())?;
+    fleet
+        .registry
+        .install_release(target_id.clone(), &program, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &source_id)?;
+    fleet.registry.allow_release(&fleet.first, &target_id)?;
+
+    let source_state = fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(source_id.clone()),
+        None,
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    let running = fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let draining = fleet.registry.compare_and_transition(
+        &fleet.first,
+        running.generation,
+        AgentLifecycle::Draining,
+    )?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        draining.generation,
+        AgentLifecycle::Stopped,
+    )?;
+
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::Upgrade,
+        source_id.to_string(),
+        target_id.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source_id)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target_id)?),
+        source_state.generation,
+        running.generation,
+    )
+    .expect("prepared transaction")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::TargetStarting)
+    .expect("target starting");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write transaction");
+
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        source_state.generation,
+        Some(target_id.clone()),
+        Some(source_id),
+    )?;
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    let transaction = crate::release_transaction::read_release_transaction(
+        record.layout.run_root(),
+    )
+    .expect("read release transaction")
+    .expect("release transaction");
+    assert_eq!(
+        transaction.phase,
+        crate::release_transaction::ReleaseTransactionPhase::Committed
+    );
+    assert_eq!(transaction.target_release, target_id.to_string());
+    Ok(())
+}
+
+#[test]
+fn recovery_required_unsigned_source_is_terminalized_as_aborted(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let program = fleet.write_release_source()?;
+    let source_id = ReleaseId::parse("unsigned-abort-source")?;
+    let target_id = ReleaseId::parse("unsigned-abort-target")?;
+    fleet
+        .registry
+        .install_release(source_id.clone(), &program, Vec::new())?;
+    fleet
+        .registry
+        .install_release(target_id.clone(), &program, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &source_id)?;
+    fleet.registry.allow_release(&fleet.first, &target_id)?;
+    let source_state = fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(source_id.clone()),
+        None,
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    let running = fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let draining = fleet.registry.compare_and_transition(
+        &fleet.first,
+        running.generation,
+        AgentLifecycle::Draining,
+    )?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        draining.generation,
+        AgentLifecycle::Stopped,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::Upgrade,
+        source_id.to_string(),
+        target_id.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source_id)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target_id)?),
+        source_state.generation,
+        running.generation,
+    )
+    .expect("prepared transaction")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::RecoveryRequired)
+    .expect("recovery required");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write recovery transaction");
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    let transaction = crate::release_transaction::read_release_transaction(
+        record.layout.run_root(),
+    )
+    .expect("read release transaction")
+    .expect("release transaction");
+    assert_eq!(
+        transaction.phase,
+        crate::release_transaction::ReleaseTransactionPhase::Aborted
+    );
+    assert!(transaction.phase.terminal());
+    Ok(())
+}
+
+#[test]
 fn stale_runtime_is_fenced_without_touching_peer() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();

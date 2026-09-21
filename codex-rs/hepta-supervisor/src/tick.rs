@@ -165,6 +165,22 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .map_err(|error| driver_error(agent_id, error))?;
                 slot.event(runtime.generation, SupervisorEventKind::KillRequested);
             }
+            RuntimePhase::Running
+                if healthy
+                    && slot.release_change.as_ref().is_some_and(|change| {
+                        matches!(
+                            change.phase,
+                            crate::runtime::ReleaseChangePhase::TargetStarting
+                                | crate::runtime::ReleaseChangePhase::AutomaticRollbackStarting
+                        )
+                    }) =>
+            {
+                // Recovery may adopt a process after it already crossed the
+                // Starting -> Running lifecycle boundary but before the
+                // release-state/transaction terminal writes completed. A
+                // fresh exact health observation closes that crash cut.
+                self.release_became_healthy(agent_id, slot, runtime.generation)?;
+            }
             RuntimePhase::Running if healthy && slot.restart_not_before.is_some() => {
                 let record = self.record(agent_id)?;
                 crate::restart_budget::complete_restart(record.layout.run_root())

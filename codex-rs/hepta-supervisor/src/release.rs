@@ -166,6 +166,76 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
+    fn reconcile_unsigned_release_outcome(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        allow_source_abort: bool,
+    ) -> Result<bool, SupervisorError> {
+        let Some(transaction) = slot.release_transaction.clone() else {
+            return Ok(false);
+        };
+        if transaction.grant_sha256.is_some() {
+            return Ok(false);
+        }
+        let record = self.record(agent_id)?;
+        let current = record.release_state.current.as_ref().map(|release| release.as_str());
+        let next_generation = transaction
+            .expected_release_state_generation
+            .checked_add(1)
+            .ok_or_else(|| {
+                SupervisorError::Invalid("release-state generation overflow".to_string())
+            })?;
+
+        let terminal = if current == Some(transaction.target_release.as_str())
+            && record.release_state.generation == next_generation
+        {
+            Some(match transaction.kind {
+                ReleaseTransactionKind::Upgrade => ReleaseTransactionPhase::Committed,
+                ReleaseTransactionKind::ExplicitRollback => ReleaseTransactionPhase::RolledBack,
+            })
+        } else if allow_source_abort
+            && current == Some(transaction.source_release.as_str())
+            && record.release_state.generation == transaction.expected_release_state_generation
+            && slot.runtime.as_ref().is_none_or(|runtime| {
+                runtime.fenced || runtime.release_id.as_str() == transaction.source_release
+            })
+        {
+            Some(ReleaseTransactionPhase::Aborted)
+        } else {
+            None
+        };
+
+        let Some(terminal) = terminal else {
+            return Ok(false);
+        };
+        let terminal_transaction = transaction
+            .with_phase(terminal)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        write_release_transaction(record.layout.run_root(), &terminal_transaction)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        slot.release_transaction = Some(terminal_transaction);
+        slot.release_change = None;
+        Ok(true)
+    }
+
+    fn enter_unsigned_release_recovery(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+    ) -> Result<bool, SupervisorError> {
+        self.advance_release_transaction(
+            agent_id,
+            slot,
+            ReleaseTransactionPhase::RecoveryRequired,
+        )?;
+        self.reconcile_unsigned_release_outcome(
+            agent_id,
+            slot,
+            /*allow_source_abort*/ true,
+        )
+    }
+
     pub(crate) fn upgrade_slot(
         &mut self,
         agent_id: &AgentId,
@@ -175,7 +245,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         explicit_rollback: bool,
         authority: Option<(codex_hepta_contracts::Sha256Digest, u64)>,
     ) -> Result<(), SupervisorError> {
-        if slot.release_change.is_some() || slot.restart_pending {
+        if slot.release_change.is_some()
+            || slot.restart_pending
+            || slot
+                .release_transaction
+                .as_ref()
+                .is_some_and(|transaction| !transaction.phase.terminal())
+        {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
         let target = self.refresh_release_for_transition(agent_id, &target)?;
@@ -217,11 +293,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             explicit_rollback,
         });
         if let Err(error) = self.drain_slot(agent_id, slot, now) {
-            let _ = self.advance_release_transaction(
-                agent_id,
-                slot,
-                ReleaseTransactionPhase::RecoveryRequired,
-            );
+            let _ = self.enter_unsigned_release_recovery(agent_id, slot);
             slot.release_change = None;
             return Err(error);
         }
@@ -343,10 +415,22 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         match change.phase {
             ReleaseChangePhase::WaitingForTargetExit => {
-                let target = self.refresh_release_for_transition(agent_id, &change.target)?;
-                self.verify_release_binding_against_transaction(
-                    agent_id, slot, &target, /*target*/ true,
-                )?;
+                let target = match self.refresh_release_for_transition(agent_id, &change.target) {
+                    Ok(target) => target,
+                    Err(_) => {
+                        slot.release_change = Some(change);
+                        return self.start_automatic_rollback(agent_id, slot, now);
+                    }
+                };
+                if self
+                    .verify_release_binding_against_transaction(
+                        agent_id, slot, &target, /*target*/ true,
+                    )
+                    .is_err()
+                {
+                    slot.release_change = Some(change);
+                    return self.start_automatic_rollback(agent_id, slot, now);
+                }
                 change.target = target.clone();
                 self.advance_release_transaction(
                     agent_id,
@@ -417,16 +501,58 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         }
 
+        // A release-state CAS can prove an unsigned transition terminal even
+        // when the daemon crashed before publishing the matching transaction
+        // phase. Target publication advances exactly one release-state
+        // generation; an unchanged source generation only closes an explicitly
+        // recovery-required transition as Aborted.
+        if self.reconcile_unsigned_release_outcome(
+            agent_id,
+            slot,
+            transaction.phase == ReleaseTransactionPhase::RecoveryRequired,
+        )? {
+            return Ok(());
+        }
+        if transaction.phase == ReleaseTransactionPhase::RecoveryRequired {
+            return Ok(());
+        }
+
         let source_id = codex_hepta_fleet::ReleaseId::parse(transaction.source_release.clone())?;
         let target_id = codex_hepta_fleet::ReleaseId::parse(transaction.target_release.clone())?;
-        let source = AgentRelease::try_from(self.registry.resolve_release(agent_id, &source_id)?)?;
-        self.verify_release_binding_against_transaction(
+        let source = match self.registry.resolve_release(agent_id, &source_id) {
+            Ok(release) => AgentRelease::try_from(release)?,
+            Err(error) => {
+                if self.enter_unsigned_release_recovery(agent_id, slot)? {
+                    return Ok(());
+                }
+                return Err(error.into());
+            }
+        };
+        if let Err(error) = self.verify_release_binding_against_transaction(
             agent_id, slot, &source, /*target*/ false,
-        )?;
-        let target = AgentRelease::try_from(self.registry.resolve_release(agent_id, &target_id)?)?;
-        self.verify_release_binding_against_transaction(
+        ) {
+            if self.enter_unsigned_release_recovery(agent_id, slot)? {
+                return Ok(());
+            }
+            return Err(error);
+        }
+        let target = match self.registry.resolve_release(agent_id, &target_id) {
+            Ok(release) => AgentRelease::try_from(release)?,
+            Err(error) => {
+                if self.enter_unsigned_release_recovery(agent_id, slot)? {
+                    return Ok(());
+                }
+                return Err(error.into());
+            }
+        };
+        if let Err(error) = self.verify_release_binding_against_transaction(
             agent_id, slot, &target, /*target*/ true,
-        )?;
+        ) {
+            if self.enter_unsigned_release_recovery(agent_id, slot)? {
+                return Ok(());
+            }
+            return Err(error);
+        }
         let prior_previous = transaction
             .rollback_predecessor
             .as_ref()
@@ -495,6 +621,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             ReleaseTransactionPhase::Committed
             | ReleaseTransactionPhase::RolledBack
+            | ReleaseTransactionPhase::Aborted
             | ReleaseTransactionPhase::RecoveryRequired => {}
         }
         Ok(())
@@ -517,10 +644,21 @@ impl<D: ProcessDriver> Supervisor<D> {
                 target: change.origin.identity().to_string(),
             },
         );
-        let rollback = self.refresh_release_for_transition(agent_id, &change.origin)?;
-        self.verify_release_binding_against_transaction(
+        let rollback = match self.refresh_release_for_transition(agent_id, &change.origin) {
+            Ok(rollback) => rollback,
+            Err(error) => {
+                slot.release_change = Some(change);
+                let _ = self.enter_unsigned_release_recovery(agent_id, slot);
+                return Err(error);
+            }
+        };
+        if let Err(error) = self.verify_release_binding_against_transaction(
             agent_id, slot, &rollback, /*target*/ false,
-        )?;
+        ) {
+            slot.release_change = Some(change);
+            let _ = self.enter_unsigned_release_recovery(agent_id, slot);
+            return Err(error);
+        }
         change.origin = rollback.clone();
         self.advance_release_transaction(
             agent_id,

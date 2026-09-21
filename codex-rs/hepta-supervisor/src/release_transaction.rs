@@ -44,6 +44,7 @@ pub enum ReleaseTransactionPhase {
     AutomaticRollbackStarting,
     Committed,
     RolledBack,
+    Aborted,
     RecoveryRequired,
 }
 
@@ -51,7 +52,7 @@ impl ReleaseTransactionPhase {
     pub fn terminal(self) -> bool {
         matches!(
             self,
-            Self::Committed | Self::RolledBack | Self::RecoveryRequired
+            Self::Committed | Self::RolledBack | Self::Aborted
         )
     }
 }
