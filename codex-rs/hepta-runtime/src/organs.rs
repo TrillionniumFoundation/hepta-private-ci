@@ -115,10 +115,17 @@ impl RuntimeOrgans {
             validate_runtime_topology_transition_v1(&host.route, host.host.generation(), &request)?;
         let token = authority.claim(signed_grant, &validated.binding)?;
         let binding = validated.binding.clone();
-        let RuntimeTopologyApplyRequestV1 { successor, .. } = request;
+        let RuntimeTopologyApplyRequestV1 {
+            mut migration,
+            successor,
+            ..
+        } = request;
         let replacement = authority.with_verified_use(token, &binding, || {
-            host.host
-                .replace_read_only_generation(validated.predecessor_generation, successor.host)
+            host.host.replace_read_only_generation_with_migration(
+                validated.predecessor_generation,
+                successor.host,
+                migration.as_mut(),
+            )
         })?;
         replacement?;
         host.route = successor.route;
@@ -155,10 +162,17 @@ impl RuntimeOrgans {
             validate_runtime_topology_recovery_v1(&host.route, host.host.generation(), &request)?;
         let token = authority.claim(signed_grant, &validated.binding)?;
         let binding = validated.binding.clone();
-        let RuntimeTopologyApplyRequestV1 { successor, .. } = request;
+        let RuntimeTopologyApplyRequestV1 {
+            mut migration,
+            successor,
+            ..
+        } = request;
         let replacement = authority.with_verified_use(token, &binding, || {
-            host.host
-                .recover_read_only_generation(validated.predecessor_generation, successor.host)
+            host.host.recover_read_only_generation_with_migration(
+                validated.predecessor_generation,
+                successor.host,
+                migration.as_mut(),
+            )
         })?;
         replacement?;
         host.route = successor.route;
