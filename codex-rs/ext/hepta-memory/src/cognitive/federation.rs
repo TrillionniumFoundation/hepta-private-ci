@@ -6,6 +6,7 @@ use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION;
 use codex_extension_api::EphemeralModelInputContext;
 use codex_extension_api::EphemeralModelInputContributor;
+use codex_extension_api::EphemeralModelInputFinalUseGuard;
 use codex_extension_api::EphemeralModelInputProposal;
 use codex_extension_api::EphemeralModelInputSource;
 use codex_extension_api::ExtensionData;
@@ -35,6 +36,7 @@ use serde_json::json;
 
 use super::CognitiveExtension;
 use super::CognitiveProposalMaterial;
+use super::chain_final_use_guards;
 use super::capture_directive;
 use super::now_unix_seconds;
 use super::secret_like;
@@ -60,6 +62,46 @@ struct PreparedFederatedAttachment {
     source_binding_sha256: Sha256Digest,
     content_sha256: Sha256Digest,
     claimed_token_count: u32,
+}
+
+struct FederatedFinalUseGuard {
+    runtime: CognitiveRuntime,
+    access: FederationConsumerAccess,
+    bindings: Vec<FederatedMemoryRevalidationBinding>,
+}
+
+impl EphemeralModelInputFinalUseGuard for FederatedFinalUseGuard {
+    fn revalidate(self: Box<Self>) -> ModelProviderPolicyFuture<'static, ()> {
+        Box::pin(async move {
+            let now = now_unix_seconds().ok_or_else(|| {
+                ModelProviderPolicyError::new(
+                    "federated_memory_final_use_clock_unavailable",
+                    "current wall clock is unavailable before provider dispatch",
+                )
+            })?;
+            let statuses = self
+                .runtime
+                .revalidate_product_federated_batch(&self.access, &self.bindings, now)
+                .await
+                .map_err(|error| {
+                    ModelProviderPolicyError::new(
+                        "federated_memory_final_use_unavailable",
+                        format!("final-use federation revalidation failed: {error}"),
+                    )
+                })?;
+            if statuses.len() != self.bindings.len()
+                || statuses
+                    .iter()
+                    .any(|status| !matches!(status, FederatedRevalidationStatus::Current(_)))
+            {
+                return Err(ModelProviderPolicyError::new(
+                    "federated_memory_final_use_stale",
+                    "federated memory changed or was revoked after request assembly",
+                ));
+            }
+            Ok(())
+        })
+    }
 }
 
 pub(crate) struct FederatedCognitiveExtension {
@@ -198,12 +240,18 @@ impl FederatedCognitiveExtension {
         {
             return None;
         }
+        let final_use_guard = Box::new(FederatedFinalUseGuard {
+            runtime: self.runtime.clone(),
+            access,
+            bindings: prepared.bindings.clone(),
+        });
         Some(CognitiveProposalMaterial {
             source: FEDERATED_COGNITIVE_SOURCE,
             source_binding_sha256,
             content_sha256,
             content,
             claimed_token_count,
+            final_use_guard: Some(final_use_guard),
         })
     }
 }
@@ -454,12 +502,15 @@ fn combine_cognitive_materials(
             content_sha256.as_str().as_bytes(),
         ],
     );
+    let final_use_guard =
+        chain_final_use_guards(local.final_use_guard, federated.final_use_guard);
     Some(CognitiveProposalMaterial {
         source: COMBINED_COGNITIVE_SOURCE,
         source_binding_sha256,
         content_sha256,
         content,
         claimed_token_count,
+        final_use_guard,
     })
 }
 
