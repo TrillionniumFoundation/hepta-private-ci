@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_state_submission_boundary_source_composed_no_non_test_learning_producer_or_target_host_execution",
+  "productCallerState": "agentd_named_learning_producer_source_composed_via_state_held_handle_not_target_host_executed_or_qualified",
   "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved",
   "operations": [
     {
@@ -193,9 +193,9 @@
     },
     {
       "operation": "agentd_named_parameter_submission",
-      "nativeSymbol": "AgentdState::submit_parameter_plasticity_v1",
-      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
-      "state": "agentd_state_submission_boundary_source_implemented_only_lifetime_tests_call_it_no_non_test_learning_producer_or_target_host_execution",
+      "nativeSymbol": "AgentdLearningPlasticityProducerV1::submit_parameter",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+      "state": "named_non_test_agentd_learning_producer_source_implemented_calls_state_submission_final_owner_revalidation_not_target_host_executed_or_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
@@ -204,7 +204,9 @@
       "designOperation": "agentd_named_parameter_submission",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.plasticity"
+        "learning.plasticity",
+        "learning.ledger",
+        "learning.eval"
       ]
     },
     {
@@ -443,7 +445,6 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind a real non-test learning/self-iteration producer to AgentdState::submit_parameter_plasticity_v1 using authoritative owner and independent-evaluation inputs; current invocations are source lifetime tests only. Do not expose mutable writers or accept caller-authored owner evidence.",
     "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head."
   ],
   "externalEvidenceGates": [
