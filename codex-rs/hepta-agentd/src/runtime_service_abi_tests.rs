@@ -86,8 +86,8 @@ async fn incompatible_abi_never_starts_factory_or_consumes_a_slot() {
 
     for candidate in invalid {
         let cancellation = CancellationToken::new();
-        let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(1))
-            .expect("host");
+        let mut tasks =
+            RuntimeTasks::new(cancellation.clone(), Duration::from_secs(1)).expect("host");
         let slots = tasks.remaining_admission_slots();
         let started = Arc::new(AtomicBool::new(false));
         let worker_started = Arc::clone(&started);
@@ -117,8 +117,7 @@ async fn incompatible_abi_never_starts_factory_or_consumes_a_slot() {
 #[tokio::test]
 async fn abi_bound_replacements_reuse_one_slot_and_reject_stale_retirement() {
     let cancellation = CancellationToken::new();
-    let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(1))
-        .expect("host");
+    let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(1)).expect("host");
     let slots = tasks.remaining_admission_slots();
     for epoch in 1..=512 {
         let (selected, mut implementation) = binding(epoch);

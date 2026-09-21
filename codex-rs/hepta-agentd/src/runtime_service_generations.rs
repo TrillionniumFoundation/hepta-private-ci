@@ -151,8 +151,7 @@ impl RuntimeTasks {
             }
             return Err(error);
         }
-        self.service_generations
-            .insert(name.to_string(), generation);
+        self.service_generations.insert(name.to_string(), generation);
         Ok(())
     }
 
