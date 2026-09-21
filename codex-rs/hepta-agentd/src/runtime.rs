@@ -48,6 +48,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    let intelligence_trust_file = config
+        .intelligence_capability_trust_file()
+        .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -68,6 +71,20 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .cognitive_ranker
             .set(ranker)
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
+    }
+    if let Some(path) = intelligence_trust_file {
+        state.refresh_generation()?;
+        let registry =
+            crate::AuthenticatedCapabilitySnapshotRegistryV3::new(identity.clone(), path)?;
+        state.refresh_generation()?;
+        state
+            .intelligence_capability_registry
+            .set(registry)
+            .map_err(|_| {
+                AgentdError::Protocol(
+                    "intelligence capability trust registry already attached".to_string(),
+                )
+            })?;
     }
     if let Some(path) = trust_file {
         state.refresh_generation()?;
