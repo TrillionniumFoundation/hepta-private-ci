@@ -417,7 +417,14 @@ fn explicit_unlearning_lineage_revokes_source_and_derived_credit() {
             record_id: id("record-unlearning-1"),
             lineage_id: id("unlearning-1"),
             source_record_id: id("record-auth-outcome-1"),
+            source_event_digest: ledger
+                .records()
+                .iter()
+                .find(|record| record.event.record_id() == &id("record-auth-outcome-1"))
+                .expect("source record")
+                .event_digest,
             dataset_snapshot_id: id("dataset-1"),
+            dataset_digest: Digest32::of_bytes(b"dataset-1-digest"),
             artifact_id: id("artifact-a"),
             authority_id: id("privacy-owner"),
             reason_digest: Digest32::of_bytes(b"withdrawal"),
