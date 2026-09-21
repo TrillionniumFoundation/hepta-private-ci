@@ -122,12 +122,13 @@
     },
     {
       "operation": "agentd_parameter_host",
-      "state": "host_entrypoint_called_by_long_lived_agentd_owner_source_composed_not_target_host_qualified",
+      "state": "host_entrypoint_called_by_long_lived_agentd_owner_with_real_append_ack_crash_registry_only_rollback_rejection_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
-        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::retained_external_anchor_blocks_rolled_back_registry_reopen"
+        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::retained_external_anchor_blocks_rolled_back_registry_reopen",
+        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::real_append_ack_crash_then_registry_rollback_is_rejected_on_restart"
       ]
     },
     {
