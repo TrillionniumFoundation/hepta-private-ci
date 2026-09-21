@@ -72,6 +72,7 @@ pub use config::HEPTA_AGENT_GENERATION_ENV;
 pub use config::HEPTA_AGENT_HOME_ENV;
 pub use config::HEPTA_AGENT_ID_ENV;
 pub use config::HEPTA_AGENT_RUN_ROOT_ENV;
+pub use config::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
 pub use error::AgentdError;
 pub use lane_b_runtime::AgentRunCoordinator;
 pub use lane_b_runtime::AgentRunError;

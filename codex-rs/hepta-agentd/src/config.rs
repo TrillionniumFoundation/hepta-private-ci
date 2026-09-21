@@ -17,6 +17,7 @@ pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
 pub const HEPTA_AGENT_HOME_ENV: &str = "HEPTA_AGENT_HOME";
 pub const HEPTA_AGENT_RUN_ROOT_ENV: &str = "HEPTA_AGENT_RUN_ROOT";
+pub const HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV: &str = "HEPTA_COGNITIVE_RETRIEVAL_MODE";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdIdentity {
@@ -45,6 +46,26 @@ impl CognitiveRetrievalMode {
     }
 }
 
+fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrievalMode, AgentdError> {
+    let Some(value) = std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV)
+        .filter(|value| !value.is_empty())
+    else {
+        return Ok(CognitiveRetrievalMode::Compatibility);
+    };
+    let value = value.into_string().map_err(|_| {
+        AgentdError::Invalid(format!(
+            "{HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV} must be UTF-8"
+        ))
+    })?;
+    match value.as_str() {
+        "compatibility" => Ok(CognitiveRetrievalMode::Compatibility),
+        "hnmf-required" => Ok(CognitiveRetrievalMode::HnmfRequired),
+        _ => Err(AgentdError::Invalid(format!(
+            "{HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV} must be compatibility or hnmf-required"
+        ))),
+    }
+}
+
 pub struct AgentdConfig {
     identity: AgentdIdentity,
     registry: FleetRegistry,
@@ -58,6 +79,7 @@ pub struct AgentdConfig {
 
 impl AgentdConfig {
     pub fn from_process_environment() -> Result<Self, AgentdError> {
+        let cognitive_retrieval_mode = cognitive_retrieval_mode_from_process_environment()?;
         let fleet_root = required_path(codex_hepta_paths::HEPTA_FLEET_ROOT_ENV)?;
         let agent_id = required_utf8(HEPTA_AGENT_ID_ENV)?;
         let spawn_generation = required_utf8(HEPTA_AGENT_GENERATION_ENV)?
@@ -80,6 +102,7 @@ impl AgentdConfig {
             codex_home,
             current_dir,
         )
+        .map(|config| config.with_cognitive_retrieval_mode(cognitive_retrieval_mode))
     }
 
     #[allow(clippy::too_many_arguments)]
