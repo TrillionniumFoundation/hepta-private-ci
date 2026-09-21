@@ -1083,6 +1083,22 @@ async fn load_occurrence_row(
         .transpose()
 }
 
+pub(crate) async fn verify_occurrence_store(
+    pool: &sqlx::SqlitePool,
+    expected_owner: &str,
+) -> Result<(), AutomationError> {
+    let rows = sqlx::query(
+        "SELECT * FROM automation_occurrence_lifecycle ORDER BY task_id, occurrence",
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(unavailable)?;
+    for row in &rows {
+        occurrence_from_row(row, expected_owner)?;
+    }
+    Ok(())
+}
+
 fn occurrence_from_row(
     row: &sqlx::sqlite::SqliteRow,
     expected_owner: &str,
@@ -1097,6 +1113,32 @@ fn occurrence_from_row(
         .try_get("task_id")
         .map_err(|_| AutomationError::Corrupt)?;
     let task_id = AutomationTaskId::parse(&task_raw).map_err(|_| AutomationError::Corrupt)?;
+    let occurrence = to_u64(
+        row.try_get("occurrence")
+            .map_err(|_| AutomationError::Corrupt)?,
+    )?;
+    let schedule_revision = to_u64(
+        row.try_get("schedule_revision")
+            .map_err(|_| AutomationError::Corrupt)?,
+    )?;
+    let scheduled_for_ms = to_u64(
+        row.try_get("scheduled_for_ms")
+            .map_err(|_| AutomationError::Corrupt)?,
+    )?;
+    let occurrence_id: String = row
+        .try_get("occurrence_id")
+        .map_err(|_| AutomationError::Corrupt)?;
+    let expected_occurrence_id =
+        deterministic_occurrence_id(expected_owner, task_id, schedule_revision, scheduled_for_ms);
+    if occurrence_id != expected_occurrence_id {
+        return Err(AutomationError::Corrupt);
+    }
+    let taskflow_run_id: String = row
+        .try_get("taskflow_run_id")
+        .map_err(|_| AutomationError::Corrupt)?;
+    if taskflow_run_id != format!("automation-run:{}", digest_suffix(&occurrence_id)) {
+        return Err(AutomationError::Corrupt);
+    }
     let state_raw: String = row.try_get("state").map_err(|_| AutomationError::Corrupt)?;
     let overlap_raw: String = row
         .try_get("overlap_policy")
@@ -1112,21 +1154,10 @@ fn occurrence_from_row(
         .transpose()?;
     Ok(AutomationOccurrence {
         task_id,
-        occurrence: to_u64(
-            row.try_get("occurrence")
-                .map_err(|_| AutomationError::Corrupt)?,
-        )?,
-        occurrence_id: row
-            .try_get("occurrence_id")
-            .map_err(|_| AutomationError::Corrupt)?,
-        schedule_revision: to_u64(
-            row.try_get("schedule_revision")
-                .map_err(|_| AutomationError::Corrupt)?,
-        )?,
-        scheduled_for_ms: to_u64(
-            row.try_get("scheduled_for_ms")
-                .map_err(|_| AutomationError::Corrupt)?,
-        )?,
+        occurrence,
+        occurrence_id,
+        schedule_revision,
+        scheduled_for_ms,
         client_user_message_id: row
             .try_get("client_user_message_id")
             .map_err(|_| AutomationError::Corrupt)?,
@@ -1144,9 +1175,7 @@ fn occurrence_from_row(
                 .map_err(|_| AutomationError::Corrupt)?,
         )
         .map_err(|_| AutomationError::Corrupt)?,
-        taskflow_run_id: row
-            .try_get("taskflow_run_id")
-            .map_err(|_| AutomationError::Corrupt)?,
+        taskflow_run_id,
         queued_submission_id: row
             .try_get("queued_submission_id")
             .map_err(|_| AutomationError::Corrupt)?,
