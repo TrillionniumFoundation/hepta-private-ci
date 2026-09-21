@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "c59599f385fddb106867bae61242ca91b102a6b6",
-    "tree": "1ee264543599ba29efff9830da29d38db28a69d6"
+    "commit": "1644afc86fb50a572cd7d89d10a7d9a75c9f607f",
+    "tree": "0c09497880937437dbc655b79e21f0015106ede3"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -56,7 +56,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved."
+    "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved.",
+    "Product turn cancellation is currently enforced by host future-drop propagation; add explicit product cancellation attribution/receipt wiring if canonical cancellation observability is required."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
@@ -79,9 +80,9 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
     "baseCommit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
-    "candidateHead": "c59599f385fddb106867bae61242ca91b102a6b6",
-    "candidateTree": "1ee264543599ba29efff9830da29d38db28a69d6",
-    "headMeaning": "current_main_merged canonical_v2 integrity ordered_prefix partial_empty live_authority interruptible_transport product_composition batch_final_use post_batch_expiry_recheck physical_http_final_use_guard current_verifier_and_generated_indexes",
+    "candidateHead": "1644afc86fb50a572cd7d89d10a7d9a75c9f607f",
+    "candidateTree": "0c09497880937437dbc655b79e21f0015106ede3",
+    "headMeaning": "current_main_merged canonical_v2 integrity ordered_prefix partial_empty live_authority interruptible_transport concurrent_product_fanout typed_failure_coverage peer_omission_visibility batch_final_use post_batch_expiry_recheck physical_http_final_use_guard current_verifier_and_generated_indexes",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -110,7 +111,11 @@
       "current_main_generated_index_preservation",
       "candidate_or_exact_observation_source_identity",
       "physical_http_final_use_guard_before_dispatch",
-      "post_batch_final_use_expiry_recheck"
+      "post_batch_final_use_expiry_recheck",
+      "bounded_concurrent_peer_fanout_one_global_horizon",
+      "peer_truncation_and_owner_candidate_omission_visibility",
+      "typed_failure_coverage_bound_to_result_and_attachment",
+      "dispatch_contract_aligned_final_use_revocation_semantics"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -136,7 +141,7 @@
       "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
       "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs"
     ],
-    "note": "sourceBase uses candidate_or_exact_observation_v1 and is bound to the frozen current-main merge candidate. observedAtHead proves the declared federation source root is byte-unchanged through metadata-only receipt commits. The candidate includes current main, exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, V2-only product attachment, batch final-use revalidation, a fresh post-batch wall-clock check that rejects capability expiry crossing or clock regression before provider dispatch, an HTTP-path regression proving final-use rejection precedes provider dispatch, current implementation-map verifier semantics, and current-main generated indexes/Cargo lock state. productExecutionProved, independent acceptance, activation and release remain false until executable and external gates pass.",
+    "note": "sourceBase uses candidate_or_exact_observation_v1 and is bound to the frozen current-main merge candidate. The candidate includes current main, exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, concurrent bounded product peer fan-out under one global horizon, deterministic aggregation, explicit peer truncation and owner-candidate omission, typed discovery/deadline-authority/integrity/transport failure coverage bound into result/attachment evidence, V2-only product attachment, batch final-use revalidation, a fresh post-batch wall-clock check that rejects capability expiry crossing or clock regression before provider transport entry, and dispatch-contract-aligned revocation semantics. Product cancellation safety currently relies on the host dropping the contributor future through its turn cancellation token; explicit canonical cancellation receipt attribution remains a repository-controlled observability gap. productExecutionProved, independent acceptance, activation and release remain false until executable and external gates pass.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
       "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
@@ -144,8 +149,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "c59599f385fddb106867bae61242ca91b102a6b6",
-    "tree": "1ee264543599ba29efff9830da29d38db28a69d6"
+    "commit": "1644afc86fb50a572cd7d89d10a7d9a75c9f607f",
+    "tree": "0c09497880937437dbc655b79e21f0015106ede3"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-memory-federation"
