@@ -33,7 +33,19 @@ MODULES = [
     "ui.native",
 ]
 OPS = {
-    "runtime.supervisor": ["start_instance","observe_health","drain","stop_instance","kill_instance","restart_instance","load_next","rollback_release","signed_upgrade","signed_rollback","reconcile_signed_intent"],
+    "runtime.supervisor": [
+        "start_instance",
+        "observe_health",
+        "drain",
+        "stop_instance",
+        "kill_instance",
+        "restart_instance",
+        "load_next",
+        "rollback_release",
+        "signed_upgrade",
+        "signed_rollback",
+        "reconcile_signed_intent",
+    ],
     "runtime.fleet": ["admit_host", "allocate", "renew_or_revoke"],
     "runtime.agentd": ["compose_runtime", "start_run", "cancel_run", "attach_context"],
     "runtime.codex": [
@@ -130,6 +142,40 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
     return commit, tree
 
 
+def verify_observed_source(row: dict[str, Any], module: str) -> None:
+    """Bind an optional source observation to unchanged product paths at HEAD."""
+    observed = row.get("observedAtHead")
+    if observed is None:
+        return
+    need(isinstance(observed, dict), f"{module}: observed source identity")
+    identity = {"commit": observed.get("commit"), "tree": observed.get("tree")}
+    commit, _ = verify_source_base(identity, f"{module}: observedAtHead")
+    roots = row.get("resolvedRoots")
+    need(
+        isinstance(roots, list)
+        and roots
+        and all(isinstance(path, str) and path for path in roots),
+        f"{module}: resolved roots",
+    )
+    paths = row.get("observedSourcePaths", roots)
+    need(
+        isinstance(paths, list)
+        and paths
+        and all(isinstance(path, str) and path for path in paths),
+        f"{module}: observed source paths",
+    )
+    need(
+        set(roots).issubset(set(paths)),
+        f"{module}: observed source paths omit resolved roots",
+    )
+    root = ROOT.resolve()
+    for path in paths:
+        candidate = (ROOT / path).resolve()
+        need(candidate.is_relative_to(root), f"{module}: observed source path escape")
+        need(candidate.exists(), f"{module}: missing observed source path {path}")
+    changed = git("diff", "--name-only", commit, "HEAD", "--", *paths)
+    need(not changed, f"{module}: observed source drift since {commit}")
+
 def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
     index = truth.get("modules")
     need(isinstance(index, list) and len(index) == len(MODULES), "module index")
@@ -154,6 +200,7 @@ def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
             or (base["commit"], base["tree"]) not in verified
         ):
             verified.add(verify_source_base(base, module))
+        verify_observed_source(row, module)
         ids = [
             item.get("designOperation") or item.get("operation")
             for item in row.get("operations", [])
@@ -272,7 +319,12 @@ def verify_candidate(manifest: dict[str, Any], truth: dict[str, Any]) -> list[st
     pull_request = event.get("pull_request")
     if "pull_request" in event:
         need(isinstance(pull_request, dict), "invalid pull-request event")
-        actual_base = pull_request["base"]["sha"]
+        # GitHub's pull-request payload preserves the base SHA observed for the
+        # event and may lag the current target branch after that branch advances.
+        # The workflow resolves the current remote base ref after checkout and
+        # passes it explicitly. The event SHA remains provenance/fallback only.
+        event_base = pull_request["base"]["sha"]
+        actual_base = os.environ.get("HEPTA_CANDIDATE_BASE_SHA") or event_base
         candidate_subject = pull_request["head"]["sha"]
     else:
         need(not synthetic, "synthetic merge requires pull-request event identity")
@@ -469,7 +521,8 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         "truth schema",
     )
     need(
-        truth.get("moduleOrder") == MODULES\n        and truth.get("operationCount") == sum(len(OPS[module]) for module in MODULES),
+        truth.get("moduleOrder") == MODULES
+        and truth.get("operationCount") == sum(len(OPS[module]) for module in MODULES),
         "truth closed world",
     )
     claims = truth.get("claimBoundary", {})
