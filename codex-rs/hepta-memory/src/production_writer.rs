@@ -1818,6 +1818,111 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn semantic_response_loss_restart_rejects_duplicate_and_preserves_committed_cut() {
+        let temp = TempDir::new().unwrap();
+        let initial_store = store(&temp).await;
+        let owner = initial_store.owner_agent_id().clone();
+        let auth = authority(owner.clone());
+        let lease_id = "production:h4:semantic-response-loss";
+        let verifier: Arc<dyn ProductionAuthorityVerifier> = Arc::new(AllowVerifier);
+        let writer = Arc::new(
+            ProductionDurableWriter::open_with_live_verifier(
+                initial_store.clone(),
+                auth.clone(),
+                Arc::clone(&verifier),
+                lease_id,
+                1,
+            )
+            .await
+            .unwrap(),
+        );
+        let capability = writer
+            .cognitive_mutation_capability()
+            .expect("live verifier must mint semantic mutation capability");
+        let access = CognitiveAccess::agent_private(owner);
+        let now = i64::try_from(now_unix_seconds().unwrap()).unwrap();
+        let content = "Committed semantic mutation survives response loss.";
+        let source = SourceDraft {
+            scope: CognitiveScope::AgentPrivate,
+            kind: crate::LedgerSourceKind::ExplicitMemoryDirective,
+            event_key: "semantic-response-loss:1".to_string(),
+            content: content.as_bytes().to_vec(),
+            observed_at_unix_seconds: now,
+        };
+        let draft = MemoryDraft {
+            stable_key: "semantic-response-loss-memory".to_string(),
+            revision: MemoryRevisionDraft {
+                scope: CognitiveScope::AgentPrivate,
+                content: content.to_string(),
+                verification: crate::MemoryVerification::Verified,
+                lifecycle: crate::MemoryLifecycleState::Active,
+                valid_from_unix_seconds: now,
+                valid_to_unix_seconds: None,
+                citations: Vec::new(),
+            },
+        };
+        let facts = KgFactSetDraft::default();
+
+        // Simulate a response that was durably committed but lost before the
+        // caller could retain the returned receipt.
+        let committed = capability
+            .remember_with_kg(&access, &source, &draft, &facts)
+            .await
+            .expect("initial semantic mutation");
+        committed.validate().expect("committed receipt");
+        let occurrence_key = format!(
+            "cognitive-mutation:{}",
+            committed.operation_digest.as_str()
+        );
+        assert_eq!(
+            writer.status(&occurrence_key).await.unwrap(),
+            LocalOutcomeState::Committed
+        );
+        let committed_cut = writer.recovery_anchor().await.unwrap();
+
+        drop(capability);
+        drop(writer);
+        drop(initial_store);
+
+        // A process restart may repeat the exact semantic request. The durable
+        // committed occurrence must stop that retry before a second Memory
+        // revision/source/fact mutation is attempted.
+        let reopened_store = store(&temp).await;
+        let reopened_writer = Arc::new(
+            ProductionDurableWriter::open_with_live_verifier(
+                reopened_store,
+                auth,
+                verifier,
+                lease_id,
+                1,
+            )
+            .await
+            .unwrap(),
+        );
+        let reopened_capability = reopened_writer
+            .cognitive_mutation_capability()
+            .expect("reopened live writer capability");
+        let retry = reopened_capability
+            .remember_with_kg(&access, &source, &draft, &facts)
+            .await;
+        assert!(matches!(
+            retry,
+            Err(ProductionCognitiveMutationError::Authority(
+                ProductionWriterError::Local(LocalLeaseOutboxError::IllegalTransition(ref message))
+            )) if message.contains("committed")
+        ));
+        assert_eq!(
+            reopened_writer.status(&occurrence_key).await.unwrap(),
+            LocalOutcomeState::Committed
+        );
+        assert_eq!(
+            reopened_writer.recovery_anchor().await.unwrap(),
+            committed_cut,
+            "response-loss retry must not append a duplicate semantic revision"
+        );
+    }
+
+    #[tokio::test]
     async fn production_writer_requires_verifier_and_records_commit() {
         let temp = TempDir::new().unwrap();
         let store = store(&temp).await;
