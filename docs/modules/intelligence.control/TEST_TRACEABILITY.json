@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.intelligence-control-test-traceability.v1",
+  "schemaVersion": 1,
+  "module": "intelligence.control",
+  "canonicalFacade": "prepare_intelligence_run",
+  "namedProductCaller": "codex-rs/hepta-agentd/src/intelligence_product.rs::AgentdIntelligenceProductRunnerV1",
+  "compatibilitySurfaces": [
+    "compose",
+    "run_read_only_vertical",
+    "run_shadow_pipeline",
+    "run_shadow_pipeline_v2",
+    "run_evaluated_shadow_v1"
+  ],
+  "operations": [
+    {
+      "operation": "build_legal_candidates",
+      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs::legal_candidate_set_rejects_replay_identity_with_duplicate_semantics",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
+      ]
+    },
+    {
+      "operation": "prepare_intelligence_run",
+      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs::canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs::abstention_stops_before_context_and_evaluation",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability"
+      ]
+    },
+    {
+      "operation": "decide_boundary",
+      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs::canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs::abstention_stops_before_context_and_evaluation"
+      ]
+    },
+    {
+      "operation": "assemble_context",
+      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
+      ]
+    },
+    {
+      "operation": "validate_current_snapshot",
+      "source": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs::owner_generation_change_between_call_and_publication_fails_closed",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs::key_rotation_and_wrong_owner_receipt_fail_closed",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::final_use_revocation_race_fails_before_decision_publication",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::missing_current_owner_fails_before_product_use"
+      ]
+    },
+    {
+      "operation": "AgentdIntelligenceProductRunnerV1::prepare",
+      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability"
+      ]
+    },
+    {
+      "operation": "AgentdIntelligenceProductRunnerV1::append_decision",
+      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::final_use_revocation_race_fails_before_decision_publication"
+      ]
+    },
+    {
+      "operation": "AgentdIntelligenceProductRunnerV1::append_outcome",
+      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
+      ]
+    },
+    {
+      "operation": "AgentdIntelligenceProductRunnerV1::reconcile_ledger_append",
+      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
+      ],
+      "note": "The real-file test proves acknowledged reopen and exact idempotent replay. A host-induced fsync Indeterminate remains target fault-injection evidence, not synthesized success."
+    }
+  ],
+  "claimBoundary": {
+    "sourceTestsPresent": true,
+    "exactHeadExecuted": false,
+    "deterministicMergeExecuted": false,
+    "targetHostQualified": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}
