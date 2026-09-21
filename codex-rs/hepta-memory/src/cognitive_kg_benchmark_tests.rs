@@ -169,21 +169,47 @@ async fn qualification_knowledge_graph_capacity_receipt() {
     }
     let total_write_ns = elapsed_ns(total_write_start);
 
+    let current_generation: i64 =
+        sqlx::query_scalar("SELECT generation FROM kg_projection WHERE projection_scope = ?")
+            .bind(scope.projection_key())
+            .fetch_one(&store.pool)
+            .await
+            .expect("KG benchmark current generation");
     let physical_counts: (i64, i64) = sqlx::query_as(
-        "SELECT (SELECT COUNT(*) FROM kg_nodes WHERE projection_scope = ?),
-                (SELECT COUNT(*) FROM kg_edges WHERE projection_scope = ?)",
+        "SELECT
+            (SELECT COUNT(*) FROM kg_nodes
+             WHERE projection_scope = ? AND generation = ?),
+            (SELECT COUNT(*) FROM kg_edges
+             WHERE projection_scope = ? AND generation = ?)",
     )
     .bind(scope.projection_key())
+    .bind(current_generation)
     .bind(scope.projection_key())
+    .bind(current_generation)
     .fetch_one(&store.pool)
     .await
-    .expect("KG benchmark physical counts");
+    .expect("KG benchmark current-generation physical counts");
     assert_eq!(
         physical_counts,
         (
             i64::try_from(writes * ENTITIES_PER_WRITE).expect("bounded node count"),
             i64::try_from(writes * RELATIONS_PER_WRITE).expect("bounded edge count"),
         ),
+    );
+    let historical_physical_counts: (i64, i64) = sqlx::query_as(
+        "SELECT
+            (SELECT COUNT(*) FROM kg_nodes WHERE projection_scope = ?),
+            (SELECT COUNT(*) FROM kg_edges WHERE projection_scope = ?)",
+    )
+    .bind(scope.projection_key())
+    .bind(scope.projection_key())
+    .fetch_one(&store.pool)
+    .await
+    .expect("KG benchmark historical physical counts");
+    assert!(
+        historical_physical_counts.0 >= physical_counts.0
+            && historical_physical_counts.1 >= physical_counts.1,
+        "historical append-only rows cannot be smaller than the selected generation"
     );
 
     let mut query_ns = Vec::with_capacity(query_samples);
@@ -226,8 +252,11 @@ async fn qualification_knowledge_graph_capacity_receipt() {
         "schema": "hepta.knowledge-graph-perf-library.v1",
         "algorithm": "complete_generation_per_logical_mutation",
         "writes": writes,
+        "currentGeneration": current_generation,
         "physicalNodes": physical_counts.0,
         "physicalEdges": physical_counts.1,
+        "historicalPhysicalNodeRows": historical_physical_counts.0,
+        "historicalPhysicalEdgeRows": historical_physical_counts.1,
         "querySamples": query_samples,
         "reopenSamples": reopen_samples,
         "mutationNs": {
