@@ -1,15 +1,22 @@
 //! Replay fencing for envelopes that were authenticated by a trusted upstream
 //! boundary.
 //!
-//! The signed admission API verifies issuer-bound Ed25519 messages. The legacy
-//! replay model accepts preverified input. Neither evaluates effect
-//! authorization policy, reserves quota or dispatches an effect. Neither mints a
-//! grant, widen scope, select, promote, merge or release. Successful receipts
-//! always carry `AuthorityPosture::DENY_ALL`.
+//! The signed admission API verifies issuer-bound Ed25519 messages and the
+//! durable policy owner evaluates exact principal/action/resource RBAC at a
+//! caller-bound policy revision. The legacy replay model accepts preverified
+//! input. None of these surfaces reserves quota or dispatches an effect; none
+//! mints a grant, widens scope, selects, promotes, merges or releases.
+//! Authentication receipts always carry `AuthorityPosture::DENY_ALL`.
 
 #![forbid(unsafe_code)]
 
+mod policy;
 mod signed;
+pub use policy::AuthPolicyStore;
+pub use policy::PolicyDecisionV1;
+pub use policy::PolicyError;
+pub use policy::PolicyRevisionDraftV1;
+pub use policy::PolicyRuleV1;
 pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;
