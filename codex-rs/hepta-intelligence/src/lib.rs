@@ -6,6 +6,39 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical;
+
+pub use canonical::AdvisoryDecisionReceiptV1;
+pub use canonical::AdvisoryDecisionV1;
+pub use canonical::CanonicalBudgetV1;
+pub use canonical::CanonicalFreshnessOracleV1;
+pub use canonical::CanonicalIntelligenceError;
+pub use canonical::CanonicalIntelligenceRunRequestV1;
+pub use canonical::CanonicalIntelligenceSnapshotV1;
+pub use canonical::CanonicalOwnerPortsV1;
+pub use canonical::CanonicalPortDecisionV1;
+pub use canonical::CanonicalPortFailureClassV1;
+pub use canonical::CanonicalPortFailureV1;
+pub use canonical::CanonicalPortInputV1;
+pub use canonical::CanonicalPortReceiptV1;
+pub use canonical::CanonicalRunOutcomeV1;
+pub use canonical::CanonicalSnapshotRequestV1;
+pub use canonical::CanonicalStageTraceV1;
+pub use canonical::CanonicalStageV1;
+pub use canonical::CanonicalTerminalReceiptV1;
+pub use canonical::ContextAssemblyReceiptV1;
+pub use canonical::CurrentOwnerStateV1;
+pub use canonical::IntelligenceHostEnvelopeV1;
+pub use canonical::LegalActionCandidateSetRequestV1;
+pub use canonical::LegalActionCandidateSetV1;
+pub use canonical::LegalActionCandidateV1;
+pub use canonical::OwnerBindingV1;
+pub use canonical::assemble_context;
+pub use canonical::build_legal_candidates;
+pub use canonical::decide_boundary;
+pub use canonical::prepare_intelligence_run;
+pub use canonical::validate_current_snapshot;
+
 mod evaluated_shadow;
 
 pub use evaluated_shadow::EvaluatedShadowError;
