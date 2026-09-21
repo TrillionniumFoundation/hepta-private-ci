@@ -2,6 +2,7 @@ use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION;
 use codex_extension_api::EphemeralModelInputContext;
+use codex_extension_api::EphemeralModelInputFinalUseGuard;
 use codex_extension_api::EphemeralModelInputProposal;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderRequestKind;
@@ -56,11 +57,18 @@ impl EphemeralModelInputBinding {
 pub(crate) struct PreparedEphemeralModelInput {
     item: ResponseItem,
     binding: EphemeralModelInputBinding,
+    final_use_guard: Option<Box<dyn EphemeralModelInputFinalUseGuard>>,
 }
 
 impl PreparedEphemeralModelInput {
-    pub(crate) fn into_parts(self) -> (ResponseItem, EphemeralModelInputBinding) {
-        (self.item, self.binding)
+    pub(crate) fn into_parts(
+        self,
+    ) -> (
+        ResponseItem,
+        EphemeralModelInputBinding,
+        Option<Box<dyn EphemeralModelInputFinalUseGuard>>,
+    ) {
+        (self.item, self.binding, self.final_use_guard)
     }
 }
 
@@ -165,7 +173,7 @@ pub(super) fn prepare_ephemeral_model_input(
     let source_binding_sha256 = proposal.source_binding_sha256().clone();
     let claimed_token_count = proposal.claimed_token_count();
     let claimed_content_sha256 = proposal.content_sha256().clone();
-    let content = proposal.into_content();
+    let (content, final_use_guard) = proposal.into_content_and_final_use_guard();
     if content.len() > context.max_content_bytes as usize
         || claimed_token_count == 0
         || claimed_token_count > context.max_content_tokens
@@ -205,6 +213,7 @@ pub(super) fn prepare_ephemeral_model_input(
     Ok(PreparedEphemeralModelInput {
         item,
         binding: EphemeralModelInputBinding::new(input_sha256, authority_sha256),
+        final_use_guard,
     })
 }
 
