@@ -10,6 +10,18 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTick;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_cognitive_read::AuthoritativeCognitiveSnapshotProvider;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_cognitive_read::SnapshotProviderError;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_compact_engine::TrustedCompactionEvaluatorV1;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_compact_engine::TrustedTokenizerV1;
 use codex_hepta_contracts::AgentId;
 #[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_contracts::Sha256Digest;
@@ -39,10 +51,16 @@ use codex_hepta_memory::LogicalTurnAttemptRequest;
 #[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_memory::LogicalTurnRequest;
 #[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_memory::ProductionAuthorityLease;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_memory::ProductionAuthorityToken;
+#[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_memory::append_h7_trajectory_event_bound;
 #[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_memory::h7_trajectory_local_receipt_digest;
 use codex_hepta_paths::HeptaFleetRoot;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_types::Digest32;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -50,13 +68,19 @@ use super::AgentdIdentity;
 use super::AgentdState;
 use super::CompletedRuntimeTask;
 use super::EVENT_CAPACITY;
+#[cfg(feature = "qualification-cognitive-write")]
+use super::attach_production_writer_after_generation_fence;
 use super::cleanup_runtime_tasks;
 use super::monitor_runtime;
 use super::open_automation_store_after_generation_fence;
 use super::open_cognitive_runtime_after_generation_fence;
 use super::require_cognitive_runtime_for_profile;
+#[cfg(feature = "qualification-cognitive-write")]
+use crate::AgentdCompactionTrustV1;
 use crate::AgentdMethod;
 use crate::AgentdPayload;
+#[cfg(feature = "qualification-cognitive-write")]
+use crate::AgentdProductionWriterBootstrap;
 #[cfg(feature = "qualification-cognitive-write")]
 use crate::app_runtime::app_server_runtime_options_for_agent;
 use crate::automation::DispatchRetryBudget;
@@ -68,6 +92,19 @@ use crate::qualification_writer::prepare_qualification_turn_writer_input;
 use codex_hepta_memory::LocalLeaseHeadDisposition;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+
+#[cfg(feature = "qualification-cognitive-write")]
+struct UnusedSnapshotProvider;
+
+#[cfg(feature = "qualification-cognitive-write")]
+impl AuthoritativeCognitiveSnapshotProvider for UnusedSnapshotProvider {
+    fn acquire(
+        &self,
+        _request: &SnapshotAcquisitionRequestV1,
+    ) -> Result<AuthoritativeSnapshotV1, SnapshotProviderError> {
+        Err(SnapshotProviderError::Unavailable)
+    }
+}
 
 #[tokio::test]
 async fn cleanup_never_polls_the_join_handle_already_consumed_by_select() {
@@ -613,6 +650,111 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         LocalLeaseHeadDisposition::ExpiredActive,
         "registry-backed H7 quarantine must not mutate the active registry head"
     );
+}
+
+#[cfg(feature = "qualification-cognitive-write")]
+#[tokio::test]
+async fn explicit_production_writer_bootstrap_is_runtime_composed_but_readiness_gated() {
+    let fixture = runtime_fixture();
+    let store = Arc::new(
+        CognitiveStore::open(&fixture.identity.layout)
+            .await
+            .expect("open cognitive store"),
+    );
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_secs();
+    let authority = ProductionAuthorityLease::from_verified_parts(
+        fixture.identity.agent_id.clone(),
+        Sha256Digest::for_bytes(b"agentd-runtime-bootstrap-grant"),
+        1,
+        1,
+        now.saturating_add(3_600),
+        ProductionAuthorityToken::from_verified_bytes(b"agentd-runtime-bootstrap-token".to_vec())
+            .expect("authority token"),
+    )
+    .expect("authority lease");
+    let verifier: Arc<dyn codex_hepta_memory::ProductionAuthorityVerifier> =
+        Arc::new(|lease: &ProductionAuthorityLease, expected: &AgentId| {
+            if &lease.agent_id == expected && lease.authority_epoch == 1 {
+                Ok(())
+            } else {
+                Err("unexpected runtime bootstrap authority".to_string())
+            }
+        });
+    let tokenizer_key = ed25519_dalek::SigningKey::from_bytes(&[11_u8; 32]);
+    let evaluator_key = ed25519_dalek::SigningKey::from_bytes(&[13_u8; 32]);
+    let trust = AgentdCompactionTrustV1::new(
+        TrustedTokenizerV1 {
+            tokenizer_digest: Digest32::of_bytes(b"runtime-tokenizer"),
+            implementation_digest: Digest32::of_bytes(b"runtime-tokenizer-implementation"),
+            attestation_digest: Digest32::of_bytes(b"runtime-tokenizer-attestation"),
+            verifying_key: tokenizer_key.verifying_key().to_bytes(),
+        },
+        TrustedCompactionEvaluatorV1 {
+            evaluator_id: codex_hepta_types::StableId::new("runtime:evaluator")
+                .expect("evaluator id"),
+            implementation_digest: Digest32::of_bytes(b"runtime-evaluator-implementation"),
+            attestation_digest: Digest32::of_bytes(b"runtime-evaluator-attestation"),
+            verifying_key: evaluator_key.verifying_key().to_bytes(),
+        },
+    );
+    let bootstrap = AgentdProductionWriterBootstrap::new(
+        authority,
+        verifier,
+        "production:compact:runtime-bootstrap",
+        1,
+        trust,
+        Arc::new(UnusedSnapshotProvider),
+    )
+    .expect("bootstrap");
+
+    attach_production_writer_after_generation_fence(&fixture.state, &store, Some(bootstrap))
+        .await
+        .expect("compose production writer host");
+    assert!(
+        fixture
+            .state
+            .production_writer_host()
+            .expect("starting readiness check")
+            .is_none(),
+        "Starting Agentd must not expose the production writer host"
+    );
+
+    fixture
+        .registry
+        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+        .expect("running generation");
+    fixture.state.refresh_generation().expect("refresh running");
+    fixture
+        .state
+        .mark_app_server_ready()
+        .expect("mark App Server ready");
+    let host = fixture
+        .state
+        .production_writer_host()
+        .expect("runtime readiness")
+        .expect("production writer host after readiness");
+    assert!(host.has_compaction_trust());
+    assert!(host.has_snapshot_provider());
+    host.writer()
+        .rollback_lease()
+        .await
+        .expect("rollback runtime bootstrap lease");
+}
+
+#[test]
+fn production_writer_bootstrap_never_degrades_without_authoritative_store() {
+    let unavailable = CognitiveRuntime::Unavailable(
+        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
+    );
+    assert!(super::require_cognitive_runtime_for_writer_bootstrap(&unavailable, false).is_ok());
+    assert!(matches!(
+        super::require_cognitive_runtime_for_writer_bootstrap(&unavailable, true),
+        Err(crate::AgentdError::Protocol(ref message))
+            if message.contains("requires the authoritative CognitiveStore")
+    ));
 }
 
 #[cfg(not(feature = "qualification-cognitive-write"))]
