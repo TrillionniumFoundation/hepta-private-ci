@@ -35,6 +35,53 @@ jobs:
           sha256sum Cargo.lock > "$RUNNER_TEMP/hepta-offline-inputs/lock.sha256"
           printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/hepta-offline-inputs/source-sha.txt"
           git diff --exit-code -- Cargo.lock
+      - name: Diagnose failed resolution in a separate non-qualifying worktree
+        if: failure()
+        env:
+          RUSTUP_TOOLCHAIN: 1.95.0
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          diagnostic="$RUNNER_TEMP/hepta-repair-diagnostic"
+          output="$RUNNER_TEMP/hepta-repair-evidence"
+          mkdir -p "$output"
+          printf '%s\n' "$GITHUB_SHA" > "$output/source-sha.txt"
+          printf '%s\n' 'Diagnostic suggestions only. Not source-head qualification, independent review, merge or release evidence.' > "$output/SCOPE.txt"
+          git worktree add --detach "$diagnostic" "$GITHUB_SHA"
+          # Preserve the locked external versions where possible. Never test
+          # this changed tree or substitute it for the failed exact candidate.
+          set +e
+          (cd "$diagnostic/codex-rs" && cargo update --workspace) > "$output/lock-resolution.log" 2>&1
+          lock_status=$?
+          cargo fmt --manifest-path "$diagnostic/codex-rs/Cargo.toml" \
+            --package codex-hepta-fleet --package codex-hepta-control-plane \
+            --package codex-hepta-agentd > "$output/format.log" 2>&1
+          format_status=$?
+          set -e
+          printf 'lock_resolution=%s\nformat=%s\n' "$lock_status" "$format_status" > "$output/exit-status.txt"
+          git -C "$diagnostic" diff --no-ext-diff --binary > "$output/suggested.patch"
+          sha256sum "$output/suggested.patch" > "$output/patch.sha256"
+          cat "$output/exit-status.txt"
+          tail -n 100 "$output/lock-resolution.log"
+          tail -n 60 "$output/format.log"
+          # Keep connector-readable diagnostics bounded; the complete patch is
+          # retained as an artifact. No workflow credential is copied or logged.
+          if test "$(wc -c < "$output/suggested.patch")" -le 524288; then
+            echo 'BEGIN_NON_QUALIFYING_REPAIR_PATCH'
+            cat "$output/suggested.patch"
+            echo 'END_NON_QUALIFYING_REPAIR_PATCH'
+          fi
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain failure diagnostics without changing the failed verdict
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-repair-diagnostics-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-repair-evidence/
+          retention-days: 3
+          if-no-files-found: error
       - name: Package the pinned host compiler and repository test entry points
         run: |
           set -euo pipefail
