@@ -263,6 +263,15 @@ impl AppServerModelDriver {
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+                let _ = owner
+                    .run_cancel(
+                        binding.run_id.clone(),
+                        revision,
+                        "local durable start commit failed after turn/start".to_string(),
+                    )
+                    .await;
+            }
             interrupt(&mut client, &output).await;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(error.into());
@@ -278,7 +287,15 @@ impl AppServerModelDriver {
             )
             .await;
         if let Err(reason) = result {
-            output.stop_reason = Some(reason);
+            output.stop_reason = Some(reason.clone());
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+                if let Ok(cancelled) = owner
+                    .run_cancel(binding.run_id.clone(), revision, reason.clone())
+                    .await
+                {
+                    intelligence_revision = Some(cancelled.receipt.revision);
+                }
+            }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
             // Commit observed authority loss before waiting for interruption:
@@ -325,6 +342,16 @@ impl AppServerModelDriver {
             // cannot restore authority lost earlier in the run.
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Err(error) =
+                    commit_intelligence_terminal(&owner, binding, revision, &output).await
+            {
+                let note = format!("Agentd terminal reconciliation required: {error}");
+                output.stop_reason = Some(match output.stop_reason.take() {
+                    Some(existing) => format!("{existing}; {note}"),
+                    None => note,
+                });
+            }
         }
         Ok(output)
     }
@@ -380,6 +407,64 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+async fn require_intelligence_handoff(
+    owner: &AgentdClient,
+    binding: &NativeIntelligenceRunBinding,
+) -> Result<u64> {
+    if binding.run_id.is_empty()
+        || binding.expected_revision == 0
+        || binding.context_digest.is_empty()
+        || binding.envelope_digest.is_empty()
+    {
+        return Err("invalid intelligence V3 execution binding".into());
+    }
+    let run = owner
+        .run_status(binding.run_id.clone())
+        .await?
+        .ok_or("intelligence V3 run is not admitted in Agentd")?;
+    if run.phase != AgentRunPhase::ContextAttached
+        || run.revision != binding.expected_revision
+        || run.context_digest.as_deref() != Some(binding.context_digest.as_str())
+        || run.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
+        || run.terminal_observed
+    {
+        return Err("Agentd intelligence V3 handoff is stale or mixed".into());
+    }
+    Ok(run.revision)
+}
+
+async fn commit_intelligence_terminal(
+    owner: &AgentdClient,
+    binding: &NativeIntelligenceRunBinding,
+    expected_revision: u64,
+    output: &NativeRunOutput,
+) -> Result<()> {
+    let phase = match output.status {
+        NativeRunStatus::Completed => AgentRunPhase::Succeeded,
+        NativeRunStatus::Failed => AgentRunPhase::Failed,
+        NativeRunStatus::Interrupted => AgentRunPhase::Cancelled,
+        NativeRunStatus::Indeterminate => {
+            return Err("cannot commit a nonterminal intelligence observation".into());
+        }
+    };
+    let receipt = owner
+        .run_observe_terminal(
+            binding.run_id.clone(),
+            expected_revision,
+            phase,
+            /*terminal_observed*/ true,
+        )
+        .await?;
+    if receipt.phase != phase
+        || !receipt.terminal_observed
+        || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())
+        || receipt.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
+    {
+        return Err("Agentd terminal receipt lost the V3 handoff binding".into());
+    }
+    Ok(())
 }
 
 async fn verify_owner_health(
