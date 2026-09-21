@@ -49,6 +49,7 @@ pub struct IntelligenceHostEnvelopeV1 {
     pub prompt_digest: Option<Digest32>,
     pub intuition_digest: Digest32,
     pub context_digest: Digest32,
+    pub execution_payload_digest: Digest32,
     pub pre_handoff_digest: Digest32,
     pub deadline_unix_micros: u64,
     pub total_budget_micros: u64,
@@ -183,6 +184,7 @@ impl IntelligenceHostEnvelopeV1 {
         prompt_digest: Option<Digest32>,
         intuition_digest: Digest32,
         context_digest: Digest32,
+        execution_payload_digest: Digest32,
         pre_handoff_digest: Digest32,
         deadline_unix_micros: u64,
         total_budget_micros: u64,
@@ -198,6 +200,7 @@ impl IntelligenceHostEnvelopeV1 {
             ("evaluation", evaluation_digest),
             ("intuition", intuition_digest),
             ("context", context_digest),
+            ("execution payload", execution_payload_digest),
             ("pre-handoff", pre_handoff_digest),
         ] {
             if digest.is_zero() {
@@ -237,6 +240,7 @@ impl IntelligenceHostEnvelopeV1 {
             prompt_digest,
             intuition_digest,
             context_digest,
+            execution_payload_digest,
             pre_handoff_digest,
             deadline_unix_micros,
             total_budget_micros,
@@ -258,6 +262,7 @@ impl IntelligenceHostEnvelopeV1 {
             prompt_digest,
             intuition_digest,
             context_digest,
+            execution_payload_digest,
             pre_handoff_digest,
             deadline_unix_micros,
             total_budget_micros,
@@ -291,6 +296,7 @@ impl IntelligenceHostEnvelopeV1 {
             self.prompt_digest,
             self.intuition_digest,
             self.context_digest,
+            self.execution_payload_digest,
             self.pre_handoff_digest,
             self.deadline_unix_micros,
             self.total_budget_micros,
@@ -346,6 +352,7 @@ fn digest_host_envelope(
     prompt_digest: Option<Digest32>,
     intuition_digest: Digest32,
     context_digest: Digest32,
+    execution_payload_digest: Digest32,
     pre_handoff_digest: Digest32,
     deadline_unix_micros: u64,
     total_budget_micros: u64,
@@ -369,12 +376,33 @@ fn digest_host_envelope(
     }
     push_optional_digest(&mut bytes, neural_digest);
     push_optional_digest(&mut bytes, prompt_digest);
-    for digest in [intuition_digest, context_digest, pre_handoff_digest] {
+    for digest in [
+        intuition_digest,
+        context_digest,
+        execution_payload_digest,
+        pre_handoff_digest,
+    ] {
         bytes.extend_from_slice(digest.as_array());
     }
     bytes.extend_from_slice(&deadline_unix_micros.to_be_bytes());
     bytes.extend_from_slice(&total_budget_micros.to_be_bytes());
     Ok(Digest32::of_bytes(&bytes))
+}
+
+/// Canonical commitment to the exact bytes that runtime.codex will submit at
+/// the physical model-effect boundary. V3 carries this digest through the
+/// envelope and Agentd run lifecycle; the execution worker recomputes it from
+/// the final payload immediately before turn/start.
+#[must_use]
+pub fn execution_payload_digest_v1(payload_bytes: &[u8]) -> Digest32 {
+    let mut bytes = b"hepta.intelligence.execution-payload.v1\0".to_vec();
+    bytes.extend_from_slice(
+        &u64::try_from(payload_bytes.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
+    bytes.extend_from_slice(payload_bytes);
+    Digest32::of_bytes(&bytes)
 }
 
 fn push_optional_digest(bytes: &mut Vec<u8>, digest: Option<Digest32>) {
@@ -487,6 +515,7 @@ mod tests {
             Some(digest("prompt")),
             digest("intuition"),
             digest("context"),
+            execution_payload_digest_v1(b"exact physical payload"),
             digest("prefix"),
             2_000_000,
             10_000,
@@ -494,7 +523,7 @@ mod tests {
         .expect("envelope");
         envelope.validate().expect("valid envelope");
         let mut tampered = envelope.clone();
-        tampered.context_digest = digest("other-context");
+        tampered.execution_payload_digest = execution_payload_digest_v1(b"substituted payload");
         assert_eq!(
             tampered.validate(),
             Err(IntelligenceContractErrorV1::DigestMismatch)
