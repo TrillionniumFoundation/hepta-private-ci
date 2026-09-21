@@ -918,12 +918,8 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
             self.writer.verify_current_authority().await?;
-            let prepared = self.prepare_semantic_mutation(
-                "remember",
-                source,
-                None,
-                &(draft, facts),
-            )?;
+            let prepared =
+                self.prepare_semantic_mutation("remember", source, None, &(draft, facts))?;
             let mut transaction = self
                 .writer
                 .store()

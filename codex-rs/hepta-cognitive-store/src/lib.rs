@@ -69,7 +69,6 @@ pub use v2::CanonicalMemoryEventShadowReceiptV1;
 pub use v2::CanonicalMemoryEventShadowWriteV1;
 pub use v2::CognitiveStoreImageV2;
 pub use v2::CognitiveStoreV2Error;
-pub use v2::bind_canonical_event_to_durable_receipt;
 pub use v2::ForgetIntentV2;
 pub use v2::MAX_V2_INTENT_JOURNAL_ENTRIES;
 pub use v2::MAX_V2_ORDINARY_RECORD_REVISIONS;
@@ -83,6 +82,7 @@ pub use v2::StoreAuthorityVerifierV2;
 pub use v2::StoreIntentImageEntryV2;
 pub use v2::StoreSnapshotPageV2;
 pub use v2::StoreSnapshotV2;
+pub use v2::bind_canonical_event_to_durable_receipt;
 
 const MAX_RECORDS: usize = 16_384;
 

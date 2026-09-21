@@ -1344,8 +1344,7 @@ impl LocalLeaseOutbox {
         let payload_sha256 = Sha256Digest::for_bytes(payload_json.as_bytes());
         let lease = self.current_lease(transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let events = verify_event_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         let outbox_rows =
             verify_outbox_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         verify_event_outbox_pairing(&events, &outbox_rows)?;
@@ -1857,8 +1856,7 @@ impl LocalLeaseOutbox {
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
         let lease = self.current_lease(transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let events = verify_event_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         let outbox_rows =
             verify_outbox_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         verify_event_outbox_pairing(&events, &outbox_rows)?;

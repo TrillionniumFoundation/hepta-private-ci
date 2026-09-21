@@ -325,11 +325,13 @@ impl CognitiveTool {
             },
         };
         let receipt = match &self.production_mutation {
-            Some(mutation) => mutation
-                .remember_with_kg(&access, &source, &draft, &facts)
-                .await
-                .map_err(mutation_error)?
-                .write,
+            Some(mutation) => {
+                mutation
+                    .remember_with_kg(&access, &source, &draft, &facts)
+                    .await
+                    .map_err(mutation_error)?
+                    .write
+            }
             None if self.qualification_write_enabled => store
                 .remember_with_kg(&access, &source, &draft, &facts)
                 .await
@@ -429,18 +431,20 @@ impl CognitiveTool {
             citations: Vec::new(),
         };
         let receipt = match &self.production_mutation {
-            Some(mutation) => mutation
-                .correct_with_kg(
-                    &access,
-                    &memory_id,
-                    args.expected_revision,
-                    &source,
-                    &revision,
-                    &facts,
-                )
-                .await
-                .map_err(mutation_error)?
-                .write,
+            Some(mutation) => {
+                mutation
+                    .correct_with_kg(
+                        &access,
+                        &memory_id,
+                        args.expected_revision,
+                        &source,
+                        &revision,
+                        &facts,
+                    )
+                    .await
+                    .map_err(mutation_error)?
+                    .write
+            }
             None if self.qualification_write_enabled => store
                 .correct_with_kg(
                     &access,
@@ -494,17 +498,19 @@ impl CognitiveTool {
             citations: Vec::new(),
         };
         let receipt = match &self.production_mutation {
-            Some(mutation) => mutation
-                .forget_with_kg(
-                    &access,
-                    &memory_id,
-                    args.expected_revision,
-                    &source,
-                    &forget,
-                )
-                .await
-                .map_err(mutation_error)?
-                .write,
+            Some(mutation) => {
+                mutation
+                    .forget_with_kg(
+                        &access,
+                        &memory_id,
+                        args.expected_revision,
+                        &source,
+                        &forget,
+                    )
+                    .await
+                    .map_err(mutation_error)?
+                    .write
+            }
             None if self.qualification_write_enabled => store
                 .forget_with_kg(
                     &access,

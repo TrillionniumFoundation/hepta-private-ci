@@ -112,13 +112,7 @@ impl CognitiveStore {
         self.insert_revision_facts_tx(transaction, &memory, &citation, &canonical)
             .await?;
         let projection = self
-            .refresh_scope_projection_tx(
-                transaction,
-                &memory.scope,
-                &memory,
-                &citation,
-                &canonical,
-            )
+            .refresh_scope_projection_tx(transaction, &memory.scope, &memory, &citation, &canonical)
             .await?;
         Ok(CognitiveWriteReceipt {
             memory,
@@ -195,13 +189,7 @@ impl CognitiveStore {
         self.insert_revision_facts_tx(transaction, &memory, &citation, &canonical)
             .await?;
         let projection = self
-            .refresh_scope_projection_tx(
-                transaction,
-                &memory.scope,
-                &memory,
-                &citation,
-                &canonical,
-            )
+            .refresh_scope_projection_tx(transaction, &memory.scope, &memory, &citation, &canonical)
             .await?;
         Ok(CognitiveWriteReceipt {
             memory,
@@ -279,13 +267,7 @@ impl CognitiveStore {
         self.insert_revision_facts_tx(transaction, &memory, &citation, &canonical)
             .await?;
         let projection = self
-            .refresh_scope_projection_tx(
-                transaction,
-                &memory.scope,
-                &memory,
-                &citation,
-                &canonical,
-            )
+            .refresh_scope_projection_tx(transaction, &memory.scope, &memory, &citation, &canonical)
             .await?;
         Ok(CognitiveWriteReceipt {
             memory,

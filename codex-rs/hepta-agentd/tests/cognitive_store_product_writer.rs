@@ -12,7 +12,6 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdProductionWriterHost;
 use codex_hepta_cognitive_store::CognitiveAccess;
-use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
 use codex_hepta_cognitive_store::CognitiveScope;
 use codex_hepta_cognitive_store::DurableCognitiveStore;
@@ -27,6 +26,20 @@ use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
 use codex_hepta_cognitive_store::SourceDraft;
+use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
+use codex_hepta_cognitive_types::hnmf::MemoryScopeV1;
+use codex_hepta_cognitive_types::hnmf::MemoryVerificationStateV1;
+use codex_hepta_cognitive_types::hnmf::ModalityKindV1;
+use codex_hepta_cognitive_types::hnmf::ModalitySpanRefV1;
+use codex_hepta_cognitive_types::hnmf::ObservedIntervalV1;
+use codex_hepta_cognitive_types::hnmf::PrivacyClassV1;
+use codex_hepta_cognitive_types::hnmf::ProvenanceRefV1;
+use codex_hepta_cognitive_types::hnmf::RetentionPolicyV1;
+use codex_hepta_cognitive_types::hnmf::SpanRangeV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
@@ -258,19 +271,14 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         behavior_propensity_ppm: None,
         lifecycle: MemoryLifecycleV1::Active,
     };
-    let canonical_binding =
-        bind_canonical_event_to_durable_receipt(&canonical_event, &written)?;
+    let canonical_binding = bind_canonical_event_to_durable_receipt(&canonical_event, &written)?;
     canonical_binding.validate()?;
     assert_eq!(
-        canonical_binding.source_revision,
-        written.write.source.revision,
+        canonical_binding.source_revision, written.write.source.revision,
         "canonical/durable bridge must carry the authoritative source revision"
     );
 
-    let written_occurrence = format!(
-        "cognitive-mutation:{}",
-        written.operation_digest.as_str()
-    );
+    let written_occurrence = format!("cognitive-mutation:{}", written.operation_digest.as_str());
     assert_eq!(
         host.writer().status(&written_occurrence).await?,
         LocalOutcomeState::Committed

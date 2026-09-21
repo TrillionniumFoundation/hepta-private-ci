@@ -98,7 +98,10 @@ impl CanonicalDurableMemoryEventBindingV1 {
     pub fn validate(&self) -> Result<(), CognitiveStoreV2Error> {
         for (name, digest) in [
             ("canonical_durable_event", self.event_digest),
-            ("canonical_durable_production_receipt", self.production_receipt_digest),
+            (
+                "canonical_durable_production_receipt",
+                self.production_receipt_digest,
+            ),
             ("canonical_durable_operation", self.operation_digest),
             ("canonical_durable_binding", self.binding_digest),
         ] {
@@ -171,10 +174,7 @@ pub fn bind_canonical_event_to_durable_receipt(
     }
 
     let verification_matches = matches!(
-        (
-            production.write.memory.verification,
-            event.verification,
-        ),
+        (production.write.memory.verification, event.verification,),
         (
             DurableMemoryVerification::Verified,
             MemoryVerificationStateV1::Verified
@@ -184,10 +184,7 @@ pub fn bind_canonical_event_to_durable_receipt(
         )
     );
     let lifecycle_matches = matches!(
-        (
-            &production.write.memory.lifecycle,
-            &event.lifecycle,
-        ),
+        (&production.write.memory.lifecycle, &event.lifecycle,),
         (
             DurableMemoryLifecycleState::Active,
             codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1::Active
