@@ -20,6 +20,7 @@ mod event_buffer;
 mod lane_b_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
+mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_runtime;
 mod production_writer_host;
