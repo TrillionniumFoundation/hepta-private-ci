@@ -43,8 +43,11 @@ const PUBLICATION_DOMAIN: &[u8] = b"hepta-memory:qualified-compact-publication:v
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum QualifiedCompactFaultPoint {
     None,
+    #[cfg(test)]
     AfterPayloadWrite,
+    #[cfg(test)]
     AfterCheckpointWrite,
+    #[cfg(test)]
     AfterRevocationWrite,
 }
 
@@ -429,7 +432,7 @@ impl CognitiveStore {
         proof: &CompactionProofV2,
         proof_witness: &CompactionProofWitnessV1,
         payload: &[u8],
-        fault_point: QualifiedCompactFaultPoint,
+        _fault_point: QualifiedCompactFaultPoint,
     ) -> Result<QualifiedCompactCheckpointPublication, QualifiedCompactStoreError> {
         validate_pair(checkpoint, proof)?;
         proof_witness
@@ -556,7 +559,8 @@ impl CognitiveStore {
                     .to_string(),
             ));
         }
-        if fault_point == QualifiedCompactFaultPoint::AfterPayloadWrite {
+        #[cfg(test)]
+        if _fault_point == QualifiedCompactFaultPoint::AfterPayloadWrite {
             transaction.rollback().await.map_err(unavailable)?;
             return Err(QualifiedCompactStoreError::FaultInjected(
                 "after_payload_write",
@@ -688,7 +692,8 @@ impl CognitiveStore {
             ))
         })?;
 
-        if fault_point == QualifiedCompactFaultPoint::AfterCheckpointWrite {
+        #[cfg(test)]
+        if _fault_point == QualifiedCompactFaultPoint::AfterCheckpointWrite {
             transaction.rollback().await.map_err(unavailable)?;
             return Err(QualifiedCompactStoreError::FaultInjected(
                 "after_checkpoint_write",
@@ -916,7 +921,7 @@ impl CognitiveStore {
         payload_digest: Digest32,
         tombstone_frontier: u64,
         revocation_digest: Digest32,
-        fault_point: QualifiedCompactFaultPoint,
+        _fault_point: QualifiedCompactFaultPoint,
     ) -> Result<(), QualifiedCompactStoreError> {
         ensure_digest_value(revocation_digest, "payload revocation digest")?;
         let binding = verify_mutation_lease(self, lease, fence)?;
@@ -1007,7 +1012,8 @@ impl CognitiveStore {
         .await
         .map_err(unavailable)?;
 
-        if fault_point == QualifiedCompactFaultPoint::AfterRevocationWrite {
+        #[cfg(test)]
+        if _fault_point == QualifiedCompactFaultPoint::AfterRevocationWrite {
             transaction.rollback().await.map_err(unavailable)?;
             return Err(QualifiedCompactStoreError::FaultInjected(
                 "after_revocation_write",
