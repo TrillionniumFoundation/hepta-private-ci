@@ -28,6 +28,7 @@ use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
+use codex_hepta_agentd::AgentRunPhase;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
@@ -42,6 +43,7 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
+pub use control::NativeIntelligenceRunBinding;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -93,6 +95,7 @@ impl AppServerModelDriver {
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
+        intelligence: Option<&NativeIntelligenceRunBinding>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
@@ -110,6 +113,10 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
+        let mut intelligence_revision = match intelligence {
+            Some(binding) => Some(require_intelligence_handoff(&owner, binding).await?),
+            None => None,
+        };
         let context = match context_query {
             Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
             None => None,
@@ -171,11 +178,20 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
         }
-        // Recheck the actual generation after acquiring context and connecting.
+        // Recheck the actual generation and exact intelligence handoff after
+        // acquiring context and connecting. Mixed or stale runs fail before
+        // the local write-ahead and before turn/start.
         owner.session_ingress().await?;
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
+        }
+        if let Some(binding) = intelligence {
+            let current_revision = require_intelligence_handoff(&owner, binding).await?;
+            if Some(current_revision) != intelligence_revision {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("intelligence handoff revision changed before dispatch".into());
+            }
         }
         control.dispatch_native(
             request_id,
@@ -185,6 +201,19 @@ impl AppServerModelDriver {
                 context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
             },
         )?;
+        if let Some(binding) = intelligence {
+            let dispatched = owner
+                .run_mark_dispatched(binding.run_id.clone(), binding.expected_revision)
+                .await?;
+            if dispatched.phase != AgentRunPhase::Dispatched
+                || dispatched.compilation_receipt_digest.as_deref()
+                    != Some(binding.envelope_digest.as_str())
+            {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("Agentd did not commit the exact intelligence dispatch".into());
+            }
+            intelligence_revision = Some(dispatched.revision);
+        }
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
@@ -234,6 +263,11 @@ impl AppServerModelDriver {
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+                let _ = owner
+                    .run_cancel(binding.run_id.clone(), revision)
+                    .await;
+            }
             interrupt(&mut client, &output).await;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(error.into());
@@ -249,7 +283,15 @@ impl AppServerModelDriver {
             )
             .await;
         if let Err(reason) = result {
-            output.stop_reason = Some(reason);
+            output.stop_reason = Some(reason.clone());
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+                if let Ok(cancelled) = owner
+                    .run_cancel(binding.run_id.clone(), revision)
+                    .await
+                {
+                    intelligence_revision = Some(cancelled.receipt.revision);
+                }
+            }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
             // Commit observed authority loss before waiting for interruption:
@@ -296,6 +338,16 @@ impl AppServerModelDriver {
             // cannot restore authority lost earlier in the run.
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Err(error) =
+                    commit_intelligence_terminal(&owner, binding, revision, &output).await
+            {
+                let note = format!("Agentd terminal reconciliation required: {error}");
+                output.stop_reason = Some(match output.stop_reason.take() {
+                    Some(existing) => format!("{existing}; {note}"),
+                    None => note,
+                });
+            }
         }
         Ok(output)
     }
@@ -351,6 +403,64 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+async fn require_intelligence_handoff(
+    owner: &AgentdClient,
+    binding: &NativeIntelligenceRunBinding,
+) -> Result<u64> {
+    if binding.run_id.is_empty()
+        || binding.expected_revision == 0
+        || binding.context_digest.is_empty()
+        || binding.envelope_digest.is_empty()
+    {
+        return Err("invalid intelligence execution binding".into());
+    }
+    let run = owner
+        .run_status(binding.run_id.clone())
+        .await?
+        .ok_or("intelligence run is not admitted in Agentd")?;
+    if run.phase != AgentRunPhase::ContextAttached
+        || run.revision != binding.expected_revision
+        || run.context_digest.as_deref() != Some(binding.context_digest.as_str())
+        || run.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
+        || run.terminal_observed
+    {
+        return Err("Agentd intelligence handoff is stale or mixed".into());
+    }
+    Ok(run.revision)
+}
+
+async fn commit_intelligence_terminal(
+    owner: &AgentdClient,
+    binding: &NativeIntelligenceRunBinding,
+    expected_revision: u64,
+    output: &NativeRunOutput,
+) -> Result<()> {
+    let phase = match output.status {
+        NativeRunStatus::Completed => AgentRunPhase::Succeeded,
+        NativeRunStatus::Failed => AgentRunPhase::Failed,
+        NativeRunStatus::Interrupted => AgentRunPhase::Cancelled,
+        NativeRunStatus::Indeterminate => {
+            return Err("cannot commit a nonterminal intelligence observation".into());
+        }
+    };
+    let receipt = owner
+        .run_observe_terminal(
+            binding.run_id.clone(),
+            expected_revision,
+            phase,
+            /*terminal_observed*/ true,
+        )
+        .await?;
+    if receipt.phase != phase
+        || !receipt.terminal_observed
+        || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())
+        || receipt.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
+    {
+        return Err("Agentd terminal receipt lost the intelligence handoff binding".into());
+    }
+    Ok(())
 }
 
 async fn verify_owner_health(
