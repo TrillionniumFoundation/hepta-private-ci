@@ -72,8 +72,21 @@ impl AgentdState {
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
-    pub(crate) fn plasticity_runtime(&self) -> Option<crate::PlasticityRuntimeHandleV1> {
-        self.plasticity_runtime.get().cloned()
+    /// Named Agentd-owned producer boundary for governed parameter plasticity.
+    /// Callers never receive the mutable writer or a second owner handle.
+    pub(crate) async fn submit_parameter_plasticity_v1(
+        &self,
+        request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
+        now: u64,
+    ) -> Result<
+        codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
+        crate::PlasticityRuntimeCallErrorV1,
+    > {
+        let handle = self
+            .plasticity_runtime
+            .get()
+            .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
+        handle.propose_parameter(request, now).await
     }
 
     pub(crate) fn attach_cognitive_store(
