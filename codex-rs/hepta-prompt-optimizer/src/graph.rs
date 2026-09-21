@@ -2,10 +2,10 @@
 
 use std::collections::BTreeSet;
 
-use codex_hepta_kg::PromptFactorProjectionV1;
 use codex_hepta_kg::KnowledgeRelationKindV2;
 use codex_hepta_kg::KnowledgeRelationQueryV2;
 use codex_hepta_kg::MAX_KNOWLEDGE_EDGES_V2;
+use codex_hepta_kg::PromptFactorProjectionV1;
 use codex_hepta_kg::query_relations;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -89,7 +89,10 @@ pub fn optimize_with_factor_graph(
         .iter()
         .map(|node| node.node_id.clone())
         .collect::<BTreeSet<_>>();
-    if let Some(missing) = factor_ids.iter().find(|factor_id| !graph_nodes.contains(*factor_id)) {
+    if let Some(missing) = factor_ids
+        .iter()
+        .find(|factor_id| !graph_nodes.contains(*factor_id))
+    {
         return Err(Error::FactorGraph(format!(
             "candidate factor missing from complete graph: {missing}"
         )));
@@ -157,8 +160,7 @@ pub fn optimize_with_factor_graph(
         }
     }
 
-    let portfolio =
-        optimize_with_factor_graph_constraints(request, &conflicts, &substitutes)?;
+    let portfolio = optimize_with_factor_graph_constraints(request, &conflicts, &substitutes)?;
     let mut result = GraphBoundPromptPortfolioReceipt {
         portfolio,
         factor_graph_generation_digest: factor_graph.generation().generation_digest,
