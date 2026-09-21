@@ -758,9 +758,10 @@ async fn stale_generation_recovery_is_owner_fenced() {
     .expect("insert foreign task");
     sqlx::query(
         "INSERT INTO automation_runs (
-             task_id, occurrence, scheduled_for_ms, client_user_message_id, state,
-             lease_generation, lease_token, lease_expires_at_ms
-         ) VALUES (?, 1, ?, ?, 'leased', ?, ?, ?)",
+             task_id, occurrence, schedule_revision, scheduled_for_ms,
+             client_user_message_id, state, lease_generation, lease_token,
+             lease_expires_at_ms
+         ) VALUES (?, 1, 1, ?, ?, 'leased', ?, ?, ?)",
     )
     .bind(foreign_task_id)
     .bind(100_i64)
@@ -942,8 +943,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_required_insert",
         "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_no_update",
         "DROP TRIGGER IF EXISTS automation_task_default_policy",
+        "DROP TABLE IF EXISTS taskflow_effect_dispatch_reconciliations",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_observations",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_attempts",
+        "DROP TABLE IF EXISTS automation_calendar_schedule_versions",
         "DROP TABLE IF EXISTS automation_occurrence_events",
         "DROP TABLE IF EXISTS taskflow_step_outbox",
         "DROP TABLE IF EXISTS automation_occurrence_lifecycle",
