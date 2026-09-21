@@ -18,6 +18,7 @@ use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_learning_artifacts::write_candidate_payload;
 use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_memory::RetrievalRequest;
@@ -37,14 +38,16 @@ use crate::cognitive_sensor_id;
 struct CurrentView {
     path: PathBuf,
     receipt: RegistrySnapshotReceipt,
+    predecessor_head_digest: Digest32,
 }
 
 impl CurrentCognitiveRegistry for CurrentView {
-    fn current(&self) -> Result<(File, RegistrySnapshotReceipt), String> {
-        Ok((
+    fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String> {
+        crate::cognitive_ranker::verified_fixture_current_view(
             File::open(&self.path).map_err(|error| error.to_string())?,
             self.receipt,
-        ))
+            self.predecessor_head_digest,
+        )
     }
 }
 
@@ -145,6 +148,7 @@ fn fitted_ranker(owner: AgentId, items: &[CognitiveContextItem], scores: &[i64])
     let current = Arc::new(CurrentView {
         path: snapshot.clone(),
         receipt: registry_receipt,
+        predecessor_head_digest: Digest32::ZERO,
     });
     let ranker = Arc::new(
         PinnedCognitiveRanker::load(

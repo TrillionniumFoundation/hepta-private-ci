@@ -154,6 +154,18 @@
       "delegatedCallees": []
     },
     {
+      "operation": "authenticated_current_registry_view",
+      "nativeSymbol": "LearningArtifactOwnerService::current_registry_view",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "state": "product_writer_service_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_current_registry_view",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "owner_writer_fence",
       "nativeSymbol": "LearningArtifactOwnerHost::open",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
@@ -316,6 +328,13 @@
       "callerPath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "mustContain": "LearningArtifactOwnerHost::open",
       "productPath": "LearningArtifactOwnerService::publish -> LearningArtifactOwnerHost"
+    },
+    {
+      "operation": "authenticated_current_revalidation",
+      "mode": "opaque_verified_current_view_only",
+      "callerPath": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "mustContain": "VerifiedCurrentRegistryViewV1",
+      "productPath": "CurrentCognitiveRegistry -> VerifiedCurrentRegistryViewV1 -> RevalidatingCandidate::with_current"
     }
   ],
   "productionWriterBindings": [

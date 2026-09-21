@@ -56,10 +56,11 @@ The current source is materially beyond the original V1 bootstrap while preservi
 - `durable_snapshots.rs`: create-only, canonical, receipt-bound durable snapshots for scoped withdrawal state and lifecycle state;
 - `pinned.rs` and `dataset_revocation.rs`: exact pinned loading, current-view revalidation, and snapshot-local revocation preparation;
 - `iteration.rs` and `iteration_ledger.rs`: bounded authority-free iteration envelopes, candidates, externally evidenced transitions, and replayable iteration bookkeeping. These records do not run sandboxes or grant selection, promotion, merge or release authority.
+- `owner_host.rs` and `owner_service.rs`: the named fenced product writer, signed writer-lease validation, signed CURRENT chain discovery, durable publication recovery, old-backup/authority-epoch rollback rejection, and opaque `VerifiedCurrentRegistryViewV1` issuance for final-use readers.
 
 The shared durable state ceiling is `MAX_DURABLE_ARTIFACT_RECORDS = 4096`. This deliberately aligns accepted artifact-registry, withdrawal and lifecycle record counts with the supported bounded snapshot formats so an in-memory state cannot cross a record-count threshold that the crate refuses to persist.
 
-Source implementation is therefore not equivalent to product activation. The exact candidate remains qualification-dependent, and product filesystem namespace ownership, writer fencing, newest-head distribution, signature authentication, containing-directory durability, independent selection and process routing remain host/external responsibilities.
+Source implementation is therefore not equivalent to product activation. The crate now has a named source-composed owner service with an exclusive OS writer fence, signed writer/head authentication and bounded local CURRENT discovery. The exact candidate remains qualification-dependent; trusted deployment namespace/parent-directory durability, external CURRENT distribution transport, independent selection, canary/promotion/release and target-host power-loss evidence remain host/external responsibilities.
 
 ## 3. Boundary, responsibilities and non-goals
 

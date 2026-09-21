@@ -14,19 +14,96 @@ use codex_hepta_bellman_operator::TabularPayloadError;
 use codex_hepta_bellman_operator::TabularPayloadPinV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
+#[cfg(test)]
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_learning_artifacts::load_pinned_candidate;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
 
-/// The authenticated host, not the model or snapshot file, determines currentness.
-/// Implementations must use trusted file capabilities, enforce current epoch and
-/// scope, and bound I/O. A failure closes the consumer; no old-view fallback.
+/// The artifact authority, not the model or a caller-supplied receipt,
+/// determines currentness. Implementations must return an opaque view issued
+/// only after signed CURRENT verification and exact snapshot binding.
 pub trait CurrentCognitiveRegistry: Send + Sync {
-    fn current(&self) -> Result<(File, RegistrySnapshotReceipt), String>;
+    fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String>;
+}
+
+#[cfg(test)]
+pub(crate) fn verified_fixture_current_view(
+    snapshot: File,
+    receipt: RegistrySnapshotReceipt,
+    expected_predecessor_head_digest: Digest32,
+) -> Result<VerifiedCurrentRegistryViewV1, String> {
+    use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
+    use codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1;
+    use codex_hepta_learning_artifacts::RegistryHeadRequirementV1;
+    use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
+    use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
+    use codex_hepta_learning_artifacts::TrustedArtifactSignerV1;
+    use codex_hepta_types::Generation;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+
+    let key = SigningKey::from_bytes(&[23_u8; 32]);
+    let verifying_key = key.verifying_key().to_bytes();
+    let signer_id = StableId::new("agentd-current-fixture-signer".to_owned())
+        .map_err(|error| error.to_string())?;
+    let registry_id = StableId::new("agentd-current-fixture-registry".to_owned())
+        .map_err(|error| error.to_string())?;
+    let scope_digest = Digest32::of_bytes(b"agentd-current-fixture-scope");
+    let signer = TrustedArtifactSignerV1 {
+        signer_id: signer_id.clone(),
+        verifying_key,
+        minimum_authority_epoch: 1,
+        maximum_authority_epoch: 10,
+        valid_from: 1,
+        expires_at: 1_000,
+        revoked_at: None,
+    };
+    let verifier = ArtifactOwnerVerifierV1::new(ArtifactOwnerTrustV1 {
+        registry_id: registry_id.clone(),
+        withdrawal_scope_digest: scope_digest,
+        minimum_registry_generation: Generation::new(1).map_err(|error| error.to_string())?,
+        genesis_predecessor_head_digest: Digest32::ZERO,
+        minimum_authority_epoch: 1,
+        writer_signers: vec![signer.clone()],
+        head_signers: vec![signer],
+    })
+    .map_err(|error| error.to_string())?;
+    let generation = Generation::new(
+        u64::try_from(receipt.records).map_err(|error| error.to_string())?,
+    )
+    .map_err(|error| error.to_string())?;
+    let mut signed = SignedCurrentArtifactHeadV1 {
+        withdrawal_scope_digest: scope_digest,
+        binding: receipt.binding,
+        witness: RegistryHeadWitnessV1 {
+            registry_id: registry_id.clone(),
+            generation,
+            head_digest: receipt.head_digest,
+            predecessor_head_digest: expected_predecessor_head_digest,
+            authority_epoch: 1,
+            signer_id,
+            signing_key_digest: Digest32::of_bytes(&verifying_key),
+            issued_at: 20,
+            expires_at: 1_000,
+        },
+        signature: [0; 64],
+    };
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    let requirement = RegistryHeadRequirementV1 {
+        registry_id,
+        minimum_generation: generation,
+        expected_predecessor_head_digest,
+        minimum_authority_epoch: 1,
+        now: 20,
+    };
+    verifier
+        .verify_current_registry_view(snapshot, receipt, &signed, &requirement)
+        .map_err(|error| error.to_string())
 }
 
 /// A host-selected, generation-bound read-only ranking consumer. Replacing the
@@ -115,9 +192,11 @@ impl PinnedCognitiveRanker {
             return Err("ranker unavailable; explicit reload required".to_string());
         };
         // Keep the cache absent on witness errors, panics and failed refreshes.
-        let (file, receipt) = self.current.current()?;
+        // The provider cannot inject a bare file/receipt: the artifact authority
+        // must first issue an opaque verified CURRENT view.
+        let current = self.current.current()?;
         let result = candidate
-            .with_current(file, receipt, |_| consume())
+            .with_current(current, |_| consume())
             .map_err(|error| error.to_string())??;
         *cache = Some(candidate);
         Ok(result)

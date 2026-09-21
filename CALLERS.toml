@@ -46,6 +46,14 @@ product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_service.rs"]
 caller_markers = ["LearningArtifactOwnerHost::open_with_required_current_head", "LearningArtifactOwnerService"]
 
 [[boundary]]
+id = "learning_artifact_verified_current_view"
+symbol = "VerifiedCurrentRegistryViewV1"
+definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
+definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs"]
+caller_markers = ["VerifiedCurrentRegistryViewV1", "CurrentCognitiveRegistry"]
+
+[[boundary]]
 id = "provider_effect_coordinator"
 symbol = "ProviderEffectCoordinator::new"
 definition_path = "codex-rs/hepta-contracts/src/provider_effect.rs"
@@ -73,13 +81,18 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
-required = ["LearningArtifactOwnerHost::open", "LearningArtifactOwnerHost::open_with_required_current_head", "recover_current_registry", "recovery_required_operations"]
+required = ["LearningArtifactOwnerHost::open", "LearningArtifactOwnerHost::open_with_required_current_head", "recover_current_registry", "current_registry_view", "recovery_required_operations"]
 forbidden = ["permit_all", "AllowVerifier", "AuthorityPosture::ALLOW_ALL"]
 
 [[protected_file]]
 path = "codex-rs/hepta-learning-artifacts/src/owner_host.rs"
-required = ["writer_fence.try_lock", "verify_signature", "recover_registry_by_head", "discover_current_head", "persist_checkpoint"]
+required = ["writer_fence.try_lock", "verify_signature", "verify_current_registry_view", "recover_registry_by_head", "discover_current_head", "current_registry_view", "persist_checkpoint"]
 forbidden = ["permit_all", "AllowVerifier"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
+required = ["VerifiedCurrentRegistryViewV1", "CurrentCognitiveRegistry", "candidate.with_current(current"]
+forbidden = ["Result<(File, RegistrySnapshotReceipt)", "candidate.with_current(file, receipt"]
 
 [[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"

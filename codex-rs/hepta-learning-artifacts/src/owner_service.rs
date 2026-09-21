@@ -26,6 +26,7 @@ use crate::LearningArtifactOwnerHost;
 use crate::RegistryHeadRequirementV1;
 use crate::SignedArtifactWriterLeaseV1;
 use crate::SignedCurrentArtifactHeadV1;
+use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 
 #[derive(Clone, Debug)]
@@ -115,6 +116,16 @@ impl LearningArtifactOwnerService {
     #[must_use]
     pub fn registry(&self) -> &ArtifactRegistry {
         &self.registry
+    }
+
+    /// Return the exact authenticated CURRENT registry view for read-only
+    /// product consumers. This delegates current-head discovery, signature
+    /// validation and snapshot binding to the fenced artifact owner.
+    pub fn current_registry_view(
+        &self,
+        now: u64,
+    ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
+        Ok(self.host.current_registry_view(now)?)
     }
 
     #[must_use]
@@ -634,6 +645,12 @@ mod tests {
         let receipt = service.publish(request.clone()).fixture("publish");
         let retry = service.publish(request.clone()).fixture("terminal retry");
         assert_eq!(retry, receipt);
+        let current_view = service
+            .current_registry_view(20)
+            .fixture("authenticated current registry view");
+        assert_eq!(current_view.receipt().head_digest, receipt.registry_head_digest);
+        assert!(!current_view.witness_digest().is_zero());
+        assert!(!current_view.trust_digest().is_zero());
         let current = request.signed_current_head;
         drop(service);
 
@@ -652,5 +669,13 @@ mod tests {
             receipt.registry_head_digest
         );
         assert!(reopened.recovery_required().is_none());
+        assert_eq!(
+            reopened
+                .current_registry_view(21)
+                .fixture("reopened authenticated current view")
+                .receipt()
+                .head_digest,
+            receipt.registry_head_digest
+        );
     }
 }

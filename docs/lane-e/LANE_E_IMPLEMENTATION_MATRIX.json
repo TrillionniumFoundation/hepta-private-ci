@@ -209,6 +209,24 @@
           "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerService::publish",
           "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "ArtifactOwnerVerifierV1::verify_current_registry_view",
+          "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1::verify_current_registry_view",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerHost::current_registry_view",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerHost::current_registry_view",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerService::current_registry_view",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerService::current_registry_view",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+          "status": "implemented"
         }
       ],
       "tests": [

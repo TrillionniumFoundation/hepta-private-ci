@@ -41,6 +41,7 @@ use crate::RegistryHeadRequirementV1;
 use crate::RegistryHeadWitnessReceipt;
 use crate::RegistryHeadWitnessV1;
 use crate::RegistrySnapshotReceipt;
+use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 use crate::read_candidate_payload;
 use crate::read_registry_head_witness;
@@ -229,6 +230,34 @@ impl ArtifactOwnerVerifierV1 {
     #[must_use]
     pub const fn trust_digest(&self) -> Digest32 {
         self.trust_digest
+    }
+
+    /// Authenticate one CURRENT head and the exact immutable registry snapshot
+    /// backing it. The returned view is opaque outside this crate and is the
+    /// only public input accepted by final-use candidate revalidation.
+    pub fn verify_current_registry_view(
+        &self,
+        snapshot_file: File,
+        snapshot_receipt: RegistrySnapshotReceipt,
+        signed_head: &SignedCurrentArtifactHeadV1,
+        requirement: &RegistryHeadRequirementV1,
+    ) -> Result<VerifiedCurrentRegistryViewV1, ArtifactOwnerHostError> {
+        let verified = self.verify_signed_head(signed_head, requirement, true)?;
+        if snapshot_receipt.binding != signed_head.binding
+            || snapshot_receipt.head_digest != signed_head.witness.head_digest
+        {
+            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+        }
+        let registry = read_registry_snapshot(snapshot_file, snapshot_receipt)?;
+        if registry.snapshot().head_digest != signed_head.witness.head_digest {
+            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+        }
+        Ok(VerifiedCurrentRegistryViewV1::new(
+            snapshot_receipt,
+            registry,
+            verified.witness_digest,
+            verified.trust_digest,
+        ))
     }
 
     fn verify_writer_lease(
@@ -767,13 +796,10 @@ impl LearningArtifactOwnerHost {
     /// current head. A current-head side effect may have crossed the boundary
     /// before the transaction advanced from RegistryDurable; that uncertainty
     /// is recoverable but must block unrelated publication until reconciled.
-    pub fn recover_current_registry(
+    fn current_registry_receipt(
         &self,
-        now: u64,
-    ) -> Result<ArtifactRegistry, ArtifactOwnerHostError> {
-        let Some(current) = self.discover_current_head(now)? else {
-            return Ok(ArtifactRegistry::new());
-        };
+        current: &VerifiedCurrentArtifactHeadV1,
+    ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
         let mut matched: Option<RegistrySnapshotReceipt> = None;
         for entry in fs::read_dir(self.root.join("transactions"))? {
             let entry = entry?;
@@ -813,12 +839,54 @@ impl LearningArtifactOwnerHost {
                 None => matched = Some(registry_receipt),
             }
         }
-        let receipt = matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
-        let path = self.root.join("registries").join(format!(
+        matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)
+    }
+
+    fn registry_snapshot_path(&self, receipt: RegistrySnapshotReceipt) -> PathBuf {
+        self.root.join("registries").join(format!(
             "{}-{}.snapshot",
             receipt.head_digest, receipt.file_digest
-        ));
-        let registry = read_registry_snapshot(File::open(path)?, receipt)?;
+        ))
+    }
+
+    /// Return the authenticated exact registry view backing the newest signed
+    /// CURRENT head discovered by this owner. The opaque result cannot be
+    /// fabricated from a bare file and receipt by a product consumer.
+    pub fn current_registry_view(
+        &self,
+        now: u64,
+    ) -> Result<VerifiedCurrentRegistryViewV1, ArtifactOwnerHostError> {
+        let current = self
+            .discover_current_head(now)?
+            .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
+        let receipt = self.current_registry_receipt(&current)?;
+        let registry = read_registry_snapshot(
+            File::open(self.registry_snapshot_path(receipt))?,
+            receipt,
+        )?;
+        if registry.snapshot().head_digest != current.signed.witness.head_digest {
+            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+        }
+        Ok(VerifiedCurrentRegistryViewV1::new(
+            receipt,
+            registry,
+            current.witness_digest,
+            current.trust_digest,
+        ))
+    }
+
+    pub fn recover_current_registry(
+        &self,
+        now: u64,
+    ) -> Result<ArtifactRegistry, ArtifactOwnerHostError> {
+        let Some(current) = self.discover_current_head(now)? else {
+            return Ok(ArtifactRegistry::new());
+        };
+        let receipt = self.current_registry_receipt(&current)?;
+        let registry = read_registry_snapshot(
+            File::open(self.registry_snapshot_path(receipt))?,
+            receipt,
+        )?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }

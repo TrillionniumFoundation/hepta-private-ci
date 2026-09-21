@@ -112,6 +112,7 @@ pub use pinned::LoadedPinnedCandidate;
 pub use pinned::PinnedCandidateLoadError;
 pub use pinned::PinnedCandidateSpec;
 pub use pinned::RevalidatingCandidate;
+pub use pinned::VerifiedCurrentRegistryViewV1;
 pub use pinned::load_pinned_candidate;
 pub use publication::ArtifactPublicationError;
 pub use publication::ArtifactPublicationIntentV1;

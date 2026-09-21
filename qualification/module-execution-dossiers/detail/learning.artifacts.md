@@ -161,7 +161,10 @@ The canonical Lane E case IDs are:
   complete durable publication saga, returns stable terminal retries, reopens
   only from independently authenticated CURRENT, rejects restored old heads and
   stale signer epochs, and process-kill recovery never promotes an
-  uncheckpointed publication phase.
+  uncheckpointed publication phase. Read consumers receive only opaque
+  `VerifiedCurrentRegistryViewV1` values issued after signed CURRENT + exact
+  snapshot verification; a bare `File + RegistrySnapshotReceipt` is not a
+  product currentness interface.
 
 Contained-write/path-escape and V1-projection swap tests remain supplemental
 hardening cases rather than separate authority claims.
@@ -190,6 +193,12 @@ authenticated and fenced host operation.
 ## 8. Current native implementation
 
 Authenticated CURRENT discovery supports bounded signer rotation: historical pre-revocation heads remain replayable, while the newest head requires a currently valid signer and non-regressing authority epoch.
+
+`ArtifactOwnerVerifierV1::verify_current_registry_view` and
+`LearningArtifactOwnerHost::current_registry_view` issue the same opaque
+`VerifiedCurrentRegistryViewV1`. `RevalidatingCandidate::with_current` accepts
+only that type, and Agentd's `CurrentCognitiveRegistry` surface returns it
+instead of a caller-constructible file/receipt pair.
 
 - **Compatibility registry/storage:** `registry.rs`, `storage.rs`,
   `pinned.rs`.

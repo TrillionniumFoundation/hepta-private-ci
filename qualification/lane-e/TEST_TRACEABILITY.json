@@ -77,7 +77,7 @@
     {
       "id": "ART-11",
       "module": "learning.artifacts",
-      "requirement": "The named LearningArtifactOwnerService is the unique product caller of the fenced owner host, performs the complete durable publication saga, returns stable terminal retries, reopens from authenticated CURRENT, and process-kill recovery never promotes an uncheckpointed phase.",
+      "requirement": "The named LearningArtifactOwnerService is the unique product caller of the fenced owner host, performs the complete durable publication saga, returns stable terminal retries, reopens from authenticated CURRENT, issues opaque VerifiedCurrentRegistryViewV1 values for final-use readers, rejects old-head/key-epoch rollback, and process-kill recovery never promotes an uncheckpointed phase.",
       "tests": [
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",

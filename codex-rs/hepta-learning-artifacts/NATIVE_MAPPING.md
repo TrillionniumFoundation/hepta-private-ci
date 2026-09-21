@@ -12,10 +12,12 @@ loader remain readable. The additive V2/V3 layers make complete provenance,
 withdrawal scope and publication ordering explicit without reinterpreting
 historical V1 files.
 
-The crate owns no product signing key, newest-head discovery service, production
-route, sandbox executor, selector, merge authority or release authority. Public
-receipts use `AuthorityPosture::DENY_ALL` where an authority posture is
-returned.
+The crate owns no product signing key, sandbox executor, selector, merge
+authority or release authority. It does own the bounded local authenticated
+CURRENT discovery/recovery service over signed head records; external
+head-distribution transport and the independent signing authority remain outside
+the crate. Public receipts use `AuthorityPosture::DENY_ALL` where an authority
+posture is returned.
 
 The `operator_sensor_core_registry` has no second writer. Sensor cores are first-class `ArtifactKind::SensorCore` records in the same append-only `ArtifactRegistry`; `project_operator_sensor_core_registry_v1` is a deterministic typed read view bound to the source registry head. Revocation/quarantine is therefore inherited from the physical artifact history rather than copied into another journal.
 
@@ -38,6 +40,8 @@ flattened into one V1 predecessor.
 | validate-before-create current-head witness | `write_registry_head_witness_beneath` | `src/storage.rs` | implemented |
 | read exact pinned candidate | `load_pinned_candidate` | `src/pinned.rs` | retained |
 | revalidate cached consumer at a newer head | `RevalidatingCandidate::with_current` | `src/pinned.rs` | retained |
+| issue opaque authenticated CURRENT registry view | `ArtifactOwnerVerifierV1::verify_current_registry_view` / `LearningArtifactOwnerHost::current_registry_view` | `src/owner_host.rs` | implemented |
+| named product CURRENT/publication service | `LearningArtifactOwnerService::current_registry_view` / `publish` | `src/owner_service.rs` | product-composed source |
 | prepare snapshot-local dataset revocation | `prepare_dataset_revocation` | `src/dataset_revocation.rs` | retained |
 | validate complete V2 manifest | `validate_artifact_manifest_v2` | `src/closure_v2.rs` | implemented |
 | persist dataset withdrawal frontier in memory | `DatasetWithdrawalRegistry::append` | `src/closure_v2.rs` | implemented |
@@ -144,10 +148,11 @@ and symlink ancestors below a canonical host-designated trusted root. They also
 perform semantic validation before final-path creation, preventing ordinary
 validation failures from leaving zero-length final-path orphans.
 
-The host still owns concurrent hostile ancestor protection, parent-directory
-sync, newest-file discovery, writer fencing, retention, backup restore,
-indeterminate-write reconciliation and actual process loading. Standard-library
-path checks are not an `openat2` directory capability.
+The owner host now performs bounded signed CURRENT discovery and exclusive writer
+fencing. The deployment host still owns concurrent hostile ancestor protection,
+parent-directory sync, external newest-head distribution, retention, backup
+restore policy, indeterminate-write reconciliation and actual process loading.
+Standard-library path checks are not an `openat2` directory capability.
 
 ## Qualification mapping
 

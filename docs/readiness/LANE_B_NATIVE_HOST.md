@@ -81,17 +81,22 @@ The owner-authority correction passed all 36 tests in the two inference librarie
 
 `AgentdConfig::with_cognitive_ranker` attaches an externally selected
 `PinnedCognitiveRanker` to the existing `cognitive_context` control read path.
-The host supplies owner/body generation, complete artifact and model pins,
-read-only files, and a `CurrentCognitiveRegistry` implementation. There is no
-implicit CLI selection, trusted file generator or evaluator self-authorization.
-The operator and artifact registry retain their existing owners.
+The host supplies owner/body generation, complete artifact/model pins and a
+`CurrentCognitiveRegistry` implementation. That interface no longer returns a
+bare file/receipt pair: it must return `VerifiedCurrentRegistryViewV1`, an
+opaque value issued only after `learning.artifacts` verifies signed CURRENT and
+the exact backing snapshot. There is no implicit CLI selection, trusted file
+generator or evaluator self-authorization. The operator and artifact registry
+retain their existing owners.
 
 The consumer ranks only records admitted by the same SQLite snapshot. Query
 sensors are exact query hashes; actions bind memory ID, revision and content
 hash. It scores before the result limit, keeps original order for ties, and
-abstains for the entire ranking when any cell is unsupported. A missing or
-revoked current view closes the consumer instead of falling back to a stale
-model. Registry I/O runs on the blocking pool; the trusted host must bound it.
+abstains for the entire ranking when any cell is unsupported. A missing, unauthenticated or revoked current view closes the consumer instead
+of falling back to a stale model. A product adapter cannot fabricate currentness
+from `RegistrySnapshotReceipt`; only the artifact authority/verifier can issue
+the opaque view. Registry I/O runs on the blocking pool; the trusted host must
+bound it.
 The memory cut and artifact view are rechecked before returning context.
 
 The fitted-model/SQLite tests prove changed control-read ordering, not improved
