@@ -28,9 +28,9 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_plasticity::{
     AppendDisposition, LayerNormDenominatorV2, ParameterGeneratorProfileV3,
     ParameterMutationRuleV1, ParameterMutationSurfaceV1, ParameterPlasticitySignalV3,
-    ProposalWindowV2, TopologyChangeV2, TopologyOperationV2,
-    build_parameter_mutation_policy_v1, build_writer_handoff_plan_v1,
-    generate_parameter_candidates_v3, parameter_generator_signing_payload_v3,
+    ProposalWindowV2, TopologyChangeV2, TopologyOperationV2, build_parameter_mutation_policy_v1,
+    build_writer_handoff_plan_v1, generate_parameter_candidates_v3,
+    parameter_generator_signing_payload_v3,
 };
 use codex_hepta_types::{Digest32, FixedQ32, Generation, ProbabilityQ32, StableId};
 use ed25519_dalek::{Signer, SigningKey};
@@ -916,7 +916,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("first topology product proposal");
     assert_eq!(first_topology.durable.sequence, 1);
-    assert_eq!(first_topology.durable.disposition, AppendDisposition::Inserted);
+    assert_eq!(
+        first_topology.durable.disposition,
+        AppendDisposition::Inserted
+    );
 
     cancellation.cancel();
     owner_task
@@ -989,7 +992,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("idempotent topology replay after restart");
     assert_eq!(second_topology.durable.sequence, 1);
-    assert_eq!(second_topology.durable.disposition, AppendDisposition::Unchanged);
+    assert_eq!(
+        second_topology.durable.disposition,
+        AppendDisposition::Unchanged
+    );
     assert_eq!(
         second_topology.next_registry_anchor,
         first_topology.next_registry_anchor
