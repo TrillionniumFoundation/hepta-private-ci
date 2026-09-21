@@ -3510,7 +3510,12 @@ name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-state",
+ "codex-utils-absolute-path",
  "ed25519-dalek",
+ "sqlx",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
