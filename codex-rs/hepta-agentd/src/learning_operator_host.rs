@@ -589,6 +589,7 @@ pub enum OfflineOperatorPayloadTargetV1 {
 pub struct OfflineOperatorCandidateRequestV1<'a> {
     pub operation_id: StableId,
     pub dataset: &'a DatasetSnapshotReceiptV3,
+    pub dataset_owner_evidence: &'a SignedLearningEvidenceV1,
     pub plan: TabularOperatorPlanV1,
     pub register_event_id: StableId,
     pub trained_lifecycle_event_id: StableId,
@@ -664,7 +665,12 @@ impl AgentdOfflineOperatorHostV1 {
         verifier: &LearningEvidenceVerifierV1,
         request: OfflineOperatorCandidateRequestV1<'_>,
     ) -> Result<OfflineOperatorCandidateReceiptV1, LearningOperatorHostError> {
-        let dataset = VerifiedOperatorDatasetV2::from_receipt(request.dataset, request.now)?;
+        let dataset = VerifiedOperatorDatasetV2::from_authenticated_receipt(
+            request.dataset,
+            request.dataset_owner_evidence,
+            verifier,
+            request.now,
+        )?;
         let request_digest = digest_product_request(&request)?;
         self.journal
             .prepare(request.operation_id.clone(), request_digest)?;
@@ -917,6 +923,9 @@ fn digest_product_request(
     push_id(&mut bytes, &request.operation_id)?;
     bytes.extend_from_slice(request.dataset.snapshot.dataset_digest.as_array());
     bytes.extend_from_slice(request.dataset.snapshot.ledger_head_digest.as_array());
+    bytes.extend_from_slice(
+        Digest32::of_bytes(&request.dataset_owner_evidence.signing_bytes()).as_array(),
+    );
     push_id(&mut bytes, &request.plan.artifact_id)?;
     push_id(&mut bytes, &request.plan.producer_id)?;
     bytes.extend_from_slice(&request.plan.generation.get().to_be_bytes());
