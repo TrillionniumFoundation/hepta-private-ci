@@ -46,10 +46,10 @@ impl CognitiveRetrievalMode {
     }
 }
 
-fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrievalMode, AgentdError> {
-    let Some(value) = std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV)
-        .filter(|value| !value.is_empty())
-    else {
+fn parse_cognitive_retrieval_mode(
+    value: Option<OsString>,
+) -> Result<CognitiveRetrievalMode, AgentdError> {
+    let Some(value) = value.filter(|value| !value.is_empty()) else {
         return Ok(CognitiveRetrievalMode::Compatibility);
     };
     let value = value.into_string().map_err(|_| {
@@ -64,6 +64,10 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
             "{HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV} must be compatibility or hnmf-required"
         ))),
     }
+}
+
+fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrievalMode, AgentdError> {
+    parse_cognitive_retrieval_mode(std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV))
 }
 
 pub struct AgentdConfig {

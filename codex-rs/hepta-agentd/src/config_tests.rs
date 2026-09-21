@@ -8,7 +8,7 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use super::AgentdConfig;
 use super::CognitiveRetrievalMode;
-use super::cognitive_retrieval_mode_from_process_environment;
+use super::parse_cognitive_retrieval_mode;
 use super::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
 use crate::AgentdError;
 
@@ -113,53 +113,25 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
 
 #[test]
 fn cognitive_retrieval_process_profile_is_explicit_and_fail_closed() {
-    // Parser behavior is tested through a subprocess-free environment guard so
-    // the production binary's profile vocabulary cannot silently widen.
-    let original = std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV);
+    use std::ffi::OsString;
 
-    // SAFETY: this test restores the process environment before returning and
-    // does not spawn threads; config tests run as ordinary unit tests.
-    unsafe {
-        std::env::remove_var(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV);
-    }
     assert_eq!(
-        cognitive_retrieval_mode_from_process_environment().expect("default profile"),
+        parse_cognitive_retrieval_mode(None).expect("default profile"),
         CognitiveRetrievalMode::Compatibility
     );
-
-    // SAFETY: see the scoped environment note above.
-    unsafe {
-        std::env::set_var(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV, "compatibility");
-    }
     assert_eq!(
-        cognitive_retrieval_mode_from_process_environment().expect("compatibility profile"),
+        parse_cognitive_retrieval_mode(Some(OsString::from("compatibility")))
+            .expect("compatibility profile"),
         CognitiveRetrievalMode::Compatibility
     );
-
-    // SAFETY: see the scoped environment note above.
-    unsafe {
-        std::env::set_var(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV, "hnmf-required");
-    }
     assert_eq!(
-        cognitive_retrieval_mode_from_process_environment().expect("HNMF profile"),
+        parse_cognitive_retrieval_mode(Some(OsString::from("hnmf-required")))
+            .expect("HNMF profile"),
         CognitiveRetrievalMode::HnmfRequired
     );
-
-    // SAFETY: see the scoped environment note above.
-    unsafe {
-        std::env::set_var(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV, "auto");
-    }
     assert!(matches!(
-        cognitive_retrieval_mode_from_process_environment(),
+        parse_cognitive_retrieval_mode(Some(OsString::from("auto"))),
         Err(AgentdError::Invalid(message))
             if message.contains("compatibility or hnmf-required")
     ));
-
-    // SAFETY: restore the caller's environment exactly.
-    unsafe {
-        match original {
-            Some(value) => std::env::set_var(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV, value),
-            None => std::env::remove_var(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV),
-        }
-    }
 }
