@@ -90,6 +90,7 @@ override these machine status facts.
 | Durable anchored topology proposal registry | **Implemented** | `DurableTopologyProposalRegistryV1` |
 | Agentd topology host adapter + external anchor/fence | **Implemented and called by the long-lived Agentd plasticity owner; not target-host executed/qualified** | `topology_plasticity_host.rs` |
 | Long-lived Agentd plasticity owner | **Implemented source composition; bounded queue, generation/readiness fenced, no ambient writer fallback** | `PlasticityRuntimeOwnerV1` in `hepta-agentd/src/plasticity_runtime.rs` |
+| Named Agentd parameter submission | **Implemented source boundary; only source lifetime tests call it, no non-test learning/self-iteration producer yet** | `AgentdState::submit_parameter_plasticity_v1` |
 | Bounded structural canary controller | **Implemented durable-candidate/plan/history-bound observation state machine; explicit finish required; no executed canary evidence** | `StructuralCanaryControllerV1` |
 | Authenticated structural-canary observation | **Implemented source boundary; every safety/lineage/rollback/health assertion is Observer-signed before state transition** | `observe_authenticated_structural_canary_v1` in `hepta-intelligence` |
 | Topology application / migration / writer handoff execution | **Implemented in the external runtime owner; plasticity itself remains proposal-only** | `codex-hepta-runtime::HeptaRuntime::apply_governed_topology` requires exact governed handoff + plan-bound `RuntimeTopologyMigrationOwnerV1` + single-use `FinalUseAuthority` |
@@ -108,14 +109,16 @@ proposal crate, and that distinction is intentional and now explicit:
 | --- | --- |
 | `codex-rs/hepta-plasticity` native crate | `codex-hepta-types` only; deterministic proposal/generator/topology/registry mechanics stay authority-free |
 | product-workspace adapter | `codex-hepta-intelligence-eval` and `codex-hepta-learning-ledger` authenticate generator/evaluator evidence and independent decisions |
-| selected host | MUST call the product adapter, read the current `learning.artifacts` and qualification/evidence frontiers, resolve every dataset/update/modulator/eligibility/mutation-policy/per-parameter evidence digest through `PlasticityOwnerEvidenceResolverV1`, then issue the short-lived trusted Observer attestation bound by `PlasticityAdmissionEvidenceV1` |
+| selected host / learning coordinator | MUST provide a real non-test producer that submits through `AgentdState::submit_parameter_plasticity_v1`, read the current `learning.artifacts` and qualification/evidence frontiers, resolve every dataset/update/modulator/eligibility/mutation-policy/per-parameter evidence digest through `PlasticityOwnerEvidenceResolverV1`, then issue the short-lived trusted Observer attestation bound by `PlasticityAdmissionEvidenceV1`; the repository does not yet contain that non-test producer |
 | selected host rollback domain | MUST implement `PlasticityAnchorCommitterV1` and monotonic writer-fence issuance outside the registry rollback domain |
 
 `codex-hepta-plasticity` itself still does not query owner stores. The source-selected
 host is now a long-lived `PlasticityRuntimeOwnerV1` supervised by the real Agentd
 `runtime.rs` task set. It exclusively retains the proposal writers, external
 anchor/fence stores, learning-evidence verifier, ArtifactRegistry, DurableLedger and
-owner-evidence resolver behind a bounded typed channel. Every proposal is fenced on
+owner-evidence resolver behind a bounded typed channel. The only current callers of
+`AgentdState::submit_parameter_plasticity_v1` are source lifetime tests; no non-test
+learning/self-iteration producer currently drives the queue. Every proposal is fenced on
 the current Running/ready Agentd generation before it reaches the parameter or topology
 host entrypoint. There is no public Agentd wire method and no ambient/default writer:
 if the owner is not explicitly attached to `AgentdConfig`, plasticity remains absent.
@@ -256,7 +259,7 @@ real rollback.
 
 ## Remaining external and composition gates
 
-The repository now contains a long-lived Agentd plasticity owner that calls the
+The remaining repository-controlled composition gap is a real non-test learning/self-iteration producer for `AgentdState::submit_parameter_plasticity_v1`; the current lifetime test proves source semantics but is not product execution. The repository now contains a long-lived Agentd plasticity owner that calls the
 parameter/topology host entrypoints, supplies current owner frontiers and retains
 independent anchor/fence seams. Dataset and immutable Policy owner adapters are concrete; NDU owns current modulator projections, neuron.runtime owns eligibility checkpoints, broadcast policy binds the low-dimensional mapping, and exact ParameterSignal evidence recomputes the consumed numeric values. These source adapters still require the selected target host to open the corresponding authoritative owner stores. The registry/anchor fault fixtures prove that a retained
 external acknowledgement rejects a rolled-back proposal file, but only a target host
