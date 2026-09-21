@@ -298,11 +298,13 @@ impl CognitiveRuntime {
             Self::AvailableFederatedV2 {
                 consumer_agent_id,
                 owner_layouts,
+                omitted_owner_candidates,
                 ..
             } => {
                 retrieve_federated_product(
                     consumer_agent_id,
                     owner_layouts.as_slice(),
+                    *omitted_owner_candidates,
                     access,
                     request,
                 )
