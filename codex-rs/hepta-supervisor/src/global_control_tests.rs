@@ -948,9 +948,16 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
         test_nonce("grant-1"),
     );
 
+    let fleet_at_dispatch = Arc::clone(&fleet);
     assert_eq!(
-        host.with_authorized_request(&plan, &signed, &request, &effect_binding, || "released",)
-            .expect("final-use dispatch"),
+        host.with_authorized_request(&plan, &signed, &request, &effect_binding, || {
+            assert!(
+                fleet_at_dispatch.try_write().is_err(),
+                "fleet revocation must not linearize inside final-use dispatch"
+            );
+            "released"
+        })
+        .expect("final-use dispatch"),
         "released"
     );
     assert!(matches!(
