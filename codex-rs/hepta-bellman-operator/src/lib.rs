@@ -34,6 +34,7 @@ pub use dataset_binding::VerifiedOperatorDatasetV2;
 pub use dataset_binding::build_targets_bound_v2;
 pub use dataset_binding::fit_tabular_operator_bound_v2;
 pub use dataset_binding::fit_transition_model_bound_v2;
+pub use dataset_binding::operator_dataset_signing_payload_v2;
 pub use loaded::LoadedTabularOperatorV1;
 pub use loaded::TabularPayloadError;
 pub use loaded::TabularPayloadPinV1;
