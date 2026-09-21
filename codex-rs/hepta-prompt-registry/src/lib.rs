@@ -66,17 +66,47 @@ pub struct PromptFactorGraphNodeV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptFactorGraphSourceV1 {
-    pub registry_revision: Revision,
-    pub registry_snapshot_digest: Digest32,
-    pub lifecycle_frontier: u64,
-    pub revocation_frontier: u64,
-    pub factors: Vec<PromptFactorGraphNodeV1>,
-    pub relations: Vec<PromptFactorRelation>,
-    pub source_digest: Digest32,
-    pub authority: AuthorityPosture,
+    registry_revision: Revision,
+    registry_snapshot_digest: Digest32,
+    lifecycle_frontier: u64,
+    revocation_frontier: u64,
+    factors: Vec<PromptFactorGraphNodeV1>,
+    relations: Vec<PromptFactorRelation>,
+    source_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl PromptFactorGraphSourceV1 {
+    #[must_use]
+    pub const fn registry_revision(&self) -> Revision {
+        self.registry_revision
+    }
+
+    #[must_use]
+    pub const fn registry_snapshot_digest(&self) -> Digest32 {
+        self.registry_snapshot_digest
+    }
+
+    #[must_use]
+    pub fn factors(&self) -> &[PromptFactorGraphNodeV1] {
+        &self.factors
+    }
+
+    #[must_use]
+    pub fn relations(&self) -> &[PromptFactorRelation] {
+        &self.relations
+    }
+
+    #[must_use]
+    pub const fn source_digest(&self) -> Digest32 {
+        self.source_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
     #[must_use]
     pub fn compute_source_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.prompt-factor-graph-source.v1".to_vec();
