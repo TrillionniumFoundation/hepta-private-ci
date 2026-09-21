@@ -454,7 +454,11 @@ impl LedgerWriter {
         evidence: &SignedLearningEvidenceV1,
         now: u64,
     ) -> Result<UnlearningLineageReceiptV1, ProductionLedgerError> {
-        verify_dataset_snapshot_receipt_v3(dataset, now)?;
+        // Unlearning may target an old frozen dataset after its original
+        // producer credential has expired. Verify immutable receipt integrity at
+        // the producer's authenticated point; current authority comes from the
+        // separately verified UnlearningAuthority evidence below.
+        verify_dataset_snapshot_receipt_v3(dataset, dataset.producer.authenticated_at)?;
         if request.dataset_snapshot_id != dataset.snapshot.snapshot_id
             || request.dataset_digest != dataset.snapshot.dataset_digest
             || dataset.snapshot.objective_digest != self.trust.verifier().objective_digest()
@@ -951,8 +955,8 @@ fn derive_dataset(
         .len()
         .checked_sub(outcome_episodes.len())
         .ok_or(ProductionLedgerError::Binding("outcome accounting"))?;
-    let missing_outcomes =
-        u32::try_from(missing_outcomes).map_err(|_| ProductionLedgerError::Binding("pending count"))?;
+    let missing_outcomes = u32::try_from(missing_outcomes)
+        .map_err(|_| ProductionLedgerError::Binding("pending count"))?;
     pending_outcomes = pending_outcomes
         .checked_add(missing_outcomes)
         .ok_or(ProductionLedgerError::Binding("pending count"))?;
