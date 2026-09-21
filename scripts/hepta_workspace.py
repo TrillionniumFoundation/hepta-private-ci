@@ -3,6 +3,8 @@
 
 This is a read-only structural preflight, not compilation or dependency resolution.
 Walk workspace members and their local dependencies, not unrelated fixture trees.
+Check version/direction collisions in conventional SQLx migration directories
+without running SQL or rewriting already-applied migration history.
 Reject Hepta product dependencies throughout the local normal/build dependency
 closure of the execution core and extension API, including target-specific and
 optional edges. Local patches are conservatively included without resolving
@@ -15,6 +17,7 @@ from __future__ import annotations
 import argparse
 from collections import deque
 from pathlib import Path
+import re
 import sys
 import tomllib
 
@@ -185,6 +188,33 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
                         )
                     edges[path].append((target_name, target, kind))
                     queue.append(target)
+        # SQLx keys applied migrations by numeric version, not by filename.
+        # Independently added migrations can therefore collide after a clean
+        # text merge while cargo metadata still succeeds. Check only the direct
+        # conventional directory of reachable SQLx packages, never fixture trees
+        # or unrelated migration frameworks. Custom paths still need native CI.
+        if any(target_name == "sqlx" for target_name, _, _ in edges.get(path, [])):
+            migration_versions: dict[tuple[int, str], str] = {}
+            for migration in sorted((path.parent / "migrations").glob("*.sql")):
+                if not migration.is_file():
+                    continue
+                prefix, separator, _ = migration.name.partition("_")
+                if not separator or re.fullmatch(r"[+-]?[0-9]+", prefix) is None:
+                    continue
+                version = int(prefix)
+                if not 0 < version <= 2**63 - 1:
+                    errors.append(f"{migration}: SQLx migration version must be a positive i64")
+                    continue
+                direction = "down" if migration.name.endswith(".down.sql") else "up"
+                key = (version, direction)
+                previous = migration_versions.get(key)
+                if previous is not None:
+                    errors.append(
+                        f"{path}: SQLx migration version {version} ({direction}) collides: "
+                        f"{previous} and {migration.name}; reconcile owner migration histories"
+                    )
+                else:
+                    migration_versions[key] = migration.name
     errors.extend(execution_boundary_errors(package_paths, edges))
     return len(seen), sorted(set(errors))
 

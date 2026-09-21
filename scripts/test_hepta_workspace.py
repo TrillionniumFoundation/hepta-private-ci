@@ -243,6 +243,85 @@ class WorkspacePreflightTests(unittest.TestCase):
             stream.write('[dependencies]\ncodex-hepta-memory = "1.0"\n')
         self.assertTrue(any("codex-hepta-contracts --dependencies--> codex-hepta-memory" in e for e in verify_workspace(self.root)[1]))
 
+    def sqlx_package(self):
+        self.write(
+            "app/Cargo.toml",
+            '[package]\nname = "app"\n[dependencies]\nsqlx = "0.9"\n',
+        )
+
+    def test_duplicate_up_migration_is_rejected_before_compilation(self):
+        self.sqlx_package()
+        self.write("app/migrations/0004_effect.sql", "CREATE TABLE effects (id INTEGER);\n")
+        self.write("app/migrations/0004_calendar.sql", "CREATE TABLE calendars (id INTEGER);\n")
+        count, errors = verify_workspace(self.root)
+        self.assertEqual(count, 1)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("migration version 4 (up) collides", errors[0])
+        self.assertIn("0004_calendar.sql and 0004_effect.sql", errors[0])
+
+    def test_numeric_aliases_and_inherited_sqlx_name_do_not_hide_collision(self):
+        with (self.root / "Cargo.toml").open("a") as stream:
+            stream.write('[workspace.dependencies]\nrenamed = { package = "sqlx", version = "0.9" }\n')
+        with (self.root / "app/Cargo.toml").open("a") as stream:
+            stream.write('[dependencies]\nrenamed.workspace = true\n')
+        self.write("app/migrations/4_alpha.sql", "SELECT 1;\n")
+        self.write("app/migrations/+0004_beta.sql", "SELECT 2;\n")
+        errors = verify_workspace(self.root)[1]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("migration version 4 (up) collides", errors[0])
+
+    def test_reversible_pair_is_not_a_duplicate(self):
+        self.sqlx_package()
+        self.write("app/migrations/0004_owner.up.sql", "CREATE TABLE owner (id INTEGER);\n")
+        self.write("app/migrations/0004_owner.down.sql", "DROP TABLE owner;\n")
+        self.assertEqual(verify_workspace(self.root), (1, []))
+
+    def test_plain_plus_up_and_duplicate_down_are_collisions(self):
+        self.sqlx_package()
+        for names, direction in [
+            (("0004_a.sql", "4_b.up.sql"), "up"),
+            (("0004_a.down.sql", "4_b.down.sql"), "down"),
+        ]:
+            with self.subTest(names=names):
+                for migration in (self.root / "app/migrations").glob("*.sql"):
+                    migration.unlink()
+                for name in names:
+                    self.write(f"app/migrations/{name}", "SELECT 1;\n")
+                errors = verify_workspace(self.root)[1]
+                self.assertEqual(len(errors), 1)
+                self.assertIn(f"migration version 4 ({direction}) collides", errors[0])
+
+    def test_migration_versions_are_scoped_to_their_package(self):
+        self.sqlx_package()
+        with (self.root / "app/Cargo.toml").open("a") as stream:
+            stream.write('helper = { path = "../helper" }\n')
+        self.write("helper/Cargo.toml", '[package]\nname = "helper"\n[dependencies]\nsqlx = "0.9"\n')
+        self.write("app/migrations/0004_owner.sql", "SELECT 1;\n")
+        self.write("helper/migrations/0004_owner.sql", "SELECT 1;\n")
+        self.assertEqual(verify_workspace(self.root), (2, []))
+
+    def test_unreferenced_fixture_migrations_are_not_global_gates(self):
+        self.sqlx_package()
+        self.write("app/tests/fixtures/migrations/0004_a.sql", "SELECT 1;\n")
+        self.write("app/tests/fixtures/migrations/0004_b.sql", "SELECT 2;\n")
+        self.assertEqual(verify_workspace(self.root), (1, []))
+
+    def test_other_migration_frameworks_are_not_interpreted_as_sqlx(self):
+        self.write("app/migrations/0004_a.sql", "SELECT 1;\n")
+        self.write("app/migrations/0004_b.sql", "SELECT 2;\n")
+        self.assertEqual(verify_workspace(self.root), (1, []))
+
+    def test_invalid_sqlx_version_range_is_reported(self):
+        self.sqlx_package()
+        for prefix in ("0", "-1", str(2**63)):
+            with self.subTest(prefix=prefix):
+                name = f"app/migrations/{prefix}_invalid.sql"
+                self.write(name, "SELECT 1;\n")
+                errors = verify_workspace(self.root)[1]
+                self.assertEqual(len(errors), 1)
+                self.assertIn("SQLx migration version must be a positive i64", errors[0])
+                (self.root / name).unlink()
+
     def test_malformed_manifest_is_reported_without_execution(self):
         self.write("app/Cargo.toml", "this is not valid = TOML")
         self.assertTrue(verify_workspace(self.root)[1])

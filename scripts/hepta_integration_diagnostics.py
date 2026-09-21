@@ -68,20 +68,38 @@ def diagnose(root: Path, source: str, target: str) -> dict:
     base = object_id(git(root, "merge-base", source, target).stdout.decode().strip())
     merged = git(root, "merge-tree", "--write-tree", "--messages", "-z", source, target, allowed=(0, 1))
     tree, stages = parse_merge(merged.stdout)
-    changed = [path.decode("utf-8", "strict") for path in git(
-        root, "diff", "--no-ext-diff", "--no-textconv", "--name-only", "--no-renames", "-z", source, tree, "--"
-    ).stdout.split(b"\0") if path]
+    # One recursive raw diff gives both the changed paths and their exact
+    # destination objects. Do not spawn a separate ls-tree for every path: a
+    # large integration must not pay one extra Git process per changed file.
+    raw = git(
+        root, "diff", "--no-ext-diff", "--no-textconv", "--raw", "--no-abbrev",
+        "--no-renames", "-z", source, tree, "--",
+    ).stdout
+    fields = raw.split(b"\0")
+    if fields[-1] != b"" or len(fields) % 2 != 1:
+        raise ValueError("invalid raw tree diff framing")
     entries = []
-    for path in changed:
-        raw = git(root, "ls-tree", "-z", tree, "--", f":(literal){path}").stdout
-        if not raw:
+    for offset in range(0, len(fields) - 1, 2):
+        header, path_bytes = fields[offset:offset + 2]
+        parts = header.decode("ascii").split(" ")
+        if len(parts) != 5 or not parts[0].startswith(":") or not path_bytes:
+            raise ValueError("invalid raw tree diff entry")
+        old_mode, mode, old_oid, oid, status = parts
+        modes = {"000000", "100644", "100755", "120000", "160000"}
+        if old_mode[1:] not in modes or mode not in modes or status not in {"A", "D", "M", "T"}:
+            raise ValueError("invalid raw tree diff mode or status")
+        object_id(old_oid)
+        object_id(oid)
+        path = path_bytes.decode("utf-8", "strict")
+        if status == "D":
+            if mode != "000000" or oid != "0" * 40:
+                raise ValueError("deleted entry still has a destination object")
             entries.append({"path": path, "deleted": True})
-            continue
-        header, actual_path = raw.rstrip(b"\0").split(b"\t", 1)
-        mode, kind, oid = header.decode("ascii").split(" ")
-        if actual_path.decode("utf-8", "strict") != path:
-            raise ValueError("tree path identity mismatch")
-        entries.append({"path": path, "mode": mode, "type": kind, "object": object_id(oid)})
+        else:
+            if mode == "000000" or oid == "0" * 40:
+                raise ValueError("live entry has no destination object")
+            kind = "commit" if mode == "160000" else "blob"
+            entries.append({"path": path, "mode": mode, "type": kind, "object": oid})
     return {
         "source": source, "target": target, "base": base,
         "source_tree": object_id(git(root, "rev-parse", source + "^{tree}").stdout.decode().strip()),

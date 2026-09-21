@@ -9,6 +9,7 @@ import subprocess
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPT = Path(__file__).with_name("hepta_integration_diagnostics.py")
 spec = importlib.util.spec_from_file_location("diagnostics", SCRIPT)
@@ -90,6 +91,61 @@ class IntegrationFeedbackTests(unittest.TestCase):
                 report = subject.diagnose(self.repo, source, target)
                 self.assertEqual(report["conflicts"], [name])
                 self.assertEqual([row["path"] for row in report["entries"]], [name])
+
+    def test_raw_diff_binds_modes_objects_and_literal_paths(self):
+        self.write("executable", "before\n")
+        self.write("link", "before\n")
+        self.write("removed", "before\n")
+        source = self.commit()
+        names = ["[x]*.txt", ":(exclude)record.txt", "a\tb.txt", "a\nb.txt", "中文.txt", "nested/file"]
+        for name in names:
+            self.write(name, "after\n")
+        (self.repo / "executable").chmod(0o755)
+        (self.repo / "link").unlink()
+        (self.repo / "link").symlink_to("record.txt")
+        (self.repo / "removed").unlink()
+        target = self.commit()
+        self.git("checkout", "--quiet", "--detach", source)
+        report = subject.diagnose(self.repo, source, target)
+        expected = [
+            {"path": name, "mode": "100644", "type": "blob",
+             "object": self.git("rev-parse", f"{target}:{name}")}
+            for name in names
+        ]
+        expected.extend([
+            {"path": "executable", "mode": "100755", "type": "blob",
+             "object": self.git("rev-parse", f"{target}:executable")},
+            {"path": "link", "mode": "120000", "type": "blob",
+             "object": self.git("rev-parse", f"{target}:link")},
+            {"path": "removed", "deleted": True},
+        ])
+        self.assertEqual(report["entries"], sorted(expected, key=lambda row: row["path"]))
+
+    def test_gitlink_is_a_commit_not_a_blob(self):
+        source = self.base
+        self.git("update-index", "--add", "--cacheinfo", f"160000,{source},submodule")
+        self.git("commit", "--quiet", "--no-gpg-sign", "-m", "gitlink fixture")
+        target = self.git("rev-parse", "HEAD")
+        self.git("checkout", "--quiet", "--detach", source)
+        report = subject.diagnose(self.repo, source, target)
+        self.assertEqual(report["entries"], [
+            {"path": "submodule", "mode": "160000", "type": "commit", "object": source}
+        ])
+
+    def test_git_process_count_does_not_grow_with_changed_files(self):
+        counts = []
+        for count in (1, 128):
+            self.git("checkout", "--quiet", "--detach", self.base)
+            for index in range(count):
+                self.write(f"module_{index:03}/src/lib.rs", "pub fn value() {}\n")
+            target = self.commit()
+            self.git("checkout", "--quiet", "--detach", self.base)
+            with patch.object(subject, "git", wraps=subject.git) as calls:
+                report = subject.diagnose(self.repo, self.base, target)
+            self.assertEqual(len(report["entries"]), count)
+            self.assertTrue(all("object" in entry for entry in report["entries"]))
+            counts.append(calls.call_count)
+        self.assertEqual(counts[0], counts[1])
 
     def test_missing_commit_is_error_not_clean_merge(self):
         result = self.invoke(self.base, "f" * 40)
