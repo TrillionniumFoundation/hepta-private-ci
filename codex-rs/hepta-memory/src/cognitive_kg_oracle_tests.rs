@@ -198,7 +198,8 @@ fn edges_by_identity(
 
 async fn assert_full_publication_history(store: &CognitiveStore, scope: &CognitiveScope) {
     let rows = sqlx::query(
-        "SELECT generation, publication_sha256
+        "SELECT generation, source_snapshot_sha256, generation_vector_sha256,
+                graph_profile_sha256, generation_sha256, publication_sha256
          FROM kg_projection_generation_semantics
          WHERE projection_scope = ?
          ORDER BY generation",
@@ -211,6 +212,18 @@ async fn assert_full_publication_history(store: &CognitiveStore, scope: &Cogniti
     let mut predecessor: Option<KnowledgeGenerationV2> = None;
     for row in rows {
         let generation_number: i64 = row.try_get("generation").expect("generation");
+        let stored_source_snapshot: String = row
+            .try_get("source_snapshot_sha256")
+            .expect("source snapshot digest");
+        let stored_generation_vector: String = row
+            .try_get("generation_vector_sha256")
+            .expect("generation vector digest");
+        let stored_graph_profile: String = row
+            .try_get("graph_profile_sha256")
+            .expect("graph profile digest");
+        let stored_generation: String = row
+            .try_get("generation_sha256")
+            .expect("generation digest");
         let stored_publication: String = row
             .try_get("publication_sha256")
             .expect("publication digest");
@@ -220,6 +233,19 @@ async fn assert_full_publication_history(store: &CognitiveStore, scope: &Cogniti
             u64::try_from(generation_number).expect("positive generation"),
         )
         .await;
+        assert_eq!(
+            stored_source_snapshot,
+            generation.source_snapshot_digest.to_string()
+        );
+        assert_eq!(
+            stored_generation_vector,
+            generation.generation_vector_digest.to_string()
+        );
+        assert_eq!(
+            stored_graph_profile,
+            generation.graph_profile_digest.to_string()
+        );
+        assert_eq!(stored_generation, generation.generation_digest.to_string());
         let receipt = publish_generation(predecessor.as_ref(), &generation)
             .expect("historical publication reconstructs");
         assert_eq!(stored_publication, receipt.publication_digest.to_string());
