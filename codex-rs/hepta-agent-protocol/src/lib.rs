@@ -798,6 +798,71 @@ mod tests {
     }
 
     #[test]
+    fn automation_effect_wire_round_trip_is_strict_and_bounded() {
+        let payload = b"{\"effect\":\"test\"}";
+        let payload_digest = Sha256Digest::for_bytes(payload);
+        let intent = AuthorizedEffectIntent {
+            run_id: "run-effect".to_string(),
+            step_id: "effect".to_string(),
+            attempt: 1,
+            operation_id: "provider.deliver".to_string(),
+            subject_id: "019153a4-3088-7e03-a56a-9b1964f75ddd".to_string(),
+            destination_id: "provider:fixture".to_string(),
+            payload_digest,
+            final_use_scope_digest: Sha256Digest::for_bytes(b"scope"),
+            policy_generation: 1,
+            expected_predecessor_digest: None,
+            dependencies: Vec::new(),
+            compensation_for: None,
+        };
+        let binding = intent.final_use_binding().expect("binding");
+        let signed_grant = SignedFinalUseGrant {
+            grant: codex_hepta_contracts::FinalUseGrant {
+                schema_version: 1,
+                signer_id: "security-owner".to_string(),
+                authority_epoch: 1,
+                grant_id: "effect-grant".to_string(),
+                nonce: [7_u8; 32],
+                binding,
+                not_before_unix_ms: 1,
+                expires_at_unix_ms: 1_001,
+            },
+            signature: vec![9_u8; 64],
+        };
+        let wire_payload_hex = payload
+            .iter()
+            .flat_map(|byte| format!("{byte:02x}").chars().collect::<Vec<_>>())
+            .collect::<String>();
+        let request = AgentdRequest::automation_execute_effect(
+            11,
+            3,
+            intent,
+            wire_payload_hex,
+            signed_grant,
+            "effect-command".to_string(),
+        );
+        let bytes = serde_json::to_vec(&request).expect("serialize effect request");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse effect request"),
+            request
+        );
+
+        let response = AgentdPayload::AutomationEffectReconcile(
+            AutomationEffectReconcileSnapshot {
+                state: AutomationEffectReconcileState::Indeterminate,
+                effect: None,
+            },
+        );
+        let response_bytes = serde_json::to_vec(&response).expect("serialize effect response");
+        assert_eq!(
+            serde_json::from_slice::<AgentdPayload>(&response_bytes)
+                .expect("parse effect response"),
+            response
+        );
+    }
+
+    #[test]
     fn memory_federation_control_is_typed_strict_and_bounded() {
         let consumer = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dd3").expect("consumer id");
         let grant = AgentdRequest::memory_federation_grant(
