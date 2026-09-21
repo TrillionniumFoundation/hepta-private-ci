@@ -8,7 +8,6 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
-use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
@@ -607,7 +606,6 @@ mod tests {
     use codex_hepta_automation::TaskFlowStepObservation;
     use codex_hepta_automation::TaskFlowTransition;
     use codex_hepta_automation::TaskFlowCommand;
-    use codex_hepta_contracts::FinalUseBinding;
     use codex_hepta_contracts::FinalUseGrant;
     use codex_hepta_contracts::ProviderEffectKey;
     use codex_hepta_contracts::SignedFinalUseGrant;
