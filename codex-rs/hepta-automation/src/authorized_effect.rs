@@ -145,6 +145,22 @@ impl AuthorizedEffectIntent {
         Ok(())
     }
 
+    /// Derive the exact final-use binding inside the automation owner.
+    ///
+    /// Product callers may transport the signed grant, but they do not get to
+    /// supply a second independently mutable binding alongside the effect
+    /// intent.
+    pub fn final_use_binding(&self) -> Result<FinalUseBinding, TaskFlowError> {
+        let intent_digest = self.digest()?;
+        Ok(FinalUseBinding {
+            subject_id: self.subject_id.clone(),
+            destination_id: self.destination_id.clone(),
+            request_sha256: digest_bytes(&intent_digest)?,
+            scope_sha256: digest_bytes(&self.final_use_scope_digest)?,
+            payload_sha256: digest_bytes(&self.payload_digest)?,
+        })
+    }
+
     /// Build the kernel-owned authority-free operation contract consumed at
     /// the effect boundary. TaskFlow orchestration identity is layered on top
     /// by `digest()`; it is not duplicated into kernel.operations.
