@@ -2211,11 +2211,6 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox_rows =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox_rows)?;
         let Some(admission) = find_admission(
             &mut transaction,
             &self.lease_id,
@@ -2238,7 +2233,13 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
-        ensure_occurrence_readable(&mut transaction, self, &events, &admission, &outbox).await?;
+        verify_occurrence_pair_incremental(
+            &self.lease_id,
+            &self.owner_agent_id,
+            &admission,
+            &outbox,
+        )?;
+        ensure_occurrence_readable(&mut transaction, self, &admission, &outbox).await?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -2655,11 +2656,6 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox_rows =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox_rows)?;
         let admission = find_admission(
             &mut transaction,
             &self.lease_id,
@@ -2681,7 +2677,13 @@ impl LocalLeaseOutbox {
         // Status is read-only. A successor may inspect an inherited
         // occurrence only after the exact source fence is terminal. This
         // grants no permission to dispatch or mutate that historical attempt.
-        ensure_occurrence_readable(&mut transaction, self, &events, &admission, &outbox).await?;
+        verify_occurrence_pair_incremental(
+            &self.lease_id,
+            &self.owner_agent_id,
+            &admission,
+            &outbox,
+        )?;
+        ensure_occurrence_readable(&mut transaction, self, &admission, &outbox).await?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -2700,8 +2702,9 @@ impl LocalLeaseOutbox {
     /// event/outbox rows in this local journal.  Checking only the occurrence
     /// state is insufficient: a forged or stale receipt could otherwise reuse
     /// a queued occurrence while substituting a different topic or payload at
-    /// the provider boundary.  This helper replays both hash chains and
-    /// compares every dispatch-relevant field under one read transaction.
+    /// the provider boundary. Full-chain integrity is audited at open/reopen;
+    /// this hot-path helper validates only the exact immutable occurrence rows
+    /// and compares every dispatch-relevant field under one read transaction.
     ///
     /// The method is crate-visible because the production writer owns the
     /// public receipt type; it grants no dispatch authority and never mutates
@@ -2734,11 +2737,6 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox_rows =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox_rows)?;
         let event = find_admission(
             &mut transaction,
             &self.lease_id,
@@ -2759,6 +2757,12 @@ impl LocalLeaseOutbox {
         .ok_or_else(|| {
             LocalLeaseOutboxError::StaleFence("queued receipt outbox is missing".to_string())
         })?;
+        verify_occurrence_pair_incremental(
+            &self.lease_id,
+            &self.owner_agent_id,
+            &event,
+            &outbox,
+        )?;
         ensure_current_occurrence_fence(self, &event, &outbox)?;
         if event.event_id != event_id
             || outbox.outbox_id != outbox_id
@@ -4836,7 +4840,6 @@ fn queued_receipt(
 async fn ensure_occurrence_readable(
     transaction: &mut Transaction<'_, Sqlite>,
     handle: &LocalLeaseOutbox,
-    events: &[EventRow],
     event: &EventRow,
     outbox: &OutboxRow,
 ) -> Result<(), LocalLeaseOutboxError> {
@@ -4854,11 +4857,24 @@ async fn ensure_occurrence_readable(
     {
         return Ok(());
     }
-    let latest = events
-        .iter()
-        .rev()
-        .find(|candidate| candidate.occurrence_key == event.occurrence_key)
-        .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
+    let row = sqlx::query(
+        "SELECT event_sequence, event_id, occurrence_key, owner_agent_id,
+                generation, fencing_token, event_kind, payload_json,
+                payload_sha256, previous_sha256, event_sha256
+         FROM cognitive_local_events
+         WHERE lease_id = ? AND occurrence_key = ?
+         ORDER BY event_sequence DESC LIMIT 1",
+    )
+    .bind(&handle.lease_id)
+    .bind(&event.occurrence_key)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?
+    .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
+    let latest = checked_event_row(&handle.lease_id, &row)?;
+    if latest.owner_agent_id != handle.owner_agent_id {
+        return Err(corrupt("occurrence event belongs to a foreign owner"));
+    }
     if latest.generation == handle.generation && latest.fencing_token == handle.fencing_token {
         return Ok(());
     }
