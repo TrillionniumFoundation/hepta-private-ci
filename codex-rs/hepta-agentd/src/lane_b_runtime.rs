@@ -852,9 +852,7 @@ impl AgentRunCoordinator {
             }
             return Err(AgentRunError::Conflict);
         }
-        if self.active_run_count() >= self.max_active_runs
-            || self.runs.len() >= MAX_RETAINED_RUNS
-        {
+        if self.active_run_count() >= self.max_active_runs || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
         }
         let record = RunRecord {
