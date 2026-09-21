@@ -153,6 +153,8 @@ pub struct AgentRunReceipt {
     pub revision: u64,
     pub phase: AgentRunPhase,
     pub context_digest: Option<String>,
+    /// Exact compilation/intelligence-envelope receipt attached before dispatch.
+    pub compilation_receipt_digest: Option<String>,
     pub authority_epoch: u64,
     pub deadline_ms: u64,
     pub cancel_reason: Option<String>,
