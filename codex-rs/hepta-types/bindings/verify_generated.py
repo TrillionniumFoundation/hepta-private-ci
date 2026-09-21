@@ -9,6 +9,13 @@ sys.path.insert(0, str(ROOT / "generated/python"))
 import hepta_platform_types_v1 as binding
 
 assert binding.STABLE_ID_MAX_BYTES == 128
+assert binding.validate_id_profile("a" * 128, "Stable") == "a" * 128
+try:
+    binding.validate_id_profile("a" * 129, "Stable")
+except ValueError:
+    pass
+else:
+    raise SystemExit("generated Python binding admitted a 129-byte StableId")
 assert binding.validate_id_profile("schema:numeric-signal", "Schema") == "schema:numeric-signal"
 assert binding.validate_id_profile("normalization:identity", "Normalization") == "normalization:identity"
 for value, variant in (("plátform.types", "Module"), ("platform.-types", "Module"), ("schema:naïve", "Schema")):
