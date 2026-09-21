@@ -415,18 +415,20 @@ impl GlobalControlHostV1 {
         {
             return Err(GlobalControlHostError::PlannerPlanExpired);
         }
-        {
-            let fleet_ledger = self
-                .fleet_ledger
-                .read()
-                .map_err(|_| GlobalControlHostError::FleetStatePoisoned)?;
-            revalidate_fleet_allocation_for_plan_v1(
-                &fleet_ledger,
-                plan,
-                request,
-                host_wall_now_ms()?,
-            )?;
-        }
+        let fleet_ledger = self
+            .fleet_ledger
+            .read()
+            .map_err(|_| GlobalControlHostError::FleetStatePoisoned)?;
+        revalidate_fleet_allocation_for_plan_v1(
+            &fleet_ledger,
+            plan,
+            request,
+            host_wall_now_ms()?,
+        )?;
+        // Keep the live fleet allocation fence through the same synchronous
+        // effect callback protected by FinalUseAuthority. A successful fleet
+        // renewal/revocation therefore cannot linearize between revalidation
+        // and dispatch.
         with_authorized_grant_request_v1(
             &self.authority,
             signed_grant,
