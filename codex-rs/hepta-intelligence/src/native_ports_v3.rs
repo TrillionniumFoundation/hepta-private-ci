@@ -304,7 +304,13 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
             &self.inputs.evaluation.verifier,
             self.inputs.evaluation.now,
         )
-        .map_err(|_| failure(input, PortFailureClassV3::Rejected, "evaluation-authentication"))?;
+        .map_err(|_| {
+            failure(
+                input,
+                PortFailureClassV3::Rejected,
+                "evaluation-authentication",
+            )
+        })?;
         if receipt.decision.disposition
             != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
@@ -362,7 +368,11 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
                 "neuron-authority",
             ));
         }
-        success(input, "neuron.runtime", sparse_signal_receipt_digest(&receipt))
+        success(
+            input,
+            "neuron.runtime",
+            sparse_signal_receipt_digest(&receipt),
+        )
     }
 
     fn build_prompt_portfolio(
