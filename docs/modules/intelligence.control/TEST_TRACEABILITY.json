@@ -85,6 +85,35 @@
         "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens"
       ],
       "note": "The real-file test proves acknowledged reopen and exact idempotent replay. A host-induced fsync Indeterminate remains target fault-injection evidence, not synthesized success."
+    },
+    {
+      "operation": "signed_currentness_manifest",
+      "source": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::unsigned_currentness_substitution_fails_before_owner_use",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::final_use_revocation_race_fails_before_decision_publication",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::missing_current_owner_fails_before_product_use"
+      ]
+    },
+    {
+      "operation": "Agentd run lifecycle",
+      "source": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "protocol": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs::real_owner_product_path_records_decision_outcome_and_reopens",
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs::indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity",
+        "codex-rs/hepta-agent-protocol/src/lib.rs::run_lifecycle_wire_is_strict_bounded_and_keeps_owner_time_out_of_request"
+      ]
+    },
+    {
+      "operation": "AppServerModelDriver::run_intelligence",
+      "source": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "delegatedPhysicalBoundary": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs"
+      ],
+      "note": "Source binds ContextAttached -> durable native dispatch -> Agentd Dispatched -> turn/start -> terminal/Indeterminate reconciliation. Exact-candidate real-process intelligence-bound App Server E2E remains pending."
     }
   ],
   "claimBoundary": {
@@ -95,6 +124,21 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "productRouteSourceComposed": true,
+    "physicalTurnSourceBound": true
+  },
+  "namedPhysicalCaller": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs::AppServerModelDriver::run_intelligence",
+  "faultCoverage": {
+    "staleOwner": "covered_source",
+    "wrongOwner": "covered_source",
+    "keyRotation": "covered_source",
+    "unsignedCurrentnessSubstitution": "covered_source",
+    "revocationRace": "covered_source",
+    "cognitionTimeout": "covered_source",
+    "ledgerIndeterminate": "source_reconciliation_present_target_fault_injection_pending",
+    "turnStartLostAck": "source_reconciliation_present_real_process_e2e_pending",
+    "providerTerminalReconciliation": "source_present_real_process_e2e_pending",
+    "processRestart": "pending_exact_product_e2e"
   }
 }
