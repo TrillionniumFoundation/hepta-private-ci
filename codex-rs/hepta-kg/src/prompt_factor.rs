@@ -80,7 +80,7 @@ pub fn build_prompt_factor_projection_v1(
                 payload_digest: Digest32::of_bytes(&payload),
                 supports: vec![KnowledgeSupportV2 {
                     source_id: factor.factor_id.clone(),
-                    source_revision: source.registry_revision,
+                    source_revision: source.registry_revision(),
                     source_fact_digest: factor.content_digest,
                     validity_digest: scoped_digest(
                         PROMPT_FACTOR_VALIDITY_DOMAIN,
@@ -118,7 +118,7 @@ pub fn build_prompt_factor_projection_v1(
                 ),
                 supports: vec![KnowledgeSupportV2 {
                     source_id: relation.relation_id.clone(),
-                    source_revision: source.registry_revision,
+                    source_revision: source.registry_revision(),
                     source_fact_digest: relation.evidence_digest,
                     validity_digest: scoped_digest(
                         PROMPT_RELATION_VALIDITY_DOMAIN,
@@ -137,7 +137,7 @@ pub fn build_prompt_factor_projection_v1(
     let projected = build_complete_generation(
         generation,
         KnowledgeProjectionInputV2 {
-            source_snapshot_digest: source.source_digest,
+            source_snapshot_digest: source.source_digest(),
             generation_vector_digest,
             graph_profile_digest,
             complete_source_cut: true,
@@ -148,9 +148,9 @@ pub fn build_prompt_factor_projection_v1(
     .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))?;
 
     let result = PromptFactorProjectionV1 {
-        registry_revision: source.registry_revision.get(),
-        registry_snapshot_digest: source.registry_snapshot_digest,
-        source_digest: source.source_digest,
+        registry_revision: source.registry_revision().get(),
+        registry_snapshot_digest: source.registry_snapshot_digest(),
+        source_digest: source.source_digest(),
         generation: projected,
         authority: AuthorityPosture::DENY_ALL,
     };
