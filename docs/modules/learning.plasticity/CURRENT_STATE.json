@@ -227,7 +227,8 @@
       "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
       "tests": [
         "codex-rs/hepta-runtime/src/organs_tests.rs::governed_topology_requires_final_use_and_replaces_the_live_cns_generation",
-        "codex-rs/hepta-runtime/src/organs_tests.rs::revoked_final_use_never_mutates_the_live_topology"
+        "codex-rs/hepta-runtime/src/organs_tests.rs::revoked_final_use_never_mutates_the_live_topology",
+        "codex-rs/hepta-runtime/src/organs_tests.rs::topology_migration_owner_must_bind_exact_handoff_plan"
       ]
     },
     {
