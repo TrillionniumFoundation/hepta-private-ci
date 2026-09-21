@@ -38,6 +38,7 @@ use codex_hepta_control_plane::PlanningRequestV1;
 use codex_hepta_control_plane::SnapshotRequestV1;
 use codex_hepta_control_plane::admit_durable_owner_summary_v1;
 use codex_hepta_control_plane::admit_fleet_allocation_owner_v1;
+use codex_hepta_control_plane::bind_planner_observation_window_v1;
 use codex_hepta_control_plane::canonical_ndu_planning_policy_digest;
 use codex_hepta_control_plane::compose_global_plan_with_fleet_v1;
 use codex_hepta_control_plane::owner_summary_payload_digest_v1;
@@ -266,6 +267,9 @@ impl GlobalControlHostV1 {
         let expires_at_micros = now_micros
             .checked_add(self.policy.maximum_plan_lifetime_micros)
             .ok_or(GlobalControlHostError::PlannerClockOverflow)?;
+        let owner_expires_at_micros = now_micros
+            .checked_add(self.policy.maximum_owner_age_micros)
+            .ok_or(GlobalControlHostError::PlannerClockOverflow)?;
         snapshot_request.collected_at_micros = now_micros;
         snapshot_request.maximum_owner_age_micros = self.policy.maximum_owner_age_micros;
         snapshot_request.expires_at_micros = expires_at_micros;
@@ -296,6 +300,11 @@ impl GlobalControlHostV1 {
                 issuer,
                 &durable_receipt,
                 wall_now_ms,
+            )?;
+            let admitted_owner = bind_planner_observation_window_v1(
+                admitted_owner,
+                now_micros,
+                owner_expires_at_micros,
             )?;
             if owner_id.as_str() == FLEET_OWNER_ID {
                 if fleet_owner.replace(admitted_owner).is_some() {
