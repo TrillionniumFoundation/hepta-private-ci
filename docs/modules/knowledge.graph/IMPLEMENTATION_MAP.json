@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "6a26ccf14b6c40d7ad4be93dc24d6f603ffa65c8",
-    "tree": "f164a117586fd38e8c5a3318e96939084a29d88c"
+    "commit": "c99c2da578d718dfe2531efd5142b43fcd784731",
+    "tree": "2337a0c760592abaf1c2b65bd677400279b94a01"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -139,6 +139,7 @@
     "codex-rs/hepta-kg"
   ],
   "compositionRoots": [
+    "codex-rs/Cargo.toml",
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
     "codex-rs/Cargo.lock",
     "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
@@ -172,11 +173,12 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "6a26ccf14b6c40d7ad4be93dc24d6f603ffa65c8",
-    "tree": "f164a117586fd38e8c5a3318e96939084a29d88c",
-    "interpretation": "exact knowledge.graph source observation after latest-main merge, canonical cognitive SQLite V2 convergence, default Agentd cognitive-writer profile, crash/reopen and PERF-LIBRARY probes, sealed prompt.registry factor-relation source, prompt-factor V2 projection, and generation-bound prompt.optimizer consumer; later commits are documentation/claim projection updates only and qualification results remain separate"
+    "commit": "c99c2da578d718dfe2531efd5142b43fcd784731",
+    "tree": "2337a0c760592abaf1c2b65bd677400279b94a01",
+    "interpretation": "exact knowledge.graph source observation after latest-main merge, canonical cognitive SQLite V2 convergence, default Agentd cognitive-writer profile, crash/reopen and PERF-LIBRARY probes, sealed prompt.registry factor-relation source, prompt-factor V2 projection, generation-bound prompt.optimizer consumer, and restored workspace dependency binding; later commits are documentation/claim projection updates only and qualification results remain separate"
   },
   "observedSourcePaths": [
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-kg",
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
     "codex-rs/Cargo.lock",
