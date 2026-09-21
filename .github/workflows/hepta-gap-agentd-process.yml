@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - main
+      # Keep exact source execution available while the existing convergence
+      # PR has no GitHub prospective merge. This never substitutes for merge CI.
+      - work/architecture-scalability-convergence-20260918
   pull_request:
     paths:
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-fleet/**
       - codex-rs/hepta-control-plane/**
       - codex-rs/hepta-automation/**
+      - codex-rs/hepta-operations/**
       - codex-rs/hepta-supervisor/**
       - codex-rs/hepta-memory/**
       - codex-rs/app-server/**
@@ -96,7 +100,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15]
+        # The additional convergence push checks Linux source only. Existing
+        # PR merge and main checks retain both platforms rather than duplicating
+        # the complete matrix for the same source notification.
+        os: ${{ fromJSON(github.event_name == 'push' && github.ref != 'refs/heads/main' && '["ubuntu-24.04"]' || '["ubuntu-24.04","macos-15"]') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     env:
@@ -140,9 +147,24 @@ jobs:
         working-directory: codex-rs
         run: just test --locked --lib -p codex-hepta-fleet -p codex-hepta-control-plane -p codex-hepta-agentd
 
-      - name: Exercise durable retirement and reconciliation
+      - name: Exercise real optional-service restart and shutdown outcomes
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-automation --test retirement_recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          # --lib above does not discover integration targets. These use real
+          # OS processes and the existing SQLite owner, not catalog counters.
+          cargo test --locked -p codex-hepta-agentd \
+            --test optional_module_restart --test runtime_shutdown_outcomes \
+            -- --nocapture --test-threads=1
+
+      - name: Exercise durable retirement and stale-writer rejection
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-automation --test retirement_recovery --test operation_timer_fence
+
+      - name: Exercise destination recovery identity and payload binding
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-operations --test destination_recovery_binding
 
       - name: Execute local writer qualification
         working-directory: codex-rs

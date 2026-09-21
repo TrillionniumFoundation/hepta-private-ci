@@ -61,11 +61,15 @@ fn runtime_module_state_catalog_and_host_admit_the_same_explicit_classes() {
         let json = serde_json::json!({"modules": [{
             "id": "optional.example", "owner": "owner", "state": state,
             "uses": [], "writes": []
-        }]}).to_string();
+        }]})
+        .to_string();
         let catalog = RuntimeModuleCatalogV1::from_reviewed_json(&json)
             .expect("explicit state must pass the catalog");
         let row = catalog.module("optional.example").expect("catalog row");
-        assert_eq!(parse(&row.state).expect("host must consume catalog state"), expected);
+        assert_eq!(
+            parse(&row.state).expect("host must consume catalog state"),
+            expected
+        );
     }
 }
 
@@ -74,6 +78,10 @@ fn runtime_module_state_every_canonical_module_is_consumable_by_the_host() {
     let catalog = RuntimeModuleCatalogV1::canonical().expect("canonical catalog");
     for id in catalog.module_ids() {
         let module = catalog.module(id).expect("enumerated module");
-        assert!(parse(&module.state).is_ok(), "unmapped canonical state for {id}: {}", module.state);
+        assert!(
+            parse(&module.state).is_ok(),
+            "unmapped canonical state for {id}: {}",
+            module.state
+        );
     }
 }
