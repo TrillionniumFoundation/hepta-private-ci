@@ -38,7 +38,7 @@ use crate::{
     ConcretePlasticityOwnerEvidenceResolverV1,
 };
 
-const DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v1";
+// A descriptor/recovery failure is terminal for this optional organ; callers must never\n// reinterpret it as permission to create a fresh, unanchored proposal history.\nconst DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v1";
 const MAX_DESCRIPTOR_BYTES: u64 = 1_048_576;
 const MAX_NDU_JOURNAL_BYTES: u64 = 2 * 1_048_576;
 
