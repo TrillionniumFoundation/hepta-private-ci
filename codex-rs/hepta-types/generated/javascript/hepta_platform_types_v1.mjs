@@ -1,5 +1,6 @@
 // GENERATED from bindings/PLATFORM_TYPES_BINDINGS_V1.json; DO NOT EDIT.
 const SPEC = {"schema":"hepta.platform-types.generated-bindings.v1","schemaVersion":1,"stableIdMaxBytes":128,"idProfiles":[{"variant":"Stable","id":"stable-v1"},{"variant":"Module","id":"module-v1"},{"variant":"Namespaced","id":"namespaced-v1"},{"variant":"Execution","id":"execution-id-v1","prefix":"execution:"},{"variant":"Schema","id":"schema-id-v1","prefix":"schema:"},{"variant":"Normalization","id":"normalization-id-v1","prefix":"normalization:"},{"variant":"Receipt","id":"receipt-id-v1","prefix":"receipt:"},{"variant":"Artifact","id":"artifact-id-v1","prefix":"artifact:"}],"authorityWireV1":{"encodedBytes":1,"trustedMask":0,"bits":{"runtime":0,"productionWriter":1,"modelInvocation":2,"providerDispatch":3,"externalEffect":4,"selection":5,"promotion":6,"release":7}},"fixedQ32":{"scale":"4294967296","arithmeticProfileId":"fixed-q32-toward-zero-v1","multiplyDivideRounding":"toward-zero"},"numericProfiles":[{"id":"hnmf-ppm-toward-zero-v1","version":1,"scale":"1000000","rounding":"toward-zero"},{"id":"signed-q24-nearest-ties-even-v1","version":1,"scale":"16777216","rounding":"nearest-ties-even"},{"id":"signed-q32-nearest-ties-even-v1","version":1,"scale":"4294967296","rounding":"nearest-ties-even","sharesFixedQ32RawScale":true,"fixedQ32ArithmeticCompatible":false}],"canonicalDigestV1":{"magic":"HPTC","encodingVersion":1,"domain":"hepta.platform.types.canonical-digest.v1","maxEncodedBytes":262144,"maxContainerItems":4096,"maxDepth":16}};
+const UTF8 = new TextEncoder();
 export const STABLE_ID_MAX_BYTES = SPEC.stableIdMaxBytes;
 export const ID_PROFILES = Object.freeze(Object.fromEntries(SPEC.idProfiles.map((row) => [row.variant, Object.freeze(row)])));
 export const AUTHORITY_WIRE_V1 = Object.freeze({...SPEC.authorityWireV1, bits: Object.freeze({...SPEC.authorityWireV1.bits})});
@@ -17,7 +18,7 @@ export function admitAuthorityWireV1(raw) {
   if (raw[0] !== AUTHORITY_WIRE_V1.trustedMask) throw new Error("authority grant bits are not representable by platform.types");
 }
 export function validateIdProfile(value, variant) {
-  const encoded = Buffer.from(value, "utf8");
+  const encoded = UTF8.encode(value);
   if (encoded.length === 0 || encoded.length > STABLE_ID_MAX_BYTES || value.includes("\0")) throw new Error("identifier bound");
   const row = ID_PROFILES[variant];
   if (!row) throw new Error("unknown identifier profile");
