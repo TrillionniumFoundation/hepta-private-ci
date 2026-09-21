@@ -1,7 +1,7 @@
 # Lane B source contracts and implementation gaps
 
 **Lane:** `LANE-B-RUNTIME`
-**Immutable source base:** `7e8379b3954808d4138a7bd2f3773f75691291a3` / tree `ff9fa6baf95a35fd2f49816e0a80097688f2aeeb`
+**Immutable source base:** `b33c3d9ab09d5e0b5cc5ee67c1544afbd8459050` / tree `0b828babc3750a8d8f68423c46ea8c3c85c8fe43`
 **Exact candidate:** derived from Git at verification time; never hard-coded
 **Repository-controlled scope:** documentation, operation inventory and source mapping verified; implementation gaps are reported per module
 **External scope:** product execution, deployment, real effects and independent acceptance remain open
@@ -166,18 +166,21 @@ A homeserver event observation settles send terminality; App Server turn complet
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `admit_event` | `owner_native` | `codex-rs/hepta-matrixd/src/runtime.rs` — `pub async fn process_event(` |
-| `prepare_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn prepare_send(` |
-| `observe_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn observe_send(` |
+| `prepare_send` | `owner_native` | `codex-rs/hepta-matrix-sdk/src/outbound.rs` — `pub async fn dispatch_outbox_once` |
+| `observe_send` | `owner_native` | `codex-rs/hepta-matrix-sdk/src/sync.rs` — `pub async fn commit_response(` |
 
 Remaining repository implementation gaps:
 
-- Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender.
+- Run exact-head and deterministic synthetic-merge Matrix source, implementation-map, final-use authority, crash/reopen, and terminal-reconciliation tests for the current candidate.
+- Run the main-only exact-SHA real Synapse/E2EE qualification including fresh final-use grants across the ACK-loss same-transaction retry.
+- Independently qualify the production grant broker/trust root and live revocation distribution, including stale/revoked/wrong-signer/rollback/broker-death/revocation-race cases, before activation.
 
 External evidence gates:
 
+- independently operated production final-use grant broker/trust root and live monotonic revocation distribution
 - real enrolled homeserver/user/device/encryption identity
-- live sync and send transport callsites
 - rate-limit/reconnect/redaction/restore target qualification
+- independent operator acceptance, activation, promotion, and release
 
 ## 10. `browser.servo`
 
