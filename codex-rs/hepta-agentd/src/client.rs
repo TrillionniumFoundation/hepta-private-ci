@@ -70,7 +70,10 @@ impl AgentdClient {
             .await?
             .payload
         {
-            AgentdPayload::Capabilities(capabilities) => Ok(capabilities),
+            AgentdPayload::Capabilities(capabilities) => {
+                capabilities.validate().map_err(AgentdError::Protocol)?;
+                Ok(capabilities)
+            }
             payload => unexpected(payload),
         }
     }
@@ -219,6 +222,16 @@ impl AgentdClient {
         missed_run: AutomationMissedRunPolicy,
         overlap: AutomationOverlapPolicy,
     ) -> Result<AutomationTask, AgentdError> {
+        let capabilities = self.capabilities().await?;
+        let supported = capabilities.capabilities.iter().any(|capability| {
+            capability.id == crate::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2
+                && capability.major == 1
+        });
+        if !supported {
+            return Err(AgentdError::Protocol(
+                "agentd does not advertise Calendar V2 automation control".to_string(),
+            ));
+        }
         match self
             .send(AgentdRequest::automation_create_calendar_v2(
                 self.request_id(),
