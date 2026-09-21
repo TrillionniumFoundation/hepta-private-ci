@@ -1,6 +1,7 @@
 name: Hepta Agentd process qualification
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -9,6 +10,16 @@ on:
       - work/architecture-scalability-convergence-20260918
   pull_request:
     paths:
+      # Shared build inputs can change the executable without a module edit.
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - codex-rs/rust-toolchain
+      - codex-rs/.cargo/**
+      - .cargo/**
+      - justfile
+      - scripts/just-shell.py
+      - scripts/hepta_ci_v8.py
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-fleet/**
       - codex-rs/hepta-control-plane/**
