@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8584c271b45f90994a699e0f22fb1c37345bb848",
-    "tree": "a5186fdf74413fb0f323d8b8dfa6392d0b0716fd"
+    "commit": "0e5ca6bea917e71afc52eef0d60964ac9f6b66d9",
+    "tree": "72558b94715726ec828c4b576c4744e2fa600482"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -198,7 +198,9 @@
     "repositoryControlledProductCompositionGapsClosed": false,
     "calendarV2ProductControlComplete": true,
     "externalEffectProductCompositionComplete": false,
-    "agedTurnRecoveryLivenessGapClosed": true
+    "agedTurnRecoveryLivenessGapClosed": true,
+    "terminalObserverPerPassBounded": true,
+    "terminalObserverDurableContinuation": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -228,9 +230,9 @@
     "codex-rs/Cargo.lock"
   ],
   "observedAtHead": {
-    "commit": "8584c271b45f90994a699e0f22fb1c37345bb848",
-    "tree": "a5186fdf74413fb0f323d8b8dfa6392d0b0716fd",
-    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair, capability-negotiated Calendar V2 Agentd product control, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation on store open, and bounded <=16x100 persisted-turn terminal observation with out-of-window turns left unresolved for explicit reconciliation; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
+    "commit": "0e5ca6bea917e71afc52eef0d60964ac9f6b66d9",
+    "tree": "72558b94715726ec828c4b576c4744e2fa600482",
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd product control, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, and reopen/CAS regression coverage; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
