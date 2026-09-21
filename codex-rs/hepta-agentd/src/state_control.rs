@@ -152,12 +152,10 @@ impl AgentdState {
                             error,
                         );
                     }
-                    Err(CognitiveContextError::ReadUnavailable(message)) => {
-                        AgentdPayload::Error {
-                            code: COGNITIVE_READ_UNAVAILABLE_CODE.to_string(),
-                            message,
-                        }
-                    }
+                    Err(CognitiveContextError::ReadUnavailable(message)) => AgentdPayload::Error {
+                        code: COGNITIVE_READ_UNAVAILABLE_CODE.to_string(),
+                        message,
+                    },
                     Err(CognitiveContextError::RankerUnavailable) => AgentdPayload::Error {
                         code: "cognitive_ranker_unavailable".to_string(),
                         message: "selected ranker is unavailable; explicit reload required"
@@ -209,12 +207,10 @@ impl AgentdState {
                             error,
                         );
                     }
-                    Err(CognitiveContextError::ReadUnavailable(message)) => {
-                        AgentdPayload::Error {
-                            code: COGNITIVE_READ_UNAVAILABLE_CODE.to_string(),
-                            message,
-                        }
-                    }
+                    Err(CognitiveContextError::ReadUnavailable(message)) => AgentdPayload::Error {
+                        code: COGNITIVE_READ_UNAVAILABLE_CODE.to_string(),
+                        message,
+                    },
                     Err(CognitiveContextError::RankerUnavailable) => {
                         return self.response_with_payload(
                             request_id,
