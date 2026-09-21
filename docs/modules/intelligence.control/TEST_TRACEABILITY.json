@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "module": "intelligence.control",
   "canonicalFacade": "prepare_intelligence_run",
-  "namedProductCaller": "codex-rs/hepta-agentd/src/intelligence_product.rs::AgentdIntelligenceProductRunnerV1",
+  "namedProductCaller": "codex-rs/hepta-agentd/src/intelligence_product.rs::AgentdIntelligenceProductRunnerV1 (named runner; daemon ingress not yet routed)",
   "compatibilitySurfaces": [
     "compose",
     "run_read_only_vertical",
@@ -114,6 +114,12 @@
         "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs"
       ],
       "note": "Source binds ContextAttached -> durable native dispatch -> Agentd Dispatched -> turn/start -> terminal/Indeterminate reconciliation. Exact-candidate real-process intelligence-bound App Server E2E remains pending."
+    },
+    {
+      "operation": "Agentd daemon intelligence ingress",
+      "source": "not_implemented",
+      "tests": [],
+      "note": "AgentdState stores the configured runner, but no AgentdMethod/App Server ingress currently invokes prepare/append_decision/append_outcome. Capability advertisement remains disabled until this exists."
     }
   ],
   "claimBoundary": {
@@ -125,8 +131,9 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "productRouteSourceComposed": true,
-    "physicalTurnSourceBound": true
+    "productRouteSourceComposed": false,
+    "physicalTurnSourceBound": true,
+    "namedRunnerSourcePresent": true
   },
   "namedPhysicalCaller": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs::AppServerModelDriver::run_intelligence",
   "faultCoverage": {
@@ -136,9 +143,9 @@
     "unsignedCurrentnessSubstitution": "covered_source",
     "revocationRace": "covered_source",
     "cognitionTimeout": "covered_source",
-    "ledgerIndeterminate": "source_reconciliation_present_target_fault_injection_pending",
+    "ledgerIndeterminate": "in_memory_replay_object_present_process_loss_recovery_pending",
     "turnStartLostAck": "source_reconciliation_present_real_process_e2e_pending",
     "providerTerminalReconciliation": "source_present_real_process_e2e_pending",
-    "processRestart": "pending_exact_product_e2e"
+    "processRestart": "pending_daemon_routed_product_e2e_and_durable_pending_recovery"
   }
 }
