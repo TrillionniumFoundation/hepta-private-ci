@@ -444,7 +444,8 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
 
     harness.start_with_plasticity_bootstrap_descriptor(&agent, &descriptor_path)?;
     let (_control, health) = harness.wait_ready(&agent, 1).await?;
-    assert_eq!(health.spawn_generation, 1);
+    assert!(health.ready);
+    assert!(!health.fenced);
 
     for path in [
         parameter_registry,
