@@ -745,6 +745,7 @@ fn internal_run_snapshot(value: crate::AgentRunSnapshot) -> crate::RunSnapshot {
         objective_digest: value.objective_digest,
         body_digest: value.body_digest,
         artifact_set_digest: value.artifact_set_digest,
+        execution_payload_digest: value.execution_payload_digest,
         authority_epoch: value.authority_epoch,
         deadline_ms: value.deadline_ms,
     }
@@ -835,6 +836,7 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         phase: wire_run_phase(value.phase),
         context_digest: value.context_digest,
         compilation_receipt_digest: value.compilation_receipt_digest,
+        execution_payload_digest: value.execution_payload_digest,
         authority_epoch: value.authority_epoch,
         deadline_ms: value.deadline_ms,
         cancel_reason: value.cancel_reason,
