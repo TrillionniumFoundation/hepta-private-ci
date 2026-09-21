@@ -150,7 +150,7 @@ Current source bounds include:
 - schedule catch-up ceiling <=1024 occurrences;
 - Calendar V2 timezone transition profile <=512 transitions and bounded calendar search <=1032 candidate days;
 - occurrence recovery query <=1024 rows;
-- Agentd terminal observation uses <=16 pages × 100 recent persisted turns on the hot path; if that exact `turn_id` is older than the recent window, one authoritative `thread/read(includeTurns=true)` full-history fallback performs the exact lookup rather than treating window exhaustion as terminal absence;
+- Agentd terminal observation is bounded to <=16 pages × 100 recent persisted turns per recovery pass; if the exact `turn_id` is older than that window, the occurrence remains unresolved/indeterminate for explicit reconciliation rather than materializing unbounded full history;
 - one historical occurrence reconciliation plus at most one new scheduler admission per Agentd tick;
 - TaskFlow graph/step bounds inherited from the existing TaskFlow ledger/outbox.
 
@@ -160,7 +160,7 @@ These are source limits, not deployment measurements. Target-host latency, backl
 
 Operate the existing Agentd `AutomationScheduler` and `AutomationStore`. Treat the compatibility task state as schedule-control state, not execution terminality. The authoritative execution status is the durable occurrence/TaskFlow chain.
 
-Important operator classes include aged `indeterminate`, queue-reconcile mismatch, persisted turn absent from authoritative full history, full-history observation failure, schedule parked by `overlap=forbid`, catch-up saturation and run-recovery re-fencing. An unknown effect is not safely rerunnable by default.
+Important operator classes include aged `indeterminate`, queue-reconcile mismatch, persisted turn not found within the bounded history window, schedule parked by `overlap=forbid`, catch-up saturation and run-recovery re-fencing. An unknown effect is not safely rerunnable by default.
 
 ## 12. Verification and qualification
 
@@ -197,7 +197,7 @@ Implemented convergence sequence:
 9. add append-only restart reconciliation for initially indeterminate provider attempts;
 10. add Calendar V2 with explicit timezone/tzdb and DST gap/overlap semantics without changing legacy schedule meaning;
 11. expose Calendar V2 through the existing generation-fenced Agentd control plane with additive capability negotiation;
-12. fall back from the bounded recent-turn observer to an exact full persisted-history lookup when a known turn ages out of the recent window;
+12. preserve bounded terminal observation when a known turn ages out of the recent window; retain unresolved state for explicit reconciliation instead of materializing full persisted history;
 13. keep concrete provider activation, target-host qualification and independent evidence gates separate.
 
 No second TaskFlow engine or scheduler is admitted by this work package.
@@ -236,7 +236,7 @@ This overlay changes no acceptance, activation, promotion or release authority.
 | `taskflow_run` | `src/automation_taskflow.rs`, `src/taskflow.rs` | deterministic durable run and transition ledger |
 | `step_outbox` | `src/taskflow_step.rs` | durable prepare/claim/observe/reconcile chain |
 | `queue_dispatch` | `codex-rs/hepta-agentd/src/automation.rs` | App Server `thread/queue/reconcile(AllowIfAbsent)` |
-| `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs` | `ReconcileOnly`; bounded recent-turn scan with exact full-history fallback for aged known turns |
+| `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs` | `ReconcileOnly`; <=16×100 bounded persisted-turn scan, with out-of-window turns left unresolved for explicit reconciliation |
 | `run_recovery` | `src/taskflow_recovery.rs` | historical-step-first, projection-only re-fence |
 | `external_effect` | `src/authorized_effect.rs`, `src/effect_dispatch_ledger.rs` | owner-computed canonical intent + kernel final-use + immutable attempt/observation/reconciliation |
 | `occurrence_terminal` | `src/lifecycle.rs` | occurs after TaskFlow reconciliation; advances forbidden-overlap recurrence |
