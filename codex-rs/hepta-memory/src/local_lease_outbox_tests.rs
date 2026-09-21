@@ -37,7 +37,15 @@ use crate::LocalReplayFinalization;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_operations::OperationIntentV1;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+
+use super::MAX_EVENT_ROWS;
+use super::MAX_OUTBOX_ROWS;
+use super::bounded_next_sequence;
 
 async fn opened_store(temp: &TempDir, number: u8) -> CognitiveStore {
     let owner = agent_id(number);
@@ -2636,4 +2644,216 @@ fn qualification_durable_writer_crash_reopen_probe() {
         "H4 qualification durable writer crash/reopen receipt: {}",
         serde_json::to_string(&decoded).expect("render H4 receipt")
     );
+}
+
+
+#[test]
+fn durable_sequence_capacity_rejects_before_mutation_boundary() {
+    assert_eq!(
+        bounded_next_sequence(
+            i64::try_from(MAX_EVENT_ROWS - 1).expect("event bound"),
+            MAX_EVENT_ROWS,
+            "durable event journal",
+            "event sequence",
+        )
+        .expect("last event slot"),
+        u64::try_from(MAX_EVENT_ROWS).expect("event maximum"),
+    );
+    assert!(matches!(
+        bounded_next_sequence(
+            i64::try_from(MAX_EVENT_ROWS).expect("event bound"),
+            MAX_EVENT_ROWS,
+            "durable event journal",
+            "event sequence",
+        ),
+        Err(LocalLeaseOutboxError::CapacityExceeded {
+            resource: "durable event journal",
+            maximum: MAX_EVENT_ROWS,
+        })
+    ));
+
+    assert_eq!(
+        bounded_next_sequence(
+            i64::try_from(MAX_OUTBOX_ROWS - 1).expect("outbox bound"),
+            MAX_OUTBOX_ROWS,
+            "durable outbox",
+            "outbox sequence",
+        )
+        .expect("last outbox slot"),
+        u64::try_from(MAX_OUTBOX_ROWS).expect("outbox maximum"),
+    );
+    assert!(matches!(
+        bounded_next_sequence(
+            i64::try_from(MAX_OUTBOX_ROWS).expect("outbox bound"),
+            MAX_OUTBOX_ROWS,
+            "durable outbox",
+            "outbox sequence",
+        ),
+        Err(LocalLeaseOutboxError::CapacityExceeded {
+            resource: "durable outbox",
+            maximum: MAX_OUTBOX_ROWS,
+        })
+    ));
+}
+
+fn durable_operation_v1(
+    owner: &codex_hepta_contracts::AgentId,
+    id: &str,
+    destination: &str,
+    payload: &str,
+) -> OperationIntentV1 {
+    OperationIntentV1::new(
+        StableId::new(id).expect("operation id"),
+        StableId::new(owner.as_str()).expect("subject"),
+        StableId::new(destination).expect("destination"),
+        Digest32::of_bytes(payload.as_bytes()),
+        Digest32::of_bytes(b"scope:durable-operation-test"),
+        Generation::new(1).expect("policy generation"),
+        Some(Digest32::of_bytes(b"predecessor")),
+    )
+    .expect("durable operation intent")
+}
+
+async fn operation_rows(store: &CognitiveStore, lease_id: &str) -> i64 {
+    sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_operation_ledger WHERE lease_id = ?")
+        .bind(lease_id)
+        .fetch_one(&store.pool)
+        .await
+        .expect("operation row count")
+}
+
+#[tokio::test]
+async fn operation_event_and_outbox_are_one_atomic_transaction_across_every_fault_boundary() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = opened_store(&temp, 153).await;
+    let lease_id = "lease:atomic-operation-v1";
+    let handle = acquired(
+        store
+            .acquire_host_bound_lease(
+                lease_id,
+                21,
+                31,
+                1,
+                "fence:atomic-operation-v1",
+                unix_seconds() + 3_600,
+            )
+            .await
+            .expect("bound lease"),
+    );
+    let payload = "{\"value\":\"atomic\"}";
+    for (index, fault) in [
+        LocalAdmissionFault::AfterEventBeforeOutbox,
+        LocalAdmissionFault::AfterOutboxBeforeCommit,
+        LocalAdmissionFault::AfterOperationBeforeCommit,
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let operation_id = format!("operation:atomic-v1-fault:{index}");
+        let operation = durable_operation_v1(
+            store.owner_agent_id(),
+            &operation_id,
+            "destination:cognitive-store",
+            payload,
+        );
+        assert!(matches!(
+            handle
+                .admit_operation_with_fault(operation, "memory.write", payload, fault)
+                .await,
+            Err(LocalLeaseOutboxError::TransactionAborted(_))
+        ));
+        let counts = handle.snapshot_counts().await.expect("counts after fault");
+        assert_eq!(counts.event_rows, 0);
+        assert_eq!(counts.outbox_rows, 0);
+        assert_eq!(operation_rows(&store, lease_id).await, 0);
+    }
+
+    let operation = durable_operation_v1(
+        store.owner_agent_id(),
+        "operation:atomic-v1-commit",
+        "destination:cognitive-store",
+        payload,
+    );
+    let first = handle
+        .admit_operation(operation.clone(), "memory.write", payload)
+        .await
+        .expect("atomic operation commit");
+    let replay = handle
+        .admit_operation(operation, "memory.write", payload)
+        .await
+        .expect("exact operation replay");
+    assert!(matches!(first, LocalAdmission::Queued(_)));
+    assert!(matches!(replay, LocalAdmission::Replay(_)));
+    let counts = handle.snapshot_counts().await.expect("committed counts");
+    assert_eq!(counts.event_rows, 1);
+    assert_eq!(counts.outbox_rows, 1);
+    assert_eq!(operation_rows(&store, lease_id).await, 1);
+}
+
+#[tokio::test]
+async fn sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cleanly() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = opened_store(&temp, 155).await;
+    let lease_id = "lease:sqlite-full-operation-v1";
+    let handle = acquired(
+        store
+            .acquire_host_bound_lease(
+                lease_id,
+                23,
+                33,
+                1,
+                "fence:sqlite-full-operation-v1",
+                unix_seconds() + 3_600,
+            )
+            .await
+            .expect("bound lease"),
+    );
+
+    sqlx::query("VACUUM")
+        .execute(&store.pool)
+        .await
+        .expect("compact fixture");
+    let _ = sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+        .execute(&store.pool)
+        .await;
+    let page_count: i64 = sqlx::query_scalar("PRAGMA page_count")
+        .fetch_one(&store.pool)
+        .await
+        .expect("page count");
+    sqlx::query(&format!("PRAGMA max_page_count = {page_count}"))
+        .execute(&store.pool)
+        .await
+        .expect("freeze page budget");
+
+    let before = handle.snapshot_counts().await.expect("before counts");
+    let before_operations = operation_rows(&store, lease_id).await;
+    let payload = format!("{{\"blob\":\"{}\"}}", "x".repeat(60_000));
+    let operation = durable_operation_v1(
+        store.owner_agent_id(),
+        "operation:sqlite-full-v1",
+        "destination:cognitive-store",
+        &payload,
+    );
+    let error = handle
+        .admit_operation(operation, "memory.write", &payload)
+        .await
+        .expect_err("storage-full append must fail");
+    let message = error.to_string().to_ascii_lowercase();
+    assert!(
+        message.contains("full") || message.contains("disk"),
+        "expected SQLITE_FULL-class error, got {error}"
+    );
+
+    assert_eq!(handle.snapshot_counts().await.expect("after counts"), before);
+    assert_eq!(operation_rows(&store, lease_id).await, before_operations);
+
+    drop(handle);
+    store.pool.close().await;
+    let reopened = opened_store(&temp, 155).await;
+    assert_eq!(operation_rows(&reopened, lease_id).await, before_operations);
+    let integrity: String = sqlx::query_scalar("PRAGMA quick_check")
+        .fetch_one(&reopened.pool)
+        .await
+        .expect("quick check");
+    assert_eq!(integrity, "ok");
 }
