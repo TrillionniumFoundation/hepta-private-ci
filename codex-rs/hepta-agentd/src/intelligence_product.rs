@@ -616,9 +616,10 @@ impl AgentdIntelligenceProductRunnerV1 {
             .checked_add(timeout_ms.max(1))
             .ok_or(AgentdIntelligenceProductError::Clock)?;
         let authority_file = self.authority_file.clone();
+        let authority_verifier = self.authority_verifier.clone();
         let mut worker = tokio::task::spawn_blocking(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs);
-            let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, self.authority_verifier.clone());
+            let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         });
         let outcome = timeout(
@@ -637,9 +638,9 @@ impl AgentdIntelligenceProductRunnerV1 {
             CanonicalRunOutcomeV1::Ready(envelope) => {
                 let mut oracle =
                     FileBackedFreshnessOracleV1::new(
-                        self.authority_file.clone(),
-                        self.authority_verifier.clone(),
-                    );
+            self.authority_file.clone(),
+            self.authority_verifier.clone(),
+        );
                 validate_current_snapshot(&snapshot, &mut oracle)
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
@@ -764,9 +765,9 @@ impl AgentdIntelligenceProductRunnerV1 {
         event: LedgerEvent,
     ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
         let mut oracle = FileBackedFreshnessOracleV1::new(
-                        self.authority_file.clone(),
-                        self.authority_verifier.clone(),
-                    );
+            self.authority_file.clone(),
+            self.authority_verifier.clone(),
+        );
         validate_current_snapshot(&snapshot, &mut oracle)
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         match journal.append(expected_predecessor, event.clone()) {
@@ -790,9 +791,9 @@ impl AgentdIntelligenceProductRunnerV1 {
         pending: PendingIntelligenceLedgerAppendV1,
     ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
         let mut oracle = FileBackedFreshnessOracleV1::new(
-                        self.authority_file.clone(),
-                        self.authority_verifier.clone(),
-                    );
+            self.authority_file.clone(),
+            self.authority_verifier.clone(),
+        );
         validate_current_snapshot(&pending.snapshot, &mut oracle)
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         journal
