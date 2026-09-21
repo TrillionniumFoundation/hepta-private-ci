@@ -710,11 +710,12 @@ impl CompactionProofV1 {
 
 /// Audit-complete compaction qualification proof.
 ///
-/// V2 retains the V1 holdout/reconstruction obligations and additionally binds
-/// the exact candidate, evaluator identity/implementation, evaluation artifact
-/// and the externally verified attestation/signature receipts.  The signature
-/// bytes and keys remain owned by the evaluator/evidence boundary; this
-/// authority-free contract binds their immutable digests only.
+/// V2 retains the holdout/reconstruction obligations and additionally binds the
+/// exact candidate, tokenizer deployment identity, evaluator
+/// identity/implementation, evaluation artifact and signed qualification
+/// evidence. Raw public keys/signatures live in the separate non-authorizing
+/// witness used to replay durable verification. Current host enrollment remains
+/// a final-use admission check and is not granted by this authority-free proof.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompactionProofV2 {
     pub checkpoint_digest: Digest32,
