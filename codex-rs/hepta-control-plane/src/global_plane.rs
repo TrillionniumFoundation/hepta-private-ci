@@ -139,6 +139,7 @@ pub enum GlobalPlaneError {
     Ndu(NduPlanningError),
     Authentication(codex_hepta_authbus::Error),
     InvalidOwnerBinding,
+    InvalidPlannerObservationWindow,
     OwnerSetMismatch,
     ClockDomainMismatch,
     FleetAllocationMissing,
@@ -291,6 +292,26 @@ pub fn admit_durable_owner_summary_v1(
         summary,
         admission_digest,
     })
+}
+
+/// Project one already authenticated owner fact into the planner host's
+/// monotonic observation domain.
+///
+/// The signed owner payload and durable AuthBus receipt remain unchanged and
+/// are retained through `admission_digest`/support binding. Only planner-local
+/// freshness timestamps are host-owned. This prevents independent producers
+/// from having to share a process-local `Instant` epoch with the global host.
+pub fn bind_planner_observation_window_v1(
+    mut owner: AdmittedOwnerSummaryV1,
+    observed_at_micros: u64,
+    expires_at_micros: u64,
+) -> Result<AdmittedOwnerSummaryV1, GlobalPlaneError> {
+    if expires_at_micros <= observed_at_micros {
+        return Err(GlobalPlaneError::InvalidPlannerObservationWindow);
+    }
+    owner.summary.observed_at_micros = observed_at_micros;
+    owner.summary.expires_at_micros = expires_at_micros;
+    Ok(owner)
 }
 
 /// Admit one exact allocation grant from the runtime.fleet owner and project
