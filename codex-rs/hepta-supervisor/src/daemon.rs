@@ -511,6 +511,13 @@ async fn handle_request<D: ProcessDriver>(
             .await
         }
         SupervisordMethod::Upgrade { fence, release_id } => {
+            if state.production_grant_verifier.is_some() {
+                return error_payload(
+                    "production_authority_required",
+                    "production release changes require the signed upgrade RPC",
+                    /*actual*/ None,
+                );
+            }
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
@@ -527,6 +534,13 @@ async fn handle_request<D: ProcessDriver>(
             handle_mutation(state, SupervisordMutation::Upgrade, fence, Some(target)).await
         }
         SupervisordMethod::Rollback { fence } => {
+            if state.production_grant_verifier.is_some() {
+                return error_payload(
+                    "production_authority_required",
+                    "production release changes require the signed rollback RPC",
+                    /*actual*/ None,
+                );
+            }
             handle_mutation(
                 state,
                 SupervisordMutation::Rollback,
@@ -1411,6 +1425,44 @@ mod tests {
         .expect("derive status")
         .control_fence
         .state_digest
+    }
+
+    #[test]
+    fn production_release_mode_rejects_unsigned_upgrade_and_rollback() {
+        fn release_change_requires_signed_rpc(
+            production_verifier_installed: bool,
+            method: &SupervisordMethod,
+        ) -> bool {
+            production_verifier_installed
+                && matches!(
+                    method,
+                    SupervisordMethod::Upgrade { .. } | SupervisordMethod::Rollback { .. }
+                )
+        }
+
+        assert!(release_change_requires_signed_rpc(
+            true,
+            &SupervisordMethod::Upgrade {
+                fence: fence(),
+                release_id: ReleaseId::parse("agentd-v2").expect("fixed release"),
+            },
+        ));
+        assert!(release_change_requires_signed_rpc(
+            true,
+            &SupervisordMethod::Rollback { fence: fence() },
+        ));
+        assert!(!release_change_requires_signed_rpc(
+            false,
+            &SupervisordMethod::Rollback { fence: fence() },
+        ));
+        assert!(!release_change_requires_signed_rpc(
+            true,
+            &SupervisordMethod::Restart { fence: fence() },
+        ));
+        assert!(!release_change_requires_signed_rpc(
+            true,
+            &SupervisordMethod::Drain { fence: fence() },
+        ));
     }
 
     #[test]
