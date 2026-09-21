@@ -1879,16 +1879,22 @@ test("online queues a fresh recovery after offline invalidates an in-flight reco
   releaseSecondConnect();
   await staleRecovery;
 
-  for (
-    let index = 0;
-    index < 40 &&
-      (connectCalls < 3 || root.attributes.get("data-hepta-ready") !== "true");
-    index += 1
+  const onlineRecoveryDeadline = Date.now() + 2_000;
+  while (
+    Date.now() < onlineRecoveryDeadline &&
+    (connectCalls < 3 || root.attributes.get("data-hepta-ready") !== "true")
   ) {
-    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setTimeout(resolve, 10));
   }
-  assert.ok(connectCalls >= 3);
-  assert.equal(root.attributes.get("data-hepta-ready"), "true");
+  assert.ok(
+    connectCalls >= 3,
+    `expected a fresh online recovery connect; connectCalls=${connectCalls}`,
+  );
+  assert.equal(
+    root.attributes.get("data-hepta-ready"),
+    "true",
+    `expected coherent controls after online recovery; connectCalls=${connectCalls}`,
+  );
 
   await control.dispose();
   await new Promise((resolve) => setImmediate(resolve));
@@ -2102,16 +2108,23 @@ test("transient backend session recovery retries with bounded backoff", async ()
 
   retryTimers.clear();
   callback();
-  for (
-    let index = 0;
-    index < 40 &&
-      (connectCalls < 3 || root.attributes.get("data-hepta-ready") !== "true");
-    index += 1
+  const retryRecoveryDeadline = Date.now() + 2_000;
+  while (
+    Date.now() < retryRecoveryDeadline &&
+    (connectCalls < 3 || root.attributes.get("data-hepta-ready") !== "true")
   ) {
-    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setTimeout(resolve, 10));
   }
-  assert.equal(connectCalls, 3);
-  assert.equal(root.attributes.get("data-hepta-ready"), "true");
+  assert.equal(
+    connectCalls,
+    3,
+    `expected exactly one scheduled recovery retry; connectCalls=${connectCalls}`,
+  );
+  assert.equal(
+    root.attributes.get("data-hepta-ready"),
+    "true",
+    `expected coherent controls after scheduled recovery; connectCalls=${connectCalls}`,
+  );
   assert.equal(retryTimers.size, 0);
 
   await control.dispose();
