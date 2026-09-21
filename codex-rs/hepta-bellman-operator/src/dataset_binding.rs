@@ -10,6 +10,10 @@ use std::fmt;
 
 use codex_hepta_learning_ledger::DatasetReceiptError;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::SignedEvidenceError;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -40,8 +44,9 @@ pub struct VerifiedOperatorDatasetV2 {
 }
 
 impl VerifiedOperatorDatasetV2 {
-    /// Verify the complete DatasetSnapshotReceiptV3 before creating a training
-    /// binding. The receipt remains DENY_ALL evidence, not training authority.
+    /// Structural compatibility constructor. This proves the V3 receipt digest
+    /// preimage is self-consistent but does not authenticate the dataset owner.
+    /// Repository product source must use `from_authenticated_receipt`.
     pub fn from_receipt(
         receipt: &DatasetSnapshotReceiptV3,
         now: u64,
@@ -54,6 +59,31 @@ impl VerifiedOperatorDatasetV2 {
             ledger_head_digest: receipt.snapshot.ledger_head_digest,
             source_record_digests: receipt.snapshot.source_record_digests.clone(),
         })
+    }
+
+    /// Verify both receipt integrity and host-trusted DatasetOwner provenance.
+    ///
+    /// The signed payload is domain-separated and binds the exact V3 dataset
+    /// digest. The verified host principal must exactly equal the producer
+    /// embedded in the receipt, so caller-constructed identity metadata cannot
+    /// stand in for authoritative owner evidence.
+    pub fn from_authenticated_receipt(
+        receipt: &DatasetSnapshotReceiptV3,
+        owner_evidence: &SignedLearningEvidenceV1,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<Self, OperatorDatasetBindingError> {
+        let payload = operator_dataset_signing_payload_v2(receipt, now)?;
+        let owner = verifier.verify(
+            LearningEvidenceRoleV1::DatasetOwner,
+            owner_evidence,
+            &payload,
+            now,
+        )?;
+        if owner.principal() != &receipt.producer {
+            return Err(OperatorDatasetBindingError::OwnerIdentityBinding);
+        }
+        Self::from_receipt(receipt, now)
     }
 
     #[must_use]
@@ -163,9 +193,26 @@ pub fn fit_transition_model_bound_v2(
     )?)
 }
 
+/// Canonical bytes signed by the host-trusted dataset owner.
+///
+/// V3 integrity verification proves that `dataset_digest` already commits to
+/// snapshot identity, producer identity, ledger/objective frontiers, correction
+/// and revocation cuts, inclusion policy and the complete canonical source set.
+pub fn operator_dataset_signing_payload_v2(
+    receipt: &DatasetSnapshotReceiptV3,
+    now: u64,
+) -> Result<Vec<u8>, OperatorDatasetBindingError> {
+    verify_dataset_snapshot_receipt_v3(receipt, now)?;
+    let mut bytes = b"hepta.bellman-operator.dataset-owner.v2".to_vec();
+    bytes.extend_from_slice(receipt.snapshot.dataset_digest.as_array());
+    Ok(bytes)
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OperatorDatasetBindingError {
     DatasetReceipt(DatasetReceiptError),
+    SignedEvidence(SignedEvidenceError),
+    OwnerIdentityBinding,
     ObjectiveMismatch,
     DatasetMismatch,
     SnapshotMismatch,
@@ -187,10 +234,12 @@ impl StdError for OperatorDatasetBindingError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             Self::DatasetReceipt(error) => Some(error),
+            Self::SignedEvidence(error) => Some(error),
             Self::TargetBuilder(error) => Some(error),
             Self::Learned(error) => Some(error),
             Self::WorldModel(error) => Some(error),
-            Self::ObjectiveMismatch
+            Self::OwnerIdentityBinding
+            | Self::ObjectiveMismatch
             | Self::DatasetMismatch
             | Self::SnapshotMismatch
             | Self::SourceHeadMismatch
@@ -203,6 +252,12 @@ impl StdError for OperatorDatasetBindingError {
 impl From<DatasetReceiptError> for OperatorDatasetBindingError {
     fn from(value: DatasetReceiptError) -> Self {
         Self::DatasetReceipt(value)
+    }
+}
+
+impl From<SignedEvidenceError> for OperatorDatasetBindingError {
+    fn from(value: SignedEvidenceError) -> Self {
+        Self::SignedEvidence(value)
     }
 }
 
