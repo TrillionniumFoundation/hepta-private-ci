@@ -1,9 +1,12 @@
-//! Feature-gated in-process Agentd host for cross-crate product qualification.
+//! Doc-hidden in-process Agentd host for cross-crate product qualification.
 //!
-//! This module is unavailable in default and production builds. It starts the
-//! real Agentd control socket and App Server over a real fleet layout and the
-//! canonical SQLite cognitive owner, but it does not expose AgentdState or any
-//! shortcut around the public control protocol.
+//! The helper is compiled under the same dependency/features as the Agentd
+//! library so qualification cannot select a stronger product feature set. It
+//! starts the real Agentd control socket and App Server over a real fleet layout
+//! and the canonical SQLite cognitive owner. External test consumers receive
+//! only the public control client and bounded mutation fixtures; no AgentdState
+//! handle, runtime authority, deployment authority, or control-protocol bypass
+//! is exported.
 
 use std::error::Error as StdError;
 use std::path::Path;
