@@ -185,8 +185,12 @@
     {
       "id": "OP-07",
       "module": "learning.operator",
-      "requirement": "Target construction, tabular fitting and world-model fitting consume a verified DatasetSnapshotReceiptV3 and require the exact frozen snapshot/objective/ledger-head/source-record binding; detached identities, omitted rows, foreign rows or relabelled evidence fail closed.",
+      "requirement": "Target construction, tabular fitting and world-model fitting consume a host-trusted DatasetOwner-signed DatasetSnapshotReceiptV3 and require the exact frozen snapshot/objective/ledger-head/source-record binding; detached identities, wrong owners, omitted rows, foreign rows or relabelled evidence fail closed.",
       "tests": [
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "function": "op_07_authenticated_dataset_requires_exact_trusted_owner"
+        },
         {
           "source": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
           "function": "op_07_bound_target_builder_rejects_detached_head_or_relabelled_evidence"
