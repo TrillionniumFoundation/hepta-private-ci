@@ -23,6 +23,7 @@ use codex_hepta_automation::AuthorizedEffectRecoveryResult;
 use codex_hepta_automation::AuthorizedEffectRequest;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::TaskFlowFence;
+use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepReceipt;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseRevocations;
@@ -248,7 +249,7 @@ impl AgentdAutomationEffectHost {
         now_ms: u64,
     ) -> Result<Option<TaskFlowStepReceipt>, AgentdError> {
         let pending = store
-            .authorized_taskflow_effect_pending(run_id, step_id, attempt)
+            .authorized_taskflow_effect_attempt(run_id, step_id, attempt)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!("read pending authorized effect: {error}"))
@@ -267,6 +268,25 @@ impl AgentdAutomationEffectHost {
             .map_err(|error| AgentdError::Protocol(format!("read effect TaskFlow run: {error}")))?
             .ok_or_else(|| AgentdError::Invalid("effect TaskFlow run does not exist".to_string()))?;
         let fence = self.current_fence(&run, now_ms)?;
+        if let Some(local) = store
+            .settle_authorized_taskflow_effect_observation(run_id, step_id, attempt, &fence)
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!(
+                    "settle durable authorized effect observation: {error}"
+                ))
+            })?
+        {
+            match local {
+                AuthorizedEffectRecoveryResult::Observed(receipt)
+                    if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
+                {
+                    return Ok(Some(receipt));
+                }
+                AuthorizedEffectRecoveryResult::ProvenAbsent => return Ok(None),
+                AuthorizedEffectRecoveryResult::Observed(_) => {}
+            }
+        }
         let provider_intent = self.provider_intent(&pending)?;
         match self.adapter.lookup_for_intent(&provider_intent).await {
             ProviderEffectLookup::Ack(ack) => {
