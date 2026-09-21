@@ -12,8 +12,11 @@ on:
       - codex-rs/hepta-intelligence-eval/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
+      - docs/modules/learning.operator/**
       - qualification/lane-e/**
       - scripts/hepta-lane-e-closure.py
+      - scripts/hepta-implementation-maps.py
+      - scripts/hepta-lane-b-truth.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
 permissions:
@@ -25,7 +28,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   rust-closure:
