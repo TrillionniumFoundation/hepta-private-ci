@@ -50,8 +50,8 @@ use zeroize::Zeroizing;
 
 pub use topology_execution::{
     RuntimeTopologyApplyReceiptV1, RuntimeTopologyApplyRequestV1, RuntimeTopologyExecutionError,
-    RuntimeTopologySnapshotV1, RuntimeTopologySuccessorV1, runtime_topology_final_use_binding_v1,
-    runtime_topology_recovery_final_use_binding_v1,
+    RuntimeTopologyMigrationOwnerV1, RuntimeTopologySnapshotV1, RuntimeTopologySuccessorV1,
+    runtime_topology_final_use_binding_v1, runtime_topology_recovery_final_use_binding_v1,
 };
 
 pub const EXISTING_SCHEMA_VERSION: i64 = 5;
