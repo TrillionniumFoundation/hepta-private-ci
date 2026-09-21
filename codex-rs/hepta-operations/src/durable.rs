@@ -246,7 +246,7 @@ impl DurableOperationStore {
             return Err(OperationError::InvalidDigest("terminal outcome").into());
         }
         self.transition(operation_id, |record| {
-            if record.owner_generation != observer_generation {
+            if observer_generation < record.owner_generation {
                 return Err(OperationError::StaleGeneration);
             }
             let target = terminal_state(outcome, outcome_digest);
