@@ -1077,7 +1077,6 @@ where
     }
 }
 
-
 fn append_failure_trace(
     stages: &mut Vec<StageTraceV3>,
     stage: LaneFStageV3,
@@ -1256,8 +1255,9 @@ fn port_input(
     stage: LaneFStageV3,
     now_unix_micros: u64,
 ) -> Result<PortInputV3, PipelineErrorV3> {
-    let capability = capability_for_stage(stage)
-        .ok_or(PipelineErrorV3::InvalidReceipt("internal stage has no port"))?;
+    let capability = capability_for_stage(stage).ok_or(PipelineErrorV3::InvalidReceipt(
+        "internal stage has no port",
+    ))?;
     let binding = request
         .snapshot
         .bound_binding(capability)
@@ -1335,8 +1335,13 @@ fn valid_transition(
         StageOutcomeV3::Abstained => {
             matches!(
                 (prior, next),
-                (LaneFStageV3::ObjectiveValidated, LaneFStageV3::LearningRecorded)
-                    | (LaneFStageV3::IntuitionDecided, LaneFStageV3::LearningRecorded)
+                (
+                    LaneFStageV3::ObjectiveValidated,
+                    LaneFStageV3::LearningRecorded
+                ) | (
+                    LaneFStageV3::IntuitionDecided,
+                    LaneFStageV3::LearningRecorded
+                )
             )
         }
         StageOutcomeV3::SlowPath => {
