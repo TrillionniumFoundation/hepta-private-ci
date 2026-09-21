@@ -675,3 +675,399 @@ fn unix_ms() -> Result<u64, UiControlProductError> {
 fn durable(error: impl fmt::Display) -> UiControlProductError {
     UiControlProductError::Durable(error.to_string())
 }
+
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeSet;
+    use std::collections::VecDeque;
+    use std::os::unix::fs::PermissionsExt;
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
+
+    use codex_hepta_authbus::PolicyRevisionDraftV1;
+    use codex_hepta_authbus::PolicyRuleV1;
+    use codex_hepta_authbus::SignedMessageClaims;
+    use codex_hepta_contracts::FinalUseGrant;
+    use codex_hepta_contracts::FinalUseRevocations;
+    use codex_state::SqliteConfig;
+    use codex_utils_absolute_path::AbsolutePathBuf;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+    use tempfile::TempDir;
+
+    use super::*;
+
+    const D1: &str = "1111111111111111111111111111111111111111111111111111111111111111";
+    const SEMANTIC: &str =
+        "fbdaf3b3aa6869642a07aafbdb0cdba25a3765f32da2f56a7062fdbed8b6ef58";
+
+    fn operation_request(digest: &str) -> Vec<u8> {
+        format!(
+            r#"{{"connectionGeneration":2,"displayedRevision":4,"intent":{{"action":"request_retry","authorityGranted":false,"directStoreWrite":false,"expectedRevision":7,"kind":"UiOperationProposalV1","operationId":"operation.1","subjectId":"runtime.agentd"}},"operationId":"operation.1","runtimeDigest":"{D1}","runtimeGeneration":3,"schema":"hepta.ui-control.transport-request.v1","semanticDigest":"{digest}","sessionId":"session.1"}}"#
+        )
+        .into_bytes()
+    }
+
+    fn sqlite_config(temp: &TempDir) -> SqliteConfig {
+        SqliteConfig::new_for_testing(
+            AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp"),
+        )
+    }
+
+    fn signed_auth(
+        agent_id: &StableId,
+        semantic: Digest32,
+        sequence: u64,
+    ) -> (IssuerRegistration, SignedMessage) {
+        let key = SigningKey::from_bytes(&[71; 32]);
+        let issuer = IssuerRegistration {
+            issuer_id: StableId::new("issuer:ui-control").expect("issuer"),
+            key_epoch: Generation::new(1).expect("epoch"),
+            verifying_key: key.verifying_key(),
+            revoked: false,
+        };
+        let claims = SignedMessageClaims {
+            issuer_id: issuer.issuer_id.clone(),
+            key_epoch: issuer.key_epoch,
+            message_id: StableId::new(format!("message:ui:{sequence}")).expect("message"),
+            subject_id: StableId::new("operator.alice").expect("subject"),
+            scope_digest: auth_scope_digest(agent_id),
+            payload_digest: semantic,
+            sequence,
+            expires_at_ms: unix_ms().expect("clock") + 60_000,
+        };
+        let signature = key.sign(&claims.signing_bytes()).to_bytes();
+        (issuer, SignedMessage { claims, signature })
+    }
+
+    fn signed_final_use(
+        authority_key: &SigningKey,
+        binding: FinalUseBinding,
+        nonce: u8,
+    ) -> SignedFinalUseGrant {
+        let now = unix_ms().expect("clock");
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "security-owner".to_string(),
+            authority_epoch: 9,
+            grant_id: format!("ui-control-grant-{nonce}"),
+            nonce: [nonce; 32],
+            binding,
+            not_before_unix_ms: now.saturating_sub(1_000),
+            expires_at_unix_ms: now + 30_000,
+        };
+        let signature = authority_key
+            .sign(&grant.signing_bytes().expect("grant bytes"))
+            .to_bytes()
+            .to_vec();
+        SignedFinalUseGrant { grant, signature }
+    }
+
+    struct ScriptedDriver {
+        dispatches: Arc<AtomicUsize>,
+        dispatch: VecDeque<UiControlDriverObservation>,
+        reconcile: VecDeque<UiControlDriverObservation>,
+    }
+
+    impl UiControlEffectDriver for ScriptedDriver {
+        fn dispatch(&mut self, _request: &UiControlEffectRequest) -> UiControlDriverObservation {
+            self.dispatches.fetch_add(1, Ordering::SeqCst);
+            self.dispatch
+                .pop_front()
+                .expect("scripted dispatch observation")
+        }
+
+        fn reconcile(&mut self, _request: &UiControlEffectRequest) -> UiControlDriverObservation {
+            self.reconcile
+                .pop_front()
+                .expect("scripted reconcile observation")
+        }
+    }
+
+    struct Fixture {
+        _temp: TempDir,
+        _authority_dir: TempDir,
+        gateway: UiControlProductGateway,
+        issuer: IssuerRegistration,
+        auth_message: SignedMessage,
+        final_use: SignedFinalUseGrant,
+        operations: DurableOperationStore,
+        dispatches: Arc<AtomicUsize>,
+    }
+
+    async fn fixture(
+        allowed: bool,
+        dispatch: UiControlDriverObservation,
+        reconcile: UiControlDriverObservation,
+    ) -> Fixture {
+        let temp = tempfile::tempdir().expect("temp root");
+        let evidence = HeptaEvidenceStore::open(&sqlite_config(&temp))
+            .await
+            .expect("evidence");
+        let policy = AuthPolicyStore::open(temp.path()).await.expect("policy");
+        let operations = DurableOperationStore::open(temp.path())
+            .await
+            .expect("operations");
+        policy
+            .publish_revision(PolicyRevisionDraftV1 {
+                revision: Revision::new(1).expect("policy revision"),
+                source_digest: Digest32::of_bytes(b"ui-control-policy-source"),
+                rules: vec![PolicyRuleV1 {
+                    principal_id: StableId::new("operator.alice").expect("principal"),
+                    action_id: StableId::new("request_retry").expect("action"),
+                    resource_id: StableId::new("runtime.agentd").expect("resource"),
+                    allowed,
+                }],
+            })
+            .await
+            .expect("publish policy");
+
+        let agent_id = StableId::new("agent.ui-control").expect("agent id");
+        let verified =
+            verify_ui_control_request("operation/request", &operation_request(SEMANTIC))
+                .expect("verified browser request");
+        let semantic = verified.semantic_digest;
+        let (issuer, auth_message) = signed_auth(&agent_id, semantic, 1);
+
+        let authority_key = SigningKey::from_bytes(&[47; 32]);
+        let authority_dir = tempfile::tempdir().expect("authority dir");
+        std::fs::set_permissions(
+            authority_dir.path(),
+            std::fs::Permissions::from_mode(0o700),
+        )
+        .expect("secure authority dir");
+        let final_use_authority = FinalUseAuthority::open_state_dir(
+            authority_dir.path(),
+            "security-owner".to_string(),
+            authority_key.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )
+        .expect("final use authority");
+        let destination = destination_id(&agent_id).expect("destination");
+        let scope = effect_scope_digest(&agent_id, &verified);
+        let payload = effect_payload_digest(&verified, scope);
+        let final_use = signed_final_use(
+            &authority_key,
+            FinalUseBinding {
+                subject_id: "operator.alice".to_string(),
+                destination_id: destination.as_str().to_string(),
+                request_sha256: semantic.into_array(),
+                scope_sha256: scope.into_array(),
+                payload_sha256: payload.into_array(),
+            },
+            5,
+        );
+        let dispatches = Arc::new(AtomicUsize::new(0));
+        let gateway = UiControlProductGateway::new(
+            evidence,
+            policy,
+            operations.clone(),
+            final_use_authority,
+            agent_id,
+            Generation::new(7).expect("owner generation"),
+            Box::new(ScriptedDriver {
+                dispatches: Arc::clone(&dispatches),
+                dispatch: VecDeque::from([dispatch]),
+                reconcile: VecDeque::from([reconcile]),
+            }),
+        );
+        Fixture {
+            _temp: temp,
+            _authority_dir: authority_dir,
+            gateway,
+            issuer,
+            auth_message,
+            final_use,
+            operations,
+            dispatches,
+        }
+    }
+
+    #[tokio::test]
+    async fn authenticated_ack_is_non_terminal_until_independent_reconciliation() {
+        let ack = Digest32::of_bytes(b"supervisor-accepted");
+        let terminal = Digest32::of_bytes(b"supervisor-terminal");
+        let fixture = fixture(
+            true,
+            UiControlDriverObservation::Accepted {
+                receipt_digest: ack,
+            },
+            UiControlDriverObservation::Terminal {
+                outcome: ReconciliationOutcome::Applied,
+                outcome_digest: terminal,
+            },
+        )
+        .await;
+
+        let disposition = fixture
+            .gateway
+            .execute(
+                &fixture.issuer,
+                UiControlProductCommand {
+                    method: "operation/request".to_string(),
+                    request_json: operation_request(SEMANTIC),
+                    auth_message: fixture.auth_message,
+                    policy_revision: Revision::new(1).expect("policy revision"),
+                    final_use_grant: fixture.final_use,
+                },
+            )
+            .await
+            .expect("execute");
+        assert!(matches!(
+            disposition,
+            UiControlGatewayDisposition::Pending {
+                acknowledgement_digest,
+                ..
+            } if acknowledgement_digest == ack
+        ));
+        assert_eq!(fixture.dispatches.load(Ordering::SeqCst), 1);
+
+        let operation_id = StableId::new("operation.1").expect("operation");
+        let durable = fixture
+            .operations
+            .get(&operation_id)
+            .await
+            .expect("durable")
+            .expect("record");
+        assert!(matches!(durable.state, OperationState::Dispatched { .. }));
+        assert!(!durable.state.is_terminal());
+
+        let terminal_disposition = fixture
+            .gateway
+            .reconcile(&operation_id)
+            .await
+            .expect("reconcile");
+        assert!(matches!(
+            terminal_disposition,
+            UiControlGatewayDisposition::Terminal {
+                outcome: ReconciliationOutcome::Applied,
+                outcome_digest,
+                ..
+            } if outcome_digest == terminal
+        ));
+        let durable = fixture
+            .operations
+            .get(&operation_id)
+            .await
+            .expect("durable")
+            .expect("record");
+        assert!(matches!(durable.state, OperationState::Applied { .. }));
+    }
+
+    #[tokio::test]
+    async fn denied_policy_consumes_auth_replay_but_never_claims_effect_or_dispatches() {
+        let fixture = fixture(
+            false,
+            UiControlDriverObservation::Indeterminate {
+                reason_digest: Digest32::of_bytes(b"must-not-dispatch"),
+            },
+            UiControlDriverObservation::Indeterminate {
+                reason_digest: Digest32::of_bytes(b"must-not-reconcile"),
+            },
+        )
+        .await;
+        let result = fixture
+            .gateway
+            .execute(
+                &fixture.issuer,
+                UiControlProductCommand {
+                    method: "operation/request".to_string(),
+                    request_json: operation_request(SEMANTIC),
+                    auth_message: fixture.auth_message,
+                    policy_revision: Revision::new(1).expect("policy revision"),
+                    final_use_grant: fixture.final_use,
+                },
+            )
+            .await;
+        assert!(matches!(result, Err(UiControlProductError::Denied)));
+        assert_eq!(fixture.dispatches.load(Ordering::SeqCst), 0);
+        assert!(
+            fixture
+                .operations
+                .get(&StableId::new("operation.1").expect("operation"))
+                .await
+                .expect("durable query")
+                .is_none()
+        );
+    }
+
+    #[tokio::test]
+    async fn malformed_browser_semantics_fail_before_auth_replay_is_consumed() {
+        let fixture = fixture(
+            true,
+            UiControlDriverObservation::Accepted {
+                receipt_digest: Digest32::of_bytes(b"accepted"),
+            },
+            UiControlDriverObservation::Indeterminate {
+                reason_digest: Digest32::of_bytes(b"still-pending"),
+            },
+        )
+        .await;
+        let bad = fixture
+            .gateway
+            .execute(
+                &fixture.issuer,
+                UiControlProductCommand {
+                    method: "operation/request".to_string(),
+                    request_json: operation_request(&"2".repeat(64)),
+                    auth_message: signed_auth(
+                        &StableId::new("agent.ui-control").expect("agent"),
+                        Digest32::from_str(SEMANTIC).expect("semantic"),
+                        1,
+                    )
+                    .1,
+                    policy_revision: Revision::new(1).expect("policy revision"),
+                    final_use_grant: fixture.final_use,
+                },
+            )
+            .await;
+        assert!(matches!(
+            bad,
+            Err(UiControlProductError::Wire(UiControlWireError::DigestMismatch))
+        ));
+
+        let result = fixture
+            .gateway
+            .execute(
+                &fixture.issuer,
+                UiControlProductCommand {
+                    method: "operation/request".to_string(),
+                    request_json: operation_request(SEMANTIC),
+                    auth_message: fixture.auth_message,
+                    policy_revision: Revision::new(1).expect("policy revision"),
+                    final_use_grant: signed_final_use(
+                        &SigningKey::from_bytes(&[47; 32]),
+                        {
+                            let verified = verify_ui_control_request(
+                                "operation/request",
+                                &operation_request(SEMANTIC),
+                            )
+                            .expect("verified");
+                            let agent = StableId::new("agent.ui-control").expect("agent");
+                            let scope = effect_scope_digest(&agent, &verified);
+                            FinalUseBinding {
+                                subject_id: "operator.alice".to_string(),
+                                destination_id: destination_id(&agent)
+                                    .expect("destination")
+                                    .as_str()
+                                    .to_string(),
+                                request_sha256: verified.semantic_digest.into_array(),
+                                scope_sha256: scope.into_array(),
+                                payload_sha256: effect_payload_digest(&verified, scope)
+                                    .into_array(),
+                            }
+                        },
+                        6,
+                    ),
+                },
+            )
+            .await
+            .expect("valid request after rejected wire");
+        assert!(matches!(result, UiControlGatewayDisposition::Pending { .. }));
+    }
+}
