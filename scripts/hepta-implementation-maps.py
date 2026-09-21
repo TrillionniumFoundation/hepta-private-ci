@@ -99,6 +99,69 @@ def validate_observed_source(
     if changed:
         failures.append(f"{mid}: observed source drift since {commit}")
 
+
+def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> None:
+    """Validate a self-reference-safe exact source manifest against HEAD.
+
+    Tracked implementation maps cannot contain their own future HEAD/tree
+    identity without a fixed-point problem. This policy freezes mapped source
+    files to Git blob identities and verifies the candidate checkout directly.
+    """
+    evidence = row.get("exactSourceEvidence")
+    if not isinstance(evidence, dict) or evidence.get("kind") != "path_blob_manifest_v1":
+        failures.append(f"{mid}: exact source manifest")
+        return
+    entries = evidence.get("entries")
+    if not isinstance(entries, list) or not entries:
+        failures.append(f"{mid}: exact source manifest entries")
+        return
+    by_path: dict[str, str] = {}
+    root = ROOT.resolve()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            failures.append(f"{mid}: exact source manifest entry")
+            return
+        path = entry.get("path")
+        blob = entry.get("blobSha")
+        if not (
+            isinstance(path, str)
+            and path
+            and isinstance(blob, str)
+            and bool(re.fullmatch(r"[0-9a-f]{40}", blob))
+        ):
+            failures.append(f"{mid}: exact source manifest entry")
+            return
+        if path in by_path:
+            failures.append(f"{mid}: duplicate exact source path {path}")
+            return
+        candidate = (ROOT / path).resolve()
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            failures.append(f"{mid}: exact source path escape {path}")
+            return
+        if not candidate.is_file():
+            failures.append(f"{mid}: missing exact source path {path}")
+            return
+        try:
+            actual = git("rev-parse", f"HEAD:{path}")
+        except subprocess.CalledProcessError:
+            failures.append(f"{mid}: cannot resolve exact source path {path}")
+            return
+        if actual != blob:
+            failures.append(f"{mid}: exact source blob drift {path}")
+        by_path[path] = blob
+
+    mapped_paths = {
+        op.get("sourcePath")
+        for op in row.get("operations", [])
+        if isinstance(op, dict) and op.get("sourcePath")
+    }
+    missing = sorted(mapped_paths - set(by_path))
+    if missing:
+        failures.append(f"{mid}: exact source manifest omits mapped paths {missing}")
+
+
 def lane_by_module():
     return {
         m: lane["id"]
@@ -384,10 +447,16 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
-            if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
+            if policy not in {
+                "legacy_shared_batch",
+                "candidate_or_exact_observation_v1",
+                "path_blob_manifest_v1",
+            }:
                 failures.append(f"{mid}: unknown source identity policy")
             elif policy == "legacy_shared_batch":
                 source_bases.add((source_base["commit"], source_base["tree"]))
+            elif policy == "path_blob_manifest_v1":
+                validate_path_blob_manifest(row, mid, failures)
             elif source_base == candidate_source_base:
                 candidate_bound_maps += 1
             else:
