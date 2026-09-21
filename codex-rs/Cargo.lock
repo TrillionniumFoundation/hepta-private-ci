@@ -3772,6 +3772,7 @@ dependencies = [
 name = "codex-hepta-kg"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-prompt-registry",
  "codex-hepta-types",
 ]
 
@@ -4019,6 +4020,7 @@ dependencies = [
 name = "codex-hepta-prompt-optimizer"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-kg",
  "codex-hepta-types",
 ]
 
