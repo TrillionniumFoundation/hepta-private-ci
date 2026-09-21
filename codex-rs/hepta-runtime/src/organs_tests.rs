@@ -472,6 +472,47 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
 
 #[cfg(unix)]
 #[test]
+fn topology_migration_owner_must_bind_exact_handoff_plan() -> Result<()> {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let root = HeptaStateRoot::parse(
+        std::env::temp_dir().join(format!("hepta-topology-migration-binding-{}", std::process::id())),
+    )?;
+    let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&calls)));
+    let organs = RuntimeOrgans::new(root.clone(), Arc::clone(&state));
+    let current = organs
+        .topology_snapshot()
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let next = build_host_generation(root, state, Generation::new(2)?)?;
+    let successor = RuntimeTopologySuccessorV1::new(next.host, next.route)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let successor_snapshot = successor.snapshot();
+    let (governed, candidate_id) =
+        governed_topology_for_runtime("migration-binding", &current, &successor_snapshot);
+    let migrations = Arc::new(AtomicUsize::new(0));
+    let rollbacks = Arc::new(AtomicUsize::new(0));
+    let request = RuntimeTopologyApplyRequestV1 {
+        governed,
+        candidate_id,
+        accepted_subject_id: StableId::new("operator:migration-binding")?,
+        migration: Box::new(RuntimeTopologyMigrationFixture {
+            handoff_plan_digest: Digest32::of_bytes(b"wrong-handoff-plan"),
+            migrations: Arc::clone(&migrations),
+            rollbacks: Arc::clone(&rollbacks),
+        }),
+        successor,
+    };
+
+    assert!(matches!(
+        runtime_topology_final_use_binding_v1(&current, &request),
+        Err(crate::RuntimeTopologyExecutionError::Binding)
+    ));
+    assert_eq!(migrations.load(Ordering::SeqCst), 0);
+    assert_eq!(rollbacks.load(Ordering::SeqCst), 0);
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
 fn revoked_final_use_never_mutates_the_live_topology() -> Result<()> {
     use std::collections::BTreeSet;
 
