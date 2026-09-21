@@ -76,6 +76,14 @@ World-model predictions are always marked synthetic. They may support planning
 or evaluation models, but they cannot become the independent factual outcome
 that judges the same candidate.
 
+Concrete product-side source composition is `runtime.agentd::AgentdOfflineOperatorHostV1`:
+it freezes the verified dataset binding, fits and publishes the deny-all candidate,
+consumes the signed independent evaluation, persists each coordination phase, and
+refuses reload until an externally authored `Selector` lifecycle transition is
+present. After observing that transition it loads the exact pinned candidate into
+`PinnedCognitiveRanker`. This is an offline/shadow source path; it does not grant
+Agentd selection authority or prove deployed-daemon activation or longitudinal gain.
+
 ## 3. Artifact publication and latest-head admission
 
 ```text

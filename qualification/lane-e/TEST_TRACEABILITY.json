@@ -211,6 +211,22 @@
       "status": "native_test_mapped"
     },
     {
+      "id": "OP-08",
+      "module": "learning.operator",
+      "requirement": "The Agentd offline/shadow coordinator durably reopens an exact operation, rejects changed semantic reuse, cannot reload an evaluated candidate before an independently authored Selector lifecycle transition, and reloads the exact pinned candidate only after that external selection is observed.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-agentd/src/learning_operator_host_tests.rs",
+          "function": "coordination_journal_reopens_and_rejects_semantic_reuse"
+        },
+        {
+          "source": "codex-rs/hepta-agentd/src/learning_operator_host_tests.rs",
+          "function": "product_loop_requires_external_selection_then_reloads_into_agentd_consumer"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
       "id": "EVAL-01",
       "module": "learning.eval",
       "requirement": "The two-step sequential doubly robust fixture returns nine tenths and zero support rejects before division.",
