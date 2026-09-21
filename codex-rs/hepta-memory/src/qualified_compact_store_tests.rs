@@ -544,6 +544,161 @@ async fn rollback_returns_candidate_only_after_current_cut_re_admission() {
 }
 
 #[tokio::test]
+async fn fault_after_payload_write_rolls_back_owner_publication_on_reopen() {
+    let (temp, store, lease, fence) = prepared().await;
+    let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "fault-payload");
+    let proof = proof(&checkpoint, "fault-payload");
+    let witness = proof_witness(&proof);
+    let payload = payload("fault-payload");
+
+    assert!(matches!(
+        store
+            .publish_qualified_compact_checkpoint_with_fault(
+                &lease,
+                &fence,
+                &checkpoint,
+                &proof,
+                &witness,
+                &payload,
+                QualifiedCompactFaultPoint::AfterPayloadWrite,
+            )
+            .await,
+        Err(QualifiedCompactStoreError::FaultInjected("after_payload_write"))
+    ));
+    drop(store);
+
+    let owner = agent_id(84);
+    let reopened = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("reopen after payload-write fault");
+    assert!(
+        reopened
+            .latest_qualified_compact_checkpoint(
+                &checkpoint.source_snapshot.vector.scope_id,
+                &checkpoint.source_snapshot.vector.purpose_id,
+            )
+            .await
+            .expect("read checkpoint after fault")
+            .is_none()
+    );
+    assert!(
+        reopened
+            .resolve_qualified_compact_payload(
+                &checkpoint.source_snapshot.vector.scope_id,
+                &checkpoint.source_snapshot.vector.purpose_id,
+                checkpoint.payload_digest,
+            )
+            .await
+            .expect("resolve payload after fault")
+            .is_none()
+    );
+}
+
+#[tokio::test]
+async fn fault_after_checkpoint_write_rolls_back_owner_publication_on_reopen() {
+    let (temp, store, lease, fence) = prepared().await;
+    let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "fault-checkpoint");
+    let proof = proof(&checkpoint, "fault-checkpoint");
+    let witness = proof_witness(&proof);
+    let payload = payload("fault-checkpoint");
+
+    assert!(matches!(
+        store
+            .publish_qualified_compact_checkpoint_with_fault(
+                &lease,
+                &fence,
+                &checkpoint,
+                &proof,
+                &witness,
+                &payload,
+                QualifiedCompactFaultPoint::AfterCheckpointWrite,
+            )
+            .await,
+        Err(QualifiedCompactStoreError::FaultInjected("after_checkpoint_write"))
+    ));
+    drop(store);
+
+    let owner = agent_id(84);
+    let reopened = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("reopen after checkpoint-write fault");
+    assert!(
+        reopened
+            .latest_qualified_compact_checkpoint(
+                &checkpoint.source_snapshot.vector.scope_id,
+                &checkpoint.source_snapshot.vector.purpose_id,
+            )
+            .await
+            .expect("read checkpoint after fault")
+            .is_none()
+    );
+    assert!(
+        reopened
+            .resolve_qualified_compact_payload(
+                &checkpoint.source_snapshot.vector.scope_id,
+                &checkpoint.source_snapshot.vector.purpose_id,
+                checkpoint.payload_digest,
+            )
+            .await
+            .expect("resolve payload after fault")
+            .is_none()
+    );
+}
+
+#[tokio::test]
+async fn fault_after_revocation_write_leaves_payload_live_on_reopen() {
+    let (temp, store, lease, fence) = prepared().await;
+    let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "fault-revoke");
+    let proof = proof(&checkpoint, "fault-revoke");
+    let witness = proof_witness(&proof);
+    let payload = payload("fault-revoke");
+    store
+        .publish_qualified_compact_checkpoint(
+            &lease,
+            &fence,
+            &checkpoint,
+            &proof,
+            &witness,
+            &payload,
+        )
+        .await
+        .expect("publish before revocation fault");
+
+    assert!(matches!(
+        store
+            .revoke_qualified_compact_payload_with_fault(
+                &lease,
+                &fence,
+                &checkpoint.source_snapshot.vector.scope_id,
+                &checkpoint.source_snapshot.vector.purpose_id,
+                checkpoint.payload_digest,
+                7,
+                digest("fault-revocation"),
+                QualifiedCompactFaultPoint::AfterRevocationWrite,
+            )
+            .await,
+        Err(QualifiedCompactStoreError::FaultInjected("after_revocation_write"))
+    ));
+    drop(store);
+
+    let owner = agent_id(84);
+    let reopened = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("reopen after revocation-write fault");
+    assert_eq!(
+        reopened
+            .resolve_qualified_compact_payload(
+                &checkpoint.source_snapshot.vector.scope_id,
+                &checkpoint.source_snapshot.vector.purpose_id,
+                checkpoint.payload_digest,
+            )
+            .await
+            .expect("resolve payload after revocation fault"),
+        Some(payload)
+    );
+}
+
+#[tokio::test]
 async fn uncommitted_publication_transaction_disappears_after_restart() {
     let (temp, store, _lease, _fence) = prepared().await;
     let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "crash");
