@@ -54,6 +54,15 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           git rev-parse HEAD HEAD^{tree}
+      - name: Execute dependency selection and module projection regressions
+        if: matrix.candidate == 'source-head'
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.tests.test_hepta_ci_dependencies scripts.tests.test_hepta_ci_scope scripts.test_hepta_module_status_facts
+      - name: Verify canonical module projections without rewriting the candidate
+        run: python3 scripts/hepta-module-docs.py refresh-derived --check
       - name: Check owner formatting before compilation
         run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-fleet --package codex-hepta-control-plane -- --check
       - name: Execute catalog and component lifecycle regressions
