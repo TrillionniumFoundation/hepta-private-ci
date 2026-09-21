@@ -28,6 +28,10 @@ A queued identity admitted under a terminal predecessor generation can be recove
 
 `CognitiveSourceOutboxTarget` is a predecessor-aware real destination slice. Apply is destination-owned through the CognitiveStore source ledger; the complete semantic digest and predecessor expectation are verified in the same destination transaction as apply/dedupe. Exact replay returns the same destination fact; payload drift or predecessor mismatch is deterministic. Automation is a second independently owned slice with task mutation + semantic dedupe receipt committed atomically and a terminal observer.
 
+## Product routing
+
+Agentd owns one durable writer and a destination-keyed final-use dispatcher registry. Primary and additional destination registrations are explicit, non-empty and unique. When exactly one destination is attached the compatibility dispatch API remains deterministic; once multiple destinations are registered, dispatch must name the destination and unknown/ambiguous destinations fail closed. The periodic reconciler iterates only registered destination observers and never calls dispatch.
+
 ## Crash and corruption evidence
 
 The source suite contains transaction fault injection, reopen/tamper tests, concurrent-dispatch exclusion, bounded claim lease/renew/takeover tests, post-send crash/indeterminate recovery, deterministic SQLite `SQLITE_FULL` rollback/reopen, and a qualification-only child-process kill/reopen probe. The latter intentionally does not claim physical host power-loss durability.
