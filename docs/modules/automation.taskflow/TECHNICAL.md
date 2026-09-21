@@ -100,10 +100,10 @@ The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is ex
 
 ## 6. Data authority, persistence and migrations
 
-Schema v15 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
+Schema v16 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
-- `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, recovery phase and terminal receipt.
+- `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, bounded terminal-observer continuation cursor, recovery phase and terminal receipt.
 - `automation_occurrence_events`: append-only hash-chained occurrence history.
 - `taskflow_step_outbox`: normal-schema durable `prepared -> claimed -> recorded -> reconciled` per-step receipt chain.
 - `taskflow_effect_dispatch_attempts`: immutable pre-provider attempt identity including intent/payload/binding/destination/grant lineage.
@@ -114,7 +114,7 @@ Schema v15 retains the original `automation_tasks`, `automation_runs` and dispat
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v15. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. A binary that does not understand schema v15 must not replace the current owner against an upgraded store.
+Migrations are additive from v3 through v16. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. A binary that does not understand schema v16 must not replace the current owner against an upgraded store.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -150,7 +150,7 @@ Current source bounds include:
 - schedule catch-up ceiling <=1024 occurrences;
 - Calendar V2 timezone transition profile <=512 transitions and bounded calendar search <=1032 candidate days;
 - occurrence recovery query <=1024 rows;
-- Agentd terminal observation is bounded to <=16 pages × 100 recent persisted turns per recovery pass; if the exact `turn_id` is older than that window, the occurrence remains unresolved/indeterminate for explicit reconciliation rather than materializing unbounded full history;
+- Agentd terminal observation is bounded to <=16 pages × 100 persisted turns per recovery pass; when more history remains, the opaque `next_cursor` is persisted under exact-CAS and the next pass resumes there. A known turn can therefore age beyond 1600 recent turns without permanent invisibility or unbounded full-history materialization;
 - one historical occurrence reconciliation plus at most one new scheduler admission per Agentd tick;
 - TaskFlow graph/step bounds inherited from the existing TaskFlow ledger/outbox.
 
@@ -160,7 +160,7 @@ These are source limits, not deployment measurements. Target-host latency, backl
 
 Operate the existing Agentd `AutomationScheduler` and `AutomationStore`. Treat the compatibility task state as schedule-control state, not execution terminality. The authoritative execution status is the durable occurrence/TaskFlow chain.
 
-Important operator classes include aged `indeterminate`, queue-reconcile mismatch, persisted turn not found within the bounded history window, schedule parked by `overlap=forbid`, catch-up saturation and run-recovery re-fencing. An unknown effect is not safely rerunnable by default.
+Important operator classes include aged `indeterminate`, queue-reconcile mismatch, terminal-scan cursor rejection/repetition, authoritative pagination exhaustion without the bound turn, schedule parked by `overlap=forbid`, catch-up saturation and run-recovery re-fencing. An unknown effect is not safely rerunnable by default.
 
 ## 12. Verification and qualification
 
@@ -197,7 +197,7 @@ Implemented convergence sequence:
 9. add append-only restart reconciliation for initially indeterminate provider attempts;
 10. add Calendar V2 with explicit timezone/tzdb and DST gap/overlap semantics without changing legacy schedule meaning;
 11. expose Calendar V2 through the existing generation-fenced Agentd control plane with additive capability negotiation;
-12. preserve bounded terminal observation when a known turn ages out of the recent window; retain unresolved state for explicit reconciliation instead of materializing full persisted history;
+12. preserve bounded terminal observation when a known turn ages out of the recent window by durably CAS-advancing the App Server continuation cursor; each pass stays bounded and only full pagination exhaustion may convert the missing known turn to indeterminate;
 13. keep concrete provider activation, target-host qualification and independent evidence gates separate.
 
 No second TaskFlow engine or scheduler is admitted by this work package.
@@ -236,7 +236,7 @@ This overlay changes no acceptance, activation, promotion or release authority.
 | `taskflow_run` | `src/automation_taskflow.rs`, `src/taskflow.rs` | deterministic durable run and transition ledger |
 | `step_outbox` | `src/taskflow_step.rs` | durable prepare/claim/observe/reconcile chain |
 | `queue_dispatch` | `codex-rs/hepta-agentd/src/automation.rs` | App Server `thread/queue/reconcile(AllowIfAbsent)` |
-| `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs` | `ReconcileOnly`; <=16×100 bounded persisted-turn scan, with out-of-window turns left unresolved for explicit reconciliation |
+| `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs`, schema v16 occurrence cursor | `ReconcileOnly`; <=16×100 per-pass scan with durable exact-CAS continuation across passes; only full pagination exhaustion becomes indeterminate |
 | `run_recovery` | `src/taskflow_recovery.rs` | historical-step-first, projection-only re-fence |
 | `external_effect` | `src/authorized_effect.rs`, `src/effect_dispatch_ledger.rs` | owner-computed canonical intent + kernel final-use + immutable attempt/observation/reconciliation |
 | `occurrence_terminal` | `src/lifecycle.rs` | occurs after TaskFlow reconciliation; advances forbidden-overlap recurrence |
