@@ -436,12 +436,11 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
     };
     let binding = runtime_topology_final_use_binding_v1(&current, &request)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
-    let (_authority_directory, authority, signed) =
-        final_use_authority_and_grant(
-            binding,
-            "grant:runtime-topology:1",
-            deterministic_test_nonce(b"runtime-topology-apply-nonce"),
-        );
+    let (_authority_directory, authority, signed) = final_use_authority_and_grant(
+        binding,
+        "grant:runtime-topology:1",
+        deterministic_test_nonce(b"runtime-topology-apply-nonce"),
+    );
 
     let receipt = organs
         .apply_governed_topology(&authority, &signed, request)
@@ -474,9 +473,10 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
 #[test]
 fn topology_migration_owner_must_bind_exact_handoff_plan() -> Result<()> {
     let calls = Arc::new(AtomicUsize::new(0));
-    let root = HeptaStateRoot::parse(
-        std::env::temp_dir().join(format!("hepta-topology-migration-binding-{}", std::process::id())),
-    )?;
+    let root = HeptaStateRoot::parse(std::env::temp_dir().join(format!(
+        "hepta-topology-migration-binding-{}",
+        std::process::id()
+    )))?;
     let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&calls)));
     let organs = RuntimeOrgans::new(root.clone(), Arc::clone(&state));
     let current = organs
@@ -542,12 +542,11 @@ fn revoked_final_use_never_mutates_the_live_topology() -> Result<()> {
     };
     let binding = runtime_topology_final_use_binding_v1(&current, &request)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
-    let (_authority_directory, authority, signed) =
-        final_use_authority_and_grant(
-            binding,
-            "grant:runtime-topology:revoked",
-            deterministic_test_nonce(b"runtime-topology-revoked-nonce"),
-        );
+    let (_authority_directory, authority, signed) = final_use_authority_and_grant(
+        binding,
+        "grant:runtime-topology:revoked",
+        deterministic_test_nonce(b"runtime-topology-revoked-nonce"),
+    );
     authority.update_revocations(codex_hepta_contracts::FinalUseRevocations {
         authority_epoch: 1,
         revision: 2,
@@ -630,12 +629,11 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     };
     let apply_binding = runtime_topology_final_use_binding_v1(&baseline, &apply_request)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
-    let (_apply_dir, apply_authority, apply_grant) =
-        final_use_authority_and_grant(
-            apply_binding,
-            "grant:runtime-canary:apply",
-            deterministic_test_nonce(b"runtime-canary-apply-nonce"),
-        );
+    let (_apply_dir, apply_authority, apply_grant) = final_use_authority_and_grant(
+        apply_binding,
+        "grant:runtime-canary:apply",
+        deterministic_test_nonce(b"runtime-canary-apply-nonce"),
+    );
     let apply_receipt = organs
         .apply_governed_topology(&apply_authority, &apply_grant, apply_request)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
