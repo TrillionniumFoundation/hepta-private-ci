@@ -7,6 +7,7 @@ use codex_hepta_kg::KnowledgeNodeV2;
 use codex_hepta_kg::KnowledgeProjectionDeltaV2;
 use codex_hepta_kg::KnowledgeRelationQueryV2;
 use codex_hepta_kg::apply_incremental_delta;
+use codex_hepta_kg::publish_generation;
 use codex_hepta_kg::query_relations;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
@@ -193,6 +194,37 @@ fn edges_by_identity(
         .cloned()
         .map(|edge| (edge.identity.clone(), edge))
         .collect()
+}
+
+async fn assert_full_publication_history(store: &CognitiveStore, scope: &CognitiveScope) {
+    let rows = sqlx::query(
+        "SELECT generation, publication_sha256
+         FROM kg_projection_generation_semantics
+         WHERE projection_scope = ?
+         ORDER BY generation",
+    )
+    .bind(scope.projection_key())
+    .fetch_all(&store.pool)
+    .await
+    .expect("publication history");
+
+    let mut predecessor: Option<KnowledgeGenerationV2> = None;
+    for row in rows {
+        let generation_number: i64 = row.try_get("generation").expect("generation");
+        let stored_publication: String = row
+            .try_get("publication_sha256")
+            .expect("publication digest");
+        let generation = load_generation(
+            store,
+            scope,
+            u64::try_from(generation_number).expect("positive generation"),
+        )
+        .await;
+        let receipt = publish_generation(predecessor.as_ref(), &generation)
+            .expect("historical publication reconstructs");
+        assert_eq!(stored_publication, receipt.publication_digest.to_string());
+        predecessor = Some(generation);
+    }
 }
 
 #[tokio::test]
@@ -408,6 +440,7 @@ async fn canonical_v2_sqlite_restart_query_correction_and_tombstone_are_one_chai
         forgotten.projection.publication_sha256.as_str(),
     )
     .await;
+    assert_full_publication_history(&reopened, &scope).await;
     let incremental_three = apply_incremental_delta(
         &full_two,
         full_three.generation,
@@ -447,4 +480,83 @@ async fn canonical_v2_sqlite_restart_query_correction_and_tombstone_are_one_chai
         .await
         .expect("SQLite graph query after tombstone");
     assert!(sql_three.is_empty());
+}
+
+
+#[tokio::test]
+async fn canonical_entity_shape_conflicts_while_live_and_evolves_after_correction() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(95);
+    let owner_layout = layout(&temp, &owner);
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let store = CognitiveStore::open(&owner_layout).await.expect("store");
+
+    let first = store
+        .remember_with_kg(
+            &access,
+            &source(scope.clone(), "kg-shape-first", "Ada shape v1"),
+            &MemoryDraft {
+                stable_key: "kg-shape-primary".to_string(),
+                revision: active_revision(scope.clone(), "Ada shape v1", 100),
+            },
+            &KgFactSetDraft {
+                entities: vec![KgEntityFactDraft {
+                    key: "ada".to_string(),
+                    entity_type: "person".to_string(),
+                    label: "Ada Lovelace".to_string(),
+                }],
+                relations: Vec::new(),
+            },
+        )
+        .await
+        .expect("first shape");
+
+    let conflicting = store
+        .remember_with_kg(
+            &access,
+            &source(scope.clone(), "kg-shape-conflict", "Ada conflicting shape"),
+            &MemoryDraft {
+                stable_key: "kg-shape-secondary".to_string(),
+                revision: active_revision(scope.clone(), "Ada conflicting shape", 110),
+            },
+            &KgFactSetDraft {
+                entities: vec![KgEntityFactDraft {
+                    key: "ada".to_string(),
+                    entity_type: "person".to_string(),
+                    label: "Ada Byron".to_string(),
+                }],
+                relations: Vec::new(),
+            },
+        )
+        .await
+        .expect_err("simultaneously live canonical shape drift must fail closed");
+    assert!(
+        format!("{conflicting:?}").contains("active KG supports disagree on type or label"),
+        "unexpected shape-conflict error: {conflicting:?}"
+    );
+
+    let corrected = store
+        .correct_with_kg(
+            &access,
+            &first.memory.id.memory_id,
+            1,
+            &source(scope.clone(), "kg-shape-correction", "Ada shape v2"),
+            &active_revision(scope.clone(), "Ada shape v2", 120),
+            &KgFactSetDraft {
+                entities: vec![KgEntityFactDraft {
+                    key: "ada".to_string(),
+                    entity_type: "person".to_string(),
+                    label: "Ada Byron".to_string(),
+                }],
+                relations: Vec::new(),
+            },
+        )
+        .await
+        .expect("shape may evolve after predecessor support leaves current cut");
+
+    let generation = load_generation(&store, &scope, corrected.projection.generation.get()).await;
+    let canonical_id = canonical_entity_id(&owner, &scope, "ada");
+    assert_eq!(generation.nodes.len(), 1);
+    assert_eq!(generation.nodes[0].node_id.as_str(), canonical_id);
 }
