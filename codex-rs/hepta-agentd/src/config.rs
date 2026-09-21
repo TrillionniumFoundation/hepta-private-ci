@@ -38,6 +38,8 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    intelligence_product_runner:
+        Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
 }
 
 impl AgentdConfig {
@@ -143,6 +145,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            intelligence_product_runner: None,
         })
     }
 
@@ -178,6 +181,27 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Compose the canonical intelligence product caller into this daemon.
+    /// No authority file, signer identity, or verifying key is inferred.
+    pub fn with_intelligence_product_runner(
+        mut self,
+        runner: std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>,
+    ) -> Result<Self, AgentdError> {
+        if self.intelligence_product_runner.is_some() {
+            return Err(AgentdError::Invalid(
+                "intelligence product runner already configured".to_string(),
+            ));
+        }
+        self.intelligence_product_runner = Some(runner);
+        Ok(self)
+    }
+
+    pub(crate) fn intelligence_product_runner(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>> {
+        self.intelligence_product_runner.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {
