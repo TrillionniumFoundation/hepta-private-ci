@@ -188,18 +188,26 @@
   "sourceRoot": [
     "codex-rs/hepta-automation"
   ],
-  "observedSourcePaths": [
-    "codex-rs/hepta-automation",
-    "codex-rs/hepta-agentd",
-    "codex-rs/hepta-operations",
-    "codex-rs/hepta-contracts",
-    "codex-rs/hepta-types",
-    "codex-rs/Cargo.lock"
-  ],
-  "observedAtHead": {
-    "commit": "37fabb4a76cf0362896aeb6df9a8e0ffdaccce60",
-    "tree": "ee55b0b056339d8c6583629d7457d5663f69c2fc",
-    "interpretation": "exact final TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence, schedule-revision claim linearization, producer-owned OperationIntentV1 composition, final-use nonce hardening, revocation-race/compensation-crash coverage, after-provider-contact fault injection, Calendar V2 bounded missed-run/DST coverage, and legacy revision-unknown dispatch reconciliation; later commits are documentation/projection truth updates only, and qualification results remain separate"
-  },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
+  "sourceIdentityPolicy": "path_blob_manifest_v1",
+  "exactSourceEvidence": {
+    "kind": "path_blob_manifest_v1",
+    "entries": [
+      {
+        "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+        "blobSha": "4cbdb0d2efc4fa01b27999376e8597b7b8c1fc1f"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/scheduler.rs",
+        "blobSha": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/lifecycle.rs",
+        "blobSha": "bf2cb260bb4b06b27b0230dfa537f9c4944b99b5"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "blobSha": "6b1c903926aae66b9d962d2a6735398a7c91b8c2"
+      }
+    ]
+  }
 }
