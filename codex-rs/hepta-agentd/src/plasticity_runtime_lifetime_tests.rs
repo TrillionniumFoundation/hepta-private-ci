@@ -1,5 +1,3 @@
-use super::*;
-
 use std::fs::{self, File, OpenOptions};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, RwLock};
@@ -780,7 +778,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         ParameterPlasticityDispositionV1::NoAdmissibleUpdate
     );
     assert_eq!(first.registry.sequence, 1);
-    assert_eq!(first.registry.disposition, AppendDisposition::Appended);
+    assert_eq!(first.registry.disposition, AppendDisposition::Inserted);
 
     cancellation.cancel();
     owner_task
