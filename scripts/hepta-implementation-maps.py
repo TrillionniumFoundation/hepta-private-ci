@@ -19,9 +19,22 @@ from hepta_module_source_roots import resolve_source_roots
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def source_identity_paths() -> list[str]:
+    """Return canonical paths whose mutation changes implementation-map source truth."""
+    modules = load("docs/modules/MODULES.json")["modules"]
+    paths = {"docs/modules/MODULES.json", "docs/modules/SOURCE_BINDINGS.json", "codex-rs/Cargo.lock"}
+    for module in modules:
+        paths.update(binding["path"] for binding in module["rootBindings"])
+        paths.update(resolve_source_roots(ROOT, module))
+    return sorted(paths)
+
+
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
-    return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+    """Derive the latest canonical source snapshot without self-referential doc commits."""
+    commit = git("log", "-1", "--format=%H", "HEAD", "--", *source_identity_paths())
+    if not commit:
+        raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: no canonical source commit")
+    return {"commit": commit, "tree": git("rev-parse", f"{commit}^{{tree}}")}
 
 
 def load(rel: str):

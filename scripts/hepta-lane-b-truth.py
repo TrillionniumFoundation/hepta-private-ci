@@ -106,6 +106,21 @@ def allowed(path: str, prefixes: list[str]) -> bool:
     return any(path == prefix or path.startswith(prefix) for prefix in prefixes)
 
 
+def source_identity_paths() -> list[str]:
+    modules = load(ROOT / "docs/modules/MODULES.json")["modules"]
+    paths = {"docs/modules/MODULES.json", "docs/modules/SOURCE_BINDINGS.json", "codex-rs/Cargo.lock"}
+    for module in modules:
+        paths.update(binding["path"] for binding in module["rootBindings"])
+        paths.update(resolve_source_roots(ROOT, module))
+    return sorted(paths)
+
+
+def current_source_base() -> dict[str, str]:
+    commit = git("log", "-1", "--format=%H", "HEAD", "--", *source_identity_paths())
+    need(bool(commit), "no canonical source commit")
+    return {"commit": commit, "tree": git("rev-parse", f"{commit}^{{tree}}")}
+
+
 def verify_source_base(value: Any, label: str) -> tuple[str, str]:
     """Validate historical provenance, independently of the candidate checkout.
 
@@ -167,6 +182,8 @@ def verify_observed_source(row: dict[str, Any], module: str) -> None:
 def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
     index = truth.get("modules")
     need(isinstance(index, list) and len(index) == len(MODULES), "module index")
+    expected_source_base = current_source_base()
+    need(truth.get("sourceBase") == expected_source_base, "lane: source base drift")
     verified = {verify_source_base(truth.get("sourceBase"), "lane")}
     out = []
     for position, entry in enumerate(index):
