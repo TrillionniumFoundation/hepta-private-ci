@@ -190,7 +190,10 @@
   ],
   "observedSourcePaths": [
     "codex-rs/hepta-automation",
-    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-agentd/src/automation.rs",
+    "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
     "codex-rs/hepta-operations",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-types",
@@ -200,7 +203,7 @@
   "observedAtHead": {
     "commit": "900365834c8f19c6b7dee794f139e9c95325bf3c",
     "tree": "629501b8f621ac2774f9efb6a7fccf706acc9c90",
-    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence, workspace dependency restoration, Calendar V2 creation repair, canonical provider-absence identity, dispatch-attempt-scoped restart identity, generation-scoped immutable TaskFlow lease-claim identity, current-schema recovery/migration fixtures, repository-current rustfmt normalization, reopen-safe provider-proven-absence cancellation, and canonical occurrence identity revalidation on store open; later commits may update documentation/projection truth only, and every declared observed source path must remain byte-unchanged through the verified candidate"
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence, workspace dependency restoration, Calendar V2 creation repair, canonical provider-absence identity, dispatch-attempt-scoped restart identity, generation-scoped immutable TaskFlow lease-claim identity, current-schema recovery/migration fixtures, repository-current rustfmt normalization, reopen-safe provider-proven-absence cancellation, and canonical occurrence identity revalidation on store open; later commits may update documentation/projection truth only, and every declared observed source path must remain byte-unchanged through the verified candidate Agentd observation is intentionally scoped to the concrete automation scheduler, recovery, runtime composition, and runtime qualification files rather than the whole Agentd crate."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
