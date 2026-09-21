@@ -559,6 +559,18 @@ pub enum AgentdIntelligenceProductOutcomeV1 {
     SlowPath,
 }
 
+/// Result of the canonical runner after the exact prepared envelope has also
+/// crossed the Agentd-owned run-admission and context-attachment boundary.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum AgentdIntelligenceAdmittedOutcomeV1 {
+    Ready {
+        prepared: PreparedAgentdIntelligenceRunV1,
+        run_receipt: crate::RunReceipt,
+    },
+    Abstained,
+    SlowPath,
+}
+
 #[derive(Debug)]
 pub enum AgentdIntelligenceProductError {
     Canonical(CanonicalIntelligenceError),
@@ -567,6 +579,7 @@ pub enum AgentdIntelligenceProductError {
     CandidateSetMismatch,
     Clock,
     InvalidAuthorityVerifier,
+    Run(crate::AgentRunError),
 }
 
 impl fmt::Display for AgentdIntelligenceProductError {
@@ -693,6 +706,62 @@ impl AgentdIntelligenceProductRunnerV1 {
                 Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
             }
             CanonicalRunOutcomeV1::SlowPath(_) => Ok(AgentdIntelligenceProductOutcomeV1::SlowPath),
+        }
+    }
+
+    /// Execute the canonical seven-owner composition and immediately admit the
+    /// exact resulting envelope into the Agentd-owned run coordinator. This
+    /// prevents product callers from treating a prepared envelope as a valid
+    /// physical-turn binding before Agentd has frozen its run/context identity.
+    pub async fn prepare_and_admit(
+        &self,
+        coordinator: &mut crate::AgentRunCoordinator,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceAdmittedOutcomeV1, AgentdIntelligenceProductError> {
+        match self.prepare(request, inputs).await? {
+            AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
+                let snapshot = prepared.run_snapshot();
+                let admitted = coordinator
+                    .start_run(
+                        wall_clock_ms()?,
+                        crate::RunSnapshot {
+                            run_id: snapshot.run_id,
+                            request_digest: snapshot.request_digest,
+                            objective_digest: snapshot.objective_digest,
+                            body_digest: snapshot.body_digest,
+                            artifact_set_digest: snapshot.artifact_set_digest,
+                            authority_epoch: snapshot.authority_epoch,
+                            deadline_ms: snapshot.deadline_ms,
+                        },
+                    )
+                    .map_err(AgentdIntelligenceProductError::Run)?;
+                let attachment = prepared.context_attachment();
+                let run_receipt = coordinator
+                    .attach_context(
+                        admitted.revision,
+                        crate::ContextAttachment {
+                            run_id: attachment.run_id,
+                            request_digest: attachment.request_digest,
+                            objective_digest: attachment.objective_digest,
+                            body_digest: attachment.body_digest,
+                            artifact_set_digest: attachment.artifact_set_digest,
+                            context_digest: attachment.context_digest,
+                            compilation_receipt_digest: attachment.compilation_receipt_digest,
+                        },
+                    )
+                    .map_err(AgentdIntelligenceProductError::Run)?;
+                Ok(AgentdIntelligenceAdmittedOutcomeV1::Ready {
+                    prepared,
+                    run_receipt,
+                })
+            }
+            AgentdIntelligenceProductOutcomeV1::Abstained => {
+                Ok(AgentdIntelligenceAdmittedOutcomeV1::Abstained)
+            }
+            AgentdIntelligenceProductOutcomeV1::SlowPath => {
+                Ok(AgentdIntelligenceAdmittedOutcomeV1::SlowPath)
+            }
         }
     }
 
