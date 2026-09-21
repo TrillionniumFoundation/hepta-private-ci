@@ -62,20 +62,10 @@ impl AgentdState {
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
-                let capabilities = if self.intelligence_product.get().is_some() {
-                    crate::AgentdCapabilitySet::new(vec![
-                        crate::AgentdCapability::new(
-                            "intelligence.control.canonical",
-                            /*major*/ 1,
-                            /*minor*/ 0,
-                        )
-                        .map_err(AgentdError::Protocol)?,
-                    ])
-                    .map_err(AgentdError::Protocol)?
-                } else {
-                    crate::AgentdCapabilitySet::empty()
-                };
-                AgentdPayload::Capabilities(capabilities)
+                // A configured runner is not a product ingress. Do not advertise
+                // intelligence.control until an Agentd request path actually
+                // invokes prepare/Decision/Outcome and binds the physical turn.
+                AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: matches!(
