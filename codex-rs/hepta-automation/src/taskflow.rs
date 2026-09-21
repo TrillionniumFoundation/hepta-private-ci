@@ -2133,7 +2133,12 @@ fn verify_taskflow_event_rows(
                 && run.cancel_requested;
             if !(matches!(
                 transition.as_str(),
-                "succeeded" | "failed" | "cancelled" | "reconciled" | "requeued_proven_absent"
+                "succeeded"
+                    | "failed"
+                    | "cancelled"
+                    | "reconciled"
+                    | "requeued_proven_absent"
+                    | "cancelled_proven_absent"
             ) || index == 0 && transition == "run_created"
                 || sticky_cancel_resume)
             {
