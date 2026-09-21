@@ -305,7 +305,7 @@ async fn drain_blockers_require_classification_but_allow_durable_uncertainty() {
         "a matching durable uncertain witness is already a fail-closed classification"
     );
     let unknown = store
-        .unresolved_dispatches(8)
+        .uncertain_dispatches(8)
         .await
         .expect("query durable uncertainty");
     assert_eq!(unknown.len(), 1);

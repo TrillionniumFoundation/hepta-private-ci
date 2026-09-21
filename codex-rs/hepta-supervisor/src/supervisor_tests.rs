@@ -930,6 +930,62 @@ fn recovery_ignores_revoked_previous_release_and_adopts_current() -> Result<(), 
 }
 
 #[test]
+fn process_recovery_fault_does_not_hide_signed_recovery_required(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = fleet.write_release_source()?;
+    let release_id = ReleaseId::parse("recovery-signed-revoked-current")?;
+    fleet
+        .registry
+        .install_release(release_id.clone(), &source, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &release_id)?;
+
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let release =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &release_id)?)?;
+    supervisor.start_release(&fleet.first, release, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    drop(supervisor);
+
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        Sha256Digest::for_bytes(b"recovery-revoked-signed-grant"),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        release_id.to_string(),
+        "recovery-signed-target",
+        0,
+        record.lifecycle.generation,
+        1,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .expect("queued signed intent");
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .expect("write queued intent");
+    fleet.registry.revoke_release(&fleet.first, &release_id)?;
+
+    let (recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report.faults.len(), 1);
+    assert_eq!(report.faults[0].agent_id, fleet.first);
+    assert!(
+        recovered.production_recovery_required(&fleet.first)?,
+        "process recovery fault must not hide durable signed recovery"
+    );
+    assert_eq!(control.counts(&fleet.first).2, 1);
+    Ok(())
+}
+
+#[test]
 fn recovery_fences_current_release_revoked_while_supervisor_is_down(
 ) -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
