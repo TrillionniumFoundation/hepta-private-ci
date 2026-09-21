@@ -150,7 +150,7 @@ impl AutomationStore {
         if run.state == TaskFlowRunState::Queued {
             let command = TaskFlowCommand::new(
                 run.run_id.clone(),
-                format!("automation:start:{}", occurrence.occurrence_id),
+                format!("automation:start:{}:{step_attempt}", occurrence.occurrence_id),
                 fence.clone(),
                 run.revision,
                 TaskFlowTransition::Start,
