@@ -72,10 +72,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `snapshot loader`
-- `candidate builder`
-- `bounded solver`
-- `decision receipt emitter`
+- `authenticated registry snapshot / realization loader`
+- `deterministic candidate enumerator`
+- `independent-evidence verifier and multidimensional pricer`
+- `constraint-aware bounded portfolio solver`
+- `delivery-boundary exercise / revalidation emitter`
+
+The source-level composition path continues outside this owner's root through `hepta-intelligence`: an exercised portfolio is materialized from the exact registry payload, compiled by `context.compiler`, revalidated again before attachment preparation, and bound to terminal delivery observation before learning-ledger admission. Those adapters do not transfer registry, context, runtime or learning ownership into `prompt.optimizer`.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -175,7 +178,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not target-host measurements. The canonical source path enforces the 128-factor, 16-selected-factor, 512-interaction-edge and explicit token-budget ceilings in [codex-rs/hepta-prompt-optimizer/src/canonical.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical.rs); compatibility limits remain in [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs) and [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs). Host latency and production capacity remain unqualified until a real caller profile is selected.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -185,8 +188,12 @@ Read-only optimizer library; provide admitted candidates, cost/support data and 
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs).
-- [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs).
+- [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs) retains the compatibility optimizer.
+- [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs) retains the strict authority-free local shadow calculator.
+- [codex-rs/hepta-prompt-optimizer/src/canonical.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical.rs) implements candidate enumeration, authenticated evidence pricing, graph-constrained portfolio selection and exercise-time revalidation.
+- [codex-rs/hepta-intelligence/src/prompt_pipeline.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline.rs) composes exercised portfolios into context compilation, exact payload materialization, serialization proof and delivery preparation.
+- [codex-rs/hepta-codex-adapter/src/lib.rs](../../../codex-rs/hepta-codex-adapter/src/lib.rs) validates a runtime-supplied terminal prompt-delivery observation against the exact submitted bytes.
+- [codex-rs/hepta-learning-ledger/src/ledger.rs](../../../codex-rs/hepta-learning-ledger/src/ledger.rs) admits prompt-delivery evidence into the durable learning event chain while forbidding policy self-observation.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -196,6 +203,10 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-prompt-optimizer/src/lib_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib_tests.rs); named case: `illegal_and_unadmitted_candidates_are_never_selected`.
 - [codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs); named case: `legacy_v1_surface_keeps_its_original_selection_limit`.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs); covers deterministic realization enumeration, signed completeness/evaluator evidence, multidimensional pricing, prerequisite-bundle selection, relation evidence and exercise-time revocation/model drift.
+- [codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs); covers exercise → context compilation → exact payload materialization → serialization/attachment preparation and stale-revocation rejection.
+- [codex-rs/hepta-codex-adapter/src/lib_tests.rs](../../../codex-rs/hepta-codex-adapter/src/lib_tests.rs); covers exact submitted-byte binding and terminal delivery disposition validation.
+- [codex-rs/hepta-learning-ledger/src/ledger_tests.rs](../../../codex-rs/hepta-learning-ledger/src/ledger_tests.rs) and [durable_tests.rs](../../../codex-rs/hepta-learning-ledger/src/durable_tests.rs); cover learning-owner prompt-delivery admission and durable replay.
 
 In `codex-rs`, run `just test -p codex-hepta-prompt-optimizer`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) separately labels target acceptance designs.
 
@@ -221,7 +232,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. The current source candidate now contains the canonical optimizer operations and a source-level cross-owner composition path through context compilation, delivery observation contracts and durable learning-ledger admission. This is still not `production_implementation`: that fact additionally requires a named real product caller at the Codex dispatch boundary plus executable product tests over that callsite. Qualification requires current exact-candidate evidence. Independent causal acceptance, activation, selection, promotion and release remain separate externally governed states.
 
 For `prompt.optimizer`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
