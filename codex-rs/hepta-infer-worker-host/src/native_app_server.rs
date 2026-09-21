@@ -235,6 +235,21 @@ impl AppServerModelDriver {
         let turn = match response {
             Ok(Ok(response)) => response.turn,
             _ => {
+                let mut stop_reason = "turn/start outcome unknown; do not replay".to_string();
+                if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                    && let Err(error) = owner
+                        .run_observe_terminal(
+                            binding.run_id.clone(),
+                            revision,
+                            AgentRunPhase::Indeterminate,
+                            /*terminal_observed*/ false,
+                        )
+                        .await
+                {
+                    stop_reason = format!(
+                        "{stop_reason}; Agentd indeterminate reconciliation required: {error}"
+                    );
+                }
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Ok(NativeRunOutput {
                     thread_id: started.thread.id,
@@ -246,7 +261,7 @@ impl AppServerModelDriver {
                     observed_output_tokens: None,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
-                    stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
+                    stop_reason: Some(stop_reason),
                 });
             }
         };
@@ -318,6 +333,23 @@ impl AppServerModelDriver {
                 .await;
             loss_recorded?;
             cancel_recorded?;
+            if !output.terminal_observed
+                && let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Err(error) = owner
+                    .run_observe_terminal(
+                        binding.run_id.clone(),
+                        revision,
+                        AgentRunPhase::Indeterminate,
+                        /*terminal_observed*/ false,
+                    )
+                    .await
+            {
+                let note = format!("Agentd indeterminate reconciliation required: {error}");
+                output.stop_reason = Some(match output.stop_reason.take() {
+                    Some(existing) => format!("{existing}; {note}"),
+                    None => note,
+                });
+            }
         }
         if output.terminal_observed {
             let _ = timeout(
