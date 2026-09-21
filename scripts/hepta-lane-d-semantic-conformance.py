@@ -232,6 +232,7 @@ def verify() -> int:
         "required_owner_ids",
         "evaluation_policy_digest",
         "canonical_ndu_planning_policy_digest",
+        "revocation_frontier_digest",
         "planner_clock_origin",
         "bind_planner_observation_window_v1",
         "owner_expires_at_micros",
@@ -250,6 +251,7 @@ def verify() -> int:
         "host_open_rejects_missing_required_owner_trust",
         "caller_cannot_omit_host_required_owner",
         "caller_cannot_relax_host_ndu_policy",
+        "caller_cannot_replace_host_revocation_frontier",
         "final_use_subject_must_match_host_pinned_fleet_principal",
         "revoked_planner_decision_cannot_reach_final_use",
         "pre_restart_plan_requires_replanning_before_final_use",
@@ -291,6 +293,7 @@ def verify() -> int:
             "RCP-26",
             "RCP-27",
             "RCP-28",
+            "RCP-29",
         ],
     }
     for path, tokens in headings.items():
