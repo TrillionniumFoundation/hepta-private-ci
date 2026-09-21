@@ -373,10 +373,8 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
         let request = Self::take(&mut self.intuition_request, input.stage, "intuition request")?;
-        if request.objective_digest != input.objective_digest
-            || request.completeness.candidate_set_digest != input.candidate_set_digest
-        {
-            return Err(Self::reject(input.stage, "intuition binding"));
+        if request.objective_digest != input.objective_digest {
+            return Err(Self::reject(input.stage, "intuition objective"));
         }
         let receipt = decide_calibrated_v2(request)
             .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
