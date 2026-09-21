@@ -174,6 +174,7 @@ mod tests {
             Some(digest("prompt")),
             digest("intuition"),
             digest("context"),
+            digest("execution-payload"),
             digest("pre-handoff"),
             10_000_000,
             10_000,
