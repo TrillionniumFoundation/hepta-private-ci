@@ -72,16 +72,6 @@ impl AutomationSchedule {
             Self::FixedInterval { .. } => Err(AutomationError::Invalid),
         }
     }
-
-    pub(crate) fn next_after(self, scheduled_for_ms: u64) -> Result<Option<u64>, AutomationError> {
-        match self {
-            Self::Once => Ok(None),
-            Self::FixedInterval { interval_ms } => scheduled_for_ms
-                .checked_add(interval_ms)
-                .map(Some)
-                .ok_or(AutomationError::Invalid),
-        }
-    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -94,15 +84,6 @@ pub enum AutomationTaskState {
 }
 
 impl AutomationTaskState {
-    pub(crate) fn as_str(self) -> &'static str {
-        match self {
-            Self::Enabled => "enabled",
-            Self::Disabled => "disabled",
-            Self::Cancelled => "cancelled",
-            Self::Completed => "completed",
-        }
-    }
-
     pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
         match value {
             "enabled" => Ok(Self::Enabled),
@@ -176,6 +157,10 @@ pub struct AutomationTask {
 pub struct AutomationLease {
     pub task: AutomationTask,
     pub occurrence: u64,
+    /// Immutable schedule revision that produced `scheduled_for_ms`.
+    /// This is frozen in `automation_runs` by the claim transaction so a
+    /// later policy update cannot relabel an already-due instant.
+    pub schedule_revision: u64,
     pub scheduled_for_ms: u64,
     pub client_user_message_id: String,
     pub lease_generation: u64,
@@ -215,9 +200,8 @@ pub struct AutomationQueueReceipt {
 }
 
 /// Durable evidence that the provider outcome for one occurrence is not yet
-/// known.  The scheduler must not blindly re-submit this occurrence until an
-/// operator or a provider-specific reconciler supplies a terminal receipt (or
-/// explicitly confirms that no admission was accepted).
+/// known. The scheduler must not blindly re-submit this occurrence until an
+/// exact provider-specific reconciler settles the stable client identity.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AutomationDispatchUncertainty {
     pub task_id: AutomationTaskId,
@@ -230,6 +214,8 @@ pub struct AutomationDispatchUncertainty {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AutomationTick {
     Idle,
+    /// Compatibility-only legacy semantic. New scheduler code must emit
+    /// `Submitted` and wait for occurrence terminalization separately.
     Submitted {
         task_id: AutomationTaskId,
         occurrence: u64,
