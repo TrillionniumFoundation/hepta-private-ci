@@ -8,13 +8,29 @@ fn main() -> anyhow::Result<()> {
     codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
-        if let Some(flag) = args.next() {
-            anyhow::ensure!(flag == "--authbus-trust-file", "unknown Agentd argument");
-            let path = args
-                .next()
-                .ok_or_else(|| anyhow::anyhow!("--authbus-trust-file requires a path"))?;
-            anyhow::ensure!(args.next().is_none(), "unexpected Agentd arguments");
-            config = config.with_authbus_trust_file(path.into());
+        let mut saw_authbus_trust = false;
+        let mut saw_intelligence_trust = false;
+        while let Some(flag) = args.next() {
+            if flag == "--authbus-trust-file" {
+                anyhow::ensure!(!saw_authbus_trust, "duplicate --authbus-trust-file");
+                let path = args
+                    .next()
+                    .ok_or_else(|| anyhow::anyhow!("--authbus-trust-file requires a path"))?;
+                config = config.with_authbus_trust_file(path.into());
+                saw_authbus_trust = true;
+            } else if flag == "--intelligence-capability-trust-file" {
+                anyhow::ensure!(
+                    !saw_intelligence_trust,
+                    "duplicate --intelligence-capability-trust-file"
+                );
+                let path = args.next().ok_or_else(|| {
+                    anyhow::anyhow!("--intelligence-capability-trust-file requires a path")
+                })?;
+                config = config.with_intelligence_capability_trust_file(path.into());
+                saw_intelligence_trust = true;
+            } else {
+                anyhow::bail!("unknown Agentd argument");
+            }
         }
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
