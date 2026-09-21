@@ -74,6 +74,7 @@ pub use config::HEPTA_AGENT_HOME_ENV;
 pub use config::HEPTA_AGENT_ID_ENV;
 pub use config::HEPTA_AGENT_RUN_ROOT_ENV;
 pub use error::AgentdError;
+pub use intelligence_product::AgentdIntelligenceAdmittedOutcomeV1;
 pub use intelligence_product::AgentdIntelligenceLedgerError;
 pub use intelligence_product::AgentdIntelligenceOwnerInputsV1;
 pub use intelligence_product::AgentdIntelligenceProductError;
