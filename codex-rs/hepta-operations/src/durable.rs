@@ -71,7 +71,7 @@ pub enum DurableOutboxState {
     },
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct DurableOperationStore {
     pool: SqlitePool,
     path: PathBuf,
@@ -957,6 +957,45 @@ async fn verify_store(pool: &SqlitePool) -> Result<(), DurableOperationError> {
         return Err(corrupt(
             "outbox projection is not backed by its immutable event",
         ));
+    }
+    let bad_operation_history: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM operation_records AS current
+         WHERE (SELECT COUNT(*) FROM operation_events AS event
+                WHERE event.operation_id = current.operation_id) != current.revision",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if bad_operation_history != 0 {
+        return Err(corrupt("operation event history is incomplete"));
+    }
+    let bad_outbox_history: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM operation_outbox AS current
+         WHERE (SELECT COUNT(*) FROM operation_outbox_events AS event
+                WHERE event.intent_id = current.intent_id) != current.revision",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if bad_outbox_history != 0 {
+        return Err(corrupt("outbox event history is incomplete"));
+    }
+    let immutable_trigger_count: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_schema
+         WHERE type='trigger' AND name IN (
+           'operation_events_no_update',
+           'operation_events_no_delete',
+           'operation_outbox_events_no_update',
+           'operation_outbox_events_no_delete'
+         )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if immutable_trigger_count != 4 {
+        return Err(corrupt("immutable event triggers are missing"));
     }
     Ok(())
 }
