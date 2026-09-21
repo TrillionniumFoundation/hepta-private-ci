@@ -434,6 +434,32 @@
       ],
       "sourcePathExists": true,
       "nonClaim": "control.runtime verifies the durable receipt binding; kernel.evidence remains the replay-state owner"
+    },
+    {
+      "operation": "bind_planner_observation_window_v1",
+      "nativeSymbol": "codex_hepta_control_plane::bind_planner_observation_window_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/global_plane.rs",
+      "inputs": [
+        "AdmittedOwnerSummaryV1",
+        "host monotonic observed_at_micros",
+        "host monotonic expires_at_micros"
+      ],
+      "outputs": [
+        "AdmittedOwnerSummaryV1 with host-owned planner observation window"
+      ],
+      "state": "source_implemented_host_monotonic_projection",
+      "authority": "none",
+      "nonClaim": "does not alter signed owner payload authority; producer-local clock values are not planner freshness authority",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/global_control_tests.rs",
+          "symbol": "producer_clock_epoch_cannot_control_host_planner_freshness"
+        }
+      ],
+      "designOperation": "bind_planner_observation_window_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalDomainContracts": [
