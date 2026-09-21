@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "c7baab392e18b20bd1748ed3afbb77531b3f97ba",
+    "tree": "1921ff3bb3e0aa2c1b42d8a1541d7fc2956f6a51"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -108,9 +108,40 @@
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "compose_global_control",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-supervisor/src/global_control.rs",
+        "symbol": "pub struct GlobalControlHostV1",
+        "buildTarget": "codex-hepta-supervisor"
+      },
+      "delegatedCallees": [
+        "control.runtime::compose_global_plan_with_fleet_v1",
+        "kernel.evidence::HeptaEvidenceStore",
+        "runtime.fleet::LeaseLedger",
+        "kernel.authority::FinalUseAuthority"
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/global_control_tests.rs",
+          "kind": "product_and_hostile",
+          "command": "cargo test -p codex-hepta-supervisor --lib global_control"
+        }
+      ],
+      "sourceSemantics": "Host-pinned trust/policy and monotonic clock, durable owner replay, live fleet allocation, real NDU/global planning, poison-on-ambiguous durable publication, selected-decision publication, and current-host final-use fencing.",
+      "operation": "compose_global_control",
+      "nativeSymbol": "GlobalControlHostV1",
+      "sourcePath": "codex-rs/hepta-supervisor/src/global_control.rs",
+      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Register and activate a selected supervisord global-planning ingress/profile before treating the named typed host as deployed product execution.",
+    "Complete exact-head and deterministic synthetic-merge qualification plus named-host load/fault/recovery measurements."
+  ],
   "externalEvidenceGates": [
     "deployed binary and host identity",
     "target-host watchdog/start/drain measurements",
@@ -129,16 +160,33 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "namedGlobalControlHostSourceImplemented": true,
+    "hostOwnedGlobalPolicyPinned": true,
+    "finalUseRequiresCurrentHostPlan": true,
+    "ambiguousPlannerPublicationBlocksFinalUse": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "named_global_control_host_source_composed_not_daemon_activated",
+  "productionWriterState": "planner_owner_store_composed_in_named_host_source_not_deployed",
   "owner": "runtime-control",
   "deputy": "fleet-runtime",
   "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",
   "sourceRoot": [
+    "codex-rs/hepta-supervisor"
+  ],
+  "implementationHead": {
+    "commit": "c7baab392e18b20bd1748ed3afbb77531b3f97ba",
+    "note": "frozen source candidate; descendant commits may update documentation/receipts only while registered source roots remain byte-identical"
+  },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "c7baab392e18b20bd1748ed3afbb77531b3f97ba",
+    "tree": "1921ff3bb3e0aa2c1b42d8a1541d7fc2956f6a51",
+    "interpretation": "exact current-main control.runtime/runtime.supervisor source closure; descendant changes are documentation/qualification truth only while registered source roots remain byte-identical"
+  },
+  "observedSourcePaths": [
     "codex-rs/hepta-supervisor"
   ]
 }
