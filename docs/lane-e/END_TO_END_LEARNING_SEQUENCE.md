@@ -17,7 +17,8 @@ product host authenticates generator and immutable objective
      AuthenticatedDecisionV2 under the single learning.ledger owner
   -> effect owner or trusted observer authenticates independently from the generator
   -> AuthenticatedOutcomeV1 remains pending, censored or terminal according to
-     OutcomeWatermarkV1; missing outcome never becomes zero
+     OutcomeWatermarkV1; a Decision with no Outcome row is also counted pending
+     at dataset freeze, and missing outcome never becomes zero
   -> LedgerWriter appends outcomes/corrections against the current linear
      predecessor head; stale branches and forks fail closed
   -> independent allocator finalizes one CreditAllocationBatchV1 whose
@@ -169,8 +170,12 @@ is never an implicit reuse of an expired grant or a stale backup marker.
 
 ```text
 source owner supplies authenticated correction or unlearning authority
-  -> LedgerWriter appends correction or explicit UnlearningLineageV1
-  -> learning.ledger advances the correction/revocation cut without rewriting history
+  -> for explicit unlearning, LedgerWriter verifies the exact historical
+     DatasetSnapshotReceiptV3 and proves the named canonical source event is in it
+  -> LedgerWriter persists source_event_digest + dataset_digest in UnlearningLineageV1
+     and advances the correction/revocation cut without rewriting history
+  -> artifact_id in the ledger event is only a handoff identity; learning.artifacts
+     verifies the authoritative dataset→artifact relation
   -> DatasetWithdrawalRegistry durably records the withdrawn dataset digest
   -> all directly matching artifacts are revoked
   -> lineage eligibility makes descendants unavailable
