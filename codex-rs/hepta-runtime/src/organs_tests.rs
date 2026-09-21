@@ -190,6 +190,11 @@ fn governed_topology_for_runtime(
 }
 
 #[cfg(unix)]
+fn deterministic_test_nonce(label: &[u8]) -> [u8; 32] {
+    *Digest32::of_bytes(label).as_array()
+}
+
+#[cfg(unix)]
 fn final_use_authority_and_grant(
     binding: codex_hepta_contracts::FinalUseBinding,
     grant_id: &str,
@@ -351,7 +356,11 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
     let binding = runtime_topology_final_use_binding_v1(&current, &request)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     let (_authority_directory, authority, signed) =
-        final_use_authority_and_grant(binding, "grant:runtime-topology:1", [0x11; 32]);
+        final_use_authority_and_grant(
+            binding,
+            "grant:runtime-topology:1",
+            deterministic_test_nonce(b"runtime-topology-apply-nonce"),
+        );
 
     let receipt = organs
         .apply_governed_topology(&authority, &signed, request)
@@ -407,7 +416,11 @@ fn revoked_final_use_never_mutates_the_live_topology() -> Result<()> {
     let binding = runtime_topology_final_use_binding_v1(&current, &request)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     let (_authority_directory, authority, signed) =
-        final_use_authority_and_grant(binding, "grant:runtime-topology:revoked", [0x22; 32]);
+        final_use_authority_and_grant(
+            binding,
+            "grant:runtime-topology:revoked",
+            deterministic_test_nonce(b"runtime-topology-revoked-nonce"),
+        );
     authority.update_revocations(codex_hepta_contracts::FinalUseRevocations {
         authority_epoch: 1,
         revision: 2,
@@ -486,7 +499,11 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     let apply_binding = runtime_topology_final_use_binding_v1(&baseline, &apply_request)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     let (_apply_dir, apply_authority, apply_grant) =
-        final_use_authority_and_grant(apply_binding, "grant:runtime-canary:apply", [0x31; 32]);
+        final_use_authority_and_grant(
+            apply_binding,
+            "grant:runtime-canary:apply",
+            deterministic_test_nonce(b"runtime-canary-apply-nonce"),
+        );
     let apply_receipt = organs
         .apply_governed_topology(&apply_authority, &apply_grant, apply_request)
         .map_err(|error| anyhow::anyhow!("{error}"))?;
@@ -527,7 +544,7 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     let (_rollback_dir, rollback_authority, rollback_grant) = final_use_authority_and_grant(
         rollback_binding,
         "grant:runtime-canary:rollback",
-        [0x32; 32],
+        deterministic_test_nonce(b"runtime-canary-rollback-nonce"),
     );
     let rollback_receipt = organs
         .recover_governed_topology(&rollback_authority, &rollback_grant, rollback_request)
