@@ -50,6 +50,7 @@ fn freezes_the_run_tuple_before_context_attachment() {
             revision: 1,
             phase: RunPhase::Admitted,
             context_digest: None,
+            compilation_receipt_digest: None,
             terminal_observed: false,
             idempotent: false,
         }
@@ -72,6 +73,7 @@ fn freezes_the_run_tuple_before_context_attachment() {
             revision: 2,
             phase: RunPhase::ContextAttached,
             context_digest: Some(digest('7')),
+            compilation_receipt_digest: Some(digest('8')),
             terminal_observed: false,
             idempotent: false,
         }
