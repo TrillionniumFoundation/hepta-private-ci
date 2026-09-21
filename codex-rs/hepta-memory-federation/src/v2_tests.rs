@@ -260,7 +260,10 @@ fn one_attempt_returns_bounded_partial_result() {
     let result = execute(&transport, query.clone(), &lease(&query))
         .unwrap_or_else(|error| panic!("valid result: {error}"));
     assert_eq!(result.items.len(), 2);
+    assert_eq!(result.coverage.truncated_peers, 0);
+    assert_eq!(result.coverage.omitted_peer_candidates, 0);
     assert_eq!(result.coverage.truncated_items, 1);
+    assert_eq!(result.coverage.failures.total(), 0);
     assert_eq!(result.completeness, FederatedCompletenessV2::Partial);
     assert_eq!(result.validity, FederatedValidityV2::Valid);
     assert_eq!(result.expires_unix_ms, 80);
@@ -722,6 +725,8 @@ fn nonterminal_attempt_is_explicitly_indeterminate_without_retry() {
     assert_eq!(result.completeness, FederatedCompletenessV2::Indeterminate);
     assert_eq!(result.validity, FederatedValidityV2::Indeterminate);
     assert_eq!(result.coverage.failed_peers, 1);
+    assert_eq!(result.coverage.failures.deadline_or_cancelled, 1);
+    assert_eq!(result.coverage.failures.total(), 1);
     assert_eq!(result.expires_unix_ms, 90);
     assert!(result.authority_observation_digest.is_none());
 }
@@ -780,6 +785,35 @@ fn duplicate_remote_identity_is_rejected() {
     assert_eq!(
         execute(&transport, query.clone(), &lease(&query)),
         Err(FederationV2Error::DuplicateResultIdentity)
+    );
+}
+
+#[test]
+fn result_digest_binds_peer_and_typed_failure_coverage() {
+    let query = query();
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::NonTerminal(
+            FederationTransportOutcomeV2::Unavailable,
+        )),
+    };
+    let mut result = execute(&transport, query.clone(), &lease(&query))
+        .unwrap_or_else(|error| panic!("indeterminate result: {error}"));
+    assert_eq!(result.coverage.failures.transport_unavailable, 1);
+
+    result.coverage.failures.transport_unavailable = 0;
+    result.coverage.failures.integrity_rejected = 1;
+    assert_eq!(
+        result.validate(),
+        Err(FederationV2Error::DigestMismatch("result"))
+    );
+
+    result.coverage.failures.integrity_rejected = 0;
+    result.coverage.failures.transport_unavailable = 1;
+    result.result_digest = result.compute_result_digest();
+    result.coverage.truncated_peers = 1;
+    assert_eq!(
+        result.validate(),
+        Err(FederationV2Error::InvalidCoverage)
     );
 }
 
