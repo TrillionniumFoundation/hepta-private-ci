@@ -310,9 +310,13 @@
     },
     {
       "operation": "verify_operator_dataset_v2",
-      "nativeSymbol": "VerifiedOperatorDatasetV2::from_receipt",
+      "nativeSymbol": "VerifiedOperatorDatasetV2::from_authenticated_receipt",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
       "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "symbol": "op_07_authenticated_dataset_requires_exact_trusted_owner"
+        },
         {
           "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
           "symbol": "op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows"
@@ -322,7 +326,7 @@
           "symbol": "op_07_bound_fit_rejects_detached_digest_or_row_set"
         }
       ],
-      "state": "source_implemented_offline_shadow_product_composed",
+      "state": "source_implemented_offline_shadow_product_composed_owner_authenticated",
       "authority": "none",
       "sourcePathExists": true,
       "designOperation": "verify_operator_dataset_v2",
@@ -459,7 +463,7 @@
       "caller": "runtime.agentd::AgentdOfflineOperatorHostV1",
       "source": "codex-rs/hepta-agentd/src/learning_operator_host.rs",
       "state": "offline_shadow_coordination_source_composed",
-      "semantics": "consumes a verified frozen dataset, performs replay-resistant deny-all fitting, publishes create-only candidate bytes, consumes signed independent evaluation, refuses to infer selection, observes an externally-authored Selector transition, and reloads the exact pinned candidate through PinnedCognitiveRanker; coordination phases are durably hash-chained and reopenable"
+      "semantics": "consumes a host-trusted DatasetOwner-signed frozen receipt, requires exact source-record binding, performs replay-resistant deny-all fitting, publishes create-only candidate bytes, consumes signed independent evaluation, refuses to infer selection, observes an externally-authored Selector transition, and reloads the exact pinned candidate through PinnedCognitiveRanker; coordination phases are durably hash-chained and reopenable"
     },
     {
       "caller": "runtime.agentd::PinnedCognitiveRanker",
