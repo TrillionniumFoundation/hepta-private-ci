@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "3074b7f9952dfe634f4a8964bb20a2b09de3202a",
+    "tree": "77fa7fa9dabb26313e5523d24fb3104c2ecad4a0"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -154,11 +154,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "blobSha": "7fac99e8a6ef1ec74fa9b740b3eff15928c9cea5"
+      "blobSha": "b36f3c329c045629584ed87a3ea7c9d2691dde5b"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
-      "blobSha": "3fbb55f9f432de17dd62df2290df4f423f0cde55"
+      "blobSha": "6841d61a101df9bdb3334fd08847b3a9620a17b5"
     },
     {
       "path": "codex-rs/hepta-agentd/src/client.rs",
@@ -166,7 +166,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "blobSha": "5b035c04f90ac5b6bb1d681b40248aec0d627556"
+      "blobSha": "a1d1c90716141e6b2b1b86e59956018833c5d450"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
@@ -234,13 +234,13 @@
       "role": "owner_read_adapter",
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "symbol": "pub(crate) async fn read(",
-      "blobSha": "7fac99e8a6ef1ec74fa9b740b3eff15928c9cea5"
+      "blobSha": "b36f3c329c045629584ed87a3ea7c9d2691dde5b"
     },
     {
       "role": "owner_final_use_revalidation",
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "symbol": "pub(crate) async fn revalidate(",
-      "blobSha": "7fac99e8a6ef1ec74fa9b740b3eff15928c9cea5"
+      "blobSha": "b36f3c329c045629584ed87a3ea7c9d2691dde5b"
     },
     {
       "role": "control_protocol",
@@ -271,5 +271,10 @@
     "mode": "runtime_verifier",
     "statement": "hepta-implementation-maps.py verify emits current HEAD/tree; tracked maps bind exact relevant HEAD blobs to avoid self-referential commit/tree hashes"
   },
-  "sourceIdentityPolicy": "legacy_shared_batch"
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "3074b7f9952dfe634f4a8964bb20a2b09de3202a",
+    "tree": "77fa7fa9dabb26313e5523d24fb3104c2ecad4a0",
+    "interpretation": "exact cognitive.read product-source observation after exact-ID, final-use freshness, owner-safe read-unavailability, and executable qualification-prerequisite fixes. Later commits may update only documentation/source-truth metadata; current mapped operations and product callers remain independently bound by exact HEAD blob objects."
+  }
 }
