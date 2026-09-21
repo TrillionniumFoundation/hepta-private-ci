@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "lane": "LANE-A-FOUNDATION",
   "closureScope": "current executable capabilities only",
-  "entryCount": 23,
+  "entryCount": 24,
   "entries": [
     {
       "capabilityId": "platform.types.bounded-values.v1",
@@ -764,7 +764,7 @@
           ]
         }
       ],
-      "durability": "sqlite_admission_outbox_and_process_local_legacy",
+      "durability": "sqlite_policy_admission_outbox_and_process_local_legacy",
       "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
@@ -808,7 +808,7 @@
           ]
         }
       ],
-      "durability": "sqlite_admission_outbox_and_process_local_legacy",
+      "durability": "sqlite_policy_admission_outbox_and_process_local_legacy",
       "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
@@ -860,7 +860,7 @@
           ]
         }
       ],
-      "durability": "sqlite_admission_outbox_and_process_local_legacy",
+      "durability": "sqlite_policy_admission_outbox_and_process_local_legacy",
       "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
@@ -917,7 +917,65 @@
           ]
         }
       ],
-      "durability": "sqlite_admission_outbox_and_process_local_legacy",
+      "durability": "sqlite_policy_admission_outbox_and_process_local_legacy",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "auth.authbus.durable-policy.v1",
+      "module": "auth.authbus",
+      "summary": "durable exact-scope versioned authorization policy with fail-closed current revision",
+      "publicSymbols": [
+        "AuthPolicyStore",
+        "PolicyRevisionDraftV1",
+        "PolicyRuleV1",
+        "PolicyDecisionV1",
+        "AuthPolicyStore::publish_revision",
+        "AuthPolicyStore::authorize"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-authbus/src/policy.rs",
+          "mustContain": [
+            "pub struct AuthPolicyStore",
+            "begin_with(\"BEGIN IMMEDIATE\")",
+            "pub async fn publish_revision(",
+            "pub async fn authorize(",
+            "current policy is not the latest immutable revision"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/migrations/0001_auth_policy.sql",
+          "mustContain": [
+            "CREATE TABLE auth_policy_revisions",
+            "CREATE TABLE auth_policy_rules",
+            "CREATE TABLE auth_policy_current",
+            "auth_policy_revisions_no_update",
+            "auth_policy_rules_no_delete"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/policy_tests.rs",
+          "mustContain": [
+            "exact_principal_action_resource_is_allowed_and_missing_rule_denies",
+            "crash_reopen_preserves_current_policy_and_decision_digest"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/policy_tests.rs",
+          "mustContain": [
+            "stale_revision_and_policy_rollback_fail_closed",
+            "duplicate_exact_scope_rules_are_rejected_before_commit",
+            "reopen_rejects_rolled_back_current_pointer"
+          ]
+        }
+      ],
+      "durability": "sqlite_policy_admission_outbox_and_process_local_legacy",
       "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
