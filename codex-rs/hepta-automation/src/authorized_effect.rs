@@ -344,14 +344,24 @@ where
 
     pub async fn lookup(
         &self,
-        provider_intent: &ProviderEffectIntent,
+        pending: &AuthorizedEffectPending,
     ) -> AuthorizedProviderEffectLookup {
-        if self.adapter.capability() != ProviderEffectIdempotencyCapability::KeyAndStatusLookup {
+        if pending.destination_id != self.provider_scope
+            || self.adapter.capability()
+                != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
+        {
             return AuthorizedProviderEffectLookup::Unresolved;
         }
-        match self.adapter.lookup_for_intent(provider_intent).await {
+        let logical_effect_id = format!("taskflow:{}:{}", pending.run_id, pending.step_id);
+        let Ok(key) =
+            ProviderEffectKey::for_logical_effect(&pending.destination_id, &logical_effect_id)
+        else {
+            return AuthorizedProviderEffectLookup::Unresolved;
+        };
+        let provider_intent = ProviderEffectIntent::new(key, pending.payload_digest.clone());
+        match self.adapter.lookup_for_intent(&provider_intent).await {
             ProviderEffectLookup::Ack(ack) => {
-                if ack.validate_for(provider_intent).is_err() {
+                if ack.validate_for(&provider_intent).is_err() {
                     return AuthorizedProviderEffectLookup::Unresolved;
                 }
                 match provider_receipt_from_ack(&ack) {
@@ -361,7 +371,7 @@ where
             }
             ProviderEffectLookup::NotFound => {
                 AuthorizedProviderEffectLookup::ProvenAbsent {
-                    proof_digest: provider_lookup_digest(provider_intent, b"not_found"),
+                    proof_digest: provider_lookup_digest(&provider_intent, b"not_found"),
                 }
             }
             ProviderEffectLookup::Conflict { .. } | ProviderEffectLookup::Unknown => {
