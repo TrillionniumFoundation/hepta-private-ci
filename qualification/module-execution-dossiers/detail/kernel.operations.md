@@ -72,7 +72,7 @@ Source test identities are not execution receipts. Only current exact-head and d
 
 Current-main `automation.taskflow` separately consumes producer-owned `OperationIntentV1` plus final-use authority and owns its own durable effect-dispatch lineage. This demonstrates a second consumer without moving Automation facts into kernel.operations.
 
-Default Agentd daemon enrollment is not yet source-composed on this current runtime lifecycle. Each additional registered effect destination must add its own dedupe/apply/terminal-observer contract before activation.
+Agentd daemon lifecycle composition is now source-implemented as an explicit opt-in: `AgentdConfig::with_production_operations(...)` is the only configuration seam, runtime requires an available CognitiveStore, retains the verified host, and runs bounded observer-only reconciliation for the daemon lifetime. Default process-environment startup still has no production-operation authority or grant source. Each additional registered effect destination must add its own dedupe/apply/terminal-observer contract before activation.
 
 Restoring old software or data must never resurrect consumed authority, an expired claim, or a terminal external outcome.
 
@@ -81,9 +81,9 @@ Restoring old software or data must never resurrect consumed authority, an expir
 - **Canonical contract/oracle:** `OperationIntentV1`, `OperationLedger`, `Outbox` in `codex-rs/hepta-operations`.
 - **Durable source owner:** `ProductionDurableWriter`, `LocalLeaseOutbox`, `operation_claims`, migrations 0011/0012 in `codex-rs/hepta-memory`.
 - **Final-use and real destination:** `ProductionFinalUseOutboxDispatcher` and `CognitiveSourceOutboxTarget`; destination recomputes complete intent semantics and owns predecessor/CAS + terminal observation.
-- **Named host primitive:** `AgentdProductionWriterHost` in `codex-rs/hepta-agentd/src/production_writer_host.rs`; legacy non-final-use dispatcher is not exported as a product API.
+- **Named host and daemon composition:** `AgentdProductionWriterHost`, `AgentdConfig::with_production_operations` and the `runtime::run` operations reconciler compose the explicit host into Agentd lifetime without adding a default authority source; legacy non-final-use dispatcher is not exported as a product API.
 - **Second current-main consumer:** `codex-rs/hepta-automation/src/authorized_effect.rs` uses producer-owned `OperationIntentV1` and final-use authority.
 - **Source tests:** reference ledger/outbox tests, `local_lease_outbox_tests.rs`, production-writer tests and `production_cognitive_source_target_tests.rs`.
 - **Exact source truth:** `docs/modules/kernel.operations/IMPLEMENTATION_MAP.json` uses `path_blob_manifest_v1`; the verifier compares every mapped file against `git rev-parse HEAD:<path>`.
-- **Remaining repository work:** default daemon lifecycle composition, remaining destination adapters, long-lived segment/checkpoint compaction, and current exact-head/synthetic-merge success.
+- **Remaining repository work:** remaining destination adapters, long-lived segment/checkpoint compaction, and current exact-head/synthetic-merge success.
 - **External gates:** target-host physical storage/power-loss qualification, independent acceptance, operator acceptance, canary, promotion and release.
