@@ -35,13 +35,69 @@ def git(*args: str) -> str:
     return p.stdout.strip()
 
 
-def lane_by_module():
-    return {
-        m: lane["id"]
-        for lane in load("docs/readiness/READINESS.json")["implementationLanes"]
-        for m in lane["modules"]
-    }
+def validate_observed_source(
+    row: dict, mid: str, resolved_roots: list[str], failures: list[str]
+) -> None:
+    """Validate an optional exact product-source observation against HEAD.
 
+    sourceBase remains historical batch provenance. observedAtHead is stronger:
+    when present, every declared observed source path must be byte-unchanged
+    from that exact commit through the current candidate. This permits later
+    documentation-only projection commits without making the observation float.
+    """
+    observed = row.get("observedAtHead")
+    if observed is None:
+        return
+    if not isinstance(observed, dict):
+        failures.append(f"{mid}: observed source identity")
+        return
+    commit, tree = observed.get("commit"), observed.get("tree")
+    if not (
+        isinstance(commit, str)
+        and bool(re.fullmatch(r"[0-9a-f]{40}", commit))
+        and isinstance(tree, str)
+        and bool(re.fullmatch(r"[0-9a-f]{40}", tree))
+    ):
+        failures.append(f"{mid}: observed source identity")
+        return
+    try:
+        if git("rev-parse", f"{commit}^{{tree}}") != tree:
+            failures.append(f"{mid}: observed source tree")
+            return
+        git("merge-base", "--is-ancestor", commit, "HEAD")
+    except subprocess.CalledProcessError:
+        failures.append(f"{mid}: observed source is not current history")
+        return
+
+    paths = row.get("observedSourcePaths", resolved_roots)
+    if not (
+        isinstance(paths, list)
+        and paths
+        and all(isinstance(path, str) and path for path in paths)
+    ):
+        failures.append(f"{mid}: observed source paths")
+        return
+    if not set(resolved_roots).issubset(set(paths)):
+        failures.append(f"{mid}: observed source paths omit resolved roots")
+        return
+    root = ROOT.resolve()
+    for path in paths:
+        candidate = (ROOT / path).resolve()
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            failures.append(f"{mid}: observed source path escape {path}")
+            return
+        if not candidate.exists():
+            failures.append(f"{mid}: missing observed source path {path}")
+            return
+    try:
+        changed = git("diff", "--name-only", commit, "HEAD", "--", *paths)
+    except subprocess.CalledProcessError:
+        failures.append(f"{mid}: observed source diff failed")
+        return
+    if changed:
+        failures.append(f"{mid}: observed source drift since {commit}")
 
 def verify_optional_head_attestation(
     module_id: str, row: dict, failures: list[str]
@@ -94,6 +150,13 @@ def verify_optional_head_attestation(
             f"{module_id}: non-metadata drift after attested head: "
             + ", ".join(unexpected)
         )
+
+def lane_by_module():
+    return {
+        m: lane["id"]
+        for lane in load("docs/readiness/READINESS.json")["implementationLanes"]
+        for m in lane["modules"]
+    }
 
 
 def parse_entrypoints(module: str):
@@ -339,8 +402,11 @@ def generate():
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
+    candidate_source_base = current_source_base()
     failures = []
     source_bases = set()
+    candidate_bound_maps = 0
+    exact_observed_fallback_maps = 0
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -369,7 +435,32 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
+            if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
+                failures.append(f"{mid}: unknown source identity policy")
+            elif policy == "legacy_shared_batch":
+                source_bases.add((source_base["commit"], source_base["tree"]))
+            elif source_base == candidate_source_base:
+                candidate_bound_maps += 1
+            else:
+                observed = row.get("observedAtHead")
+                observed_identity = (
+                    {
+                        "commit": observed.get("commit"),
+                        "tree": observed.get("tree"),
+                    }
+                    if isinstance(observed, dict)
+                    else None
+                )
+                if source_base == observed_identity:
+                    # validate_observed_source below proves that this exact
+                    # owner-source commit/tree is in current history and every
+                    # declared observed path is byte-unchanged through HEAD.
+                    exact_observed_fallback_maps += 1
+                else:
+                    failures.append(
+                        f"{mid}: source base is neither current candidate nor exact observed source"
+                    )
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -377,8 +468,10 @@ def verify():
         if declared != roots:
             failures.append(f"{mid}: declared roots")
         try:
-            if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
+            resolved_roots = resolve_source_roots(ROOT, module)
+            if row.get("resolvedRoots") != resolved_roots:
                 failures.append(f"{mid}: resolved source roots")
+            validate_observed_source(row, mid, resolved_roots, failures)
         except (ValueError, OSError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")
@@ -410,6 +503,8 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "candidateBoundMaps": candidate_bound_maps,
+                "exactObservedFallbackMaps": exact_observed_fallback_maps,
             },
             sort_keys=True,
         )
