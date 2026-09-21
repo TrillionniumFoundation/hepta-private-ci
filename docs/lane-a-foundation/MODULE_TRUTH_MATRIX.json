@@ -179,7 +179,7 @@
         "implementation": "durable_owner_source_implemented",
         "durability": "sqlite_wal_full_integrated_owner",
         "qualification": "source_tests_present_exact_candidate_pending",
-        "activation": "explicit_final_use_host_default_runtime_not_enrolled",
+        "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
@@ -187,10 +187,11 @@
         "atomic CognitiveStore SQLite operation ledger plus local outbox publication",
         "bounded durable dispatch claims with attempt lease expiry renewal backoff and takeover",
         "final-use-only dispatch with destination CAS and independent terminal observation",
-        "bounded deterministic in-memory ledger and outbox retained as reference oracles"
+        "bounded deterministic in-memory ledger and outbox retained as reference oracles",
+        "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default"
       ],
       "targetOnlyCapabilities": [
-        "default Agentd daemon enrollment with an external production grant source",
+        "external production authority/grant enrollment and selected-host activation",
         "destination-owned adapter and terminal observer for every remaining registered effect destination",
         "bounded segment checkpoint compaction for long-lived append-only history",
         "target-host power-loss storage qualification and independent acceptance"
@@ -254,6 +255,21 @@
             "MAX_MODEL_OUTBOX_RECORDS",
             "claim_with_lease",
             "renew_claim"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "mustContain": [
+            "with_production_operations",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "run_production_operation_reconciler",
+            "attach_production_operations",
+            "CompletedRuntimeTask::Operations"
           ]
         }
       ]
