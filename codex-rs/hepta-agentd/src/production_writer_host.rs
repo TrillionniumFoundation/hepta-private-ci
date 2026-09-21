@@ -5,6 +5,7 @@
 //! default runtime remains read-only. A dispatcher target is likewise an
 //! explicit attachment and dispatch fails closed while it is absent.
 
+use std::collections::BTreeMap;
 use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
@@ -46,6 +47,7 @@ pub struct AgentdProductionOperationRuntimeConfig {
     pub target: Arc<dyn FinalUseProductionOutboxTarget>,
     pub grants: Arc<dyn AgentdFinalUseGrantProvider>,
     pub reconcile_interval: Duration,
+    additional_targets: Vec<(FinalUseAuthority, Arc<dyn FinalUseProductionOutboxTarget>)>,
 }
 
 impl fmt::Debug for AgentdProductionOperationRuntimeConfig {
@@ -56,12 +58,58 @@ impl fmt::Debug for AgentdProductionOperationRuntimeConfig {
             .field("lease_id", &self.lease_id)
             .field("lease_generation", &self.lease_generation)
             .field("destination", &self.target.destination_id())
+            .field("additional_destinations", &self.additional_targets.len())
             .field("reconcile_interval", &self.reconcile_interval)
             .finish_non_exhaustive()
     }
 }
 
 impl AgentdProductionOperationRuntimeConfig {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        authority: ProductionAuthorityLease,
+        verifier: Arc<dyn ProductionAuthorityVerifier>,
+        lease_id: String,
+        lease_generation: u64,
+        final_use: FinalUseAuthority,
+        target: Arc<dyn FinalUseProductionOutboxTarget>,
+        grants: Arc<dyn AgentdFinalUseGrantProvider>,
+        reconcile_interval: Duration,
+    ) -> Self {
+        Self {
+            authority,
+            verifier,
+            lease_id,
+            lease_generation,
+            final_use,
+            target,
+            grants,
+            reconcile_interval,
+            additional_targets: Vec::new(),
+        }
+    }
+
+    pub fn with_additional_target(
+        mut self,
+        final_use: FinalUseAuthority,
+        target: Arc<dyn FinalUseProductionOutboxTarget>,
+    ) -> Result<Self, AgentdError> {
+        let destination = target.destination_id();
+        if destination.is_empty()
+            || destination == self.target.destination_id()
+            || self
+                .additional_targets
+                .iter()
+                .any(|(_, existing)| existing.destination_id() == destination)
+        {
+            return Err(AgentdError::Invalid(
+                "production operation destinations must be non-empty and unique".to_string(),
+            ));
+        }
+        self.additional_targets.push((final_use, target));
+        Ok(self)
+    }
+
     pub fn validate_for(&self, config: &AgentdConfig) -> Result<(), AgentdError> {
         if self.authority.agent_id != config.identity().agent_id {
             return Err(AgentdError::GenerationFenced(
@@ -71,11 +119,23 @@ impl AgentdProductionOperationRuntimeConfig {
         if self.lease_generation == 0
             || self.lease_id.trim().is_empty()
             || self.reconcile_interval.is_zero()
+            || self.target.destination_id().is_empty()
         {
             return Err(AgentdError::Invalid(
-                "production operation runtime requires a non-zero generation, non-empty lease id, and non-zero reconcile interval"
+                "production operation runtime requires a non-zero generation, non-empty lease id/destination, and non-zero reconcile interval"
                     .to_string(),
             ));
+        }
+        let mut destinations = BTreeMap::new();
+        destinations.insert(self.target.destination_id(), ());
+        for (_, target) in &self.additional_targets {
+            if target.destination_id().is_empty()
+                || destinations.insert(target.destination_id(), ()).is_some()
+            {
+                return Err(AgentdError::Invalid(
+                    "production operation destinations must be non-empty and unique".to_string(),
+                ));
+            }
         }
         Ok(())
     }
@@ -85,7 +145,7 @@ impl AgentdProductionOperationRuntimeConfig {
         store: CognitiveStore,
     ) -> Result<(Arc<AgentdProductionWriterHost>, Duration), AgentdError> {
         let reconcile_interval = self.reconcile_interval;
-        let host = AgentdProductionWriterHost::open_with_store(
+        let mut host = AgentdProductionWriterHost::open_with_store(
             store,
             self.authority,
             self.verifier.as_ref(),
@@ -93,7 +153,10 @@ impl AgentdProductionOperationRuntimeConfig {
             self.lease_generation,
         )
         .await?
-        .attach_target(self.final_use, self.target, self.grants);
+        .attach_target(self.final_use, self.target, Arc::clone(&self.grants));
+        for (final_use, target) in self.additional_targets {
+            host = host.attach_additional_target(final_use, target)?;
+        }
         Ok((Arc::new(host), reconcile_interval))
     }
 }
@@ -103,7 +166,7 @@ impl AgentdProductionOperationRuntimeConfig {
 #[derive(Clone)]
 pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
-    dispatcher: Option<ProductionFinalUseOutboxDispatcher>,
+    dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
     grants: Option<Arc<dyn AgentdFinalUseGrantProvider>>,
 }
 
@@ -112,7 +175,7 @@ impl fmt::Debug for AgentdProductionWriterHost {
         formatter
             .debug_struct("AgentdProductionWriterHost")
             .field("writer", &self.writer)
-            .field("dispatcher_attached", &self.dispatcher.is_some())
+            .field("destination_count", &self.dispatchers.len())
             .field("grant_provider_attached", &self.grants.is_some())
             .finish()
     }
@@ -141,7 +204,7 @@ impl AgentdProductionWriterHost {
                 .await?;
         Ok(Self {
             writer: Arc::new(writer),
-            dispatcher: None,
+            dispatchers: BTreeMap::new(),
             grants: None,
         })
     }
@@ -164,7 +227,7 @@ impl AgentdProductionWriterHost {
                 .await?;
         Ok(Self {
             writer: Arc::new(writer),
-            dispatcher: None,
+            dispatchers: BTreeMap::new(),
             grants: None,
         })
     }
@@ -182,15 +245,39 @@ impl AgentdProductionWriterHost {
         target: Arc<dyn FinalUseProductionOutboxTarget>,
         grants: Arc<dyn AgentdFinalUseGrantProvider>,
     ) -> Self {
-        self.dispatcher = Some(ProductionFinalUseOutboxDispatcher::attach(
-            final_use, target,
-        ));
+        let destination = target.destination_id().to_string();
+        self.dispatchers.insert(
+            destination,
+            ProductionFinalUseOutboxDispatcher::attach(final_use, target),
+        );
         self.grants = Some(grants);
         self
     }
 
+    pub fn attach_additional_target(
+        mut self,
+        final_use: FinalUseAuthority,
+        target: Arc<dyn FinalUseProductionOutboxTarget>,
+    ) -> Result<Self, AgentdError> {
+        let destination = target.destination_id().to_string();
+        if destination.is_empty() || self.dispatchers.contains_key(&destination) {
+            return Err(AgentdError::Invalid(
+                "production operation destination must be non-empty and unique".to_string(),
+            ));
+        }
+        self.dispatchers.insert(
+            destination,
+            ProductionFinalUseOutboxDispatcher::attach(final_use, target),
+        );
+        Ok(self)
+    }
+
     pub fn has_target(&self) -> bool {
-        self.dispatcher.is_some() && self.grants.is_some()
+        !self.dispatchers.is_empty() && self.grants.is_some()
+    }
+
+    pub fn destination_count(&self) -> usize {
+        self.dispatchers.len()
     }
 
     /// Product dispatch path: derive the exact final-use binding from the
@@ -200,10 +287,34 @@ impl AgentdProductionWriterHost {
         &self,
         receipt: ProductionQueuedReceipt,
     ) -> Result<ProductionDispatchReceipt, AgentdError> {
-        let dispatcher = self.dispatcher.as_ref().ok_or_else(|| {
-            AgentdError::Protocol(
-                "production final-use outbox dispatcher is not explicitly attached".to_string(),
-            )
+        if self.dispatchers.len() != 1 {
+            return Err(AgentdError::Protocol(
+                "multiple production destinations are attached; dispatch must name the destination"
+                    .to_string(),
+            ));
+        }
+        let destination = self
+            .dispatchers
+            .keys()
+            .next()
+            .ok_or_else(|| {
+                AgentdError::Protocol(
+                    "production final-use outbox dispatcher is not explicitly attached".to_string(),
+                )
+            })?
+            .clone();
+        self.dispatch_to_with_grant_provider(&destination, receipt).await
+    }
+
+    pub async fn dispatch_to_with_grant_provider(
+        &self,
+        destination_id: &str,
+        receipt: ProductionQueuedReceipt,
+    ) -> Result<ProductionDispatchReceipt, AgentdError> {
+        let dispatcher = self.dispatchers.get(destination_id).ok_or_else(|| {
+            AgentdError::Protocol(format!(
+                "production destination {destination_id:?} is not registered"
+            ))
         })?;
         let grants = self.grants.as_ref().ok_or_else(|| {
             AgentdError::Protocol(
@@ -223,12 +334,26 @@ impl AgentdProductionWriterHost {
     /// Bounded observer-only reconciliation. This never invokes target
     /// dispatch, so an acknowledgement-loss/restart cannot become a resend.
     pub async fn reconcile(&self, limit: usize) -> Result<usize, AgentdError> {
-        let dispatcher = self.dispatcher.as_ref().ok_or_else(|| {
-            AgentdError::Protocol(
+        if !(1..=256).contains(&limit) {
+            return Err(AgentdError::Protocol(
+                "production operation reconcile limit must be 1..=256".to_string(),
+            ));
+        }
+        if self.dispatchers.is_empty() {
+            return Err(AgentdError::Protocol(
                 "production final-use outbox dispatcher is not explicitly attached".to_string(),
-            )
-        })?;
-        Ok(dispatcher.reconcile(self.writer.as_ref(), limit).await?)
+            ));
+        }
+        let mut total = 0_usize;
+        for dispatcher in self.dispatchers.values() {
+            if total >= limit {
+                break;
+            }
+            total += dispatcher
+                .reconcile(self.writer.as_ref(), limit - total)
+                .await?;
+        }
+        Ok(total)
     }
 
     pub async fn dispatch(
@@ -237,11 +362,15 @@ impl AgentdProductionWriterHost {
         expected: &FinalUseBinding,
         receipt: ProductionQueuedReceipt,
     ) -> Result<ProductionDispatchReceipt, AgentdError> {
-        let dispatcher = self.dispatcher.as_ref().ok_or_else(|| {
-            AgentdError::Protocol(
-                "production final-use outbox dispatcher is not explicitly attached".to_string(),
-            )
-        })?;
+        let dispatcher = self
+            .dispatchers
+            .get(&expected.destination_id)
+            .ok_or_else(|| {
+                AgentdError::Protocol(format!(
+                    "production destination {:?} is not registered",
+                    expected.destination_id
+                ))
+            })?;
         Ok(dispatcher
             .dispatch(self.writer.as_ref(), signed, expected, receipt)
             .await?)
