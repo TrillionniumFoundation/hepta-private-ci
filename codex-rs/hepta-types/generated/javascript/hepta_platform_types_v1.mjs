@@ -26,7 +26,8 @@ export function validateIdProfile(value, variant) {
     return value;
   }
   if (variant === "Module") {
-    if (!/^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$/.test(value) || value.split(".").some((part) => part.length === 0)) throw new Error("module identifier grammar");
+    const parts = value.split(".");
+    if (parts.some((part) => !/^[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?$/.test(part))) throw new Error("module identifier grammar");
     return value;
   }
   let local;
