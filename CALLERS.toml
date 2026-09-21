@@ -91,7 +91,7 @@ forbidden = ["permit_all", "AllowVerifier"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
-required = ["VerifiedCurrentRegistryViewV1", "CurrentCognitiveRegistry", "candidate.with_current(current"]
+required = ["VerifiedCurrentRegistryViewV1", "CurrentCognitiveRegistry", ".with_current(current"]
 forbidden = ["Result<(File, RegistrySnapshotReceipt)", "candidate.with_current(file, receipt"]
 
 [[protected_file]]
