@@ -5,9 +5,11 @@ use std::sync::atomic::Ordering;
 use crate::RuntimeStateStatus;
 #[cfg(unix)]
 use crate::{
-    RuntimeTopologyApplyRequestV1, RuntimeTopologySuccessorV1,
+    RuntimeTopologyApplyRequestV1, RuntimeTopologyMigrationOwnerV1, RuntimeTopologySuccessorV1,
     runtime_topology_final_use_binding_v1, runtime_topology_recovery_final_use_binding_v1,
 };
+#[cfg(unix)]
+use codex_hepta_control_plane::{OrganMigrationError, OrganStateMigrationV1};
 
 #[derive(Debug)]
 struct ObservedAdapter(Arc<AtomicUsize>);
@@ -190,6 +192,82 @@ fn governed_topology_for_runtime(
 }
 
 #[cfg(unix)]
+#[derive(Debug)]
+struct RuntimeTopologyMigrationFixture {
+    handoff_plan_digest: Digest32,
+    migrations: Arc<AtomicUsize>,
+    rollbacks: Arc<AtomicUsize>,
+}
+
+#[cfg(unix)]
+impl OrganStateMigrationV1 for RuntimeTopologyMigrationFixture {
+    fn snapshot(&mut self, _predecessor: Generation) -> Result<Vec<u8>, OrganMigrationError> {
+        Ok(b"runtime-topology-owned-state".to_vec())
+    }
+
+    fn migrate(
+        &mut self,
+        _snapshot: &[u8],
+        _predecessor: Generation,
+        _candidate: Generation,
+    ) -> Result<(), OrganMigrationError> {
+        self.migrations.fetch_add(1, Ordering::SeqCst);
+        Ok(())
+    }
+
+    fn rollback(
+        &mut self,
+        _snapshot: &[u8],
+        _predecessor: Generation,
+        _candidate: Generation,
+    ) -> Result<(), OrganMigrationError> {
+        self.rollbacks.fetch_add(1, Ordering::SeqCst);
+        Ok(())
+    }
+}
+
+#[cfg(unix)]
+impl RuntimeTopologyMigrationOwnerV1 for RuntimeTopologyMigrationFixture {
+    fn handoff_plan_digest(&self) -> Digest32 {
+        self.handoff_plan_digest
+    }
+}
+
+#[cfg(unix)]
+fn runtime_topology_migration_for(
+    governed: &codex_hepta_plasticity::GovernedTopologyProposalV1,
+    candidate_id: &StableId,
+) -> (
+    Box<dyn RuntimeTopologyMigrationOwnerV1>,
+    Arc<AtomicUsize>,
+    Arc<AtomicUsize>,
+) {
+    let candidate = governed
+        .proposal
+        .candidates
+        .iter()
+        .find(|candidate| &candidate.candidate_id == candidate_id)
+        .expect("topology candidate");
+    let change = candidate.changes.first().expect("topology change");
+    let handoff = governed
+        .handoffs
+        .iter()
+        .find(|handoff| handoff.module_id == change.module_id)
+        .expect("writer handoff");
+    let migrations = Arc::new(AtomicUsize::new(0));
+    let rollbacks = Arc::new(AtomicUsize::new(0));
+    (
+        Box::new(RuntimeTopologyMigrationFixture {
+            handoff_plan_digest: handoff.plan_digest,
+            migrations: Arc::clone(&migrations),
+            rollbacks: Arc::clone(&rollbacks),
+        }),
+        migrations,
+        rollbacks,
+    )
+}
+
+#[cfg(unix)]
 fn deterministic_test_nonce(label: &[u8]) -> [u8; 32] {
     *Digest32::of_bytes(label).as_array()
 }
@@ -347,10 +425,13 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
     let successor_snapshot = successor.snapshot();
     let (governed, candidate_id) =
         governed_topology_for_runtime("apply", &current, &successor_snapshot);
+    let (migration, migration_calls, rollback_calls) =
+        runtime_topology_migration_for(&governed, &candidate_id);
     let request = RuntimeTopologyApplyRequestV1 {
         governed,
         candidate_id,
         accepted_subject_id: StableId::new("operator:accepted-topology")?,
+        migration,
         successor,
     };
     let binding = runtime_topology_final_use_binding_v1(&current, &request)
@@ -372,6 +453,8 @@ fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -
         successor_snapshot.hierarchy_digest()
     );
     assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
 
     let after = organs
         .topology_snapshot()
@@ -407,10 +490,13 @@ fn revoked_final_use_never_mutates_the_live_topology() -> Result<()> {
     let successor_snapshot = successor.snapshot();
     let (governed, candidate_id) =
         governed_topology_for_runtime("revoked", &current, &successor_snapshot);
+    let (migration, migration_calls, rollback_calls) =
+        runtime_topology_migration_for(&governed, &candidate_id);
     let request = RuntimeTopologyApplyRequestV1 {
         governed,
         candidate_id,
         accepted_subject_id: StableId::new("operator:revoked-topology")?,
+        migration,
         successor,
     };
     let binding = runtime_topology_final_use_binding_v1(&current, &request)
@@ -440,6 +526,8 @@ fn revoked_final_use_never_mutates_the_live_topology() -> Result<()> {
         current
     );
     assert_eq!(calls.load(Ordering::SeqCst), 0);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
     Ok(())
 }
 
@@ -490,10 +578,13 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     )?;
     let mut controller = StructuralCanaryControllerV1::new(plan)?;
 
+    let (apply_migration, apply_migration_calls, apply_rollback_calls) =
+        runtime_topology_migration_for(&governed, &candidate_id);
     let apply_request = RuntimeTopologyApplyRequestV1 {
         governed,
         candidate_id,
         accepted_subject_id: StableId::new("operator:runtime-canary-apply")?,
+        migration: apply_migration,
         successor,
     };
     let apply_binding = runtime_topology_final_use_binding_v1(&baseline, &apply_request)
@@ -509,6 +600,8 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     assert_eq!(apply_receipt.predecessor_generation, Generation::new(1)?);
     assert_eq!(apply_receipt.successor_generation, Generation::new(2)?);
+    assert_eq!(apply_migration_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(apply_rollback_calls.load(Ordering::SeqCst), 0);
 
     // Force a real live-host failure after cutover, rather than synthesizing a boolean-only fault.
     {
@@ -532,10 +625,13 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     let rollback_snapshot = rollback_successor.snapshot();
     let (rollback_governed, rollback_candidate_id) =
         governed_topology_for_runtime("canary-rollback", &failed, &rollback_snapshot);
+    let (rollback_migration, rollback_migration_calls, rollback_owner_rollbacks) =
+        runtime_topology_migration_for(&rollback_governed, &rollback_candidate_id);
     let rollback_request = RuntimeTopologyApplyRequestV1 {
         governed: rollback_governed,
         candidate_id: rollback_candidate_id,
         accepted_subject_id: StableId::new("operator:runtime-canary-rollback")?,
+        migration: rollback_migration,
         successor: rollback_successor,
     };
     let rollback_binding =
@@ -551,6 +647,8 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
         .map_err(|error| anyhow::anyhow!("{error}"))?;
     assert_eq!(rollback_receipt.predecessor_generation, Generation::new(2)?);
     assert_eq!(rollback_receipt.successor_generation, Generation::new(3)?);
+    assert_eq!(rollback_migration_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(rollback_owner_rollbacks.load(Ordering::SeqCst), 0);
 
     let recovered_status = organs.status_json()?;
     let recovered = organs
