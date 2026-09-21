@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "faf56e2aa62e3a1a33a462e516011bdfc17879f4",
-    "tree": "489a435298ef2f8748935b1ecb327b3ff6aaa041"
+    "commit": "bea88cf8789186778d6229670fadc84f1c61755c",
+    "tree": "89d1908ead4d8f162e20ea56fe112373075ca881"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -172,9 +172,7 @@
       "productCompositionState": "pending_independent_final_use_host_and_attested_provider_product_caller"
     }
   ],
-  "repositoryControlledGaps": [
-    "External-effect product composition remains open: no registered product caller currently binds the TaskFlow AuthorizedEffectDriver seam to an independently provisioned FinalUseAuthority host and an independently attested concrete provider/terminal observer."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",
     "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect",
@@ -215,6 +213,7 @@
   "observedSourcePaths": [
     "codex-rs/hepta-automation",
     "codex-rs/hepta-agent-protocol",
+    "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/automation.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
     "codex-rs/hepta-agentd/src/state_control.rs",
@@ -230,9 +229,12 @@
     "codex-rs/Cargo.lock"
   ],
   "observedAtHead": {
-    "commit": "faf56e2aa62e3a1a33a462e516011bdfc17879f4",
-    "tree": "489a435298ef2f8748935b1ecb327b3ff6aaa041",
-    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd product control, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, reopen/CAS regression coverage, and repository-current rustfmt; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
+    "commit": "bea88cf8789186778d6229670fadc84f1c61755c",
+    "tree": "89d1908ead4d8f162e20ea56fe112373075ca881",
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd product control, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, reopen/CAS regression coverage, Calendar V2 capability type export, and repository-current rustfmt; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
   },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "repositoryControlledProductCompositionGaps": [
+    "External-effect product composition remains open: no registered product caller currently binds the TaskFlow AuthorizedEffectDriver seam to an independently provisioned FinalUseAuthority host and an independently attested concrete provider/terminal observer."
+  ]
 }
