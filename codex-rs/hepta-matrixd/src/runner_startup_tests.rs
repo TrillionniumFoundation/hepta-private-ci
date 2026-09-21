@@ -241,6 +241,7 @@ async fn initial_sync_redaction_commits_before_resume_and_inbox_recovery() -> an
                 source_event_id: MatrixEventId::parse("$redaction")?,
                 room_id: fixture.config.binding.allowed_rooms[0].clone(),
                 sender: fixture.config.binding.allowed_senders[0].clone(),
+                transaction_id: None,
                 binding_revision: 1,
                 generation: 1,
                 origin_server_ts_ms: 19,
