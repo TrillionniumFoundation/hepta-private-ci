@@ -24,6 +24,7 @@ pub enum LearningEvidenceRoleV1 {
     Generator,
     Observer,
     Evaluator,
+    DatasetOwner,
 }
 
 impl LearningEvidenceRoleV1 {
@@ -32,6 +33,7 @@ impl LearningEvidenceRoleV1 {
             Self::Generator => 0,
             Self::Observer => 1,
             Self::Evaluator => 2,
+            Self::DatasetOwner => 3,
         }
     }
 }
@@ -151,7 +153,7 @@ impl LearningEvidenceVerifierV1 {
                 || signer.principal.authority_epoch != trust.authority_epoch
                 || signer.principal.signing_key_digest != Digest32::of_bytes(&signer.verifying_key)
                 || signer.roles.is_empty()
-                || signer.roles.len() > 3
+                || signer.roles.len() > 4
             {
                 return Err(SignedEvidenceError::InvalidTrust);
             }
