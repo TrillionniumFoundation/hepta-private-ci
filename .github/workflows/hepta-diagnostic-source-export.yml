@@ -2,6 +2,11 @@ name: Hepta diagnostic source export
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - work/architecture-scalability-convergence-20260918
+    paths:
+      - .github/workflows/hepta-diagnostic-source-export.yml
 
 permissions:
   contents: read
@@ -32,7 +37,11 @@ jobs:
           archive="$RUNNER_TEMP/hepta-source-$EXPECTED_SHA.tar.gz"
           tar --exclude=.git --exclude=.hepta-evidence --exclude=.hepta-diagnostics -czf "$archive" .
           sha256sum "$archive" > "$archive.sha256"
-          printf 'archive=%s\n' "$archive" >> "$GITHUB_ENV"
+          bundle="$RUNNER_TEMP/hepta-source-$EXPECTED_SHA.bundle"
+          git bundle create "$bundle" HEAD refs/remotes/origin/main
+          git bundle verify "$bundle"
+          sha256sum "$bundle" > "$bundle.sha256"
+          printf 'archive=%s\nbundle=%s\n' "$archive" "$bundle" >> "$GITHUB_ENV"
 
       - name: Retain diagnostic snapshot
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -41,10 +50,13 @@ jobs:
           path: |
             ${{ env.archive }}
             ${{ env.archive }}.sha256
+            ${{ env.bundle }}
+            ${{ env.bundle }}.sha256
           if-no-files-found: error
           retention-days: 1
 
   rust-policy-diagnostics:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -97,6 +109,7 @@ jobs:
           retention-days: 1
 
   bazel-lock-diagnostics:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -140,6 +153,7 @@ jobs:
           retention-days: 1
 
   python-sdk-diagnostics:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -184,6 +198,7 @@ jobs:
           retention-days: 1
 
   python-format-candidate:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -195,7 +210,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        uses: astral-sh/setup-uv@08807647e7069bb48b6efacd8ec9567f424441b
         with:
           version: 0.11.3
 
