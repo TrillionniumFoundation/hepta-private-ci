@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "01b1ed61f77819b8028a9ea008b2743125db9bad",
-    "tree": "71d5312279caed1476c9c9956283910e5d187b00"
+    "commit": "e759a5bd4382fba9c120cd5bf4b572fda1c96b2b",
+    "tree": "2b03eb460523ce449cb83031dd7bd8592733bf10"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -18,18 +18,92 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_explicit_profile_not_product_qualified",
   "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "retrieve_v2",
       "nativeSymbol": "retrieve_v2",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compile_cue",
+      "nativeSymbol": "compile_cue",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_cue",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_candidate_union_from_generated",
+      "nativeSymbol": "build_candidate_union_from_generated",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retrieve",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "settle_engram",
+      "nativeSymbol": "settle_engram",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "engram_settle",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "recall_generated_with_engram",
+      "nativeSymbol": "recall_generated_with_engram",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recall",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "observe_retrieval_assignment",
+      "nativeSymbol": "observe_retrieval_assignment",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/decision.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/decision_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "assignment_observation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -73,13 +147,16 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Qualify the explicit generation-bound RecallPacketV1 -> canonical cognitive.types RecallPacketV1 shadow adapter on exact source-head and deterministic synthetic merge.",
-    "Migrate consumer-owned callsites only after the exact legacy-to-canonical event/cue/snapshot bridge is supplied by authoritative owners; do not infer event identity from legacy record identity.",
-    "Bind every product operation to an authenticated consumer callsite and owner store before changing production-composition claims."
+    "Obtain green exact-head and ordered-parent synthetic-merge receipts for the exact observed source snapshot, including package tests, all-target Clippy, formatting and clean source.",
+    "Compose and independently qualify an authenticated CurrentMemoryRetrievalContext provider for the real Agentd hnmf-required process profile; the binary now selects the profile explicitly and fails startup when the provider is absent.",
+    "Retain a green exact-head qualification-host receipt and repeat the same checked-in SQLite/revalidation plus 512-candidate/4096-node/32768-synapse/four-step probes on an approved named target host before target-host performance claims.",
+    "Bind and qualify a real current encoder/vector-index owner before enabling the Vector policy channel; no lexical, generic-graph or learned-ranker score may be relabelled as vector evidence."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic review and acceptance",
+    "approved named target-host p50/p95/p99 latency, throughput, CPU, RSS/peak-memory, allocation and SQLite/revalidation measurements",
+    "actual encoder/vector-index owner qualification before the Vector policy channel is enabled",
+    "independently observed learned-ranker propensity/outcome evidence for causal utility claims",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
@@ -93,6 +170,62 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-retrieval"
+  ],
+  "compositionRoots": [
+    "codex-rs/hepta-memory/src/cognitive_model.rs",
+    "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-learning-ledger/src/model.rs",
+    "codex-rs/hepta-learning-ledger/src/ledger.rs",
+    "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
+    "codex-rs/hepta-learning-ledger/src/durable_codec.rs"
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "e759a5bd4382fba9c120cd5bf4b572fda1c96b2b",
+    "tree": "2b03eb460523ce449cb83031dd7bd8592733bf10",
+    "interpretation": "exact memory.retrieval source/test/composition snapshot rebased on current main; later commits are documentation/projection-only and every observed source, manifest, test and qualification path must remain byte-unchanged through PR HEAD"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-memory-retrieval",
+    "codex-rs/hepta-memory/Cargo.toml",
+    "codex-rs/hepta-memory/src/cognitive_model.rs",
+    "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+    "codex-rs/hepta-agentd/Cargo.toml",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/config_tests.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-learning-ledger/Cargo.toml",
+    "codex-rs/hepta-learning-ledger/src/model.rs",
+    "codex-rs/hepta-learning-ledger/src/ledger.rs",
+    "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
+    "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
+    "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
+    ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+    "qualification/memory-retrieval/TARGET_HOST.md"
   ],
   "canonicalCognitiveRecallMigration": {
     "state": "shadow_adapter_source_candidate",

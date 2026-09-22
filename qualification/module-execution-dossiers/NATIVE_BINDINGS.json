@@ -268,12 +268,16 @@
     },
     {
       "module": "memory.retrieval",
-      "path": "codex-rs/hepta-memory-retrieval/src/v2.rs",
-      "blobSha": "69e7c773f9ebaa777783a4965749a0051edf37eb",
+      "path": "codex-rs/hepta-memory-retrieval/src/lib.rs",
+      "blobSha": "53261ce8409cb6dfca4c990dd25a84c508c2b1ad",
       "exports": [
         "RetrievalReceiptV2",
         "retrieve_v2",
-        "binding_digest_v2"
+        "compile_cue",
+        "build_candidate_union_from_generated",
+        "settle_engram",
+        "recall_generated_with_engram",
+        "observe_retrieval_assignment"
       ]
     },
     {

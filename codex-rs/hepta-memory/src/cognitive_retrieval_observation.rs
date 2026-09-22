@@ -44,6 +44,7 @@ pub struct ObservedRetrievalCandidate {
     pub revalidation: MemoryRevalidationBinding,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
+    pub channel_ranks: Vec<RetrievalChannelRank>,
 }
 
 /// Created only by the owner read API from one SQLite read transaction.
@@ -83,8 +84,8 @@ pub(super) struct GeneratedRetrieval {
 
 impl CognitiveStore {
     /// Observe all bounded generator outputs before final top-four truncation.
-    /// This optional slow read validates up to 4 * 32 candidate explanations in
-    /// one snapshot. It never expands channel limits or changes legacy ranking.
+    /// This optional slow read validates up to 7 * 32 candidate explanations in
+    /// one snapshot. It never expands per-channel limits or changes legacy top-four ranking.
     pub async fn observe_memory_retrieval(
         &self,
         access: &CognitiveAccess,
@@ -101,7 +102,7 @@ impl CognitiveStore {
                 access,
                 request,
                 generated.ranked,
-                4 * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
+                MAX_RETRIEVAL_OWNER_CHANNELS * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             )
             .await?;
         let mut observed = candidates
@@ -110,6 +111,7 @@ impl CognitiveStore {
                 revalidation: candidate.revalidation.clone(),
                 reciprocal_rank_score: candidate.reciprocal_rank_score,
                 channels: candidate.channels.clone(),
+                channel_ranks: candidate.channel_ranks.clone(),
             })
             .collect::<Vec<_>>();
         observed.sort_by(|left, right| {
@@ -191,6 +193,30 @@ impl CognitiveStore {
         let graph = self
             .graph_channel_tx(transaction, &seeds.values, now)
             .await?;
+        let causal = self
+            .typed_relation_channel_tx(
+                transaction,
+                &seeds.values,
+                now,
+                KgRelationSemanticV1::Causes,
+            )
+            .await?;
+        let procedural = self
+            .typed_relation_channel_tx(
+                transaction,
+                &seeds.values,
+                now,
+                KgRelationSemanticV1::ProcedureStep,
+            )
+            .await?;
+        let contradiction = self
+            .typed_relation_channel_tx(
+                transaction,
+                &seeds.values,
+                now,
+                KgRelationSemanticV1::Contradicts,
+            )
+            .await?;
         let recency = self
             .recency_channel_tx(
                 transaction,
@@ -205,6 +231,17 @@ impl CognitiveStore {
             (RetrievalChannel::EntityFts, &entity, seeds.limit),
             (RetrievalChannel::GraphOneHop, &graph.values, graph.limit),
             (RetrievalChannel::Recency, &recency.values, recency.limit),
+            (RetrievalChannel::Causal, &causal.values, causal.limit),
+            (
+                RetrievalChannel::Procedural,
+                &procedural.values,
+                procedural.limit,
+            ),
+            (
+                RetrievalChannel::ContradictionSupport,
+                &contradiction.values,
+                contradiction.limit,
+            ),
         ] {
             add_rrf_channel(&mut ranked, keys, channel);
             channels.push(RetrievalChannelObservation {
@@ -247,10 +284,16 @@ impl CognitiveStore {
             {
                 continue;
             }
+            let channel_ranks = rank
+                .ranks
+                .into_iter()
+                .map(|(channel, rank)| RetrievalChannelRank { channel, rank })
+                .collect();
             candidates.push(RetrievalCandidate {
                 memory: explanation.memory.clone(),
                 reciprocal_rank_score: rank.score,
                 channels: rank.channels.into_iter().collect(),
+                channel_ranks,
                 revalidation: binding_from_explanation(&explanation),
             });
         }

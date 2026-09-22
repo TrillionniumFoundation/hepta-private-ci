@@ -50,6 +50,48 @@ pub struct EpisodeDecision {
     pub support_digest: Digest32,
 }
 
+/// Durable retrieval-native assignment fact.
+///
+/// Candidate identities are stored as canonical 32-byte digests to retain the
+/// complete 512-candidate retrieval profile within the existing bounded
+/// learning-ledger frame. legal_candidate_indices and
+/// selected_candidate_indices index the sorted enumerated digest vector.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RetrievalAssignmentFact {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub cue_digest: Digest32,
+    pub policy_digest: Digest32,
+    pub source_completeness_digest: Digest32,
+    pub candidate_union_digest: Digest32,
+    pub recall_packet_digest: Digest32,
+    pub enumerated_candidate_digests: Vec<Digest32>,
+    pub legal_candidate_indices: Vec<u32>,
+    pub selected_candidate_indices: Vec<u32>,
+    /// Exact subset published by the owner to the named product consumer after
+    /// downstream learned reranking, response budget, NDU planning and final
+    /// owner/currentness fences. Provider/model attachment is proved separately
+    /// by the inference journal; this field alone does not claim model delivery.
+    pub delivered_candidate_indices: Vec<u32>,
+    /// Whether a non-empty retrieval context was published to that consumer.
+    pub context_exposed: bool,
+    /// Digest of the exact serialized CognitiveContextSnapshot returned by the
+    /// owner. The inference journal carries the same digest so a later
+    /// native_started receipt can prove actual turn/start attachment.
+    pub published_context_digest: Option<Digest32>,
+    pub omitted_by_policy_limits: u32,
+    pub assignment_propensity: ProbabilityQ32,
+    /// Exact learned policy payload that affected final delivery, when a
+    /// downstream ranker actually applied. None means HNMF/order/budget only.
+    pub downstream_policy_digest: Option<Digest32>,
+    /// Propensity of the final delivered subset under the downstream decision
+    /// path. Current deterministic rank/budget/planning paths record one.
+    pub delivery_propensity: ProbabilityQ32,
+    pub completeness: CandidateSetCompleteness,
+    /// Digest of the complete retrieval-native assignment observation.
+    pub support_digest: Digest32,
+}
+
 /// Outcome observed by an identity independent from the evaluated policy.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OutcomeObservation {
@@ -82,18 +124,25 @@ pub struct Revocation {
     pub reason_digest: Digest32,
 }
 
+// Retrieval assignment facts intentionally carry a bounded 512-candidate
+// causal surface. Keep the durable event representation inline so the private
+// journal encoding and public event API do not change merely to optimize enum
+// stack size.
+#[allow(clippy::large_enum_variant)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LedgerEvent {
     Decision(EpisodeDecision),
+    RetrievalAssignment(RetrievalAssignmentFact),
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
     Revocation(Revocation),
 }
 
 impl LedgerEvent {
-    pub(crate) fn record_id(&self) -> &StableId {
+    pub fn record_id(&self) -> &StableId {
         match self {
             Self::Decision(value) => &value.record_id,
+            Self::RetrievalAssignment(value) => &value.record_id,
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
             Self::Revocation(value) => &value.record_id,

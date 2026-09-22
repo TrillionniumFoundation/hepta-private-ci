@@ -7,6 +7,8 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 
 use super::AgentdConfig;
+use super::CognitiveRetrievalMode;
+use super::parse_cognitive_retrieval_mode;
 use crate::AgentdError;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
@@ -106,4 +108,29 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
         .is_err(),
         "workspace mismatch must fail closed"
     );
+}
+
+#[test]
+fn cognitive_retrieval_process_profile_is_explicit_and_fail_closed() {
+    use std::ffi::OsString;
+
+    assert_eq!(
+        parse_cognitive_retrieval_mode(None).expect("default profile"),
+        CognitiveRetrievalMode::Compatibility
+    );
+    assert_eq!(
+        parse_cognitive_retrieval_mode(Some(OsString::from("compatibility")))
+            .expect("compatibility profile"),
+        CognitiveRetrievalMode::Compatibility
+    );
+    assert_eq!(
+        parse_cognitive_retrieval_mode(Some(OsString::from("hnmf-required")))
+            .expect("HNMF profile"),
+        CognitiveRetrievalMode::HnmfRequired
+    );
+    assert!(matches!(
+        parse_cognitive_retrieval_mode(Some(OsString::from("auto"))),
+        Err(AgentdError::Invalid(message))
+            if message.contains("compatibility or hnmf-required")
+    ));
 }

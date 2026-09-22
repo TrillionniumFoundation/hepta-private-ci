@@ -1095,11 +1095,11 @@
       "guide": "docs/modules/memory.retrieval/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/memory.retrieval.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "compile_cue(objective,approvedContext,snapshot); retrieve(cue,channelBudgets); recall(candidateUnion,engram,policy). Log enumerated/truncated generator-relative candidates through ledger owner.",
-      "stateAndEncoding": "No fact writer. Recall/cache binds full snapshot,cue,retrieval/encoder profile,quotas,truncation and revocation. Source IDs/revisions and support remain resolvable.",
-      "linearizationAndRecovery": "Parallel channel results are canonicalized before assignment; stable exact-revision dedupe,source quotas and bounded truncation precede logged propensity. Current source revalidation precedes attachment.",
-      "algorithmAndBounds": "<=512 events,4096 nodes,32768 edges,4 settling steps,16 results,64 active units/population. Contradictory high-risk support abstains; similarity is not truth.",
-      "acceptanceOracle": "Permute channel completion order: identical candidate digest. Revoke top-ranked source before delivery: it cannot attach. Equal-budget lexical/no-recurrence/no-inhibition baselines retain independent outcome labels.",
+      "apiContract": "compile_cue(objective,approvedContext,request,snapshot); owner generators emit authenticated bounded RetrievalGeneratorBatchV1 values; build_candidate_union_from_generated(cue,policy,input); recall_generated_with_engram(cue,policy,input,engram,dynamics); observe_retrieval_assignment(...) records enumerated/legal/selected evidence. Agentd product composition enters only through hepta-memory::execute_owner_observation.",
+      "stateAndEncoding": "No source-fact writer. The SQLite owner observation binds exact memory/source revision, per-channel rank and completeness before legacy top-four truncation; HNMF inputs bind the Lane C generation vector, cue/profile, retrieval policy, generator owner/generation, engram generation and dynamics policy. learning.ledger separately owns durable assignment and final-delivery evidence.",
+      "linearizationAndRecovery": "Acquire one coherent Lane C cut; observe the complete bounded SQLite-owner candidate set before top-k; adapt only owner-observed ranks/support into generator batches; canonicalize and recall; optionally rerank only the HNMF-admitted set; batch-revalidate exact selected revisions/sources before materializing content; revalidate cut/current retrieval context/ranker before publication. HnmfRequired never falls back to Compatibility.",
+      "algorithmAndBounds": "Product HNMF admits at most 512 generator candidate events, 4096 engram nodes, 32768 synapses, four settling steps, 64 active units per population and 16 returned events. Sparse competition, recurrent association, contradiction-aware abstention and explicit OOD/coverage gates are deterministic; similarity never establishes source truth.",
+      "acceptanceOracle": "Channel/generator completion permutations yield one canonical union/recall. A candidate below legacy top-four can win before final truncation. Missing positive-weight generator owners, cross-generation rebinding, stale/revoked final support, recomputed malformed receipts and HnmfRequired-without-current-context fail closed. RET-04 plain/lexical-only/no-recurrence/no-inhibition fixtures remain independently observable.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -1110,26 +1110,45 @@
             "symbol": "retrieve_v2"
           },
           {
-            "path": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-            "symbol": "build_candidate_union"
+            "path": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+            "symbol": "compile_cue"
           },
           {
-            "path": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-            "symbol": "recall"
+            "path": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+            "symbol": "build_candidate_union_from_generated"
+          },
+          {
+            "path": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+            "symbol": "recall_generated_with_engram"
+          },
+          {
+            "path": "codex-rs/hepta-memory-retrieval/src/engram.rs",
+            "symbol": "settle_engram"
+          },
+          {
+            "path": "codex-rs/hepta-memory-retrieval/src/decision.rs",
+            "symbol": "observe_retrieval_assignment"
           }
         ],
-        "stateAndRecovery": "Native receipts bind the supplied candidate set, including omitted candidates, and retain explicit channel/score/generation data. Ranking is stateless; existing hepta-memory SQLite retrieval remains the physical content/index owner.",
+        "stateAndRecovery": "The retrieval/HNMF core is stateless and deny-all authority. hepta-memory::CognitiveStore remains the durable SQLite content/index and owner-observation boundary; only its sealed adapter derives product generator evidence. Agentd exposes explicit Compatibility versus HnmfRequired composition, and learning.ledger owns durable enumerated/legal/selected/final-delivered assignment evidence.",
         "testFiles": [
           "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
           "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
-          "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+          "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+          "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
+          "codex-rs/hepta-memory-retrieval/src/decision_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+          "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs"
         ],
         "runtimeDocuments": [
           "codex-rs/hepta-memory/LANE_C_SQLITE.md",
-          "docs/readiness/LANE_B_NATIVE_HOST.md"
+          "docs/readiness/LANE_B_NATIVE_HOST.md",
+          "qualification/memory-retrieval/TARGET_HOST.md"
         ],
         "remainingWork": [
-          "Input completeness/freshness still needs the real generator and owner. Do not infer a complete HNMF/embedding execution pipeline from caller-supplied candidates or scores."
+          "Obtain green exact-head and ordered-parent synthetic-merge receipts for this candidate and preserve the explicit HnmfRequired fail-closed product profile.",
+          "The durable SQLite KG owner supplies typed causal/procedural/contradiction-support batches and generic graph excludes those reserved edges; Vector remains disabled until an authenticated current encoder/vector-index owner is composed and qualified.",
+          "Run named target-host SQLite/revalidation and 512-candidate/4096-node/32768-synapse/four-step measurements, then obtain independent semantic acceptance and real downstream outcome evidence before any activation or causal-uplift claim."
         ]
       }
     },

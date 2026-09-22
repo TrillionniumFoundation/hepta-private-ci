@@ -13,6 +13,7 @@ use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
+use crate::KgRelationSemanticV1;
 use crate::LedgerSourceKind;
 use crate::MemoryLifecycleState;
 use crate::MemoryRevisionId;
@@ -35,6 +36,7 @@ pub use observation::RetrievalObservation;
 pub const MAX_RETRIEVAL_QUERY_BYTES: usize = 2 * 1024;
 pub const MAX_RETRIEVAL_CHANNEL_CANDIDATES: usize = 32;
 pub const MAX_RETRIEVAL_RESULTS: usize = 4;
+pub(crate) const MAX_RETRIEVAL_OWNER_CHANNELS: usize = 7;
 
 const RRF_K: u64 = 60;
 const RRF_SCALE: u64 = 1_000_000;
@@ -64,6 +66,15 @@ pub enum RetrievalChannel {
     EntityFts,
     GraphOneHop,
     Recency,
+    Causal,
+    Procedural,
+    ContradictionSupport,
+}
+
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+pub struct RetrievalChannelRank {
+    pub channel: RetrievalChannel,
+    pub rank: u32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -91,6 +102,7 @@ pub struct RetrievalCandidate {
     pub memory: MemoryRevisionRecord,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
+    pub channel_ranks: Vec<RetrievalChannelRank>,
     pub revalidation: MemoryRevalidationBinding,
 }
 
@@ -154,6 +166,7 @@ struct MemoryKey {
 struct AggregatedRank {
     score: u64,
     channels: BTreeSet<RetrievalChannel>,
+    ranks: BTreeMap<RetrievalChannel, u32>,
 }
 
 struct EntitySeed {
@@ -636,6 +649,28 @@ impl CognitiveStore {
         seeds: &[EntitySeed],
         now: i64,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
+        self.relation_channel_tx(transaction, seeds, now, None)
+            .await
+    }
+
+    async fn typed_relation_channel_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        seeds: &[EntitySeed],
+        now: i64,
+        semantic: KgRelationSemanticV1,
+    ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
+        self.relation_channel_tx(transaction, seeds, now, Some(semantic))
+            .await
+    }
+
+    async fn relation_channel_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        seeds: &[EntitySeed],
+        now: i64,
+        semantic: Option<KgRelationSemanticV1>,
+    ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
         let mut queried_canonical_entities = BTreeSet::new();
         let mut seen = BTreeSet::new();
         let mut result = Vec::new();
@@ -653,6 +688,8 @@ impl CognitiveStore {
                 continue;
             }
             let remaining = MAX_RETRIEVAL_CHANNEL_CANDIDATES - result.len();
+            let typed_relation = semantic.map(KgRelationSemanticV1::relation).unwrap_or("");
+            let generic = if semantic.is_none() { 1_i64 } else { 0_i64 };
             let rows = sqlx::query(
                 "WITH canonical_support_nodes AS (
                      SELECT node_id
@@ -680,7 +717,9 @@ impl CognitiveStore {
                                          AND er.revision = e.memory_revision
                  JOIN memory_revisions nr ON nr.memory_id = n.memory_id
                                          AND nr.revision = n.memory_revision
-                 WHERE e.valid_from_unix_seconds <= ?
+                 WHERE ((? = 1 AND e.relation NOT IN (?, ?, ?))
+                        OR (? = 0 AND e.relation = ?))
+                   AND e.valid_from_unix_seconds <= ?
                    AND (e.valid_to_unix_seconds IS NULL OR ? < e.valid_to_unix_seconds)
                    AND n.valid_from_unix_seconds <= ?
                    AND (n.valid_to_unix_seconds IS NULL OR ? < n.valid_to_unix_seconds)
@@ -698,6 +737,12 @@ impl CognitiveStore {
             .bind(&seed.canonical_entity_id)
             .bind(&seed.projection_scope)
             .bind(seed.generation)
+            .bind(generic)
+            .bind(KgRelationSemanticV1::Causes.relation())
+            .bind(KgRelationSemanticV1::ProcedureStep.relation())
+            .bind(KgRelationSemanticV1::Contradicts.relation())
+            .bind(generic)
+            .bind(typed_relation)
             .bind(now)
             .bind(now)
             .bind(now)
@@ -836,6 +881,9 @@ fn add_rrf_channel(
         let aggregate = ranked.entry(memory.clone()).or_default();
         aggregate.score += RRF_SCALE / (RRF_K + rank);
         aggregate.channels.insert(source);
+        aggregate
+            .ranks
+            .insert(source, u32::try_from(rank).unwrap_or(u32::MAX));
     }
 }
 

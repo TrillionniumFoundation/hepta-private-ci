@@ -18,6 +18,7 @@ use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
 use codex_hepta_learning_artifacts::load_pinned_candidate;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
@@ -34,9 +35,17 @@ pub trait CurrentCognitiveRegistry: Send + Sync {
 pub struct PinnedCognitiveRanker {
     owner: AgentId,
     body_generation: u64,
+    policy_digest: Digest32,
     model: LoadedTabularOperatorV1,
     current: Arc<dyn CurrentCognitiveRegistry>,
     cache: Mutex<Option<RevalidatingCandidate>>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct CognitiveRankObservation {
+    pub(crate) policy_digest: Digest32,
+    pub(crate) propensity: ProbabilityQ32,
+    pub(crate) applied: bool,
 }
 
 /// Stable query encoder shared by the trainer and runtime. It is not an
@@ -91,6 +100,7 @@ impl PinnedCognitiveRanker {
         let value = Self {
             owner,
             body_generation,
+            policy_digest: model_pin.payload_digest,
             model,
             current,
             cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
@@ -133,7 +143,7 @@ impl PinnedCognitiveRanker {
         generation: u64,
         query: &str,
         items: &mut [CognitiveContextItem],
-    ) -> Result<(), String> {
+    ) -> Result<CognitiveRankObservation, String> {
         self.require_identity(owner, generation)?;
         if items.len() > 1024 {
             return Err("ranking candidates exceed cognitive read bound".to_string());
@@ -144,8 +154,16 @@ impl PinnedCognitiveRanker {
             for (index, item) in items.iter().enumerate() {
                 match self.model.predict(&sensor, &cognitive_action_id(item)?) {
                     Ok(prediction) => scored.push((index, prediction.value.raw())),
-                    // Partial support must not silently outrank unobserved records.
-                    Err(TabularPayloadError::UnsupportedCell) => return Ok(()),
+                    // Partial support abstains from this downstream policy
+                    // decision rather than silently assigning a fabricated
+                    // propensity to a partially observed action set.
+                    Err(TabularPayloadError::UnsupportedCell) => {
+                        return Ok(CognitiveRankObservation {
+                            policy_digest: self.policy_digest,
+                            propensity: ProbabilityQ32::ONE,
+                            applied: false,
+                        });
+                    }
                     Err(error) => return Err(error.to_string()),
                 }
             }
@@ -154,7 +172,11 @@ impl PinnedCognitiveRanker {
             for (destination, (source, _)) in scored.into_iter().enumerate() {
                 items[destination] = original[source].clone();
             }
-            Ok(())
+            Ok(CognitiveRankObservation {
+                policy_digest: self.policy_digest,
+                propensity: ProbabilityQ32::ONE,
+                applied: true,
+            })
         })
     }
 }

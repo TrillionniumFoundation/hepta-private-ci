@@ -92,8 +92,13 @@ pub enum NativeReservationState {
 pub struct NativeDispatch {
     pub thread_id: String,
     pub model_provider: String,
-    /// Exact serialized additional context, including its owner snapshot.
+    /// Exact serialized additional context passed to turn/start.
     pub context_digest: String,
+    /// Digest of the owner-native CognitiveContextSnapshot nested inside the
+    /// additional context. It joins retrieval assignment evidence to this
+    /// durable dispatch without claiming provider acceptance by itself.
+    #[serde(default)]
+    pub owner_context_digest: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -410,6 +415,9 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                if let Some(owner_context_digest) = &dispatch.owner_context_digest {
+                    validate_digest(owner_context_digest, "native owner context")?;
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }

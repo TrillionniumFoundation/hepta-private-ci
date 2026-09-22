@@ -1,0 +1,97 @@
+name: Hepta memory retrieval qualification host
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "qualification/memory-retrieval/**"
+      - "docs/modules/memory.retrieval/**"
+      - ".github/workflows/hepta-memory-retrieval-qualification-host.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-memory-retrieval-qualification-host-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+
+jobs:
+  qualification-host:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source and host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/memory-retrieval-target-host"
+          {
+            printf 'source_commit=%s\n' "$(git rev-parse HEAD)"
+            printf 'source_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'runner_name=%s\n' "$RUNNER_NAME"
+            printf 'runner_os=%s\n' "$RUNNER_OS"
+            printf 'runner_arch=%s\n' "$RUNNER_ARCH"
+            uname -a
+            lscpu
+            free -b
+            rustc -Vv
+            cargo -V
+            /usr/bin/time --version
+          } > "$RUNNER_TEMP/memory-retrieval-target-host/host.txt" 2>&1
+
+      - name: SQLite owner retrieval and revalidation probe
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v             cargo test --release --locked -p codex-hepta-memory             target_host_owner_retrieval_reports_latency_percentiles             -- --ignored --nocapture --test-threads=1             > "$RUNNER_TEMP/memory-retrieval-target-host/sqlite-owner.log" 2>&1
+
+      - name: HNMF 512-candidate four-step probe
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v             cargo test --release --locked -p codex-hepta-memory-retrieval             target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling             -- --ignored --nocapture --test-threads=1             > "$RUNNER_TEMP/memory-retrieval-target-host/hnmf-512.log" 2>&1
+
+      - name: HNMF 4096-node 32768-synapse structural probe
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v             cargo test --release --locked -p codex-hepta-memory-retrieval             target_host_hnmf_validates_full_structural_ceiling             -- --ignored --nocapture --test-threads=1             > "$RUNNER_TEMP/memory-retrieval-target-host/hnmf-structural.log" 2>&1
+
+      - name: Summarize measurement lines
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            printf 'Source: `%s`\n\n' "$SOURCE_SHA"
+            printf 'This is GitHub-hosted qualification-host evidence, not a production target-host acceptance receipt.\n\n'
+            grep -h 'hepta.memory-retrieval.target-host.v1' "$RUNNER_TEMP"/memory-retrieval-target-host/*.log || true
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Retain raw qualification-host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-retrieval-qualification-host-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-retrieval-target-host/**
+          if-no-files-found: error
+          retention-days: 30

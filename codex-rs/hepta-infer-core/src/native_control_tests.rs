@@ -26,6 +26,7 @@ fn dispatch() -> NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
+        owner_context_digest: Some("c".repeat(64)),
     }
 }
 

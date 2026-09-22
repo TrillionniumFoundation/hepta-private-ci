@@ -30,6 +30,8 @@ fn encoded_read_budget_unavailability_is_local_not_store_failure() {
         super::CognitiveContextError::ReadUnavailable(_)
     ));
 }
+#[path = "cognitive_context_hnmf_tests.rs"]
+mod hnmf;
 
 #[tokio::test]
 async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
