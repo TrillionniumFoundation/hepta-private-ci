@@ -849,12 +849,11 @@ mod tests {
             request
         );
 
-        let response = AgentdPayload::AutomationEffectReconcile(
-            AutomationEffectReconcileSnapshot {
+        let response =
+            AgentdPayload::AutomationEffectReconcile(AutomationEffectReconcileSnapshot {
                 state: AutomationEffectReconcileState::Indeterminate,
                 effect: None,
-            },
-        );
+            });
         let response_bytes = serde_json::to_vec(&response).expect("serialize effect response");
         assert_eq!(
             serde_json::from_slice::<AgentdPayload>(&response_bytes)

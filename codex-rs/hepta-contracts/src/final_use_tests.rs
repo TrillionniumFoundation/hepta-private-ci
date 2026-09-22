@@ -83,7 +83,7 @@ fn synchronous_final_use_rejects_a_concurrent_revocation_commit() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
 }
@@ -93,9 +93,11 @@ fn async_final_use_fence_survives_pending_and_releases_on_cancellation() {
     let (authority, signed, _directory) = fixture().unwrap();
     let binding = signed.grant.binding.clone();
     let token = authority.claim(&signed, &binding).unwrap();
-    let mut future = Box::pin(authority.with_verified_use_async(token, &binding, || async {
-        std::future::pending::<()>().await
-    }));
+    let mut future = Box::pin(
+        authority.with_verified_use_async(token, &binding, || async {
+            std::future::pending::<()>().await
+        }),
+    );
     let waker = Waker::noop();
     let mut context = Context::from_waker(waker);
 
@@ -114,7 +116,7 @@ fn async_final_use_fence_survives_pending_and_releases_on_cancellation() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
 }

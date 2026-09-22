@@ -1593,35 +1593,21 @@ mod tests {
 
     #[test]
     fn operation_effect_key_is_stable_across_payload_changes() {
-        let first = ProviderEffectKey::for_operation(
-            "provider/config-v1",
-            "run-1/step-1",
-            "operation-1",
-        )
-        .expect("operation key");
-        let second = ProviderEffectKey::for_operation(
-            "provider/config-v1",
-            "run-1/step-1",
-            "operation-1",
-        )
-        .expect("same operation key");
-        let changed_operation = ProviderEffectKey::for_operation(
-            "provider/config-v1",
-            "run-1/step-1",
-            "operation-2",
-        )
-        .expect("changed operation key");
+        let first =
+            ProviderEffectKey::for_operation("provider/config-v1", "run-1/step-1", "operation-1")
+                .expect("operation key");
+        let second =
+            ProviderEffectKey::for_operation("provider/config-v1", "run-1/step-1", "operation-1")
+                .expect("same operation key");
+        let changed_operation =
+            ProviderEffectKey::for_operation("provider/config-v1", "run-1/step-1", "operation-2")
+                .expect("changed operation key");
         assert_eq!(first, second);
         assert_ne!(first, changed_operation);
 
-        let payload_a = ProviderEffectIntent::new(
-            first.clone(),
-            Sha256Digest::for_bytes(b"payload-a"),
-        );
-        let payload_b = ProviderEffectIntent::new(
-            first,
-            Sha256Digest::for_bytes(b"payload-b"),
-        );
+        let payload_a =
+            ProviderEffectIntent::new(first.clone(), Sha256Digest::for_bytes(b"payload-a"));
+        let payload_b = ProviderEffectIntent::new(first, Sha256Digest::for_bytes(b"payload-b"));
         assert_eq!(payload_a.key, payload_b.key);
         assert_ne!(payload_a.payload_sha256, payload_b.payload_sha256);
     }

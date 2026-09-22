@@ -21,12 +21,12 @@ use tokio::time::timeout;
 
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
 use crate::AgentdCapabilitySet;
-use crate::AutomationEffectReconcileSnapshot;
-use crate::AutomationEffectSnapshot;
 use crate::AgentdError;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
 use crate::AgentdResponse;
+use crate::AutomationEffectReconcileSnapshot;
+use crate::AutomationEffectSnapshot;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
@@ -260,9 +260,7 @@ impl AgentdClient {
         signed_grant: SignedFinalUseGrant,
         command_id: String,
     ) -> Result<AutomationEffectSnapshot, AgentdError> {
-        if wire_payload.is_empty()
-            || wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES
-        {
+        if wire_payload.is_empty() || wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES {
             return Err(AgentdError::Invalid(
                 "automation effect wire payload is empty or too large".to_string(),
             ));

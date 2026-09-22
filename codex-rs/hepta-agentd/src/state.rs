@@ -106,11 +106,9 @@ impl AgentdState {
         &self,
         host: Arc<crate::automation_effect_host::AgentdAutomationEffectHost>,
     ) -> Result<(), AgentdError> {
-        self.automation_effect
-            .set(host)
-            .map_err(|_| AgentdError::Protocol(
-                "automation effect host was attached more than once".to_string(),
-            ))
+        self.automation_effect.set(host).map_err(|_| {
+            AgentdError::Protocol("automation effect host was attached more than once".to_string())
+        })
     }
 
     pub(crate) fn automation_effect_host(

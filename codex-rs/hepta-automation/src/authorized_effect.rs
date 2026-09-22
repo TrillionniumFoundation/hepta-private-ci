@@ -161,7 +161,7 @@ impl AuthorizedEffectIntent {
     /// Product callers may transport the signed grant, but they do not get to
     /// supply a second independently mutable binding alongside the effect
     /// intent.
-    pub fn final_use_binding(&self) -> Result<FinalUseBinding, TaskFlowError> {
+    pub fn final_use_binding(&self) -> Result<FinalUseBinding, AuthorizedEffectError> {
         let intent_digest = self.digest()?;
         Ok(FinalUseBinding {
             subject_id: self.subject_id.clone(),
@@ -307,9 +307,8 @@ pub struct AuthorizedProviderEffectRequest<'a> {
 
 pub type AuthorizedEffectFuture<'a> = Pin<
     Box<
-        dyn Future<
-                Output = Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError>,
-            > + Send
+        dyn Future<Output = Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError>>
+            + Send
             + 'a,
     >,
 >;
@@ -366,8 +365,7 @@ where
         pending: &AuthorizedEffectPending,
     ) -> AuthorizedProviderEffectLookup {
         if pending.destination_id != self.provider_scope
-            || self.adapter.capability()
-                != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
+            || self.adapter.capability() != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
         {
             return AuthorizedProviderEffectLookup::Unresolved;
         }
@@ -388,11 +386,9 @@ where
                     None => AuthorizedProviderEffectLookup::Unresolved,
                 }
             }
-            ProviderEffectLookup::NotFound => {
-                AuthorizedProviderEffectLookup::ProvenAbsent {
-                    proof_digest: provider_lookup_digest(&provider_intent, b"not_found"),
-                }
-            }
+            ProviderEffectLookup::NotFound => AuthorizedProviderEffectLookup::ProvenAbsent {
+                proof_digest: provider_lookup_digest(&provider_intent, b"not_found"),
+            },
             ProviderEffectLookup::Conflict { .. } | ProviderEffectLookup::Unknown => {
                 AuthorizedProviderEffectLookup::Unresolved
             }
@@ -425,7 +421,6 @@ where
         })
     }
 }
-
 
 fn provider_effect_intent(
     intent: &AuthorizedEffectIntent,
@@ -779,7 +774,10 @@ impl AutomationStore {
         attempt: u32,
         fence: &TaskFlowFence,
     ) -> Result<Option<AuthorizedEffectRecoveryResult>, AuthorizedEffectError> {
-        let Some(durable) = self.effect_dispatch_attempt(run_id, step_id, attempt).await? else {
+        let Some(durable) = self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .await?
+        else {
             return Ok(None);
         };
         if durable.observation.is_none() {
@@ -1522,7 +1520,7 @@ mod intent_tests {
         let mut value = baseline.clone();
         value.dependencies[0].state_digest = Sha256Digest::for_bytes(b"other-dep");
         variants.push(value);
-        let mut value = baseline.clone();
+        let mut value = baseline;
         value.compensation_for = None;
         variants.push(value);
 

@@ -109,10 +109,7 @@ struct AutomationEffectHostFileV1 {
 }
 
 impl AgentdAutomationEffectHost {
-    pub(crate) fn open(
-        identity: &AgentdIdentity,
-        path: &Path,
-    ) -> Result<Self, AgentdError> {
+    pub(crate) fn open(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
         let config = read_host_file(path)?;
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {
             return Err(AgentdError::Invalid(
@@ -132,15 +129,12 @@ impl AgentdAutomationEffectHost {
             ));
         }
 
-        let final_use_scope_digest =
-            Sha256Digest::parse(config.final_use_scope_sha256.clone())
-                .map_err(AgentdError::Invalid)?;
-        let declared_contract_digest = Sha256Digest::parse(config.contract_sha256.clone())
+        let final_use_scope_digest = Sha256Digest::parse(config.final_use_scope_sha256.clone())
             .map_err(AgentdError::Invalid)?;
-        let contract_signature = decode_hex_array::<64>(
-            &config.contract_signature_hex,
-            "contract_signature_hex",
-        )?;
+        let declared_contract_digest =
+            Sha256Digest::parse(config.contract_sha256.clone()).map_err(AgentdError::Invalid)?;
+        let contract_signature =
+            decode_hex_array::<64>(&config.contract_signature_hex, "contract_signature_hex")?;
         let contract_verifying_key = decode_hex_array::<32>(
             &config.contract_verifying_key_hex,
             "contract_verifying_key_hex",
@@ -191,7 +185,10 @@ impl AgentdAutomationEffectHost {
             initial_revocations.revision,
         );
 
-        let authority_root = identity.layout.automation_root().join("final-use-authority");
+        let authority_root = identity
+            .layout
+            .automation_root()
+            .join("final-use-authority");
         fs::create_dir_all(&authority_root)?;
         #[cfg(unix)]
         {
@@ -236,7 +233,9 @@ impl AgentdAutomationEffectHost {
             .taskflow_run(&intent.run_id)
             .await
             .map_err(|error| AgentdError::Protocol(format!("read effect TaskFlow run: {error}")))?
-            .ok_or_else(|| AgentdError::Invalid("effect TaskFlow run does not exist".to_string()))?;
+            .ok_or_else(|| {
+                AgentdError::Invalid("effect TaskFlow run does not exist".to_string())
+            })?;
         let fence = self.current_fence(&run, now_ms)?;
         self.refresh_revocations()?;
         let binding = intent
@@ -291,7 +290,9 @@ impl AgentdAutomationEffectHost {
             .taskflow_run(run_id)
             .await
             .map_err(|error| AgentdError::Protocol(format!("read effect TaskFlow run: {error}")))?
-            .ok_or_else(|| AgentdError::Invalid("effect TaskFlow run does not exist".to_string()))?;
+            .ok_or_else(|| {
+                AgentdError::Invalid("effect TaskFlow run does not exist".to_string())
+            })?;
         let fence = self.current_fence(&run, now_ms)?;
         if let Some(local) = store
             .settle_authorized_taskflow_effect_observation(run_id, step_id, attempt, &fence)
@@ -334,8 +335,7 @@ impl AgentdAutomationEffectHost {
                         AgentdError::Protocol(format!(
                             "reconcile authorized effect terminal observation: {error}"
                         ))
-                    })?
-                {
+                    })? {
                     AuthorizedEffectRecoveryResult::Observed(receipt) => {
                         Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
                     }
@@ -355,19 +355,16 @@ impl AgentdAutomationEffectHost {
 
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
         let head = read_revocations_file(&self.revocations_file)?;
-        let mut frontier = self
-            .revocation_frontier
-            .lock()
-            .map_err(|_| AgentdError::Protocol(
+        let mut frontier = self.revocation_frontier.lock().map_err(|_| {
+            AgentdError::Protocol(
                 "automation effect revocation frontier lock is poisoned".to_string(),
-            ))?;
+            )
+        })?;
         let observed = (head.authority_epoch, head.revision);
         if observed == *frontier {
             return Ok(());
         }
-        if observed.0 < frontier.0
-            || (observed.0 == frontier.0 && observed.1 < frontier.1)
-        {
+        if observed.0 < frontier.0 || (observed.0 == frontier.0 && observed.1 < frontier.1) {
             return Err(AgentdError::GenerationFenced(
                 "automation effect revocation frontier rolled back".to_string(),
             ));
@@ -418,7 +415,10 @@ impl AgentdAutomationEffectHost {
                 "TaskFlow run is owned by a different Agent".to_string(),
             ));
         }
-        if run.lease_expires_at_ms.is_none_or(|expires_at| expires_at <= now_ms) {
+        if run
+            .lease_expires_at_ms
+            .is_none_or(|expires_at| expires_at <= now_ms)
+        {
             return Err(AgentdError::Protocol(
                 "TaskFlow owner lease is not current".to_string(),
             ));
@@ -451,7 +451,10 @@ impl AgentdAutomationEffectHost {
             &pending.step_id,
         )
         .map_err(|error| AgentdError::Invalid(format!("derive provider effect key: {error:?}")))?;
-        Ok(ProviderEffectIntent::new(key, pending.payload_digest.clone()))
+        Ok(ProviderEffectIntent::new(
+            key,
+            pending.payload_digest.clone(),
+        ))
     }
 }
 
@@ -488,9 +491,10 @@ impl AuthorizedEffectDriver for HttpAuthorizedEffectDriver {
                     Ok(runtime) => runtime,
                     Err(_) => return ProviderThreadOutcome::BeforeContact,
                 };
-                ProviderThreadOutcome::Dispatch(runtime.block_on(
-                    adapter.dispatch_with_payload(&provider_intent, &wire_payload),
-                ))
+                ProviderThreadOutcome::Dispatch(
+                    runtime
+                        .block_on(adapter.dispatch_with_payload(&provider_intent, &wire_payload)),
+                )
             })
             .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
         match spawn.join() {
@@ -500,9 +504,7 @@ impl AuthorizedEffectDriver for HttpAuthorizedEffectDriver {
             Ok(ProviderThreadOutcome::Dispatch(ProviderEffectDispatch::NotDispatched {
                 ..
             })) => Err(AuthorizedEffectDriverError::BeforeProviderContact),
-            Ok(ProviderThreadOutcome::Dispatch(dispatch)) => {
-                Ok(receipt_from_dispatch(&dispatch))
-            }
+            Ok(ProviderThreadOutcome::Dispatch(dispatch)) => Ok(receipt_from_dispatch(&dispatch)),
             Err(_) => Ok(AuthorizedEffectProviderReceipt {
                 outcome: AuthorizedEffectOutcome::Indeterminate,
                 receipt_digest: Sha256Digest::for_bytes(
@@ -553,10 +555,7 @@ fn terminal_receipt_from_ack(ack: &ProviderEffectAck) -> Option<AuthorizedEffect
     })
 }
 
-fn serialized_observation_digest(
-    domain: &[u8],
-    value: &impl serde::Serialize,
-) -> Sha256Digest {
+fn serialized_observation_digest(domain: &[u8], value: &impl serde::Serialize) -> Sha256Digest {
     let mut bytes = domain.to_vec();
     if let Ok(encoded) = serde_json::to_vec(value) {
         bytes.extend_from_slice(&encoded);
@@ -584,11 +583,7 @@ fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError
     Ok(serde_json::from_slice(&bytes)?)
 }
 
-fn read_protected_file(
-    path: &Path,
-    max_bytes: u64,
-    label: &str,
-) -> Result<Vec<u8>, AgentdError> {
+fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
     if !path.is_absolute() {
         return Err(AgentdError::Invalid(format!("{label} must be absolute")));
     }
@@ -635,10 +630,7 @@ fn validate_host_identifier(label: &str, value: &str) -> Result<(), AgentdError>
     Ok(())
 }
 
-fn decode_hex_array<const N: usize>(
-    value: &str,
-    label: &str,
-) -> Result<[u8; N], AgentdError> {
+fn decode_hex_array<const N: usize>(value: &str, label: &str) -> Result<[u8; N], AgentdError> {
     if value.len() != N * 2 {
         return Err(AgentdError::Invalid(format!(
             "{label} must contain exactly {} hex characters",
@@ -647,12 +639,10 @@ fn decode_hex_array<const N: usize>(
     }
     let mut output = [0_u8; N];
     for (index, pair) in value.as_bytes().chunks_exact(2).enumerate() {
-        let high = hex_nibble(pair[0]).ok_or_else(|| {
-            AgentdError::Invalid(format!("{label} contains non-hex data"))
-        })?;
-        let low = hex_nibble(pair[1]).ok_or_else(|| {
-            AgentdError::Invalid(format!("{label} contains non-hex data"))
-        })?;
+        let high = hex_nibble(pair[0])
+            .ok_or_else(|| AgentdError::Invalid(format!("{label} contains non-hex data")))?;
+        let low = hex_nibble(pair[1])
+            .ok_or_else(|| AgentdError::Invalid(format!("{label} contains non-hex data")))?;
         output[index] = (high << 4) | low;
     }
     Ok(output)
@@ -667,7 +657,6 @@ fn hex_nibble(value: u8) -> Option<u8> {
     }
 }
 
-
 #[cfg(all(test, unix))]
 mod tests {
     use std::collections::BTreeSet;
@@ -676,13 +665,13 @@ mod tests {
     use std::time::UNIX_EPOCH;
 
     use codex_hepta_automation::AuthorizedEffectIntent;
+    use codex_hepta_automation::TaskFlowCommand;
     use codex_hepta_automation::TaskFlowDefinition;
     use codex_hepta_automation::TaskFlowEdgeSpec;
     use codex_hepta_automation::TaskFlowNodeKind;
     use codex_hepta_automation::TaskFlowNodeSpec;
     use codex_hepta_automation::TaskFlowStepObservation;
     use codex_hepta_automation::TaskFlowTransition;
-    use codex_hepta_automation::TaskFlowCommand;
     use codex_hepta_contracts::FinalUseGrant;
     use codex_hepta_contracts::ProviderEffectKey;
     use codex_hepta_contracts::SignedFinalUseGrant;
@@ -727,8 +716,7 @@ mod tests {
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root)
-                    .expect("workspace binding"),
+                WorkspaceBinding::new(workspace.clone(), &fleet_root).expect("workspace binding"),
                 resources.clone(),
             )
             .expect("manifest");
@@ -745,7 +733,9 @@ mod tests {
                 control_socket: layout.agentd_control_socket().to_path_buf(),
                 app_server_socket: layout.app_server_socket().to_path_buf(),
             };
-            let store = AutomationStore::open(&layout).await.expect("automation store");
+            let store = AutomationStore::open(&layout)
+                .await
+                .expect("automation store");
             Self {
                 _temp: temp,
                 identity,
@@ -988,7 +978,11 @@ mod tests {
         fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
             .expect("revocations file permissions");
 
-        let host_file = fixture.identity.layout.automation_root().join("effect-host.json");
+        let host_file = fixture
+            .identity
+            .layout
+            .automation_root()
+            .join("effect-host.json");
         let host_json = serde_json::json!({
             "schema_version": 1,
             "provider_scope": "provider/fixture-v1",

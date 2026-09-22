@@ -117,8 +117,11 @@ class SourceRootTests(unittest.TestCase):
         (rust_root / "hepta-automation").mkdir(parents=True)
         (rust_root / "Cargo.toml").write_text("[workspace]\n", encoding="utf-8")
         (rust_root / "Cargo.lock").write_text("version = 4\n", encoding="utf-8")
+
         def git(*args):
-            return subprocess.check_output(["git", *args], cwd=self.root, text=True).strip()
+            return subprocess.check_output(
+                ["git", *args], cwd=self.root, text=True
+            ).strip()
 
         git("init", "-q")
         git("config", "user.name", "Source identity test")
@@ -127,7 +130,10 @@ class SourceRootTests(unittest.TestCase):
         (rust_root / "hepta-automation/lib.rs").write_text("pub fn run() {}\n")
         git("add", ".")
         git("commit", "-qm", "source fixture")
-        identity = {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+        identity = {
+            "commit": git("rev-parse", "HEAD"),
+            "tree": git("rev-parse", "HEAD^{tree}"),
+        }
         row = {
             "sourceBase": identity,
             "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
@@ -139,7 +145,11 @@ class SourceRootTests(unittest.TestCase):
         with mock.patch.object(maps, "ROOT", self.root):
             with self.assertRaisesRegex(ValueError, "omit Rust workspace build inputs"):
                 maps.verify_source_identity(row, roots, identity)
-            row["observedSourcePaths"] = [*roots, "codex-rs/Cargo.toml", "codex-rs/Cargo.lock"]
+            row["observedSourcePaths"] = [
+                *roots,
+                "codex-rs/Cargo.toml",
+                "codex-rs/Cargo.lock",
+            ]
             self.assertEqual(
                 maps.verify_source_identity(row, roots, identity),
                 sorted(row["observedSourcePaths"]),

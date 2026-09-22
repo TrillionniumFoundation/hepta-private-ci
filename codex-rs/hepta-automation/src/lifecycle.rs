@@ -915,12 +915,12 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
 
-        if !matches!(
+        if !(matches!(
             current.state,
             AutomationOccurrenceState::Admitted
                 | AutomationOccurrenceState::Running
                 | AutomationOccurrenceState::Indeterminate
-        ) && !(current.state == AutomationOccurrenceState::Claimed
+        ) || current.state == AutomationOccurrenceState::Claimed
             && terminal == AutomationOccurrenceTerminalState::Cancelled)
         {
             return Err(AutomationError::Conflict);

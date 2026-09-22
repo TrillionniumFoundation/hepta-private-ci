@@ -255,11 +255,7 @@ impl AutomationCalendarScheduleV2 {
             anchor_day
         } else {
             let delta = reference_day - anchor_day;
-            if forward {
-                anchor_day + (delta / stride) * stride
-            } else {
-                anchor_day + (delta / stride) * stride
-            }
+            anchor_day + (delta / stride) * stride
         };
 
         for _ in 0..MAX_CALENDAR_SCAN {
@@ -1270,7 +1266,7 @@ mod tests {
         let transition = 100 * DAY + 9 * HOUR;
         let profile = profile(transition, -7 * 3_600, -8 * 3_600);
         let first = schedule(
-            profile.clone(),
+            profile,
             HOUR as u32,
             AutomationDstGapPolicy::Skip,
             AutomationDstOverlapPolicy::First,

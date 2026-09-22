@@ -553,15 +553,11 @@ fn valid_contract_id(value: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
 }
 
-fn push_contract_field(
-    bytes: &mut Vec<u8>,
-    label: &str,
-    value: &[u8],
-) -> Result<(), String> {
-    let label_len =
-        u32::try_from(label.len()).map_err(|_| "provider contract label is too long".to_string())?;
-    let value_len =
-        u32::try_from(value.len()).map_err(|_| "provider contract field is too long".to_string())?;
+fn push_contract_field(bytes: &mut Vec<u8>, label: &str, value: &[u8]) -> Result<(), String> {
+    let label_len = u32::try_from(label.len())
+        .map_err(|_| "provider contract label is too long".to_string())?;
+    let value_len = u32::try_from(value.len())
+        .map_err(|_| "provider contract field is too long".to_string())?;
     bytes.extend_from_slice(&label_len.to_be_bytes());
     bytes.extend_from_slice(label.as_bytes());
     bytes.extend_from_slice(&value_len.to_be_bytes());
@@ -812,24 +808,15 @@ mod tests {
 
     #[test]
     fn attested_http_adapter_rejects_config_drift_after_signature() {
-        let mut config = attested_fixture_config(
-            "http://127.0.0.1:9",
-            "drift-contract",
-            1,
-            13,
-        );
+        let mut config = attested_fixture_config("http://127.0.0.1:9", "drift-contract", 1, 13);
         config.dispatch_url = "http://127.0.0.1:9/different-dispatch".to_string();
         assert_eq!(
             HttpProviderEffectAdapter::new(config).unwrap_err(),
             "contract attestation binding is invalid"
         );
 
-        let mut config = attested_fixture_config(
-            "http://127.0.0.1:9",
-            "header-drift-contract",
-            1,
-            14,
-        );
+        let mut config =
+            attested_fixture_config("http://127.0.0.1:9", "header-drift-contract", 1, 14);
         config.headers.insert(
             HeaderName::from_static("x-provider-mode"),
             HeaderValue::from_static("changed-after-signature"),

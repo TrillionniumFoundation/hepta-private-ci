@@ -105,10 +105,8 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     }
     if let Some(path) = automation_effect_host_file {
         state.refresh_generation()?;
-        let host = crate::automation_effect_host::AgentdAutomationEffectHost::open(
-            &identity,
-            &path,
-        )?;
+        let host =
+            crate::automation_effect_host::AgentdAutomationEffectHost::open(&identity, &path)?;
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
     }
