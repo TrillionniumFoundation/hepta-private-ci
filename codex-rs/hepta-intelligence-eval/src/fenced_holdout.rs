@@ -144,12 +144,17 @@ impl HoldoutFenceIssuerV1 {
         })
     }
 
-    pub fn issue(&mut self, lease_digest: Digest32) -> Result<HoldoutWriterFenceV1, FencedHoldoutError> {
+    pub fn issue(
+        &mut self,
+        lease_digest: Digest32,
+    ) -> Result<HoldoutWriterFenceV1, FencedHoldoutError> {
         if lease_digest.is_zero() {
             return Err(FencedHoldoutError::Binding);
         }
         let generation = self.next_generation;
-        self.next_generation = generation.checked_add(1).ok_or(FencedHoldoutError::Binding)?;
+        self.next_generation = generation
+            .checked_add(1)
+            .ok_or(FencedHoldoutError::Binding)?;
         let mut bytes = b"hepta.intelligence-eval.holdout-fence-lease.v1".to_vec();
         bytes.extend_from_slice(self.authority_digest.as_array());
         bytes.extend_from_slice(lease_digest.as_array());

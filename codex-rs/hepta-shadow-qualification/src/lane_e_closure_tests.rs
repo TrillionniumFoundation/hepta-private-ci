@@ -9,11 +9,11 @@ use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
 use codex_hepta_intelligence_eval::CrossFoldPlanV1;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
 use codex_hepta_intelligence_eval::EvaluationDirectionV1;
+use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
 use codex_hepta_intelligence_eval::FinalHoldoutCasRecordV1;
 use codex_hepta_intelligence_eval::FinalHoldoutCasStoreError;
 use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
 use codex_hepta_intelligence_eval::FinalHoldoutJournalReceiptV1;
-use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
 use codex_hepta_intelligence_eval::HeldOutTarget;
 use codex_hepta_intelligence_eval::HoldoutWriterFenceV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
@@ -24,8 +24,8 @@ use codex_hepta_intelligence_eval::OpeAction;
 use codex_hepta_intelligence_eval::OpePlan;
 use codex_hepta_intelligence_eval::OpeRow;
 use codex_hepta_intelligence_eval::OutcomeTrainingSample;
-use codex_hepta_intelligence_eval::ProductEvidenceSinkErrorV1;
 use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;
+use codex_hepta_intelligence_eval::ProductEvidenceSinkErrorV1;
 use codex_hepta_intelligence_eval::ProductMetricSourceContractV1;
 use codex_hepta_intelligence_eval::ProductMetricSourceV1;
 use codex_hepta_intelligence_eval::ProductProviderErrorV1;
@@ -136,7 +136,11 @@ impl FinalHoldoutCasStoreV1 for LocalCas {
         &mut self,
         binding: Digest32,
     ) -> Result<Option<FinalHoldoutCasRecordV1>, FinalHoldoutCasStoreError> {
-        if self.state.as_ref().is_some_and(|record| record.binding != binding) {
+        if self
+            .state
+            .as_ref()
+            .is_some_and(|record| record.binding != binding)
+        {
             return Err(FinalHoldoutCasStoreError::Conflict);
         }
         Ok(self.state.clone())

@@ -151,7 +151,7 @@ impl LedgerBackend {
     }
 }
 
-/// Product writer with immutable trust state and a separately durable witness.
+/// Product writer with root-authenticated trust and a separately durable witness.
 /// The backend is consumed at construction, so callers using this API cannot
 /// bypass typed admission through the same owned handle.
 pub struct LedgerWriter {
@@ -210,6 +210,20 @@ impl LedgerWriter {
             witness,
             trust,
         })
+    }
+
+    /// Activate a root-signed successor distribution before the next admission.
+    /// Failed signature, root or monotonicity checks leave current trust unchanged.
+    pub fn rotate_trust(
+        &mut self,
+        root: &crate::LearningTrustRootV1,
+        signed: crate::SignedLearningTrustDistributionV1,
+        now: u64,
+    ) -> Result<Digest32, crate::LearningTrustDistributionError> {
+        let next = crate::activate_learning_trust(root, signed, Some(&self.trust), now)?;
+        let digest = next.distribution_digest();
+        self.trust = next;
+        Ok(digest)
     }
 
     #[must_use]

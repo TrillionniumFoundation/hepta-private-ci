@@ -123,14 +123,11 @@ fn owner(
     store: LockedFileFinalHoldoutCasStoreV1,
     minimum: Option<FinalHoldoutCasAnchorV1>,
 ) -> FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1> {
-    let mut issuer = match HoldoutFenceIssuerV1::resume(
-        id("eval-owner"),
-        digest("fence-authority"),
-        minimum,
-    ) {
-        Ok(value) => value,
-        Err(error) => panic!("resume fence issuer: {error}"),
-    };
+    let mut issuer =
+        match HoldoutFenceIssuerV1::resume(id("eval-owner"), digest("fence-authority"), minimum) {
+            Ok(value) => value,
+            Err(error) => panic!("resume fence issuer: {error}"),
+        };
     let fence = match issuer.issue(digest("lease")) {
         Ok(value) => value,
         Err(error) => panic!("issue fence: {error}"),
@@ -184,12 +181,8 @@ fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
         panic!("restore backup: {error}");
     }
     assert_eq!(
-        LockedFileFinalHoldoutCasStoreV1::recover(
-            temp.open(),
-            digest("binding"),
-            Some(committed),
-        )
-        .err(),
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(committed),)
+            .err(),
         Some(LockedFileCasErrorV1::Rollback)
     );
 }
@@ -252,7 +245,6 @@ fn child_process_observes_lock_then_recovers_after_owner_exit() {
     assert!(recovered.success());
 }
 
-
 #[test]
 fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
     let temp = TempFile::new();
@@ -262,8 +254,8 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
     let fence = first.fence().clone();
     let store = first.into_store();
     drop(store);
-    let pre_minimum = fs::read(&temp.path)
-        .unwrap_or_else(|error| panic!("read pre-minimum backup: {error}"));
+    let pre_minimum =
+        fs::read(&temp.path).unwrap_or_else(|error| panic!("read pre-minimum backup: {error}"));
 
     let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)
         .unwrap_or_else(|error| panic!("recover store: {error}"));
@@ -292,12 +284,8 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
     drop(store);
 
     assert_eq!(
-        LockedFileFinalHoldoutCasStoreV1::recover(
-            temp.open(),
-            digest("binding"),
-            Some(retained),
-        )
-        .err(),
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(retained),)
+            .err(),
         Some(LockedFileCasErrorV1::Rollback)
     );
 }

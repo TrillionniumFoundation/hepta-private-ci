@@ -223,3 +223,5 @@ binary identity and records append/rotation p50/p95/p99, throughput, reopen time
 storage and RSS. These measurements and all local filesystem/synthetic scenarios
 still do not prove physical power-loss behavior, independent acceptance,
 longitudinal efficacy or hostile-writer resistance.
+
+The consolidated writer retains root-signed live distribution rotation through `LedgerWriter::rotate_trust`; failed root/signature/monotonicity checks preserve the current distribution. Raw durable append is crate-private, and only the explicit `qualification-legacy-write` feature exposes historical fixture writes. `measure_ledger_recovery_work` is replay-validated capacity accounting, not a target-host latency or efficacy claim.

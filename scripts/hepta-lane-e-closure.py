@@ -17,7 +17,9 @@ ROOT = Path(__file__).resolve().parents[1]
 MATRIX_PATH = ROOT / "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json"
 TRACE_PATH = ROOT / "qualification/lane-e/TEST_TRACEABILITY.json"
 WORKFLOW_PATH = ROOT / ".github/workflows/hepta-lane-e-gap-closure.yml"
-PRODUCTION_CONTRACT_PATH = ROOT / "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"
+PRODUCTION_CONTRACT_PATH = (
+    ROOT / "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"
+)
 EVIDENCE_SCRIPT_PATH = ROOT / "scripts/hepta-learning-eval-evidence.py"
 TEMPORARY_WORKFLOW_PATH = (
     ROOT / ".github/workflows/hepta-lane-e-materialize-generated.yml"
@@ -38,6 +40,8 @@ EXPECTED_CASES = {
 EXPECTED_EXTERNAL_GATES = {f"RDY-EXT-{index:03d}" for index in range(1, 10)}
 EXPECTED_OPERATIONS = {
     "learning.ledger": {
+        "LedgerWriter::rotate_trust",
+        "measure_ledger_recovery_work",
         "LedgerWriter::append_decision",
         "LedgerWriter::append_outcome",
         "LedgerWriter::append_credit_batch",
@@ -146,7 +150,11 @@ def verify_symbol(source: str, native_symbol: str) -> bool:
     parts = native_symbol.split("::")
     function = parts[-1]
     if function[:1].isupper():
-        return bool(re.search(rf"\b(?:struct|enum|type|trait)\s+{re.escape(function)}\b", source))
+        return bool(
+            re.search(
+                rf"\b(?:struct|enum|type|trait)\s+{re.escape(function)}\b", source
+            )
+        )
     if not re.search(
         rf"\b(?:pub(?:\([^)]*\))?\s+)?fn\s+{re.escape(function)}"
         rf"(?:\s*<[^{{}};]*>)?\s*\(",
@@ -269,7 +277,23 @@ def verify_matrix(
             )
             status = operation.get("status")
             findings.require(
-                operation.get("status") in {'implemented_pairwise_independence', 'implemented_rebuildable', 'implemented', 'implemented_sealed_receipt', 'implemented_current_state_revalidation', 'implemented_existing', 'implemented_verified_source_dataset_membership_artifact_handoff', 'implemented_directory_sync_before_witness', 'implemented_ledger_derived', 'implemented_root_authenticated_distribution_transport_external', 'implemented_host_authorized_directory_fsync', 'implemented_atomic_conservation', 'implemented_low_level', 'implemented_compatibility'},
+                operation.get("status")
+                in {
+                    "implemented_pairwise_independence",
+                    "implemented_rebuildable",
+                    "implemented",
+                    "implemented_sealed_receipt",
+                    "implemented_current_state_revalidation",
+                    "implemented_existing",
+                    "implemented_verified_source_dataset_membership_artifact_handoff",
+                    "implemented_directory_sync_before_witness",
+                    "implemented_ledger_derived",
+                    "implemented_root_authenticated_distribution_transport_external",
+                    "implemented_host_authorized_directory_fsync",
+                    "implemented_atomic_conservation",
+                    "implemented_low_level",
+                    "implemented_compatibility",
+                },
                 "operation_not_implemented",
                 f"{module}.{operation_name} is not source-implemented",
             )
@@ -470,7 +494,6 @@ def verify_traceability(
                 )
 
 
-
 def verify_learning_eval_production_boundary(findings: Findings) -> None:
     lib_path = ROOT / "codex-rs/hepta-intelligence-eval/src/lib.rs"
     closure_path = ROOT / "codex-rs/hepta-intelligence-eval/src/closure.rs"
@@ -524,10 +547,10 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
         "unsigned decide_independently_v2() must remain crate-private",
     )
     for token in (
-        'trusted-inprocess-eval = []',
-        'pub mod trusted_inprocess',
-        'pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;',
-        'pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;',
+        "trusted-inprocess-eval = []",
+        "pub mod trusted_inprocess",
+        "pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;",
+        "pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;",
     ):
         findings.require(
             token in (cargo + "\n" + lib),
@@ -578,6 +601,8 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
             "learning_eval_api_contract",
             f"cross-crate API contract does not bind: {token}",
         )
+
+
 def verify_product_writer_exclusivity(findings: Findings) -> None:
     """Prevent product crates from bypassing LedgerWriter with raw V1 appends."""
 
@@ -595,7 +620,10 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
 
     for path in (ROOT / "codex-rs").rglob("*.rs"):
         relative = path.relative_to(ROOT).as_posix()
-        if any(relative == root or relative.startswith(f"{root}/") for root in allowed_roots):
+        if any(
+            relative == root or relative.startswith(f"{root}/")
+            for root in allowed_roots
+        ):
             continue
         if (
             "/tests/" in relative
@@ -715,19 +743,55 @@ def verify_workflow(findings: Findings) -> None:
         "workflow is missing synthetic-merge job",
     )
     for token, message in (
-        ("learning-eval-qualification:", "workflow is missing learning-eval qualification job"),
-        ("cargo-llvm-cov@0.9.1", "workflow is missing pinned learning-eval coverage tooling"),
+        (
+            "learning-eval-qualification:",
+            "workflow is missing learning-eval qualification job",
+        ),
+        (
+            "cargo-llvm-cov@0.9.1",
+            "workflow is missing pinned learning-eval coverage tooling",
+        ),
         ("fenced_holdout", "workflow is missing fenced holdout stress execution"),
-        ("qualification.json", "workflow is missing commit-addressed qualification manifest"),
-        ("actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373", "workflow is missing pinned provenance attestation"),
-        ("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", "workflow is missing retained qualification artifact"),
-        ("trusted-inprocess-eval", "workflow is missing explicit compatibility-surface verification"),
-        ("--test operator_claim", "workflow is missing the trusted compatibility regression"),
-        ("decide_with_signed_evidence_v2", "workflow is missing signed production-surface verification"),
-        ("FencedFinalHoldoutOwnerV1", "workflow is missing fenced-owner production-surface verification"),
-        ("ProductEvaluationRunnerV1", "workflow is missing product-evaluation production-surface verification"),
-        ("evaluated_shadow", "workflow is missing terminal product-receipt consumer execution"),
-        ("--fail-under-lines 85", "workflow is missing enforced evaluator coverage floor"),
+        (
+            "qualification.json",
+            "workflow is missing commit-addressed qualification manifest",
+        ),
+        (
+            "actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373",
+            "workflow is missing pinned provenance attestation",
+        ),
+        (
+            "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "workflow is missing retained qualification artifact",
+        ),
+        (
+            "trusted-inprocess-eval",
+            "workflow is missing explicit compatibility-surface verification",
+        ),
+        (
+            "--test operator_claim",
+            "workflow is missing the trusted compatibility regression",
+        ),
+        (
+            "decide_with_signed_evidence_v2",
+            "workflow is missing signed production-surface verification",
+        ),
+        (
+            "FencedFinalHoldoutOwnerV1",
+            "workflow is missing fenced-owner production-surface verification",
+        ),
+        (
+            "ProductEvaluationRunnerV1",
+            "workflow is missing product-evaluation production-surface verification",
+        ),
+        (
+            "evaluated_shadow",
+            "workflow is missing terminal product-receipt consumer execution",
+        ),
+        (
+            "--fail-under-lines 85",
+            "workflow is missing enforced evaluator coverage floor",
+        ),
     ):
         findings.require(
             token in text,

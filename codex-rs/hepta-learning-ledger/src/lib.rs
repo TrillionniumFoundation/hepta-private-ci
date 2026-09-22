@@ -146,3 +146,7 @@ pub use witness::LedgerWitnessStore;
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
 mod shadow_tests;
+
+mod recovery_work;
+pub use recovery_work::LedgerRecoveryWorkV1;
+pub use recovery_work::measure_ledger_recovery_work;

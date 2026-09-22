@@ -30,7 +30,10 @@ impl FinalHoldoutCasStoreV1 for MemoryCas {
             .0
             .lock()
             .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
-        if state.as_ref().is_some_and(|record| record.binding != binding) {
+        if state
+            .as_ref()
+            .is_some_and(|record| record.binding != binding)
+        {
             return Err(FinalHoldoutCasStoreError::Conflict);
         }
         Ok(state.clone())
@@ -46,9 +49,7 @@ impl FinalHoldoutCasStoreV1 for MemoryCas {
             .0
             .lock()
             .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
-        if next.binding != binding
-            || state.as_ref().map(|record| record.state_digest) != expected
-        {
+        if next.binding != binding || state.as_ref().map(|record| record.state_digest) != expected {
             return Err(FinalHoldoutCasStoreError::Conflict);
         }
         *state = Some(next.clone());
@@ -238,12 +239,7 @@ impl Fixture {
         let mut runner = ProductEvaluationRunnerV1::new(owner);
         let mut provider = provider_inputs(dataset.snapshot.snapshot_id.clone());
         let temporal = runner
-            .evaluate_temporal_comparison(
-                &frozen,
-                &candidate_plan,
-                &baseline_plan,
-                &mut provider,
-            )
+            .evaluate_temporal_comparison(&frozen, &candidate_plan, &baseline_plan, &mut provider)
             .unwrap();
         let context = ProductQualificationContextV1 {
             generator: principals[0].clone(),
@@ -400,23 +396,6 @@ impl Fixture {
             trust,
             bytes,
         }
-    }
-
-    pub fn resign_candidate(&mut self) {
-        let key = SigningKey::from_bytes(&[22; 32]);
-        self.candidate_evidence = sign(
-            &self.verifier,
-            &self.qualification.evaluator,
-            &key,
-            LearningEvidenceRoleV1::Evaluator,
-            &evaluated_candidate_signing_payload_v2(
-                &self.qualification,
-                &self.bytes,
-                self.run.snapshot.learning_artifact_generation,
-            )
-            .unwrap(),
-        );
-        self.resign_decision();
     }
 
     pub fn trust_activation(&self) -> ActivatedLearningTrustV1 {

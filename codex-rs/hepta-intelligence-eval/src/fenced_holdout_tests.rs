@@ -149,7 +149,7 @@ fn newer_generation_fences_out_the_old_writer() {
     )
     .expect("initialize");
     let mut current =
-        FencedFinalHoldoutOwnerV1::recover(store.clone(), binding, fence("owner-b", 2, "lease-b"))
+        FencedFinalHoldoutOwnerV1::recover(store, binding, fence("owner-b", 2, "lease-b"))
             .expect("take over");
 
     assert_eq!(

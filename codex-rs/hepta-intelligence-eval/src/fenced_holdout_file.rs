@@ -139,7 +139,11 @@ impl LockedFileFinalHoldoutCasStoreV1 {
                 return Err(LockedFileCasErrorV1::Corrupt);
             }
             state = Some(replay_event(binding, state, payload)?);
-            if minimum.is_some_and(|anchor| state.as_ref().is_some_and(|record| record_anchor(record) == anchor)) {
+            if minimum.is_some_and(|anchor| {
+                state
+                    .as_ref()
+                    .is_some_and(|record| record_anchor(record) == anchor)
+            }) {
                 minimum_witnessed = true;
             }
         }

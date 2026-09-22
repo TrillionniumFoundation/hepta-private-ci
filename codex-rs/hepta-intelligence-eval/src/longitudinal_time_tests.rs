@@ -252,7 +252,6 @@ fn time_policy_observer_and_future_collection_cannot_be_substituted() {
     assert!(fixture.decide(&evidence).is_err());
 }
 
-
 #[test]
 fn evaluator_and_observer_cannot_share_identity_key_credential_or_controller() {
     let mut fixture = Fixture::new();

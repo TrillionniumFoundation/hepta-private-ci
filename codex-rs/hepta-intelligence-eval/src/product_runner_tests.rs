@@ -44,7 +44,10 @@ impl FinalHoldoutCasStoreV1 for MemoryCas {
             Ok(state) => state,
             Err(_) => return Err(crate::FinalHoldoutCasStoreError::Indeterminate),
         };
-        if state.as_ref().is_some_and(|record| record.binding != binding) {
+        if state
+            .as_ref()
+            .is_some_and(|record| record.binding != binding)
+        {
             return Err(crate::FinalHoldoutCasStoreError::Conflict);
         }
         Ok(state.clone())
@@ -60,9 +63,7 @@ impl FinalHoldoutCasStoreV1 for MemoryCas {
             Ok(state) => state,
             Err(_) => return Err(crate::FinalHoldoutCasStoreError::Indeterminate),
         };
-        if next.binding != binding
-            || state.as_ref().map(|record| record.state_digest) != expected
-        {
+        if next.binding != binding || state.as_ref().map(|record| record.state_digest) != expected {
             return Err(crate::FinalHoldoutCasStoreError::Conflict);
         }
         *state = Some(next.clone());
@@ -89,9 +90,7 @@ impl FinalHoldoutProviderV1 for Provider {
             return Err(ProductProviderErrorV1::Rejected);
         }
         self.release_count += 1;
-        self.inputs
-            .take()
-            .ok_or(ProductProviderErrorV1::Rejected)
+        self.inputs.take().ok_or(ProductProviderErrorV1::Rejected)
     }
 }
 
@@ -369,9 +368,9 @@ fn signed_context(
         Err(error) => panic!("trust: {error}"),
     };
     let sign = |principal: &AuthenticatedPrincipalV1,
-                    key: &SigningKey,
-                    role: LearningEvidenceRoleV1,
-                    payload: &[u8]| {
+                key: &SigningKey,
+                role: LearningEvidenceRoleV1,
+                payload: &[u8]| {
         let mut evidence = SignedLearningEvidenceV1 {
             evidence_id: principal.principal_id.clone(),
             principal_id: principal.principal_id.clone(),
@@ -513,6 +512,10 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
     assert!(!qualified.authority.grants_any());
 
+    let mut changed_generator = qualified;
+    changed_generator.generator.principal_id = id("substituted-generator");
+    assert!(changed_generator.validate_integrity().is_err());
+
     let mut tampered = temporal.clone();
     tampered.metrics[0].candidate.lower = FixedQ32::ZERO;
     assert!(runner.qualification_bundle(&tampered, &context).is_err());
@@ -545,13 +548,15 @@ fn product_runner_never_releases_holdout_before_fenced_consumption() {
         Err(error) => panic!("fenced owner: {error}"),
     };
     let mut runner = ProductEvaluationRunnerV1::new(owner);
-    assert!(runner
-        .evaluate_temporal_comparison(
-            &frozen,
-            &fixture.candidate_plan,
-            &fixture.baseline_plan,
-            &mut fixture.provider,
-        )
-        .is_err());
+    assert!(
+        runner
+            .evaluate_temporal_comparison(
+                &frozen,
+                &fixture.candidate_plan,
+                &fixture.baseline_plan,
+                &mut fixture.provider,
+            )
+            .is_err()
+    );
     assert_eq!(fixture.provider.release_count, 0);
 }

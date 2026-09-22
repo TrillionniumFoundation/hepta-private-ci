@@ -90,3 +90,20 @@ fn checkpoint_revocation_frontier_changes_without_rewriting_history() {
     assert_eq!(after.active_record_count, 1);
     assert!(!after.lookup(&id("decision-record-00000")).unwrap().active);
 }
+
+#[test]
+fn recovery_work_receipt_covers_full_single_segment_record_profile() {
+    let mut ledger = LearningLedger::new();
+    for index in 0..8192 {
+        ledger.append(decision(index)).unwrap();
+    }
+    let snapshot = ledger.snapshot();
+    let work = crate::measure_ledger_recovery_work(&snapshot).unwrap();
+    assert_eq!(work.record_count, 8192);
+    assert_eq!(work.active_record_count, 8192);
+    assert!(work.canonical_event_bytes > work.record_count);
+    assert!(work.maximum_event_bytes > 0);
+    assert!(!work.work_digest.is_zero());
+    let checkpoint = build_ledger_index_checkpoint(&snapshot).unwrap();
+    verify_ledger_index_checkpoint(&snapshot, &checkpoint).unwrap();
+}

@@ -308,8 +308,7 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     if qualification.decision.trust_digest != ledger.verifier().trust_digest()
         || request.dataset.snapshot.dataset_digest != qualification.dataset_digest
         || request.dataset.snapshot.objective_digest != qualification.objective_digest
-        || qualification.snapshot_ids.as_slice()
-            != [request.dataset.snapshot.snapshot_id.clone()]
+        || qualification.snapshot_ids.as_slice() != [request.dataset.snapshot.snapshot_id.clone()]
     {
         return Err(E::Binding("qualification or dataset"));
     }

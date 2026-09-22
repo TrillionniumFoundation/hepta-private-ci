@@ -481,7 +481,12 @@ fn dataset_freeze_counts_decisions_without_any_outcome_as_pending() {
         .append_decision(Digest32::ZERO, first, &first_evidence, 50)
         .unwrap();
 
-    let observed = outcome("outcome-record-pending-test", "outcome-pending-test", None, 100);
+    let observed = outcome(
+        "outcome-record-pending-test",
+        "outcome-pending-test",
+        None,
+        100,
+    );
     let observed_evidence = sign(
         writer.verifier(),
         "observer",
@@ -489,12 +494,7 @@ fn dataset_freeze_counts_decisions_without_any_outcome_as_pending() {
         &outcome_signing_payload_v2(&observed),
     );
     let observed_receipt = writer
-        .append_outcome(
-            first_receipt.chain_digest,
-            observed,
-            &observed_evidence,
-            50,
-        )
+        .append_outcome(first_receipt.chain_digest, observed, &observed_evidence, 50)
         .unwrap();
 
     let mut pending = decision();
@@ -807,4 +807,63 @@ fn directory_durability_requires_an_actual_directory_handle() {
         sync_directory_handle(&fixture.file("ledger")).err(),
         Some(DurableLedgerError::NotDirectory)
     );
+}
+
+#[test]
+fn production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollback() {
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+    let before = writer.witness_frontier().unwrap();
+    let first = writer.trust_distribution_digest();
+    let root_key = trust_root_key();
+    let root = LearningTrustRootV1 {
+        root_id: id("learning-root"),
+        scope_digest: digest("scope"),
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 200,
+        revoked_at: None,
+    };
+    let mut revoked = trust();
+    revoked
+        .signers
+        .iter_mut()
+        .find(|row| row.principal.principal_id == id("generator"))
+        .unwrap()
+        .revoked_at = Some(40);
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("trust-revoked-generator"),
+            generation: 2,
+            effective_at: 40,
+            trust: revoked,
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 35,
+        expires_at: 90,
+        signature: [0; 64],
+    };
+    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    let second = writer.rotate_trust(&root, signed.clone(), 50).unwrap();
+    assert_ne!(first, second);
+    let payload = decision_signing_payload_v2(&decision()).unwrap();
+    let evidence = sign(
+        writer.verifier(),
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &payload,
+    );
+    assert!(matches!(
+        writer.append_decision(Digest32::ZERO, decision(), &evidence, 50),
+        Err(ProductionLedgerError::Evidence(
+            SignedEvidenceError::Revoked
+        ))
+    ));
+    assert!(matches!(
+        writer.rotate_trust(&root, signed, 50),
+        Err(crate::LearningTrustDistributionError::NonMonotonicRotation)
+    ));
+    assert_eq!(writer.trust_distribution_digest(), second);
+    assert_eq!(writer.witness_frontier().unwrap(), before);
+    assert!(writer.records().unwrap().is_empty());
 }

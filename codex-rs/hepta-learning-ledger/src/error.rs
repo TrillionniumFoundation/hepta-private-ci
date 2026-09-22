@@ -223,9 +223,8 @@ impl fmt::Display for LedgerError {
             Self::UnlearningTargetInvalid => {
                 formatter.write_str("unlearning source cannot be a revocation or unlearning record")
             }
-            Self::UnlearningSourceDigestMismatch => {
-                formatter.write_str("unlearning source event digest does not match canonical history")
-            }
+            Self::UnlearningSourceDigestMismatch => formatter
+                .write_str("unlearning source event digest does not match canonical history"),
             Self::IdentityConflict(id) => write!(formatter, "record id reused with drift: {id}"),
             Self::SequenceOverflow => formatter.write_str("ledger sequence overflow"),
             Self::SnapshotHeadMismatch => formatter.write_str("snapshot head digest mismatch"),

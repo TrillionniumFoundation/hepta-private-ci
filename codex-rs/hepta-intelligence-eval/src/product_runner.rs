@@ -115,10 +115,8 @@ pub fn freeze_product_evaluation_plan_v1(
         || baseline_temporal.objective_digest != plan.objective_digest
         || candidate_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm
         || baseline_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm
-        || candidate_temporal.confidence.simultaneous_comparisons
-            != plan.simultaneous_comparisons
-        || baseline_temporal.confidence.simultaneous_comparisons
-            != plan.simultaneous_comparisons
+        || candidate_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons
+        || baseline_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons
     {
         return Err(ProductEvaluationError::Binding("temporal plan"));
     }
@@ -335,10 +333,11 @@ impl ProductQualificationReceiptV1 {
             return Err(ProductEvaluationError::Integrity("qualification receipt"));
         }
         let expected = product_qualification_evidence_digest(self);
-        if self.evidence_digest != expected
-            || self.receipt_seal != product_qualification_seal(self)
+        if self.evidence_digest != expected || self.receipt_seal != product_qualification_seal(self)
         {
-            return Err(ProductEvaluationError::Integrity("qualification receipt seal"));
+            return Err(ProductEvaluationError::Integrity(
+                "qualification receipt seal",
+            ));
         }
         Ok(())
     }
@@ -639,11 +638,17 @@ fn validate_comparable_observations(
         let mut right_actions: Vec<_> = right.actions.iter().collect();
         left_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));
         right_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));
-        if left_actions.into_iter().zip(right_actions).any(|(left, right)| {
-            left.action_id != right.action_id
-                || left.behavior_probability != right.behavior_probability
-        }) {
-            return Err(ProductEvaluationError::Binding("comparison behavior policy"));
+        if left_actions
+            .into_iter()
+            .zip(right_actions)
+            .any(|(left, right)| {
+                left.action_id != right.action_id
+                    || left.behavior_probability != right.behavior_probability
+            })
+        {
+            return Err(ProductEvaluationError::Binding(
+                "comparison behavior policy",
+            ));
         }
     }
     Ok(())
@@ -654,8 +659,12 @@ fn derive_metric_gates(
     candidate: &ClusterOpeEstimate,
     baseline: &ClusterOpeEstimate,
 ) -> Result<Vec<MetricGateV1>, ProductEvaluationError> {
-    candidate.validate_integrity().map_err(TemporalEvaluationError::Confidence)?;
-    baseline.validate_integrity().map_err(TemporalEvaluationError::Confidence)?;
+    candidate
+        .validate_integrity()
+        .map_err(TemporalEvaluationError::Confidence)?;
+    baseline
+        .validate_integrity()
+        .map_err(TemporalEvaluationError::Confidence)?;
     if plan.metric_contracts.len() != plan.metric_sources.len() {
         return Err(ProductEvaluationError::Integrity("metric source coverage"));
     }
@@ -787,7 +796,9 @@ fn product_evaluation_seal(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn product_plan_seal(plan: &ProductFrozenEvaluationPlanV1) -> Result<Digest32, ProductEvaluationError> {
+fn product_plan_seal(
+    plan: &ProductFrozenEvaluationPlanV1,
+) -> Result<Digest32, ProductEvaluationError> {
     let mut bytes = b"hepta.intelligence-eval.product-frozen-plan.v1".to_vec();
     for digest in [
         plan.frozen_plan.plan_digest,
@@ -815,7 +826,9 @@ fn product_plan_seal(plan: &ProductFrozenEvaluationPlanV1) -> Result<Digest32, P
     for role in &plan.metric_roles {
         push_id(&mut bytes, &role.metric_id);
         match role.role {
-            MetricRoleV2::PrimarySuperiority { minimum_improvement } => {
+            MetricRoleV2::PrimarySuperiority {
+                minimum_improvement,
+            } => {
                 bytes.push(0);
                 bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());
             }
@@ -853,10 +866,12 @@ fn bound_estimand_digest(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn normalize_unique_ids(values: &mut Vec<StableId>) -> Result<(), ProductEvaluationError> {
+fn normalize_unique_ids(values: &mut [StableId]) -> Result<(), ProductEvaluationError> {
     values.sort();
     if values.windows(2).any(|pair| pair[0] == pair[1]) {
-        return Err(ProductEvaluationError::Binding("duplicate evidence identity"));
+        return Err(ProductEvaluationError::Binding(
+            "duplicate evidence identity",
+        ));
     }
     Ok(())
 }

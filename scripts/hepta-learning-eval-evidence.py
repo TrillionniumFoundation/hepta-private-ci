@@ -223,7 +223,9 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
         receipt["stressIterations"] = 8
     output = ROOT / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    output.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return receipt
 
 
@@ -233,7 +235,13 @@ def verify(path: Path) -> dict[str, Any]:
         raise ValueError("unexpected evidence schema")
     if receipt.get("mode") not in {"exact-source", "synthetic-merge"}:
         raise ValueError("invalid evidence mode")
-    for key in ("sourceSha", "sourceTree", "candidateSha", "candidateTree", "inputDigest"):
+    for key in (
+        "sourceSha",
+        "sourceTree",
+        "candidateSha",
+        "candidateTree",
+        "inputDigest",
+    ):
         value = receipt.get(key)
         if not isinstance(value, str) or not value:
             raise ValueError(f"missing {key}")
@@ -242,7 +250,9 @@ def verify(path: Path) -> dict[str, Any]:
     base_sha = receipt.get("baseSha")
     if receipt.get("sourceTree") != git_text("rev-parse", f"{source_sha}^{{tree}}"):
         raise ValueError("source SHA/tree binding mismatch")
-    if receipt.get("candidateTree") != git_text("rev-parse", f"{candidate_sha}^{{tree}}"):
+    if receipt.get("candidateTree") != git_text(
+        "rev-parse", f"{candidate_sha}^{{tree}}"
+    ):
         raise ValueError("candidate SHA/tree binding mismatch")
     if receipt.get("candidateTree") != git_text("write-tree"):
         raise ValueError("evidence does not bind the current candidate tree")
@@ -291,7 +301,12 @@ def verify(path: Path) -> dict[str, Any]:
         if receipt.get("stressIterations") != 8:
             raise ValueError("stress iteration binding mismatch")
         outputs = receipt.get("qualificationOutputs")
-        if not isinstance(outputs, dict) or set(outputs) != {"coverage", "stress", "stressLog", "runtime"}:
+        if not isinstance(outputs, dict) or set(outputs) != {
+            "coverage",
+            "stress",
+            "stressLog",
+            "runtime",
+        }:
             raise ValueError("qualification output bindings missing")
         for label, item in outputs.items():
             if not isinstance(item, dict):
@@ -309,7 +324,9 @@ def verify(path: Path) -> dict[str, Any]:
     generated = parse_time(receipt.get("generatedAt"))
     expires = parse_time(receipt.get("expiresAt"))
     current = now_utc()
-    if expires <= generated or expires - generated > timedelta(days=MAX_AGE_DAYS, minutes=1):
+    if expires <= generated or expires - generated > timedelta(
+        days=MAX_AGE_DAYS, minutes=1
+    ):
         raise ValueError("invalid evidence expiry window")
     if generated > current + timedelta(minutes=5):
         raise ValueError("evidence generated in the future")
@@ -322,7 +339,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
     emitter = sub.add_parser("emit")
-    emitter.add_argument("--mode", choices=("exact-source", "synthetic-merge"), required=True)
+    emitter.add_argument(
+        "--mode", choices=("exact-source", "synthetic-merge"), required=True
+    )
     emitter.add_argument("--source-sha", required=True)
     emitter.add_argument("--candidate-sha", required=True)
     emitter.add_argument("--candidate-tree", required=True)
@@ -341,10 +360,20 @@ def main() -> int:
             result = emit(args)
         else:
             result = verify(ROOT / args.path)
-    except (OSError, subprocess.CalledProcessError, ValueError, json.JSONDecodeError) as error:
+    except (
+        OSError,
+        subprocess.CalledProcessError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as error:
         print(json.dumps({"ok": False, "error": str(error)}, sort_keys=True))
         return 1
-    print(json.dumps({"ok": True, "schema": result["schema"], "mode": result["mode"]}, sort_keys=True))
+    print(
+        json.dumps(
+            {"ok": True, "schema": result["schema"], "mode": result["mode"]},
+            sort_keys=True,
+        )
+    )
     return 0
 
 

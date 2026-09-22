@@ -219,3 +219,5 @@ cannot self-issue:
 
 Those are separate evidence gates and must not be inferred from this source
 mapping.
+
+The consolidated writer retains root-signed live distribution rotation through `LedgerWriter::rotate_trust`; failed root/signature/monotonicity checks preserve the current distribution. Raw durable append is crate-private, and only the explicit `qualification-legacy-write` feature exposes historical fixture writes. `measure_ledger_recovery_work` is replay-validated capacity accounting, not a target-host latency or efficacy claim.

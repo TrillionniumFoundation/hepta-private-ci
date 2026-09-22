@@ -158,7 +158,7 @@ impl DurableLedger {
     /// Validate without changing memory, compare the exact predecessor, append
     /// and sync, then publish the core event. Equal canonical retries never append.
     /// An I/O uncertainty poisons this handle: recover and reconcile before retry.
-    pub fn append(
+    pub(crate) fn append(
         &mut self,
         expected_predecessor: Digest32,
         event: LedgerEvent,
@@ -202,6 +202,17 @@ impl DurableLedger {
         self.durable_length = next_length;
         self.poisoned = false;
         Ok(receipt)
+    }
+
+    /// Historical raw-event qualification only. Product writes use LedgerWriter.
+    #[cfg(feature = "qualification-legacy-write")]
+    #[doc(hidden)]
+    pub fn append_qualification(
+        &mut self,
+        expected_predecessor: Digest32,
+        event: LedgerEvent,
+    ) -> Result<AppendReceipt, DurableLedgerError> {
+        self.append(expected_predecessor, event)
     }
 
     #[must_use]

@@ -99,6 +99,18 @@
           "nativeSymbol": "codex_hepta_learning_ledger::sync_directory_handle",
           "source": "codex-rs/hepta-learning-ledger/src/production.rs",
           "status": "implemented_host_authorized_directory_fsync"
+        },
+        {
+          "operation": "LedgerWriter::rotate_trust",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::rotate_trust",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_root_authenticated_distribution_transport_external"
+        },
+        {
+          "operation": "measure_ledger_recovery_work",
+          "nativeSymbol": "codex_hepta_learning_ledger::measure_ledger_recovery_work",
+          "source": "codex-rs/hepta-learning-ledger/src/recovery_work.rs",
+          "status": "implemented"
         }
       ],
       "tests": [
@@ -119,7 +131,9 @@
         "product_path_records_outcome_correction_then_conserved_credit",
         "credit_failure_preserves_outcome_for_exact_reconciliation",
         "run_episode_mismatch_rejects_before_any_outcome_append",
-        "dataset_freeze_counts_decisions_without_any_outcome_as_pending"
+        "dataset_freeze_counts_decisions_without_any_outcome_as_pending",
+        "production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollback",
+        "recovery_work_receipt_covers_full_single_segment_record_profile"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [

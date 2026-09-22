@@ -33,7 +33,7 @@ toml = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
-codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-objective = { path = "../hepta-objective" }
 codex-hepta-types = { path = "../hepta-types" }
