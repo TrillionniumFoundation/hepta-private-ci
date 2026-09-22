@@ -209,7 +209,7 @@ fn associative_and_entity_owner_batches_merge_without_double_counting_channel() 
             vec![candidate(
                 record.clone(),
                 RetrievalChannelV1::Entity,
-                2,
+                1,
                 "entity-support",
             )],
             RetrievalSourceCompletenessV1::Exhausted,
@@ -424,8 +424,15 @@ fn enabled_generator_unavailability_fails_closed() {
     ])
     .expect("bounded unavailable batch");
 
+    let mut enabled_policy = policy();
+    enabled_policy.channel_weights.retain(|channel| {
+        matches!(
+            channel.channel,
+            RetrievalChannelV1::Lexical | RetrievalChannelV1::Entity
+        )
+    });
     assert_eq!(
-        build_candidate_union_from_generated(&cue(), &policy(), &input),
+        build_candidate_union_from_generated(&cue(), &enabled_policy, &input),
         Err(GeneratorErrorV1::RequiredGeneratorUnavailable(
             RetrievalChannelV1::Entity
         ))
@@ -436,7 +443,7 @@ fn enabled_generator_unavailability_fails_closed() {
 fn property_all_generator_batch_permutations_have_one_recall() {
     let first = record(1);
     let second = record(2);
-    let batches = vec![
+    let batches = [
         batch(
             RetrievalGeneratorOwnerV1::CognitiveLexical,
             vec![
@@ -448,7 +455,7 @@ fn property_all_generator_batch_permutations_have_one_recall() {
         batch(
             RetrievalGeneratorOwnerV1::CognitiveEntity,
             vec![
-                candidate(first.clone(), RetrievalChannelV1::Entity, 1, "entity-1"),
+                candidate(first, RetrievalChannelV1::Entity, 1, "entity-1"),
                 candidate(second.clone(), RetrievalChannelV1::Entity, 2, "entity-2"),
             ],
             RetrievalSourceCompletenessV1::LimitReached,

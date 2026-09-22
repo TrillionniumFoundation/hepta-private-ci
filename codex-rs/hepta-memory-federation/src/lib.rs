@@ -13,8 +13,8 @@ use codex_hepta_types::StableId;
 
 pub use v2::FederatedCompletenessV2;
 pub use v2::FederatedCoverageV2;
-pub use v2::FederatedFailureCoverageV2;
 pub use v2::FederatedEvidenceItemV2;
+pub use v2::FederatedFailureCoverageV2;
 pub use v2::FederatedLeaseV2;
 pub use v2::FederatedQueryV2;
 pub use v2::FederatedResultV2;

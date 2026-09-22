@@ -194,10 +194,7 @@ impl EphemeralModelInputProposal {
     /// Consumes the one-shot proposal and releases raw content plus its final-use fence to Core.
     pub fn into_content_and_final_use_guard(
         self,
-    ) -> (
-        String,
-        Option<Box<dyn EphemeralModelInputFinalUseGuard>>,
-    ) {
+    ) -> (String, Option<Box<dyn EphemeralModelInputFinalUseGuard>>) {
         (self.content, self.final_use_guard)
     }
 

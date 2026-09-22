@@ -392,7 +392,6 @@ async fn product_v2_scope_mismatch_is_not_enrolled_or_dispatched() {
     assert_eq!(coverage.failed_peers, 0);
 }
 
-
 #[tokio::test]
 async fn product_v2_composition_reports_omitted_owner_candidates() {
     let temp = TempDir::new().expect("temp dir");

@@ -30,8 +30,8 @@ use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
-use crate::CognitiveContextSnapshot;
 use crate::CognitiveContextRevalidation;
+use crate::CognitiveContextSnapshot;
 
 const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
 const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read.v1";
@@ -55,6 +55,7 @@ impl From<CognitiveStoreError> for CognitiveContextError {
 
 /// `body_generation` is the process launch identity, not the separately fenced
 /// fleet lifecycle epoch (Starting -> Running advances that epoch).
+#[cfg(test)]
 pub(crate) async fn read(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -77,6 +78,7 @@ pub(crate) async fn read(
     .await
 }
 
+#[cfg(test)]
 pub(crate) async fn read_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -244,10 +246,12 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     for candidate in observed {
         let binding = candidate.revalidation;
         let accepted = admission_read.records().iter().any(|record| {
-            record.is_live() &&
-            record.record_id.as_str() == binding.memory.memory_id.as_str()
+            record.is_live()
+                && record.record_id.as_str() == binding.memory.memory_id.as_str()
                 && record.revision.get() == binding.memory.revision
-                && record.content_digest.is_some_and(|digest| digest.to_string() == binding.content_sha256.as_str())
+                && record
+                    .content_digest
+                    .is_some_and(|digest| digest.to_string() == binding.content_sha256.as_str())
                 && binding.scope == scope
         });
         if !accepted {
@@ -318,10 +322,12 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         };
         let memory = explanation.memory;
         let accepted = admission_read.records().iter().any(|record| {
-            record.is_live() &&
-            record.record_id.as_str() == memory.id.memory_id.as_str()
+            record.is_live()
+                && record.record_id.as_str() == memory.id.memory_id.as_str()
                 && record.revision.get() == memory.id.revision
-                && record.content_digest.is_some_and(|digest| digest.to_string() == memory.content_sha256.as_str())
+                && record
+                    .content_digest
+                    .is_some_and(|digest| digest.to_string() == memory.content_sha256.as_str())
                 && memory.scope == scope
         });
         if !accepted
@@ -346,7 +352,8 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     }
 
     let selected_read = read_selected_items(&cut, &response.items)?;
-    let selected_read_binding = bind_selected_read(&cut, &selected_read);
+    let selected_read_binding =
+        bind_selected_read(&cut, &selected_read, expected_retrieval_context_digest);
     response.snapshot_digest = selected_read.snapshot_digest().to_string();
     response.read_digest = selected_read_binding.to_string();
     let encoded_context = serde_json::to_vec(&response)
@@ -471,6 +478,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     Ok(response)
 }
 
+#[cfg(test)]
 pub(crate) async fn revalidate(
     store: &CognitiveStore,
     owner: &AgentId,
@@ -480,6 +488,33 @@ pub(crate) async fn revalidate(
     items: &[CognitiveContextItem],
     plan: Option<&CognitiveContextPlan>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    revalidate_with_retrieval_context(
+        store,
+        owner,
+        snapshot_digest,
+        read_digest,
+        omitted_records,
+        items,
+        plan,
+        ranker,
+        1,
+        None,
+    )
+    .await
+}
+
+pub(crate) async fn revalidate_with_retrieval_context(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    snapshot_digest: &str,
+    read_digest: &str,
+    omitted_records: u64,
+    items: &[CognitiveContextItem],
+    plan: Option<&CognitiveContextPlan>,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    body_generation: u64,
+    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
@@ -532,7 +567,15 @@ pub(crate) async fn revalidate(
     }
 
     let read = read_selected_items(&cut, items)?;
-    let current_read_binding = bind_selected_read(&cut, &read);
+    let retrieval_context_digest = match current_retrieval {
+        Some(current) => Some(
+            load_retrieval_context(current, owner, body_generation)
+                .await?
+                .binding_digest(),
+        ),
+        None => None,
+    };
+    let current_read_binding = bind_selected_read(&cut, &read, retrieval_context_digest);
     if current_read_binding != expected_read {
         return Err(CognitiveStoreError::Conflict(
             "cognitive context owner cut or read receipt is stale".to_string(),
@@ -600,10 +643,17 @@ pub(crate) async fn revalidate(
 /// The public Agentd response keeps its existing read_digest field, but that
 /// field now invalidates on source/tombstone/KG frontier drift even when the
 /// selected memory heads themselves remain byte-identical.
-fn bind_selected_read(cut: &DurableCognitiveSnapshot, read: &ReadIdsResultV1) -> Digest32 {
+fn bind_selected_read(
+    cut: &DurableCognitiveSnapshot,
+    read: &ReadIdsResultV1,
+    retrieval_context: Option<Digest32>,
+) -> Digest32 {
     let mut bytes = CONTEXT_READ_BINDING_DOMAIN.to_vec();
     bytes.extend_from_slice(cut.cut_digest().as_array());
     bytes.extend_from_slice(read.receipt_digest().as_array());
+    if let Some(context) = retrieval_context {
+        bytes.extend_from_slice(context.as_array());
+    }
     Digest32::of_bytes(&bytes)
 }
 

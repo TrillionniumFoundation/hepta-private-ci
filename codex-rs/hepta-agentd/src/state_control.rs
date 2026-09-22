@@ -193,7 +193,7 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                let result = crate::cognitive_context::revalidate(
+                let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
                     &self.identity.agent_id,
                     &snapshot_digest,
@@ -202,6 +202,8 @@ impl AgentdState {
                     &items,
                     plan.as_ref(),
                     self.cognitive_ranker.get(),
+                    self.identity.spawn_generation,
+                    self.cognitive_retrieval_context.get(),
                 )
                 .await;
                 self.refresh_generation()?;
@@ -236,6 +238,18 @@ impl AgentdState {
                                     .to_string(),
                             },
                         );
+                    }
+                    Err(CognitiveContextError::RetrievalContextUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "cognitive_retrieval_context_unavailable".to_string(),
+                            message: "selected retrieval context is unavailable or no longer current; explicit reload required".to_string(),
+                        }
+                    }
+                    Err(CognitiveContextError::RetrievalLearningUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "cognitive_retrieval_learning_unavailable".to_string(),
+                            message: "retrieval assignment could not be durably recorded by the learning ledger owner".to_string(),
+                        }
                     }
                 }
             }

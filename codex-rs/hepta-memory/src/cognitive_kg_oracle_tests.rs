@@ -221,9 +221,8 @@ async fn assert_full_publication_history(store: &CognitiveStore, scope: &Cogniti
         let stored_graph_profile: String = row
             .try_get("graph_profile_sha256")
             .expect("graph profile digest");
-        let stored_generation: String = row
-            .try_get("generation_sha256")
-            .expect("generation digest");
+        let stored_generation: String =
+            row.try_get("generation_sha256").expect("generation digest");
         let stored_publication: String = row
             .try_get("publication_sha256")
             .expect("publication digest");

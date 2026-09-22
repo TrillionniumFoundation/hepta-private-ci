@@ -538,8 +538,7 @@ async fn retrieve_federated_product(
     });
     readers.dedup_by(|(_, left), (_, right)| left.capability().id() == right.capability().id());
     let observable_peer_slots = readers.len().saturating_add(discovery_failures);
-    let truncated_peers =
-        observable_peer_slots.saturating_sub(MAX_FEDERATION_SOURCES_PER_AGENT);
+    let truncated_peers = observable_peer_slots.saturating_sub(MAX_FEDERATION_SOURCES_PER_AGENT);
     readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
 
     let discovery_failure_slots =
@@ -737,10 +736,7 @@ fn merge_failure_coverage(
         .saturating_add(attempt.transport_unavailable);
 }
 
-fn record_product_failure(
-    failures: &mut FederatedFailureCoverageV2,
-    error: &FederationV2Error,
-) {
+fn record_product_failure(failures: &mut FederatedFailureCoverageV2, error: &FederationV2Error) {
     match error {
         FederationV2Error::DeadlineExpired
         | FederationV2Error::AttemptCancelled
@@ -1172,6 +1168,25 @@ fn domain_digest32(domain: &[u8], parts: &[&[u8]]) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+impl fmt::Debug for CognitiveRuntime {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Absent => formatter.write_str("CognitiveRuntime::Absent"),
+            Self::Available(_) => formatter.write_str("CognitiveRuntime::Available(<owned store>)"),
+            Self::AvailableFederated { .. } => formatter.write_str(
+                "CognitiveRuntime::AvailableFederated(<owned store>, <legacy read-only sources>)",
+            ),
+            Self::AvailableFederatedV2 { .. } => formatter.write_str(
+                "CognitiveRuntime::AvailableFederatedV2(<owned store>, <canonical read-only sources>)",
+            ),
+            Self::Unavailable(reason) => formatter
+                .debug_tuple("CognitiveRuntime::Unavailable")
+                .field(reason)
+                .finish(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod product_nonce_tests {
     use super::*;
@@ -1209,24 +1224,5 @@ mod product_nonce_tests {
         let second = product_attempt_nonce_digest(query_digest, "federation:v1:test", 123_000)
             .expect("second nonce");
         assert_ne!(first, second);
-    }
-}
-
-impl fmt::Debug for CognitiveRuntime {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Absent => formatter.write_str("CognitiveRuntime::Absent"),
-            Self::Available(_) => formatter.write_str("CognitiveRuntime::Available(<owned store>)"),
-            Self::AvailableFederated { .. } => formatter.write_str(
-                "CognitiveRuntime::AvailableFederated(<owned store>, <legacy read-only sources>)",
-            ),
-            Self::AvailableFederatedV2 { .. } => formatter.write_str(
-                "CognitiveRuntime::AvailableFederatedV2(<owned store>, <canonical read-only sources>)",
-            ),
-            Self::Unavailable(reason) => formatter
-                .debug_tuple("CognitiveRuntime::Unavailable")
-                .field(reason)
-                .finish(),
-        }
     }
 }

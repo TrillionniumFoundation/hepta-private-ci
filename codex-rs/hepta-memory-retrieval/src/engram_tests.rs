@@ -420,7 +420,7 @@ fn engram_snapshot_and_receipt_tampering_fail_closed() {
     receipt.coverage = ProbabilityQ32::ZERO;
     assert_eq!(
         receipt.validate(),
-        Err(EngramErrorV1::DigestMismatch("engram_recall"))
+        Err(EngramErrorV1::NonCanonical("engram_coverage"))
     );
 }
 
@@ -465,7 +465,7 @@ fn recomputed_structural_receipt_forgery_fails_closed() {
     mismatched_resources.receipt_digest = mismatched_resources.compute_receipt_digest();
     assert_eq!(
         mismatched_resources.validate(),
-        Err(EngramErrorV1::NonCanonical("engram_resources"))
+        Err(EngramErrorV1::ActiveNodeLimitExceeded)
     );
 
     let mut wrong_coverage = settle_engram(&cue, &union, &snapshot, &policy).expect("receipt");

@@ -258,7 +258,8 @@ fn final_use_guard_runs_after_policy_admission_and_before_http_dispatch() -> Res
             .build(&server)
             .await?;
 
-        test.submit_turn("final-use guard must fence transport").await?;
+        test.submit_turn("final-use guard must fence transport")
+            .await?;
 
         assert_eq!(calls.load(Ordering::SeqCst), 1);
         assert_eq!(guard_calls.load(Ordering::SeqCst), 1);

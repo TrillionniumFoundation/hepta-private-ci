@@ -21,8 +21,8 @@ use codex_extension_api::TurnInputContributor;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::CognitiveRuntime;
-use codex_hepta_memory::FederatedCoverageV2;
 use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_memory::FederatedCoverageV2;
 use codex_hepta_memory::FederatedMemoryExplanation;
 use codex_hepta_memory::FederatedMemoryRevalidationBinding;
 use codex_hepta_memory::FederatedRetrievalBatch;
@@ -37,8 +37,8 @@ use serde_json::json;
 
 use super::CognitiveExtension;
 use super::CognitiveProposalMaterial;
-use super::chain_final_use_guards;
 use super::capture_directive;
+use super::chain_final_use_guards;
 use super::now_unix_seconds;
 use super::secret_like;
 use crate::extension::HeptaMemoryThreadState;
@@ -574,8 +574,7 @@ fn combine_cognitive_materials(
             content_sha256.as_str().as_bytes(),
         ],
     );
-    let final_use_guard =
-        chain_final_use_guards(local.final_use_guard, federated.final_use_guard);
+    let final_use_guard = chain_final_use_guards(local.final_use_guard, federated.final_use_guard);
     Some(CognitiveProposalMaterial {
         source: COMBINED_COGNITIVE_SOURCE,
         source_binding_sha256,

@@ -177,7 +177,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_logical_turn_attempts_trajectory_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "ae52b47126c510d36e89cf378a9df11f985527cea24111da7b2cf38b020cab6c";
+    "9a5bcdb83b4ce7302cafee907d257a8cb2f485043b2888c5c0c387957cda278c";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {

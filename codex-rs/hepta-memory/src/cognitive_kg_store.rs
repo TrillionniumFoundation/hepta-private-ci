@@ -542,9 +542,15 @@ pub(crate) async fn graph_source_vector_digest_tx(
     .fetch_one(&mut **transaction)
     .await
     .map_err(unavailable)?;
+    // The graph cut contains cited evidence. A standalone source append has
+    // no graph facts and must not invalidate a previously published generation
+    // when reopening the owner. The broader Lane C snapshot still fences all
+    // source-ledger changes independently.
     let source_frontier: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM source_ledger
-         WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?",
+        "SELECT COUNT(*) FROM source_ledger s
+         WHERE s.owner_agent_id = ? AND s.scope_kind = ? AND s.workspace_sha256 IS ?
+           AND EXISTS (SELECT 1 FROM memory_citations c
+                       WHERE c.source_id = s.source_id AND c.source_revision = s.source_revision)",
     )
     .bind(owner_agent_id)
     .bind(scope_kind)
@@ -1162,7 +1168,9 @@ fn limit_plus_one(value: usize) -> Result<i64, CognitiveStoreError> {
 }
 
 /// Preserve the canonical stored relation identity when selecting typed channels.
-pub(crate) fn canonical_relation_kind(relation: &str) -> Result<KnowledgeRelationKindV2, CognitiveStoreError> {
+pub(crate) fn canonical_relation_kind(
+    relation: &str,
+) -> Result<KnowledgeRelationKindV2, CognitiveStoreError> {
     Ok(KnowledgeRelationKindV2::Custom(stable_digest_id(
         "kg-rel-kind:v1:",
         b"hepta:cognitive:kg-relation-kind:v1",

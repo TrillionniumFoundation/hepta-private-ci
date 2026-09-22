@@ -240,7 +240,7 @@ fn custom_relation_identities_are_lossless_and_queryable() {
             vec![node("a", "a"), node("b", "b")],
             vec![
                 edge("a", "b", studies.clone(), "studies-edge"),
-                edge("a", "b", teaches.clone(), "teaches-edge"),
+                edge("a", "b", teaches, "teaches-edge"),
             ],
         ),
     )

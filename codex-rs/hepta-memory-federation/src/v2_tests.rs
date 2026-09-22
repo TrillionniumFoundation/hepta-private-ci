@@ -469,7 +469,7 @@ fn result_expiry_is_capped_by_query_when_query_is_shorter_than_lease() {
     let transport = FixtureTransport {
         result: Ok(FederationTransportResultV2::Terminal(response)),
     };
-    let result = execute(&transport, query.clone(), &long_lease)
+    let result = execute(&transport, query, &long_lease)
         .unwrap_or_else(|error| panic!("valid query-capped result: {error}"));
     assert_eq!(result.expires_unix_ms, 70);
 }
@@ -811,10 +811,7 @@ fn result_digest_binds_peer_and_typed_failure_coverage() {
     result.coverage.failures.transport_unavailable = 1;
     result.result_digest = result.compute_result_digest();
     result.coverage.truncated_peers = 1;
-    assert_eq!(
-        result.validate(),
-        Err(FederationV2Error::InvalidCoverage)
-    );
+    assert_eq!(result.validate(), Err(FederationV2Error::InvalidCoverage));
 }
 
 #[test]

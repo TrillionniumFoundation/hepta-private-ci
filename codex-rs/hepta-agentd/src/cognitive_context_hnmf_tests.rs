@@ -239,3 +239,63 @@ async fn changed_hnmf_context_before_publication_fails_closed() {
         Err(CognitiveContextError::RetrievalContextUnavailable)
     ));
 }
+
+#[tokio::test]
+async fn final_use_revalidation_rejects_changed_hnmf_context() {
+    let (_temp, store, owner, first, _) = fixture(133).await;
+    let stable: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
+        owner: owner.clone(),
+        generation: 1,
+        first: first.clone(),
+        later: first.clone(),
+        switch_after_first: false,
+        calls: Arc::new(AtomicUsize::new(0)),
+    });
+    let snapshot = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&stable))
+        .await
+        .unwrap();
+    let accepted = crate::cognitive_context::revalidate_with_retrieval_context(
+        &store,
+        &owner,
+        &snapshot.snapshot_digest,
+        &snapshot.read_digest,
+        snapshot.omitted_records,
+        &snapshot.items,
+        snapshot.plan.as_ref(),
+        None,
+        1,
+        Some(&stable),
+    )
+    .await
+    .unwrap();
+    assert_eq!(accepted.read_digest, snapshot.read_digest);
+    let mut changed = first;
+    changed.objective_digest = Digest32::of_bytes(b"changed after publication");
+    let changed: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
+        owner: owner.clone(),
+        generation: 1,
+        first: changed.clone(),
+        later: changed,
+        switch_after_first: false,
+        calls: Arc::new(AtomicUsize::new(0)),
+    });
+    let rejected = crate::cognitive_context::revalidate_with_retrieval_context(
+        &store,
+        &owner,
+        &snapshot.snapshot_digest,
+        &snapshot.read_digest,
+        snapshot.omitted_records,
+        &snapshot.items,
+        snapshot.plan.as_ref(),
+        None,
+        1,
+        Some(&changed),
+    )
+    .await;
+    assert!(matches!(
+        rejected,
+        Err(CognitiveContextError::Store(
+            codex_hepta_memory::CognitiveStoreError::Conflict(_)
+        ))
+    ));
+}

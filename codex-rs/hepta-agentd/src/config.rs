@@ -66,7 +66,8 @@ fn parse_cognitive_retrieval_mode(
     }
 }
 
-fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrievalMode, AgentdError> {
+fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrievalMode, AgentdError>
+{
     parse_cognitive_retrieval_mode(std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV))
 }
 

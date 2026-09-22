@@ -431,6 +431,7 @@ impl RecallPacketV1 {
             return Err(RecallErrorV1::InvalidRecallChannelCount);
         }
         if let Some(engram) = &self.engram
+            && self.disposition == RecallDispositionV1::Recalled
             && usize::try_from(engram.resources.candidate_records).unwrap_or(usize::MAX)
                 != candidate_count
         {

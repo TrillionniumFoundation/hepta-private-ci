@@ -560,10 +560,7 @@ impl FederatedResultV2 {
         push_u64(&mut bytes, u64::from(self.coverage.completed_peers));
         push_u64(&mut bytes, u64::from(self.coverage.failed_peers));
         push_u64(&mut bytes, u64::from(self.coverage.truncated_peers));
-        push_u64(
-            &mut bytes,
-            u64::from(self.coverage.omitted_peer_candidates),
-        );
+        push_u64(&mut bytes, u64::from(self.coverage.omitted_peer_candidates));
         push_u64(&mut bytes, u64::from(self.coverage.truncated_items));
         push_u64(
             &mut bytes,

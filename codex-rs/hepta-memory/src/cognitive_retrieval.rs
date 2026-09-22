@@ -803,18 +803,32 @@ impl CognitiveStore {
                     ))
                 })?;
             let remaining = MAX_RETRIEVAL_CHANNEL_CANDIDATES - result.len();
-            let typed_kinds = [KgRelationSemanticV1::Causes, KgRelationSemanticV1::ProcedureStep, KgRelationSemanticV1::Contradicts]
-                .into_iter()
-                .map(|kind| crate::cognitive_kg_store::canonical_relation_kind(kind.relation()))
-                .collect::<Result<BTreeSet<_>, _>>()?;
+            let typed_kinds = [
+                KgRelationSemanticV1::Causes,
+                KgRelationSemanticV1::ProcedureStep,
+                KgRelationSemanticV1::Contradicts,
+            ]
+            .into_iter()
+            .map(|kind| crate::cognitive_kg_store::canonical_relation_kind(kind.relation()))
+            .collect::<Result<BTreeSet<_>, _>>()?;
             let relation_kinds = match semantic {
-                Some(kind) => vec![crate::cognitive_kg_store::canonical_relation_kind(kind.relation())?],
-                None => generation.edges.iter().map(|edge| edge.identity.relation.clone())
-                    .filter(|kind| !typed_kinds.contains(kind)).collect::<BTreeSet<_>>().into_iter().collect(),
+                Some(kind) => vec![crate::cognitive_kg_store::canonical_relation_kind(
+                    kind.relation(),
+                )?],
+                None => generation
+                    .edges
+                    .iter()
+                    .map(|edge| edge.identity.relation.clone())
+                    .filter(|kind| !typed_kinds.contains(kind))
+                    .collect::<BTreeSet<_>>()
+                    .into_iter()
+                    .collect(),
             };
             // An empty KG query filter means all relations; an empty generic
             // channel must instead stay empty so typed support cannot leak in.
-            if relation_kinds.is_empty() { continue; }
+            if relation_kinds.is_empty() {
+                continue;
+            }
             let query_result = query_relations(
                 &generation,
                 KnowledgeRelationQueryV2 {

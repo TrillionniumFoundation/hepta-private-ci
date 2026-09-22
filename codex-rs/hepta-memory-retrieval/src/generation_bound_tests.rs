@@ -1,9 +1,9 @@
+use super::*;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf_learning::RecallAbstainReasonV1 as CanonicalRecallAbstainReasonV1;
 use codex_hepta_cognitive_types::hnmf_learning::RecallResourceReceiptV1 as CanonicalRecallResourceReceiptV1;
 use codex_hepta_cognitive_types::hnmf_learning::SelectedEventRefV1 as CanonicalSelectedEventRefV1;
-use super::*;
 
 use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::MemoryKind;
@@ -234,7 +234,7 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
 
 #[test]
 fn zero_weight_channel_cannot_satisfy_coverage() {
-    let cue = cue();
+    let _cue = cue();
     let mut policy = policy();
     policy.channel_weights = vec![
         RetrievalChannelWeightV1 {
@@ -291,7 +291,7 @@ fn public_union_and_packet_validators_reject_structural_tampering() {
     ];
     let union = build_candidate_union(&cue, &policy, candidates.clone())
         .unwrap_or_else(|error| panic!("union: {error}"));
-    let mut reordered = union.clone();
+    let mut reordered = union;
     reordered.entries.reverse();
     reordered.union_digest = reordered.compute_union_digest();
     assert_eq!(
@@ -301,7 +301,7 @@ fn public_union_and_packet_validators_reject_structural_tampering() {
 
     let packet =
         recall(&cue, &policy, candidates).unwrap_or_else(|error| panic!("recall: {error}"));
-    let mut duplicate = packet.clone();
+    let mut duplicate = packet;
     duplicate.selections.push(duplicate.selections[0].clone());
     duplicate.packet_digest = duplicate.compute_packet_digest();
     assert_eq!(
@@ -347,7 +347,7 @@ fn property_all_candidate_permutations_have_one_union_and_recall() {
     let cue = cue();
     let mut policy = policy();
     policy.minimum_distinct_channels = 1;
-    let candidates = vec![
+    let candidates = [
         candidate(record(1), RetrievalChannelV1::Lexical, 1),
         candidate(record(2), RetrievalChannelV1::Entity, 1),
         candidate(record(3), RetrievalChannelV1::ContradictionSupport, 1),
@@ -396,12 +396,10 @@ fn next_permutation(values: &mut [usize]) -> bool {
     true
 }
 
-
 fn canonical_digest(value: &str) -> ContractDigestV1 {
     ContractDigestV1::from_digest(digest(value))
         .unwrap_or_else(|error| panic!("valid canonical digest: {error}"))
 }
-
 
 fn canonical_context(
     legacy: &RecallPacketV1,
@@ -447,7 +445,6 @@ fn canonical_context(
     }
 }
 
-
 #[test]
 fn legacy_recall_projects_to_canonical_shadow_without_fabricating_authority() {
     let cue = cue();
@@ -484,7 +481,6 @@ fn legacy_recall_projects_to_canonical_shadow_without_fabricating_authority() {
     );
 }
 
-
 #[test]
 fn legacy_abstention_maps_to_canonical_abstention_without_selected_events() {
     let cue = cue();
@@ -508,7 +504,6 @@ fn legacy_abstention_maps_to_canonical_abstention_without_selected_events() {
     );
     assert!(canonical.selected_events.is_empty());
 }
-
 
 #[test]
 fn canonical_shadow_receipt_cannot_undercount_legacy_selection() {
@@ -538,7 +533,6 @@ fn canonical_shadow_receipt_cannot_undercount_legacy_selection() {
         ))
     );
 }
-
 
 #[test]
 fn canonical_shadow_bridge_rejects_cross_packet_or_selection_drift() {
