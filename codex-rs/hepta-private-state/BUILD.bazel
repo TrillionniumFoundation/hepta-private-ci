@@ -1,0 +1,8 @@
+load("//:defs.bzl", "codex_rust_crate")
+
+# Internal Windows private-state primitive for kernel.authority. This is not a
+# separate Hepta module or authority owner.
+codex_rust_crate(
+    name = "hepta-private-state",
+    crate_name = "codex_hepta_private_state",
+)

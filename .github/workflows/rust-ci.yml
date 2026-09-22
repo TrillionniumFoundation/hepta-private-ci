@@ -16,6 +16,7 @@ jobs:
       argument_comment_lint: ${{ steps.detect.outputs.argument_comment_lint }}
       argument_comment_lint_package: ${{ steps.detect.outputs.argument_comment_lint_package }}
       codex: ${{ steps.detect.outputs.codex }}
+      ui_native: ${{ steps.detect.outputs.ui_native }}
       workflows: ${{ steps.detect.outputs.workflows }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -40,11 +41,13 @@ jobs:
           fi
 
           codex=false
+          ui_native=false
           argument_comment_lint=false
           argument_comment_lint_package=false
           workflows=false
           for f in "${files[@]}"; do
             [[ $f == codex-rs/* ]] && codex=true
+            [[ $f == apps/hepta-native/* || $f == codex-rs/hepta-native-gateway/* || $f == codex-rs/hepta-contracts/* || $f == codex-rs/hepta-private-state/* || $f == docs/modules/ui.native/* || $f == qualification/module-execution-dossiers/detail/ui.native.md ]] && ui_native=true
             [[ $f == codex-rs/* || $f == tools/argument-comment-lint/* || $f == justfile ]] && argument_comment_lint=true
             [[ $f == defs.bzl || $f == workspace_root_test_launcher.sh.tpl || $f == workspace_root_test_launcher.bat.tpl ]] && argument_comment_lint=true
             [[ $f == tools/argument-comment-lint/* || $f == .github/workflows/rust-ci.yml || $f == .github/workflows/rust-ci-full.yml ]] && argument_comment_lint_package=true
@@ -54,6 +57,7 @@ jobs:
           echo "argument_comment_lint=$argument_comment_lint" >> "$GITHUB_OUTPUT"
           echo "argument_comment_lint_package=$argument_comment_lint_package" >> "$GITHUB_OUTPUT"
           echo "codex=$codex" >> "$GITHUB_OUTPUT"
+          echo "ui_native=$ui_native" >> "$GITHUB_OUTPUT"
           echo "workflows=$workflows" >> "$GITHUB_OUTPUT"
 
       - name: Check for a clean worktree

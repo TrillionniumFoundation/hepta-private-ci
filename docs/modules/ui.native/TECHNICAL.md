@@ -46,12 +46,13 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js); observed identifiers include `buildNativeIntent`, `observeNativeOutcome`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) for the implemented subset and remaining product work.
+The registered product source is Rust-only under `apps/hepta-native`: [src/main.rs](../../../apps/hepta-native/src/main.rs) is the named native application bootstrap, [src/runtime.rs](../../../apps/hepta-native/src/runtime.rs) owns the session/view/effect state machine, and [src/updater.rs](../../../apps/hepta-native/src/updater.rs) owns signed staging/activation mechanics. The former JavaScript boundary has been retired from the canonical source and test surface. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) and [Rust development guide](../../../apps/hepta-native/DEVELOPMENT.md) together.
 
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
 
+- `kernel.authority`
 - `runtime.agentd`
 
 Authoritative write domains:
@@ -91,7 +92,9 @@ None.
 Consumed contracts:
 
 - `DomainRead::runtime_health_observationV1`
+- `ModulePort::kernel.authority::ui.native`
 - `ModulePort::runtime.agentd::ui.native`
+- `VerifiedUseTokenWitnessV1`
 
 Critical protocol schemas:
 
@@ -141,13 +144,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current product limits belong to the Rust state machine and adapters under `apps/hepta-native/src`; there is no parallel JavaScript native execution boundary.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Native-shell adapter library around injected backend, OS-permission and updater ports. It is not yet a selected packaged OS application. Framework/platform matrix, signing/notarization/keychain and real updater trust roots remain required implementation/deployment work; no empty wrapper command establishes those capabilities.
+The selected product shell is Rust `eframe 0.36.2` / `egui` with native `winit` integration and AccessKit. Product targets are Windows 11 x86_64, macOS 14+ arm64/x86_64 and Ubuntu 24.04 x86_64. The candidate includes a named application bootstrap, durable operation journal, authenticated loopback gateway adapter, OS keyring-backed opaque credentials, signed endpoint/update verification, kernel `FinalUseAuthority` admission with durable nonce/revocation semantics, narrow platform adapters, signed stable-channel updater mechanics and unsigned development packaging. Production Authenticode/Apple Developer ID + notarization/Linux repository signing, installed-package notification identity/permission evidence and independent accessibility acceptance remain external deployment gates.
 
 Current operating and state-format references:
 
@@ -159,10 +162,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [apps/hepta-native/test/native.test.js](../../../apps/hepta-native/test/native.test.js); named case: `native intent requires exact payload binding`.
-- [apps/hepta-native/test/shell-runtime.test.js](../../../apps/hepta-native/test/shell-runtime.test.js); named case: `executes a final-payload-bound platform request`.
+- [apps/hepta-native/tests/runtime.rs](../../../apps/hepta-native/tests/runtime.rs); session-incarnation fencing, indeterminate retry/reconciliation, restart recovery and permission denial.
+- [apps/hepta-native/tests/security_updater.rs](../../../apps/hepta-native/tests/security_updater.rs); kernel final-use binding and live revocation, stable update-channel admission, predecessor fencing, unsigned update refusal and rollback.
+- [.github/workflows/hepta-native-rust.yml](../../../.github/workflows/hepta-native-rust.yml); exact PR-head Linux execution plus Windows/macOS/Linux merge-candidate build/test/package/self-test and unsigned qualification receipts.
 
-From the repository root, run `node --test apps/hepta-native/test/native.test.js apps/hepta-native/test/shell-runtime.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
+From the repository root, run `cargo fmt --manifest-path apps/hepta-native/Cargo.toml --check`, `cargo clippy --manifest-path apps/hepta-native/Cargo.toml --all-targets --all-features -- -D warnings`, and `cargo test --manifest-path apps/hepta-native/Cargo.toml --all-targets
+cargo run --manifest-path apps/hepta-native/Cargo.toml --bin hepta-native -- --qualification-e2e`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -217,7 +222,7 @@ For `ui.native`, this document grants no runtime, production, model, provider, t
 
 #### `UI-V5`
 
-- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `independent_source_preparation`.
+- State: `source_implemented`; priority: `2`; parallel class: `independent_source_preparation`.
 - Owner/deputy: `ui-platform` / `accessibility`.
 - Allowed write paths:
 - `apps/hepta-control-ui/**`
@@ -269,3 +274,19 @@ The bootstrap source-location obligation for `ui.native` is implemented by work 
 - `apps/hepta-native`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Rust product candidate closure
+
+The current candidate is a concrete Rust desktop product caller in the canonical `apps/hepta-native` root; the former JavaScript native boundary is retired. This section records repository source/composition facts only; it does not turn unsigned CI artifacts into activation, independent acceptance, promotion or release authority.
+
+Repository-controlled implementation includes:
+
+- `src/runtime.rs` + `src/journal.rs`: operation identity `(session_id, session_generation, operation_id)`, durable `Prepared -> Invoking -> Indeterminate/Terminal` transitions, close/reconnect fencing, and reconcile-before-retry semantics. Uncertain effects survive process restart without automatic replay.
+- `src/backend.rs` + `codex-rs/hepta-native-gateway`: signed endpoint manifests, loopback-only authenticated `keyring_bearer_v1` runtime status access and no fallback to the legacy unauthenticated gateway mode.
+- `src/security.rs` + `codex-rs/hepta-contracts/src/final_use.rs` + `src/session_store.rs`: exact native `FinalUseBinding` construction, kernel-owned durable nonce claim, live epoch/revocation revalidation through non-serializable `VerifiedUseToken`, and OS-keyring storage for opaque session/gateway references rather than product-domain facts. No native-local authority system exists.
+- `src/platform.rs`: root-scoped path policy and explicit clipboard/notification ceilings. Local policy denial is tested before OS entry; where an OS does not expose a trustworthy terminal query, success remains indeterminate instead of being invented.
+- `src/updater.rs` + `src/bin/hepta-native-updater.rs` + `src/ui.rs`: signed stable-channel manifests, exact package/platform/architecture/protocol/evidence binding, UI staging, installed-predecessor digest admission, GUI-exit handoff to a separate updater process, bounded Windows executable-lock retry, backup/restore and confirmation before cleanup.
+- `src/ui.rs` + `src/main.rs`: real eframe/egui native window lifecycle, runtime/operations/updates/accessibility views, AccessKit, keyboard focus, per-monitor DPI through winit and English/Chinese shell copy.
+- `packaging/**` + `.github/workflows/hepta-native-rust.yml`: explicit Windows/macOS/Linux packaging metadata, packaged-binary self-test, Windows/macOS/Linux merge-candidate execution, an exact PR-head Linux gate and unsigned qualification receipts binding source/merge identity to binary SHA-256 values.
+
+Still repository-controlled: no Agentd/gateway product endpoint currently delivers independently issued `SignedFinalUseGrant` values to the GUI, and the kernel final-use durable store intentionally rejects non-Unix hosts, so Windows platform effects remain fail-closed/read-only. Still external/deployment-gated: production signing-key custody, Authenticode, Apple Developer ID/notarization, Linux distribution signing/repository ownership, installed Windows AppUserModelID notification registration, real target-host OS permission/revocation observation where applicable, screen-reader/accessibility acceptance, operator acceptance, promotion and release. These facts remain false until independently observed.

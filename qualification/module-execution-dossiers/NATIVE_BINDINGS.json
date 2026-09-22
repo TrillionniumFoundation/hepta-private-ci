@@ -224,11 +224,14 @@
     },
     {
       "module": "ui.native",
-      "path": "apps/hepta-native/src/native.js",
-      "blobSha": "0b43af170d02a2d672c68b18e100a1507957f483",
+      "path": "apps/hepta-native/src/runtime.rs",
+      "blobSha": "b67b1d3199e45d2946c44ecc8d4992da8c4cdd75",
       "exports": [
-        "buildNativeIntent",
-        "observeNativeOutcome"
+        "NativeShellRuntime",
+        "connect_runtime",
+        "render_runtime_view",
+        "request_platform_capability",
+        "reconcile_pending"
       ]
     },
     {

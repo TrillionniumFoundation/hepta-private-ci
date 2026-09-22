@@ -1353,6 +1353,20 @@
       "compatibility": "backward_compatible_or_explicit_migration"
     },
     {
+      "id": "ModulePort::kernel.authority::ui.native",
+      "version": 1,
+      "kind": "module_port",
+      "producer": "kernel.authority",
+      "consumers": [
+        "ui.native"
+      ],
+      "transport": "typed_local_or_versioned_wire",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "digest_bound_summary_or_request",
+      "compatibility": "backward_compatible_or_explicit_migration"
+    },
+    {
       "id": "ModulePort::kernel.evidence::control.engineering",
       "version": 1,
       "kind": "module_port",
@@ -2629,7 +2643,8 @@
         "runtime.codex",
         "inference.control",
         "channel.matrix",
-        "browser.servo"
+        "browser.servo",
+        "ui.native"
       ],
       "transport": "canonical_json_or_in_process_typed",
       "bounded": true,

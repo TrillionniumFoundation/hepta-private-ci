@@ -90,13 +90,12 @@ jobs:
           python3 scripts/hepta-lane-b-truth.py verify
           git diff --check
 
-      - name: Verify JavaScript runtime boundaries
+      - name: Verify JavaScript browser and control boundaries
         shell: bash
         run: |
           set -euo pipefail
           node --test apps/hepta-browser/test/runtime.test.js
           node --test apps/hepta-control-ui/test/runtime-client.test.js
-          node --test apps/hepta-native/test/shell-runtime.test.js
 
       - name: Verify Rust formatting
         working-directory: codex-rs

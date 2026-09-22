@@ -32,3 +32,6 @@ tempfile = { workspace = true }
 serde_json = { workspace = true }
 toml = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt"] }
+
+[target.'cfg(windows)'.dependencies]
+codex-hepta-private-state = { path = "../hepta-private-state" }
