@@ -6,7 +6,8 @@
 
 #![forbid(unsafe_code)]
 
-mod runtime_prompt;
+// Compatibility exports of the sole server-side extension implementation.
+use codex_hepta_prompt_extension as runtime_prompt;
 mod wire;
 
 use std::error::Error as StdError;

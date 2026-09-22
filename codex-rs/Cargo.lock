@@ -2130,13 +2130,13 @@ dependencies = [
  "codex-git-utils",
  "codex-goal-extension",
  "codex-guardian-v2",
- "codex-hepta-codex-adapter",
  "codex-hepta-contracts",
  "codex-hepta-evidence",
  "codex-hepta-governance",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
  "codex-hepta-paths",
+ "codex-hepta-prompt-extension",
  "codex-history-notes-extension",
  "codex-home",
  "codex-hooks",
@@ -3482,7 +3482,6 @@ dependencies = [
  "codex-hepta-cognitive-types",
  "codex-hepta-context-compiler",
  "codex-hepta-contracts",
- "codex-hepta-context-compiler",
  "codex-hepta-control-plane",
  "codex-hepta-evidence",
  "codex-hepta-fleet",
@@ -3494,20 +3493,15 @@ dependencies = [
  "codex-hepta-learning-artifacts",
  "codex-hepta-learning-ledger",
  "codex-hepta-memory",
- "codex-hepta-ndu",
- "codex-hepta-neuron",
- "codex-hepta-objective",
- "codex-hepta-prompt-optimizer",
  "codex-hepta-memory-extension",
  "codex-hepta-memory-retrieval",
- "codex-hepta-objective",
- "codex-hepta-neuron",
- "codex-hepta-paths",
- "codex-hepta-prompt-optimizer",
- "codex-hepta-prompt-registry",
  "codex-hepta-ndu",
  "codex-hepta-neuron",
+ "codex-hepta-objective",
+ "codex-hepta-paths",
  "codex-hepta-plasticity",
+ "codex-hepta-prompt-optimizer",
+ "codex-hepta-prompt-registry",
  "codex-hepta-supervisor",
  "codex-hepta-types",
  "codex-model-provider",
@@ -3616,7 +3610,7 @@ version = "0.0.0"
 dependencies = [
  "codex-app-server-client",
  "codex-app-server-protocol",
- "codex-extension-api",
+ "codex-hepta-prompt-extension",
  "codex-hepta-types",
  "codex-hepta-wire",
  "codex-protocol",
@@ -4090,6 +4084,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-hepta-prompt-extension"
+version = "0.0.0"
+dependencies = [
+ "codex-extension-api",
+ "codex-hepta-types",
+ "codex-protocol",
+ "tokio",
+]
+
+[[package]]
 name = "codex-hepta-prompt-optimizer"
 version = "0.0.0"
 dependencies = [
@@ -4120,21 +4124,21 @@ name = "codex-hepta-runtime"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "codex-hepta-control-plane",
  "codex-hepta-contracts",
+ "codex-hepta-control-plane",
  "codex-hepta-intelligence",
  "codex-hepta-learning-ledger",
  "codex-hepta-paths",
  "codex-hepta-plasticity",
  "codex-hepta-types",
  "codex-hepta-wire",
+ "ed25519-dalek",
  "hmac 0.12.1",
  "libc",
  "serde",
  "serde_json",
  "sha2 0.10.9",
  "sqlx",
- "ed25519-dalek",
  "tempfile",
  "tokio",
  "zeroize",
@@ -4156,8 +4160,8 @@ dependencies = [
  "libc",
  "pretty_assertions",
  "rand 0.9.3",
- "serde_json",
  "serde",
+ "serde_json",
  "sha2 0.10.9",
  "sqlx",
  "tempfile",

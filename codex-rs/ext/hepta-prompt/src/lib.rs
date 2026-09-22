@@ -7,6 +7,8 @@
 //! registry itself, never selects a factor, and never mints model/provider
 //! authority.
 
+#![forbid(unsafe_code)]
+
 use std::fmt;
 use std::future::Future;
 use std::pin::Pin;
@@ -37,10 +39,6 @@ use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
 use tokio::sync::Mutex;
-
-use crate::CodexOperationIntent;
-use crate::PromptProviderTerminalObservationV1;
-use crate::observe_prompt_delivery_v1;
 
 const ATTACHMENT_DOMAIN: &[u8] = b"hepta.runtime-codex.prompt-attachment.v1";
 const MAX_DEVELOPER_FRAGMENTS: usize = 128;
@@ -635,19 +633,8 @@ impl ModelProviderPolicyContributor for PromptRuntimeExtension {
                     "host provider request digest is invalid",
                 )
             })?;
-            let intent = CodexOperationIntent {
-                operation_id: parse_stable_id(input.attempt_id, "attempt id")?,
-                thread_id: parse_stable_id(input.thread_id, "thread id")?,
-                method_id: StableId::new("provider.send").map_err(|_| {
-                    ModelProviderPolicyError::new(
-                        "prompt_runtime_internal_identity_invalid",
-                        "runtime method identity is invalid",
-                    )
-                })?,
-                payload_digest: provider_request_digest,
-                lease_payload_digest: provider_request_digest,
-                deadline_ms: attachment.deadline_ms,
-            };
+            parse_stable_id(input.attempt_id, "attempt id")?;
+            parse_stable_id(input.thread_id, "thread id")?;
             let dispatch_record = PromptRuntimeDispatchRecordV1 {
                 compilation_id: attachment.compilation_id.clone(),
                 context_attachment_digest: attachment.context_attachment_digest,
@@ -671,7 +658,6 @@ impl ModelProviderPolicyContributor for PromptRuntimeExtension {
                 lease: Box::new(PromptRuntimeAttemptLease {
                     host: self.host.clone(),
                     attachment,
-                    intent,
                     thread_id: input.thread_id.to_owned(),
                     turn_id: input.turn_id.to_owned(),
                     attempt_id: input.attempt_id.to_owned(),
@@ -698,7 +684,6 @@ impl ModelProviderAttemptLease for PromptRuntimeNoopLease {
 struct PromptRuntimeAttemptLease {
     host: PromptRuntimeHost,
     attachment: PromptRuntimeAttachmentV1,
-    intent: CodexOperationIntent,
     thread_id: String,
     turn_id: String,
     attempt_id: String,
@@ -744,6 +729,31 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
 }
 
 impl PromptRuntimeAttemptLease {
+    // This lease is created by the physical ModelProviderPolicyContributor,
+    // not by an App Server client DTO. The sealed terminal callback supplies
+    // the observation; the stored attempt owns its exact request digest.
+    fn delivery_observation(
+        &self,
+        delivered: bool,
+        rejected_reason: Option<PromptDeliveryRejectReasonV1>,
+    ) -> Result<PromptDeliveryObservationV1, PromptRuntimeError> {
+        if self.dispatch_unix_ms >= self.attachment.deadline_ms {
+            return Err(PromptRuntimeError::InvalidTerminalRecord);
+        }
+        let observation = PromptDeliveryObservationV1 {
+            compilation_id: self.attachment.compilation_id.clone(),
+            provider_request_digest: self.provider_request_digest,
+            delivered,
+            rejected_reason,
+            observed_token_positions: None,
+            truncation_observed: false,
+        };
+        observation
+            .validate()
+            .map_err(|_| PromptRuntimeError::InvalidTerminalRecord)?;
+        Ok(observation)
+    }
+
     fn map_terminal(
         &self,
         terminal: ModelProviderTerminal,
@@ -758,20 +768,7 @@ impl PromptRuntimeAttemptLease {
     > {
         match terminal {
             ModelProviderTerminal::Completed { end_turn, .. } => {
-                let observation = observe_prompt_delivery_v1(
-                    self.dispatch_unix_ms,
-                    &self.intent,
-                    self.attachment.compilation_id.clone(),
-                    PromptProviderTerminalObservationV1 {
-                        terminal_observed: true,
-                        observed_provider_request_digest: self.provider_request_digest,
-                        delivered: true,
-                        rejected_reason: None,
-                        observed_token_positions: None,
-                        truncation_observed: false,
-                    },
-                )
-                .map_err(|_| PromptRuntimeError::InvalidTerminalRecord)?;
+                let observation = self.delivery_observation(true, None)?;
                 Ok((
                     PromptRuntimeTerminalOutcomeV1::Delivered,
                     None,
@@ -781,20 +778,7 @@ impl PromptRuntimeAttemptLease {
             }
             ModelProviderTerminal::Rejected { reason_code } => {
                 let rejection_reason = rejection_reason(&reason_code)?;
-                let observation = observe_prompt_delivery_v1(
-                    self.dispatch_unix_ms,
-                    &self.intent,
-                    self.attachment.compilation_id.clone(),
-                    PromptProviderTerminalObservationV1 {
-                        terminal_observed: true,
-                        observed_provider_request_digest: self.provider_request_digest,
-                        delivered: false,
-                        rejected_reason: Some(rejection_reason),
-                        observed_token_positions: None,
-                        truncation_observed: false,
-                    },
-                )
-                .map_err(|_| PromptRuntimeError::InvalidTerminalRecord)?;
+                let observation = self.delivery_observation(false, Some(rejection_reason))?;
                 Ok((
                     PromptRuntimeTerminalOutcomeV1::Rejected,
                     Some(reason_code),
@@ -873,5 +857,5 @@ fn push_text(bytes: &mut Vec<u8>, value: &str) {
 }
 
 #[cfg(test)]
-#[path = "runtime_prompt_tests.rs"]
+#[path = "lib_tests.rs"]
 mod tests;
