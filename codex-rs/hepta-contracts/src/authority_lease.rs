@@ -1088,7 +1088,8 @@ mod tests {
         }
     }
 
-    fn fixture() -> Result<(AuthorityLeaseRegistry, tempfile::TempDir), Box<dyn std::error::Error>> {
+    fn fixture() -> Result<(AuthorityLeaseRegistry, tempfile::TempDir), Box<dyn std::error::Error>>
+    {
         let directory = tempfile::tempdir()?;
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(

@@ -12,9 +12,9 @@ on:
       - scripts/test_hepta_integration_feedback.py
       - scripts/test_hepta_preflight_logging.py
       - scripts/hepta_workspace.py
-      - scripts/test_hepta_workspace.py
+      - scripts/test_hepta_workspace*.py
       - scripts/hepta-implementation-maps.py
-      - scripts/test_hepta_implementation_identity.py
+      - scripts/test_hepta_implementation*.py
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
@@ -63,8 +63,8 @@ jobs:
           set -euo pipefail
           python3 -m unittest discover -s scripts -p 'test_hepta_integration_feedback.py' -v
           python3 -m unittest discover -s scripts -p 'test_hepta_preflight_logging.py' -v
-          python3 -m unittest discover -s scripts -p 'test_hepta_workspace.py' -v
-          python3 -m unittest discover -s scripts -p 'test_hepta_implementation_identity.py' -v
+          python3 -m unittest discover -s scripts -p 'test_hepta_workspace*.py' -v
+          python3 -m unittest discover -s scripts -p 'test_hepta_implementation*.py' -v
       - name: Check structural workspace before native work
         id: manifest
         if: ${{ !cancelled() }}

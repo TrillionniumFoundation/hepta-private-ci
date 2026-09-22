@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -42,8 +43,22 @@ def load(rel: str):
 
 
 def git(*args: str) -> str:
+    # Observe this checkout, never ambient Git redirection, replacement objects,
+    # user configuration, network-backed object fetches or an fsmonitor hook.
+    # Keep the explicit :(literal) pathspecs below: a global literal-pathspecs
+    # flag would interpret their magic prefix as part of the filename.
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(
+        GIT_CONFIG_NOSYSTEM="1",
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_NO_REPLACE_OBJECTS="1",
+        GIT_NO_LAZY_FETCH="1",
+        GIT_TERMINAL_PROMPT="0",
+        GIT_OPTIONAL_LOCKS="0",
+    )
     p = subprocess.run(
-        ["git", *args], cwd=ROOT, text=True, capture_output=True, check=True
+        ["git", "--no-replace-objects", "-c", "core.fsmonitor=false", *args],
+        cwd=ROOT, env=env, text=True, capture_output=True, check=True,
     )
     return p.stdout.strip()
 
@@ -121,6 +136,11 @@ def verify_source_identity(row: dict) -> bool:
 
     def require_clean(paths):
         specs = [f":(literal){path}" for path in paths]
+        # These index flags can hide worktree edits from diff/status. Reject
+        # them within witnessed roots rather than mutating the caller's index.
+        for entry in git("ls-files", "-v", "-z", "--", *specs).split("\0"):
+            if entry and (entry[0] == "S" or entry[0].islower()):
+                raise ValueError("mapped source has an opaque Git index flag")
         for extra in ([], ["--cached"]):
             if git(
                 "diff", "--no-ext-diff", "--no-textconv", "--name-only", *extra,
