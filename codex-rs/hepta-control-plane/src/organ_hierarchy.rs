@@ -20,6 +20,7 @@ use crate::OrganDeliveryV1;
 use crate::OrganGraphsV1;
 use crate::OrganHostV1;
 use crate::OrganRuntimeError;
+use crate::OrganStateMigrationV1;
 use crate::OrganWireError;
 
 /// One system's primary membership in an immutable execution hierarchy.
@@ -282,6 +283,64 @@ impl CnsOrganHostV1 {
         let Self { host, routes, .. } = next;
         self.host
             .replace_admitted_read_only_generation(expected, host)
+            .map_err(CnsHierarchyError::Runtime)?;
+        self.routes = routes;
+        Ok(())
+    }
+
+    /// Recover a stopped/quarantined hierarchy into one exact admitted successor.
+    /// Healthy replacement remains a distinct API so recovery cannot silently
+    /// weaken the Ready-predecessor invariant.
+    pub fn recover_read_only_generation(
+        &mut self,
+        expected: Generation,
+        next: Self,
+    ) -> Result<(), CnsHierarchyError> {
+        if self.cns != next.cns {
+            return Err(CnsHierarchyError::CnsIdentity);
+        }
+        let Self { host, routes, .. } = next;
+        self.host
+            .recover_admitted_read_only_generation(expected, host)
+            .map_err(CnsHierarchyError::Runtime)?;
+        self.routes = routes;
+        Ok(())
+    }
+
+    /// Cut over one admitted CNS generation while invoking the authoritative
+    /// state owner before predecessor shutdown. The hierarchy itself still
+    /// owns no durable state and cannot fabricate migration success.
+    pub fn replace_read_only_generation_with_migration<M: OrganStateMigrationV1 + ?Sized>(
+        &mut self,
+        expected: Generation,
+        next: Self,
+        migration: &mut M,
+    ) -> Result<(), CnsHierarchyError> {
+        if self.cns != next.cns {
+            return Err(CnsHierarchyError::CnsIdentity);
+        }
+        let Self { host, routes, .. } = next;
+        self.host
+            .replace_admitted_read_only_generation_with_migration(expected, host, migration)
+            .map_err(CnsHierarchyError::Runtime)?;
+        self.routes = routes;
+        Ok(())
+    }
+
+    /// Recover an inactive CNS generation through the authoritative migration
+    /// owner before publishing the exact forward successor.
+    pub fn recover_read_only_generation_with_migration<M: OrganStateMigrationV1 + ?Sized>(
+        &mut self,
+        expected: Generation,
+        next: Self,
+        migration: &mut M,
+    ) -> Result<(), CnsHierarchyError> {
+        if self.cns != next.cns {
+            return Err(CnsHierarchyError::CnsIdentity);
+        }
+        let Self { host, routes, .. } = next;
+        self.host
+            .recover_admitted_read_only_generation_with_migration(expected, host, migration)
             .map_err(CnsHierarchyError::Runtime)?;
         self.routes = routes;
         Ok(())

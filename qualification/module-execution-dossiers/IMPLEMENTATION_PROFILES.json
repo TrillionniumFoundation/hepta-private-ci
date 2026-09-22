@@ -2089,21 +2089,58 @@
             "symbol": "verify_parameter_proposal_v2"
           },
           {
+            "path": "codex-rs/hepta-plasticity/src/generator_v3.rs",
+            "symbol": "generate_parameter_candidates_v3"
+          },
+          {
+            "path": "codex-rs/hepta-plasticity/src/generator_v3.rs",
+            "symbol": "verify_generated_parameter_candidates_v3"
+          },
+          {
+            "path": "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs",
+            "symbol": "verify_parameter_mutation_policy_v1"
+          },
+          {
+            "path": "codex-rs/hepta-plasticity/src/topology_v2.rs",
+            "symbol": "propose_topology_v2"
+          },
+          {
+            "path": "codex-rs/hepta-plasticity/src/topology_v2.rs",
+            "symbol": "verify_topology_proposal_v2"
+          },
+          {
             "path": "codex-rs/hepta-plasticity/src/durable_registry.rs",
             "symbol": "DurableProposalRegistry"
+          },
+          {
+            "path": "codex-rs/hepta-plasticity/src/topology_registry.rs",
+            "symbol": "DurableTopologyProposalRegistryV1"
+          },
+          {
+            "path": "codex-rs/hepta-plasticity/src/topology_canary.rs",
+            "symbol": "StructuralCanaryControllerV1"
           }
         ],
-        "stateAndRecovery": "V2 verifies supplied parameter deltas and norm arithmetic. DurableProposalRegistry owns bounded, locked, generation/fence-scoped checksum-chain frames, syncs before publication and supports an independently retained anchor.",
+        "stateAndRecovery": "V2 remains the compatibility envelope; governed V3 deterministically regenerates bounded candidates under a typed mutation policy. Parameter and topology proposal registries are checksum-chained and externally anchored. Agentd composes authenticated owner evidence and long-lived proposal writers; an external hepta-runtime owner consumes independently governed topology candidates through distinct FinalUse-authorized healthy-apply and stopped/quarantined recovery transitions. These source components do not establish target-host deployment.",
         "testFiles": [
           "codex-rs/hepta-plasticity/src/lib_tests.rs",
-          "codex-rs/hepta-plasticity/src/durable_registry_tests.rs"
+          "codex-rs/hepta-plasticity/src/durable_registry_tests.rs",
+          "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+          "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs",
+          "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+          "codex-rs/hepta-runtime/src/organs_tests.rs",
+          "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
         ],
         "runtimeDocuments": [
           "docs/modules/learning.plasticity/TECHNICAL.md",
+          "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md",
+          "docs/modules/learning.plasticity/OPERATIONS.md",
           "docs/learning/NEURAL_BIOMIMICRY_SPEC.md"
         ],
         "remainingWork": [
-          "Authenticate generator-relative completeness/current lineage and independent decisions. This parameter-only path neither trains/installs weights nor implements the full target topology-application lifecycle."
+          "Run one frozen exact-head and deterministic synthetic-merge qualification through compilation, tests, strict lint, Agentd/Lane-F and live-runtime canary coverage.",
+          "Obtain independent semantic/security review, target-host proof of physically independent registry/anchor rollback domains with crash telemetry, and operator recovery evidence.",
+          "Repeat topology apply/fault/distinct-authorized recovery on the selected target host with production telemetry before any productExecutionProved, independentAcceptance, activation or release claim."
         ]
       }
     },

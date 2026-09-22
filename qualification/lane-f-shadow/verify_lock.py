@@ -10,10 +10,12 @@ from pathlib import Path
 EXPECTED_ROOT_DEPENDENCIES = {
     "codex-hepta-intelligence",
     "codex-hepta-intuition",
+    "codex-hepta-learning-ledger",
     "codex-hepta-neuron",
     "codex-hepta-plasticity",
     "codex-hepta-prompt-optimizer",
     "codex-hepta-types",
+    "ed25519-dalek",
 }
 
 

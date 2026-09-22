@@ -41,6 +41,7 @@ enum CompletedRuntimeTask {
     Automation,
     AuthBus,
     Operations,
+    Plasticity,
 }
 
 pub async fn run(
@@ -48,6 +49,7 @@ pub async fn run(
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
@@ -97,6 +99,8 @@ pub async fn run(
         registry,
         EVENT_CAPACITY,
     )?);
+    let plasticity_runtime =
+        crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
     if let Some(ranker) = ranker {
         state
             .cognitive_ranker
@@ -278,6 +282,12 @@ pub async fn run(
         cancellation.clone(),
     ));
 
+    let mut plasticity_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
+        Arc::clone(&state),
+        plasticity_runtime,
+        cancellation.clone(),
+    );
+
     let (outcome, completed_task) = tokio::select! {
         result = &mut authbus_task => (
             joined("AuthBus text relay", result),
@@ -303,6 +313,10 @@ pub async fn run(
             joined("production operation reconciler", result),
             Some(CompletedRuntimeTask::Operations),
         ),
+        result = &mut plasticity_task => (
+            joined("plasticity owner", result),
+            Some(CompletedRuntimeTask::Plasticity),
+        ),
         signal = shutdown_signal() => {
             signal?;
             (drain_runtime(Arc::clone(&state)).await, None)
@@ -319,6 +333,7 @@ pub async fn run(
         &mut monitor_task,
         &mut automation_task,
         &mut operations_task,
+        &mut plasticity_task,
     )
     .await;
     outcome
@@ -571,6 +586,7 @@ async fn cleanup_runtime_tasks<
     MonitorOutput,
     AutomationOutput,
     OperationsOutput,
+    PlasticityOutput,
 >(
     completed_task: Option<CompletedRuntimeTask>,
     control_task: &mut JoinHandle<ControlOutput>,
@@ -578,6 +594,7 @@ async fn cleanup_runtime_tasks<
     monitor_task: &mut JoinHandle<MonitorOutput>,
     automation_task: &mut JoinHandle<AutomationOutput>,
     operations_task: &mut JoinHandle<OperationsOutput>,
+    plasticity_task: &mut JoinHandle<PlasticityOutput>,
 ) {
     if completed_task != Some(CompletedRuntimeTask::Control) {
         abort_and_join(control_task).await;
@@ -593,6 +610,9 @@ async fn cleanup_runtime_tasks<
     }
     if completed_task != Some(CompletedRuntimeTask::Operations) {
         abort_and_join(operations_task).await;
+    }
+    if completed_task != Some(CompletedRuntimeTask::Plasticity) {
+        abort_and_join(plasticity_task).await;
     }
 }
 

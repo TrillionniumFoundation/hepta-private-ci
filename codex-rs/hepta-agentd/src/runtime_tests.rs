@@ -82,6 +82,7 @@ async fn cleanup_never_polls_the_join_handle_already_consumed_by_select() {
     let mut monitor_task = tokio::spawn(std::future::pending::<()>());
     let mut automation_task = tokio::spawn(std::future::pending::<()>());
     let mut operations_task = tokio::spawn(std::future::pending::<()>());
+    let mut plasticity_task = tokio::spawn(std::future::pending::<()>());
 
     cleanup_runtime_tasks(
         Some(CompletedRuntimeTask::Control),
@@ -90,6 +91,7 @@ async fn cleanup_never_polls_the_join_handle_already_consumed_by_select() {
         &mut monitor_task,
         &mut automation_task,
         &mut operations_task,
+        &mut plasticity_task,
     )
     .await;
 
@@ -98,6 +100,7 @@ async fn cleanup_never_polls_the_join_handle_already_consumed_by_select() {
     assert!(monitor_task.is_finished());
     assert!(automation_task.is_finished());
     assert!(operations_task.is_finished());
+    assert!(plasticity_task.is_finished());
 }
 
 struct RuntimeFixture {

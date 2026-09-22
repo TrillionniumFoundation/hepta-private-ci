@@ -1,28 +1,73 @@
 //! Governed plasticity proposal records.
 //!
-//! New writes are parameter-only V2 candidate sets. Historical parameter and
-//! topology V1 records are read-only. Proposals are next-generation,
-//! qualification-only artifacts; this crate has no API for runtime mutation,
-//! authority mutation, self-promotion or release.
+//! Parameter V2 remains the stable proposal envelope. Parameter V3 adds a
+//! deterministic generator-complete search profile, and topology V2 adds typed
+//! structural proposal construction. Historical V1 records remain read-only.
+//! Every surface is proposal-only: this crate has no API for runtime mutation,
+//! authority mutation, self-promotion, selection, activation or release.
 
 #![forbid(unsafe_code)]
 
 mod durable_registry;
+mod generator_v3;
+mod legacy;
+mod parameter_mutation_policy_v1;
+mod parameter_v2;
+mod registry;
+mod topology_canary;
+mod topology_governance;
+mod topology_registry;
+mod topology_v2;
+mod types;
 
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
-
-mod legacy;
-mod parameter_v2;
-mod registry;
-mod types;
-
+pub use generator_v3::GeneratedParameterCandidateSetV3;
+pub use generator_v3::ParameterGeneratorErrorV3;
+pub use generator_v3::ParameterGeneratorProfileV3;
+pub use generator_v3::ParameterPlasticitySignalV3;
+pub use generator_v3::generate_parameter_candidates_v3;
+pub use generator_v3::parameter_generator_signing_payload_v3;
+pub use generator_v3::verify_generated_parameter_candidates_v3;
+pub use parameter_mutation_policy_v1::ParameterMutationPolicyErrorV1;
+pub use parameter_mutation_policy_v1::ParameterMutationPolicyV1;
+pub use parameter_mutation_policy_v1::ParameterMutationRuleV1;
+pub use parameter_mutation_policy_v1::ParameterMutationSurfaceV1;
+pub use parameter_mutation_policy_v1::authorize_parameter_mutation_v1;
+pub use parameter_mutation_policy_v1::build_parameter_mutation_policy_v1;
+pub use parameter_mutation_policy_v1::verify_parameter_mutation_policy_v1;
 pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use registry::ProposalRegistry;
 pub use registry::ProposalRegistrySlotV2;
+pub use topology_canary::StructuralCanaryControllerV1;
+pub use topology_canary::StructuralCanaryErrorV1;
+pub use topology_canary::StructuralCanaryObservationV1;
+pub use topology_canary::StructuralCanaryPlanV1;
+pub use topology_canary::StructuralCanaryReceiptV1;
+pub use topology_canary::StructuralCanaryStateV1;
+pub use topology_canary::build_structural_canary_plan_v1;
+pub use topology_governance::GovernedTopologyProposalV1;
+pub use topology_governance::TopologyGovernanceErrorV1;
+pub use topology_governance::WriterHandoffPlanV1;
+pub use topology_governance::admit_governed_topology_v1;
+pub use topology_governance::build_writer_handoff_plan_v1;
+pub use topology_governance::validate_writer_handoff_plan_v1;
+pub use topology_registry::DurableTopologyAppendReceiptV1;
+pub use topology_registry::DurableTopologyProposalRegistryV1;
+pub use topology_registry::DurableTopologyRegistryAnchorV1;
+pub use topology_registry::DurableTopologyRegistryErrorV1;
+pub use topology_v2::TopologyCandidateKindV2;
+pub use topology_v2::TopologyCandidateV2;
+pub use topology_v2::TopologyChangeV2;
+pub use topology_v2::TopologyOperationV2;
+pub use topology_v2::TopologyProposalErrorV2;
+pub use topology_v2::TopologyProposalRequestV2;
+pub use topology_v2::TopologyProposalV2;
+pub use topology_v2::propose_topology_v2;
+pub use topology_v2::verify_topology_proposal_v2;
 pub use types::AppendDisposition;
 pub use types::CandidateNormMetricsV2;
 pub use types::Error;

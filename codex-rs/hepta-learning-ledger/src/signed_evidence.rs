@@ -303,6 +303,18 @@ impl LearningEvidenceVerifierV1 {
     }
 }
 
+/// Require both distinct protocol roles and independently authenticated actors.
+pub fn verify_signed_independent_roles_v1(
+    left: &VerifiedLearningEvidenceV1,
+    right: &VerifiedLearningEvidenceV1,
+    now: u64,
+) -> Result<(), SignedEvidenceError> {
+    if left.role == right.role {
+        return Err(SignedEvidenceError::RoleMismatch);
+    }
+    verify_signed_actor_separation(left, right, now)
+}
+
 /// Verify that two already-authenticated evidence actors are independent in the
 /// same trust/objective domain. This is role-agnostic and is used where a
 /// protocol requires pairwise separation beyond generator-vs-observer.

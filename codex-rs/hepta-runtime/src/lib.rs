@@ -8,6 +8,7 @@
 #![forbid(unsafe_code)]
 
 mod organs;
+mod topology_execution;
 
 use std::fmt;
 use std::fs::File;
@@ -46,6 +47,15 @@ use sqlx::Connection;
 use sqlx::SqliteConnection;
 use sqlx::sqlite::SqliteConnectOptions;
 use zeroize::Zeroizing;
+
+pub use topology_execution::RuntimeTopologyApplyReceiptV1;
+pub use topology_execution::RuntimeTopologyApplyRequestV1;
+pub use topology_execution::RuntimeTopologyExecutionError;
+pub use topology_execution::RuntimeTopologyMigrationOwnerV1;
+pub use topology_execution::RuntimeTopologySnapshotV1;
+pub use topology_execution::RuntimeTopologySuccessorV1;
+pub use topology_execution::runtime_topology_final_use_binding_v1;
+pub use topology_execution::runtime_topology_recovery_final_use_binding_v1;
 
 pub const EXISTING_SCHEMA_VERSION: i64 = 5;
 pub const RUNTIME_SNAPSHOT_VERSION: u64 = 1;
@@ -107,6 +117,34 @@ impl HeptaRuntime {
             state,
             organs,
         }
+    }
+
+    pub fn topology_snapshot(&self) -> Result<RuntimeTopologySnapshotV1> {
+        self.organs
+            .topology_snapshot()
+            .map_err(|error| anyhow::anyhow!("{error}"))
+    }
+
+    pub fn apply_governed_topology(
+        &self,
+        authority: &codex_hepta_contracts::FinalUseAuthority,
+        signed_grant: &codex_hepta_contracts::SignedFinalUseGrant,
+        request: RuntimeTopologyApplyRequestV1,
+    ) -> Result<RuntimeTopologyApplyReceiptV1> {
+        self.organs
+            .apply_governed_topology(authority, signed_grant, request)
+            .map_err(|error| anyhow::anyhow!("{error}"))
+    }
+
+    pub fn recover_governed_topology(
+        &self,
+        authority: &codex_hepta_contracts::FinalUseAuthority,
+        signed_grant: &codex_hepta_contracts::SignedFinalUseGrant,
+        request: RuntimeTopologyApplyRequestV1,
+    ) -> Result<RuntimeTopologyApplyReceiptV1> {
+        self.organs
+            .recover_governed_topology(authority, signed_grant, request)
+            .map_err(|error| anyhow::anyhow!("{error}"))
     }
 
     /// Query the initialized, generation-fenced, read-only organ graph.

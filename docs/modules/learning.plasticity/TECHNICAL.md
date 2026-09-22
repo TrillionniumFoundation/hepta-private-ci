@@ -110,13 +110,13 @@ All new writes use the internal, parameter-only `ParameterProposalV2` profile re
 
 Each bounded caller-supplied candidate set contains `1..32` candidates, at most 4,096 total deltas and exactly one explicit no-change candidate. The crate proves only structural completeness of that supplied set; it cannot prove that the set is complete relative to a generator or search space. The set is one proposal envelope, not several final proposals. Parameter IDs are unique within a candidate, updates are nonzero and bounded, and candidate/delta/layer order is canonical. Norm profiles contain `1..256` layers. The registry reserves one slot per `(selected_artifact_digest, window_id)` and caps configured capacity at 4,096 records; a changed window digest or other semantic drift in an occupied slot conflicts, while an identical replay is idempotent and consumes no additional capacity.
 
-The norm profile uses squared L2 Q64 numerators and nonzero per-layer baseline squared L2 Q64 denominators. The checked sum of every declared layer denominator is the global denominator. Per-layer relative norm is limited to `5000 ppm` and aggregate relative norm to `2500 ppm`, using exact squared-ratio comparisons. Because the aggregate is energy-weighted across the complete profile, a small layer may pass the global gate while failing its own gate; both checks are required. The crate binds but cannot authenticate the caller-supplied artifact profile; artifact/window/dataset/update/modulator/eligibility/evaluation/per-delta evidence digest provenance, freshness or completeness; or independent identities merely from unequal proposer/evaluator ID strings. Independent consumers must verify all of those facts before selection or acceptance, neither of which this record authorizes.
+The norm profile uses squared L2 Q64 numerators and nonzero per-layer baseline squared L2 Q64 denominators. The checked sum of every declared layer denominator is the global denominator. Per-layer relative norm is limited to `5000 ppm` and aggregate relative norm to `2500 ppm`, using exact squared-ratio comparisons. Because the aggregate is energy-weighted across the complete profile, a small layer may pass the global gate while failing its own gate; both checks are required. The raw V2 crate binds but cannot authenticate the caller-supplied artifact profile; artifact/window/dataset/update/modulator/eligibility/evaluation/per-delta evidence digest provenance, freshness or completeness; or independent identities merely from unequal proposer/evaluator ID strings. The governed V3/product path therefore adds deterministic regeneration, a typed parameter-specific `ParameterMutationPolicyV1` allowlist/protected-surface view, pairwise signed Generator/Observer/Evaluator admission, current owner-frontier recomputation plus context-bound owner-evidence resolution in Agentd (including exact signal values and the parameter mutation-policy digest), a long-lived generation-fenced Agentd plasticity owner, and external anchor/fence persistence. The canonical readiness protocol `MutationGrammarManifestV1` remains owned by `control.engineering`; this module consumes its governance intent but does not redefine or claim wire-equivalence with that protocol. Dataset receipts are concretely verified against the live DurableLedger head and immutable update/mutation Policy artifacts against the live ArtifactRegistry head. Dynamic evidence is also source-bound to its authoritative owner surfaces: NDU supplies the current modulator projection, the immutable broadcast-policy artifact binds the broadcast mapping, neuron.runtime supplies the anchored eligibility checkpoint, and ParameterSignal evidence recomputes the exact consumed eligibility/modulator/learning-rate/bounds. These adapters reject stale, rolled-back, unavailable, wrong-owner and value-substituted state; target-host opening/placement of those owner stores remains deployment evidence. A deterministic no-update result is not treated as an ordinary error: an independent Evaluator must attest the exact `NoAdmissibleUpdate` terminal payload before the no-change-only proposal is durably recorded. None of those steps authorizes selection or activation.
 
 Golden fixtures `PLASTICITY-V1-GV-001` and `PLASTICITY-V2-GV-001` fix, respectively, the 307-byte legacy digest `a143a54a94d60d2734237612f1c2e0af4b4d986ea52efa6099765b83442dedb4` and the 898-byte V2 digest `e2ecdc9e0fd3278865665a2b0b168a3048919e86e8979e2e90bc6e5db9ab357c`. The V2 artifact norm-profile digest is `d31bd6f69d36817557272d747e5209d431e3ef3058e6f415dc57da4f8f98fb97`. Tests use these as hard-coded independent oracles and assert deny-all authority.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Native Rust proposal types use deterministic canonical byte encodings and tests cover maximum bounds, canonical ordering, trust-region arithmetic, digest stability, durable recovery and fail-closed authority behavior. Canonical JSON protocol semantics remain defined by the registered contract/readiness schemas; a module-local native type is not claimed to be a JSON round-trip implementation unless a registered adapter explicitly provides that mapping. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -137,6 +137,8 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
+
+`PlasticityRuntimeOwnerV1` is the source-selected long-lived Agentd owner. It exclusively retains the parameter/topology writers, anchor stores, current ArtifactRegistry/DurableLedger handles, trust verifier and owner-evidence resolver behind a bounded typed channel. `runtime.rs` supervises the owner as part of the Agentd task set, and each proposal checks the current Running/ready generation before admission. The owner is opt-in and there is no public wire method or ambient fallback writer.
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.plasticity.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.plasticity.md).
 
@@ -166,13 +168,16 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Candidate-only parameter/topology library with a durable proposal registry. Preserve the proposal version and exact predecessor; V1 read compatibility is not permission to emit new V1 writes. Structural split/merge/rewire needs an admitted state-migration and writer-handoff implementation before any production application.
+The native plasticity crate remains candidate-only with durable parameter/topology proposal registries. Preserve the proposal version and exact predecessor; V1 read compatibility is not permission to emit new V1 writes. Structural split/merge/rewire is consumed only by the separate `codex-hepta-runtime` execution owner after governed writer-handoff validation and a single-use FinalUse grant. Healthy replacement and stopped/quarantined recovery are separate runtime transitions with distinct FinalUse destinations; neither gives `learning.plasticity` topology-apply authority.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-plasticity/src/parameter_v2.rs](../../../codex-rs/hepta-plasticity/src/parameter_v2.rs).
 - [codex-rs/hepta-plasticity/src/durable_registry.rs](../../../codex-rs/hepta-plasticity/src/durable_registry.rs).
+- [docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md).
+- [docs/modules/learning.plasticity/OPERATIONS.md](OPERATIONS.md).
 - [docs/readiness/SELF_ITERATION_EXECUTION.md](../../readiness/SELF_ITERATION_EXECUTION.md).
+- [codex-rs/hepta-runtime/src/topology_execution.rs](../../../codex-rs/hepta-runtime/src/topology_execution.rs) — external FinalUse-authorized consumer for an independently accepted governed topology candidate.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -182,6 +187,11 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-plasticity/src/durable_registry_tests.rs](../../../codex-rs/hepta-plasticity/src/durable_registry_tests.rs); named case: `append_reopen_and_anchor_preserve_exact_record`.
 - [codex-rs/hepta-plasticity/src/lib_tests.rs](../../../codex-rs/hepta-plasticity/src/lib_tests.rs); named case: `legacy_v1_is_explicit_read_only_and_never_upconverted`.
+- [codex-rs/hepta-agentd/src/plasticity_runtime.rs](../../../codex-rs/hepta-agentd/src/plasticity_runtime.rs); named case: `runtime_queue_capacity_is_bounded`.
+- [codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs](../../../codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs); named cases cover live dataset/policy owner binding and rollback-frontier rejection.
+- [codex-rs/hepta-intelligence/src/plasticity_product_tests.rs](../../../codex-rs/hepta-intelligence/src/plasticity_product_tests.rs); named case: `no_admissible_update_is_independently_attested_and_durably_recorded`.
+- [codex-rs/hepta-intelligence/src/topology_canary_product.rs](../../../codex-rs/hepta-intelligence/src/topology_canary_product.rs); named case: `payload_binds_every_caller_asserted_canary_fact`.
+- [docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) is the machine trace from every current operation to its focused source tests; `scripts/hepta-implementation-maps.py verify` also checks the generated status block in `CURRENT_IMPLEMENTATION.md`.
 
 In `codex-rs`, run `just test -p codex-hepta-plasticity`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.plasticity.md) separately labels target acceptance designs.
 
@@ -212,6 +222,8 @@ Documentation completion requires this guide, exact registry references and clos
 For `learning.plasticity`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
 ### Work-package execution envelopes
+
+The `State` values below are canonical delivery/work-package states projected from the delivery registry. They do not override current source-capability facts. Use `IMPLEMENTATION_MAP.json` and the generated status block in `CURRENT_IMPLEMENTATION.md` for implemented-source truth; activation, independent acceptance and release remain separate evidence states.
 
 #### `PLS-1-PARAMETER-PLASTICITY`
 

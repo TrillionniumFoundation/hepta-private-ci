@@ -770,6 +770,42 @@ fn already_started_candidate_is_not_a_registered_successor() {
 }
 
 #[test]
+fn recovery_requires_inactive_predecessor_and_publishes_exact_successor() {
+    let mut host = fixture().host().unwrap();
+    host.start_all().unwrap();
+    let previous = route(&host);
+
+    let active_candidate = next_fixture(previous.generation.next().unwrap(), false);
+    let active_events = Arc::clone(&active_candidate.events);
+    assert!(matches!(
+        host.recover_read_only_generation(previous.generation, active_candidate.host().unwrap()),
+        Err(CnsHierarchyError::Runtime(
+            OrganRuntimeError::RecoveryPredecessorActive { .. }
+        ))
+    ));
+    assert!(active_events.lock().unwrap().is_empty());
+    assert_eq!(route(&host), previous);
+
+    host.stop_all().unwrap();
+    let next_generation = previous.generation.next().unwrap();
+    let candidate = next_fixture(next_generation, false);
+    let candidate_events = Arc::clone(&candidate.events);
+    host.recover_read_only_generation(previous.generation, candidate.host().unwrap())
+        .unwrap();
+
+    let recovered = route(&host);
+    assert_eq!(host.generation(), next_generation);
+    assert_eq!(recovered.generation, next_generation);
+    assert_ne!(recovered.hierarchy_digest, previous.hierarchy_digest);
+    assert_eq!(
+        *candidate_events.lock().unwrap(),
+        vec!["start:ingress", "start:status", "start:health"]
+    );
+    assert!(host.dispatch_once(&previous, b"stale").is_err());
+    assert!(host.dispatch_once(&recovered, b"recovered").is_ok());
+}
+
+#[test]
 fn stopped_predecessor_does_not_start_a_candidate() {
     let mut host = fixture().host().unwrap();
     host.start_all().unwrap();

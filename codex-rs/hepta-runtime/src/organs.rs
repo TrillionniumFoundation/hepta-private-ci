@@ -7,6 +7,8 @@ use std::sync::Mutex;
 
 use anyhow::Context;
 use anyhow::Result;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_control_plane::BodyGraphBindingV1;
 use codex_hepta_control_plane::CnsHierarchyV1;
 use codex_hepta_control_plane::CnsOrganHostV1;
@@ -43,6 +45,12 @@ use codex_hepta_types::StableId;
 use crate::RuntimeAuthorityStatus;
 use crate::RuntimeStateAdapter;
 use crate::RuntimeStatus;
+use crate::topology_execution::RuntimeTopologyApplyReceiptV1;
+use crate::topology_execution::RuntimeTopologyApplyRequestV1;
+use crate::topology_execution::RuntimeTopologyExecutionError;
+use crate::topology_execution::RuntimeTopologySnapshotV1;
+use crate::topology_execution::validate_runtime_topology_recovery_v1;
+use crate::topology_execution::validate_runtime_topology_transition_v1;
 
 #[derive(Debug)]
 pub(crate) struct RuntimeOrgans {
@@ -76,6 +84,115 @@ impl RuntimeOrgans {
         Ok(())
     }
 
+    pub(crate) fn topology_snapshot(
+        &self,
+    ) -> Result<RuntimeTopologySnapshotV1, RuntimeTopologyExecutionError> {
+        let host = self
+            .host
+            .lock()
+            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+        let host = host
+            .as_ref()
+            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+        Ok(RuntimeTopologySnapshotV1 {
+            route: host.route.clone(),
+        })
+    }
+
+    pub(crate) fn apply_governed_topology(
+        &self,
+        authority: &FinalUseAuthority,
+        signed_grant: &SignedFinalUseGrant,
+        request: RuntimeTopologyApplyRequestV1,
+    ) -> Result<RuntimeTopologyApplyReceiptV1, RuntimeTopologyExecutionError> {
+        let mut host = self
+            .host
+            .lock()
+            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+        let host = host
+            .as_mut()
+            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+
+        let validated =
+            validate_runtime_topology_transition_v1(&host.route, host.host.generation(), &request)?;
+        let token = authority.claim(signed_grant, &validated.binding)?;
+        let binding = validated.binding.clone();
+        let RuntimeTopologyApplyRequestV1 {
+            mut migration,
+            successor,
+            ..
+        } = request;
+        let replacement = authority.with_verified_use(token, &binding, || {
+            host.host.replace_read_only_generation_with_migration(
+                validated.predecessor_generation,
+                successor.host,
+                migration.as_mut(),
+            )
+        })?;
+        replacement?;
+        host.route = successor.route;
+
+        Ok(RuntimeTopologyApplyReceiptV1 {
+            proposal_id: validated.proposal_id,
+            candidate_id: validated.candidate_id,
+            admission_digest: validated.admission_digest,
+            handoff_plan_digest: validated.handoff.plan_digest,
+            predecessor_generation: validated.predecessor_generation,
+            successor_generation: validated.successor_generation,
+            predecessor_hierarchy_digest: validated.predecessor_hierarchy_digest,
+            successor_hierarchy_digest: validated.successor_hierarchy_digest,
+            final_use_request_digest: validated.final_use_request_digest,
+            authority: AuthorityPosture::DENY_ALL,
+        })
+    }
+
+    pub(crate) fn recover_governed_topology(
+        &self,
+        authority: &FinalUseAuthority,
+        signed_grant: &SignedFinalUseGrant,
+        request: RuntimeTopologyApplyRequestV1,
+    ) -> Result<RuntimeTopologyApplyReceiptV1, RuntimeTopologyExecutionError> {
+        let mut host = self
+            .host
+            .lock()
+            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+        let host = host
+            .as_mut()
+            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+
+        let validated =
+            validate_runtime_topology_recovery_v1(&host.route, host.host.generation(), &request)?;
+        let token = authority.claim(signed_grant, &validated.binding)?;
+        let binding = validated.binding.clone();
+        let RuntimeTopologyApplyRequestV1 {
+            mut migration,
+            successor,
+            ..
+        } = request;
+        let replacement = authority.with_verified_use(token, &binding, || {
+            host.host.recover_read_only_generation_with_migration(
+                validated.predecessor_generation,
+                successor.host,
+                migration.as_mut(),
+            )
+        })?;
+        replacement?;
+        host.route = successor.route;
+
+        Ok(RuntimeTopologyApplyReceiptV1 {
+            proposal_id: validated.proposal_id,
+            candidate_id: validated.candidate_id,
+            admission_digest: validated.admission_digest,
+            handoff_plan_digest: validated.handoff.plan_digest,
+            predecessor_generation: validated.predecessor_generation,
+            successor_generation: validated.successor_generation,
+            predecessor_hierarchy_digest: validated.predecessor_hierarchy_digest,
+            successor_hierarchy_digest: validated.successor_hierarchy_digest,
+            final_use_request_digest: validated.final_use_request_digest,
+            authority: AuthorityPosture::DENY_ALL,
+        })
+    }
+
     pub(crate) fn status_json(&self) -> Result<Vec<u8>> {
         // Never block an async gateway worker behind a concurrent handler.
         let mut host = self
@@ -99,8 +216,19 @@ impl RuntimeOrgans {
 }
 
 fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Result<StatusHost> {
+    let mut host = build_host_generation(root, state, Generation::new(/*value*/ 1)?)?;
+    host.host
+        .start_all()
+        .context("start compiled-in status organs")?;
+    Ok(host)
+}
+
+fn build_host_generation(
+    root: HeptaStateRoot,
+    state: Arc<dyn RuntimeStateAdapter>,
+    generation: Generation,
+) -> Result<StatusHost> {
     let ingress = StableId::new("runtime.status.ingress")?;
-    let generation = Generation::new(/*value*/ 1)?;
     let status = StableId::new("runtime.status.adapter")?;
     let owner = StableId::new("runtime.hepta-live-shell")?;
     let port = StableId::new("runtime.status.request.v1")?;
@@ -238,10 +366,8 @@ fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Resu
             },
         })
         .collect();
-    let mut host = verified.into_hierarchical_host(hierarchy, catalog)?;
+    let host = verified.into_hierarchical_host(hierarchy, catalog)?;
     let route = host.route(&control_system, &ingress, /*output_port*/ 0)?;
-    host.start_all()
-        .context("start compiled-in status organs")?;
     Ok(StatusHost { host, route })
 }
 

@@ -767,6 +767,155 @@ def validate_operation_inventory(mid: str, ops: list[dict]) -> None:
         raise ValueError("public operation inventory incomplete: " + ", ".join(missing))
 
 
+STATUS_BEGIN = "<!-- BEGIN GENERATED IMPLEMENTATION STATUS -->"
+STATUS_END = "<!-- END GENERATED IMPLEMENTATION STATUS -->"
+
+
+def plasticity_status_block(row: dict) -> str:
+    lines = [
+        STATUS_BEGIN,
+        "## Generated implementation status",
+        "",
+        "This block is generated only from `IMPLEMENTATION_MAP.json`. Run",
+        "`python3 scripts/hepta-implementation-maps.py sync-plasticity-status` after",
+        "changing the map. Hand-written sections below explain semantics but do not",
+        "override these machine status facts.",
+        "",
+        f"- Product caller: `{row['productCallerState']}`",
+        f"- Production writer: `{row['productionWriterState']}`",
+        f"- Production implementation: `{str(bool(row['productionImplementation'])).lower()}`",
+        f"- Product execution proved: `{str(bool(row['claimBoundary']['productExecutionProved'])).lower()}`",
+        f"- Independent acceptance: `{str(bool(row['claimBoundary']['independentAcceptance'])).lower()}`",
+        f"- Activation: `{str(bool(row['claimBoundary']['activation'])).lower()}`",
+        f"- Release: `{str(bool(row['claimBoundary']['release'])).lower()}`",
+        "",
+        "| Operation | State | Source | Tests |",
+        "| --- | --- | --- | ---: |",
+    ]
+    for op in row["operations"]:
+        lines.append(
+            f"| `{op['operation']}` | `{op['state']}` | "
+            f"`{op.get('sourcePath') or '-'}` | {len(op.get('tests') or [])} |"
+        )
+    lines.extend(["", "### Repository-controlled gaps", ""])
+    lines.extend(f"- {gap}" for gap in row.get("repositoryControlledGaps", []))
+    lines.extend(["", "### External evidence gates", ""])
+    lines.extend(f"- {gate}" for gate in row.get("externalEvidenceGates", []))
+    lines.extend(["", STATUS_END])
+    return "\n".join(lines)
+
+
+def plasticity_current_state_projection(row: dict) -> dict:
+    return {
+        "schema": "hepta.learning-plasticity-current-state.v1",
+        "schemaVersion": 1,
+        "module": row["module"],
+        "generatedFrom": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+        "sourceBase": row["sourceBase"],
+        "current": {
+            "sourceRootPresent": bool(row["sourceRootPresent"]),
+            "productionImplementation": bool(row["productionImplementation"]),
+            "productCallerState": row["productCallerState"],
+            "productionWriterState": row["productionWriterState"],
+            "claimBoundary": row["claimBoundary"],
+        },
+        "operations": [
+            {
+                "operation": op["operation"],
+                "state": op["state"],
+                "sourcePath": op.get("sourcePath"),
+                "tests": op.get("tests") or [],
+            }
+            for op in row["operations"]
+        ],
+        "remainingToTarget": {
+            "repositoryControlledGaps": row.get("repositoryControlledGaps", []),
+            "externalEvidenceGates": row.get("externalEvidenceGates", []),
+        },
+    }
+
+
+def sync_plasticity_status() -> None:
+    map_path = ROOT / "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json"
+    doc_path = ROOT / "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md"
+    row = json.loads(map_path.read_text(encoding="utf-8"))
+    expected = plasticity_status_block(row)
+    text = doc_path.read_text(encoding="utf-8")
+    pattern = re.compile(re.escape(STATUS_BEGIN) + r".*?" + re.escape(STATUS_END), re.S)
+    if pattern.search(text):
+        text = pattern.sub(expected, text, count=1)
+    else:
+        marker = "\n## Status matrix\n"
+        if marker not in text:
+            raise SystemExit(
+                "learning.plasticity current implementation is missing Status matrix"
+            )
+        text = text.replace(marker, "\n" + expected + "\n" + marker, 1)
+    doc_path.write_text(text, encoding="utf-8")
+    (ROOT / "docs/modules/learning.plasticity/CURRENT_STATE.json").write_text(
+        json.dumps(
+            plasticity_current_state_projection(row),
+            indent=2,
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def plasticity_status_matches() -> bool:
+    row = load("docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json")
+    text = (
+        ROOT / "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md"
+    ).read_text(encoding="utf-8")
+    expected = plasticity_status_block(row)
+    pattern = re.compile(re.escape(STATUS_BEGIN) + r".*?" + re.escape(STATUS_END), re.S)
+    match = pattern.search(text)
+    if not (match and match.group(0) == expected):
+        return False
+    if not (ROOT / "docs/modules/learning.plasticity/CURRENT_STATE.json").is_file():
+        return False
+    try:
+        current = json.loads(
+            (ROOT / "docs/modules/learning.plasticity/CURRENT_STATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+    except Exception:
+        return False
+    return current == plasticity_current_state_projection(row)
+
+
+def verify_plasticity_test_references(row: dict, failures: list[str]) -> None:
+    for op in row.get("operations", []):
+        tests = op.get("tests")
+        if not isinstance(tests, list) or not tests:
+            failures.append(
+                f"learning.plasticity: {op.get('operation', '<unknown>')} has no focused test identity"
+            )
+            continue
+        for test in tests:
+            if not isinstance(test, str) or ".rs::" not in test:
+                failures.append(f"learning.plasticity: invalid test identity {test!r}")
+                continue
+            source, test_path = test.split(".rs::", 1)
+            source += ".rs"
+            try:
+                path = checked_source_path(ROOT, source)
+            except ValueError as exc:
+                failures.append(f"learning.plasticity: invalid test source {exc}")
+                continue
+            if not path.is_file():
+                failures.append(f"learning.plasticity: missing test source {source}")
+                continue
+            leaf = test_path.rsplit("::", 1)[-1]
+            source_text = path.read_text(encoding="utf-8")
+            if re.search(rf"\bfn\s+{re.escape(leaf)}\s*\(", source_text) is None:
+                failures.append(
+                    f"learning.plasticity: test identity {test} does not name a function"
+                )
+
+
 def verify(*, require_current_source: bool = True):
     """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
 
@@ -817,6 +966,12 @@ def verify(*, require_current_source: bool = True):
             if "sourceRootPresent" not in row or "productionImplementation" not in row:
                 raise ValueError("status model")
             validate_operation_inventory(mid, ops)
+            if mid == "learning.plasticity":
+                verify_plasticity_test_references(row, failures)
+                if not plasticity_status_matches():
+                    raise ValueError(
+                        "generated plasticity status differs from implementation map"
+                    )
             mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
             if mapping_mode not in {"path_only", "exact_blob"}:
                 raise ValueError("mapping source identity mode")
@@ -977,7 +1132,9 @@ def verify(*, require_current_source: bool = True):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["generate", "migrate", "verify"])
+    parser.add_argument(
+        "command", choices=["generate", "migrate", "verify", "sync-plasticity-status"]
+    )
     parser.add_argument(
         "--module",
         action="append",
@@ -997,7 +1154,11 @@ def main():
     if args.command == "migrate":
         migrate(args.modules)
     else:
-        {"generate": generate, "verify": verify}[args.command]()
+        {
+            "generate": generate,
+            "verify": verify,
+            "sync-plasticity-status": sync_plasticity_status,
+        }[args.command]()
 
 
 if __name__ == "__main__":

@@ -155,6 +155,7 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_actor_separation;
+pub use signed_evidence::verify_signed_independent_roles_v1;
 pub use signed_evidence::verify_signed_role_separation;
 pub use trust_distribution::ActivatedLearningTrustV1;
 pub use trust_distribution::LearningTrustDistributionError;

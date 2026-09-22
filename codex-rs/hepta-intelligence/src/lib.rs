@@ -36,6 +36,39 @@ pub use objective_run::ObjectiveRunError;
 pub use objective_run::PublishedObjectiveRunV1;
 pub use objective_run::compile_and_publish_objective_run_v1;
 
+mod plasticity_product;
+
+pub use plasticity_product::AnchoredPlasticityWriterErrorV1;
+pub use plasticity_product::AnchoredPlasticityWriterV1;
+pub use plasticity_product::CandidateEvaluationAdmissionV1;
+pub use plasticity_product::ParameterPlasticityDispositionV1;
+pub use plasticity_product::ParameterPlasticityProductErrorV1;
+pub use plasticity_product::ParameterPlasticityProductReceiptV1;
+pub use plasticity_product::ParameterPlasticityProductRequestV1;
+pub use plasticity_product::PlasticityAdmissionEvidenceV1;
+pub use plasticity_product::PlasticityAnchorCommitterV1;
+pub use plasticity_product::PlasticityWriterStateV1;
+pub use plasticity_product::no_change_disposition_signing_payload_v1;
+pub use plasticity_product::plasticity_admission_signing_payload_v1;
+pub use plasticity_product::propose_authenticated_parameter_plasticity_v1;
+
+mod topology_canary_product;
+mod topology_product;
+
+pub use topology_canary_product::AuthenticatedStructuralCanaryErrorV1;
+pub use topology_canary_product::AuthenticatedStructuralCanaryReceiptV1;
+pub use topology_canary_product::observe_authenticated_structural_canary_v1;
+pub use topology_canary_product::structural_canary_observation_signing_payload_v1;
+
+pub use topology_product::TopologyAdmissionEvidenceV1;
+pub use topology_product::TopologyPlasticityProductErrorV1;
+pub use topology_product::TopologyPlasticityProductReceiptV1;
+pub use topology_product::TopologyPlasticityProductRequestV1;
+pub use topology_product::propose_authenticated_topology_plasticity_v1;
+pub use topology_product::topology_admission_signing_payload_v1;
+pub use topology_product::topology_evaluation_signing_payload_v1;
+pub use topology_product::topology_generation_signing_payload_v1;
+
 mod capability_snapshot;
 
 pub use capability_snapshot::CapabilityBindingV2;
@@ -245,3 +278,7 @@ mod tests;
 #[cfg(test)]
 #[path = "vertical_tests.rs"]
 mod vertical_tests;
+
+#[cfg(test)]
+#[path = "plasticity_product_tests.rs"]
+mod plasticity_product_tests;

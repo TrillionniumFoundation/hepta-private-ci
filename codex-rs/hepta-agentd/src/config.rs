@@ -88,6 +88,7 @@ pub struct AgentdConfig {
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
 }
 
 impl AgentdConfig {
@@ -206,6 +207,7 @@ impl AgentdConfig {
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
+            plasticity_bootstrap: None,
         })
     }
 
@@ -433,6 +435,29 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>> {
         self.cognitive_retrieval_learning.clone()
+    }
+
+    /// Attach one explicitly constructed governed plasticity bootstrap envelope.
+    /// Agentd itself consumes the envelope, creates the bounded channel, retains
+    /// the sole mutable owner and stores the producer handle in daemon state.
+    /// There is no ambient/default plasticity writer.
+    pub fn with_plasticity_runtime_bootstrap(
+        mut self,
+        bootstrap: crate::PlasticityRuntimeBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        if self.plasticity_bootstrap.is_some() {
+            return Err(AgentdError::Invalid(
+                "plasticity runtime bootstrap already configured".to_string(),
+            ));
+        }
+        self.plasticity_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn take_plasticity_runtime_bootstrap(
+        &mut self,
+    ) -> Option<crate::PlasticityRuntimeBootstrapV1> {
+        self.plasticity_bootstrap.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

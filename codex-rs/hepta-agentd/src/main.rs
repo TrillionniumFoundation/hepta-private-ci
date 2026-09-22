@@ -1,4 +1,8 @@
+use std::path::PathBuf;
+
 use codex_hepta_agentd::AgentdConfig;
+use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
+use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 fn main() -> anyhow::Result<()> {
@@ -9,6 +13,8 @@ fn main() -> anyhow::Result<()> {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
+        let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
+        let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
         let mut authbus_checkpoint = None;
         let mut evidence_trust = None;
@@ -22,6 +28,24 @@ fn main() -> anyhow::Result<()> {
             if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
+            } else if flag == "--plasticity-bootstrap-descriptor" {
+                anyhow::ensure!(
+                    plasticity_bootstrap_descriptor.is_none(),
+                    "duplicate --plasticity-bootstrap-descriptor"
+                );
+                plasticity_bootstrap_descriptor = Some(path.into());
+            } else if flag == "--plasticity-bootstrap-descriptor-digest" {
+                anyhow::ensure!(
+                    plasticity_bootstrap_descriptor_digest.is_none(),
+                    "duplicate --plasticity-bootstrap-descriptor-digest"
+                );
+                let value = path
+                    .into_string()
+                    .map_err(|_| anyhow::anyhow!("plasticity descriptor digest must be UTF-8"))?;
+                plasticity_bootstrap_descriptor_digest =
+                    Some(value.parse::<Digest32>().map_err(|error| {
+                        anyhow::anyhow!("invalid plasticity descriptor digest: {error}")
+                    })?);
             } else if flag == "--objective-profile-file" {
                 anyhow::ensure!(
                     objective_profile.is_none(),
@@ -87,6 +111,25 @@ fn main() -> anyhow::Result<()> {
                 "--evidence-recovery-frontier-file and --evidence-recovery-frontier-trust-file must be supplied together"
             ),
         }
+
+        match (
+            plasticity_bootstrap_descriptor,
+            plasticity_bootstrap_descriptor_digest,
+        ) {
+            (Some(path), Some(expected_digest)) => {
+                let bootstrap = load_plasticity_process_bootstrap_v1(
+                    &path,
+                    expected_digest,
+                    config.identity(),
+                )?;
+                config = config.with_plasticity_runtime_bootstrap(bootstrap)?;
+            }
+            (None, None) => {}
+            _ => anyhow::bail!(
+                "--plasticity-bootstrap-descriptor and its digest must be supplied together"
+            ),
+        }
+
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
     })

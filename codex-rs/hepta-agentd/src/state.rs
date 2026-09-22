@@ -41,6 +41,9 @@ pub(crate) struct AgentdState {
         std::sync::OnceLock<Arc<crate::automation_effect_host::AgentdAutomationEffectHost>>,
     pub(crate) objective_runtime:
         std::sync::OnceLock<Arc<crate::objective_runtime::ObjectiveRuntimeHost>>,
+    plasticity_runtime: std::sync::OnceLock<
+        crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1,
+    >,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -120,6 +123,7 @@ impl AgentdState {
             production_operations: std::sync::OnceLock::new(),
             cognitive_retrieval_context: std::sync::OnceLock::new(),
             cognitive_retrieval_learning: std::sync::OnceLock::new(),
+            plasticity_runtime: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
@@ -134,6 +138,53 @@ impl AgentdState {
             runs: Mutex::new(run_coordinator),
             prompt_pipeline,
         })
+    }
+
+    pub(crate) fn attach_plasticity_runtime(
+        &self,
+        handle: crate::PlasticityRuntimeHandleV1,
+    ) -> Result<(), AgentdError> {
+        self.plasticity_runtime
+            .set(
+                crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::new(
+                    handle,
+                ),
+            )
+            .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
+    }
+
+    /// Named Agentd-owned producer boundary for governed parameter plasticity.
+    /// Callers never receive the mutable writer or a second owner handle.
+    pub(crate) async fn submit_parameter_plasticity_v1(
+        &self,
+        request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
+        now: u64,
+    ) -> Result<
+        codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
+        crate::PlasticityRuntimeCallErrorV1,
+    > {
+        let producer = self
+            .plasticity_runtime
+            .get()
+            .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
+        producer.submit_parameter(request, now).await
+    }
+
+    /// Named Agentd-owned producer boundary for governed topology plasticity.
+    /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
+    pub(crate) async fn submit_topology_plasticity_v1(
+        &self,
+        request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
+        now: u64,
+    ) -> Result<
+        codex_hepta_intelligence::TopologyPlasticityProductReceiptV1,
+        crate::PlasticityRuntimeCallErrorV1,
+    > {
+        let producer = self
+            .plasticity_runtime
+            .get()
+            .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
+        producer.submit_topology(request, now).await
     }
 
     pub(crate) fn attach_cognitive_store(
@@ -380,6 +431,16 @@ impl AgentdState {
             && !runtime.fenced)
     }
 
+    /// Plasticity proposal admission is available only on the live Running
+    /// generation after App Server readiness. This fences the long-lived
+    /// proposal owner with the same lifecycle boundary as other Agentd work.
+    pub(crate) fn plasticity_admission_ready(&self) -> Result<bool, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        Ok(runtime.lifecycle == AgentLifecycle::Running
+            && runtime.app_server_ready
+            && !runtime.fenced)
+    }
     /// Revalidate a durable run-start record against the current owner trust,
     /// current Fleet generation and exact Agentd fence, then project it into
     /// the sole daemon-owned run coordinator.
