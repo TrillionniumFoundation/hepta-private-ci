@@ -98,19 +98,20 @@ event identity and episode identity
 scope and observed interval
 one or more modality spans
 normalized semantic keys
-entity/relation/action/outcome projections
 causal parents and temporal neighbors
 objective and NDU snapshot digests
-optional legal-candidate-set and propensity witnesses
+optional behavior propensity
 verification, provenance, privacy and retention
 supersession and forget state
 ```
 
 Events are immutable. Corrections append a successor event or correction record. Forgetting appends a tombstone/revocation record and triggers projection rebuild or artifact revocation. No update-in-place is permitted.
 
+Entity/relation/action/outcome projections are **derived owner projections**, not fields of canonical `MemoryEventV1`; their source event identities and digests are carried by the responsible projection owner. Likewise, the legal candidate-set/decision witness is owned by the learning ledger. `MemoryEventV1` carries only the optional bounded `behaviorPropensityPpm` observation and must not embed or reinterpret another owner's decision receipt. This separation is normative for V1.
+
 ### 4.3 `CrossModalBindingV1`
 
-A cross-modal binding records that two or more spans are co-referential, temporally aligned, causally related, procedurally paired, or supplied as alternative observations. The record contains an alignment kind, confidence, producer manifest, and support event. Alignment output is provisional until its sources and producer are qualified.
+A cross-modal binding records that two or more spans are co-referential, temporally aligned, causally related, procedurally paired, or supplied as alternative observations. The record contains an alignment kind, confidence, producer manifest, and support event. Alignment output is provisional until its sources and producer are qualified. Structural `CrossModalBindingV1::validate` does not authenticate referenced span membership; separately transported bindings must additionally pass `validate_cross_modal_binding_against_event_v1` against the exact canonical event.
 
 ### 4.4 `EngramNodeV1`
 
@@ -135,7 +136,7 @@ Each synapse carries fixed-point weight, bounded delay, plasticity class, eligib
 
 ### 4.6 `RecallPacketV1`
 
-A recall packet contains only bounded identifiers, digests, selected event revisions, active node summaries, activation paths, contradiction groups, coverage, confidence, OOD, abstention reason, and resource receipt. Raw source data is attached later only by `context.compiler` after exact revalidation.
+A recall packet contains only bounded identifiers, digests, selected event revisions, active node summaries, activation paths, contradiction groups, coverage, confidence, OOD, abstention reason, and resource receipt. Selected event revisions are non-zero. V1 enforces an exclusive terminal shape: `abstain == None` requires one or more selected events, while `abstain != None` requires zero selected events. Raw source data is attached later only by `context.compiler` after exact revalidation.
 
 ## 5. Seven functional engram populations
 
@@ -155,7 +156,7 @@ Competition occurs primarily within a population. Excitatory association may cro
 
 ## 6. Fixed-point neuron dynamics
 
-The deterministic reference uses signed parts-per-million fixed point. Production implementations may use another registered numeric representation only if parity, bounds, and platform determinism are qualified.
+The deterministic reference uses signed parts-per-million fixed point. Canonical node thresholds and synapse weights use signed unit-range Q16 with `Q16_ONE = 65_536`, so the admitted raw interval is `[-65_536, 65_536]`. Conversion to ppm is `trunc_toward_zero(q16 * 1_000_000 / 65_536)`. Plasticity proposal `deltaPpm` is not caller commentary: it must equal the deterministic conversion of `newQ16 - oldQ16` exactly. Production implementations may use another registered numeric representation only if parity, bounds, and platform determinism are qualified.
 
 For node `i` at settling step `t`:
 

@@ -5,7 +5,10 @@
 
 #![forbid(unsafe_code)]
 
+pub mod hnmf;
+pub mod hnmf_learning;
 pub mod lane_c;
+pub mod wire;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -129,9 +132,6 @@ impl MemoryRecord {
             if citation.source_digest.is_zero() {
                 return Err(Error::EmptyDigest("citation"));
             }
-            // One stable source identity cannot denote two different payloads
-            // inside the same record. A changed source digest requires a new
-            // source identity or a separately governed source revision type.
             if !seen.insert(citation.source_id.clone()) {
                 return Err(Error::DuplicateCitation(citation.source_id.to_string()));
             }
@@ -141,7 +141,7 @@ impl MemoryRecord {
 
     /// Computes the canonical V1 digest without implicitly validating the record.
     ///
-    /// Call [`Self::validate`] before treating the digest as an integrity binding.
+    /// Validate first before treating the digest as an integrity binding.
     /// The digest is not source authentication or freshness evidence.
     #[must_use]
     pub fn record_digest(&self) -> Digest32 {
@@ -245,3 +245,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "contract_tests.rs"]
+mod contract_tests;

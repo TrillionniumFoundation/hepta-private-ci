@@ -9,6 +9,9 @@ publish = false
 path = "src/lib.rs"
 doctest = false
 
+[dependencies]
+codex-hepta-cognitive-types = { path = "../../codex-rs/hepta-cognitive-types" }
+
 [workspace]
 
 [lints.rust]

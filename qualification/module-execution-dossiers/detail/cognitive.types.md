@@ -1,7 +1,7 @@
 # cognitive.types: implementation design
 
 Parent: `docs/modules/cognitive.types/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded record/snapshot types and Lane C generation contracts implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded record/snapshot types, Lane C generation contracts, canonical HNMF V1 types and strict wire source are implemented on the candidate branch; consumer convergence, current execution receipts and independent acceptance remain separate gates listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -35,7 +35,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - CTYPE-03: correction and tombstone references remain distinct from normal evidence.
 - CTYPE-04: canonical cross-language encoding preserves source and numeric-profile identities.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+These cases are implemented as source-level qualification tests in `codex-rs/hepta-cognitive-types/src/contract_tests.rs`; CTYPE-04 is additionally checked by the independent Python canonical-JSON oracle in `qualification/cognitive-types-v1/verify_vectors.py`. Source presence is not an executed exact-candidate receipt; current source-head and deterministic synthetic-merge runs remain the execution authority.
 
 ## 7. Integration, rollback and capability ceiling
 
@@ -45,8 +45,9 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `build_snapshot` in [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs); `CognitiveSnapshotKeyV1` in [codex-rs/hepta-cognitive-types/src/lane_c.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c.rs). Bounded record/snapshot types and Lane C generation contracts implemented.
+- **Implemented entrypoints:** `build_snapshot` in [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs); `CognitiveSnapshotKeyV1` in [src/lane_c.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c.rs); canonical HNMF `ModalitySpanRefV1`, `MemoryEventV1`, `CrossModalBindingV1` in [src/hnmf.rs](../../../codex-rs/hepta-cognitive-types/src/hnmf.rs); `EngramNodeV1`, `SynapseV1`, `MemoryCueV1`, `RecallPacketV1`, `OutcomeSignalV1`, replay/plasticity/topology/forget contracts in [src/hnmf_learning.rs](../../../codex-rs/hepta-cognitive-types/src/hnmf_learning.rs); and strict canonical JSON `encode_wire_v1` / `decode_wire_v1` in [src/wire.rs](../../../codex-rs/hepta-cognitive-types/src/wire.rs).
 - **State and recovery:** Stateless types canonicalize record ID/revision order and hash exact bounded records, citations and generation. These values contain no SQL connection or mutation authority; a snapshot digest does not authenticate its source.
-- **Source tests:** [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs), [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Source tests:** [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs), [src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs), and [src/contract_tests.rs](../../../codex-rs/hepta-cognitive-types/src/contract_tests.rs). `contract_tests.rs` implements CTYPE-01 through CTYPE-04 plus strict unknown-field/enum/canonical-byte, bound, receipt-binding, abstention/revision, Q16/ppm proposal-binding, contextual-binding, deterministic round-trip, digest-domain and bounded arbitrary-byte decoder-smoke checks. [qualification/cognitive-types-v1/verify_vectors.py](../../cognitive-types-v1/verify_vectors.py) independently computes golden canonical JSON digests for all 12 registered V1 contracts, and [codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs](../../../codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs) remains the libFuzzer target for every registered V1 contract. These remain source identities until the exact candidate executes them.
+- **Qualification/reference ownership:** `qualification/hnmf-contract-reference` compiles against and re-exports the production V1 contracts rather than defining replacements. `qualification/hnmf-reference` imports the production modality/privacy/engram/relation taxonomies and projects canonical `MemoryEventV1` identities into algorithm-local state; the closed-world HNMF verifier forbids those taxonomies from being redefined locally.
 - **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
-- **Remaining work:** Keep native snapshot/contract versions distinct from admitted cross-owner wire formats and bind every generation component to its actual owner.
+- **Remaining work:** current exact-head focused/package/all-target/strict-Clippy/clean-worktree evidence and deterministic main synthetic-merge evidence are still required. Registry projections do not prove downstream migration: cognitive.read/store, memory.retrieval, compact.engine and intelligence.control still expose compatibility surfaces, including the distinct legacy `memory.retrieval::generation_bound::RecallPacketV1`. Consumer-owned adapters must converge under their own work packages before `canonicalConsumerConvergenceProved` or authenticated product-composition claims may become true. Native Lane C owner-local records that have no registered V1 wire schema remain local-only and distinct from `MemoryEventV1`.
