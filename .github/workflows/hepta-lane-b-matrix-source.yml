@@ -1,0 +1,141 @@
+name: Hepta Lane B Matrix source closure
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-contracts/src/final_use.rs"
+      - "codex-rs/hepta-contracts/src/final_use_store.rs"
+      - "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      - "codex-rs/hepta-contracts/src/lib.rs"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "docs/modules/channel.matrix/**"
+      - "docs/delivery/WORK_PACKAGES.json"
+      - "docs/delivery/PATH_OWNERSHIP.json"
+      - "qualification/lane-b/**"
+      - "qualification/module-execution-dossiers/DETAILS.json"
+      - "qualification/module-execution-dossiers/detail/channel.matrix.md"
+      - "scripts/hepta-lane-b-path-guard.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/workflows/hepta-lane-b-matrix-source.yml"
+      - ".github/workflows/hepta-lane-b-matrix-real-synapse.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-contracts/src/final_use.rs"
+      - "codex-rs/hepta-contracts/src/final_use_store.rs"
+      - "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      - "codex-rs/hepta-contracts/src/lib.rs"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "docs/modules/channel.matrix/**"
+      - "qualification/lane-b/**"
+      - "qualification/module-execution-dossiers/detail/channel.matrix.md"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/workflows/hepta-lane-b-matrix-source.yml"
+      - ".github/workflows/hepta-lane-b-matrix-real-synapse.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lane-b-matrix-source-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-head:
+    name: Verify exact Matrix source head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify Matrix truth
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta-lane-b-path-guard.py self-test
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-technical-closure.py verify
+          git diff --check
+
+      - name: Verify Matrix formatting
+        working-directory: codex-rs
+        run: |
+          cargo fmt             --package codex-hepta-contracts             --package codex-hepta-matrix-protocol             --package codex-hepta-matrix-sdk             --package codex-hepta-matrix-store             --package codex-hepta-matrixd             -- --check
+
+      - name: Verify durable Matrix and final-use behavior
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-contracts final_use
+          cargo test -p codex-hepta-matrix-store --test sync_mutation_v2
+          cargo test -p codex-hepta-matrix-store --test sync_observation_v1
+          cargo test -p codex-hepta-matrix-sdk --test durable_transport
+          cargo test -p codex-hepta-matrixd --lib
+
+      - name: Assert tracked tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=no)"
+
+  merge-candidate:
+    name: Verify deterministic Matrix synthetic merge
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct deterministic synthetic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Matrix CI
+          author-email: hepta-matrix-ci@users.noreply.github.com
+          message: Synthetic Matrix merge
+
+      - name: Verify merged Matrix truth and behavior
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-technical-closure.py verify
+          cd codex-rs
+          cargo fmt             --package codex-hepta-contracts             --package codex-hepta-matrix-protocol             --package codex-hepta-matrix-sdk             --package codex-hepta-matrix-store             --package codex-hepta-matrixd             -- --check
+          cargo test -p codex-hepta-contracts final_use
+          cargo test -p codex-hepta-matrix-store --test sync_mutation_v2
+          cargo test -p codex-hepta-matrix-store --test sync_observation_v1
+          cargo test -p codex-hepta-matrix-sdk --test durable_transport
+          cargo test -p codex-hepta-matrixd --lib
+          cd ..
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"

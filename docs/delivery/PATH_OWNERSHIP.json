@@ -464,43 +464,7 @@
     "overlapRequiresDagOrderingOrLease": true,
     "unboundedRepositoryScopeAllowed": false
   },
-  "activeLeases": [
-    {
-      "leaseId": "LEASE-TASKFLOW-MATRIX-QUALIFICATION-001",
-      "packageA": "MATRIX-1-CHANNEL-BOUNDARY",
-      "packageB": "TASKFLOW-1-EXECUTION-BOUNDARY",
-      "normalizedExactPaths": [
-        ".github/workflows/hepta-lane-b-truth.yml"
-      ],
-      "pathSetSha256": "eaebdea539636893407409fb6631db3ace7254e21e0450e52d7a05b29e705a05",
-      "purpose": "shared_taskflow_matrix_qualification",
-      "status": "requires_external_attestation",
-      "reviewBinding": {
-        "identitySource": "github_pull_request_review",
-        "repositorySource": "github.event.repository.id",
-        "pullRequestSource": "github.event.pull_request.number",
-        "baseSource": "github.event.pull_request.base.sha",
-        "headSource": "github.event.pull_request.head.sha",
-        "reviewCommitSource": "github.event.review.commit_id",
-        "reviewerIdSource": "github.event.review.user.id",
-        "authorIdSource": "github.event.pull_request.user.id",
-        "requiredState": "approved",
-        "reviewCommitMustEqualHead": true,
-        "reviewerMustDifferFromAuthor": true,
-        "invalidateOnHeadChange": true,
-        "reusable": false,
-        "maximumAttestationAgeSeconds": 86400
-      },
-      "lifecycle": {
-        "activation": "trusted_external_attestation_after_exact_changed_path_match",
-        "changeSetBinding": "exact_normalized_lease_path_set",
-        "expiresOn": "head_change_review_dismissal_or_ttl",
-        "retention": "manifest_only_no_authority"
-      },
-      "authorityGranted": false,
-      "authorityDelta": "none"
-    }
-  ],
+  "activeLeases": [],
   "authorityFlags": {
     "runtimeAuthority": false,
     "productionCaller": false,

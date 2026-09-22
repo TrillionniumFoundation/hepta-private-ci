@@ -189,6 +189,32 @@ def verify(root: Path = ROOT) -> int:
         maps[module] = row
         roots[module] = resolved_roots
 
+    def load_owner_roots(module: str) -> list[str]:
+        if module in roots:
+            return roots[module]
+        map_path = f"docs/modules/{module}/IMPLEMENTATION_MAP.json"
+        path = canonical_path(root, map_path, f"{module}: delegated owner map", require_file=True)
+        row = load(path)
+        need(row.get("module") == module, f"{module}: delegated owner identity")
+        resolved_roots = row.get("resolvedRoots")
+        need(
+            isinstance(resolved_roots, list)
+            and resolved_roots
+            and all(isinstance(item, str) and item for item in resolved_roots),
+            f"{module}: delegated owner roots",
+        )
+        for owner_root in resolved_roots:
+            canonical_path(root, owner_root, f"{module}: delegated owner root", require_file=None)
+        roots[module] = resolved_roots
+        return resolved_roots
+
+    for row in maps.values():
+        for item in row.get("operations", []):
+            for delegate in item.get("delegatedCallees", []):
+                delegated_owner = delegate.get("ownerModule") if isinstance(delegate, dict) else None
+                if isinstance(delegated_owner, str) and delegated_owner not in roots:
+                    load_owner_roots(delegated_owner)
+
     operations = tests = delegates = 0
     for module, row in maps.items():
         items = row.get("operations")

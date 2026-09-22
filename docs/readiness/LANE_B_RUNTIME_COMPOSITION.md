@@ -4,7 +4,7 @@ Implementation correction: [Lane B native host](LANE_B_NATIVE_HOST.md) records a
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0  
 **Lane:** `LANE-B-RUNTIME`  
-**Immutable source base:** `7e8379b3954808d4138a7bd2f3773f75691291a3` / tree `ff9fa6baf95a35fd2f49816e0a80097688f2aeeb`
+**Immutable source base:** `b33c3d9ab09d5e0b5cc5ee67c1544afbd8459050` / tree `0b828babc3750a8d8f68423c46ea8c3c85c8fe43`
 **Exact candidate:** derived by the verifier from Git HEAD  
 **Truth registry:** `qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json`
 
@@ -65,7 +65,7 @@ TaskFlow persists legacy or Calendar V2 schedule revision and deterministic occu
 
 ## 8. Matrix path
 
-Ingress binds enrolled homeserver, user, device, room and encryption generation; deduplicates server event identity; applies correction/redaction; and advances a durable sync frontier. Send preparation binds room, session, payload, authority epoch and one Matrix transaction ID. HTTP acceptance, homeserver persistence and human reading are separate claims. Lost acknowledgement retains the same transaction for reconciliation.
+Ingress binds enrolled homeserver, user, device, room and encryption generation; deduplicates server event identity; applies correction/redaction; and advances a durable sync frontier. Send preparation persists one canonical stable transaction and immutable dispatch identity before transport. Every physical attempt requires a fresh independently signed final-use grant, current revocation revalidation and a durable attempt claim before the lazy network future is polled. HTTP/SDK acceptance remains `accepted` or `indeterminate`; only a matching homeserver `/sync` event carrying `unsigned.transaction_id` settles qualified success in the same SQLite transaction as the sync frontier. A remote echo without matching current-attempt authority evidence is terminal `ObservedUnqualified`, never qualified success. Retry exhaustion parks reconciliation rather than inventing failure, and terminal/redaction evidence remains append-only and distinct from human reading.
 
 ## 9. Browser path
 
