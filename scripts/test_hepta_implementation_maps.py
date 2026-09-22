@@ -284,6 +284,75 @@ class SourceIdentityTests(unittest.TestCase):
         self.commit("ambiguous JSON")
         self.reject()
 
+    def test_assume_unchanged_cannot_hide_native_drift(self):
+        source = "src/alpha/lib.rs"
+        self.git("update-index", "--assume-unchanged", source)
+        self.write(source, "pub fn substituted() {}\n")
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.reject()
+
+    def test_skip_worktree_cannot_hide_native_drift(self):
+        source = "src/alpha/lib.rs"
+        self.git("update-index", "--skip-worktree", source)
+        self.write(source, "pub fn substituted() {}\n")
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.reject()
+
+    def test_combined_index_flags_cannot_hide_native_drift(self):
+        source = "src/alpha/lib.rs"
+        self.git("update-index", "--skip-worktree", source)
+        self.git("update-index", "--assume-unchanged", source)
+        self.write(source, "pub fn substituted() {}\n")
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.reject()
+
+    def test_hidden_registry_is_rejected_before_it_controls_verification(self):
+        path = "docs/modules/MODULES.json"
+        self.git("update-index", "--assume-unchanged", path)
+        # Omitting alpha would otherwise hide its committed source drift.
+        self.write(path, {"modules": [self.modules[1]]})
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.reject()
+
+    def test_hidden_map_cannot_change_the_claim_input(self):
+        path = "docs/modules/alpha/IMPLEMENTATION_MAP.json"
+        self.git("update-index", "--skip-worktree", path)
+        row = copy.deepcopy(self.rows["alpha"])
+        row["productionImplementation"] = True
+        self.write(path, row)
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.reject()
+
+    def test_clean_hidden_index_is_not_an_exact_checkout(self):
+        self.git("update-index", "--assume-unchanged", "README.md")
+        self.reject()
+
+    def test_clearing_hidden_flag_restores_verification_without_rebinding(self):
+        self.git("update-index", "--skip-worktree", "src/alpha/lib.rs")
+        self.git("update-index", "--no-skip-worktree", "src/alpha/lib.rs")
+        self.verify()
+
+    def test_hidden_filename_record_cannot_split_the_index_check(self):
+        path = "src/alpha/space tab\tnewline\nfile.rs"
+        self.write(path, "pub fn extra() {}\n")
+        anchor = self.commit("unusual tracked filename")
+        for row in self.rows.values():
+            row["sourceBase"] = anchor
+        self.change_maps()
+        self.verify()
+        self.git("update-index", "--assume-unchanged", path)
+        self.write(path, "pub fn changed() {}\n")
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.reject()
+
+    def test_rejecting_hidden_index_does_not_clear_user_flags(self):
+        self.git("update-index", "--skip-worktree", "src/alpha/lib.rs")
+        index = self.root / ".git/index"
+        before = index.read_bytes()
+        self.reject()
+        self.assertEqual(index.read_bytes(), before)
+        self.assertTrue(self.git("ls-files", "-v", "src/alpha/lib.rs").startswith("S "))
+
 
 if __name__ == "__main__":
     unittest.main()

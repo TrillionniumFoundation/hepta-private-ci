@@ -59,6 +59,7 @@ def git(*args: str) -> str:
         GIT_NO_REPLACE_OBJECTS="1",
         GIT_NO_LAZY_FETCH="1",
         GIT_TERMINAL_PROMPT="0",
+        GIT_OPTIONAL_LOCKS="0",
     )
     p = subprocess.run(
         ["git", "--literal-pathspecs", "-c", "core.fsmonitor=false", *args],
@@ -177,6 +178,22 @@ def require_clean_candidate(
 ) -> None:
     # This is a quiescent-checkout verifier, not a concurrent build attestor.
     # Untracked CI reports outside mapped roots are not source mutations.
+    # status/diff trust index flags: assume-unchanged and skip-worktree can
+    # conceal changed source AND the registries/maps that select that source.
+    # Reject them before reading those inputs, without clearing user flags or
+    # refreshing the index. NUL records keep unusual filenames unambiguous.
+    selection = ("--", *paths) if paths else ()
+    hidden = [
+        record[2:]
+        for record in git("ls-files", "-v", "-z", *selection).split("\0")
+        if record and (record[0] == "S" or record[0].islower())
+    ]
+    if hidden:
+        raise ValueError(
+            "candidate index hides tracked paths (assume-unchanged/skip-worktree): "
+            + ", ".join(repr(path) for path in hidden[:5])
+            + "; verify a full checkout without hidden index entries"
+        )
     if current_source_base() != candidate or git(
         "status", "--porcelain=v1", "--untracked-files=no"
     ):
