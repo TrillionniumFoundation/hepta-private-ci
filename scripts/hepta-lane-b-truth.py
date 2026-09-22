@@ -35,7 +35,14 @@ MODULES = [
 OPS = {
     "runtime.supervisor": ["start_instance", "observe_health", "drain", "load_next"],
     "runtime.fleet": ["admit_host", "allocate", "renew_or_revoke"],
-    "runtime.agentd": ["compose_runtime", "start_run", "cancel_run", "attach_context"],
+    "runtime.agentd": [
+        "compose_runtime",
+        "start_run",
+        "admit_revalidated_run_start",
+        "cancel_run",
+        "attach_context",
+        "daemon_run_lifecycle_control",
+    ],
     "runtime.codex": [
         "open_thread",
         "submit_turn",
@@ -60,6 +67,7 @@ OPS = {
         "apply_shell_update",
     ],
 }
+OPERATION_COUNT = sum(len(operations) for operations in OPS.values())
 HEX40 = re.compile(r"[0-9a-f]{40}")
 
 
@@ -282,7 +290,7 @@ def native_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> str:
     lines += [
         "## 13. Cross-module acceptance boundary",
         "",
-        "All 39 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.",
+        f"All {OPERATION_COUNT} operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.",
         "",
         "Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.",
         "",
@@ -509,7 +517,8 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         "truth schema",
     )
     need(
-        truth.get("moduleOrder") == MODULES and truth.get("operationCount") == 39,
+        truth.get("moduleOrder") == MODULES
+        and truth.get("operationCount") == OPERATION_COUNT,
         "truth closed world",
     )
     claims = truth.get("claimBoundary", {})
@@ -617,7 +626,7 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         ):
             text = path.read_text(encoding="utf-8")
             need(module in text, f"{module}: document {path.relative_to(ROOT)}")
-    need(operations == 39, "operation count")
+    need(operations == OPERATION_COUNT, "operation count")
     return operations, tests
 
 
@@ -710,7 +719,7 @@ def self_test() -> int:
             {
                 "status": "PASS_HEPTA_LANE_B_SOURCE_CLOSURE_SELF_TEST",
                 "modules": 11,
-                "operations": 39,
+                "operations": OPERATION_COUNT,
             },
             sort_keys=True,
         )

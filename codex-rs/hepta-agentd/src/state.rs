@@ -1,15 +1,29 @@
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
+use codex_hepta_authbus::SignedMessage;
+use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_learning_ledger::DurableRunStartJournal;
+use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
+use crate::AgentRunCoordinator;
+use crate::AgentRunError;
 use crate::AgentdError;
 use crate::AgentdEventKind;
 use crate::AgentdIdentity;
 use crate::EventBuffer;
+use crate::RunReceipt;
+use crate::RuntimeComposition;
 
 #[path = "state_control.rs"]
 mod control;
@@ -27,6 +41,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    runs: Mutex<AgentRunCoordinator>,
 }
 
 struct RuntimeState {
@@ -48,6 +63,34 @@ impl AgentdState {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
+        let configuration_material = format!(
+            "{}|{}|{}|{}|{}",
+            identity.agent_id,
+            identity.spawn_generation,
+            identity.workspace.display(),
+            identity.home_root.display(),
+            identity.run_root.display()
+        );
+        let ports_material = format!(
+            "{}|{}|{}",
+            identity.control_socket.display(),
+            identity.app_server_socket.display(),
+            crate::AGENTD_CONTROL_SCHEMA_VERSION
+        );
+        let run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+            agent_id: identity.agent_id.as_str().to_string(),
+            supervisor_generation: identity.spawn_generation,
+            agentd_generation: identity.spawn_generation,
+            configuration_digest: Sha256Digest::for_bytes(configuration_material.as_bytes())
+                .as_str()
+                .to_string(),
+            ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
+                .as_str()
+                .to_string(),
+            max_active_runs: usize::from(identity.resources.max_concurrent_turns),
+        })
+        .map_err(run_error)?;
+
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
@@ -64,6 +107,7 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
+            runs: Mutex::new(run_coordinator),
         })
     }
 
@@ -179,6 +223,13 @@ impl AgentdState {
                     lifecycle: record.lifecycle.lifecycle,
                     generation: record.lifecycle.generation,
                 });
+            if runtime.lifecycle == AgentLifecycle::Draining {
+                self.runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .begin_drain(unix_now_ms()?, "supervisor_draining")
+                    .map_err(run_error)?;
+            }
         }
         Ok(())
     }
@@ -222,6 +273,12 @@ impl AgentdState {
             .lock()
             .map_err(poisoned_state)?
             .push(AgentdEventKind::Draining);
+        drop(runtime);
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .begin_drain(unix_now_ms()?, "agentd_shutdown")
+            .map_err(run_error)?;
         Ok(())
     }
 
@@ -232,6 +289,13 @@ impl AgentdState {
         }
         if let Ok(mut events) = self.events.lock() {
             events.push(AgentdEventKind::GenerationFenced);
+        }
+        if let Ok(mut runs) = self.runs.lock() {
+            runs.close_admissions();
+            if let Ok(now_ms) = unix_now_ms() {
+                let _ = runs.begin_drain(now_ms, "generation_fenced");
+            }
+            let _ = runs.mark_unresolved_indeterminate("generation_fenced");
         }
     }
 
@@ -246,6 +310,141 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+
+    /// Revalidate a durable run-start record against the current owner trust,
+    /// current Fleet generation and exact Agentd fence, then project it into
+    /// the sole daemon-owned run coordinator.
+    pub(crate) fn start_current_run_start(
+        &self,
+        journal: &DurableRunStartJournal,
+        run_id: &StableId,
+    ) -> Result<RunReceipt, AgentdError> {
+        let record = journal
+            .get(run_id)
+            .map_err(|error| {
+                AgentdError::Protocol(format!("durable run-start journal rejected read: {error}"))
+            })?
+            .ok_or_else(|| {
+                AgentdError::Protocol(format!("durable run-start {run_id} is not published"))
+            })?;
+        let now_ms = self.require_current_run_start(record)?;
+        // Re-read both mutable authority domains immediately before mutation.
+        // This is intentionally redundant: a trust/fleet change during the
+        // first validation must not survive into runtime admission.
+        let final_now_ms = self.require_current_run_start(record)?;
+        let now_ms = now_ms.max(final_now_ms);
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .start_revalidated_run_start(now_ms, record)
+            .map_err(run_error)
+    }
+
+    fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
+        crate::authbus_ingress::require_ready(self)?;
+        let now_ms = crate::authbus_ingress::now_ms()?;
+        let current_generation = self.runtime.lock().map_err(poisoned_state)?.current_generation;
+        if record.snapshot.generation != current_generation
+            || record.snapshot.fence_digest.to_string()
+                != objective_run_fence(&self.identity, current_generation)
+        {
+            return Err(AgentdError::GenerationFenced(
+                "durable run-start generation or fence is not current".to_string(),
+            ));
+        }
+
+        let host = crate::authbus_ingress::attached(self)?;
+        let trust = host.trust(self)?;
+        let authentication = &record.authentication;
+        let message = SignedMessage {
+            claims: SignedMessageClaims {
+                issuer_id: authentication.issuer_id.clone(),
+                key_epoch: Generation::new(authentication.key_epoch).map_err(|error| {
+                    AgentdError::Invalid(format!("durable run-start key epoch: {error}"))
+                })?,
+                message_id: authentication.message_id.clone(),
+                subject_id: StableId::new(self.identity.agent_id.as_str()).map_err(|error| {
+                    AgentdError::Invalid(format!("durable run-start subject: {error}"))
+                })?,
+                scope_digest: authentication.scope_digest,
+                payload_digest: authentication.signed_body_digest,
+                sequence: authentication.sequence,
+                expires_at_ms: authentication.expires_at_ms,
+            },
+            signature: authentication.signature,
+        };
+        message
+            .authenticate(
+                &trust.issuer()?,
+                objective_run_scope(&self.identity),
+                authentication.signed_body_digest,
+                now_ms,
+            )
+            .map_err(|error| {
+                AgentdError::Invalid(format!(
+                    "durable run-start authentication is not current: {error}"
+                ))
+            })?;
+        Ok(now_ms)
+    }
+
+    pub(crate) fn expire_run_deadlines(&self) -> Result<usize, AgentdError> {
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .expire_deadlines(unix_now_ms()?)
+            .map_err(run_error)
+    }
+
+    pub(crate) fn active_run_count(&self) -> Result<usize, AgentdError> {
+        Ok(self.runs.lock().map_err(poisoned_state)?.active_run_count())
+    }
+
+    pub(crate) fn unresolved_run_count(&self) -> Result<usize, AgentdError> {
+        Ok(self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .unresolved_run_count())
+    }
+
+    pub(crate) fn mark_unresolved_runs_indeterminate(
+        &self,
+        reason: &str,
+    ) -> Result<usize, AgentdError> {
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .mark_unresolved_indeterminate(reason)
+            .map_err(run_error)
+    }
+}
+
+pub(super) fn run_error(error: AgentRunError) -> AgentdError {
+    AgentdError::Protocol(format!("agent run lifecycle rejected: {error:?}"))
+}
+
+fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
+    let mut bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
+    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
+    Digest32::of_bytes(&bytes)
+}
+
+fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
+    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
+    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
+    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
+    bytes.extend_from_slice(&current_generation.to_be_bytes());
+    Sha256Digest::for_bytes(&bytes).as_str().to_string()
+}
+
+fn unix_now_ms() -> Result<u64, AgentdError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| AgentdError::Protocol("system clock precedes Unix epoch".to_string()))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|_| AgentdError::Protocol("system clock exceeds u64 milliseconds".to_string()))
 }
 
 fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
