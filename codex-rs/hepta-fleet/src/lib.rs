@@ -5,7 +5,9 @@
 #![forbid(unsafe_code)]
 
 /// Reusable state machine; does not install a second runtime owner.
+pub mod authority_port;
 pub mod lease_ledger;
+pub mod revocation_control;
 
 mod allocation;
 mod allocation_digest;
@@ -31,6 +33,8 @@ pub use allocation_model::LocalResourceVectorV1;
 pub use allocation_model::MAX_LOCAL_ALLOCATION_CANDIDATES;
 pub use allocation_model::MAX_LOCAL_ALLOCATION_WEIGHT;
 pub use allocation_model::MAX_LOCAL_HOST_CANDIDATES;
+pub use authority_port::FleetAuthorityError;
+pub use authority_port::FleetAuthorityPort;
 pub use error::FleetRegistryError;
 pub use model::AGENT_MANIFEST_SCHEMA_VERSION;
 pub use model::AGENT_STATE_SCHEMA_VERSION;
@@ -50,6 +54,11 @@ pub use release::RegisteredRelease;
 pub use release::ReleaseId;
 pub use release::ReleaseMetadata;
 pub use release::ReleaseProgramMetadata;
+pub use revocation_control::FleetNodeRevocationState;
+pub use revocation_control::FleetRevocationCoordinator;
+pub use revocation_control::FleetRevocationError;
+pub use revocation_control::FleetRevocationStatus;
+pub use revocation_control::MAX_FLEET_REVOCATION_NODES;
 
 #[cfg(test)]
 #[path = "allocation_tests.rs"]

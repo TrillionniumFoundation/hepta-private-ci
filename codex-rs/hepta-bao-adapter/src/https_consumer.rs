@@ -9,6 +9,8 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::claim_final_use;
+use codex_hepta_contracts::deliver_final_use;
 use codex_hepta_types::Digest32;
 use codex_http_client::HttpClient;
 use codex_http_client::HttpClientBuilder;
@@ -160,6 +162,25 @@ impl BaoClient {
         request: &BaoReadRequest,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoClientError> {
+        match self
+            .consume_kv_v2_guarded(authority, grant, request, consumer)
+            .await?
+        {
+            Ok(receipt) => Ok(receipt),
+            Err(()) => Err(BaoClientError::ConsumerIndeterminate),
+        }
+    }
+
+    /// Crate-private typed final-delivery gate used by the registered host.
+    /// Provider I/O and secret validation complete first, then kernel authority
+    /// is revalidated and this gate executes at the final consumer boundary.
+    pub(crate) async fn consume_kv_v2_guarded<E>(
+        &self,
+        authority: &FinalUseAuthority,
+        grant: &SignedFinalUseGrant,
+        request: &BaoReadRequest,
+        consumer: impl FnOnce(&[u8]) -> Result<(), E>,
+    ) -> Result<Result<BaoSecretReceipt, E>, BaoClientError> {
         let binding = self.binding(request)?;
         let mut url = self.origin.clone();
         {
@@ -188,9 +209,8 @@ impl BaoClient {
         if !request.namespace.is_empty() {
             network_request = network_request.header("X-Vault-Namespace", &request.namespace);
         }
-        let verified = authority
-            .claim(grant, &binding)
-            .map_err(BaoClientError::Authority)?;
+        let verified =
+            claim_final_use(authority, grant, &binding).map_err(BaoClientError::Authority)?;
         let mut response = network_request.send().await.map_err(transport_error)?;
         match response.status() {
             StatusCode::OK => {}
@@ -234,11 +254,14 @@ impl BaoClient {
             version: request.version,
             secret_bytes: secret.len(),
         };
-        authority
-            .with_verified_use(verified, &binding, || consumer(secret.as_bytes()))
-            .map_err(BaoClientError::Authority)?
-            .map_err(|()| BaoClientError::ConsumerIndeterminate)?;
-        Ok(receipt)
+        match deliver_final_use(authority, verified, &binding, || {
+            consumer(secret.as_bytes())
+        })
+        .map_err(BaoClientError::Authority)?
+        {
+            Ok(()) => Ok(Ok(receipt)),
+            Err(error) => Ok(Err(error)),
+        }
     }
 }
 

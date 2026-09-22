@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); observed identifiers include `FleetRegistry`, `FleetSnapshot`, `AgentRecord`, `initialize`, `open_existing`, `register`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); the concrete generic-authority consumer is [authority_port.rs](../../../codex-rs/hepta-fleet/src/authority_port.rs), and fleet revocation admission/convergence is [revocation_control.rs](../../../codex-rs/hepta-fleet/src/revocation_control.rs). Observed identifiers include `FleetRegistry`, `FleetAuthorityPort`, `FleetRevocationCoordinator`, `FleetSnapshot`, `AgentRecord`, `initialize`, `open_existing`, `register`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -161,12 +161,14 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-FleetRegistry is operated by the existing supervisor owner. Open the same registry and preserve generation/fence identity during lifecycle changes. The separate lease_ledger is an in-memory component; durable resource grants and real capacity observations remain implementation work. Do not launch a second fleet writer.
+FleetRegistry is operated by the existing supervisor owner. Open the same registry and preserve generation/fence identity during lifecycle changes. `FleetAuthorityPort::issue` is the concrete `ModulePort::kernel.authority::runtime.fleet` source boundary for the current allocation issue mutation: it computes the exact binding from `AllocationGrant`, verifies/revalidates the live generic authority lease, then invokes `LeaseLedger::issue`. `FleetRevocationCoordinator` separately enforces current signed-head catch-up, quarantine and stale-feed admission semantics. The lease ledger remains an in-memory component; durable resource grants, deployed revocation wire fanout and real capacity observations remain implementation/deployment work. Do not launch a second fleet writer.
 
 Current operating and state-format references:
 
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 - [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs).
+- [codex-rs/hepta-fleet/src/authority_port.rs](../../../codex-rs/hepta-fleet/src/authority_port.rs).
+- [codex-rs/hepta-fleet/src/revocation_control.rs](../../../codex-rs/hepta-fleet/src/revocation_control.rs).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -176,6 +178,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-fleet/src/allocation_tests.rs](../../../codex-rs/hepta-fleet/src/allocation_tests.rs); named case: `weighted_allocation_reserves_minimums_and_conserves_capacity`.
 - [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs); named case: `conserves_capacity_and_reuses_identical_grant`.
+- [codex-rs/hepta-fleet/src/authority_port.rs](../../../codex-rs/hepta-fleet/src/authority_port.rs); named case: `allocation_issue_consumes_exact_live_kernel_authority_lease`.
+- [codex-rs/hepta-fleet/src/revocation_control.rs](../../../codex-rs/hepta-fleet/src/revocation_control.rs); named cases cover catch-up, quarantine, stale feeds and exact acknowledgements.
 
 In `codex-rs`, run `just test -p codex-hepta-fleet`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) separately labels target acceptance designs.
 
@@ -261,6 +265,8 @@ This receipt records repository source bindings for the current documentation ca
 | `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
 | `allocate` | `pub fn issue(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
 | `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
+| kernel-authorized `allocate` | `FleetAuthorityPort::issue` | `codex-rs/hepta-fleet/src/authority_port.rs` | inline exact-binding/revocation tests |
+| revocation fleet admission | `FleetRevocationCoordinator` | `codex-rs/hepta-fleet/src/revocation_control.rs` | inline catch-up/quarantine/stale-feed tests |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
