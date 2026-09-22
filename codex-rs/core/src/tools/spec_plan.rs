@@ -113,6 +113,17 @@ struct CoreToolPlanContext<'a> {
     wait_agent_timeouts: WaitAgentTimeoutOptions,
 }
 
+/// The dedicated Hepta inference worker is a model-only App Server client.
+///
+/// This is deliberately a deny-only identity: any client may claim the name,
+/// but doing so can only remove tool capability. It never grants authority.
+pub(crate) const HEPTA_INFER_WORKER_CLIENT_NAME: &str = "hepta-infer-worker";
+
+pub(crate) fn hepta_model_only_tool_router(turn_context: &TurnContext) -> Option<ToolRouter> {
+    (turn_context.app_server_client_name.as_deref() == Some(HEPTA_INFER_WORKER_CLIENT_NAME))
+        .then(|| ToolRouter::from_parts(ToolRegistry::default(), Vec::new()))
+}
+
 #[instrument(level = "trace", skip_all)]
 pub(crate) fn build_tool_router(
     session: &Session,

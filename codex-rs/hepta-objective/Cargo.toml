@@ -10,6 +10,12 @@ name = "codex_hepta_objective"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Explicitly qualification-only compatibility surface. Product code must use
+# admit_objective_v1 + compile_admitted_objective_v1.
+qualification-legacy-compile = []
+
 [lints]
 workspace = true
 

@@ -18,11 +18,10 @@ use codex_hepta_wire::encode_typed;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::AppServerObservation;
 use crate::CodexAdapterReceipt;
 use crate::CodexOperationIntent;
 use crate::Error;
-use crate::adapt;
+use crate::adapt_request;
 
 pub const CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2: &str = "hepta.codex-operation-intent.v2";
 pub const CODEX_OPERATION_INTENT_WIRE_PRODUCER_V2: &str = "runtime.agentd";
@@ -116,6 +115,9 @@ pub fn encode_codex_operation_intent_wire_v2(
     registry
         .register(codec.descriptor().clone())
         .map_err(WireAdapterError::Schema)?;
+    if intent.app_server_binding.is_some() {
+        return Err(WireAdapterError::ProductBindingUnsupported);
+    }
     let value = CodexOperationIntentWireV2 {
         operation_id: intent.operation_id.to_string(),
         thread_id: intent.thread_id.to_string(),
@@ -165,6 +167,7 @@ pub fn decode_codex_operation_intent_wire_v2(
         lease_payload_digest: Digest32::from_str(&value.lease_payload_digest)
             .map_err(|_| WireAdapterError::Digest("lease_payload_digest"))?,
         deadline_ms: value.deadline_ms,
+        app_server_binding: None,
     })
 }
 
@@ -175,10 +178,9 @@ pub fn decode_codex_operation_intent_wire_v2(
 pub fn adapt_wire_v2(
     now_ms: u64,
     envelope: &WireEnvelopeV2,
-    observation: Option<AppServerObservation>,
 ) -> Result<CodexAdapterReceipt, WireAdapterError> {
     let intent = decode_codex_operation_intent_wire_v2(envelope)?;
-    adapt(now_ms, intent, observation).map_err(WireAdapterError::Adapter)
+    adapt_request(now_ms, intent).map_err(WireAdapterError::Adapter)
 }
 
 fn require_codex_operation_intent_producer(producer: &StableId) -> Result<(), WireAdapterError> {
@@ -196,6 +198,7 @@ pub enum WireAdapterError {
     Envelope(WireV2Error),
     Identity(&'static str),
     Digest(&'static str),
+    ProductBindingUnsupported,
     Adapter(Error),
 }
 
@@ -212,7 +215,10 @@ impl StdError for WireAdapterError {
             Self::Payload(error) => Some(error),
             Self::Envelope(error) => Some(error),
             Self::Adapter(error) => Some(error),
-            Self::UnexpectedProducer(_) | Self::Identity(_) | Self::Digest(_) => None,
+            Self::UnexpectedProducer(_)
+            | Self::Identity(_)
+            | Self::Digest(_)
+            | Self::ProductBindingUnsupported => None,
         }
     }
 }

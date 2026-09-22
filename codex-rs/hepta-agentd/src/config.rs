@@ -80,6 +80,7 @@ pub struct AgentdConfig {
     automation_effect_host_file: Option<PathBuf>,
     evidence_recovery_frontier_file: Option<PathBuf>,
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
+    objective_profile_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
@@ -196,6 +197,7 @@ impl AgentdConfig {
             automation_effect_host_file: None,
             evidence_recovery_frontier_file: None,
             evidence_recovery_frontier_trust_file: None,
+            objective_profile_file: None,
             cognitive_ranker: None,
             production_operations: None,
             production_writer_host: None,
@@ -258,6 +260,17 @@ impl AgentdConfig {
 
     pub(crate) fn automation_effect_host_file(&self) -> Option<&Path> {
         self.automation_effect_host_file.as_deref()
+    }
+
+    /// Explicit owner-managed objective admission profile. A request cannot
+    /// select or replace this file; changing it requires a new process generation.
+    pub fn with_objective_profile_file(mut self, path: PathBuf) -> Self {
+        self.objective_profile_file = Some(path);
+        self
+    }
+
+    pub(crate) fn objective_profile_file(&self) -> Option<&Path> {
+        self.objective_profile_file.as_deref()
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must

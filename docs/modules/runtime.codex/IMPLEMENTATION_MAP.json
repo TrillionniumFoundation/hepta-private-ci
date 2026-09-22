@@ -14,12 +14,10 @@
   ],
   "resolvedRoots": [
     "codex-rs/app-server",
-    "codex-rs/core/src/tools/router.rs",
-    "codex-rs/core/src/codex_thread.rs",
     "codex-rs/hepta-codex-adapter"
   ],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
-  "terminalObserverDisposition": "The App Server observes admission and streaming state; external tool/provider terminality remains with its effect owner.",
+  "terminalObserverDisposition": "The App Server/client path supplies typed process-local terminal and request-level observations; runtime.codex validates exact correlation. External tool/provider terminality remains with its effect owner and target-host trust is independently qualified.",
   "operations": [
     {
       "designOperation": "open_thread",
@@ -130,17 +128,22 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "current runtime.codex exact-head, deterministic synthetic-merge, focused product fault-matrix, and product E2E evidence are pending for this composed candidate"
+  ],
   "externalEvidenceGates": [
-    "named deployed Agentd caller identity",
-    "real model/provider stream observation",
-    "real tool terminal observation and acknowledgement-loss qualification"
+    "independently operated final-use authority endpoint, signer-key custody, pathname plus connected-peer socket identity, trusted time/revocation distribution, and external anti-rollback recovery for replay/epoch state",
+    "authenticated target-host Agentd/App Server process, generation and socket identity",
+    "real model/provider terminal stream observation under the selected target deployment",
+    "delegated external-tool terminal observation and acknowledgement-loss qualification",
+    "independent policy/evidence for resolving or quarantining indeterminate effects when ephemeral App Server history is unavailable; no unauthenticated manual release",
+    "independent acceptance, activation/canary, promotion and release"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
+    "nativeSourceMappingComplete": false,
     "repositoryControlledDocumentationGapsClosed": true,
-    "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -153,13 +156,146 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "composed_candidate_exact_head_qualification_pending",
+  "productionWriterState": "existing_app_server_owner",
   "owner": "codex-integration",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
-  ]
+  ],
+  "productionCallerBindings": [
+    {
+      "role": "production_caller",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "async fn run_once(",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Named native caller sends the real App Server v2 thread/start and turn/start path. It requires independently signed final-use authority for the exact TurnStartParams binding, rechecks cancellation/deadline/Agent readiness/ingress after authority acquisition, commits the authority/request witness durably before the network await, maps typed App Server outcomes through hepta-codex-adapter, and never blindly replays an unknown acknowledgement."
+    },
+    {
+      "role": "final_use_authority_port",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "symbol": "impl TurnStartAuthorizer for UnixFinalUseAuthorizer",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Obtains an independently signed exact-binding grant over a protected Unix endpoint, synchronizes monotonic revocation state, locally claims the grant into a non-constructible VerifiedUseToken, and keeps the issuer private key outside the worker."
+    },
+    {
+      "role": "durable_reconciler",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "pub(super) async fn reconcile_existing(",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Reopens the original Agent/App Server generation and uses thread/read(includeTurns=true) without submitting a new turn. Recovery requires exact stable client_user_message_id plus original UserMessage content; mismatched or duplicate matches are hard conflicts and missing history remains indeterminate."
+    },
+    {
+      "role": "durable_owner",
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "symbol": "pub struct NativeRunRecord",
+      "buildTarget": "codex-hepta-infer-core",
+      "semantics": "Persists write-ahead dispatch identity, exact runtime.codex correlation fields, authority-witness digest, unknown-outcome capacity ownership, terminal observations and legacy-compatible replay semantics."
+    }
+  ],
+  "compositionTests": [
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+      "command": "just test -p codex-hepta-codex-adapter",
+      "covers": [
+        "terminal status correctness",
+        "transport/thread/turn correlation",
+        "overload versus accepted-or-unknown classification",
+        "thread-read recovery conflicts"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs",
+      "command": "just test -p codex-hepta-codex-adapter",
+      "covers": [
+        "absolute deadline binding",
+        "stable exact request identity",
+        "late terminal evidence"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "command": "just test -p codex-hepta-infer-core",
+      "covers": [
+        "durable write-ahead",
+        "unknown-outcome slot retention",
+        "one-shot live pre-effect abort proof",
+        "legacy replay cannot become newly qualified success"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "named caller terminal outcomes",
+        "owner authority loss",
+        "cancellation and deadline behavior",
+        "late terminal facts"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "reopen/no-replay",
+        "pre-dispatch stop",
+        "explicit pre-start rejection"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "independently signed exact-binding grant",
+        "forged grant rejection",
+        "authority denial",
+        "peer identity",
+        "revocation-head rollback rejection"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+      "command": "just test -p codex-hepta-agentd runtime_codex_product_caller_commits_one_authorized_terminal_turn",
+      "covers": [
+        "real Agentd and App Server process composition",
+        "named runtime.codex AppServerModelDriver caller",
+        "independently signed exact final-use grant",
+        "single physical Responses provider dispatch",
+        "durable terminal observation and correlation witness"
+      ],
+      "evidenceBoundary": "controlled mock Responses provider only; real provider and target-host identity remain external qualification gates"
+    },
+    {
+      "path": "codex-rs/core/src/tools/spec_plan_tests.rs",
+      "command": "just test -p codex-core hepta_native_inference_client_has_no_model_visible_or_registered_tools",
+      "covers": [
+        "model-only native inference topology",
+        "no MCP/connector/dynamic/core tool exposure for hepta-infer-worker"
+      ]
+    }
+  ],
+  "sourceBaseSemantics": "historical_provenance_only",
+  "exactCandidateProvenance": {
+    "mode": "verification_derived_from_checkout",
+    "commitCommand": "git rev-parse HEAD",
+    "treeCommand": "git rev-parse HEAD^{tree}",
+    "verifier": "scripts/hepta-lane-b-truth.py verify",
+    "receiptFields": [
+      "exactHead",
+      "exactTree"
+    ],
+    "hardCodedInMap": false,
+    "rationale": "A committed map cannot safely hard-code its own Git commit/tree identity without becoming self-referential. Exact candidate identity is derived and emitted from the checked-out candidate by the verifier; sourceBase remains historical provenance only."
+  },
+  "toolTopology": {
+    "nativeInferenceProfile": "model_only",
+    "denyOnlyGuard": {
+      "path": "codex-rs/core/src/tools/spec_plan.rs",
+      "symbol": "pub(crate) fn hepta_model_only_tool_router(",
+      "buildTarget": "codex-core"
+    },
+    "effectSemantics": "The hepta-infer-worker App Server profile exposes no model-visible or registered tools. dispatch_tool mappings are delegated source navigation only. Any external tool effect requires a separately authorized effect owner, final-use capability, durable operation identity, and terminal observer."
+  }
 }

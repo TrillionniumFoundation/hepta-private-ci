@@ -206,6 +206,30 @@ This closes the typed/canonical-JSON witness contract without turning an audit
 receipt into a portable bearer grant. Product code that does not need the
 serialized evidence may continue to use the opaque-token APIs.
 
+## Exact-frontier asynchronous entry
+
+`claim` also snapshots the exact durable revocation head and includes that head,
+the signed grant and signature in the opaque token witness. Runtime Codex uses
+`VerifiedUseToken::enter(expected)` immediately before the first effectful
+await. This consumes the token, rechecks the protected owner clock, live
+revocations and binding, and requires the current head to equal the claim-time
+head. Even an unrelated frontier advance requires new independent authorization.
+The returned `EnteredUseToken` is non-constructible, non-cloneable and
+non-serializable; it establishes one effect entry, never permission to retry.
+
+This entry-only API releases the owner mutex before I/O. A later revocation may
+deny future entries but cannot prove that the already-entered operation stopped.
+Unknown results must reconcile the same durable operation identity before a
+new grant. It differs from `with_verified_use_async` / `with_verified_effect`,
+which retain an active-effect guard for adapters whose contract requires
+revocation commits to return `DispatchInProgress` during the bounded effect.
+Synchronous `with_verified_use` retains its existing consumer-entry
+linearization contract and does not hold the mutex across arbitrary callbacks.
+
+`revocation_head()` only reports the locally trusted head. An independently
+authenticated feed must pass `update_revocations`; reading the head does not
+fetch newer data or replace protected time and the external rollback frontier.
+
 ## APIs and failure semantics
 
 | API / result | Host action |
@@ -222,8 +246,10 @@ serialized evidence may continue to use the opaque-token APIs.
 | `deliver_final_use_with_witness` | Same consumer-entry check, plus a serializable non-authorizing `VerifiedUseTokenWitnessV1` |
 | `dispatch_final_use` / `with_dispatch_boundary` | Revalidate and hold the lock only across one short local irreversible dispatch boundary |
 | `dispatch_final_use_with_witness` | Same dispatch-entry fence, plus a serializable non-authorizing witness |
+| `revocation_head` | Read locally trusted head; no authority or automatic feed refresh |
+| `VerifiedUseToken::enter` / `enter_verified_use` | Consume an exact-frontier token at one asynchronous effect entry; never retry authority |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
-| `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use |
+| `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use under the locally trusted head |
 | `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
 | `InvalidTrust`, `AntiRollbackViolation`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner clock/frontier/configuration/storage without resetting authority implicitly |
 | `StaleRevocationHead` | Reject a rollback/inconsistent host update |

@@ -205,3 +205,7 @@ serializable authority token. These non-test callers remain registered in
 `CALLERS.toml`; their source composition does not establish product execution
 or activation. Fleet mutation uses `dispatch_authority_lease_with_witness` at
 the concrete owner boundary, retaining its canonical audit witness.
+
+## Integrated runtime.codex entry
+
+Runtime Codex obtains an opaque final-use token from the host-owned verifier, binds its exact claim-time head into the durable dispatch witness, and calls `VerifiedUseToken::enter` at its first effectful boundary. Entry rechecks the same protected clock and requires an unchanged head. This source integration does not qualify a concrete deployed clock, rollback frontier or revocation-distribution backend.

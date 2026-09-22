@@ -12,6 +12,8 @@ use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_memory::CognitiveRuntime;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::task::JoinHandle;
+use tokio::time::Instant;
+use tokio::time::sleep;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -27,6 +29,9 @@ use crate::automation::run_automation_scheduler;
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const APP_SERVER_PROBE_TIMEOUT: Duration = Duration::from_secs(2);
+const RUN_DRAIN_POLL_INTERVAL: Duration = Duration::from_millis(50);
+const RUN_DRAIN_GRACE: Duration = Duration::from_secs(5);
+const RUN_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum CompletedRuntimeTask {
@@ -55,6 +60,14 @@ pub async fn run(
     let automation_effect_host_file = config
         .automation_effect_host_file()
         .map(std::path::Path::to_path_buf);
+    let objective_profile_file = config
+        .objective_profile_file()
+        .map(std::path::Path::to_path_buf);
+    if objective_profile_file.is_some() && trust_file.is_none() {
+        return Err(AgentdError::Invalid(
+            "objective profile requires explicit AuthBus trust configuration".to_string(),
+        ));
+    }
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
     if production_operations.is_some() && production_writer_host.is_none() {
@@ -122,6 +135,23 @@ pub async fn run(
         return Err(AgentdError::Invalid(
             "kernel evidence recovery frontier requires --evidence-trust-file".to_string(),
         ));
+    }
+    if let Some(path) = objective_profile_file {
+        state.refresh_generation()?;
+        let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
+            &identity, &path,
+        )?);
+        let current_generation = state.current_generation()?;
+        host.reconcile(
+            &state,
+            current_generation,
+            crate::authbus_ingress::now_ms()?,
+        )?;
+        state
+            .objective_runtime
+            .set(host)
+            .map_err(|_| AgentdError::Protocol("objective runtime already attached".to_string()))?;
+        state.refresh_generation()?;
     }
     let cognitive_runtime = match production_writer_host.as_ref() {
         Some(host) => {
@@ -262,8 +292,7 @@ pub async fn run(
         ),
         signal = shutdown_signal() => {
             signal?;
-            state.mark_draining()?;
-            (Ok(()), None)
+            (drain_runtime(Arc::clone(&state)).await, None)
         }
     };
     cancellation.cancel();
@@ -397,10 +426,18 @@ async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
             state.mark_fenced();
             return Err(error);
         }
+        state.expire_run_deadlines()?;
         if !app_server_ready {
             match probe_app_server(state.identity()).await {
                 Ok(()) => {
                     state.mark_app_server_ready()?;
+                    if let Some(host) = state.objective_runtime.get() {
+                        host.reconcile(
+                            &state,
+                            state.current_generation()?,
+                            crate::authbus_ingress::now_ms()?,
+                        )?;
+                    }
                     app_server_ready = true;
                 }
                 Err(error @ AgentdError::GenerationFenced(_)) => {
@@ -440,6 +477,42 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
     }
     client.shutdown().await?;
     Ok(())
+}
+
+async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
+    state.mark_draining()?;
+    let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
+    loop {
+        state.expire_run_deadlines()?;
+        if state.active_run_count()? == 0 {
+            return Ok(());
+        }
+        if Instant::now() >= drain_deadline {
+            break;
+        }
+        sleep(RUN_DRAIN_POLL_INTERVAL).await;
+    }
+
+    state.mark_unresolved_runs_indeterminate("shutdown_drain_timeout")?;
+    let reconcile_deadline = Instant::now() + RUN_RECONCILE_GRACE;
+    loop {
+        if state.unresolved_run_count()? == 0 {
+            return Ok(());
+        }
+        if Instant::now() >= reconcile_deadline {
+            break;
+        }
+        sleep(RUN_DRAIN_POLL_INTERVAL).await;
+    }
+
+    let unresolved = state.unresolved_run_count()?;
+    if unresolved == 0 {
+        Ok(())
+    } else {
+        Err(AgentdError::Protocol(format!(
+            "agentd shutdown left {unresolved} indeterminate run(s); owner recovery is required"
+        )))
+    }
 }
 
 fn joined(
@@ -513,9 +586,16 @@ async fn cleanup_runtime_tasks<
 #[cfg(unix)]
 async fn shutdown_signal() -> Result<(), AgentdError> {
     let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
-    terminate.recv().await.ok_or_else(|| {
-        AgentdError::Protocol("SIGTERM listener closed before receiving a signal".to_string())
-    })
+    let mut interrupt = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())?;
+    tokio::select! {
+        signal = terminate.recv() => signal.ok_or_else(|| {
+            AgentdError::Protocol("SIGTERM listener closed before receiving a signal".to_string())
+        })?,
+        signal = interrupt.recv() => signal.ok_or_else(|| {
+            AgentdError::Protocol("SIGINT listener closed before receiving a signal".to_string())
+        })?,
+    }
+    Ok(())
 }
 
 #[cfg(not(unix))]

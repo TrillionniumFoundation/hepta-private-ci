@@ -49,15 +49,7 @@
         "symbol": "pub fn start_run(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-          "symbol": "pub(crate) async fn turn_start(",
-          "buildTarget": "codex-app-server",
-          "ownerModule": "runtime.codex"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
@@ -65,9 +57,40 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity.",
+      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity; it does not itself dispatch a Codex turn.",
       "operation": "start_run",
       "nativeSymbol": "pub fn start_run(",
+      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "admit_revalidated_run_start",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "symbol": "pub(crate) fn start_revalidated_run_start(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+          "symbol": "pub struct RunStartRecordV1",
+          "buildTarget": "codex-hepta-learning-ledger",
+          "ownerModule": "learning.ledger"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+          "kind": "durable_run_start_projection",
+          "command": "just test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "Projects only a product-revalidated durable RunStartRecordV1 into the sole daemon coordinator. request_digest is admitted_source_digest; body/artifact/authority/generation/fence/deadline are exact durable fields. ExplicitAbstain never enters runtime admission. Authentication/currentness remains a caller precondition.",
+      "operation": "admit_revalidated_run_start",
+      "nativeSymbol": "pub(crate) fn start_revalidated_run_start(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "sourcePathExists": true
     },
@@ -80,15 +103,7 @@
         "symbol": "pub fn cancel_run(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-          "symbol": "pub(crate) async fn turn_interrupt(",
-          "buildTarget": "codex-app-server",
-          "ownerModule": "runtime.codex"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
@@ -96,7 +111,7 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Distinguishes provable pre-dispatch cancellation from post-dispatch cancelling or indeterminate state.",
+      "sourceSemantics": "Transitions only Agentd-owned lifecycle state. Pre-dispatch cancellation is locally terminal; post-dispatch cancellation remains pending/indeterminate until the execution owner is invoked and observed by a separately composed caller.",
       "operation": "cancel_run",
       "nativeSymbol": "pub fn cancel_run(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -111,15 +126,7 @@
         "symbol": "pub fn attach_context(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/core/src/codex_thread.rs",
-          "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
-          "buildTarget": "codex-core",
-          "ownerModule": "runtime.codex"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
@@ -127,24 +134,64 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple.",
+      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple; it does not itself submit the context to Codex.",
       "operation": "attach_context",
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "daemon_run_lifecycle_control",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/state_control.rs",
+        "symbol": "crate::AgentdMethod::RunStart",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "symbol": "pub fn start_run(",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+          "kind": "daemon_control_lifecycle",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "kind": "bounded_drain_reconciliation",
+          "command": "just test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain.",
+      "operation": "daemon_run_lifecycle_control",
+      "nativeSymbol": "crate::AgentdMethod::RunStart",
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Compose a canonical non-test caller that supplies authenticated request/objective/body/artifact/authority identities to run.lifecycle without synthetic hashes.",
+    "Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.",
+    "Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable."
+  ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
-    "non-test caller through the full Codex turn path",
-    "target backpressure/restart measurements"
+    "target-host drain/restart/backpressure measurements",
+    "independent acceptance, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -153,16 +200,29 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "durableRunStartProjectionSourceImplemented": true,
+    "currentTrustRunStartRevalidationComposed": false
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "daemon_lifecycle_and_durable_run_start_projection_composed_physical_codex_pending",
   "productionWriterState": "not_established",
   "owner": "agent-runtime",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-agentd"
-  ]
+  ],
+  "currentSourceEvidence": {
+    "commit": "cbb3cee084a4caf4702dd4e575cae5504486c176",
+    "tree": "e22806b086240bb2015344dfb545734342c7fdb3",
+    "meaning": "exact_module_local_run_lifecycle_and_durable_run_start_projection_anchor",
+    "evidencePaths": [
+      "codex-rs/hepta-agentd/Cargo.toml",
+      "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start.rs"
+    ]
+  }
 }

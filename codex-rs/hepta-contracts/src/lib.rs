@@ -34,6 +34,7 @@ pub use authority_trust::AuthorityFrontierStore;
 pub use authority_trust::AuthorityTrustError;
 pub use authority_trust::SystemAuthorityClock;
 
+pub use final_use::EnteredUseToken;
 pub use final_use::FinalUseAuthority;
 pub use final_use::FinalUseBinding;
 pub use final_use::FinalUseCapacity;

@@ -61,20 +61,28 @@ Agentd preserves dispatch-boundary uncertainty and accepts terminal state only f
 |---|---|---|
 | `compose_runtime` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn compose_runtime(` |
 | `start_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn start_run(` |
+| `admit_revalidated_run_start` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub(crate) fn start_revalidated_run_start(` |
 | `cancel_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn cancel_run(` |
 | `attach_context` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn attach_context(` |
+| `daemon_run_lifecycle_control` | `owner_native` | `codex-rs/hepta-agentd/src/state_control.rs` — `crate::AgentdMethod::RunStart` |
+
+Remaining repository implementation gaps:
+
+- Compose a canonical non-test caller that supplies authenticated request/objective/body/artifact/authority identities to run.lifecycle without synthetic hashes.
+- Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.
+- Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.
 
 External evidence gates:
 
 - deployed Agentd process and authenticated socket identity
-- non-test caller through the full Codex turn path
-- target backpressure/restart measurements
+- target-host drain/restart/backpressure measurements
+- independent acceptance, promotion and release
 
 ## 5. `runtime.codex`
 
 The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.
 
-The App Server observes admission and streaming state; external tool/provider terminality remains with its effect owner.
+The App Server/client path supplies typed process-local terminal and request-level observations; runtime.codex validates exact correlation. External tool/provider terminality remains with its effect owner and target-host trust is independently qualified.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -83,11 +91,18 @@ The App Server observes admission and streaming state; external tool/provider te
 | `dispatch_tool` | `owner_boundary` | `codex-rs/app-server/src/request_processors/turn_processor.rs` — `pub(crate) async fn turn_start(` |
 | `observe_delivery` | `owner_boundary` | `codex-rs/app-server/src/request_processors/turn_processor.rs` — `pub(crate) async fn turn_start(` |
 
+Remaining repository implementation gaps:
+
+- current runtime.codex exact-head, deterministic synthetic-merge, focused product fault-matrix, and product E2E evidence are pending for this composed candidate
+
 External evidence gates:
 
-- named deployed Agentd caller identity
-- real model/provider stream observation
-- real tool terminal observation and acknowledgement-loss qualification
+- independently operated final-use authority endpoint, signer-key custody, pathname plus connected-peer socket identity, trusted time/revocation distribution, and external anti-rollback recovery for replay/epoch state
+- authenticated target-host Agentd/App Server process, generation and socket identity
+- real model/provider terminal stream observation under the selected target deployment
+- delegated external-tool terminal observation and acknowledgement-loss qualification
+- independent policy/evidence for resolving or quarantining indeterminate effects when ephemeral App Server history is unavailable; no unauthenticated manual release
+- independent acceptance, activation/canary, promotion and release
 
 ## 6. `inference.control`
 
@@ -236,6 +251,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 39 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 41 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.

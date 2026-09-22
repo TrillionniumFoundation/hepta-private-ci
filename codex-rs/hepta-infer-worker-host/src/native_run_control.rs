@@ -58,24 +58,50 @@ impl AppServerModelDriver {
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
+        if let Some(rejection) = &record.dispatch_rejection {
+            return Err(format!(
+                "turn/start was explicitly rejected before start ({:?}): {}",
+                rejection.status, rejection.reason
+            )
+            .into());
+        }
         if record.state != NativeReservationState::Reserved {
+            if let Some(output) = record
+                .observation
+                .as_ref()
+                .filter(|output| output.terminal_observed)
+            {
+                return Ok(output.clone());
+            }
+            if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
+                let settled = control.settle_native(&record.request.request_id, reconciled)?;
+                return settled.observation.ok_or_else(|| {
+                    "durable reconciliation omitted its normalized observation".into()
+                });
+            }
             if let Some(output) = record.observation {
                 return Ok(output);
             }
-            let dispatch = record.dispatch.ok_or("missing durable dispatch binding")?;
+            let dispatch = record
+                .dispatch
+                .as_ref()
+                .ok_or("missing durable dispatch binding")?;
             let output = NativeRunOutput {
-                thread_id: dispatch.thread_id,
-                turn_id: record.turn_id.unwrap_or_default(),
-                model: record.request.model,
-                model_provider: dispatch.model_provider,
+                thread_id: dispatch.thread_id.clone(),
+                turn_id: record.turn_id.clone().unwrap_or_default(),
+                model: record.request.model.clone(),
+                model_provider: dispatch.model_provider.clone(),
                 status: NativeRunStatus::Indeterminate,
+                boundary_status: codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Indeterminate,
                 output: String::new(),
                 observed_output_tokens: None,
                 terminal_observed: false,
                 owner_authority: NativeOwnerAuthority::Unverified,
                 stop_reason: Some(
-                    "reopened after possible dispatch; reservation held, no replay".to_string(),
+                    "reopened after possible dispatch; thread/read found no exact terminal evidence; reservation held, no replay"
+                        .to_string(),
                 ),
+                codex_terminal_correlation_digest: None,
             };
             control.settle_native(&record.request.request_id, output.clone())?;
             return Ok(output);
@@ -89,8 +115,10 @@ impl AppServerModelDriver {
                 if !output.terminal_observed && cancellation.is_cancelled() {
                     control.cancel_native(&request_id)?;
                 }
-                control.settle_native(&request_id, output.clone())?;
-                Ok(output)
+                let settled = control.settle_native(&request_id, output)?;
+                settled.observation.ok_or_else(|| {
+                    "durable execution settlement omitted its normalized observation".into()
+                })
             }
             Err(error) => {
                 if control

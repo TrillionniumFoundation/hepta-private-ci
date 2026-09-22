@@ -11,13 +11,13 @@ use crate::ConstraintAtomV1;
 use crate::ConstraintRelation;
 use crate::FeasibilityOutcomeV1;
 use crate::ObjectiveError;
-use crate::ObjectiveSourceEnvelope;
 use crate::OracleBudgetV1;
 use crate::PredicateTerminality;
 use crate::RegisteredAxisV1;
 use crate::RegisteredDomainV1;
 use crate::RegisteredGrammarV1;
 use crate::check_feasibility_v1;
+use crate::model::ObjectiveSourceEnvelope;
 
 /// Legacy envelopes already carry normalized FixedQ32 values without units.
 /// Bind that existing representation to its explicit compatibility profile;

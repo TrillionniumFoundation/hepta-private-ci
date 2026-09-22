@@ -166,6 +166,8 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 Embed authority owners behind a trusted host boundary. Production-oriented construction binds an `AuthorityClock` plus an externally durable CAS `AuthorityFrontierStore`; the owner-only local directory remains the crash-durable state store and must not be treated as the rollback oracle. A restored local snapshot behind the external frontier fails closed. Compatibility constructors without external trust are not production qualification.
 
+The exact-frontier asynchronous `VerifiedUseToken::enter` additionally requires the claim-time durable head to remain current and samples that same protected owner clock. A new head invalidates an unentered asynchronous token; an already entered effect remains subject to terminal observation and reconciliation, not automatic retry.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-contracts/FINAL_USE.md](../../../codex-rs/hepta-contracts/FINAL_USE.md).

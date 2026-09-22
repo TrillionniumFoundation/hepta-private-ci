@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs); observed identifiers include `AgentdProductionWriterHost`, `open`, `attach_target`, `dispatch`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md) for the implemented subset and remaining product work.
+The daemon-owned run lifecycle is implemented by [codex-rs/hepta-agentd/src/lane_b_runtime.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime.rs), held by [codex-rs/hepta-agentd/src/state.rs](../../../codex-rs/hepta-agentd/src/state.rs), dispatched through [codex-rs/hepta-agentd/src/state_control.rs](../../../codex-rs/hepta-agentd/src/state_control.rs), and consumed through the typed [codex-rs/hepta-agentd/src/client.rs](../../../codex-rs/hepta-agentd/src/client.rs). The additive local protocol advertises `run.lifecycle/1.1` before clients use these methods. The explicit durable cognitive writer seam remains [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs); it is not installed by normal daemon startup. These are source navigation bindings, not proof that a canonical product caller supplies every authoritative run identity or that deployment qualification has passed. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -75,8 +75,10 @@ The bounded components are:
 
 - `bootstrap and configuration loader`
 - `supervision loop`
+- `daemon-owned bounded run lifecycle coordinator`
+- `local typed control protocol and client`
 - `durable state projection`
-- `readiness and shutdown controller`
+- `readiness, bounded drain and shutdown controller`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -108,7 +110,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-None.
+- `AgentRunSnapshot` / `AgentContextAttachment` / `AgentRunReceipt` on the local `run.lifecycle/1.1` capability. These are Agentd-local transport types and do not replace canonical cross-module contracts such as `RunStartSnapshotV1`.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -136,13 +138,21 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md).
+`AgentdState` owns exactly one mutex-protected `AgentRunCoordinator` for the process generation. Its active-run ceiling is the supervisor/Fleet `ResourceBudget.max_concurrent_turns` for this Agent (within the supported local bound), and it retains at most 1024 records until the terminal consumer explicitly releases a closed record. The coordinator freezes request/objective/body/artifact digests together with authority epoch and deadline; context attachment must repeat that complete tuple exactly. Attachment and dispatch re-check the deadline, cancellation records a bounded reason, and the runtime monitor continuously advances deadlines. Post-dispatch cancellation has a 3-second acknowledgement deadline; if no terminal owner observation arrives, the run becomes `Indeterminate`. Terminal observations preserve the dispatch-boundary distinction, and `RunReleaseClosed` removes a closed record only with its exact expected revision. Existing identical operations are idempotent; reused identities with changed semantics conflict.
+
+The run map is intentionally ephemeral and is not a second durable execution ledger. After process loss an external durable execution owner may supply the exact prior snapshot/revision/context/receipt identity through the recovery method; Agentd rehydrates it only as `Indeterminate`. No restart path may infer completion or redispatch from an absent local record.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
+### Durable run-start projection
+
+The daemon coordinator exposes the owner-internal `start_revalidated_run_start` bridge for a `RunStartRecordV1` that has already been revalidated by the product owner against current trust. The bridge fixes the durable-owner → daemon-owner mapping: `admission.admitted_source_digest` is the runtime request identity, and objective/body/artifact/authority/generation/fence/deadline are copied from the durable record. `ExplicitAbstain` is terminal at objective admission and is never inserted as an executable run. A retained journal record is not, by itself, proof that its signer remains current; raw-record authentication is intentionally outside this bridge.
+
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Run deadlines remain live after admission: expiration before dispatch becomes a local terminal cancellation; expiration after dispatch moves the run to `Cancelling` and still requires owner terminal observation. Shutdown closes new admission before teardown, converts pre-dispatch work to local cancellation, moves dispatched work to cancelling, and keeps the control path running for a bounded drain. After the drain deadline, unresolved dispatched/cancelling work becomes `Indeterminate`; a second bounded reconciliation window accepts exact terminal observations. If uncertainty remains, shutdown reports recovery-required rather than fabricating success/failure.
+
+Recovery after process loss is explicit and non-authoritative: a durable external owner must provide the exact prior operation identity, and the new Agentd process can only rehydrate it as `Indeterminate`; the recovery API cannot redispatch. The local control server also distinguishes saturation from disappearance by returning a typed overload/retry frame instead of dropping the connection. `run.lifecycle/1.1` adds explicit closed-record release and exposes the pending cancellation-ack deadline in receipts so callers can reconcile rather than guess.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -165,6 +175,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 ## 11. Observability and operations
 
 codex-hepta-agentd starts from AgentdConfig::from_process_environment; the optional --authbus-trust-file is protected host configuration. `HEPTA_COGNITIVE_RETRIEVAL_MODE` is a strict product-profile selector: absent/`compatibility` selects the compatibility path, `hnmf-required` selects HNMF-required mode, and any other value is rejected. The ordinary binary does not mint a `CurrentMemoryRetrievalContext`, so HNMF-required startup without an externally composed current context fails closed. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
+codex-hepta-agentd starts from `AgentdConfig::from_process_environment`; the optional `--authbus-trust-file` is protected host configuration. The supervisor supplies the owner identity/generation and existing memory store. The local control capability endpoint advertises the additive run lifecycle surface. SIGINT, SIGTERM, and supervisor Draining all close run admission before teardown; terminal observation remains possible during the bounded drain/reconciliation window. An App Server interruption acknowledgement alone is never terminal task completion.
 
 Current operating and state-format references:
 
@@ -179,6 +190,9 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs) covers complete frozen-tuple binding, post-admission deadlines, reasoned cancellation, drain and explicit indeterminate recovery.
+- [codex-rs/hepta-agentd/src/state_isolation_tests.rs](../../../codex-rs/hepta-agentd/src/state_isolation_tests.rs) exercises the lifecycle methods through the real daemon control dispatch and verifies capability advertisement and terminal reconciliation during drain.
+- [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs) verifies that bounded shutdown keeps reconciliation live until terminal observation.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `context_reads_real_owner_content_and_removes_committed_tombstones`.
 - [codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs); named case: `lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt`.
 
@@ -317,5 +331,6 @@ This receipt records repository source bindings for the current documentation ca
 | `attach_context` | `pub fn attach_context(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

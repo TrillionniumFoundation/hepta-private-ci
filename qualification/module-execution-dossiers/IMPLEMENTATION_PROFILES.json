@@ -599,11 +599,11 @@
       "guide": "docs/modules/runtime.codex/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/runtime.codex.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "open_thread(session,version); submit_turn(thread,context,objective); dispatch_tool(turn,finalCall,verifiedUse); observe_delivery(turn,payloadDigest). Preserve upstream app-server protocol.",
-      "stateAndEncoding": "Thread/turn principal,sequence,selected model/runtime,context/tool-schema digests and lifecycle. External effect truth remains with destination/operations owner, not generated model prose.",
-      "linearizationAndRecovery": "Revalidate evidence at physical request assembly, bind actual tokenizer/template, record delivery only after matching payload submission. Tool entry consumes current final grant. Provider timeout is not a proven safe retry.",
-      "algorithmAndBounds": "Token/context limits come from exact model profile; candidate tool set<=128 and reserved dispatch concurrency. Separate queue,first-token,last-token,assembly and terminal-tool timings.",
-      "acceptanceOracle": "Compiled but unsent prompt receives no exposure credit. Post-authorization payload drift denies. Missing model/session profile cannot choose ambient defaults. Unknown tool outcome remains pending.",
+      "apiContract": "open_thread(session,version); submit_turn(thread,context,objective); runtime.codex-bound model execution freezes exact TurnStartParams, consumes independently verified final-use authority, submits one App Server turn, and reconciles the same operation without blind replay. The native inference profile is model-only; external tool effects require a separate authorized effect-owner path.",
+      "stateAndEncoding": "App Server remains the sole thread/turn execution owner. Runtime.codex binds operation, Agent generation, App Server session/connection/version/home, model/provider, exact TurnStart payload, client message/input digest, deadline, authority witness and terminal correlation. Durable dispatch/reconciliation fields live in the existing inference.control journal and explicitly retain claim-time authority epoch, revocation revision and complete-head digest for recovery audit; adapter receipts remain DENY_ALL.",
+      "linearizationAndRecovery": "Before physical turn/start, the caller freezes exact payload, obtains an independently signed single-use grant, binds the exact claim-time revocation frontier into its witness, commits the durable dispatch, rechecks owner/ingress/cancel/deadline, then consumes the token. After possible send, timeout/lost ACK is reconcile-only: same connection may observe turn/started; restart uses thread/read(includeTurns=true) with stable client id plus original input. Missing/ambiguous history stays Indeterminate.",
+      "algorithmAndBounds": "Prompt<=32 KiB, model attachment<=8 KiB, observed output<=1 MiB, bounded App Server events<=256, final-use authority messages<=16 KiB, and execution timeout<=3600 s. One exact absolute deadline covers authority acquisition, final-use entry and turn/start acknowledgement. The hepta-infer-worker client receives an empty tool router before MCP/connector/dynamic/core tool planning.",
+      "acceptanceOracle": "Completed/Failed/Interrupted remain distinct. Explicit overload is safe-before-admission; internal/transport uncertainty is not. Wrong thread/turn/session/generation/connection/version/home/payload/input rejects. Revocation-frontier advance after claim denies before send. Crash after durable dispatch cannot recreate pre-effect proof. Restart recovery never submits a replacement turn. Product E2E must observe exactly one physical provider request.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -619,20 +619,43 @@
           },
           {
             "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
-            "symbol": "adapt"
+            "symbol": "adapt_request"
+          },
+          {
+            "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+            "symbol": "adapt_observed_event"
+          },
+          {
+            "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+            "symbol": "AppServerModelDriver"
+          },
+          {
+            "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+            "symbol": "UnixFinalUseAuthorizer"
           }
         ],
-        "stateAndRecovery": "App Server owns real thread/turn execution and its existing persistence. adapt is stateless and only validates supplied payload/deadline bindings and observations; its receipt alone does not perform an RPC or authenticate terminality.",
+        "stateAndRecovery": "The existing App Server owns physical thread/turn execution. AppServerModelDriver is the named product caller and routes the real Agentd-owned App Server path through runtime.codex. RemoteAppServerClient mints process-local typed request/event observations. DurableInferenceControl commits exact runtime.codex correlation, queryable claim-time authority epoch/revocation revision/complete-head digest, and the cryptographic authority witness before the physical send and retains unknown execution across restart. A live-only pre-effect abort token can prove unsent work before entry; restart cannot recreate it. Lost acknowledgement is reconciled by exact same-operation observations or thread/read; unresolved/duplicate/conflicting history remains indeterminate/quarantined. The final-use verifier persists nonce/revocation state and binds tokens to the exact claim-time frontier.",
         "testFiles": [
           "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
-          "codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs"
+          "codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs",
+          "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+          "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+          "codex-rs/core/src/tools/spec_plan_tests.rs"
         ],
         "runtimeDocuments": [
           "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+          "docs/modules/runtime.codex/FAULT_MATRIX.md",
+          "codex-rs/hepta-infer-worker-host/FINAL_USE_AUTHORITY_PORT.md",
+          "codex-rs/hepta-contracts/FINAL_USE.md",
           "codex-rs/app-server/README.md"
         ],
         "remainingWork": [
-          "Qualify the identified deployed Agentd caller, real provider stream and delegated tool terminal observer, including lost acknowledgements."
+          "Pass exact-head and deterministic merge-candidate source/product fault gates for the reviewed candidate before changing repository source-closure claims.",
+          "Qualify the deployed final-use issuer/revocation distribution and target-host Agentd/App Server process/socket identity, then run the real provider terminal stream and separately authorized external-tool terminal/acknowledgement-loss path.",
+          "Define independent handling for indeterminate effects when App Server history is unavailable; independent acceptance, activation, promotion and release remain external."
         ]
       }
     },
@@ -1052,7 +1075,7 @@
       "guide": "docs/modules/cognitive.store/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/cognitive.store.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "Canonical module fa\u00e7ade: hepta-cognitive-store::AdmittedCognitiveStoreV2 remains the semantic qualification model; durable product writes use the existing hepta-memory SQLite owner only through a live-verified ProductionDurableWriter that mints the sealed ProductionCognitiveMutationCapability. Agentd carries that capability through normal App Server composition without introducing a replacement database.",
+      "apiContract": "Canonical module façade: hepta-cognitive-store::AdmittedCognitiveStoreV2 remains the semantic qualification model; durable product writes use the existing hepta-memory SQLite owner only through a live-verified ProductionDurableWriter that mints the sealed ProductionCognitiveMutationCapability. Agentd carries that capability through normal App Server composition without introducing a replacement database.",
       "stateAndEncoding": "The semantic V1/V2 ledgers are bounded in-memory models. The physical authoritative owner is hepta-memory::CognitiveStore over cognitive_1.sqlite3. memory_ledger owns Memory/source/tombstone lineage; knowledge_fact_ledger is the memory-revision-bound authoritative fact-set subledger in kg_revision_fact_sets/entities/relations, committed with the owning Memory revision and never given an independent fact writer/head. WAL+FULL writer fencing, exact-cut recovery anchors and the active-generation pointer protect the physical owner.",
       "linearizationAndRecovery": "BEGIN IMMEDIATE/CAS mutations remain single-owner. Production semantic mutation revalidates the retained external verifier immediately before the owner mutation. Writable recovery fences ordinary store handles, copies identity-bound database/WAL/journal descriptors into a private generation, checks exact current-cut equality, schema/integrity and production authority/fence, checkpoints, then publishes the active generation; post-rename publication uncertainty is Indeterminate. Ordinary open is not a production-writer recovery fallback.",
       "algorithmAndBounds": "V2 accepts only Verified admission, reserves hard revision capacity for tombstones, bounds the intent journal and binds image receipts/frontiers to retained history. Semantic pages bind exact generation-vector+sequence. Durable pages keyset-page <=512 heads and reconstruct complete selected ancestry under 16384-revision/65536-citation page budgets while binding global deletion/source/fact/KG state.",
@@ -1083,7 +1106,7 @@
             "symbol": "AgentdProductionWriterHost"
           }
         ],
-        "stateAndRecovery": "The canonical cognitive-store fa\u00e7ade delegates durable ownership to the one existing hepta-memory SQLite owner. Descriptor-bound writable recovery, shared/exclusive open fencing, proof-bound durable paging, live final-use authority revalidation and a sealed semantic mutation capability are source-implemented. Normal Agentd/App Server composition can carry only the minted capability; independent currentness/authority inputs, standalone deployment bootstrap and activation remain external.",
+        "stateAndRecovery": "The canonical cognitive-store façade delegates durable ownership to the one existing hepta-memory SQLite owner. Descriptor-bound writable recovery, shared/exclusive open fencing, proof-bound durable paging, live final-use authority revalidation and a sealed semantic mutation capability are source-implemented. Normal Agentd/App Server composition can carry only the minted capability; independent currentness/authority inputs, standalone deployment bootstrap and activation remain external.",
         "testFiles": [
           "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
           "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
@@ -1527,11 +1550,11 @@
       "guide": "docs/modules/objective.compiler/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/objective.compiler.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "compile(sourceEnvelope,baselineProfile); check_feasibility(typedConstraints,budget). Model extraction is an untrusted IR candidate. Results distinguish feasible,infeasible,unsupported_language,budget_exhausted.",
-      "stateAndEncoding": "No durable owner. Caller records immutable ObjectiveFunction/RunStartSnapshot with scope,success/terminal predicates,hard constraints,actions,evidence sources,resources,risk,revision and digest.",
-      "linearizationAndRecovery": "Normalize and solve pure IR before adaptive logic. A semantic objective/acceptance change starts a new authorized run. Unsupported/exhausted never drops a constraint or relabels the problem infeasible.",
-      "algorithmAndBounds": "Interval/set intersection and positive Horn implication closure only. <=256 constraints,128 predicates/actions,256 KiB. Sorting O(n log n); inclusion-minimal conflict filtering <=n+1 oracle calls and O(n*C(n)), not minimum cardinality.",
-      "acceptanceOracle": "[0,1] intersect [2,3] infeasible; irrelevant atom removed from core. Permutations yield equal IR. Nonlinear/unsupported atoms or exhausted oracle preserve original objective and grant no new action.",
+      "apiContract": "decode Source V1 -> admit_objective_v1(authenticated source/profile/time) -> opaque AdmittedObjectiveV1 -> compile_admitted_objective_v1 -> encode_objective_function_v1. The protocol adapter validates and exact-round-trips registered canonical JSON. Direct check_feasibility_v1 remains a richer typed API. Agentd signed objective_start authenticates before admission-context construction.",
+      "stateAndEncoding": "Compiler is stateless. ObjectiveFunction::semantic_digest is the owner-native identity used by RunStartSnapshotV1.objectiveDigest; canonical ObjectiveFunctionV1 has a separate protocol-wire digest. Destination-owned DurableRunStartJournal v2 persists ingress authentication, admission binding, both objective byte/digest identities and RunStartSnapshotV1 before non-abstain runtime admission.",
+      "linearizationAndRecovery": "Current AuthBus verification precedes admission. Native compile and canonical wire projection precede durable run-start append+sync, which precedes AgentRunCoordinator consumption. Exact replay and acknowledgement-loss retry are idempotent; partial unacknowledged tails recover to the last complete frame; same-run native/protocol drift conflicts; current trust, generation, fence and canonical protocol identity are revalidated before final use.",
+      "algorithmAndBounds": "Source V1: <=246 source constraints plus 10 generated resource/risk constraints => <=256 native hard constraints; success+terminal+evidence aggregate <=128; caller legal actions <=127 when abstain is implicit or 128 with explicit abstain; soft dimensions <=64; raw input <=256 KiB. Native scalar compatibility compile uses deterministic call-budget feasibility; direct typed feasibility also supports finite enums/action implications/immutable identities. Inclusion-minimal conflict filtering <=n+1 oracle calls.",
+      "acceptanceOracle": "Raw compiler is absent from the default public API. Capacity/unsupported semantics fail closed. Canonical ObjectiveFunctionV1 must exact-round-trip and its wire digest must remain distinct from the native semantic digest. Durable recovery must reject protocol drift, revoked/stale owner trust, generation/fence mismatch and legacy records lacking canonical protocol identity. Target-host ordinary/conflict timing remains separate external evidence.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -1539,24 +1562,52 @@
         "entrypoints": [
           {
             "path": "codex-rs/hepta-objective/src/objective_admission.rs",
-            "symbol": "admit_and_compile_objective_v1"
+            "symbol": "admit_objective_v1"
+          },
+          {
+            "path": "codex-rs/hepta-objective/src/objective_admission.rs",
+            "symbol": "compile_admitted_objective_v1"
           },
           {
             "path": "codex-rs/hepta-objective/src/feasibility.rs",
             "symbol": "check_feasibility_v1"
+          },
+          {
+            "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+            "symbol": "encode_objective_function_v1"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+            "symbol": "ObjectiveRuntimeHost::submit"
+          },
+          {
+            "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
+            "symbol": "compile_and_publish_objective_run_v1"
+          },
+          {
+            "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+            "symbol": "DurableRunStartJournal"
           }
         ],
-        "stateAndRecovery": "Stateless outputs bind the immutable source/principal/profile/schema/unit/time/intent tuple; unknown mappings fail closed. The owner caller must persist objective and run snapshot publication; the native compiler has no durable objective database.",
+        "stateAndRecovery": "Opaque admitted-objective typing seals the default compiler boundary. Canonical ObjectiveFunctionV1 projection binds external protocol semantics independently from the native semantic digest. Agentd authenticates signed ingress against current AuthBus trust; DurableRunStartJournal v2 provides locked bounded append, sync-before-publication, dual-digest validation, exact replay/conflict semantics, legacy-read/new-final-use fencing and recovery before generation/fence-bound runtime admission.",
         "testFiles": [
           "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-          "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs"
+          "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+          "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
+          "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+          "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+          "codex-rs/hepta-agentd/src/objective_runtime_tests.rs"
         ],
         "runtimeDocuments": [
           "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+          "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+          "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md",
           "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
         ],
         "remainingWork": [
-          "Authenticate actual source context and compose the production caller; conflict-oracle budgets and target latency need separate measurements from ordinary compilation."
+          "Obtain green exact-head and deterministic synthetic-merge receipts for the single canonical #910 checkout.",
+          "Run the exact-source ordinary/maximum-conflict harness plus crash/power-loss/backpressure qualification on the selected target-host profile.",
+          "Independent acceptance, activation, canary, promotion and release remain external."
         ]
       }
     },
