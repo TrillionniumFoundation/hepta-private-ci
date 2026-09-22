@@ -35,7 +35,8 @@ pub enum ProviderEffectIdempotencyCapability {
     #[default]
     Unsupported,
     /// The provider contract exposes a stable key, same-key conflict rules,
-    /// and durable status lookup.  No current provider is marked this way.
+    /// and durable status lookup.  The attested HTTP adapter can report this
+    /// only after its constructor verifies the pinned provider contract.
     KeyAndStatusLookup,
 }
 
@@ -94,6 +95,30 @@ impl ProviderEffectKey {
                 provider_scope,
                 occurrence_id,
                 operation_id,
+            ])
+        )))
+    }
+
+    /// Derives a provider-stable key for a logical effect whose physical
+    /// payload and retry attempt are bound separately.  This is intended for
+    /// orchestration systems such as TaskFlow where one logical step may need
+    /// a new local attempt only after provider-owned absence proof.
+    ///
+    /// Keeping payload bytes and the physical attempt out of this key lets a
+    /// provider reject same-logical-effect/different-payload substitution and
+    /// deduplicate a safely retried send under the original occurrence key.
+    pub fn for_logical_effect(
+        provider_scope: &str,
+        logical_effect_id: &str,
+    ) -> Result<Self, ProviderEffectBindingError> {
+        validate_non_empty("provider scope", provider_scope)?;
+        validate_non_empty("logical effect id", logical_effect_id)?;
+        Ok(Self(format!(
+            "provider-effect:v1:{}",
+            digest_parts([
+                "provider-effect:logical-effect:v1",
+                provider_scope,
+                logical_effect_id,
             ])
         )))
     }
@@ -1166,11 +1191,13 @@ pub fn reconcile_provider_lookup(
     }
 }
 
-/// Async adapter seam for a future provider implementation.
+/// Async adapter seam for provider-backed effects.
 ///
-/// No current HTTP or WebSocket provider implements this trait. An adapter may
-/// report `KeyAndStatusLookup` only after its provider contract proves stable
-/// key transport, same-key conflict/dedupe, and durable lookup semantics.
+/// The repository's HTTP adapter implements this trait only behind a verified
+/// provider-contract attestation. An adapter may report `KeyAndStatusLookup`
+/// only after its provider contract proves stable key transport, same-key
+/// conflict/dedupe, and durable lookup semantics. Source implementation alone
+/// is not a product caller or activation receipt.
 pub type ProviderEffectFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
 pub trait ProviderEffectAdapter: Send + Sync {
@@ -1656,6 +1683,34 @@ mod tests {
         assert_eq!(first, retry);
         assert_eq!(first, changed_payload);
         assert_ne!(first, changed_occurrence);
+    }
+
+    #[test]
+    fn logical_effect_key_is_stable_across_local_attempts_and_payload_changes() {
+        let first = ProviderEffectKey::for_logical_effect(
+            "provider-1/config-v1",
+            "taskflow:run-1:step-send",
+        )
+        .expect("logical key");
+        let retry = ProviderEffectKey::for_logical_effect(
+            "provider-1/config-v1",
+            "taskflow:run-1:step-send",
+        )
+        .expect("retry logical key");
+        let other_step = ProviderEffectKey::for_logical_effect(
+            "provider-1/config-v1",
+            "taskflow:run-1:step-other",
+        )
+        .expect("other logical key");
+        let other_provider = ProviderEffectKey::for_logical_effect(
+            "provider-2/config-v1",
+            "taskflow:run-1:step-send",
+        )
+        .expect("other provider key");
+
+        assert_eq!(first, retry);
+        assert_ne!(first, other_step);
+        assert_ne!(first, other_provider);
     }
 
     #[test]

@@ -144,6 +144,13 @@
           "symbol": "pub async fn record_taskflow_step(",
           "ownerModule": "automation.taskflow",
           "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+          "symbol": "pub async fn execute_authorized_taskflow_effect_async",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
         }
       ],
       "tests": [
@@ -168,13 +175,13 @@
           "command": "cargo test -p codex-hepta-automation --test authorized_effect"
         }
       ],
-      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, and records initial plus terminal reconciliation evidence without blind redispatch.",
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true,
       "productCallers": [],
-      "productCompositionState": "pending_independent_final_use_host_and_attested_provider_product_caller"
+      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending"
     }
   ],
   "repositoryControlledGaps": [],
@@ -203,7 +210,10 @@
     "externalEffectProductCompositionComplete": false,
     "agedTurnRecoveryLivenessGapClosed": true,
     "terminalObserverPerPassBounded": true,
-    "terminalObserverDurableContinuation": true
+    "terminalObserverDurableContinuation": true,
+    "externalEffectAsyncBridgeComplete": true,
+    "externalEffectExactWireBindingComplete": true,
+    "externalEffectDurableRecoveryIdentityComplete": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -232,16 +242,17 @@
     "codex-rs/hepta-types",
     "codex-rs/Cargo.toml",
     "codex-rs/Cargo.lock",
-    "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs"
+    "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+    "CALLERS.toml"
   ],
   "observedAtHead": {
     "commit": "86cc384cc71f5c36293c3d9c34ff7f125d29faea",
     "tree": "beec89393ef9c52d15b08f9d2f29be63ec2a113b",
-    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd control, real five-Agent process coverage that creates one Calendar V2 task through AgentdClient and executes it through the existing scheduler/App Server spine, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity plus structural replay validation plus regression coverage that binds scoped claim IDs to persisted owner epoch/generation while preserving legacy immutable claim history, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, reopen/CAS regression coverage, Calendar V2 capability type export, repository-current rustfmt, and CI-stable independent peer-scheduler qualification timing without weakening the blocked-owner isolation assertion; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd control, real five-Agent process coverage that creates one Calendar V2 task through AgentdClient and executes it through the existing scheduler/App Server spine, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity plus structural replay validation plus regression coverage that binds scoped claim IDs to persisted owner epoch/generation while preserving legacy immutable claim history, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, reopen/CAS regression coverage, Calendar V2 capability type export, repository-current rustfmt, and CI-stable independent peer-scheduler qualification timing without weakening the blocked-owner isolation assertion; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged; async final-use/provider bridge has now been merged with these executable-closure repairs and requires re-observation of the integrated source before qualification"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "repositoryControlledProductCompositionGaps": [
-    "External-effect product composition remains open: no registered product caller currently binds the TaskFlow AuthorizedEffectDriver seam to an independently provisioned FinalUseAuthority host and an independently attested concrete provider/terminal observer."
+    "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
   ],
   "sourceObservationRequirements": {
     "policy": "candidate_or_exact_observation_v1",

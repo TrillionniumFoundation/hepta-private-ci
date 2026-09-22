@@ -28,6 +28,25 @@ or Unix account. A host selects the callback from its own consumer registry;
 a signed consumer-name string cannot authenticate a closure supplied by a
 plugin. Protect the configuration, directory ancestors, clock and issuer key.
 
+## Async dispatch revocation fence
+
+`with_verified_use_async` is the async provider counterpart to the synchronous
+final-use callback. It revalidates the same non-cloneable claimed token before
+provider entry, then registers an in-memory active-dispatch fence without
+holding the authority mutex across `await`.
+
+A trusted `update_revocations` call may commit before that fence is entered or
+after it leaves. While any active dispatch owns the fence, the update returns
+`FinalUseError::DispatchInProgress`; callers must retry the same monotonic
+head after the bounded provider call completes or is cancelled. A cancelled
+future drops its RAII fence. This avoids a check-before-await revocation race
+without blocking a runtime thread on a mutex held by a suspended future.
+
+The active fence is intentionally not durable. If the process dies after
+provider contact, the provider effect remains indeterminate and must be
+reconciled by the durable operation/effect owner; revocation is not a rollback
+of an effect that already crossed the provider boundary.
+
 ## Wire and signing schemas
 
 All grants use `schema_version = 1`, deny unknown JSON fields, and serialize
