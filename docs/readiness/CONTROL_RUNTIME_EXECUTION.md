@@ -11,7 +11,7 @@
 
 `control.runtime` constructs one bounded global planning snapshot, preserves essential resource floors, consumes one independently produced NDU evaluation through a typed owner port, and emits an immutable plan receipt plus optional execution-grant requests. It neither evaluates utility on behalf of `utility.ndu` nor issues capabilities on behalf of `kernel.authority`.
 
-The repository implementation is a deterministic, authority-free reference suitable for source qualification. It does not establish a production caller, production writer, independently accepted deployment, hardware control, operator acceptance, activation, promotion or release. Every output produced by this module carries `AuthorityPosture::DENY_ALL`.
+The repository implementation now includes a named `runtime.supervisor::GlobalControlHostV1` source composition and a durable local-Unix planner writer profile, while remaining authority-free at the planning boundary. This establishes source composition, not deployed/activated production ingress, target-host qualification, independent acceptance, hardware control, operator acceptance, promotion or release. Every planner output produced by this module carries `AuthorityPosture::DENY_ALL`.
 
 The global planner is distinct from:
 
@@ -60,10 +60,12 @@ Each `OwnerSummaryV1` binds:
 - immutable objective digest;
 - body generation;
 - configuration digest;
-- observation and expiry times in one declared monotonic domain;
+- planner-local observation and expiry times;
 - readiness posture;
 - source-frontier digest;
 - support digest.
+
+For the named global host, independent producers do **not** supply authority over the planner clock. Their signed payload may contain producer-local timing metadata, but after signature and durable AuthBus receipt verification `bind_planner_observation_window_v1` overwrites the planner-local observation/expiry window from the supervisor process's monotonic `Instant` epoch. All summaries admitted into one named-host snapshot therefore share the same planner clock domain. Lower-level composition helpers remain valid only when their caller can prove one common monotonic domain.
 
 `SnapshotRequestV1` binds the required owner set, objective, body generation, configuration, current revocation frontier, a snapshot-policy digest, collection time, maximum owner age and snapshot expiry. The resulting snapshot additionally binds the required-owner-set digest and the exact maximum-age policy.
 
@@ -86,6 +88,7 @@ A `PlanCandidateV1` binds:
 - plan digest;
 - required owners;
 - final payload digests;
+- one canonical effect-binding digest for an effectful candidate, covering subject, destination, scope and effect boundary; no-effect candidates must omit it;
 - explicit per-axis resource costs.
 
 Candidate count is bounded to 128. Required owners are bounded to 32 and payload digests to 64 per candidate. Candidate IDs, owner IDs and resource axes are duplicate-free after canonical sorting. Plan and final-payload digests must be non-zero.
@@ -98,7 +101,7 @@ available_for_plan(axis) = endowment(axis) - essential_floor(axis)
 
 Both terms are non-negative fixed-point values, and the floor cannot exceed the endowment. Every candidate must explicitly report each registered resource axis; missing axes are unavailable rather than zero. Unknown axes reject rather than widening the budget.
 
-The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
+The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. `canonical_resource_profile_digest` now derives the resource-profile digest from the exact canonical `(axis, endowment, essential_floor)` reservation set, and `prepare_plan` rejects any caller-supplied digest that does not match those reservations. `canonical_effect_binding_digest_v1` similarly seals subject, destination, scope and effect-boundary identity into every effectful candidate before NDU evaluation; the effect-binding digest participates in the candidate-set digest and cannot be supplied later by the effect host. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
 
 `prepare_plan` filters resource-infeasible candidates before NDU evaluation and records their IDs in `resource_rejected_candidate_ids`. The intrinsic `abstain` candidate must remain feasible after this filter. The digest of the source candidate set and the digest of the feasible candidate set are both retained, so resource filtering cannot be hidden.
 
@@ -159,11 +162,12 @@ Each `GrantRequestV1` binds:
 - operation and candidate IDs;
 - chosen plan digest;
 - one final payload digest;
+- the plan-sealed canonical effect-binding digest;
 - objective and snapshot digests;
 - current revocation-frontier digest;
 - expiry.
 
-The resulting `GrantRequestSetV1` is a deterministic request batch with a semantic digest and `AuthorityPosture::DENY_ALL`. A grant request is not an authority token. `kernel.authority` must independently check principal scope, current revocations, final payload, effect boundary, deadlines and any required human confirmation immediately before dispatch.
+The resulting `GrantRequestSetV1` is a deterministic request batch with a semantic digest and `AuthorityPosture::DENY_ALL`. A grant request is not an authority token. At the final boundary the host may present the structured `EffectBindingV1`, but `authority_bridge` recomputes its canonical digest and requires exact equality with the digest sealed before planning; subject, destination, scope or effect-boundary drift fails before authority claim. `kernel.authority` then independently checks the signed final-use binding, current revocations, final payload, deadlines and any required human confirmation immediately before dispatch.
 
 A candidate with no effect payload, including abstain, produces an empty request set. The planner never fabricates a no-op capability.
 
@@ -183,7 +187,7 @@ Each entry contains sequence, kind, idempotency identity, payload digest, predec
 - selected-plan projection;
 - revocation edges that prevent reselection and restart resurrection.
 
-A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention policy and backup/restore qualification.
+A selected plan must already have a decision record. `append` and `reopen` now apply the same selection/revocation semantic checks, so a hash-valid journal containing a selection without a prior decision is rejected. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. `PlannerJournalStoreV1` supplies the repository's local-Unix owner-store profile: owner-only directory and files, no-follow opens, single-process lock, same-directory atomic replacement, file plus directory `fsync`, V1-to-V2 migration, append-only history checks and a caller-supplied current revocation recovery floor that rejects restoration of a pre-revocation backup. A named product host, retention/archival policy and target-filesystem qualification remain separate composition evidence.
 
 ## 9. Failure and degradation semantics
 
@@ -240,12 +244,26 @@ Target metrics include snapshot age, stale/missing owner counts, candidate and r
 - `RCP-13`: operation, payload, resource or required-owner mutation after finalization rejects before grant-request construction.
 - `RCP-14`: grant-request construction revalidates snapshot masks and digest.
 - `RCP-15`: the NDU evaluation policy and resource profile are frozen before evaluation and bound through the final receipt.
+- `RCP-16`: the resource-profile digest must equal the canonical exact reservation set, including essential floors.
+- `RCP-17`: hash-valid journal bytes with an impossible selection sequence fail semantic replay.
+- `RCP-18`: V1 planner-store state migrates atomically, failed migration preserves predecessor bytes, and current revocation floors reject older restored backups.
+- `RCP-19`: every global owner summary, including `runtime.fleet`, is AuthBus-authenticated and durably replay-admitted; the signed fleet revision/frontier must additionally match the live exact `LeaseLedger` allocation before real NDU evaluation, and the result produces only deny-all grant requests.
+- `RCP-20`: an independently signed `kernel.authority` final-use grant is bound to the exact planner request/final payload and plan-sealed effect identity; payload drift rejects claim.
+- `RCP-21`: subject, destination, scope or effect-boundary drift from the preplanned `EffectBindingV1` rejects before authority claim.
+- `RCP-22`: the named global host, not a request caller, freezes fleet principal/floors, required owners, canonical NDU evaluation policy, freshness/lifetime bounds and snapshot policy; attempts to omit a required owner or relax NDU policy fail closed.
+- `RCP-23`: global planning time is sampled from a host-owned process-monotonic epoch; request-supplied planning timestamps are overwritten rather than trusted.
+- `RCP-24`: final use requires a plan receipt issued by the current host generation and still selected in the durable journal; decision revocation, supersession or process restart requires replanning before any effect.
+- `RCP-25`: the plan-sealed effect subject must equal the host-pinned fleet principal before final-use authority can enter the dispatch closure.
+- `RCP-26`: if `planner.state` rename succeeds but directory-sync acknowledgement is lost, the durable writer returns `Indeterminate`, poisons the open handle, blocks final-use dispatch through that host, and may resume only after drop/reopen reconciliation of the durable bytes.
+- `RCP-27`: an authenticated producer-local timestamp from a different monotonic epoch cannot control named-host planner freshness; the host stamps one process-local observation/expiry window after durable authentication.
+- `RCP-28`: runtime.fleet support at final use must preserve both the durable AuthBus admission binding and the unchanged live allocation-grant digest; substituting either digest domain rejects.
+- `RCP-29`: a request caller cannot choose the planner revocation frontier; the named host overwrites it from immutable `GlobalControlHostPolicyV1` and the resulting snapshot/receipt bind that host-owned value.
 
 Native mappings and tests are recorded in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
 ## 12. Implementation sequence and completion state
 
-The source sequence is snapshot types and validation, resource-floor preparation, NDU owner-port binding, plan finalization, grant-request construction, journal integrity and restart fixtures, semantic conformance and exact-head CI.
+The current source sequence is snapshot validation, canonical resource-profile binding, plan-time effect-identity prebinding, authenticated/admitted owner projection, real NDU composition, plan finalization, grant-request construction, semantic journal replay, durable local-Unix owner-store recovery fixtures, independent final-use authority binding, semantic conformance and exact-head CI.
 
 Repository source completion requires every mapped native test, package check, strict lint, clean worktree, exact-head workflow and synthetic merge check to pass. Composition requires a named product caller and selected production store. Independent qualification, activation and release remain separate governed states and cannot be advanced by this document.
 
@@ -254,6 +272,7 @@ Repository source completion requires every mapped native test, package check, s
 Produced owner-local types:
 
 - `GlobalStateSnapshotV1`
+- `EffectBindingV1`
 - `PreparedPlanInputV1`
 - `NduPlanEvaluationV1`
 - `FeasiblePlanReceiptV1`
@@ -292,9 +311,24 @@ abstain candidates, and returns the real NDU evaluation and sealed plan. Empty
 records, ties and insufficient budget do not authorize context delivery. This is
 an observed digital task, not an estimate of model quality or memory capacity.
 
+The live Agentd caller owns one `MonotonicClockV1` epoch per process generation and supplies elapsed microseconds to the planner; wall-clock `SystemTime` is no longer used for request-local planning freshness or expiry. Durable store timestamps remain in their separately owned domains.
+
 The single-observation owner summary has its own initial revision and an explicit
 request-local generation fence. It does not impersonate a database revision or
 global revocation frontier. Existing host authorization and generation checks
 remain required before and after the read. Context bytes exclude the planning
 metadata to avoid a self-referential digest; the host separately bounds the final
 response envelope. Neither helper grants effects or proves long-term improvement.
+
+
+## Current global source composition
+
+`global_plane.rs` now provides a closed source composition for the broader control path without granting activation:
+
+1. every global owner summary, including `runtime.fleet`, enters through `admit_durable_owner_summary_v1` after `HeptaEvidenceStore::admit_authbus_message` durably consumes the pinned AuthBus issuer/replay sequence. The named host then applies `bind_planner_observation_window_v1`, so producer-local clock values cannot control planner freshness; the bounded in-process `authenticate_owner_summary_v1` path remains a source fixture only;
+2. `runtime.fleet` then enters `admit_fleet_allocation_owner_v1` only after that durable authentication. Its signed owner identity, lease-generation revision, readiness and source frontier must match the host-pinned live `LeaseLedger::AllocationGrant`; principal/revocation/expiry are rechecked before CPU, memory and accelerator endowments plus essential floors become the canonical planner resource profile. The snapshot support digest preserves the already authenticated AuthBus support binding and adds the exact live allocation-grant digest as a second domain; final-use revalidation recomputes that same two-layer binding rather than substituting one digest domain for the other;
+3. `compose_global_plan_with_fleet_v1` requires the authenticated admitted-owner set to equal the snapshot required-owner set, then runs `collect_snapshot -> prepare_plan -> evaluate_prepared_plan_with_ndu -> request_execution_grants`;
+4. the NDU step calls the real `utility.ndu` implementation; no caller-supplied selected candidate is accepted;
+5. every effectful plan candidate prebinds an `EffectBindingV1` digest before NDU evaluation. `authority_bridge.rs` maps each deny-all `GrantRequestV1` to an exact `FinalUseBinding` only after the structured subject/destination/scope/effect-boundary identity rehashes to that plan-sealed digest. `with_authorized_grant_request_v1` then accepts only an independently signed grant, durably claims its single-use nonce, and runs the effect closure only inside `FinalUseAuthority::with_verified_use`, which performs the final live time/revocation fence immediately before callback entry. `claim_final_use_for_grant_request_v1` remains the lower-level token-returning primitive.
+
+`runtime.supervisor::GlobalControlHostV1` is the named typed product host for this global composition. Construction freezes `GlobalControlHostPolicyV1`: fleet principal and essential floors, required-owner set, canonical NDU evaluation-policy digest, host-owned revocation-frontier digest, snapshot-policy digest, maximum owner age and maximum plan lifetime. Every required owner must have host-pinned AuthBus trust. The named host overwrites any request-supplied revocation frontier before snapshot construction; changing that frontier requires a new host policy/generation rather than a per-request relaxation. The host durably consumes replay through `HeptaEvidenceStore`, cross-checks the authenticated fleet revision/frontier against the exact live allocation, samples planning freshness from a process-monotonic epoch, executes the real NDU/global planner, and persists planner snapshot/decision/selection through `PlannerJournalStoreV1`. Effect dispatch additionally requires the plan receipt to have been issued by this host generation, remain the durable current selection, bind the host-pinned fleet principal as its effect subject, and pass the independent final-use authority fence. A planner revocation or process restart therefore requires replanning before an old receipt can dispatch. This is source composition inside the product supervisor crate; the existing supervisord network protocol is unchanged and global planning is not activated by default. Exact-head and deterministic synthetic-merge qualification for the canonical convergence candidate, selected deployment ingress, named-host performance/fault evidence, independent acceptance, activation and release remain separate.

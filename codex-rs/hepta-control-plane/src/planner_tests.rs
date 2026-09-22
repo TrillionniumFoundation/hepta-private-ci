@@ -7,6 +7,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
+use super::EffectBindingV1;
 use super::NduPlanEvaluationInputV1;
 use super::OwnerReadinessV1;
 use super::OwnerSummaryV1;
@@ -19,6 +20,8 @@ use super::PreparedPlanInputV1;
 use super::ResourceReservationV1;
 use super::SnapshotRequestV1;
 use super::bind_ndu_plan_evaluation_v1;
+use super::canonical_effect_binding_digest_v1;
+use super::canonical_resource_profile_digest;
 use super::collect_snapshot;
 use super::finalize_plan;
 use super::prepare_plan;
@@ -79,6 +82,15 @@ fn snapshot_request() -> SnapshotRequestV1 {
     }
 }
 
+fn effect_binding_digest() -> Digest32 {
+    must(canonical_effect_binding_digest_v1(&EffectBindingV1 {
+        subject_id: id("agent:alpha"),
+        destination_id: id("provider:effect"),
+        scope_digest: digest("effect-scope"),
+        effect_boundary_id: id("provider-dispatch"),
+    }))
+}
+
 fn candidate(name: &str, resource: i64) -> PlanCandidateV1 {
     PlanCandidateV1 {
         candidate_id: id(name),
@@ -89,6 +101,7 @@ fn candidate(name: &str, resource: i64) -> PlanCandidateV1 {
             .then(|| digest(&format!("payload:{name}")))
             .into_iter()
             .collect(),
+        effect_binding_digest: (name != "abstain").then(effect_binding_digest),
         resource_costs: vec![PlannerAxisValueV1 {
             axis: id("compute"),
             value: q32(resource),
@@ -97,18 +110,19 @@ fn candidate(name: &str, resource: i64) -> PlanCandidateV1 {
 }
 
 fn planning_request(work_resource: i64) -> PlanningRequestV1 {
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: id("compute"),
+        endowment: q32(10),
+        essential_floor: FixedQ32::ZERO,
+    }];
     PlanningRequestV1 {
         plan_id: id("plan-run-1"),
         now_micros: 1_000,
         deadline_micros: 1_900,
         evaluation_policy_digest: digest("policy"),
-        resource_profile_digest: digest("resource-profile"),
+        resource_profile_digest: must(canonical_resource_profile_digest(&resource_reservations)),
         candidates: vec![candidate("abstain", 0), candidate("work", work_resource)],
-        resource_reservations: vec![ResourceReservationV1 {
-            axis: id("compute"),
-            endowment: q32(10),
-            essential_floor: FixedQ32::ZERO,
-        }],
+        resource_reservations,
     }
 }
 
@@ -195,6 +209,9 @@ fn essential_floor_survives_overload_before_ndu_evaluation() {
     ));
     let mut request = planning_request(9);
     request.resource_reservations[0].essential_floor = q32(2);
+    request.resource_profile_digest = must(canonical_resource_profile_digest(
+        &request.resource_reservations,
+    ));
     let prepared = must(prepare_plan(&snapshot, request));
 
     assert_eq!(prepared.resource_rejected_candidate_ids, vec![id("work")]);
@@ -285,6 +302,36 @@ fn tampered_ndu_binding_is_rejected() {
     assert_eq!(
         must_err(finalize_plan(&snapshot, &prepared, &ndu, 1_100)),
         PlannerError::EvaluationBindingMismatch
+    );
+}
+
+#[test]
+fn effectful_candidate_requires_a_prebound_effect_identity() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    request.candidates[1].effect_binding_digest = None;
+
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::EffectBindingMismatch("work".to_string())
+    );
+}
+
+#[test]
+fn resource_profile_digest_must_match_exact_reservations() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    request.resource_reservations[0].essential_floor = q32(1);
+
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::ResourceProfileMismatch
     );
 }
 

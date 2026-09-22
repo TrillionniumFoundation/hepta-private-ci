@@ -17,6 +17,7 @@ use crate::PlannerAxisValueV1;
 use crate::PlanningRequestV1;
 use crate::ResourceReservationV1;
 use crate::SnapshotRequestV1;
+use crate::canonical_resource_profile_digest;
 use crate::collect_snapshot;
 use crate::prepare_plan;
 use crate::request_execution_grants;
@@ -106,6 +107,11 @@ fn fixture() -> (
                 .collect(),
         },
     };
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: id("context-read"),
+        endowment: FixedQ32::ONE,
+        essential_floor: FixedQ32::ZERO,
+    }];
     let prepared = prepare_plan(
         &snapshot,
         PlanningRequestV1 {
@@ -114,7 +120,8 @@ fn fixture() -> (
             deadline_micros: 190,
             evaluation_policy_digest: canonical_ndu_planning_policy_digest(&input)
                 .expect("policy binding"),
-            resource_profile_digest: digest("bounded-context-read"),
+            resource_profile_digest: canonical_resource_profile_digest(&resource_reservations)
+                .expect("resource profile binding"),
             candidates: ["abstain", "read-context"]
                 .into_iter()
                 .map(|name| PlanCandidateV1 {
@@ -123,6 +130,7 @@ fn fixture() -> (
                     plan_digest: digest(name),
                     required_owner_ids: vec![id("state-reader")],
                     final_payload_digests: vec![],
+                    effect_binding_digest: None,
                     resource_costs: vec![PlannerAxisValueV1 {
                         axis: id("context-read"),
                         value: if name == "abstain" {
@@ -133,11 +141,7 @@ fn fixture() -> (
                     }],
                 })
                 .collect(),
-            resource_reservations: vec![ResourceReservationV1 {
-                axis: id("context-read"),
-                endowment: FixedQ32::ONE,
-                essential_floor: FixedQ32::ZERO,
-            }],
+            resource_reservations,
         },
     )
     .expect("prepared plan");
