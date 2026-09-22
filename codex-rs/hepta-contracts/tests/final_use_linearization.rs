@@ -39,11 +39,13 @@ mod unix {
             not_before_unix_ms: now - 1_000,
             expires_at_unix_ms: now + 30_000,
         };
-        let signature = issuer.sign(&grant.signing_bytes().unwrap()).to_bytes().to_vec();
+        let signature = issuer
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
         let signed = SignedFinalUseGrant { grant, signature };
         let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let authority = FinalUseAuthority::open_state_dir(
             directory.path(),
             "security-owner".into(),

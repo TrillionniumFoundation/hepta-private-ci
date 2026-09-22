@@ -79,10 +79,8 @@ mod unix {
         .with_no_client_auth()
         .with_single_cert(
             vec![certified.cert.der().clone()],
-            rustls::pki_types::PrivatePkcs8KeyDer::from(
-                certified.signing_key.serialize_der(),
-            )
-            .into(),
+            rustls::pki_types::PrivatePkcs8KeyDer::from(certified.signing_key.serialize_der())
+                .into(),
         )?;
         let listener = TcpListener::bind("127.0.0.1:0").await?;
         let endpoint = format!("https://localhost:{}/", listener.local_addr()?.port());
@@ -253,13 +251,11 @@ mod unix {
         const SECRET: &str = "registered-secret";
         let clock = Arc::new(ManualClock::new(10_000));
         let advance_clock = Arc::clone(&clock);
-        let body =
-            serde_json::json!({"data":{"data":{"value":SECRET},"metadata":{"version":1}}})
-                .to_string();
-        let (endpoint, ca, task) =
-            delayed_server(body, move || advance_clock.set(11_000))
-                .await
-                .unwrap();
+        let body = serde_json::json!({"data":{"data":{"value":SECRET},"metadata":{"version":1}}})
+            .to_string();
+        let (endpoint, ca, task) = delayed_server(body, move || advance_clock.set(11_000))
+            .await
+            .unwrap();
         let client = BaoClient::new(
             &endpoint,
             ca.as_bytes(),

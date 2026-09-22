@@ -14,6 +14,8 @@ on:
       - "scripts/verify_lane_a_foundation.py"
       - "scripts/verify_lane_a_pr_tuple.py"
       - "scripts/verify_hepta_callers.py"
+      - "scripts/verify_kernel_authority_map_freshness.py"
+      - "qualification/kernel-authority/**"
       - ".github/workflows/lane-a-foundation.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
@@ -55,6 +57,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/verify_kernel_authority_map_freshness.py --expected-sha "$EXPECTED_SHA"
+          python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           python3 codex-rs/hepta-types/conformance/verify_vectors.py
@@ -83,6 +87,9 @@ jobs:
           python3 scripts/verify_lane_a_foundation.py native-receipt \
             --expected-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-native-head.json
+          python3 scripts/verify_kernel_authority_map_freshness.py \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-kernel-authority-map-head.json
 
       - name: Retain exact source receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -126,6 +133,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/verify_kernel_authority_map_freshness.py --expected-sha "$EXPECTED_SHA"
+          python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           python3 codex-rs/hepta-types/conformance/verify_vectors.py
@@ -154,6 +163,9 @@ jobs:
           python3 scripts/verify_lane_a_foundation.py native-receipt \
             --expected-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-native-merge-candidate.json
+          python3 scripts/verify_kernel_authority_map_freshness.py \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-kernel-authority-map-merge-candidate.json
 
       - name: Retain synthetic merge receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

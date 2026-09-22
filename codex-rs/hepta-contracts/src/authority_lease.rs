@@ -225,8 +225,7 @@ impl AuthorityLease {
             || !binding_valid(&self.binding)
             || self.issued_at_unix_ms == 0
             || self.expires_at_unix_ms <= self.issued_at_unix_ms
-            || self.expires_at_unix_ms - self.issued_at_unix_ms
-                > MAX_AUTHORITY_LEASE_LIFETIME_MS
+            || self.expires_at_unix_ms - self.issued_at_unix_ms > MAX_AUTHORITY_LEASE_LIFETIME_MS
         {
             return Err(AuthorityLeaseError::InvalidLease);
         }
@@ -313,9 +312,7 @@ impl AuthorityLeaseRegistry {
             return Err(AuthorityLeaseError::InvalidTrust);
         }
         clock.now_unix_ms().map_err(map_trust_error)?;
-        let trusted_frontier = frontier_store
-            .load(&owner_id)
-            .map_err(map_trust_error)?;
+        let trusted_frontier = frontier_store.load(&owner_id).map_err(map_trust_error)?;
         if trusted_frontier.authority_epoch == 0
             || trusted_frontier.store_revision == 0
             || trusted_frontier.state_sha256 == [0; 32]
@@ -426,10 +423,14 @@ impl AuthorityLeaseRegistry {
             return Err(AuthorityLeaseError::InvalidLease);
         }
         let state = self.lock_state()?;
-        Ok(state.leases.get(lease_id).cloned().map(|lease| AuthorityLeaseReadV1 {
-            lease,
-            store_revision: state.store_revision,
-        }))
+        Ok(state
+            .leases
+            .get(lease_id)
+            .cloned()
+            .map(|lease| AuthorityLeaseReadV1 {
+                lease,
+                store_revision: state.store_revision,
+            }))
     }
 
     pub fn read_revocation(
@@ -507,10 +508,7 @@ impl AuthorityLeaseRegistry {
     /// tombstones are never garbage-collected inside an epoch. A stale token is
     /// still rejected because final verification requires the exact current
     /// lease record to remain present.
-    pub fn prune_expired_leases(
-        &self,
-        max_to_prune: usize,
-    ) -> Result<usize, AuthorityLeaseError> {
+    pub fn prune_expired_leases(&self, max_to_prune: usize) -> Result<usize, AuthorityLeaseError> {
         if max_to_prune == 0 || max_to_prune > MAX_AUTHORITY_PRUNE_BATCH {
             return Err(AuthorityLeaseError::InvalidPrune);
         }
@@ -639,10 +637,14 @@ impl AuthorityLeaseVerifier {
             return Err(AuthorityLeaseError::InvalidLease);
         }
         let state = self.lock_state()?;
-        Ok(state.leases.get(lease_id).cloned().map(|lease| AuthorityLeaseReadV1 {
-            lease,
-            store_revision: state.store_revision,
-        }))
+        Ok(state
+            .leases
+            .get(lease_id)
+            .cloned()
+            .map(|lease| AuthorityLeaseReadV1 {
+                lease,
+                store_revision: state.store_revision,
+            }))
     }
 
     pub fn read_revocation(
@@ -689,6 +691,56 @@ impl AuthorityLeaseVerifier {
     ) -> Result<T, AuthorityLeaseError> {
         let _witness = self.validate_token_live_witness(&token, expected)?;
         Ok(consumer())
+    }
+
+    /// Revalidate live authority and hold the owner/revocation fence only while
+    /// the caller crosses one already-selected local irreversible boundary.
+    ///
+    /// The callback must be bounded and local: publish durable intent and/or
+    /// enter the concrete owner mutation, then return. It must not wait for
+    /// remote execution, terminal acknowledgement or reconciliation.
+    pub fn with_dispatch_boundary<T>(
+        &self,
+        token: LeaseVerifiedUseToken,
+        expected: &AuthorityLeaseBinding,
+        dispatch_boundary: impl FnOnce() -> T,
+    ) -> Result<T, AuthorityLeaseError> {
+        let (result, _witness) =
+            self.with_dispatch_boundary_witness(token, expected, |_| dispatch_boundary())?;
+        Ok(result)
+    }
+
+    fn with_dispatch_boundary_witness<T>(
+        &self,
+        token: LeaseVerifiedUseToken,
+        expected: &AuthorityLeaseBinding,
+        dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
+    ) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
+            return Err(AuthorityLeaseError::BindingMismatch);
+        }
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
+        let state = self.lock_state()?;
+        validate_live(
+            &token.lease,
+            &state,
+            token.lease.revision,
+            expected,
+            now_unix_ms,
+        )?;
+        let witness = VerifiedUseTokenWitnessV1::authority_lease(
+            self.0.owner_id.clone(),
+            token.lease.lease_id.clone(),
+            state.authority_epoch,
+            token.lease.revision,
+            state.store_revision,
+            now_unix_ms,
+            VerifiedUseBoundaryV1::DispatchEntry,
+            authority_lease_binding_witness_sha256(expected)?,
+        );
+        let result = dispatch_boundary(&witness);
+        drop(state);
+        Ok((result, witness))
     }
 
     fn validate_token_live_witness(
@@ -744,6 +796,19 @@ pub fn deliver_authority_lease_with_witness<T>(
 ) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
     let witness = verifier.validate_token_live_witness(&token, expected)?;
     Ok((consumer(), witness))
+}
+
+/// Consume one live general lease at the short local irreversible dispatch
+/// boundary and emit a serializable audit witness for that exact ordering point.
+/// Revocation uses the same owner mutex, so a revoke that commits first denies
+/// entry and a revoke that starts later is ordered after the local boundary.
+pub fn dispatch_authority_lease_with_witness<T>(
+    verifier: &AuthorityLeaseVerifier,
+    token: LeaseVerifiedUseToken,
+    expected: &AuthorityLeaseBinding,
+    dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
+) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
+    verifier.with_dispatch_boundary_witness(token, expected, dispatch_boundary)
 }
 
 fn authority_lease_binding_witness_sha256(
@@ -859,8 +924,8 @@ impl Store {
             if bytes.len() > MAX_AUTHORITY_STORE_BYTES {
                 return Err(AuthorityLeaseError::InvalidTrust);
             }
-            let stored: Stored = serde_json::from_slice(&bytes)
-                .map_err(|_| AuthorityLeaseError::InvalidTrust)?;
+            let stored: Stored =
+                serde_json::from_slice(&bytes).map_err(|_| AuthorityLeaseError::InvalidTrust)?;
             if stored.schema_version != STORE_SCHEMA_VERSION
                 || stored.owner_id != owner_id
                 || !state_valid(&stored.state)
@@ -913,10 +978,7 @@ impl Store {
     }
 }
 
-fn frontier_conflicts(
-    persisted: AuthorityLeaseFrontier,
-    trusted: AuthorityLeaseFrontier,
-) -> bool {
+fn frontier_conflicts(persisted: AuthorityLeaseFrontier, trusted: AuthorityLeaseFrontier) -> bool {
     persisted.authority_epoch < trusted.authority_epoch
         || (persisted.authority_epoch == trusted.authority_epoch
             && persisted.store_revision < trusted.store_revision)
@@ -1181,8 +1243,7 @@ mod tests {
 
     fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir) {
         let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
@@ -1220,16 +1281,9 @@ mod tests {
         let (registry, directory) = fixture();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
-        let token = verifier
-            .verify_use("lease-one", 1, &binding())
-            .unwrap();
-        assert_eq!(
-            verifier.with_verified_use(token, &binding(), || 7),
-            Ok(7)
-        );
-        let receipt = registry
-            .revoke("lease-one", 1, [9; 32])
-            .unwrap();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
+        assert_eq!(verifier.with_verified_use(token, &binding(), || 7), Ok(7));
+        let receipt = registry.revoke("lease-one", 1, [9; 32]).unwrap();
         assert_eq!(receipt.lease_revision, 2);
         assert_eq!(
             verifier.verify_use("lease-one", 2, &binding()).unwrap_err(),
@@ -1251,9 +1305,7 @@ mod tests {
         let (registry, _directory) = fixture();
         let written = registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
-        let token = verifier
-            .verify_use("lease-one", 1, &binding())
-            .unwrap();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
         let (value, witness) =
             deliver_authority_lease_with_witness(&verifier, token, &binding(), || 13).unwrap();
         assert_eq!(value, 13);
@@ -1277,9 +1329,7 @@ mod tests {
         let (registry, _directory) = fixture();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
-        let token = verifier
-            .verify_use("lease-one", 1, &binding())
-            .unwrap();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
         let (tx, rx) = mpsc::channel();
         let expected = binding();
         std::thread::spawn(move || {
@@ -1293,6 +1343,40 @@ mod tests {
             rx.recv_timeout(Duration::from_secs(2))
                 .expect("lease consumer remained blocked on the owner mutex"),
             Ok(7)
+        );
+    }
+
+    #[test]
+    fn dispatch_boundary_serializes_revocation_until_local_entry_returns() {
+        let (registry, _directory) = fixture();
+        registry.put_lease(lease(), 0).unwrap();
+        let verifier = registry.verifier();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
+        let (entered_tx, entered_rx) = mpsc::channel();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        std::thread::spawn(move || {
+            entered_rx.recv().unwrap();
+            let result = registry.revoke("lease-one", 1, [8; 32]);
+            let _ = revoked_tx.send(result);
+        });
+
+        let expected = binding();
+        let result = verifier
+            .with_dispatch_boundary(token, &expected, || {
+                entered_tx.send(()).unwrap();
+                assert!(
+                    revoked_rx.recv_timeout(Duration::from_millis(100)).is_err(),
+                    "revocation crossed the local dispatch linearization fence"
+                );
+                11
+            })
+            .unwrap();
+        assert_eq!(result, 11);
+        assert!(
+            revoked_rx
+                .recv_timeout(Duration::from_secs(2))
+                .expect("revocation did not complete after local dispatch boundary")
+                .is_ok()
         );
     }
 
@@ -1322,9 +1406,7 @@ mod tests {
         let (registry, _directory) = fixture();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
-        let token = verifier
-            .verify_use("lease-one", 1, &binding())
-            .unwrap();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
         let mut replacement = lease();
         replacement.revision = 2;
         replacement.expires_at_unix_ms = 40_000;
@@ -1346,9 +1428,7 @@ mod tests {
         assert_eq!(first, retry);
         assert_eq!(first.revoked_at_unix_ms, 2_000);
         assert_eq!(
-            registry
-                .revoke("lease-one", 1, [10; 32])
-                .unwrap_err(),
+            registry.revoke("lease-one", 1, [10; 32]).unwrap_err(),
             AuthorityLeaseError::Revoked
         );
     }
@@ -1360,11 +1440,13 @@ mod tests {
         expired.expires_at_unix_ms = 1_500;
         registry.put_lease(expired, 0).unwrap();
         assert_eq!(registry.prune_expired_leases(1), Ok(1));
-        assert!(registry
-            .verifier()
-            .read_lease("lease-one")
-            .unwrap()
-            .is_none());
+        assert!(
+            registry
+                .verifier()
+                .read_lease("lease-one")
+                .unwrap()
+                .is_none()
+        );
         let capacity = registry.capacity().unwrap();
         assert_eq!(capacity.leases, 0);
         assert_eq!(capacity.retired_lease_ids, 1);
@@ -1394,10 +1476,12 @@ mod tests {
                 .unwrap_err(),
             AuthorityLeaseError::RevisionMismatch
         );
-        assert!(registry
-            .verifier()
-            .verify_use("lease-one", 2, &binding())
-            .is_ok());
+        assert!(
+            registry
+                .verifier()
+                .verify_use("lease-one", 2, &binding())
+                .is_ok()
+        );
     }
 
     #[test]
@@ -1417,10 +1501,12 @@ mod tests {
         fresh.issued_at_unix_ms = 1_000;
         fresh.expires_at_unix_ms = 30_000;
         registry.put_lease(fresh, 0).unwrap();
-        assert!(registry
-            .verifier()
-            .verify_use("lease-one", 1, &binding())
-            .is_ok());
+        assert!(
+            registry
+                .verifier()
+                .verify_use("lease-one", 1, &binding())
+                .is_ok()
+        );
     }
 
     #[test]
@@ -1498,8 +1584,7 @@ mod tests {
     #[test]
     fn production_frontier_cas_detects_restored_local_snapshot() {
         let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let frontier_store = Arc::new(MemoryFrontierStore(Mutex::new(
             AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
         )));
@@ -1533,8 +1618,7 @@ mod tests {
     #[test]
     fn external_frontier_ahead_after_local_commit_failure_fences_reopen() {
         let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let frontier_store = Arc::new(MemoryFrontierStore(Mutex::new(
             AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
         )));
@@ -1610,9 +1694,7 @@ mod tests {
         let (registry, _directory) = fixture();
         registry.put_lease(lease(), 0).unwrap();
         let before = registry.frontier().unwrap();
-        let after = registry
-            .advance_epoch(before.store_revision, 8)
-            .unwrap();
+        let after = registry.advance_epoch(before.store_revision, 8).unwrap();
         assert_eq!(after.authority_epoch, 8);
         assert!(registry.read_lease("lease-one").unwrap().is_none());
         assert_eq!(registry.capacity().unwrap().leases, 0);

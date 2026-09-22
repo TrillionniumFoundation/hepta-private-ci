@@ -38,7 +38,11 @@ pub struct AuthorityLeaseWitnessRefV1 {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "authority_family", content = "authority", rename_all = "snake_case")]
+#[serde(
+    tag = "authority_family",
+    content = "authority",
+    rename_all = "snake_case"
+)]
 pub enum VerifiedUseAuthorityRefV1 {
     FinalUse(FinalUseWitnessRefV1),
     AuthorityLease(AuthorityLeaseWitnessRefV1),
@@ -138,15 +142,13 @@ impl VerifiedUseTokenWitnessV1 {
             authority_epoch,
             verified_at_unix_ms,
             boundary,
-            authority_ref: VerifiedUseAuthorityRefV1::AuthorityLease(
-                AuthorityLeaseWitnessRefV1 {
-                    owner_id,
-                    lease_id,
-                    lease_revision,
-                    store_revision,
-                    binding_sha256,
-                },
-            ),
+            authority_ref: VerifiedUseAuthorityRefV1::AuthorityLease(AuthorityLeaseWitnessRefV1 {
+                owner_id,
+                lease_id,
+                lease_revision,
+                store_revision,
+                binding_sha256,
+            }),
         }
     }
 }

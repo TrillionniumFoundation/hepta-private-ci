@@ -135,13 +135,28 @@
       "designOperation": "serialize_consumer_entry_or_dispatch_linearization_evidence",
       "mappingClass": "owner_native_evidence",
       "delegatedCallees": []
+    },
+    {
+      "operation": "verified_use_token_witness_v1",
+      "nativeSymbol": "VerifiedUseTokenWitnessV1",
+      "sourcePath": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
+      "state": "source_implemented_evidence_projection_not_authorization",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-contracts/src/verified_use_witness.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decision_and_audit_projection",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
     "Select and qualify a named product-process caller for the registered Bao final-use host before activation.",
     "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes.",
     "Compose remaining target-only ModulePorts only when their real owner exposes one canonical authority reference/revision; do not create ad-hoc double-authority wrappers.",
-    "Obtain exact-head and deterministic synthetic-merge execution receipts for the current-main closure candidate."
+    "Obtain exact-head and deterministic synthetic-merge execution receipts for the current-main closure candidate.",
+    "Compose each remaining target kernel.authority ModulePort only at its real owner boundary; runtime.fleet is now source-composed, while the remaining target-only ports are enumerated in TRACEABILITY.md."
   ],
   "externalEvidenceGates": [
     "deployed fleet revocation wire fanout and measured convergence/freshness latency qualification; repository admission/convergence semantics are implemented in runtime.fleet",
@@ -247,6 +262,10 @@
     {
       "path": "apps/hepta-browser/src/runtime-host.js",
       "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
+    },
+    {
+      "path": "codex-rs/hepta-contracts",
+      "object": "c2bed93ef7d558b9ca21b8752b9162bc19f9c939"
     }
   ]
 }

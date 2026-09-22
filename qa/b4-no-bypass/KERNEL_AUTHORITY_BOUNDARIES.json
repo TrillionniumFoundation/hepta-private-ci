@@ -15,7 +15,8 @@
     {
       "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "privilegedFunctions": {
-        "deliver_authority_lease_with_witness": "authority_lease_delivery_witness"
+        "deliver_authority_lease_with_witness": "authority_lease_delivery_witness",
+        "dispatch_authority_lease_with_witness": "authority_lease_dispatch_witness"
       },
       "nonPrivilegedFunctions": []
     }
@@ -67,7 +68,8 @@
       "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "privilegedMethods": {
         "verify_use": "authority_lease_verify_use",
-        "with_verified_use": "authority_lease_delivery"
+        "with_verified_use": "authority_lease_delivery",
+        "with_dispatch_boundary": "authority_lease_dispatch_raw"
       },
       "nonPrivilegedMethods": [
         "owner_id",
@@ -150,7 +152,8 @@
         "FinalUseAuthority\\s*::\\s*open_state_dir\\s*\\(",
         "FinalUseAuthority\\s*::\\s*open_state_dir_with_clock\\s*\\(",
         "FinalUseAuthority\\s*::\\s*open_state_dir_with_trust\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*open_state_dir_with_issuer_keys\\s*\\\\("
+        "FinalUseAuthority\\s*::\\s*open_state_dir_with_issuer_keys\\s*\\\\(",
+        "FinalUseAuthority\\\\s*::\\\\s*open_state_dir_with_issuer_keys\\\\s*\\\\("
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"
@@ -301,7 +304,8 @@
       "typeMarker": "FinalUseRevocationConvergenceVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "FinalUseRevocationConvergenceVerifier\\s*::\\s*new\\s*\\\\("
+        "FinalUseRevocationConvergenceVerifier\\s*::\\s*new\\s*\\\\(",
+        "FinalUseRevocationConvergenceVerifier\\\\s*::\\\\s*new\\\\s*\\\\("
       ],
       "allowedCallers": []
     },
@@ -311,7 +315,9 @@
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
         "convergence_verifier\\s*\\\\.\\s*verify\\s*\\\\(",
-        "FinalUseRevocationConvergenceVerifier\\s*::\\s*verify\\s*\\\\("
+        "FinalUseRevocationConvergenceVerifier\\s*::\\s*verify\\s*\\\\(",
+        "convergence_verifier\\\\s*\\\\.\\\\s*verify\\\\s*\\\\(",
+        "FinalUseRevocationConvergenceVerifier\\\\s*::\\\\s*verify\\\\s*\\\\("
       ],
       "allowedCallers": [
         "codex-rs/hepta-fleet/src/revocation_control.rs"
@@ -449,6 +455,27 @@
         "\\bdeliver_authority_lease_with_witness\\s*\\("
       ],
       "allowedCallers": []
+    },
+    {
+      "id": "authority_lease_dispatch_raw",
+      "typeMarker": "AuthorityLeaseVerifier",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "callPatterns": [
+        "\\.\\s*with_dispatch_boundary\\s*\\(",
+        "AuthorityLeaseVerifier\\s*::\\s*with_dispatch_boundary\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "authority_lease_dispatch_witness",
+      "typeMarker": "dispatch_authority_lease_with_witness",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "callPatterns": [
+        "\\bdispatch_authority_lease_with_witness\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ]
     }
   ]
 }

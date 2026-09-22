@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Generate and verify one implementation map for every registered module.
 
-Maps are source-navigation evidence.  They deliberately distinguish a native
+Maps are source-navigation evidence. They deliberately distinguish a native
 entrypoint from a composed production caller; an entrypoint never grants
 runtime, effect, acceptance, promotion, or release authority.
+
+Maps retain module-local navigation anchors and exact source observations.
+Composed maps may additionally pin the tree/blob objects of their owners and
+product callers; migration refreshes these objects without granting execution.
 """
 
 from __future__ import annotations
@@ -210,6 +214,39 @@ def verify_source_identity(
     return checked_paths
 
 
+def tracked_source_paths(row: dict) -> list[str]:
+    """Return source paths whose Git objects prove this map is still current.
+
+    The map itself is deliberately excluded, so the evidence is not recursive.
+    Directory paths are valid and bind the complete Git tree below that owner
+    root; file paths bind the exact blob consumed by an operation/caller.
+    """
+    paths: set[str] = set()
+    declared = row.get("declaredRoots", row.get("sourceRoot", []))
+    if isinstance(declared, str):
+        declared = [declared]
+    paths.update(path for path in declared if isinstance(path, str) and path)
+    for operation in row.get("operations", []):
+        path = operation.get("sourcePath") if isinstance(operation, dict) else None
+        if isinstance(path, str) and path:
+            paths.add(path)
+    for caller in row.get("productCallers", []):
+        path = caller.get("sourcePath") if isinstance(caller, dict) else None
+        if isinstance(path, str) and path:
+            paths.add(path)
+    for path in paths:
+        checked_source_path(ROOT, path)
+    return sorted(paths)
+
+
+def current_source_objects(row: dict) -> list[dict[str, str]]:
+    """Bind each relevant path to the tree/blob present at the tested HEAD."""
+    return [
+        {"path": path, "object": git("rev-parse", f"HEAD:{path}")}
+        for path in tracked_source_paths(row)
+    ]
+
+
 def require_clean_candidate(
     candidate: dict[str, str], paths: list[str] | None = None
 ) -> None:
@@ -283,7 +320,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     operations = parse_entrypoints(mid)
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
-        # entrypoint.  This is a handoff blocker, not a production claim.
+        # entrypoint. This is a handoff blocker, not a production claim.
         operations = [
             {
                 "operation": "native_mapping_pending",
@@ -442,6 +479,11 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
+    if "sourceObjects" in row:
+        # Only maps that opted into exact source-object receipts are refreshed.
+        # This keeps migration compatible while making composed maps fail closed
+        # once they publish this stronger evidence boundary.
+        migrated["sourceObjects"] = current_source_objects(migrated)
     return migrated
 
 
@@ -614,6 +656,43 @@ def verify(*, require_current_source: bool = True):
                     implemented_mapping_complete and owned_source_complete
                 ):
                     raise ValueError("native source mapping claim drift")
+            status = row.get("status")
+            if status is not None:
+                if not isinstance(status, dict) or any(
+                    not isinstance(status.get(field), bool)
+                    for field in ("implemented", "composed", "qualified")
+                ):
+                    raise ValueError("invalid implemented/composed/qualified status")
+                if status["composed"] != (row.get("productCallerState") != "not_composed"):
+                    raise ValueError("composition status disagreement")
+            source_objects = row.get("sourceObjects")
+            if source_objects is not None:
+                if not isinstance(source_objects, list) or not source_objects:
+                    raise ValueError("source objects")
+                if source_objects != current_source_objects(row):
+                    raise ValueError("stale source objects")
+            if row.get("productCallerState", "not_composed") != "not_composed":
+                callers = row.get("productCallers")
+                if not isinstance(callers, list) or not callers:
+                    raise ValueError("composed map requires product callers")
+                for caller in callers:
+                    if not isinstance(caller, dict):
+                        raise ValueError("invalid product caller")
+                    source = caller.get("sourcePath")
+                    symbol = caller.get("nativeSymbol")
+                    if not isinstance(source, str):
+                        raise ValueError("missing product caller source")
+                    local = checked_source_path(ROOT, source)
+                    if not local.is_file():
+                        raise ValueError(f"missing product caller source {source}")
+                    if isinstance(symbol, str) and symbol:
+                        if symbol.rsplit("::", 1)[-1] not in local.read_text(encoding="utf-8"):
+                            raise ValueError(f"missing product caller symbol {symbol}")
+                if source_objects is None:
+                    if row.get("exactSourceEvidenceMode") != "lane_a_runtime_head_tree_and_registered_callers":
+                        raise ValueError("composed map requires exact source objects")
+                    if row.get("laneId") != "LANE-A-FOUNDATION":
+                        raise ValueError("Lane A runtime source evidence mode used outside Lane A")
         except (
             ValueError, TypeError, KeyError, OSError, subprocess.CalledProcessError
         ) as exc:

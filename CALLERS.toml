@@ -41,6 +41,8 @@ required_boundary_ids = [
   "authority_lease_verify_use",
   "authority_lease_delivery",
   "authority_lease_delivery_witness",
+  "authority_lease_dispatch_raw",
+  "authority_lease_dispatch_witness",
 ]
 
 [[boundary]]
@@ -313,9 +315,9 @@ caller_markers = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort"
 id = "authority_lease_delivery"
 symbol = "AuthorityLeaseVerifier::with_verified_use"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
-definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "drop(state)"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["AuthorityLeaseVerifier", ".with_verified_use(", "FleetAuthorityPort"]
+definition_markers = ["pub fn with_verified_use", "validate_token_live_witness", "consumer()"]
+product_callers = []
+caller_markers = []
 
 [[boundary]]
 id = "authority_lease_delivery_witness"
@@ -324,6 +326,22 @@ definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn deliver_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "validate_token_live_witness"]
 product_callers = []
 caller_markers = []
+
+[[boundary]]
+id = "authority_lease_dispatch_raw"
+symbol = "AuthorityLeaseVerifier::with_dispatch_boundary"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn with_dispatch_boundary", "with_dispatch_boundary_witness", "dispatch_boundary"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_dispatch_witness"
+symbol = "dispatch_authority_lease_with_witness"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "with_dispatch_boundary_witness"]
+product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
+caller_markers = ["dispatch_authority_lease_with_witness", "issue_with_witness", "FleetAuthorityPort"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
@@ -352,7 +370,7 @@ forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for Fina
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/authority_lease.rs"
-required = ["pub struct AuthorityLeaseRegistry", "pub struct AuthorityLeaseVerifier", "pub fn open_state_dir_with_trust(", "pub fn verifier(", "pub fn verify_use(", "pub fn deliver_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "pub fn revoke(", "pub fn prune_expired_leases(", "AntiRollbackViolation", "pub fn advance_epoch("]
+required = ["pub struct AuthorityLeaseRegistry", "pub struct AuthorityLeaseVerifier", "pub fn open_state_dir_with_trust(", "pub fn verifier(", "pub fn verify_use(", "pub fn with_dispatch_boundary(", "pub fn deliver_authority_lease_with_witness", "pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "pub fn revoke(", "pub fn prune_expired_leases(", "retired_revisions", "AntiRollbackViolation", "pub fn advance_epoch("]
 forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
 
 [[protected_file]]

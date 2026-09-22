@@ -18,11 +18,6 @@ A revocation or replacement committed before that point denies entry. A change
 committed after that point is ordered after entry and does not retroactively
 undo an already-entered synchronous effect.
 
-Pruning is also ordered through the same owner state. Expired unrevoked lease
-payloads may be removed, but their last revision is retained as a compact
-retired-id lineage. Reissue of the same lease id must advance from that revision;
-pruning never creates a new revision-1 identity.
-
 ## FinalUse delivery
 
 `claim_final_use` validates issuer signature and exact binding, persists the
@@ -46,9 +41,12 @@ reconciliation loops or arbitrary plugin/user code.
 A valid signature on a revocation head is insufficient by itself.
 `FinalUseRevocationUpdate` V2 signs `issued_at_unix_ms` and
 `expires_at_unix_ms`. A host rejects a not-yet-valid or stale head. The
-registered Bao host begins with no freshness authority and denies final secret
-use until it has ingested a current signed head; it denies new final use again
-when that freshness window expires.
+registered Bao host begins with no freshness authority and denies provider
+dispatch until it has ingested a current signed head. It samples freshness
+again at the registered consumer boundary after provider I/O. That second
+successful check is the revocation-feed freshness linearization point for
+secret release: a feed that expires while the request is in flight cannot
+release the secret.
 
 This is the repository partition policy for that host: stale revocation
 knowledge stops new affected effects. Transport fanout and fleet convergence

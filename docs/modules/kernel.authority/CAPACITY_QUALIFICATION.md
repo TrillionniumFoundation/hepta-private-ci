@@ -12,9 +12,11 @@ General leases:
 
 - live lease records: 16,384 maximum;
 - revocation tombstones: 16,384 maximum per authority epoch;
-- expired unrevoked pruning: at most 1,024 records per call;
+- retired lease-ID revision lineage: 16,384 maximum per authority epoch;
+- expired unrevoked pruning: at most 1,024 records per call and never beyond remaining retired-lineage capacity;
+- pruning removes the live record only after durably recording that lease ID's last revision; same-epoch reuse must continue at exactly the next revision and can never restart at revision 1;
 - complete persisted-state read ceiling: 64 MiB;
-- revocation tombstones are retained until epoch rollover.
+- revocation tombstones and retired revision lineage are retained until an explicit authority-epoch rollover.
 
 FinalUse:
 
@@ -73,8 +75,12 @@ equivalent FinalUse capacity check) reaches the deployment reserve. Epoch rollov
 is an authority operation and requires its own change/audit procedure; observability
 or GC code cannot advance epochs.
 
-Expired unrevoked general leases may be pruned online. Revocation tombstones and
+Expired unrevoked general leases may be pruned online only while the retired
+lease-ID lineage has capacity. Pruning is not identity deletion: the last
+revision remains authoritative for same-epoch reuse and is included in the
+anti-rollback frontier. Revocation tombstones, retired revision lineage and
 FinalUse replay history must not be discarded merely to recover capacity.
+Only an explicit stronger authority-epoch transition may clear those histories.
 
 ## Evidence admission
 

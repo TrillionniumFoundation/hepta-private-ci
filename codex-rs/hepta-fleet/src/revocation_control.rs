@@ -12,7 +12,6 @@ use std::sync::Arc;
 
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::FinalUseControlError;
-use codex_hepta_contracts::FinalUseRevocationAck;
 use codex_hepta_contracts::FinalUseRevocationConvergenceReport;
 use codex_hepta_contracts::FinalUseRevocationConvergenceVerifier;
 use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
@@ -267,6 +266,7 @@ impl FleetRevocationCoordinator {
             });
         }
         let report = self.current_report()?;
+        let converged = report.converged();
         Ok(FleetRevocationStatus {
             authority_epoch: current.update.update.head.authority_epoch,
             revision: current.update.update.head.revision,
@@ -275,7 +275,7 @@ impl FleetRevocationCoordinator {
             convergence_deadline_unix_ms: current.convergence_deadline_unix_ms,
             acknowledged_nodes: report.acknowledged_nodes,
             missing_nodes: report.missing_nodes,
-            converged: report.converged(),
+            converged,
             feed_fresh: true,
         })
     }

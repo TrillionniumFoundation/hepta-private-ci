@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "lane": "LANE-A-FOUNDATION",
   "closureScope": "current executable capabilities only",
-  "entryCount": 25,
+  "entryCount": 32,
   "entries": [
     {
       "capabilityId": "platform.types.bounded-identity.v1",
@@ -504,121 +504,6 @@
       "receiptStatus": "native_workflow_required"
     },
     {
-      "capabilityId": "kernel.authority.signed-final-use.v1",
-      "module": "kernel.authority",
-      "summary": "independently signed final-use grant verification",
-      "publicSymbols": [
-        "FinalUseAuthority::claim",
-        "FinalUseGrant::signing_bytes"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use.rs",
-          "mustContain": [
-            "verify_strict",
-            "signing_bytes"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-          "mustContain": [
-            "signed_claim_is_single_use_and_delivers_under_same_owner"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-          "mustContain": [
-            "changing_signed_data_or_substituting_a_key_does_not_authorize"
-          ]
-        }
-      ],
-      "durability": "local_fsync_store",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "kernel.authority.nonce-revocation-store.v1",
-      "module": "kernel.authority",
-      "summary": "single-use nonce and monotonic revocation persistence",
-      "publicSymbols": [
-        "FinalUseAuthority::update_revocations",
-        "FinalUseAuthority::open_state_dir"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-          "mustContain": [
-            "file.sync_all()",
-            "renameat",
-            "used_nonces"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-          "mustContain": [
-            "replay_state_survives_owner_restart_and_prevents_concurrent_owners"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-          "mustContain": [
-            "revocation_survives_restart_and_missing_state_is_not_reset"
-          ]
-        }
-      ],
-      "durability": "local_fsync_store",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "kernel.authority.nonserial-token.v1",
-      "module": "kernel.authority",
-      "summary": "non-serializable final-use token consumed at adapter entry",
-      "publicSymbols": [
-        "VerifiedUseToken",
-        "FinalUseAuthority::with_verified_use"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use.rs",
-          "mustContain": [
-            "pub struct VerifiedUseToken",
-            "pub fn with_verified_use"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-          "mustContain": [
-            "signed_claim_is_single_use_and_delivers_under_same_owner"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-          "mustContain": [
-            "revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back"
-          ]
-        }
-      ],
-      "durability": "local_fsync_store",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
       "capabilityId": "kernel.operations.bounded-state-model.v1",
       "module": "kernel.operations",
       "summary": "bounded deterministic operation-state reference model",
@@ -1107,47 +992,7 @@
         }
       ],
       "durability": "external_authority_plus_local_final_use_state",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "secrets.heptabao.final-use-binding.v1",
-      "module": "secrets.heptabao",
-      "summary": "final-use grant binding and single-use dispatch",
-      "publicSymbols": [
-        "BaoClient::binding",
-        "FinalUseAuthority::claim"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-          "mustContain": [
-            "pub fn binding",
-            "let verified = authority",
-            ".claim(grant, &binding)"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-          "mustContain": [
-            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-          "mustContain": [
-            "revocation_during_network_wait_prevents_consumer_delivery",
-            "timeout_does_not_retry_or_release_a_secret"
-          ]
-        }
-      ],
-      "durability": "external_authority_plus_local_final_use_state",
-      "activation": "host_composition_required",
+      "activation": "registered_host_composed_not_product_activated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -1185,7 +1030,508 @@
         }
       ],
       "durability": "external_authority_plus_local_final_use_state",
-      "activation": "host_composition_required",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.authority.signed-final-use.v2",
+      "module": "kernel.authority",
+      "summary": "independently signed final-use grant verification through canonical claim and delivery entrypoints",
+      "publicSymbols": [
+        "claim_final_use",
+        "deliver_final_use",
+        "FinalUseGrant::signing_bytes"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "mustContain": [
+            "pub fn claim_final_use(",
+            "pub fn deliver_final_use",
+            "verify_strict",
+            "signing_bytes"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+          "mustContain": [
+            "signed_claim_is_single_use_and_delivers_under_same_owner"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+          "mustContain": [
+            "changing_signed_data_or_substituting_a_key_does_not_authorize"
+          ]
+        }
+      ],
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.authority.nonce-revocation-capacity.v2",
+      "module": "kernel.authority",
+      "summary": "single-use nonce and monotonic revocation persistence with capacity/frontier observability",
+      "publicSymbols": [
+        "FinalUseAuthority::update_revocations",
+        "FinalUseAuthority::capacity",
+        "FinalUseCapacity"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "mustContain": [
+            "pub struct FinalUseCapacity",
+            "pub fn capacity(&self)",
+            "pub fn update_revocations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+          "mustContain": [
+            "file.sync_all()",
+            "renameat",
+            "used_nonces"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+          "mustContain": [
+            "capacity_snapshot_tracks_claims_revocations_and_epoch_rollover",
+            "replay_state_survives_owner_restart_and_prevents_concurrent_owners"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+          "mustContain": [
+            "revocation_survives_restart_and_missing_state_is_not_reset"
+          ]
+        }
+      ],
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.authority.authority-lease-owner.v1",
+      "module": "kernel.authority",
+      "summary": "durable authority leases with owner-CAS mutation, CAS revocation, trusted time and anti-rollback frontier input",
+      "publicSymbols": [
+        "AuthorityLeaseRegistry",
+        "AuthorityLeaseVerifier",
+        "AuthorityLeaseRegistry::put_lease",
+        "AuthorityLeaseRegistry::revoke",
+        "AuthorityLeaseVerifier::verify_use",
+        "AuthorityLeaseRegistry::advance_epoch"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "pub struct AuthorityLeaseRegistry",
+            "pub struct AuthorityLeaseVerifier",
+            "pub fn put_lease(",
+            "pub fn revoke(",
+            "pub fn verify_use(",
+            "pub fn advance_epoch(",
+            "AntiRollbackViolation"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "lease_is_durable_verified_and_cas_revoked",
+            "epoch_rollover_is_durable_and_clears_bounded_history"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "stale_cas_and_binding_drift_fail_closed",
+            "external_frontier_detects_old_snapshot_and_missing_store_reset"
+          ]
+        }
+      ],
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.authority.nonserial-verified-use.v2",
+      "module": "kernel.authority",
+      "summary": "non-serializable final-use and lease verified-use tokens",
+      "publicSymbols": [
+        "VerifiedUseToken",
+        "LeaseVerifiedUseToken",
+        "deliver_final_use",
+        "AuthorityLeaseVerifier::with_verified_use"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "mustContain": [
+            "pub struct VerifiedUseToken",
+            "pub fn deliver_final_use"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "pub struct AuthorityLeaseVerifier",
+            "pub struct LeaseVerifiedUseToken",
+            "pub fn with_verified_use"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+          "mustContain": [
+            "signed_claim_is_single_use_and_delivers_under_same_owner"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "verified_use_releases_owner_lock_before_consumer_code"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+          "mustContain": [
+            "revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back"
+          ]
+        }
+      ],
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.authority.independent-control.v1",
+      "module": "kernel.authority",
+      "summary": "independent operator approval and authenticated revocation-feed verification",
+      "publicSymbols": [
+        "FinalUseApprovalVerifier",
+        "FinalUseRevocationFeedVerifier"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+          "mustContain": [
+            "pub struct FinalUseApprovalVerifier",
+            "pub struct FinalUseRevocationFeedVerifier",
+            "verify_strict",
+            "update_revocations"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+          "mustContain": [
+            "independent_approval_binds_exact_grant_semantics",
+            "signed_revocation_feed_is_authenticated_and_monotonic"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+          "mustContain": [
+            "forged_revocation_feed_never_updates_authority"
+          ]
+        }
+      ],
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.authority.registered-bao-host.v1",
+      "module": "kernel.authority",
+      "summary": "closed registered Bao consumer host source composition",
+      "publicSymbols": [
+        "BaoFinalUseHost",
+        "RegisteredBaoConsumer"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+          "mustContain": [
+            "pub struct BaoFinalUseHost",
+            "pub struct RegisteredBaoConsumer",
+            "UnregisteredConsumer",
+            "approval_verifier",
+            "revocation_verifier"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+          "mustContain": [
+            "consumer_registry_is_closed_and_unique"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+          "mustContain": [
+            "unregistered_signed_consumer_is_denied_before_network_dispatch",
+            "forged_independent_approval_is_denied_before_network_dispatch"
+          ]
+        }
+      ],
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.authority.fleet-revocation-control.v1",
+      "module": "kernel.authority",
+      "summary": "bounded fleet revocation catch-up/quarantine/stale-feed admission over authenticated update and acknowledgement evidence",
+      "publicSymbols": [
+        "FinalUseRevocationConvergenceVerifier",
+        "FleetRevocationCoordinator",
+        "FleetNodeRevocationState"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+          "mustContain": [
+            "pub struct FinalUseRevocationConvergenceVerifier",
+            "pub fn verify(",
+            "missing_nodes"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
+          "mustContain": [
+            "pub struct FleetRevocationCoordinator",
+            "CatchingUp",
+            "Quarantined",
+            "FeedStale",
+            "is_superset"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
+          "mustContain": [
+            "exact_ack_makes_node_ready_and_duplicate_is_idempotent",
+            "missing_node_moves_from_catchup_to_quarantine_and_stale"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
+          "mustContain": [
+            "new_head_forces_catchup_and_same_revision_drift_conflicts",
+            "FleetRevocationError::ConflictingUpdate"
+          ]
+        }
+      ],
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.authority.runtime-fleet-generic-lease-consumer.v1",
+      "module": "kernel.authority",
+      "summary": "runtime.fleet concrete generic-lease consumer revalidates exact AllocationGrant binding before LeaseLedger issue",
+      "publicSymbols": [
+        "FleetAuthorityPort",
+        "FleetAuthorityPort::issue",
+        "AuthorityLeaseVerifier::verify_use",
+        "AuthorityLeaseVerifier::with_verified_use"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "pub struct FleetAuthorityPort",
+            "pub fn issue(",
+            ".verify_use(",
+            ".with_verified_use(",
+            "allocation_binding"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "pub struct AuthorityLeaseVerifier",
+            "pub fn verify_use(",
+            "pub fn with_verified_use"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "allocation_issue_consumes_exact_live_kernel_authority_lease"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "allocation_binding_changes_when_owner_mutation_semantics_change",
+            "AuthorityLeaseError::Revoked"
+          ]
+        }
+      ],
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "secrets.heptabao.canonical-final-use.v2",
+      "module": "secrets.heptabao",
+      "summary": "canonical final-use claim and delivery boundaries",
+      "publicSymbols": [
+        "BaoClient::binding",
+        "claim_final_use",
+        "deliver_final_use"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "pub fn binding",
+            "claim_final_use(authority, grant, &binding)",
+            "deliver_final_use(authority, verified, &binding"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "revocation_during_network_wait_prevents_consumer_delivery",
+            "timeout_does_not_retry_or_release_a_secret"
+          ]
+        }
+      ],
+      "durability": "external_authority_plus_local_final_use_state",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "secrets.heptabao.registered-consumer.v1",
+      "module": "secrets.heptabao",
+      "summary": "registered signed consumer-id to trusted callback mapping",
+      "publicSymbols": [
+        "BaoFinalUseHost",
+        "RegisteredBaoConsumer"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+          "mustContain": [
+            "pub struct BaoFinalUseHost",
+            "pub struct RegisteredBaoConsumer",
+            "consumers: BTreeMap"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+          "mustContain": [
+            "consumer_registry_is_closed_and_unique"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+          "mustContain": [
+            "unregistered_signed_consumer_is_denied_before_network_dispatch"
+          ]
+        }
+      ],
+      "durability": "external_authority_plus_local_final_use_state",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "secrets.heptabao.independent-control.v1",
+      "module": "secrets.heptabao",
+      "summary": "independent approval before dispatch and authenticated revocation ingestion",
+      "publicSymbols": [
+        "BaoFinalUseHost::consume_kv_v2",
+        "BaoFinalUseHost::apply_revocation_update"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+          "mustContain": [
+            "approval_verifier",
+            ".verify(grant, approval)",
+            "apply_revocation_update",
+            "revocation_verifier"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+          "mustContain": [
+            "independent_approval_binds_exact_grant_semantics",
+            "signed_revocation_feed_is_authenticated_and_monotonic"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+          "mustContain": [
+            "forged_independent_approval_is_denied_before_network_dispatch"
+          ]
+        }
+      ],
+      "durability": "external_authority_plus_local_final_use_state",
+      "activation": "registered_host_composed_not_product_activated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     }

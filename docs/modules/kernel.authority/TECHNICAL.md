@@ -130,6 +130,8 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
+The current general authority-lease store starts at canonical store schema V2 because retired lease-ID revision lineage participates in the authoritative frontier. No schema-V1 general lease store was activated or released; V1 images are rejected rather than silently reinterpreted. Any future durable predecessor requires an explicit migration and frontier transition. FinalUse retains its separately documented V1 single-key compatibility format and V2 key-ring format.
+
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
@@ -195,7 +197,7 @@ Applicable work packages:
 
 The bootstrap package is `P0.7B-B0-VERIFIED-USE`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. External production trust evidence is admitted through `qualification/kernel-authority/verify.py`; that admission is exact-candidate/content-addressed but does not itself activate or release a deployment. Later planned packages may remain without invalidating documentation closure.
 
 ## 14. Activation, compatibility and retirement
 
