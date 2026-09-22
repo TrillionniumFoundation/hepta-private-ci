@@ -48,7 +48,10 @@
       "designOperation": "estimate_cluster_intervals",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "estimate_ope"
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+          "symbol": "estimate_ope"
+        }
       ]
     },
     {
@@ -78,8 +81,14 @@
       "designOperation": "evaluate_temporal_holdout",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "fit_temporal_fold",
-        "estimate_cluster_intervals"
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs",
+          "symbol": "fit_temporal_fold"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+          "symbol": "estimate_cluster_intervals"
+        }
       ]
     },
     {
@@ -95,7 +104,10 @@
       "designOperation": "freeze_product_evaluation_plan_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "freeze_cross_fold_plan_v2"
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+          "symbol": "freeze_cross_fold_plan_v2"
+        }
       ]
     },
     {
@@ -111,9 +123,18 @@
       "designOperation": "product_temporal_comparison",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "FencedFinalHoldoutOwnerV1::consume",
-        "FinalHoldoutProviderV1::release_after_consumption",
-        "evaluate_temporal_holdout"
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+          "symbol": "FencedFinalHoldoutOwnerV1::consume"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "symbol": "FinalHoldoutProviderV1::release_after_consumption"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
+          "symbol": "evaluate_temporal_holdout"
+        }
       ]
     },
     {
@@ -129,9 +150,18 @@
       "designOperation": "product_signed_qualification",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "decide_with_signed_evidence_v2",
-        "decide_with_signed_longitudinal_evidence_v3",
-        "ProductQualificationEvidenceSinkV1::persist"
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+          "symbol": "decide_with_signed_evidence_v2"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+          "symbol": "decide_with_signed_longitudinal_evidence_v3"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "symbol": "ProductQualificationEvidenceSinkV1::persist"
+        }
       ]
     },
     {
@@ -147,7 +177,10 @@
       "designOperation": "fenced_final_holdout_consume",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "FinalHoldoutCasStoreV1::compare_and_swap"
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+          "symbol": "FinalHoldoutCasStoreV1::compare_and_swap"
+        }
       ]
     },
     {

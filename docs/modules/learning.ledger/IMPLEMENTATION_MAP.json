@@ -218,6 +218,32 @@
       "designOperation": "sync_directory_handle",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "LedgerWriter::rotate_trust",
+      "designOperation": "LedgerWriter::rotate_trust",
+      "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::rotate_trust",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_ci_pending",
+      "mappingClass": "owner_native",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
+      ],
+      "delegatedCallees": []
+    },
+    {
+      "operation": "measure_ledger_recovery_work",
+      "designOperation": "measure_ledger_recovery_work",
+      "nativeSymbol": "codex_hepta_learning_ledger::measure_ledger_recovery_work",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/recovery_work.rs",
+      "sourcePathExists": true,
+      "state": "source_implemented_ci_pending",
+      "mappingClass": "owner_native",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs"
+      ],
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [],
