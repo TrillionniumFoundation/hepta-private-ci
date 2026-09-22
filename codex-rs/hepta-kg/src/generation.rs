@@ -48,6 +48,10 @@ pub enum KnowledgeRelationKindV2 {
     /// semantic classes above. The identifier must already be canonical and
     /// stable for the source graph profile.
     Custom(StableId),
+    PromptRequires,
+    PromptDominates,
+    PromptRedundant,
+    PromptSupersedes,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -817,6 +821,10 @@ fn push_relation_kind(bytes: &mut Vec<u8>, value: &KnowledgeRelationKindV2) {
             bytes.push(10);
             push_id(bytes, relation_id);
         }
+        KnowledgeRelationKindV2::PromptRequires => bytes.push(11),
+        KnowledgeRelationKindV2::PromptDominates => bytes.push(12),
+        KnowledgeRelationKindV2::PromptRedundant => bytes.push(13),
+        KnowledgeRelationKindV2::PromptSupersedes => bytes.push(14),
     }
 }
 

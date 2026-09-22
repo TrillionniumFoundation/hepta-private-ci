@@ -6,6 +6,9 @@
 
 #![forbid(unsafe_code)]
 
+mod runtime_prompt;
+mod wire;
+
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -25,9 +28,24 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-mod wire;
-
+use codex_hepta_types::PromptDeliveryErrorV1;
+pub use codex_hepta_types::PromptDeliveryObservationV1;
+pub use codex_hepta_types::PromptDeliveryRejectReasonV1;
 pub use wire::CODEX_OPERATION_INTENT_WIRE_PRODUCER_V2;
+
+pub use runtime_prompt::PromptRuntimeAttachmentV1;
+pub use runtime_prompt::PromptRuntimeDeveloperFragmentV1;
+pub use runtime_prompt::PromptRuntimeDispatchFuture;
+pub use runtime_prompt::PromptRuntimeDispatchRecordV1;
+pub use runtime_prompt::PromptRuntimeError;
+pub use runtime_prompt::PromptRuntimeHost;
+pub use runtime_prompt::PromptRuntimeHostError;
+pub use runtime_prompt::PromptRuntimePrepareFuture;
+pub use runtime_prompt::PromptRuntimePrepareRequest;
+pub use runtime_prompt::PromptRuntimeRecordFuture;
+pub use runtime_prompt::PromptRuntimeTerminalOutcomeV1;
+pub use runtime_prompt::PromptRuntimeTerminalRecordV1;
+pub use runtime_prompt::install_prompt_runtime;
 pub use wire::CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2;
 pub use wire::CodexOperationIntentWireV2;
 pub use wire::WireAdapterError;
@@ -82,6 +100,16 @@ pub enum TerminalOutcome {
     Interrupted,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptProviderTerminalObservationV1 {
+    pub terminal_observed: bool,
+    pub observed_provider_request_digest: Digest32,
+    pub delivered: bool,
+    pub rejected_reason: Option<PromptDeliveryRejectReasonV1>,
+    pub observed_token_positions: Option<Vec<u32>>,
+    pub truncation_observed: bool,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AdapterStatus {
     Succeeded,
@@ -117,6 +145,17 @@ pub struct CodexAdapterReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptDeliveryBoundaryInputV1 {
+    pub compilation_id: StableId,
+    pub expected_payload_digest: Digest32,
+    pub terminal_observed: bool,
+    pub delivered: bool,
+    pub rejected_reason: Option<PromptDeliveryRejectReasonV1>,
+    pub observed_token_positions: Option<Vec<u32>>,
+    pub truncation_observed: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Error {
     EmptyDigest(&'static str),
     PayloadBindingMismatch,
@@ -128,6 +167,13 @@ pub enum Error {
     CorrelationMismatch(&'static str),
     NonTerminalObservation,
     ObservationEncodingFailed,
+    MissingTerminalResponse,
+    InvalidPromptDeliveryObservation,
+    PromptDeliveryNotTerminal,
+    InvalidPromptDeliveryDisposition,
+    TokenPositionLimitExceeded,
+    NonCanonicalTokenPositions,
+    PromptDeliveryContract(PromptDeliveryErrorV1),
 }
 
 impl fmt::Display for Error {
@@ -136,6 +182,38 @@ impl fmt::Display for Error {
     }
 }
 impl StdError for Error {}
+
+pub fn observe_prompt_delivery_v1(
+    now_ms: u64,
+    intent: &CodexOperationIntent,
+    compilation_id: StableId,
+    observation: PromptProviderTerminalObservationV1,
+) -> Result<PromptDeliveryObservationV1, Error> {
+    validate_intent_static(intent)?;
+    if now_ms >= intent.deadline_ms {
+        return Err(Error::DeadlineExpired);
+    }
+    if !observation.terminal_observed {
+        return Err(Error::MissingTerminalResponse);
+    }
+    if observation.observed_provider_request_digest.is_zero()
+        || observation.observed_provider_request_digest != intent.payload_digest
+    {
+        return Err(Error::PayloadBindingMismatch);
+    }
+    let result = PromptDeliveryObservationV1 {
+        compilation_id,
+        provider_request_digest: observation.observed_provider_request_digest,
+        delivered: observation.delivered,
+        rejected_reason: observation.rejected_reason,
+        observed_token_positions: observation.observed_token_positions,
+        truncation_observed: observation.truncation_observed,
+    };
+    result
+        .validate()
+        .map_err(|_| Error::InvalidPromptDeliveryObservation)?;
+    Ok(result)
+}
 
 pub fn adapt_request(
     now_ms: u64,
@@ -559,6 +637,50 @@ fn server_error_digest(error: &JSONRPCErrorError) -> Digest32 {
         push_bytes(&mut bytes, &encoded);
     }
     Digest32::of_bytes(&bytes)
+}
+
+/// Emits the runtime-owned prompt delivery observation only after the caller
+/// supplies the exact bytes that crossed the Codex request boundary.
+///
+/// This adapter does not submit the request itself. It fails closed unless the
+/// supplied bytes match the expected compilation attachment digest and the
+/// caller reports a terminal delivered/rejected disposition.
+pub fn observe_prompt_delivery_bytes_v1(
+    input: PromptDeliveryBoundaryInputV1,
+    submitted_payload: &[u8],
+) -> Result<PromptDeliveryObservationV1, Error> {
+    if input.expected_payload_digest.is_zero() {
+        return Err(Error::EmptyDigest("expected prompt payload"));
+    }
+    let provider_request_digest = Digest32::of_bytes(submitted_payload);
+    if provider_request_digest != input.expected_payload_digest {
+        return Err(Error::PayloadBindingMismatch);
+    }
+    if !input.terminal_observed {
+        return Err(Error::PromptDeliveryNotTerminal);
+    }
+
+    let observation = PromptDeliveryObservationV1 {
+        compilation_id: input.compilation_id,
+        provider_request_digest,
+        delivered: input.delivered,
+        rejected_reason: input.rejected_reason,
+        observed_token_positions: input.observed_token_positions,
+        truncation_observed: input.truncation_observed,
+    };
+    observation
+        .validate()
+        .map_err(map_prompt_delivery_contract_error)?;
+    Ok(observation)
+}
+
+fn map_prompt_delivery_contract_error(error: PromptDeliveryErrorV1) -> Error {
+    match error {
+        PromptDeliveryErrorV1::InvalidDisposition => Error::InvalidPromptDeliveryDisposition,
+        PromptDeliveryErrorV1::TokenPositionLimitExceeded => Error::TokenPositionLimitExceeded,
+        PromptDeliveryErrorV1::NonCanonicalTokenPositions => Error::NonCanonicalTokenPositions,
+        other => Error::PromptDeliveryContract(other),
+    }
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {

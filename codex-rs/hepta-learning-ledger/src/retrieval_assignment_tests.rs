@@ -233,3 +233,80 @@ fn owner_bridge_uses_canonical_digest_indices_not_input_positions() {
     );
     assert_eq!(legal_candidate_indices, vec![0, 1, 2]);
 }
+
+#[test]
+fn normalization_preserves_selected_and_delivered_candidate_identity() {
+    let mut event = retrieval_assignment_event(
+        id("record:remapped"),
+        id("episode:remapped"),
+        &observation(3, true),
+    )
+    .expect("bridge");
+    let LedgerEvent::RetrievalAssignment(fact) = &mut event else {
+        panic!("retrieval assignment");
+    };
+    fact.enumerated_candidate_digests.reverse();
+    let selected_identity = fact.enumerated_candidate_digests[0];
+    fact.selected_candidate_indices = vec![0];
+    fact.delivered_candidate_indices = vec![0];
+    fact.context_exposed = true;
+    fact.published_context_digest = Some(digest("published-context"));
+    let mut ledger = LearningLedger::new();
+    ledger.append(event).expect("normalized append");
+    let LedgerEvent::RetrievalAssignment(fact) = &ledger.records()[0].event else {
+        panic!("retrieval assignment");
+    };
+    assert_eq!(fact.selected_candidate_indices, vec![2]);
+    assert_eq!(fact.delivered_candidate_indices, vec![2]);
+    assert_eq!(fact.enumerated_candidate_digests[2], selected_identity);
+    assert!(
+        fact.enumerated_candidate_digests
+            .windows(2)
+            .all(|pair| pair[0] < pair[1])
+    );
+    let reopened = LearningLedger::from_snapshot(ledger.snapshot()).expect("replay");
+    assert_eq!(reopened.records(), ledger.records());
+}
+
+#[test]
+fn selected_set_exceeding_decoder_capacity_is_rejected_atomically() {
+    let mut event = retrieval_assignment_event(
+        id("record:oversized-selection"),
+        id("episode:oversized-selection"),
+        &observation(17, true),
+    )
+    .expect("bridge");
+    let LedgerEvent::RetrievalAssignment(fact) = &mut event else {
+        panic!("retrieval assignment");
+    };
+    fact.selected_candidate_indices = (0..17).collect();
+    let mut ledger = LearningLedger::new();
+    let before = ledger.snapshot();
+    assert_eq!(
+        ledger.append(event),
+        Err(crate::LedgerError::RetrievalCandidateLimitExceeded)
+    );
+    assert_eq!(ledger.snapshot(), before);
+}
+
+#[test]
+fn retrieval_encoding_has_a_distinct_tag_and_bounded_roundtrip() {
+    let event = retrieval_assignment_event(
+        id("record:codec-nine"),
+        id("episode:codec-nine"),
+        &observation(512, true),
+    )
+    .expect("bridge");
+    let encoded = encode_event(&event);
+    let tag_offset = b"hepta.learning-ledger.event.v1".len();
+    assert_eq!(encoded[tag_offset], 9);
+    assert_eq!(
+        crate::durable_codec::decode_event(&encoded).expect("decode"),
+        event
+    );
+    // The retired retrieval-only branch reused canonical outcome tag 4. Such
+    // branch-private bytes must not be guessed into the current event lineage.
+    let mut ambiguous_old_encoding = encoded;
+    ambiguous_old_encoding[tag_offset] = 4;
+    assert!(crate::durable_codec::decode_event(&ambiguous_old_encoding).is_err());
+}

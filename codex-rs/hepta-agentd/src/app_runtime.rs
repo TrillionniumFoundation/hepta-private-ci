@@ -94,6 +94,7 @@ pub(crate) fn app_server_runtime_options(
         cognitive_runtime,
         /*production_cognitive_mutation*/ None,
         /*qualification_turn_writer*/ None,
+        /*prompt_runtime_host*/ None,
     )
 }
 
@@ -103,12 +104,18 @@ pub(crate) fn app_server_runtime_options_for_agent(
     cognitive_runtime: CognitiveRuntime,
     production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
+    let prompt_runtime_host = state
+        .prompt_pipeline_owner()
+        .runtime_owner()
+        .host()
+        .map_err(std::io::Error::other)?;
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);
     app_server_runtime_options_with_writer(
         identity,
         cognitive_runtime,
         production_cognitive_mutation,
         writer,
+        Some(prompt_runtime_host),
     )
 }
 
@@ -117,6 +124,7 @@ fn app_server_runtime_options_with_writer(
     cognitive_runtime: CognitiveRuntime,
     production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
     qualification_turn_writer: Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+    prompt_runtime_host: Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let cognitive_write_enabled =
         COGNITIVE_WRITE_ENABLED || production_cognitive_mutation.is_some();
@@ -142,6 +150,7 @@ fn app_server_runtime_options_with_writer(
             .then_some(codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only()),
         hepta_qualification_turn_writer_enabled: QUALIFICATION_TURN_WRITER_ENABLED,
         hepta_qualification_turn_writer: qualification_turn_writer,
+        hepta_prompt_runtime_host: prompt_runtime_host,
         // This embedding-owned product capability is applied after managed
         // config and per-request overrides. Agentd therefore selects the
         // scoped cognitive mutation profile; ordinary Codex does not.

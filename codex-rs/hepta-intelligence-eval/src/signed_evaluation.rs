@@ -20,6 +20,7 @@ use crate::IndependentEvaluationDispositionV1;
 use crate::MetricRoleContractV2;
 use crate::closure::digest_evaluation_bundle;
 use crate::closure::digest_evaluation_roles;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::decide_independently;
 use crate::decide_independently_v2;
 
@@ -62,6 +63,7 @@ pub fn evaluation_signing_payload_v2(
     Ok(bytes)
 }
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub fn decide_with_signed_evidence_v1(
     bundle: IndependentEvaluationBundleV1,
     evidence: &SignedEvaluationEvidenceV1,

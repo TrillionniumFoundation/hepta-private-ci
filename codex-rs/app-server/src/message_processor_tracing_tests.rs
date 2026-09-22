@@ -299,6 +299,7 @@ async fn build_test_processor(
         hepta_local_development_policy: None,
         hepta_qualification_turn_writer_enabled: false,
         hepta_qualification_turn_writer: None,
+        hepta_prompt_runtime_host: None,
     }));
     (processor, outgoing_rx)
 }

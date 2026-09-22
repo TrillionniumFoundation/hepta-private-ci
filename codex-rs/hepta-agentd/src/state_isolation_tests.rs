@@ -4,8 +4,6 @@ use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 
 use super::*;
-use crate::AgentdPayload;
-use crate::LifecycleSnapshot;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
@@ -24,6 +22,9 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+
+use crate::AgentdPayload;
+use crate::LifecycleSnapshot;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;

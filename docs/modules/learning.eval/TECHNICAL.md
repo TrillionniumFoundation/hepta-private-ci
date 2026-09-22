@@ -16,6 +16,8 @@
 
 This stable document is the implementation guide for `learning.eval`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+**Normative production API and ownership contract:** [`codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md`](../../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md). Default builds expose signature-verified qualification ingress; direct evaluators exist only behind the explicit `trusted-inprocess-eval` compatibility feature. Multi-writer final-holdout ownership requires the fenced CAS contract defined there.
+
 ## 1. Identity, mission and ownership
 
 Perform support-aware causal and longitudinal evaluation independently from the production writer.
@@ -170,6 +172,26 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
+### Canonical product evaluation composition
+
+The source product composition is `ProductEvaluationRunnerV1`. It binds a
+preregistered metric-to-estimator mapping into the frozen estimand, consumes the
+final holdout through `FencedFinalHoldoutOwnerV1`, and only then calls
+`FinalHoldoutProviderV1::release_after_consumption`. Candidate and baseline
+intervals come from sealed temporal/cluster estimator receipts; product callers
+do not submit final `MetricGateV1` values. Qualification returns only after the
+declared `ProductQualificationEvidenceSinkV1` reports a durable nonzero
+publication digest.
+
+`LockedFileFinalHoldoutCasStoreV1` is the repository concrete cross-process
+CAS/replay backend. Recovery is bounded by an independently retained
+`FinalHoldoutCasAnchorV1`; `HoldoutFenceIssuerV1` resumes monotonic fence
+generation from that anchor. Cross-host deployment of this backend additionally
+requires a shared filesystem with qualified linearizable lock and fsync
+semantics.
+
+The evaluated-shadow caller now consumes only the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and never re-runs low-level signed admission. This leaves one repository-controlled product qualification spine.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.eval.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md).
@@ -243,7 +265,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Product composition now exists and the evaluated-shadow consumer is bound to the product qualification receipt; target-host composition still requires the named evidence sink/holdout namespace. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `learning.eval`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 

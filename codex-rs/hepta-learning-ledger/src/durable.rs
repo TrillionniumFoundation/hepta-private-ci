@@ -52,6 +52,7 @@ pub enum DurableLedgerError {
     InvalidAnchor,
     Busy,
     NotRegular,
+    NotDirectory,
     AlreadyInitialized,
     MissingHeader,
     BindingMismatch,
@@ -88,6 +89,7 @@ impl From<io::Error> for DurableLedgerError {
 pub struct DurableLedger {
     file: LockedFile,
     core: LearningLedger,
+    binding: Digest32,
     max_records: usize,
     durable_length: u64,
     poisoned: bool,
@@ -117,6 +119,7 @@ impl DurableLedger {
         Ok(Self {
             file,
             core: LearningLedger::new(),
+            binding,
             max_records,
             durable_length: HEADER as u64,
             poisoned: false,
@@ -145,6 +148,7 @@ impl DurableLedger {
         Ok(Self {
             file,
             core,
+            binding,
             max_records,
             durable_length: cursor,
             poisoned: false,
@@ -154,7 +158,7 @@ impl DurableLedger {
     /// Validate without changing memory, compare the exact predecessor, append
     /// and sync, then publish the core event. Equal canonical retries never append.
     /// An I/O uncertainty poisons this handle: recover and reconcile before retry.
-    pub fn append(
+    pub(crate) fn append(
         &mut self,
         expected_predecessor: Digest32,
         event: LedgerEvent,
@@ -198,6 +202,22 @@ impl DurableLedger {
         self.durable_length = next_length;
         self.poisoned = false;
         Ok(receipt)
+    }
+
+    /// Historical raw-event qualification only. Product writes use LedgerWriter.
+    #[cfg(feature = "qualification-legacy-write")]
+    #[doc(hidden)]
+    pub fn append_qualification(
+        &mut self,
+        expected_predecessor: Digest32,
+        event: LedgerEvent,
+    ) -> Result<AppendReceipt, DurableLedgerError> {
+        self.append(expected_predecessor, event)
+    }
+
+    #[must_use]
+    pub const fn binding_digest(&self) -> Digest32 {
+        self.binding
     }
 
     pub fn records(&self) -> Result<&[LedgerRecord], DurableLedgerError> {

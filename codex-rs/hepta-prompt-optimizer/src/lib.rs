@@ -14,6 +14,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+pub mod canonical;
 mod graph;
 pub mod local_shadow;
 

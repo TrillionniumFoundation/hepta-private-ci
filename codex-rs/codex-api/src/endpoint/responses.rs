@@ -2,6 +2,7 @@ use crate::auth::SharedAuthProvider;
 use crate::common::ResponseStream;
 use crate::common::ResponsesApiRequest;
 use crate::dispatch_metadata::RequestDispatchMetadata;
+use crate::encoded_body_observer::EncodedRequestBodyObserver;
 use crate::endpoint::session::EndpointSession;
 use crate::error::ApiError;
 use crate::provider::Provider;
@@ -38,6 +39,7 @@ pub struct ResponsesOptions {
     pub extra_headers: HeaderMap,
     pub compression: Compression,
     pub turn_state: Option<Arc<OnceLock<String>>>,
+    pub encoded_body_observer: Option<Arc<dyn EncodedRequestBodyObserver>>,
 }
 
 impl<T: HttpTransport> ResponsesClient<T> {
@@ -117,10 +119,21 @@ impl<T: HttpTransport> ResponsesClient<T> {
             extra_headers,
             compression,
             turn_state,
+            encoded_body_observer,
         } = options;
 
         let body = EncodedJsonBody::encode(&request)
             .map_err(|e| ApiError::Stream(format!("failed to encode responses request: {e}")))?;
+        if let Some(observer) = encoded_body_observer.as_ref() {
+            observer
+                .observe_encoded_body(body.as_bytes())
+                .await
+                .map_err(|error| {
+                    ApiError::Stream(format!(
+                        "encoded responses request rejected by final-use observer: {error}"
+                    ))
+                })?;
+        }
 
         let mut headers = extra_headers;
         if let Some(ref thread_id) = thread_id {

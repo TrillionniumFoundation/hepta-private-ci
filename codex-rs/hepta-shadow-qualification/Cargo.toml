@@ -33,10 +33,11 @@ toml = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
-codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-objective = { path = "../hepta-objective", features = ["qualification-legacy-compile"] }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
+ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }

@@ -341,6 +341,11 @@ pub struct ModelClientSession {
     /// keep sending it unchanged between turn requests (e.g., for retries, incremental
     /// appends, or continuation requests), and must not send it between different turns.
     turn_state: Arc<OnceLock<String>>,
+    /// Optional final-use observer for the exact encoded Responses JSON body.
+    ///
+    /// When present, the turn is forced onto the HTTP single-attempt path so
+    /// every physical send remains behind the host provider-policy claim.
+    encoded_request_body_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 }
 
 #[derive(Debug, Clone)]
@@ -687,6 +692,7 @@ impl ModelClient {
             client: self.clone(),
             websocket_session: self.take_cached_websocket_session(),
             turn_state: Arc::new(OnceLock::new()),
+            encoded_request_body_observer: None,
         }
     }
 
@@ -1569,6 +1575,23 @@ impl ModelClientSession {
         Arc::clone(&self.turn_state)
     }
 
+    /// Installs a host-owned final-use observer for one turn.
+    ///
+    /// The observer sees the canonical encoded Responses JSON bytes immediately
+    /// before the transport boundary. Installing it also disables WebSocket
+    /// request sends for this turn because the WebSocket path has a different
+    /// encoding boundary.
+    pub fn set_encoded_request_body_observer(
+        &mut self,
+        observer: Arc<dyn codex_api::EncodedRequestBodyObserver>,
+    ) {
+        self.encoded_request_body_observer = Some(observer);
+    }
+
+    pub fn clear_encoded_request_body_observer(&mut self) {
+        self.encoded_request_body_observer = None;
+    }
+
     fn reset_websocket_session(&mut self) {
         self.websocket_session.connection = None;
         self.websocket_session.last_request = None;
@@ -1611,6 +1634,7 @@ impl ModelClientSession {
             },
             compression,
             turn_state: Some(Arc::clone(&self.turn_state)),
+            encoded_body_observer: self.encoded_request_body_observer.clone(),
         }
     }
 
@@ -2082,6 +2106,12 @@ impl ModelClientSession {
                     }
                 }
             }
+            if self.encoded_request_body_observer.is_some() && admitted_provider_attempt.is_none() {
+                return Err(CodexErr::Fatal(
+                    "exact encoded request observation requires an admitted provider-policy attempt"
+                        .to_string(),
+                ));
+            }
             let inference_trace_attempt = inference_trace.start_attempt();
             inference_trace_attempt.add_request_headers(&mut options.extra_headers);
             inference_trace_attempt.record_started(&request);
@@ -2145,6 +2175,7 @@ impl ModelClientSession {
                             .take()
                             .map(AdmittedProviderAttempt::into_owner),
                         has_ephemeral_input,
+                        self.encoded_request_body_observer.clone(),
                     );
                     return Ok(stream);
                 }
@@ -2624,6 +2655,7 @@ impl ModelClientSession {
                     .take()
                     .map(AdmittedProviderAttempt::into_owner),
                 /*redact_provider_errors*/ false,
+                /*encoded_request_observer*/ None,
             );
             self.websocket_session.last_response_rx = Some(last_request_rx);
             return Ok(WebsocketStreamOutcome::Stream(stream));
@@ -2705,6 +2737,9 @@ impl ModelClientSession {
         provider_policy_context: Option<&ModelProviderPolicyContext<'_>>,
     ) -> Result<()> {
         if !self.client.responses_websocket_enabled() {
+            return Ok(());
+        }
+        if self.encoded_request_body_observer.is_some() {
             return Ok(());
         }
         // Turn-input contributors finish preparing their turn-local state before this
@@ -2898,7 +2933,9 @@ impl ModelClientSession {
         let wire_api = self.client.state.provider.info().wire_api;
         match wire_api {
             WireApi::Responses => {
-                if self.client.responses_websocket_enabled() && !ephemeral_model_input_requires_http
+                if self.client.responses_websocket_enabled()
+                    && !ephemeral_model_input_requires_http
+                    && self.encoded_request_body_observer.is_none()
                 {
                     let request_trace = current_span_w3c_trace_context();
                     match self
@@ -3033,6 +3070,7 @@ fn map_response_stream(
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
     redact_provider_errors: bool,
+    encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>) {
     let codex_api::ResponseStream {
         rx_event,
@@ -3055,6 +3093,7 @@ fn map_response_stream(
         provider,
         provider_attempt,
         redact_provider_errors,
+        encoded_request_observer,
     )
 }
 
@@ -3066,6 +3105,7 @@ fn map_response_events<S>(
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
     redact_provider_errors: bool,
+    encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
     S: futures::Stream<Item = std::result::Result<ResponseEvent, ApiError>>
@@ -3097,6 +3137,7 @@ where
                         &mut provider_terminal,
                         "provider_response_consumer_dropped",
                         &items_added,
+                        encoded_request_observer.as_ref(),
                     ).await;
                     inference_trace_attempt.record_cancelled(
                         STREAM_DROPPED_REASON,
@@ -3122,6 +3163,7 @@ where
                             &mut provider_terminal,
                             "provider_response_consumer_dropped",
                             &items_added,
+                            encoded_request_observer.as_ref(),
                         )
                         .await;
                         inference_trace_attempt.record_cancelled(
@@ -3154,6 +3196,23 @@ where
                             return;
                         }
                     };
+                    if let Err(error) = observe_encoded_request_terminal(
+                        encoded_request_observer.as_ref(),
+                        codex_api::EncodedRequestTerminal::Completed {
+                            response_id: response_id.clone(),
+                        },
+                    )
+                    .await
+                    {
+                        inference_trace_attempt.record_failed(
+                            &error,
+                            upstream_request_id,
+                            &items_added,
+                        );
+                        session_telemetry.see_event_completed_failed(&error);
+                        let _ = tx_event.send(Err(error)).await;
+                        return;
+                    }
                     feedback_tags!(last_model_response_id = &response_id);
                     if let Some(usage) = &token_usage {
                         session_telemetry.sse_event_completed(usage, ttft_ms);
@@ -3196,6 +3255,7 @@ where
                             &mut provider_terminal,
                             "provider_response_consumer_dropped",
                             &items_added,
+                            encoded_request_observer.as_ref(),
                         )
                         .await;
                         inference_trace_attempt.record_cancelled(
@@ -3207,9 +3267,9 @@ where
                     }
                 }
                 Err(err) => {
-                    let provider_terminal_result = if api_error_http_status(&err)
-                        == Some(StatusCode::UNAUTHORIZED.as_u16())
-                    {
+                    let provider_rejected =
+                        api_error_http_status(&err) == Some(StatusCode::UNAUTHORIZED.as_u16());
+                    let provider_terminal_result = if provider_rejected {
                         provider_terminal
                             .finish_rejected("provider_response_unauthorized")
                             .await
@@ -3241,6 +3301,30 @@ where
                             return;
                         }
                     };
+                    let observed_terminal = if provider_rejected {
+                        codex_api::EncodedRequestTerminal::Rejected {
+                            reason_code: "provider_response_unauthorized".to_string(),
+                        }
+                    } else {
+                        codex_api::EncodedRequestTerminal::Indeterminate {
+                            reason_code: "provider_response_stream_error".to_string(),
+                        }
+                    };
+                    if let Err(error) = observe_encoded_request_terminal(
+                        encoded_request_observer.as_ref(),
+                        observed_terminal,
+                    )
+                    .await
+                    {
+                        inference_trace_attempt.record_failed(
+                            &error,
+                            upstream_request_id,
+                            &items_added,
+                        );
+                        session_telemetry.see_event_completed_failed(&error);
+                        let _ = tx_event.send(Err(error)).await;
+                        return;
+                    }
                     let mapped = redact_ephemeral_provider_error(
                         provider.map_api_error(err),
                         redact_provider_errors,
@@ -3273,6 +3357,19 @@ where
             let _ = tx_event.send(Err(error)).await;
             return;
         }
+        if let Err(error) = observe_encoded_request_terminal(
+            encoded_request_observer.as_ref(),
+            codex_api::EncodedRequestTerminal::Indeterminate {
+                reason_code: "provider_response_stream_closed".to_string(),
+            },
+        )
+        .await
+        {
+            inference_trace_attempt.record_failed(&error, upstream_request_id, &items_added);
+            session_telemetry.see_event_completed_failed(&error);
+            let _ = tx_event.send(Err(error)).await;
+            return;
+        }
         inference_trace_attempt.record_failed(
             "stream closed before response.completed",
             upstream_request_id,
@@ -3289,10 +3386,25 @@ where
     )
 }
 
+async fn observe_encoded_request_terminal(
+    observer: Option<&Arc<dyn codex_api::EncodedRequestBodyObserver>>,
+    terminal: codex_api::EncodedRequestTerminal,
+) -> Result<()> {
+    let Some(observer) = observer else {
+        return Ok(());
+    };
+    observer.observe_terminal(terminal).await.map_err(|error| {
+        CodexErr::Fatal(format!(
+            "exact provider request terminal observation failed: {error}"
+        ))
+    })
+}
+
 async fn finish_abandoned_provider_response(
     provider_terminal: &mut ProviderResponseTerminal,
     reason_code: &'static str,
     response_items: &[ResponseItem],
+    encoded_request_observer: Option<&Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 ) {
     if let Err(error) = provider_terminal
         .finish_indeterminate(reason_code, response_items)
@@ -3302,6 +3414,19 @@ async fn finish_abandoned_provider_response(
             reason_code = error.reason_code(),
             detail = error.detail(),
             "failed to persist abandoned provider response terminal"
+        );
+    }
+    if let Some(observer) = encoded_request_observer
+        && let Err(error) = observer
+            .observe_terminal(codex_api::EncodedRequestTerminal::Abandoned {
+                reason_code: reason_code.to_string(),
+            })
+            .await
+    {
+        warn!(
+            reason_code,
+            error = %error,
+            "failed to persist exact-request abandoned terminal observation"
         );
     }
 }

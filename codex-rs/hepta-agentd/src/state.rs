@@ -48,6 +48,7 @@ pub(crate) struct AgentdState {
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
     runs: Mutex<AgentRunCoordinator>,
+    pub(crate) prompt_pipeline: Arc<crate::AgentdPromptPipelineOwner>,
 }
 
 struct RuntimeState {
@@ -97,6 +98,19 @@ impl AgentdState {
         })
         .map_err(run_error)?;
 
+        let prompt_registry_root = identity.home_root.join("prompt-registry");
+        let prompt_runtime_root = identity.run_root.join("prompt-runtime");
+        let prompt_pipeline = crate::AgentdPromptPipelineOwner::open_state_dirs(
+            &prompt_registry_root,
+            &prompt_runtime_root,
+            crate::prompt_runtime::AGENTD_PROMPT_REGISTRY_MAX_RECORDS,
+        )
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "prompt pipeline durable owners failed to open: {error}"
+            ))
+        })?;
+        let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
@@ -118,6 +132,7 @@ impl AgentdState {
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
             runs: Mutex::new(run_coordinator),
+            prompt_pipeline,
         })
     }
 
@@ -210,6 +225,10 @@ impl AgentdState {
             .lock()
             .map_err(poisoned_state)?
             .current_generation)
+    }
+
+    pub(crate) fn prompt_pipeline_owner(&self) -> Arc<crate::AgentdPromptPipelineOwner> {
+        Arc::clone(&self.prompt_pipeline)
     }
 
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {

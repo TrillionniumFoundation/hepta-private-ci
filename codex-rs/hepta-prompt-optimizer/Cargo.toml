@@ -15,7 +15,11 @@ workspace = true
 
 [dependencies]
 codex-hepta-kg = { path = "../hepta-kg" }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
 codex-hepta-types = { path = "../hepta-types" }
 
 [dev-dependencies]
-codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
+codex-hepta-contracts = { path = "../hepta-contracts" }
+tempfile = { workspace = true }
+ed25519-dalek = { workspace = true }

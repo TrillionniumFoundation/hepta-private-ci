@@ -2130,6 +2130,7 @@ dependencies = [
  "codex-git-utils",
  "codex-goal-extension",
  "codex-guardian-v2",
+ "codex-hepta-codex-adapter",
  "codex-hepta-contracts",
  "codex-hepta-evidence",
  "codex-hepta-governance",
@@ -3475,9 +3476,11 @@ dependencies = [
  "codex-hepta-authbus",
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
+ "codex-hepta-codex-adapter",
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-store",
  "codex-hepta-cognitive-types",
+ "codex-hepta-context-compiler",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
  "codex-hepta-evidence",
@@ -3492,6 +3495,8 @@ dependencies = [
  "codex-hepta-memory-retrieval",
  "codex-hepta-objective",
  "codex-hepta-paths",
+ "codex-hepta-prompt-optimizer",
+ "codex-hepta-prompt-registry",
  "codex-hepta-supervisor",
  "codex-hepta-types",
  "codex-model-provider",
@@ -3598,10 +3603,13 @@ version = "0.0.0"
 dependencies = [
  "codex-app-server-client",
  "codex-app-server-protocol",
+ "codex-extension-api",
  "codex-hepta-types",
  "codex-hepta-wire",
+ "codex-protocol",
  "serde",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]
@@ -3771,6 +3779,7 @@ dependencies = [
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
  "codex-hepta-context-compiler",
+ "codex-hepta-contracts",
  "codex-hepta-intelligence-eval",
  "codex-hepta-intuition",
  "codex-hepta-learning-ledger",
@@ -3779,6 +3788,7 @@ dependencies = [
  "codex-hepta-objective",
  "codex-hepta-plasticity",
  "codex-hepta-prompt-optimizer",
+ "codex-hepta-prompt-registry",
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
@@ -3827,6 +3837,8 @@ dependencies = [
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -4060,16 +4072,26 @@ dependencies = [
 name = "codex-hepta-prompt-optimizer"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-kg",
+ "codex-hepta-learning-ledger",
  "codex-hepta-prompt-registry",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "tempfile",
 ]
 
 [[package]]
 name = "codex-hepta-prompt-registry"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "rustix 1.1.4",
+ "serde",
+ "serde_json",
+ "tempfile",
 ]
 
 [[package]]
@@ -4104,6 +4126,7 @@ dependencies = [
  "codex-hepta-objective",
  "codex-hepta-types",
  "codex-hepta-wire",
+ "ed25519-dalek",
  "libc",
  "pretty_assertions",
  "rand 0.9.3",

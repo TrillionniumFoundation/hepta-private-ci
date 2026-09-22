@@ -18,30 +18,154 @@
       "stableGuide": "docs/modules/learning.ledger/TECHNICAL.md",
       "dossier": "qualification/module-execution-dossiers/detail/learning.ledger.md",
       "nativeMapping": "codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md",
-      "implementationState": "source_implemented_ci_pending",
-      "compatibility": "stable_v1_durable_encoding_retained_v2_additive_surface",
+      "implementationState": "source_converged_current_candidate_qualification_pending_live_product_external",
+      "compatibility": "stable_v1_read_compatibility_retained_authenticated_v2_product_writer_additive",
       "operations": [
-        {"operation": "verify_independent_roles", "nativeSymbol": "codex_hepta_learning_ledger::verify_independent_roles", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "validate_authenticated_outcome", "nativeSymbol": "codex_hepta_learning_ledger::validate_authenticated_outcome", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "validate_candidate_set_completeness", "nativeSymbol": "codex_hepta_learning_ledger::validate_candidate_set_completeness", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "finalize_credit_batch", "nativeSymbol": "codex_hepta_learning_ledger::finalize_credit_batch", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "freeze_dataset", "nativeSymbol": "codex_hepta_learning_ledger::freeze_dataset", "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs", "status": "implemented"},
-        {"operation": "append_shadow_decision", "nativeSymbol": "codex_hepta_learning_ledger::append_shadow_decision", "source": "codex-rs/hepta-learning-ledger/src/shadow.rs", "status": "implemented_existing"}
+        {
+          "operation": "LedgerWriter::append_decision",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::append_decision",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LedgerWriter::append_outcome",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::append_outcome",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LedgerWriter::append_credit_batch",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::append_credit_batch",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_atomic_conservation"
+        },
+        {
+          "operation": "LedgerWriter::append_unlearning",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::append_unlearning",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_verified_source_dataset_membership_artifact_handoff"
+        },
+        {
+          "operation": "LedgerWriter::freeze_dataset",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::freeze_dataset",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_ledger_derived"
+        },
+        {
+          "operation": "LedgerWitnessStore",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWitnessStore",
+          "source": "codex-rs/hepta-learning-ledger/src/witness.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "activate_learning_trust",
+          "nativeSymbol": "codex_hepta_learning_ledger::activate_learning_trust",
+          "source": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+          "status": "implemented_root_authenticated_distribution_transport_external",
+          "notes": "Requires host-pinned LearningTrustRootV1 and verifies SignedLearningTrustDistributionV1 before activation."
+        },
+        {
+          "operation": "canonical_protocol_adapters",
+          "nativeSymbol": "codex_hepta_learning_ledger::LearningDecisionV1",
+          "source": "codex-rs/hepta-learning-ledger/src/protocol.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "build_ledger_index_checkpoint",
+          "nativeSymbol": "codex_hepta_learning_ledger::build_ledger_index_checkpoint",
+          "source": "codex-rs/hepta-learning-ledger/src/checkpoint.rs",
+          "status": "implemented_rebuildable"
+        },
+        {
+          "operation": "validate_candidate_set_completeness",
+          "nativeSymbol": "codex_hepta_learning_ledger::validate_candidate_set_completeness",
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+          "status": "implemented_compatibility"
+        },
+        {
+          "operation": "LedgerWriter::revalidate_dataset_snapshot",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::revalidate_dataset_snapshot",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_current_state_revalidation"
+        },
+        {
+          "operation": "LedgerWriter::rotate_segment",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::rotate_segment",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_directory_sync_before_witness"
+        },
+        {
+          "operation": "sync_directory_handle",
+          "nativeSymbol": "codex_hepta_learning_ledger::sync_directory_handle",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_host_authorized_directory_fsync"
+        },
+        {
+          "operation": "LedgerWriter::rotate_trust",
+          "nativeSymbol": "codex_hepta_learning_ledger::LedgerWriter::rotate_trust",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented_root_authenticated_distribution_transport_external"
+        },
+        {
+          "operation": "measure_ledger_recovery_work",
+          "nativeSymbol": "codex_hepta_learning_ledger::measure_ledger_recovery_work",
+          "source": "codex-rs/hepta-learning-ledger/src/recovery_work.rs",
+          "status": "implemented"
+        }
       ],
       "tests": [
-        "ledger_03_rejects_shared_credential_chain",
-        "ledger_04_validates_terminal_watermark_and_correction_lineage",
-        "ledger_credit_batch_enforces_conservation",
-        "ledger_candidate_receipt_binds_generator_relative_completeness",
-        "ledger_dataset_freeze_is_order_independent_and_rejects_duplicates",
-        "acknowledged_revocation_cannot_disappear_as_a_valid_prefix_or_partial_tail",
-        "unacknowledged_partial_tail_recovers_exact_predecessor_at_every_cut"
+        "authenticated_corrections_form_one_linear_head_without_forks",
+        "atomic_credit_batch_enforces_terminal_value_and_conservation",
+        "explicit_unlearning_lineage_revokes_source_and_derived_credit",
+        "production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit",
+        "production_writer_recovers_against_independent_witness",
+        "witness_advances_monotonically_and_recovers_exact_frontier",
+        "trust_distribution_rotation_is_monotonic_and_content_addressed",
+        "registered_protocols_reject_unknown_fields",
+        "checkpoint_is_content_addressed_and_supports_binary_lookup",
+        "existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+        "lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness",
+        "corrupt_or_missing_witness_history_never_falls_back_to_reinitialization",
+        "process_death_between_ledger_and_witness_reconciles_without_redispatch",
+        "directory_durability_requires_an_actual_directory_handle",
+        "product_path_records_outcome_correction_then_conserved_credit",
+        "credit_failure_preserves_outcome_for_exact_reconciliation",
+        "run_episode_mismatch_rejects_before_any_outcome_append",
+        "dataset_freeze_counts_decisions_without_any_outcome_as_pending",
+        "production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollback",
+        "recovery_work_receipt_covers_full_single_segment_record_profile"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
-        "production_host_authenticates_principal_receipts",
-        "named_product_caller_and_exclusive_physical_writer",
-        "live_independent_outcomes_and_target_measurements"
+        "named_live_product_caller_and_exclusive_physical_writer",
+        "production_root_provisioning_rotation_trust_distribution_transport_key_custody_and_witness_placement",
+        "live_independent_outcomes_and_target_host_measurements",
+        "physical_erasure_backup_and_model_unlearning_evidence_where_claimed",
+        "live_learning_artifacts_dataset_withdrawal_descendant_revocation_and_rebuild_handoff"
+      ],
+      "statusDimensions": {
+        "planning": "lrn_0_and_lrn_1_source_implemented",
+        "source": "converged_source_implemented",
+        "composition": "decision_and_terminal_closure_source_composed_live_daemon_binding_pending",
+        "qualification": "current_candidate_exact_head_and_synthetic_merge_pending",
+        "liveProduct": "external_not_established"
+      },
+      "crossLaneRepositoryDependencies": [
+        "runtime.agentd daemon-owned terminal observation must consume the authenticated LedgerWriter closure after its lifecycle owner line converges",
+        "intelligence.control canonical V3 must migrate any legacy Outcome/Credit compatibility caller to append_outcome_credit_v2 before product activation",
+        "learning.artifacts owns authoritative dataset-to-artifact membership, withdrawal fanout and descendant revocation for UnlearningLineage handoff"
+      ],
+      "productCallsites": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+          "symbol": "run_evaluated_shadow_v1",
+          "state": "source_composed_authenticated_decision_qualification_caller"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+          "symbol": "append_outcome_credit_v2",
+          "state": "source_composed_authenticated_terminal_closure_live_daemon_binding_pending"
+        }
       ]
     },
     {
@@ -54,11 +178,36 @@
       "implementationState": "source_implemented_ci_pending",
       "compatibility": "stable_v1_registry_retained_v2_manifest_withdrawal_head_and_lifecycle_additive",
       "operations": [
-        {"operation": "validate_artifact_manifest_v2", "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_manifest_v2", "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs", "status": "implemented"},
-        {"operation": "DatasetWithdrawalRegistry::append", "nativeSymbol": "codex_hepta_learning_artifacts::DatasetWithdrawalRegistry::append", "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs", "status": "implemented"},
-        {"operation": "validate_registry_head_witness", "nativeSymbol": "codex_hepta_learning_artifacts::validate_registry_head_witness", "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs", "status": "implemented"},
-        {"operation": "validate_artifact_lifecycle_transition", "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_lifecycle_transition", "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs", "status": "implemented"},
-        {"operation": "load_pinned_candidate", "nativeSymbol": "codex_hepta_learning_artifacts::load_pinned_candidate", "source": "codex-rs/hepta-learning-artifacts/src/pinned.rs", "status": "implemented_existing"}
+        {
+          "operation": "validate_artifact_manifest_v2",
+          "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_manifest_v2",
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "DatasetWithdrawalRegistry::append",
+          "nativeSymbol": "codex_hepta_learning_artifacts::DatasetWithdrawalRegistry::append",
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "validate_registry_head_witness",
+          "nativeSymbol": "codex_hepta_learning_artifacts::validate_registry_head_witness",
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "validate_artifact_lifecycle_transition",
+          "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_lifecycle_transition",
+          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "load_pinned_candidate",
+          "nativeSymbol": "codex_hepta_learning_artifacts::load_pinned_candidate",
+          "source": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+          "status": "implemented_existing"
+        }
       ],
       "tests": [
         "art_01_manifest_v2_normalizes_complete_lineage",
@@ -85,17 +234,64 @@
       "implementationState": "source_implemented_ci_pending",
       "compatibility": "legacy_train_alias_retained_build_targets_explicit_and_learned_profile_additive",
       "operations": [
-        {"operation": "build_targets", "nativeSymbol": "codex_hepta_bellman_operator::build_targets", "source": "codex-rs/hepta-bellman-operator/src/lib.rs", "status": "implemented"},
-        {"operation": "validate_applicability_certificate", "nativeSymbol": "codex_hepta_bellman_operator::validate_applicability_certificate", "source": "codex-rs/hepta-bellman-operator/src/reference.rs", "status": "implemented"},
-        {"operation": "build_sensor_core", "nativeSymbol": "codex_hepta_bellman_operator::build_sensor_core", "source": "codex-rs/hepta-bellman-operator/src/reference.rs", "status": "implemented"},
-        {"operation": "evaluate_bellman_reference", "nativeSymbol": "codex_hepta_bellman_operator::evaluate_bellman_reference", "source": "codex-rs/hepta-bellman-operator/src/reference.rs", "status": "implemented"},
-        {"operation": "admit_operator_regularity", "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity", "source": "codex-rs/hepta-bellman-operator/src/reference.rs", "status": "implemented"},
-        {"operation": "fit_transition_model", "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model", "source": "codex-rs/hepta-bellman-operator/src/world_model.rs", "status": "implemented"},
-        {"operation": "predict_transition", "nativeSymbol": "codex_hepta_bellman_operator::predict_transition", "source": "codex-rs/hepta-bellman-operator/src/world_model.rs", "status": "implemented"}
+        {
+          "operation": "build_targets",
+          "nativeSymbol": "codex_hepta_bellman_operator::build_targets",
+          "source": "codex-rs/hepta-bellman-operator/src/lib.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "validate_applicability_certificate",
+          "nativeSymbol": "codex_hepta_bellman_operator::validate_applicability_certificate",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "build_sensor_core",
+          "nativeSymbol": "codex_hepta_bellman_operator::build_sensor_core",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "evaluate_bellman_reference",
+          "nativeSymbol": "codex_hepta_bellman_operator::evaluate_bellman_reference",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "admit_operator_regularity",
+          "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "fit_transition_model",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model",
+          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "predict_transition",
+          "nativeSymbol": "codex_hepta_bellman_operator::predict_transition",
+          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+          "status": "implemented"
+        }
       ],
       "supplementalOperations": [
-        {"operation": "fit_tabular_operator", "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator", "source": "codex-rs/hepta-bellman-operator/src/learned.rs", "status": "implemented", "profile": "simplest_sufficient_complete_grid_v1"},
-        {"operation": "predict_tabular_operator", "nativeSymbol": "codex_hepta_bellman_operator::predict_tabular_operator", "source": "codex-rs/hepta-bellman-operator/src/learned.rs", "status": "implemented", "profile": "supported_cell_only_synthetic_deny_all_v1"}
+        {
+          "operation": "fit_tabular_operator",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator",
+          "source": "codex-rs/hepta-bellman-operator/src/learned.rs",
+          "status": "implemented",
+          "profile": "simplest_sufficient_complete_grid_v1"
+        },
+        {
+          "operation": "predict_tabular_operator",
+          "nativeSymbol": "codex_hepta_bellman_operator::predict_tabular_operator",
+          "source": "codex-rs/hepta-bellman-operator/src/learned.rs",
+          "status": "implemented",
+          "profile": "supported_cell_only_synthetic_deny_all_v1"
+        }
       ],
       "tests": [
         "op_01_farthest_point_sensor_core_is_deterministic",
@@ -123,24 +319,79 @@
       "stableGuide": "docs/modules/learning.eval/TECHNICAL.md",
       "dossier": "qualification/module-execution-dossiers/detail/learning.eval.md",
       "nativeMapping": "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
-      "implementationState": "source_implemented_ci_pending",
-      "compatibility": "existing_estimators_retained_complete_plan_receipt_sealed_holdout_use_and_independent_decision_additive",
+      "implementationState": "source_product_composed_ci_pending",
+      "compatibility": "sealed_estimator_receipts_v2_metric_roles_signed_v2_v3_admission_fenced_holdout_locked_file_cas_and_trusted_direct_feature_gate",
       "operations": [
-        {"operation": "estimate_ope", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_ope", "source": "codex-rs/hepta-intelligence-eval/src/ope.rs", "status": "implemented_existing"},
-        {"operation": "estimate_sequential", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_sequential", "source": "codex-rs/hepta-intelligence-eval/src/sequential.rs", "status": "implemented_existing"},
-        {"operation": "freeze_cross_fold_plan", "nativeSymbol": "codex_hepta_intelligence_eval::freeze_cross_fold_plan", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"},
-        {"operation": "FinalHoldoutRegistry::consume", "nativeSymbol": "codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"},
-        {"operation": "decide_independently", "nativeSymbol": "codex_hepta_intelligence_eval::decide_independently", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"}
+        {
+          "operation": "estimate_ope",
+          "nativeSymbol": "codex_hepta_intelligence_eval::estimate_ope",
+          "source": "codex-rs/hepta-intelligence-eval/src/ope.rs",
+          "status": "implemented_existing"
+        },
+        {
+          "operation": "estimate_cluster_intervals",
+          "nativeSymbol": "codex_hepta_intelligence_eval::estimate_cluster_intervals",
+          "source": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+          "status": "implemented_sealed_receipt"
+        },
+        {
+          "operation": "estimate_sequential",
+          "nativeSymbol": "codex_hepta_intelligence_eval::estimate_sequential",
+          "source": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
+          "status": "implemented_existing"
+        },
+        {
+          "operation": "freeze_product_evaluation_plan_v1",
+          "nativeSymbol": "codex_hepta_intelligence_eval::freeze_product_evaluation_plan_v1",
+          "source": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ProductEvaluationRunnerV1::evaluate_temporal_comparison",
+          "nativeSymbol": "codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::evaluate_temporal_comparison",
+          "source": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ProductEvaluationRunnerV1::qualify_and_persist",
+          "nativeSymbol": "codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::qualify_and_persist",
+          "source": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "FencedFinalHoldoutOwnerV1::consume",
+          "nativeSymbol": "codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::consume",
+          "source": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LockedFileFinalHoldoutCasStoreV1",
+          "nativeSymbol": "codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1",
+          "source": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "decide_with_signed_evidence_v2",
+          "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_evidence_v2",
+          "source": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+          "status": "implemented_low_level"
+        },
+        {
+          "operation": "decide_with_signed_longitudinal_evidence_v3",
+          "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3",
+          "source": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+          "status": "implemented_pairwise_independence"
+        }
       ],
       "tests": [
-        "eval_03_intersects_superiority_safety_retention_and_unlearning",
-        "eval_04_rejects_role_collision_and_missing_future_windows",
-        "evaluation_fails_candidate_when_interval_or_floor_does_not_pass",
-        "eval_cross_fold_plan_binds_disjoint_lineage_and_final_holdout",
-        "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse",
-        "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth",
-        "independent_decision_consumes_bound_holdout_receipt",
-        "op_03_high_fit_without_retention_is_insufficient"
+        "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+        "product_runner_never_releases_holdout_before_fenced_consumption",
+        "locked_file_store_replays_takeover_and_rejects_backup_rollback",
+        "child_process_observes_lock_then_recovers_after_owner_exit",
+        "evaluator_and_observer_cannot_share_identity_key_credential_or_controller",
+        "signed_evaluation_binds_metrics_roles_and_host_identities",
+        "newer_generation_fences_out_the_old_writer",
+        "indeterminate_write_poison_requires_recovery_and_preserves_history"
       ],
       "stageResourceBounds": {
         "pointOpeRows": 1000000,
@@ -152,11 +403,13 @@
       },
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
-        "authenticated_live_input_adapters_and_durable_product_scheduler",
-        "real_future_calendar_windows_and_independent_snapshots",
-        "retention_change_point_privacy_power_and_unlearning_receipts",
-        "separate_selector_operator_canary_promotion_and_release_decisions"
-      ]
+        "target_host_evidence_sink_and_namespace_authentication",
+        "real_future_calendar_and_live_authenticated_outcomes",
+        "retention_change_point_privacy_power_and_unlearning",
+        "cross_host_shared_storage_lock_fsync_qualification_if_applicable",
+        "independent_operator_acceptance_selection_canary_promotion_release"
+      ],
+      "productionContract": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"
     }
   ],
   "crossCrateQualification": {
@@ -171,19 +424,55 @@
       "world_model",
       "bellman_reference",
       "artifact_admission",
-      "independent_evaluation",
+      "signed_independent_evaluation",
       "artifact_lifecycle"
     ]
   },
   "externalGates": [
-    {"id": "RDY-EXT-001", "state": "open_until_exact_head_and_synthetic_merge_ci_pass", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-002", "state": "open_independent_semantic_review_required", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-003", "state": "open_real_product_consumer_runtime_model_and_device_identity_required", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-004", "state": "open_future_calendar_efficacy_retention_and_support_required", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-005", "state": "conditional_open_for_biomimicry_claims", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-006", "state": "conditional_open_for_target_hardware_or_embodied_use", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-007", "state": "conditional_open_for_external_system_or_data_owner_consent", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-008", "state": "open_independent_operator_acceptance_required", "repositoryMaySelfCertify": false},
-    {"id": "RDY-EXT-009", "state": "open_canary_selection_promotion_and_release_decisions_required", "repositoryMaySelfCertify": false}
+    {
+      "id": "RDY-EXT-001",
+      "state": "open_until_exact_head_and_synthetic_merge_ci_pass",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-002",
+      "state": "open_independent_semantic_review_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-003",
+      "state": "open_real_product_consumer_runtime_model_and_device_identity_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-004",
+      "state": "open_future_calendar_efficacy_retention_and_support_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-005",
+      "state": "conditional_open_for_biomimicry_claims",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-006",
+      "state": "conditional_open_for_target_hardware_or_embodied_use",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-007",
+      "state": "conditional_open_for_external_system_or_data_owner_consent",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-008",
+      "state": "open_independent_operator_acceptance_required",
+      "repositoryMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-009",
+      "state": "open_canary_selection_promotion_and_release_decisions_required",
+      "repositoryMaySelfCertify": false
+    }
   ]
 }

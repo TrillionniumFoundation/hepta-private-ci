@@ -4,8 +4,13 @@ use crate::PipelineDispositionV1;
 use codex_hepta_intuition::RiskClass;
 use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_learning_ledger::DurableLedger;
+use codex_hepta_learning_ledger::DurableLedgerError;
 use codex_hepta_learning_ledger::LedgerAnchor;
+use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerRecovery;
+use codex_hepta_learning_ledger::LedgerWitnessStore;
+use codex_hepta_learning_ledger::LedgerWriter;
+use codex_hepta_learning_ledger::ProductionLedgerError;
 use codex_hepta_types::ProbabilityQ32;
 use pretty_assertions::assert_eq;
 use std::fs;
@@ -97,17 +102,38 @@ impl LaneFShadowPortsV1 for Ports {
         panic!("a host proposal digest must never substitute for the durable append")
     }
 }
-fn ledger_at(path: &std::path::Path) -> DurableLedger {
+fn witness_path(path: &std::path::Path) -> std::path::PathBuf {
+    path.with_extension("witness")
+}
+
+fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
     let file = OpenOptions::new()
         .create_new(true)
         .read(true)
         .write(true)
         .open(path)
         .unwrap();
-    DurableLedger::create(
+    let ledger = DurableLedger::create(
         file,
         digest("host-authorized-ledger"),
         /*max_records*/ 1,
+    )
+    .unwrap();
+    let witness = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(witness_path(path))
+        .unwrap();
+    let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger")).unwrap();
+    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    LedgerWriter::from_durable(
+        ledger,
+        witness,
+        fixture.trust_activation(),
+        &ledger_directory,
+        &witness_directory,
     )
     .unwrap()
 }
@@ -117,16 +143,10 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
     let fixture = Fixture::new();
     let temp = tempfile::tempdir().unwrap();
     let path = temp.path().join("ledger");
-    let mut ledger = ledger_at(&path);
+    let mut ledger = ledger_at(&path, &fixture);
     let mut ports = Ports::new(&fixture);
-    let receipt = run_evaluated_shadow_v1(
-        fixture.request(),
-        &fixture.verifier,
-        &mut ledger,
-        &mut ports,
-        /*now*/ 50,
-    )
-    .unwrap();
+    let receipt =
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50).unwrap();
     let append = receipt.learning.unwrap();
     assert_eq!(append.disposition, AppendDisposition::Appended);
     assert_eq!(ports.calls.len(), 7);
@@ -140,8 +160,8 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
     );
     assert_eq!(receipt.pipeline.authority, AuthorityPosture::DENY_ALL);
     let expected_records = ledger.records().unwrap().to_vec();
-    let LedgerEvent::Decision(decision) = &expected_records[0].event else {
-        panic!("only a Decision")
+    let LedgerEvent::AuthenticatedDecisionV2(decision) = &expected_records[0].event else {
+        panic!("only an authenticated production Decision")
     };
     assert_eq!(decision.record_id, fixture.run.run_id);
     assert_eq!(decision.selected_candidate_id, id("action"));
@@ -153,7 +173,7 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
         .write(true)
         .open(&path)
         .unwrap();
-    let mut reopened = DurableLedger::recover(
+    let reopened_ledger = DurableLedger::recover(
         file,
         digest("host-authorized-ledger"),
         /*max_records*/ 1,
@@ -163,10 +183,25 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
         }),
     )
     .unwrap();
+    let witness = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(witness_path(&path))
+        .unwrap();
+    let witness = LedgerWitnessStore::recover(witness, digest("host-authorized-ledger")).unwrap();
+    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let mut reopened = LedgerWriter::from_durable(
+        reopened_ledger,
+        witness,
+        fixture.trust_activation(),
+        &ledger_directory,
+        &witness_directory,
+    )
+    .unwrap();
     assert_eq!(reopened.records().unwrap(), expected_records);
     let replay = run_evaluated_shadow_v1(
         fixture.request(),
-        &fixture.verifier,
         &mut reopened,
         &mut ports,
         /*now*/ 50,
@@ -183,28 +218,25 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
     assert_eq!(fs::read(&path).unwrap(), original_bytes);
     let mut drift = fixture.request();
     drift.intuition.sequence += 1;
+    drift.decision_evidence =
+        fixture.decision_evidence_for(&drift.run, &drift.intuition, &drift.episode_id);
     ports.intuition = decide_calibrated_v2(drift.intuition.clone()).unwrap();
     assert!(matches!(
-        run_evaluated_shadow_v1(
-            drift,
-            &fixture.verifier,
-            &mut reopened,
-            &mut ports,
-            /*now*/ 50
-        ),
-        Err(EvaluatedShadowError::Ledger(DurableLedgerError::Semantic(
-            _
-        )))
+        run_evaluated_shadow_v1(drift, &mut reopened, &mut ports, /*now*/ 50),
+        Err(EvaluatedShadowError::Ledger(
+            ProductionLedgerError::Durable(DurableLedgerError::Semantic(_))
+        ))
     ));
     assert_eq!(fs::read(&path).unwrap(), original_bytes);
 }
 
 #[test]
 fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
-    let mutations: [fn(&mut Fixture); 9] = [
-        |f| f.evidence.generator_plan.signature[0] ^= 1,
-        |f| f.evidence.evaluator_bundle.signature[0] ^= 1,
+    let mutations: [fn(&mut Fixture); 10] = [
+        |f| f.qualification.publication_digest = digest("tampered publication"),
+        |f| f.qualification.decision.authentication_digest = digest("tampered authentication"),
         |f| f.candidate_evidence.signature[0] ^= 1,
+        |f| f.decision_evidence.signature[0] ^= 1,
         |f| {
             f.bytes[0] ^= 1;
             f.run.snapshot.model_artifact_digest = Digest32::of_bytes(&f.bytes);
@@ -212,10 +244,7 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
         |f| f.run.snapshot.learning_artifact_generation += 1,
         |f| f.run.snapshot.model_artifact_digest = digest("another artifact"),
         |f| f.dataset.inclusion_policy_digest = digest("changed cut"),
-        |f| {
-            f.bundle.snapshot_ids.push(id("unchecked-snapshot"));
-            f.resign_evaluator();
-        },
+        |f| f.qualification.snapshot_ids.push(id("unchecked-snapshot")),
         |f| f.intuition.state_digest = digest("wrong run"),
     ];
     for mutate in mutations {
@@ -224,17 +253,11 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
         mutate(&mut fixture);
         let temp = tempfile::tempdir().unwrap();
         let path = temp.path().join("ledger");
-        let mut ledger = ledger_at(&path);
+        let mut ledger = ledger_at(&path, &fixture);
         let before = fs::read(&path).unwrap();
         assert!(
-            run_evaluated_shadow_v1(
-                fixture.request(),
-                &fixture.verifier,
-                &mut ledger,
-                &mut ports,
-                /*now*/ 50
-            )
-            .is_err()
+            run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50)
+                .is_err()
         );
         assert!(ports.calls.is_empty());
         assert!(ledger.records().unwrap().is_empty());
@@ -252,16 +275,10 @@ fn old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch() {
     let mut ports = Ports::new(&fixture);
     let temp = tempfile::tempdir().unwrap();
     let path = temp.path().join("ledger");
-    let mut ledger = ledger_at(&path);
+    let mut ledger = ledger_at(&path, &fixture);
     let before = fs::read(&path).unwrap();
     assert!(matches!(
-        run_evaluated_shadow_v1(
-            fixture.request(),
-            &fixture.verifier,
-            &mut ledger,
-            &mut ports,
-            /*now*/ 50,
-        ),
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50,),
         Err(EvaluatedShadowError::Binding("authority epoch"))
     ));
     assert!(ports.calls.is_empty());
@@ -270,28 +287,28 @@ fn old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch() {
 }
 
 #[test]
-fn signed_ineligibility_insufficiency_and_expiry_refuse_all_ports() {
+fn tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports() {
     for case in 0..3 {
         let mut fixture = Fixture::new();
         if case == 0 {
-            fixture.bundle.metrics[0].candidate.lower = codex_hepta_types::FixedQ32::ZERO;
-            fixture.bundle.metrics[0].candidate.upper = codex_hepta_types::FixedQ32::ZERO;
+            fixture.qualification.decision.decision.evidence_digest = Digest32::ZERO;
         } else if case == 1 {
-            fixture.bundle.metrics[0].support_digest = Digest32::ZERO;
+            fixture.qualification.publication_digest = Digest32::ZERO;
         }
-        fixture.resign_evaluator();
         let mut ports = Ports::new(&fixture);
         let temp = tempfile::tempdir().unwrap();
-        let mut ledger = ledger_at(&temp.path().join("ledger"));
+        let mut ledger = ledger_at(&temp.path().join("ledger"), &fixture);
         let result = run_evaluated_shadow_v1(
             fixture.request(),
-            &fixture.verifier,
             &mut ledger,
             &mut ports,
             if case == 2 { 95 } else { 50 },
         );
         if case != 2 {
-            assert!(matches!(result, Err(EvaluatedShadowError::Ineligible(_))));
+            assert!(matches!(
+                result,
+                Err(EvaluatedShadowError::Qualification(_))
+            ));
         } else {
             assert!(matches!(result, Err(EvaluatedShadowError::Evidence(_))));
         }
@@ -310,15 +327,10 @@ fn host_failure_or_substituted_intuition_never_reaches_the_durable_stage() {
             ports.intuition.receipt_digest = digest("fake intuition");
         }
         let temp = tempfile::tempdir().unwrap();
-        let mut ledger = ledger_at(&temp.path().join("ledger"));
-        let receipt = run_evaluated_shadow_v1(
-            fixture.request(),
-            &fixture.verifier,
-            &mut ledger,
-            &mut ports,
-            /*now*/ 50,
-        )
-        .unwrap();
+        let mut ledger = ledger_at(&temp.path().join("ledger"), &fixture);
+        let receipt =
+            run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50)
+                .unwrap();
         assert!(matches!(
             receipt.pipeline.disposition,
             PipelineDispositionV1::Failed(_)
@@ -334,50 +346,38 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
     let fixture = Fixture::new();
     let temp = tempfile::tempdir().unwrap();
     let path = temp.path().join("ledger");
-    let mut ledger = ledger_at(&path);
+    let mut ledger = ledger_at(&path, &fixture);
     let mut ports = Ports::new(&fixture);
     let mut wrong_head = fixture.request();
     wrong_head.expected_ledger_head = digest("unrelated predecessor");
     assert!(matches!(
-        run_evaluated_shadow_v1(
-            wrong_head,
-            &fixture.verifier,
-            &mut ledger,
-            &mut ports,
-            /*now*/ 50
-        ),
-        Err(EvaluatedShadowError::Ledger(DurableLedgerError::Conflict))
+        run_evaluated_shadow_v1(wrong_head, &mut ledger, &mut ports, /*now*/ 50),
+        Err(EvaluatedShadowError::Ledger(
+            ProductionLedgerError::Durable(DurableLedgerError::Conflict)
+        ))
     ));
     assert!(ledger.records().unwrap().is_empty());
-    let receipt = run_evaluated_shadow_v1(
-        fixture.request(),
-        &fixture.verifier,
-        &mut ledger,
-        &mut ports,
-        /*now*/ 50,
-    )
-    .unwrap();
+    let receipt =
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50).unwrap();
     let before = fs::read(&path).unwrap();
     let mut second = fixture.request();
     second.run.run_id = id("second-run");
     second.intuition.decision_id = id("second-run");
     second.episode_id = id("second-episode");
     second.expected_ledger_head = receipt.learning.unwrap().chain_digest;
+    second.decision_evidence =
+        fixture.decision_evidence_for(&second.run, &second.intuition, &second.episode_id);
     ports.intuition = decide_calibrated_v2(second.intuition.clone()).unwrap();
     assert!(matches!(
-        run_evaluated_shadow_v1(
-            second,
-            &fixture.verifier,
-            &mut ledger,
-            &mut ports,
-            /*now*/ 50
-        ),
-        Err(EvaluatedShadowError::Ledger(DurableLedgerError::Capacity))
+        run_evaluated_shadow_v1(second, &mut ledger, &mut ports, /*now*/ 50),
+        Err(EvaluatedShadowError::Ledger(
+            ProductionLedgerError::Durable(DurableLedgerError::Capacity)
+        ))
     ));
     assert_eq!(fs::read(path).unwrap(), before);
 
     let path = temp.path().join("faulted-ledger");
-    let mut ledger = ledger_at(&path);
+    let mut ledger = ledger_at(&path, &fixture);
     OpenOptions::new()
         .write(true)
         .open(&path)
@@ -386,18 +386,14 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
         .unwrap();
     let mut ports = Ports::new(&fixture);
     assert!(matches!(
-        run_evaluated_shadow_v1(
-            fixture.request(),
-            &fixture.verifier,
-            &mut ledger,
-            &mut ports,
-            /*now*/ 50
-        ),
-        Err(EvaluatedShadowError::Ledger(DurableLedgerError::Corrupt))
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50),
+        Err(EvaluatedShadowError::Ledger(
+            ProductionLedgerError::Durable(DurableLedgerError::Corrupt)
+        ))
     ));
     assert!(matches!(
         ledger.records(),
-        Err(DurableLedgerError::Poisoned)
+        Err(ProductionLedgerError::Durable(DurableLedgerError::Poisoned))
     ));
 }
 
@@ -415,17 +411,13 @@ fn abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome() {
                 )
                 .unwrap();
         }
+        fixture.resign_decision();
         let mut ports = Ports::new(&fixture);
         let temp = tempfile::tempdir().unwrap();
-        let mut ledger = ledger_at(&temp.path().join("ledger"));
-        let receipt = run_evaluated_shadow_v1(
-            fixture.request(),
-            &fixture.verifier,
-            &mut ledger,
-            &mut ports,
-            /*now*/ 50,
-        )
-        .unwrap();
+        let mut ledger = ledger_at(&temp.path().join("ledger"), &fixture);
+        let receipt =
+            run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50)
+                .unwrap();
         assert!(receipt.learning.is_some());
         assert_eq!(ports.calls.len(), 5);
         let expected = if slow {
@@ -436,8 +428,8 @@ fn abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome() {
         assert_eq!(receipt.pipeline.disposition, expected);
         let records = ledger.records().unwrap();
         assert_eq!(records.len(), 1);
-        let LedgerEvent::Decision(decision) = &records[0].event else {
-            panic!("Decision, never Outcome")
+        let LedgerEvent::AuthenticatedDecisionV2(decision) = &records[0].event else {
+            panic!("authenticated Decision, never Outcome")
         };
         assert_eq!(
             decision.selected_candidate_id,

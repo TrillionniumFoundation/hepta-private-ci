@@ -9,6 +9,8 @@ This document defines the executable separation between experience recording, ca
 
 `learning.ledger` owns immutable decisions and outcomes, `learning.eval` owns analysis, `learning.artifacts` owns candidate bytes and lineage, and `kernel.evidence` verifies identity separation. All modules retain zero production selection, merge, promotion and release authority.
 
+For concrete `learning.eval` code, [`../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md`](../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md) is normative: default external qualification uses signed V2/V3 admission, direct evaluators are explicit trusted-only compatibility, and multi-writer final-holdout ownership requires linearizable CAS plus monotonic fencing. The local file journal is not a distributed lock.
+
 ## 2. Preregistered evaluation plan
 
 Before candidate outcomes are inspected, `EvaluationPlanV1` freezes objective class, candidate, baseline, estimators, clipping policy, future windows, retention slices, multiplicity correction, minimum samples and decision thresholds. Any semantic change creates a new plan and invalidates prior partial results.
@@ -67,7 +69,7 @@ Property tests enforce immutable plans, chosen membership, probability normaliza
 
 ## 11. Implementation sequence
 
-Implement append-only decision/outcome protocols, plan freezing, candidate/support validation, deterministic OPE, watermarks and corrections, immutable datasets, cross-fitting, confidence/multiplicity, future windows, retention slices, unlearning, artifact reload and independent decision adapters. Learned outcome models are optional and follow the tabular/linear baseline.
+Implement append-only decision/outcome protocols, V2 plan/metric-role freezing, candidate/support validation, deterministic OPE, watermarks and corrections, immutable datasets, cross-fitting, confidence/multiplicity, signed independent V2/V3 admission, durable final-holdout consumption, future windows, retention slices, unlearning, artifact reload and independent decision adapters. Multi-writer holdout owners use the fenced CAS contract; single-host owners may use the local durable adapter. Learned outcome models are optional and follow the tabular/linear baseline.
 
 ## 12. Coding-entry checklist
 

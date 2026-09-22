@@ -7,12 +7,21 @@
 #![forbid(unsafe_code)]
 
 mod evaluated_shadow;
+mod outcome_credit_v2;
 
 pub use evaluated_shadow::EvaluatedShadowError;
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
+pub use evaluated_shadow::evaluated_candidate_signing_payload_v2;
+pub use evaluated_shadow::evaluated_shadow_production_decision_v2;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+pub use outcome_credit_v2::ObservedOutcomeRequestV2;
+pub use outcome_credit_v2::OutcomeCreditClosureErrorV2;
+pub use outcome_credit_v2::OutcomeCreditClosureReceiptV2;
+pub use outcome_credit_v2::OutcomeCreditClosureRequestV2;
+pub use outcome_credit_v2::append_observed_outcome_v2;
+pub use outcome_credit_v2::append_outcome_credit_v2;
 
 mod objective_run;
 
@@ -30,12 +39,31 @@ pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
+mod prompt_pipeline;
+
+pub use prompt_pipeline::PreparedPromptContextV1;
+pub use prompt_pipeline::PreparedPromptDeliveryV1;
+pub use prompt_pipeline::PromptContextCompileRequestV1;
+pub use prompt_pipeline::PromptDeliveryPrepareRequestV1;
+pub use prompt_pipeline::PromptPayloadMaterializationV1;
+pub use prompt_pipeline::PromptPipelineErrorV1;
+pub use prompt_pipeline::PromptSerializationOccurrenceV1;
+pub use prompt_pipeline::PromptSerializationProofV1;
+pub use prompt_pipeline::compile_exercised_prompt_context_v1;
+pub use prompt_pipeline::observe_prompt_delivery_v1;
+pub use prompt_pipeline::prepare_prompt_delivery_v1;
+
 mod pipeline_v2;
+mod prompt_delivery;
 
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
 pub use pipeline_v2::run_shadow_pipeline_v2;
+pub use prompt_delivery::PromptRegistryCompilationErrorV2;
+pub use prompt_delivery::PromptRegistryCompilationRequestV2;
+pub use prompt_delivery::PromptRegistryCompiledContextV2;
+pub use prompt_delivery::compile_prompt_registry_v2;
 
 mod pipeline;
 

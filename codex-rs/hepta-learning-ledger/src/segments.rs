@@ -173,7 +173,7 @@ impl SegmentedLedger {
         })
     }
 
-    pub fn append(
+    pub(crate) fn append(
         &mut self,
         expected_predecessor: Digest32,
         event: LedgerEvent,
@@ -280,6 +280,11 @@ impl SegmentedLedger {
         self.sealed = false;
         self.poisoned = false;
         Ok(())
+    }
+
+    #[must_use]
+    pub const fn binding_digest(&self) -> Digest32 {
+        self.binding
     }
 
     pub fn checkpoint(&self) -> Result<LedgerSegmentCheckpoint, DurableLedgerError> {
