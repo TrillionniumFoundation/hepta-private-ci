@@ -404,8 +404,15 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     boundary = migrated.get("claimBoundary") or migrated.get("completion")
     if not isinstance(boundary, dict):
         boundary = {}
+    implemented_mapping_complete = all(
+        bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+        for op in operations
+    )
     migrated["claimBoundary"] = {
         **boundary,
+        "implementedOperationMappingComplete": boundary.get(
+            "implementedOperationMappingComplete", implemented_mapping_complete
+        ),
         # Preserve a reviewed claim; migration must not manufacture one.
         "nativeSourceMappingComplete": boundary.get("nativeSourceMappingComplete", False),
         "sourceRootPresent": migrated["sourceRootPresent"],
@@ -580,8 +587,33 @@ def verify(*, require_current_source: bool = True):
                 candidate_bound_maps += 1
             else:
                 exact_observed_fallback_maps += 1
-            if not isinstance(row.get("claimBoundary") or row.get("completion"), dict):
+            boundary = row.get("claimBoundary") or row.get("completion")
+            if not isinstance(boundary, dict):
                 raise ValueError("claim boundary")
+            implemented_mapping_complete = all(
+                bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+                for op in ops
+            )
+            if (
+                "implementedOperationMappingComplete" in boundary
+                and boundary["implementedOperationMappingComplete"]
+                is not implemented_mapping_complete
+            ):
+                raise ValueError("implemented operation mapping claim drift")
+            owned_protocols = row.get("ownedTargetProtocols")
+            if owned_protocols is not None:
+                if not isinstance(owned_protocols, list):
+                    raise ValueError("owned target protocols")
+                owned_source_complete = all(
+                    isinstance(item, dict) and item.get("state") == "source_implemented"
+                    for item in owned_protocols
+                )
+                if boundary.get("ownedTargetProtocolSourceComplete") is not owned_source_complete:
+                    raise ValueError("owned target protocol source claim drift")
+                if boundary.get("nativeSourceMappingComplete") is not (
+                    implemented_mapping_complete and owned_source_complete
+                ):
+                    raise ValueError("native source mapping claim drift")
         except (
             ValueError, TypeError, KeyError, OSError, subprocess.CalledProcessError
         ) as exc:

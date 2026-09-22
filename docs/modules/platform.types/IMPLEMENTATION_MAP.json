@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "2384affeaacf7303f279efc699e488750fb70e04",
+    "tree": "7e0c612842f901949093c2acad6b46fc80c1f977"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
@@ -20,43 +20,251 @@
   "productionImplementation": false,
   "productCallerState": "not_composed",
   "productionWriterState": "not_established",
+  "stateOwnerDisposition": "Stateless authority-free values; immutable registry generations are caller-owned inputs.",
+  "terminalObserverDisposition": "No effects or terminal observer; candidate qualification proves deterministic value semantics only.",
   "operations": [
+    {
+      "operation": "bounded_values",
+      "nativeSymbol": "BoundedText",
+      "sourcePath": "codex-rs/hepta-types/src/bounded.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/bounded_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "bounded_values",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "BoundedText",
+        "BoundedBytes"
+      ]
+    },
+    {
+      "operation": "validate_id",
+      "nativeSymbol": "validate_id",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_id",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "StableId",
+        "IdProfileV1",
+        "IdNamespaceV1",
+        "validate_id"
+      ]
+    },
+    {
+      "operation": "raw_authority_ingress",
+      "nativeSymbol": "AuthorityPosture::try_from_wire_bytes",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "raw_authority_ingress",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "AuthorityFlagsV1",
+        "AuthorityPosture",
+        "NonAuthorizingPosture"
+      ]
+    },
+    {
+      "operation": "canonical_digest_v1",
+      "nativeSymbol": "canonical_digest_v1",
+      "sourcePath": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+        "codex-rs/hepta-types/conformance/verify_vectors.py",
+        "codex-rs/hepta-types/conformance/verify_vectors.ts"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_digest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "canonical_encode_v1",
+        "canonical_digest_v1"
+      ]
+    },
+    {
+      "operation": "canonical_validate_v1",
+      "nativeSymbol": "canonical_validate_v1",
+      "sourcePath": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+        "codex-rs/hepta-types/conformance/verify_rejections.py",
+        "codex-rs/hepta-types/conformance/verify_rejections.mjs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_validate_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "canonical_validate_v1"
+      ]
+    },
+    {
+      "operation": "fixed_q32",
+      "nativeSymbol": "FixedQ32",
+      "sourcePath": "codex-rs/hepta-types/src/fixed.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/fixed_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "fixed_q32",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "FixedQ32",
+        "ProbabilityQ32",
+        "FIXED_Q32_ARITHMETIC_PROFILE_V1"
+      ]
+    },
+    {
+      "operation": "contract_registry_v1",
+      "nativeSymbol": "ContractRegistryV1",
+      "sourcePath": "codex-rs/hepta-types/src/registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "contract_registry_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "ContractRegistryV1",
+        "RegistryDefinitionV1",
+        "RegistryKindV1"
+      ]
+    },
+    {
+      "operation": "numeric_profile_definition_v1",
+      "nativeSymbol": "NumericProfileDefinitionV1",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_profile.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_profile_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "numeric_profile_definition_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "NumericProfileV1",
+        "NumericProfileDefinitionV1"
+      ]
+    },
     {
       "operation": "rescale_signal",
       "nativeSymbol": "rescale_signal",
       "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "rescale_signal",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "NumericSignalV1",
+        "NumericConversionReceiptV1",
+        "rescale_signal"
+      ]
     },
     {
-      "operation": "stableid",
-      "nativeSymbol": "StableId",
-      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "operation": "rescale_signal_registered",
+      "nativeSymbol": "rescale_signal_registered",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "stableid",
+      "designOperation": "rescale_signal_registered",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "rescale_signal_registered"
+      ]
+    },
+    {
+      "operation": "generated_bindings_v1",
+      "nativeSymbol": "generate_bindings.py",
+      "sourcePath": "codex-rs/hepta-types/bindings/generate_bindings.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/bindings/verify_generated.py",
+        "codex-rs/hepta-types/bindings/verify_generated.mjs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "generated_bindings_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "generated/python/hepta_platform_types_v1.py",
+        "generated/javascript/hepta_platform_types_v1.mjs",
+        "generated/typescript/hepta_platform_types_v1.d.ts"
+      ]
+    }
+  ],
+  "ownedTargetProtocols": [
+    {
+      "protocol": "RandomStreamManifestV1",
+      "state": "source_pending"
+    },
+    {
+      "protocol": "ExternalSystemManifestV1",
+      "state": "source_pending"
+    },
+    {
+      "protocol": "SensorCalibrationManifestV1",
+      "state": "source_pending"
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge Lane A qualification for this exact candidate.",
+    "Implement native source for RandomStreamManifestV1, ExternalSystemManifestV1 and SensorCalibrationManifestV1 before claiming full owned-target-protocol source completion."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "named authenticated product composition and full consumer compile matrix",
+    "independent semantic review and target-host/product qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
+    "implementedOperationMappingComplete": true,
+    "ownedTargetProtocolSourceComplete": false,
+    "nativeSourceMappingComplete": false,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
     "sourceRootPresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
@@ -65,6 +273,14 @@
     "release": false
   },
   "sourceRoot": [
+    "codex-rs/hepta-types"
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "2384affeaacf7303f279efc699e488750fb70e04",
+    "tree": "7e0c612842f901949093c2acad6b46fc80c1f977"
+  },
+  "observedSourcePaths": [
     "codex-rs/hepta-types"
   ]
 }

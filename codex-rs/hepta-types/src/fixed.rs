@@ -3,6 +3,11 @@ use std::fmt;
 
 const SCALE: i128 = 1_i128 << 32;
 
+/// Arithmetic semantics for FixedQ32 compatibility methods. This is distinct
+/// from signed-q32-nearest-ties-even-v1: the raw scale matches, the arithmetic
+/// rounding rule does not.
+pub const FIXED_Q32_ARITHMETIC_PROFILE_V1: &str = "fixed-q32-toward-zero-v1";
+
 /// Signed Q32 fixed-point value with checked deterministic arithmetic.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct FixedQ32(i64);
@@ -17,6 +22,10 @@ impl FixedQ32 {
 
     pub const fn raw(self) -> i64 {
         self.0
+    }
+
+    pub const fn arithmetic_profile_id() -> &'static str {
+        FIXED_Q32_ARITHMETIC_PROFILE_V1
     }
 
     pub fn checked_add(self, other: Self) -> Result<Self, FixedQ32Error> {
@@ -34,6 +43,10 @@ impl FixedQ32 {
     }
 
     pub fn checked_mul(self, other: Self) -> Result<Self, FixedQ32Error> {
+        self.checked_mul_toward_zero(other)
+    }
+
+    pub fn checked_mul_toward_zero(self, other: Self) -> Result<Self, FixedQ32Error> {
         let product = i128::from(self.0) * i128::from(other.0);
         let scaled = product / SCALE;
         i64::try_from(scaled)
@@ -42,6 +55,10 @@ impl FixedQ32 {
     }
 
     pub fn checked_div(self, other: Self) -> Result<Self, FixedQ32Error> {
+        self.checked_div_toward_zero(other)
+    }
+
+    pub fn checked_div_toward_zero(self, other: Self) -> Result<Self, FixedQ32Error> {
         if other.0 == 0 {
             return Err(FixedQ32Error::DivisionByZero);
         }

@@ -148,9 +148,10 @@ fn altered_snapshot_fields_are_rejected_before_filtering() {
     let mut value = original.clone();
     value.records[0].revision = revision(2);
     altered.push(value);
-    let mut value = original.clone();
-    value.authority.runtime = true;
-    altered.push(value);
+    assert_eq!(
+        codex_hepta_types::AuthorityPosture::try_from_wire_bytes(&[0x01]),
+        Err(codex_hepta_types::AuthorityPostureError::GrantRequested)
+    );
     for value in altered {
         assert_eq!(read(&value, request.clone()), Err(Error::SnapshotMismatch));
     }
