@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "446b8806885ab3ca497ca14efd82077c5361b9fe",
-    "tree": "ce3657d25f71aad66444d3ee1ebb739ed8b2b994"
+    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
+    "tree": "2966b18a48c64350872ac9052acdcd0642372ada"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -36,7 +36,10 @@
       "designOperation": "build_complete_generation",
       "mappingClass": "owner_native_with_cognitive_owner_adapter",
       "delegatedCallees": [
-        "codex-rs/hepta-memory/src/cognitive_kg_store.rs::canonical_generation_from_projection"
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+          "symbol": "canonical_generation_from_projection"
+        }
       ]
     },
     {
@@ -64,14 +67,23 @@
         "codex-rs/hepta-kg/src/generation_tests.rs",
         "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
         "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-        "codex-rs/hepta-memory/src/cognitive_store_tests.rs::qualification_kg_projection_crash_windows_restore_exact_predecessor",
-        "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs::qualification_knowledge_graph_capacity_receipt"
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+          "symbol": "qualification_kg_projection_crash_windows_restore_exact_predecessor"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+          "symbol": "qualification_knowledge_graph_capacity_receipt"
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "publish_generation",
       "mappingClass": "owner_native_with_cognitive_owner_adapter",
       "delegatedCallees": [
-        "codex-rs/hepta-memory/src/cognitive_kg_store.rs::refresh_scope_projection_tx"
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+          "symbol": "refresh_scope_projection_tx"
+        }
       ]
     },
     {
@@ -84,7 +96,10 @@
         "codex-rs/hepta-kg/src/generation_tests.rs",
         "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
         "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
-        "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs::qualification_knowledge_graph_capacity_receipt",
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+          "symbol": "qualification_knowledge_graph_capacity_receipt"
+        },
         "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
         "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
       ],
@@ -92,8 +107,14 @@
       "designOperation": "query_relations",
       "mappingClass": "owner_native_with_cognitive_read_adapter",
       "delegatedCallees": [
-        "codex-rs/hepta-memory/src/cognitive_retrieval.rs::graph_channel_tx",
-        "codex-rs/hepta-prompt-optimizer/src/graph.rs::optimize_with_factor_graph"
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+          "symbol": "graph_channel_tx"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
+          "symbol": "optimize_with_factor_graph"
+        }
       ]
     },
     {
@@ -103,7 +124,10 @@
       "state": "source_composed_prompt_registry_owner_to_prompt_optimizer_consumer_pending_exact_head",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-prompt-registry/src/lib_tests.rs::governed_factor_relations_are_owner_bound_and_rebuildable",
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+          "symbol": "governed_factor_relations_are_owner_bound_and_rebuildable"
+        },
         "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
         "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
       ],
@@ -111,8 +135,14 @@
       "designOperation": "build_prompt_factor_projection",
       "mappingClass": "owner_native_with_prompt_registry_source_and_optimizer_consumer",
       "delegatedCallees": [
-        "codex-rs/hepta-prompt-registry/src/lib.rs::PromptRegistry::factor_graph_source_v1",
-        "codex-rs/hepta-prompt-optimizer/src/graph.rs::optimize_with_factor_graph"
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
+          "symbol": "PromptRegistry::factor_graph_source_v1"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
+          "symbol": "optimize_with_factor_graph"
+        }
       ]
     }
   ],
@@ -173,8 +203,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "446b8806885ab3ca497ca14efd82077c5361b9fe",
-    "tree": "ce3657d25f71aad66444d3ee1ebb739ed8b2b994",
+    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
+    "tree": "2966b18a48c64350872ac9052acdcd0642372ada",
     "interpretation": "exact knowledge.graph source observation after canonical cognitive SQLite V2 convergence, default Agentd cognitive-writer profile, crash/reopen and truthful current-generation PERF-LIBRARY probes, complete query-request digest binding, full predecessor-bound publication-history and semantic-row oracle, canonical entity shape-evolution oracle, sealed prompt.registry factor-relation source, prompt substitute hard-redundancy semantics, complement no-fabricated-bonus semantics, generation-bound prompt.optimizer consumption, candidate-owned rustfmt and workspace lock closure, and KG qualification isolation from unrelated detailed-design drift; later map-only commits may project this observation while qualification results remain separate"
   },
   "observedSourcePaths": [

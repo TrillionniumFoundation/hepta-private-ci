@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "01b1ed61f77819b8028a9ea008b2743125db9bad",
-    "tree": "71d5312279caed1476c9c9956283910e5d187b00"
+    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
+    "tree": "2966b18a48c64350872ac9052acdcd0642372ada"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -169,19 +169,19 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "blobSha": "f4169b08f3dcc66207e9b7a4b622668a584d4089"
+      "blobSha": "d40c885f15845b6b7426897ef72afb68f3720e09"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
-      "blobSha": "e7e6d082565079f2004c3994b74cf51d5b4d3de9"
+      "blobSha": "31d80f11e912e6ef711410ba0b808eadcde16416"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
-      "blobSha": "6841d61a101df9bdb3334fd08847b3a9620a17b5"
+      "blobSha": "21b5cb0e03f66fc86645a73fd978626ce1e9638a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "blobSha": "99e0fb69ab9fee402de49be187a3f1c8e2be0c89"
+      "blobSha": "475d0916cb3ea75269425e9b29db74f6b7c1bc3b"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
@@ -189,7 +189,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "blobSha": "b25135846b4701bc9b6a9608fed48f810d40e3a2"
+      "blobSha": "8e6a9a5a56bc03bb3d321d31c5ae0927292d40b6"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -201,7 +201,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
-      "blobSha": "7e72f553592b6ac09d452453702ff2c7536bee38"
+      "blobSha": "094f0d9d546018830d60ebc22d7f809da658eca6"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
@@ -233,15 +233,15 @@
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-      "blobSha": "40bb297d256f061bbdeb58afd5c91e501bb81840"
+      "blobSha": "c23e18265b712cfc39f3ac1e3bf3e9414185795d"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
-      "blobSha": "263a32755e6efb1f5bc59765d5947cdde82838c1"
+      "blobSha": "f788e0ae3d275cdcd7f15c5492801edfbe6484f0"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "blobSha": "a4507245b9b98f76a5736f63b9f7ba0dc90ecb6e"
+      "blobSha": "2abfaac6402421f435076a2fea18c4ac0d6e97cb"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
@@ -265,13 +265,13 @@
       "role": "owner_read_adapter",
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "symbol": "pub(crate) async fn read(",
-      "blobSha": "f4169b08f3dcc66207e9b7a4b622668a584d4089"
+      "blobSha": "d40c885f15845b6b7426897ef72afb68f3720e09"
     },
     {
       "role": "owner_final_use_revalidation",
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "symbol": "pub(crate) async fn revalidate(",
-      "blobSha": "f4169b08f3dcc66207e9b7a4b622668a584d4089"
+      "blobSha": "d40c885f15845b6b7426897ef72afb68f3720e09"
     },
     {
       "role": "control_protocol",
@@ -289,13 +289,13 @@
       "role": "model_effect_consumer",
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "symbol": "owner.revalidate_cognitive_context(snapshot).await",
-      "blobSha": "a4507245b9b98f76a5736f63b9f7ba0dc90ecb6e"
+      "blobSha": "2abfaac6402421f435076a2fea18c4ac0d6e97cb"
     },
     {
       "role": "durable_pre_turn_stop",
       "path": "codex-rs/hepta-infer-core/src/native_control.rs",
       "symbol": "pub fn stop_native_before_turn_start(",
-      "blobSha": "40bb297d256f061bbdeb58afd5c91e501bb81840"
+      "blobSha": "c23e18265b712cfc39f3ac1e3bf3e9414185795d"
     }
   ],
   "exactCandidateEvidence": {
@@ -304,8 +304,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "01b1ed61f77819b8028a9ea008b2743125db9bad",
-    "tree": "71d5312279caed1476c9c9956283910e5d187b00",
+    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
+    "tree": "2966b18a48c64350872ac9052acdcd0642372ada",
     "interpretation": "exact cognitive.read product-source observation after exact-ID, final-use freshness, owner-safe read-unavailability, and executable qualification-prerequisite fixes. Later commits may update only documentation/source-truth metadata; current mapped operations and product callers remain independently bound by exact HEAD blob objects."
   },
   "canonicalMemoryEventReadMigration": {
