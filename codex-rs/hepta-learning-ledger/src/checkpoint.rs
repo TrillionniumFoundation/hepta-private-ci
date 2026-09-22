@@ -176,6 +176,7 @@ fn event_kind(event: &LedgerEvent) -> u8 {
         LedgerEvent::UnlearningLineageV1(_) => 6,
         LedgerEvent::AuthenticatedDecisionV2(_) => 7,
         LedgerEvent::PromptDelivery(_) => 8,
+        LedgerEvent::RetrievalAssignment(_) => 9,
     }
 }
 

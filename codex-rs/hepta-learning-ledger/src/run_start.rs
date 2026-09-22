@@ -16,6 +16,7 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 
+use codex_hepta_types::AuthorityFlagsV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -1053,15 +1054,16 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 }
 
 fn push_authority(bytes: &mut Vec<u8>, authority: AuthorityPosture) {
+    let flags = authority.flags();
     for value in [
-        authority.runtime,
-        authority.production_writer,
-        authority.model_invocation,
-        authority.provider_dispatch,
-        authority.external_effect,
-        authority.selection,
-        authority.promotion,
-        authority.release,
+        flags.runtime,
+        flags.production_writer,
+        flags.model_invocation,
+        flags.provider_dispatch,
+        flags.external_effect,
+        flags.selection,
+        flags.promotion,
+        flags.release,
     ] {
         bytes.push(u8::from(value));
     }
@@ -1101,7 +1103,7 @@ impl Reader<'_> {
         if values.iter().any(|value| *value > 1) {
             return Err(RunStartStoreError::Corrupt);
         }
-        Ok(AuthorityPosture {
+        AuthorityPosture::try_from_flags(AuthorityFlagsV1 {
             runtime: values[0] != 0,
             production_writer: values[1] != 0,
             model_invocation: values[2] != 0,
@@ -1111,6 +1113,7 @@ impl Reader<'_> {
             promotion: values[6] != 0,
             release: values[7] != 0,
         })
+        .map_err(|_| RunStartStoreError::Corrupt)
     }
     fn len(&mut self) -> Result<usize, RunStartStoreError> {
         Ok(u32::from_be_bytes(self.take()?) as usize)

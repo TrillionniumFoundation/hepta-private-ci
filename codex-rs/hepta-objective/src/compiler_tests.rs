@@ -15,7 +15,7 @@ use crate::Constraint;
 use crate::ConstraintClass;
 use crate::ConstraintRelation;
 use crate::ObjectiveError;
-use crate::ObjectiveSourceEnvelope;
+use crate::model::ObjectiveSourceEnvelope;
 use crate::PredicateTerminality;
 use crate::SoftDirection;
 use crate::SoftPreference;

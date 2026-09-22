@@ -2,8 +2,7 @@
 //! in `docs/readiness/PROTOCOLS.json`. This is not its admitted wire type.
 //!
 //! The separate `decode_source_envelope_json_v1` entrypoint checks JSON shape;
-//! canonical intent digesting and profile-bound admission are provided by
-//! `canonical_objective_intent_digest_v1` and `admit_and_compile_objective_v1`.
+//! no canonical encoder/digest, trust conversion or compiler adapter is provided.
 //! Strings preserve source spelling: identifier/timestamp syntax, NFC, canonical
 //! ordering and registered profiles require later admission.
 
@@ -28,13 +27,6 @@ pub enum ObjectivePredicateComparatorV1 {
     GreaterThanOrEqual,
 }
 
-/// V1 preserves all protocol comparator spellings so unsupported semantics fail
-/// closed at admission rather than being silently rewritten. The V1 constraint
-/// row carries only one scalar `bound_q32`; it has no finite-enum set payload.
-/// Consequently `In`/`NotInSet`, strict inequalities and `NotEqual` are not a
-/// claim that the V1 source-to-objective adapter can represent those operations.
-/// Finite-enum intersection is a capability of the general feasibility API and
-/// requires a source grammar with an explicit set payload.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ObjectiveConstraintComparatorV1 {
     Equal,
@@ -79,10 +71,8 @@ pub struct ObjectiveSourcePredicateV1 {
     pub terminal: bool,
 }
 
-/// Preserves the V1 source grammar without guessing the native compiler's axis
-/// or precedence class. Resolving those requires a registered profile. V1 hard
-/// constraints are scalar Q32 bounds; enum-set and action-implication atoms are
-/// intentionally not synthesized from this row.
+/// Preserves the source grammar without guessing the native compiler's axis
+/// or precedence class. Resolving those requires a registered profile.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveSourceConstraintV1 {
     pub constraint_id: String,
@@ -134,11 +124,8 @@ pub struct ObjectiveProvenanceV1 {
     pub normalization_profile_digest: Digest32,
 }
 
-/// All eleven required structured-intent fields. Admission preserves and binds
-/// every field, but V1 intentionally lowers only the semantics the native
-/// objective model can represent. In particular, the general feasibility
-/// engine's finite-enum and positive-action-implication atoms are not exposed by
-/// this scalar V1 source grammar.
+/// All eleven required structured-intent fields, including fields that the
+/// existing scalar compiler cannot yet represent or enforce.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveStructuredIntentV1 {
     pub success_predicates: Vec<ObjectiveSourcePredicateV1>,
@@ -157,9 +144,9 @@ pub struct ObjectiveStructuredIntentV1 {
 /// Native source fields only. Even a structurally valid instance is neither
 /// authenticated nor eligible for publication or effect authorization.
 ///
-/// Digest fields retain supplied values until admission verifies their bindings.
-/// `observed_at` and `deadline` retain source text; UTC syntax, freshness and
-/// deadline enforcement are admission responsibilities.
+/// Digest fields retain supplied values; no bytes/profile are available here
+/// to verify their bindings. `observed_at` and `deadline` retain source text;
+/// UTC syntax, freshness and deadline enforcement are admission responsibilities.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveSourceEnvelopeV1 {
     pub request_id: String,
