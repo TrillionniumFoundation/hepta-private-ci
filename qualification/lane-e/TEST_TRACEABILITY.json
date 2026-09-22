@@ -25,7 +25,7 @@
     {
       "id": "OP-02",
       "module": "learning.operator",
-      "requirement": "Degenerate diffusion, invalid geometry, excessive reconstruction gain or shape/error breach disables the learned path.",
+      "requirement": "Degenerate applicability/geometry/regularity fails closed, and qualification admission requires an authenticated evaluator independent from the generator.",
       "tests": [
         {
           "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
@@ -34,6 +34,14 @@
         {
           "source": "codex-rs/hepta-bellman-operator/src/reference_tests.rs",
           "function": "op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs",
+          "function": "op_02_signed_applicability_requires_authenticated_independent_evaluator"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/authenticated_tests.rs",
+          "function": "op_02_signed_regularity_binds_evaluator_identity_and_exact_assessment"
         }
       ],
       "status": "native_test_mapped"
@@ -57,7 +65,7 @@
     {
       "id": "OP-04",
       "module": "learning.operator",
-      "requirement": "World-model rollouts remain synthetic and cannot become independent factual outcome evidence.",
+      "requirement": "World-model rollouts remain synthetic, unsupported pairs abstain, and relabelled duplicate evidence cannot alter counts or probabilities.",
       "tests": [
         {
           "source": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
@@ -66,6 +74,10 @@
         {
           "source": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
           "function": "op_04_transition_model_is_action_conditioned_and_probability_exact"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/world_model_tests.rs",
+          "function": "op_04_world_model_rejects_relabelled_duplicate_evidence"
         }
       ],
       "status": "native_test_mapped"
@@ -682,6 +694,58 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
           "function": "snapshot_replay_is_exact_and_duplicate_receipts_fail"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "OP-05",
+      "module": "learning.operator",
+      "requirement": "Canonical tabular fitting is complete-grid, deterministic and rejects duplicate underlying evidence even when samples are relabelled; strict V2 preserves the same admission.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/learned_tests.rs",
+          "function": "op_05_tabular_operator_fits_complete_grid_deterministically"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/learned_tests.rs",
+          "function": "op_05_tabular_operator_rejects_missing_or_underfilled_cells"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/learned_tests.rs",
+          "function": "op_05_default_fit_rejects_relabelled_duplicate_evidence"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+          "function": "op_05_strict_fit_rejects_relabelled_duplicate_evidence"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+          "function": "op_05_indexed_prediction_uses_canonical_grid"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "OP-06",
+      "module": "learning.operator",
+      "requirement": "Qualification training binds the exact self-verifying frozen dataset rows, and persisted candidates require an independent pin plus separate-process reload/rollback behavior.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs",
+          "function": "op_06_tabular_fit_requires_exact_frozen_dataset_evidence"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/dataset_bound_tests.rs",
+          "function": "op_06_world_model_requires_exact_frozen_dataset_evidence"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/loaded_tests.rs",
+          "function": "independent_pin_and_all_truncations_are_checked"
+        },
+        {
+          "source": "codex-rs/hepta-bellman-operator/src/loaded_tests.rs",
+          "function": "distinct_process_load_changes_prediction_and_rolls_back_without_retraining"
         }
       ],
       "status": "native_test_mapped"

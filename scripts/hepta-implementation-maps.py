@@ -375,71 +375,6 @@ def require_clean_candidate(
         raise ValueError("mapped source checkout contains uncommitted evidence")
 
 
-def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> None:
-    """Validate a self-reference-safe exact source manifest against HEAD.
-
-    Tracked implementation maps cannot contain their own future HEAD/tree
-    identity without a fixed-point problem. This policy freezes mapped source
-    files to Git blob identities and verifies the candidate checkout directly.
-    """
-    evidence = row.get("exactSourceEvidence")
-    if (
-        not isinstance(evidence, dict)
-        or evidence.get("kind") != "path_blob_manifest_v1"
-    ):
-        failures.append(f"{mid}: exact source manifest")
-        return
-    entries = evidence.get("entries")
-    if not isinstance(entries, list) or not entries:
-        failures.append(f"{mid}: exact source manifest entries")
-        return
-    by_path: dict[str, str] = {}
-    root = ROOT.resolve()
-    for entry in entries:
-        if not isinstance(entry, dict):
-            failures.append(f"{mid}: exact source manifest entry")
-            return
-        path = entry.get("path")
-        blob = entry.get("blobSha")
-        if not (
-            isinstance(path, str)
-            and path
-            and isinstance(blob, str)
-            and bool(re.fullmatch(r"[0-9a-f]{40}", blob))
-        ):
-            failures.append(f"{mid}: exact source manifest entry")
-            return
-        if path in by_path:
-            failures.append(f"{mid}: duplicate exact source path {path}")
-            return
-        candidate = (ROOT / path).resolve()
-        try:
-            candidate.relative_to(root)
-        except ValueError:
-            failures.append(f"{mid}: exact source path escape {path}")
-            return
-        if not candidate.is_file():
-            failures.append(f"{mid}: missing exact source path {path}")
-            return
-        try:
-            actual = git("rev-parse", f"HEAD:{path}")
-        except subprocess.CalledProcessError:
-            failures.append(f"{mid}: cannot resolve exact source path {path}")
-            return
-        if actual != blob:
-            failures.append(f"{mid}: exact source blob drift {path}")
-        by_path[path] = blob
-
-    mapped_paths = {
-        op.get("sourcePath")
-        for op in row.get("operations", [])
-        if isinstance(op, dict) and op.get("sourcePath")
-    }
-    missing = sorted(mapped_paths - set(by_path))
-    if missing:
-        failures.append(f"{mid}: exact source manifest omits mapped paths {missing}")
-
-
 def lane_by_module():
     return {
         m: lane["id"]
@@ -785,6 +720,53 @@ def validate_closed_world_bindings(row: dict) -> None:
                 )
 
 
+def validate_observed_source(
+    row: dict, mid: str, resolved_roots: list[str], failures: list[str]
+) -> None:
+    """Compatibility report adapter over the sole strict identity verifier."""
+    try:
+        observation = dict(row)
+        observation.setdefault("operations", [])
+        verify_source_identity(observation, resolved_roots, current_source_base())
+    except (
+        ValueError,
+        TypeError,
+        KeyError,
+        OSError,
+        subprocess.CalledProcessError,
+    ) as exc:
+        failures.append(f"{mid}: {exc}")
+
+
+def validate_operation_inventory(mid: str, ops: list[dict]) -> None:
+    if mid != "learning.operator":
+        return
+    required = {
+        "build_targets",
+        "build_sensor_core",
+        "evaluate_bellman_reference",
+        "validate_applicability_certificate",
+        "validate_applicability_with_signed_evidence_v2",
+        "fit_tabular_operator",
+        "fit_tabular_operator_strict_v2",
+        "verify_tabular_operator_plan_v2",
+        "fit_tabular_operator_verified_v2",
+        "predict_tabular_operator",
+        "encode_tabular_payload_v1",
+        "load_pinned_tabular_operator_v1",
+        "admit_operator_regularity",
+        "admit_operator_regularity_with_signed_evidence_v2",
+        "fit_transition_model",
+        "verify_world_model_dataset_v2",
+        "fit_transition_model_verified_v2",
+        "predict_transition",
+    }
+    mapped = {op.get("operation") for op in ops if isinstance(op, dict)}
+    missing = sorted(required - mapped)
+    if missing:
+        raise ValueError("public operation inventory incomplete: " + ", ".join(missing))
+
+
 def verify(*, require_current_source: bool = True):
     """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
 
@@ -834,6 +816,7 @@ def verify(*, require_current_source: bool = True):
                 raise ValueError("operations")
             if "sourceRootPresent" not in row or "productionImplementation" not in row:
                 raise ValueError("status model")
+            validate_operation_inventory(mid, ops)
             mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
             if mapping_mode not in {"path_only", "exact_blob"}:
                 raise ValueError("mapping source identity mode")

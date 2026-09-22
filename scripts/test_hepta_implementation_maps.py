@@ -192,6 +192,25 @@ class SourceIdentityTests(unittest.TestCase):
                         }
                     )
 
+    def test_verifier_helpers_cannot_be_shadowed_by_duplicate_definitions(self):
+        import ast
+
+        tree = ast.parse(Path(maps.__file__).read_text(encoding="utf-8"))
+        names = [
+            node.name
+            for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        ]
+        self.assertEqual(len(names), len(set(names)))
+
+    def test_partial_operator_inventory_cannot_claim_a_closed_map(self):
+        with self.assertRaisesRegex(
+            ValueError, "public operation inventory incomplete"
+        ):
+            maps.validate_operation_inventory(
+                "learning.operator", [{"operation": "build_targets"}]
+            )
+
     def test_unchanged_ancestral_source_passes(self):
         self.assertEqual(
             self.verify()["candidateSource"]["commit"], self.git("rev-parse", "HEAD")
