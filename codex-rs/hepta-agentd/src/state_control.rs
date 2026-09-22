@@ -63,18 +63,21 @@ impl AgentdState {
         let automation = self.automation.lock().map_err(poisoned_state)?.clone();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
-            crate::AgentdMethod::Capabilities => AgentdPayload::Capabilities(
-                crate::AgentdCapabilitySet::new(vec![
+            crate::AgentdMethod::Capabilities => {
+                let mut capabilities = vec![
                     crate::AgentdCapability::new(crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY, 1, 0).map_err(AgentdError::Invalid)?,
-                    crate::AgentdCapability::new(
-                        crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_ID,
-                        crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR,
-                        crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR,
-                    )
-                    .map_err(AgentdError::Protocol)?,
-                ])
-                .map_err(AgentdError::Protocol)?,
-            ),
+                    crate::AgentdCapability::new(crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_ID, crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR, crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR).map_err(AgentdError::Protocol)?,
+                ];
+                if self.objective_runtime.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new("objective.start", 1, 0)
+                            .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                AgentdPayload::Capabilities(
+                    crate::AgentdCapabilitySet::new(capabilities).map_err(AgentdError::Protocol)?,
+                )
+            }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: matches!(
                     lifecycle,
@@ -106,6 +109,30 @@ impl AgentdState {
                         socket_path: self.identity.app_server_socket.clone(),
                         transport: SessionTransport::CodexAppServerWebsocketOverUds,
                     })
+                }
+            }
+            crate::AgentdMethod::ObjectiveStart { request } => {
+                let Some(host) = self.objective_runtime.get() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        AgentdPayload::Error {
+                            code: "objective_unavailable".to_string(),
+                            message: "no owner objective profile is configured".to_string(),
+                        },
+                    );
+                };
+                match host.submit(self, request, current_generation)? {
+                    crate::objective_runtime::ObjectiveStartResult::Admitted(receipt) => {
+                        AgentdPayload::ObjectiveRun(receipt)
+                    }
+                    crate::objective_runtime::ObjectiveStartResult::Conflict {
+                        run_id,
+                        conflict_digest,
+                    } => AgentdPayload::ObjectiveConflict {
+                        run_id,
+                        conflict_digest,
+                    },
                 }
             }
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(

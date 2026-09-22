@@ -35,6 +35,8 @@ pub(crate) struct AgentdState {
     pub(crate) cognitive_retrieval_learning:
         std::sync::OnceLock<Arc<crate::CognitiveRetrievalLearningSink>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
+    pub(crate) objective_runtime:
+        std::sync::OnceLock<Arc<crate::objective_runtime::ObjectiveRuntimeHost>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -93,6 +95,7 @@ impl AgentdState {
 
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
+            objective_runtime: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
             cognitive_retrieval_context: std::sync::OnceLock::new(),
             cognitive_retrieval_learning: std::sync::OnceLock::new(),
@@ -160,6 +163,15 @@ impl AgentdState {
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {
         &self.identity
+    }
+
+    pub(crate) fn current_generation(&self) -> Result<u64, AgentdError> {
+        self.refresh_generation()?;
+        Ok(self
+            .runtime
+            .lock()
+            .map_err(poisoned_state)?
+            .current_generation)
     }
 
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {

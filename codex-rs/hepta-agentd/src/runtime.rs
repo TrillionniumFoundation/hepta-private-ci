@@ -46,6 +46,14 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    let objective_profile_file = config
+        .objective_profile_file()
+        .map(std::path::Path::to_path_buf);
+    if objective_profile_file.is_some() && trust_file.is_none() {
+        return Err(AgentdError::Invalid(
+            "objective profile requires explicit AuthBus trust configuration".to_string(),
+        ));
+    }
     let ranker = config.cognitive_ranker();
     let production_writer_host = config.production_writer_host();
     let retrieval_mode = config.cognitive_retrieval_mode();
@@ -93,6 +101,23 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .authbus
             .set(Arc::new(host))
             .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+    }
+    if let Some(path) = objective_profile_file {
+        state.refresh_generation()?;
+        let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
+            &identity, &path,
+        )?);
+        let current_generation = state.current_generation()?;
+        host.reconcile(
+            &state,
+            current_generation,
+            crate::authbus_ingress::now_ms()?,
+        )?;
+        state
+            .objective_runtime
+            .set(host)
+            .map_err(|_| AgentdError::Protocol("objective runtime already attached".to_string()))?;
+        state.refresh_generation()?;
     }
     let cognitive_runtime = match production_writer_host.as_ref() {
         Some(host) => {
@@ -315,6 +340,9 @@ async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
             match probe_app_server(state.identity()).await {
                 Ok(()) => {
                     state.mark_app_server_ready()?;
+            if let Some(host) = state.objective_runtime.get() {
+                host.reconcile(&state, state.current_generation()?, crate::authbus_ingress::now_ms()?)?;
+            }
                     app_server_ready = true;
                 }
                 Err(error @ AgentdError::GenerationFenced(_)) => {

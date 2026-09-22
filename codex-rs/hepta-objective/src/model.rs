@@ -162,6 +162,7 @@ pub struct ObjectiveFunction {
     pub request_id: StableId,
     pub principal_scope: StableId,
     pub revision: Revision,
+    pub source_trust: SourceTrust,
     pub source_digest: Digest32,
     pub schema_digest: Digest32,
     pub hard_constraint_digest: Digest32,

@@ -161,6 +161,46 @@ def verify() -> int:
     for module in MODULES:
         verify_map(module)
 
+    objective_map = load(MAPS["objective.compiler"])
+    objective_operations = {
+        operation["operation"] for operation in objective_map["operations"]
+    }
+    required_objective_operations = {
+        "decode_source_envelope_json_v1",
+        "validate_structure",
+        "canonical_objective_intent_digest_v1",
+        "admit_objective_v1",
+        "compile_admitted_objective_v1",
+        "check_feasibility_v1",
+        "encode_objective_function_v1",
+        "decode_objective_function_v1",
+    }
+    need(
+        required_objective_operations <= objective_operations,
+        "objective.compiler canonical operation mapping incomplete",
+    )
+    need(
+        objective_map.get("canonicalProductOperations")
+        == [
+            "decode_source_envelope_json_v1",
+            "validate_structure",
+            "admit_objective_v1",
+            "compile_admitted_objective_v1",
+            "encode_objective_function_v1",
+            "decode_objective_function_v1",
+        ],
+        "objective.compiler canonical product operation order",
+    )
+    wrapper = next(
+        operation
+        for operation in objective_map["operations"]
+        if operation["operation"] == "admit_and_compile_objective_v1"
+    )
+    need(
+        wrapper.get("productRole") == "compatibility_not_canonical_product_path",
+        "objective.compiler convenience wrapper product-role drift",
+    )
+
     objective = (
         ROOT / "codex-rs/hepta-objective/src/objective_admission.rs"
     ).read_text(encoding="utf-8")
@@ -240,6 +280,8 @@ def verify() -> int:
         "LANE-D-RCP-INTEGRITY-026",
         "LANE-D-RCP-POLICY-027",
         "LANE-D-READINESS-028",
+        "LANE-D-OBJ-WIRE-037",
+        "LANE-D-OBJ-RECOVERY-038",
     ]:
         need(gap_id in gap_ids, "missing gap record " + gap_id)
     need(
@@ -271,10 +313,22 @@ def verify() -> int:
         "maturity module closure",
     )
     for row in maturity["modules"]:
-        for key in ["productCaller", "independentAcceptance", "activation", "release"]:
+        module = row["module"]
+        product_caller = row["dimensions"]["productCaller"]["state"]
+        if module == "objective.compiler":
+            need(
+                product_caller == "source_composed_authenticated_agentd_not_activated",
+                f"truth boundary {module} productCaller",
+            )
+        else:
+            need(
+                product_caller == "not_established",
+                f"truth boundary {module} productCaller",
+            )
+        for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
-                f"truth boundary {row['module']} {key}",
+                f"truth boundary {module} {key}",
             )
 
     print(

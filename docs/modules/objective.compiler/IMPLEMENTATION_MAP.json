@@ -11,7 +11,7 @@
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_authenticated_agentd_not_activated",
   "productionWriterState": "not_applicable_stateless",
   "operations": [
     {
@@ -97,7 +97,7 @@
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_convenience_wrapper",
       "authority": "deny_all",
       "tests": [
         {
@@ -120,7 +120,8 @@
       "designOperation": "admit_and_compile_objective_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "productRole": "compatibility_not_canonical_product_path"
     },
     {
       "operation": "check_feasibility_v1",
@@ -153,7 +154,7 @@
     },
     {
       "operation": "compile",
-      "nativeSymbol": "codex_hepta_objective::compile",
+      "nativeSymbol": "crate::compiler::compile",
       "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
       "inputs": [
         "ObjectiveSourceEnvelope"
@@ -162,7 +163,7 @@
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_internal_opaque_admission_only",
       "authority": "none",
       "tests": [
         {
@@ -181,6 +182,116 @@
       "designOperation": "compile",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
+      "sourcePathExists": true,
+      "publicCompatibilityEntrypoint": "compile_prevalidated_legacy_objective_v1",
+      "publicCompatibilityFeature": "qualification-legacy-compile"
+    },
+    {
+      "operation": "encode_objective_function_v1",
+      "nativeSymbol": "codex_hepta_objective::encode_objective_function_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "inputs": [
+        "ObjectiveCompileReceipt",
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveAdmissionProfileV1",
+        "ObjectiveAdmissionReceiptV1"
+      ],
+      "outputs": [
+        "canonical ObjectiveFunctionV1 bytes",
+        "ObjectiveFunctionV1 protocol digest",
+        "native semantic digest binding"
+      ],
+      "state": "source_implemented_product_publication_bound",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+          "symbol": "authenticated_objective_is_durable_before_product_receipt_returns"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+          "symbol": "objective_protocol_digest_mismatch_rejects_before_io"
+        }
+      ],
+      "designOperation": "encode_objective_function_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "decode_objective_function_v1"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "admit_objective_v1",
+      "nativeSymbol": "codex_hepta_objective::admit_objective_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveAdmissionProfileV1",
+        "ObjectiveAdmissionContextV1"
+      ],
+      "outputs": [
+        "opaque AdmittedObjectiveV1"
+      ],
+      "state": "source_implemented_canonical_product_admission",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "two_phase_admission_matches_convenience_wrapper"
+        }
+      ],
+      "designOperation": "admit_objective_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "compile_admitted_objective_v1",
+      "nativeSymbol": "codex_hepta_objective::compile_admitted_objective_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "inputs": [
+        "opaque AdmittedObjectiveV1"
+      ],
+      "outputs": [
+        "ObjectiveAdmissionOutcomeV1"
+      ],
+      "state": "source_implemented_canonical_product_compile",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "two_phase_admission_matches_convenience_wrapper"
+        }
+      ],
+      "designOperation": "compile_admitted_objective_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "crate::compiler::compile"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "decode_objective_function_v1",
+      "nativeSymbol": "codex_hepta_objective::decode_objective_function_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "inputs": [
+        "bounded canonical ObjectiveFunctionV1 JSON bytes"
+      ],
+      "outputs": [
+        "DecodedObjectiveFunctionV1",
+        "ObjectiveFunctionV1 protocol digest"
+      ],
+      "state": "source_implemented_canonical_protocol_validation",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+          "symbol": "authenticated_objective_is_durable_before_product_receipt_returns"
+        }
+      ],
+      "designOperation": "decode_objective_function_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
       "sourcePathExists": true
     }
   ],
@@ -194,7 +305,7 @@
     "specification": "complete",
     "source": "candidate_implemented",
     "exactHeadQualification": "required",
-    "productComposition": "not_established",
+    "productComposition": "source_composed_not_activated",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -215,19 +326,81 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "productSourceComposition": true
   },
   "sourceBase": {
     "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
+    "Run the named target-host objective measurement harness and qualify Agentd crash/restart/backpressure behavior on the selected deployment host."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+  "exactHeadQualificationPolicy": {
+    "state": "external_exact_candidate_receipt_required",
+    "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <checkout> --expected-tree <checkout-tree>",
+    "moduleSourceRule": "exactSourceCandidate equals the newest Git commit/tree touching every declared source root",
+    "workflows": [
+      ".github/workflows/hepta-objective-admission.yml",
+      ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+    ],
+    "productCompositionRule": "productCompositionSourceCandidate must equal the newest Git commit/tree touching the registered product-composition paths"
+  },
+  "productCallerEvidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "symbol": "ObjectiveRuntimeHost::submit",
+      "semantics": "signed AuthBus -> current trust authentication -> admission -> durable publication -> current-trust revalidation -> generation/fence-bound runtime admission"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
+      "symbol": "compile_and_publish_objective_run_v1",
+      "semantics": "opaque admission -> compile -> canonical ObjectiveFunctionV1 projection -> destination-owned run-start append before runtime consumption"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "symbol": "DurableRunStartJournal",
+      "semantics": "v2 record binds native semantic bytes/digest plus canonical ObjectiveFunctionV1 bytes/digest; legacy v1 is read-compatible but rejected at Agentd final use"
+    }
+  ],
+  "exactSourceCandidate": {
+    "commit": "e946a7ed08814881f9986d813c5b8cd821241f99",
+    "tree": "5c62cf98768ee7f99c55e80c3b4430bcfddd41e7",
+    "roots": [
+      "codex-rs/hepta-objective"
+    ],
+    "role": "module_source_identity"
+  },
+  "canonicalProtocolContracts": [
+    "ObjectiveFunctionV1",
+    "RunStartSnapshotV1"
+  ],
+  "productCompositionSourceCandidate": {
+    "commit": "e603e7ac675843e69f6cfd741e42180b2d5437ed",
+    "tree": "6de843d2ddf162869e4aff0ebb84642d4b2c26c3",
+    "paths": [
+      "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "codex-rs/hepta-intelligence/src/objective_run.rs",
+      "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_tests.rs"
+    ],
+    "role": "product_composition_source_identity"
+  },
+  "canonicalProductOperations": [
+    "decode_source_envelope_json_v1",
+    "validate_structure",
+    "admit_objective_v1",
+    "compile_admitted_objective_v1",
+    "encode_objective_function_v1",
+    "decode_objective_function_v1"
   ]
 }

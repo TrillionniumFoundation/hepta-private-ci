@@ -1410,11 +1410,11 @@
       "guide": "docs/modules/objective.compiler/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/objective.compiler.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "compile(sourceEnvelope,baselineProfile); check_feasibility(typedConstraints,budget). Model extraction is an untrusted IR candidate. Results distinguish feasible,infeasible,unsupported_language,budget_exhausted.",
-      "stateAndEncoding": "No durable owner. Caller records immutable ObjectiveFunction/RunStartSnapshot with scope,success/terminal predicates,hard constraints,actions,evidence sources,resources,risk,revision and digest.",
-      "linearizationAndRecovery": "Normalize and solve pure IR before adaptive logic. A semantic objective/acceptance change starts a new authorized run. Unsupported/exhausted never drops a constraint or relabels the problem infeasible.",
-      "algorithmAndBounds": "Interval/set intersection and positive Horn implication closure only. <=256 constraints,128 predicates/actions,256 KiB. Sorting O(n log n); inclusion-minimal conflict filtering <=n+1 oracle calls and O(n*C(n)), not minimum cardinality.",
-      "acceptanceOracle": "[0,1] intersect [2,3] infeasible; irrelevant atom removed from core. Permutations yield equal IR. Nonlinear/unsupported atoms or exhausted oracle preserve original objective and grant no new action.",
+      "apiContract": "decode Source V1 -> admit_objective_v1(authenticated source/profile/time) -> opaque AdmittedObjectiveV1 -> compile_admitted_objective_v1 -> encode_objective_function_v1. The protocol adapter validates and exact-round-trips registered canonical JSON. Direct check_feasibility_v1 remains a richer typed API. Agentd signed objective_start authenticates before admission-context construction.",
+      "stateAndEncoding": "Compiler is stateless. ObjectiveFunction::semantic_digest is the owner-native identity used by RunStartSnapshotV1.objectiveDigest; canonical ObjectiveFunctionV1 has a separate protocol-wire digest. Destination-owned DurableRunStartJournal v2 persists ingress authentication, admission binding, both objective byte/digest identities and RunStartSnapshotV1 before non-abstain runtime admission.",
+      "linearizationAndRecovery": "Current AuthBus verification precedes admission. Native compile and canonical wire projection precede durable run-start append+sync, which precedes AgentRunCoordinator consumption. Exact replay and acknowledgement-loss retry are idempotent; partial unacknowledged tails recover to the last complete frame; same-run native/protocol drift conflicts; current trust, generation, fence and canonical protocol identity are revalidated before final use.",
+      "algorithmAndBounds": "Source V1: <=246 source constraints plus 10 generated resource/risk constraints => <=256 native hard constraints; success+terminal+evidence aggregate <=128; caller legal actions <=127 when abstain is implicit or 128 with explicit abstain; soft dimensions <=64; raw input <=256 KiB. Native scalar compatibility compile uses deterministic call-budget feasibility; direct typed feasibility also supports finite enums/action implications/immutable identities. Inclusion-minimal conflict filtering <=n+1 oracle calls.",
+      "acceptanceOracle": "Raw compiler is absent from the default public API. Capacity/unsupported semantics fail closed. Canonical ObjectiveFunctionV1 must exact-round-trip and its wire digest must remain distinct from the native semantic digest. Durable recovery must reject protocol drift, revoked/stale owner trust, generation/fence mismatch and legacy records lacking canonical protocol identity. Target-host ordinary/conflict timing remains separate external evidence.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -1422,24 +1422,52 @@
         "entrypoints": [
           {
             "path": "codex-rs/hepta-objective/src/objective_admission.rs",
-            "symbol": "admit_and_compile_objective_v1"
+            "symbol": "admit_objective_v1"
+          },
+          {
+            "path": "codex-rs/hepta-objective/src/objective_admission.rs",
+            "symbol": "compile_admitted_objective_v1"
           },
           {
             "path": "codex-rs/hepta-objective/src/feasibility.rs",
             "symbol": "check_feasibility_v1"
+          },
+          {
+            "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+            "symbol": "encode_objective_function_v1"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+            "symbol": "ObjectiveRuntimeHost::submit"
+          },
+          {
+            "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
+            "symbol": "compile_and_publish_objective_run_v1"
+          },
+          {
+            "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+            "symbol": "DurableRunStartJournal"
           }
         ],
-        "stateAndRecovery": "Stateless outputs bind the immutable source/principal/profile/schema/unit/time/intent tuple; unknown mappings fail closed. The owner caller must persist objective and run snapshot publication; the native compiler has no durable objective database.",
+        "stateAndRecovery": "Opaque admitted-objective typing seals the default compiler boundary. Canonical ObjectiveFunctionV1 projection binds external protocol semantics independently from the native semantic digest. Agentd authenticates signed ingress against current AuthBus trust; DurableRunStartJournal v2 provides locked bounded append, sync-before-publication, dual-digest validation, exact replay/conflict semantics, legacy-read/new-final-use fencing and recovery before generation/fence-bound runtime admission.",
         "testFiles": [
           "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-          "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs"
+          "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+          "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
+          "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+          "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
+          "codex-rs/hepta-agentd/src/objective_runtime_tests.rs"
         ],
         "runtimeDocuments": [
           "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+          "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+          "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md",
           "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
         ],
         "remainingWork": [
-          "Authenticate actual source context and compose the production caller; conflict-oracle budgets and target latency need separate measurements from ordinary compilation."
+          "Obtain green exact-head and deterministic synthetic-merge receipts for the single canonical #910 checkout.",
+          "Run the exact-source ordinary/maximum-conflict harness plus crash/power-loss/backpressure qualification on the selected target-host profile.",
+          "Independent acceptance, activation, canary, promotion and release remain external."
         ]
       }
     },

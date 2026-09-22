@@ -227,6 +227,9 @@ impl AgentRunCoordinator {
         now_ms: u64,
         record: &RunStartRecordV1,
     ) -> Result<RunReceipt, AgentRunError> {
+        if record.objective_function_v1_digest.is_zero() || record.objective_function_v1_bytes.is_empty() {
+            return Err(AgentRunError::InvalidRunStart("canonical ObjectiveFunctionV1 identity"));
+        }
         if record.disposition != RunStartObjectiveDispositionV1::Compiled {
             return Err(AgentRunError::InvalidRunStart("objective disposition"));
         }
