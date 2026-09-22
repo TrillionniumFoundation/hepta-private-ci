@@ -270,3 +270,44 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn intelligence_handoff_is_committed_to_native_admission_identity() {
+    let socket = std::path::Path::new("/tmp/native-owner.sock");
+    let none = native_source_payload_digest("prompt", &None, socket, 5000, None).unwrap();
+    let original = NativeIntelligenceRunBinding {
+        run_id: "intelligence-run".to_string(),
+        expected_revision: 2,
+        context_digest: "a".repeat(64),
+        envelope_digest: "b".repeat(64),
+    };
+    let bound =
+        native_source_payload_digest("prompt", &None, socket, 5000, Some(&original)).unwrap();
+    assert_ne!(none, bound);
+    for field in 0..4 {
+        let mut changed = original.clone();
+        match field {
+            0 => changed.run_id.push_str("-other"),
+            1 => changed.expected_revision += 1,
+            2 => changed.context_digest = "c".repeat(64),
+            _ => changed.envelope_digest = "d".repeat(64),
+        }
+        assert_ne!(
+            bound,
+            native_source_payload_digest("prompt", &None, socket, 5000, Some(&changed)).unwrap()
+        );
+    }
+    assert_eq!(
+        none,
+        digest(
+            &serde_json::to_vec(&(
+                "hepta.native-request.v1",
+                "prompt",
+                Option::<String>::None,
+                socket,
+                5000_u128,
+            ))
+            .unwrap()
+        )
+    );
+}

@@ -74,6 +74,7 @@ fn freezes_the_complete_run_tuple_before_context_attachment() {
         AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
     let admitted = coordinator.start_run(100, snapshot()).expect("admit run");
     assert_receipt(&admitted, 1, RunPhase::Admitted, None);
+    assert_eq!(admitted.compilation_receipt_digest, None);
 
     let mut mixed = attachment();
     mixed.body_digest = digest('9');
@@ -115,6 +116,7 @@ fn freezes_the_complete_run_tuple_before_context_attachment() {
         .expect("attach context");
     assert_receipt(&attached, 2, RunPhase::ContextAttached, None);
     assert_eq!(attached.context_digest, Some(digest('7')));
+    assert_eq!(attached.compilation_receipt_digest, Some(digest('8')));
 }
 
 #[test]

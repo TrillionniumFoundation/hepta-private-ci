@@ -97,6 +97,7 @@ pub struct RunReceipt {
     pub deadline_ms: u64,
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
+    pub compilation_receipt_digest: Option<String>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -733,6 +734,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         deadline_ms: record.snapshot.deadline_ms,
         cancel_reason: record.cancel_reason.clone(),
         cancel_ack_deadline_ms: record.cancel_ack_deadline_ms,
+        compilation_receipt_digest: record.compilation_receipt_digest.clone(),
         terminal_observed: record.phase.terminal_observed(),
         idempotent,
     }

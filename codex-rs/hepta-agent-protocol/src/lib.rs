@@ -180,6 +180,8 @@ pub struct AgentRunReceipt {
     pub revision: u64,
     pub phase: AgentRunPhase,
     pub context_digest: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub compilation_receipt_digest: Option<String>,
     pub authority_epoch: u64,
     pub generation: u64,
     pub fence_digest: String,

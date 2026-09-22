@@ -1,9 +1,13 @@
 use std::path::PathBuf;
 
 use codex_hepta_agentd::AgentdConfig;
+use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
+use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
 use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use std::ffi::OsString;
+use std::sync::Arc;
 
 fn main() -> anyhow::Result<()> {
     let mut config = AgentdConfig::from_process_environment()?;
@@ -13,6 +17,9 @@ fn main() -> anyhow::Result<()> {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
+        let mut intelligence_authority_file = None;
+        let mut intelligence_authority_signer = None;
+        let mut intelligence_authority_verifying_key = None;
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
@@ -46,6 +53,27 @@ fn main() -> anyhow::Result<()> {
                     Some(value.parse::<Digest32>().map_err(|error| {
                         anyhow::anyhow!("invalid plasticity descriptor digest: {error}")
                     })?);
+            } else if flag == "--intelligence-authority-file" {
+                anyhow::ensure!(
+                    intelligence_authority_file.is_none(),
+                    "duplicate --intelligence-authority-file"
+                );
+                intelligence_authority_file = Some(PathBuf::from(path));
+            } else if flag == "--intelligence-authority-signer" {
+                anyhow::ensure!(
+                    intelligence_authority_signer.is_none(),
+                    "duplicate --intelligence-authority-signer"
+                );
+                intelligence_authority_signer = Some(
+                    path.into_string()
+                        .map_err(|_| anyhow::anyhow!("intelligence signer must be UTF-8"))?,
+                );
+            } else if flag == "--intelligence-authority-verifying-key" {
+                anyhow::ensure!(
+                    intelligence_authority_verifying_key.is_none(),
+                    "duplicate --intelligence-authority-verifying-key"
+                );
+                intelligence_authority_verifying_key = Some(parse_verifying_key_hex(path)?);
             } else if flag == "--objective-profile-file" {
                 anyhow::ensure!(
                     objective_profile.is_none(),
@@ -81,6 +109,28 @@ fn main() -> anyhow::Result<()> {
                 evidence_recovery_frontier_trust = Some(path);
             } else {
                 anyhow::bail!("unknown Agentd argument {flag:?}");
+            }
+        }
+        match (
+            intelligence_authority_file,
+            intelligence_authority_signer,
+            intelligence_authority_verifying_key,
+        ) {
+            (None, None, None) => {}
+            (Some(path), Some(signer_id), Some(verifying_key)) => {
+                let runner = AgentdIntelligenceProductRunnerV1::new(
+                    path,
+                    IntelligenceAuthorityVerifierV1 {
+                        signer_id,
+                        verifying_key,
+                    },
+                )?;
+                config = config.with_intelligence_product_runner(Arc::new(runner))?;
+            }
+            _ => {
+                return Err(anyhow::anyhow!(
+                    "--intelligence-authority-file, --intelligence-authority-signer and --intelligence-authority-verifying-key must be supplied together"
+                ));
             }
         }
         anyhow::ensure!(
@@ -133,4 +183,21 @@ fn main() -> anyhow::Result<()> {
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
     })
+}
+
+fn parse_verifying_key_hex(value: OsString) -> anyhow::Result<[u8; 32]> {
+    let value = value
+        .into_string()
+        .map_err(|_| anyhow::anyhow!("intelligence verifying key must be UTF-8 hex"))?;
+    anyhow::ensure!(
+        value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_hexdigit()),
+        "intelligence verifying key must contain exactly 64 hex characters"
+    );
+    let mut output = [0_u8; 32];
+    for (index, slot) in output.iter_mut().enumerate() {
+        let offset = index * 2;
+        *slot = u8::from_str_radix(&value[offset..offset + 2], 16)
+            .map_err(|_| anyhow::anyhow!("invalid intelligence verifying key hex"))?;
+    }
+    Ok(output)
 }

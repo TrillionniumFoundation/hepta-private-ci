@@ -86,6 +86,7 @@ pub async fn run(
     let retrieval_learning = config.cognitive_retrieval_learning();
     require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
     let intuition_policy_host = config.intuition_policy_host();
+    let intelligence_product = config.intelligence_product_runner();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -112,6 +113,11 @@ pub async fn run(
             .cognitive_ranker
             .set(ranker)
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
+    }
+    if let Some(runner) = intelligence_product {
+        state.intelligence_product.set(runner).map_err(|_| {
+            AgentdError::Invalid("intelligence product runner already attached".to_string())
+        })?;
     }
     if let Some(current) = retrieval_context {
         state

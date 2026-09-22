@@ -26,6 +26,7 @@ def load_module(name: str, filename: str):
 
 LANE_B = load_module("ci_source_lane_b", "hepta-lane-b-truth.py")
 LANE_E = load_module("ci_source_lane_e", "hepta-lane-e-closure.py")
+IMAPS = load_module("ci_implementation_maps", "hepta-implementation-maps.py")
 
 
 class GitSourceIdentityTests(unittest.TestCase):
@@ -248,6 +249,100 @@ class GitSourceIdentityTests(unittest.TestCase):
         self.git("checkout", "--detach", swapped)
         with self.assertRaisesRegex(LANE_B.Invalid, "parents differ"):
             self.lane_b(synthetic=True)
+
+
+class ImplementationMapSourceIdentityTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name) / "repo"
+        self.root.mkdir()
+        self.git("init", "-q")
+        self.git("config", "user.name", "implementation-map regression")
+        self.git("config", "user.email", "implementation-map@example.invalid")
+        self.git("config", "commit.gpgsign", "false")
+        source = self.root / "owner-crate" / "src"
+        source.mkdir(parents=True)
+        (source / "lib.rs").write_text(
+            "mod canonical;\npub use canonical::prepare;\n",
+            encoding="utf-8",
+        )
+        (source / "canonical.rs").write_text(
+            "pub fn prepare() {}\n",
+            encoding="utf-8",
+        )
+        self.git("add", ".")
+        self.git("commit", "-qm", "observed owner source")
+        self.observed_commit = self.git("rev-parse", "HEAD")
+        self.observed_tree = self.git("rev-parse", "HEAD^{tree}")
+
+    def git(self, *args: str) -> str:
+        return subprocess.run(
+            ["git", *args],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+
+    def observed_row(self) -> dict:
+        return {
+            "observedAtHead": {
+                "commit": self.observed_commit,
+                "tree": self.observed_tree,
+            },
+            "observedSourcePaths": ["owner-crate"],
+        }
+
+    def validate(self) -> list[str]:
+        failures: list[str] = []
+        with mock.patch.object(IMAPS, "ROOT", self.root):
+            IMAPS.validate_observed_source(
+                self.observed_row(),
+                "owner.module",
+                ["owner-crate"],
+                failures,
+            )
+        return failures
+
+    def test_exact_observed_source_survives_docs_only_commit_but_rejects_source_drift(
+        self,
+    ) -> None:
+        docs = self.root / "docs" / "note.md"
+        docs.parent.mkdir()
+        docs.write_text("projection only\n", encoding="utf-8")
+        self.git("add", ".")
+        self.git("commit", "-qm", "docs only")
+        self.assertEqual(self.validate(), [])
+
+        source = self.root / "owner-crate" / "src" / "canonical.rs"
+        source.write_text(
+            "pub fn prepare() {}\npub fn new_surface() {}\n", encoding="utf-8"
+        )
+        self.git("add", ".")
+        self.git("commit", "-qm", "owner source drift")
+        failures = self.validate()
+        self.assertTrue(
+            any("observed source drift" in failure for failure in failures),
+            failures,
+        )
+
+    def test_closed_world_public_function_scan_tracks_root_exports(self) -> None:
+        with mock.patch.object(IMAPS, "ROOT", self.root):
+            self.assertEqual(
+                IMAPS.public_rust_functions("owner-crate"),
+                {"prepare"},
+            )
+        source = self.root / "owner-crate" / "src" / "lib.rs"
+        source.write_text(
+            "mod canonical;\npub use canonical::prepare;\npub fn direct() {}\n",
+            encoding="utf-8",
+        )
+        with mock.patch.object(IMAPS, "ROOT", self.root):
+            self.assertEqual(
+                IMAPS.public_rust_functions("owner-crate"),
+                {"prepare", "direct"},
+            )
 
 
 class SourceConformanceTests(unittest.TestCase):

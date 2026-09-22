@@ -20,6 +20,16 @@ pub struct NativeAdmission {
     pub maximum_in_flight: usize,
 }
 
+/// Exact Agentd intelligence handoff that must already be attached before a
+/// physical App Server turn can start.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeIntelligenceRunBinding {
+    pub run_id: String,
+    pub expected_revision: u64,
+    pub context_digest: String,
+    pub envelope_digest: String,
+}
+
 impl AppServerModelDriver {
     /// Reserves before any provider call, journals dispatch before `turn/start`,
     /// and commits real observations before returning them to the caller.
@@ -30,6 +40,48 @@ impl AppServerModelDriver {
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_bound(
+            control,
+            admission,
+            prompt,
+            context_query,
+            /*intelligence*/ None,
+            cancellation,
+        )
+        .await
+    }
+
+    /// Execute the physical turn only after the exact Agentd intelligence
+    /// envelope has reached ContextAttached. The worker cannot mint this binding.
+    pub async fn run_intelligence(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        intelligence: NativeIntelligenceRunBinding,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_bound(
+            control,
+            admission,
+            prompt,
+            context_query,
+            Some(&intelligence),
+            cancellation,
+        )
+        .await
+    }
+
+    async fn run_bound(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        intelligence: Option<&NativeIntelligenceRunBinding>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
@@ -46,13 +98,13 @@ impl AppServerModelDriver {
             principal_id: self.config.agent_id.to_string(),
             worker_generation: self.config.generation,
             model: self.config.model.clone(),
-            payload_digest: digest(&serde_json::to_vec(&(
-                "hepta.native-request.v1",
+            payload_digest: native_source_payload_digest(
                 &prompt,
                 &context_query,
                 &self.config.agentd_socket,
                 self.config.timeout.as_millis(),
-            ))?),
+                intelligence,
+            )?,
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
         if let Some(reason) = &record.pre_dispatch_stop {
@@ -108,7 +160,14 @@ impl AppServerModelDriver {
         }
         let request_id = record.request.request_id;
         match self
-            .run_once(control, &request_id, prompt, context_query, cancellation)
+            .run_once(
+                control,
+                &request_id,
+                prompt,
+                context_query,
+                intelligence,
+                cancellation,
+            )
             .await
         {
             Ok(output) => {
@@ -133,6 +192,36 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn native_source_payload_digest(
+    prompt: &str,
+    context_query: &Option<String>,
+    socket: &std::path::Path,
+    timeout_ms: u128,
+    intelligence: Option<&NativeIntelligenceRunBinding>,
+) -> Result<String> {
+    let bytes = match intelligence {
+        None => serde_json::to_vec(&(
+            "hepta.native-request.v1",
+            prompt,
+            context_query,
+            socket,
+            timeout_ms,
+        ))?,
+        Some(binding) => serde_json::to_vec(&(
+            "hepta.native-intelligence-request.v2",
+            prompt,
+            context_query,
+            socket,
+            timeout_ms,
+            &binding.run_id,
+            binding.expected_revision,
+            &binding.context_digest,
+            &binding.envelope_digest,
+        ))?,
+    };
+    Ok(digest(&bytes))
 }
 
 pub(super) fn digest(bytes: &[u8]) -> String {

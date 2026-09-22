@@ -29,6 +29,8 @@ use crate::RuntimeComposition;
 mod control;
 
 pub(crate) struct AgentdState {
+    pub(crate) intelligence_product:
+        std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -117,6 +119,7 @@ impl AgentdState {
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
+            intelligence_product: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),

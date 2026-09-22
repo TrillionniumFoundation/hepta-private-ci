@@ -2202,35 +2202,52 @@
       "guide": "docs/modules/intelligence.control/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/intelligence.control.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "prepare_intelligence_run(request,ownerPorts,snapshot); build_legal_candidates(objective,body,skills); decide_boundary(run,observations); assemble_context(decision,evidence). Composition only,not a second model loop.",
-      "stateAndEncoding": "Ephemeral run/boundary,immutable owner snapshots,port handles,pending observations,receipt references. No all-purpose JSON/SQL domain store or self-owned learning labels.",
-      "linearizationAndRecovery": "Compile objective,acquire evidence,enumerate legal set,NDU/signals,portfolio,intuition/slow path,context,Codex delivery,outcome ledger. Each stage binds the same generation tuple and has explicit unavailable/abstain paths.",
-      "algorithmAndBounds": "Candidates<=128,per-stage deadline from total run budget,reserve evidence/recovery floors. C1 may use a simpler baseline only through an explicit compatible work-package interpretation; mandatory DAG predecessors are not waived.",
-      "acceptanceOracle": "C1 traverses named host+real owner storage. Undelivered context yields no exposure credit. Dependency faults never invent success. New-process selected-artifact behavior change and current-revocation-safe rollback are separate receipts.",
+      "apiContract": "build_legal_candidates(request); prepare_intelligence_run(request,ownerPorts,freshnessOracle); decide_boundary(run,candidateSet,intuition); assemble_context(decision,context); validate_current_snapshot(snapshot,oracle). Canonical product facade only; historical vertical/shadow calls are compatibility/reference.",
+      "stateAndEncoding": "Ephemeral canonical snapshot binds objective, body/configuration, seven owner generation/implementation/current-key identities, authority epoch and revocation frontier. Agentd owns the product-call lifetime; Decision/Outcome durability remains in learning.ledger.",
+      "linearizationAndRecovery": "Objective -> first-class NDU -> neuron -> prompt -> intuition -> context -> independent evaluation, with before/after currentness fences and final Agentd revalidation. Stage/total timeout discards late read-only results. Ledger uncertainty preserves exact event+predecessor for recovered replay.",
+      "algorithmAndBounds": "Legal candidates<=128; exactly seven owner bindings; each stage and total run have non-zero monotonic budgets. Selected intuition must carry positive propensity. No cognition worker receives effect or ledger capability.",
+      "acceptanceOracle": "Real Agentd product E2E invokes all seven owner crates, derives a dispatch proposal only after final currentness, appends Decision then independent terminal Outcome, reopens the acknowledged ledger and exact-retries idempotently. Revocation race/missing owner/timeout fail before publication.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
       "nativeImplementation": {
         "entrypoints": [
           {
-            "path": "codex-rs/hepta-intelligence/src/vertical.rs",
-            "symbol": "run_read_only_vertical"
+            "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+            "symbol": "build_legal_candidates"
           },
           {
-            "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
-            "symbol": "run_evaluated_shadow_v1"
+            "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+            "symbol": "prepare_intelligence_run"
+          },
+          {
+            "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+            "symbol": "decide_boundary"
+          },
+          {
+            "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+            "symbol": "assemble_context"
+          },
+          {
+            "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+            "symbol": "validate_current_snapshot"
           }
         ],
-        "stateAndRecovery": "The vertical derives cross-stage objective/read/context/NDU bindings in one call. Evaluated shadow additionally verifies signed evidence and appends a decision through the existing DurableLedger; it does not create another model loop or cognitive writer.",
+        "stateAndRecovery": "No intelligence store. Agentd supplies concrete owner adapters and a file-backed currentness source. Durable Decision/Outcome writes use the sealed learning ledger; ambiguous append returns a pending exact replay. Legacy read-only/evaluated-shadow receipt domains are retained as compatibility surfaces only.",
         "testFiles": [
-          "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+          "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
           "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
         ],
         "runtimeDocuments": [
+          "docs/modules/intelligence.control/TECHNICAL.md",
+          "qualification/module-execution-dossiers/detail/intelligence.control.md",
           "codex-rs/hepta-intelligence/EVALUATED_SHADOW.md"
         ],
         "remainingWork": [
-          "Supply the seven real host ports, trusted current keys, observed evaluations/calibration and valid assignment draw; live model/effect execution and long-term benefits are not implemented by these shadow calls."
+          "Obtain terminal exact-head and deterministic-merge execution receipts for the current candidate.",
+          "Run target-host latency/RSS/cancellation qualification and independent semantic/security acceptance.",
+          "Activate the selected live Agentd/App Server profile with its trusted currentness source; C1 prompted-memory retrieval remains a separate milestone."
         ]
       }
     },

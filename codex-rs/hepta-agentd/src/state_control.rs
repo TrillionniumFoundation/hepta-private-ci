@@ -1162,6 +1162,7 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         revision: value.revision,
         phase: wire_run_phase(value.phase),
         context_digest: value.context_digest,
+        compilation_receipt_digest: value.compilation_receipt_digest,
         authority_epoch: value.authority_epoch,
         generation: value.generation,
         fence_digest: value.fence_digest,

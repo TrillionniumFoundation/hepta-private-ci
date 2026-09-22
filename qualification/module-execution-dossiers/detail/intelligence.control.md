@@ -1,52 +1,91 @@
 # intelligence.control: implementation design
 
 Parent: `docs/modules/intelligence.control/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: read-only vertical and signed evaluated-shadow composition implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: canonical seven-owner composition source and a named Agentd product-runner implementation exist; the daemon/App Server product ingress is not yet routed. Exact-candidate execution, target-host qualification and independent acceptance remain separate gates. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-intelligence`.
+Owner root: `codex-rs/hepta-intelligence`. Named product-runner source: `codex-rs/hepta-agentd/src/intelligence_product.rs`; actual daemon-routed product caller remains pending.
 Packages: `INTELLIGENCE-A0-Q0.63`, `INT-2-AGENTD-CODEX-COMPOSITION`, `C1-PROMPTED-MEMORY-RETRIEVAL-RANK`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+The canonical product facade is `prepare_intelligence_run`. `run_read_only_vertical`, `run_shadow_pipeline{,_v2}` and `run_evaluated_shadow_v1` remain compatibility/reference and qualification surfaces; they are not parallel product control planes. Preserve existing owner stores and execution spines; the facade owns no objective, utility, neural, prompt, intuition, context, evaluation or learning fact.
 
 ## 2. Public operations and contract details
 
-`prepare_intelligence_run(request, owner_ports, frozen_snapshot) -> IntelligenceHostEnvelopeV1`; `build_legal_candidates(objective, body, supported_skills) -> LegalActionCandidateSetV1`; `decide_boundary(run, observations) -> AdvisoryDecision`; `assemble_context(decision, evidence) -> ContextCompilationReceiptV1`. These are composition operations; facts and execution remain with their registered owners.
+Implemented canonical operations:
+
+- `build_legal_candidates(request) -> LegalActionCandidateSetV1` validates the bounded set, canonicalizes order and publishes an authority-free candidate-set digest.
+- `prepare_intelligence_run(request, owner_ports, freshness_oracle) -> CanonicalRunOutcomeV1` is the single product composition entry. It orders objective -> utility.ndu -> neuron -> prompt -> intuition -> context -> independent evaluation and emits `IntelligenceHostEnvelopeV1` only for a selected, fully admitted run.
+- `decide_boundary(run, candidate_set, intuition_receipt) -> AdvisoryDecisionReceiptV1` converts only the authenticated intuition receipt into selected/abstain/slow-path advisory state.
+- `assemble_context(decision, context_receipt) -> ContextAssemblyReceiptV1` binds a selected decision to the source-aware context receipt.
+- `validate_current_snapshot(snapshot, oracle)` rechecks current owner generation, implementation digest, key digest/epoch, authority epoch and revocation frontier immediately before product use.
+
+`IntelligenceHostEnvelopeV1` carries bounded receipt references and no effect authority. `LegalActionCandidateSetV1` and intuition's calibrated-completeness digest remain distinct protocol domains; Agentd proves candidate identity closure while each owner verifies its own digest grammar.
 
 ## 3. State records and transaction design
 
-Ephemeral orchestration state only: run/boundary identity, frozen owner snapshots, bounded port handles, pending observations and receipt references. Objective/NDU/neural/prompt/learning/artifact records remain in their separate owners. The facade must not introduce a hidden all-purpose JSON/SQL store or a parallel model-call loop.
+The facade owns ephemeral orchestration only: run identity, frozen owner bindings, candidate-set identity, per-stage predecessor/output digests and advisory decision/context bindings. Each frozen owner binding includes generation, implementation digest and current-key identity. The snapshot additionally binds authority epoch, revocation frontier, body generation and configuration digest.
+
+Agentd owns the product-call lifetime but not the facts. The seven owner APIs are invoked directly from their authoritative crates. `AgentdIntelligenceProductRunnerV1::prepare_and_admit` combines canonical composition with Agentd `RunStart` and exact `ContextAttached`, so callers cannot promote a merely prepared envelope into a physical-turn binding. A successful cognition worker has no dispatch or ledger capability; after it returns, Agentd performs another full currentness check before publishing a dispatch-proposal digest. Currentness comes from an Ed25519-signed manifest whose verifier key is configured outside the manifest and whose signed domain includes the authority epoch, revocation frontier and all seven owner generation/implementation/key identities.
+
+The daemon-owned `AgentRunCoordinator` freezes the exact prepared envelope into a typed run snapshot plus context attachment. runtime.codex accepts that binding only at the exact `ContextAttached` revision, persists its native dispatch identity, advances Agentd to `Dispatched`, and only then calls App Server `turn/start`. Decision and independently observed Outcome are appended only through the existing sealed `DurableLearningJournal`.
+
+Ledger append uncertainty never becomes success. `Indeterminate` or ambiguous I/O returns `PendingIntelligenceLedgerAppendV1`, preserving the exact event and original predecessor. Reconciliation requires a freshly recovered journal and exact replay. Physical after-send uncertainty is also explicit: lost turn/start acknowledgement or a cancellation/deadline grace window without terminal provider evidence transitions the same Agentd run to `Indeterminate`; no automatic redispatch is permitted.
 
 ## 4. Deterministic algorithm and scheduling
 
-Compile immutable objective; acquire coherent memory/body evidence; build the complete bounded legal set; obtain NDU and qualified neural signals; price/select prompt portfolio; run calibrated intuition or deterministic slow path; compile source-aware context; hand to agentd/Codex; route independent outcomes to the ledger. Each stage has typed unavailable/conflict/abstain fallbacks; no stage converts missing evidence into a successful result.
+1. Validate canonical budget, frozen snapshot and bounded legal candidate set.
+2. Before and after every owner call, reread current owner/key/authority/revocation state.
+3. Admit and compile the exact objective through `objective.compiler`; its compiled semantic digest must equal the frozen objective digest.
+4. Evaluate the complete owner contributions through policy-bound `utility.ndu::evaluate_candidates_with_policy`. The V2 evaluation digest is a first-class stage output.
+5. Run `neuron.runtime::sparse_tick`; the tick must bind the objective and exact NDU predecessor digest.
+6. Run `prompt.optimizer::optimize` over its registered prompt snapshot.
+7. Run `intuition.policy::decide_calibrated_v2`; retain the exact positive propensity for a selected candidate. Abstain/slow-path terminates before context/evaluation/dispatch.
+8. Compile context through `context.compiler::compile` bound to the canonical snapshot/objective.
+9. Admit the selected candidate through `learning.eval::evaluate`; non-eligible dispositions stop the product path.
+10. Revalidate every owner again, return an authority-free `IntelligenceHostEnvelopeV1`, then let Agentd perform one further final-use currentness fence before deriving a dispatch proposal and freezing the exact envelope into `ContextAttached`.
+11. runtime.codex rechecks that exact Agentd run/context/envelope revision, persists its native dispatch write-ahead, advances the run to `Dispatched`, and only then crosses App Server `turn/start`.
+12. Provider terminal observation returns to the same run revision. Lost turn-start acknowledgement, transport loss or no-terminal cancellation grace becomes `Indeterminate`, never safe replay.
+13. Durable Decision and independently observed terminal Outcome remain separate learning-ledger events and still require currentness at append/reconcile time.
+
+Each real owner call is measured with a monotonic `Instant` and rejected when it exceeds its stage budget. The entire cognition run also has a total timeout around a blocking worker. Late worker results have no effect/ledger capability and are discarded; this is effect isolation, not a claim that `spawn_blocking` can kill a running synchronous Rust instruction.
 
 ## 5. Capacity and performance profile
 
-Pilot <=128 candidates, bounded receipt/evidence set and per-stage deadline derived from the run budget. Total budget reserves evidence/recovery floors before cognition. Record critical path, stage omissions/fallbacks, scope/generation mismatches and foreground resource cost.
+Canonical legal candidates are bounded to 128. The canonical snapshot requires exactly seven owners: objective, utility.ndu, neuron, prompt, intuition, context and evaluation. Each stage has a non-zero microsecond budget and the sum may not exceed the total cognition budget.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+These are enforcement bounds, not target-host measurements. The blocking worker protects effect publication, not a claim that an arbitrary synchronous Rust call can be asynchronously killed mid-instruction. Current owner calls are bounded local/read-only algorithms; any future I/O-bearing adapter requires a process/driver boundary with its own kill/reconcile semantics.
 
 ## 6. Concrete verification cases
 
-- IC-01: deterministic C1 traverses actual host ports and produces a read-only report with no Memory/KG/tool mutation.
-- IC-02: each dependency outage triggers the declared bounded fallback or abstention.
-- IC-03: mixed snapshot or compiled-but-undelivered prompt cannot produce a valid success/learning receipt.
-- IC-04: new-process selected-artifact load changes future behavior and an exact compatible rollback restores the predecessor behavior under current revocations.
+Source tests now include:
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+- `codex-rs/hepta-intelligence/src/canonical_tests.rs`: seven-owner order with first-class NDU, abstention truncation, post-call generation drift, key rotation, wrong-owner receipt and duplicate candidate rejection.
+- `codex-rs/hepta-agentd/src/intelligence_product_tests.rs`: real objective/NDU/neuron/prompt/intuition/context/evaluation APIs, Agentd dispatch proposal, real durable Decision -> independent terminal Outcome, acknowledged reopen and idempotent retry.
+- The Agentd product tests also cover missing current owner, signed-currentness substitution, final-use revocation-frontier race, exact admit/context/dispatch/terminal lifecycle and total-budget timeout before any ledger capability is exposed.
+- Agent protocol tests cover strict bounded run-lifecycle DTO round trips with owner-controlled admission time.
+- Native inference source binds physical turn dispatch and terminal/indeterminate reconciliation to the exact Agentd intelligence run; a real-process App Server E2E for the exact candidate remains required before `productExecutionProved` can become true.
+- Existing vertical/evaluated-shadow tests remain compatibility regression coverage.
+
+These are executable source tests. They become exact-candidate evidence only when the repository workflows execute them on the exact head and deterministic merge candidate. Target-host resource evidence remains a separate receipt.
 
 ## 7. Integration, rollback and capability ceiling
 
-C1 is an end-to-end milestone, not a sum of independently green library tests. Existing development/activation/evidence predecessors stay enforced; a simpler slice needs an explicit reviewed package change. The facade owns neither acceptance nor release.
+The intended product topology is explicit, but not fully routed: Agentd owns the composition-runner source; `intelligence.control` is an in-process composition facade; the seven facts remain with their owners; `AppServerModelDriver::run_intelligence` can consume an exact prepared binding. Today no Agentd daemon/App Server ingress actually calls the runner and supplies that prepared binding, so Agentd must not yet be claimed as an exercised product caller. Dispatch is not a model success claim: it is a durable/Agentd transition that precedes the physical App Server effect boundary.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Currentness is final-use, not admission-only. Key rotation, owner generation drift, authority-epoch drift or revocation-frontier drift invalidates the frozen run before publication. The currentness manifest itself must verify under the separately configured signer key, so rewriting JSON fields cannot substitute a new current key. An exact durable Decision/Outcome retry may replay after restart only when currentness still permits use.
+
+This source grants no model/provider/tool/effect authority, no production activation, no selection/promotion/release authority and no independent acceptance. C1 prompted-memory retrieval remains a distinct planned capability and is not closed by the basic product composition.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `run_read_only_vertical` in [codex-rs/hepta-intelligence/src/vertical.rs](../../../codex-rs/hepta-intelligence/src/vertical.rs); `run_evaluated_shadow_v1` in [codex-rs/hepta-intelligence/src/evaluated_shadow.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow.rs). Read-only vertical and signed evaluated-shadow composition implemented.
-- **State and recovery:** The vertical derives cross-stage objective/read/context/NDU bindings in one call. Evaluated shadow additionally requires a source-composed `LedgerWriter`, verifies generator evidence against its pinned-root-authenticated trust snapshot, and appends one witnessed `AuthenticatedDecisionV2`; it no longer receives a raw `DurableLearningJournal`/`DurableLedger` writer. It does not create another model loop or cognitive writer.
-- **Source tests:** [codex-rs/hepta-intelligence/src/vertical_tests.rs](../../../codex-rs/hepta-intelligence/src/vertical_tests.rs), [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
-- **Remaining work:** Supply the seven real host ports, production root provisioning/distribution transport and current keys, observed evaluations/calibration and valid assignment draw; live model/effect execution and long-term benefits are not implemented by these shadow calls.
+- **Canonical entrypoints:** `build_legal_candidates`, `prepare_intelligence_run`, `decide_boundary`, `assemble_context`, `validate_current_snapshot` in [codex-rs/hepta-intelligence/src/canonical.rs](../../../codex-rs/hepta-intelligence/src/canonical.rs).
+- **Named runner implementation:** `AgentdIntelligenceProductRunnerV1` in [codex-rs/hepta-agentd/src/intelligence_product.rs](../../../codex-rs/hepta-agentd/src/intelligence_product.rs), with concrete adapters to objective, NDU, neuron, prompt, intuition, context, evaluation and the sealed learning ledger. Agentd startup can configure/store it, but no daemon request path invokes it yet.
+- **Named physical caller:** `AppServerModelDriver::run_intelligence` in `codex-rs/hepta-infer-worker-host/src/native_run_control.rs`, backed by the real App Server driver and exact Agentd run-lifecycle RPCs. The `hepta-infer-worker` binary exposes the same binding through all-or-none intelligence arguments.
+- **Compatibility/reference entrypoints:** `run_read_only_vertical`, `run_shadow_pipeline`, `run_shadow_pipeline_v2`, `run_evaluated_shadow_v1` and the bounded `compose` helper. They retain their historical receipt domains but are not the product facade.
+- **State and recovery:** no new intelligence fact store. The currentness manifest is reread and signature-verified for every query. Agentd owns ephemeral run lifecycle state; runtime.codex owns its existing durable native dispatch journal; learning mutations remain behind the canonical authenticated `LedgerWriter` over its durable backend. Ambiguous ledger append preserves an exact pending replay object, while ambiguous physical dispatch is an Agentd `Indeterminate` run and is never redispatched automatically.
+- **Source tests:** [codex-rs/hepta-intelligence/src/canonical_tests.rs](../../../codex-rs/hepta-intelligence/src/canonical_tests.rs), [codex-rs/hepta-agentd/src/intelligence_product_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_product_tests.rs), plus existing vertical/evaluated-shadow suites.
+- **Operating references:** [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md) for the legacy evaluated-shadow surface and this dossier for the canonical product path.
+- **Remaining work:** add the actual daemon/App Server product ingress that calls the runner and binds its envelope to `run_intelligence`; make ambiguous Decision/Outcome append recovery durable across Agentd process loss; obtain current exact-head and deterministic-merge execution receipts; run exact-candidate real-process Agentd/App Server intelligence-bound E2E including lost-ack/restart/revocation races; collect target-host latency/RSS and hard-termination measurements; obtain independent semantic/security acceptance; and complete the separate C1 prompted-memory retrieval milestone. Source integration of the physical model route does not itself prove a live provider, target host, activation, promotion or release.
+
+Native source admission commits the intelligence run, revision, context and envelope. Only a newly committed, non-idempotent Agentd dispatch may enter a physical model request. Unknown results remain reconcile-only. The same bounded generation/fence-aware coordinator owns preparation and admission.

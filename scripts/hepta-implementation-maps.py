@@ -954,6 +954,33 @@ def verify_plasticity_test_references(row: dict, failures: list[str]) -> None:
                 )
 
 
+def public_rust_functions(root: str) -> set[str]:
+    """Return root-exported public free functions for one Rust crate.
+
+    Direct functions in lib.rs and single-name pub-use re-exports are included.
+    Types, associated methods and private helpers are deliberately excluded.
+    """
+    src = checked_source_path(ROOT, root) / "src"
+    lib = src / "lib.rs"
+    if not lib.is_file():
+        return set()
+    text = lib.read_text(encoding="utf-8")
+    functions = set(
+        re.findall(r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\b", text)
+    )
+    for module, name in re.findall(
+        r"\bpub\s+use\s+([A-Za-z_][A-Za-z0-9_]*)::([A-Za-z_][A-Za-z0-9_]*)\s*;",
+        text,
+    ):
+        source = src / f"{module}.rs"
+        if source.is_file() and re.search(
+            rf"\bpub\s+(?:async\s+)?fn\s+{re.escape(name)}\b",
+            source.read_text(encoding="utf-8"),
+        ):
+            functions.add(name)
+    return functions
+
+
 def verify(*, require_current_source: bool = True):
     """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
 
@@ -1004,6 +1031,21 @@ def verify(*, require_current_source: bool = True):
             if "sourceRootPresent" not in row or "productionImplementation" not in row:
                 raise ValueError("status model")
             validate_operation_inventory(mid, ops)
+            if row.get("closedWorldPublicFunctions") is True:
+                exported = set()
+                for root in resolved_roots:
+                    if (checked_source_path(ROOT, root) / "Cargo.toml").is_file():
+                        exported.update(public_rust_functions(root))
+                mapped = {
+                    op.get("nativeSymbol")
+                    for op in ops
+                    if isinstance(op.get("nativeSymbol"), str)
+                }
+                if exported != mapped:
+                    raise ValueError(
+                        f"public function inventory differs: missing={sorted(exported - mapped)}, extra={sorted(mapped - exported)}"
+                    )
+
             if mid == "learning.plasticity":
                 verify_plasticity_test_references(row, failures)
                 if not plasticity_status_matches():
