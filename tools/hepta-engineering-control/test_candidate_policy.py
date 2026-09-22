@@ -35,6 +35,46 @@ class CandidatePolicyTests(unittest.TestCase):
             Mutation("add_file", "scripts-extra/new.py", replacement_text="pass"),
         ))), 2)
 
+
+    def test_candidate_can_never_edit_its_own_oracle_paths(self):
+        for path in (
+            "src/tests/test_feature.py",
+            "src/test_feature.py",
+            "src/feature_tests.rs",
+            "src/__tests__/feature.js",
+            "src/fixtures/case.json",
+            "src/output.golden",
+            "src/feature.test.ts",
+            "src/feature.spec.js",
+            "src/feature_test.go",
+            "src/feature_spec.rb",
+            "src/feature_test.cpp",
+            "src/contract.feature",
+            "src/__snapshots__/feature.snap",
+            "src/testdata/fixture.json",
+            "src/Cargo.toml",
+            "src/Cargo.lock",
+            "src/pyproject.toml",
+            "src/pytest.ini",
+            "src/tox.ini",
+            "src/noxfile.py",
+            "src/package.json",
+            "src/package-lock.json",
+            "src/pnpm-lock.yaml",
+            "src/yarn.lock",
+            "src/nextest.toml",
+            "src/jest.config.ts",
+            "src/vitest.config.js",
+            "src/playwright.config.ts",
+            "src/rust-toolchain.toml",
+        ):
+            with self.subTest(path=path):
+                with self.assertRaisesRegex(EngineeringError, "candidate_oracle_path"):
+                    generate_candidates(
+                        self.envelope,
+                        (Mutation("add_file", path, replacement_text="x"),),
+                    )
+
     def test_entire_effective_scope_and_budget_are_bound_to_identity(self):
         original = generate_candidates(self.envelope, (self.mutation,))[1]
         variants = (

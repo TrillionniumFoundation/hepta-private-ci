@@ -784,6 +784,9 @@ def verify(*, require_current_source: bool = True):
                 raise ValueError("operations")
             if "sourceRootPresent" not in row or "productionImplementation" not in row:
                 raise ValueError("status model")
+            mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
+            if mapping_mode not in {"path_only", "exact_blob"}:
+                raise ValueError("mapping source identity mode")
             for op in ops:
                 if not isinstance(op, dict) or not op.get("operation"):
                     raise ValueError("operation id")
@@ -795,6 +798,16 @@ def verify(*, require_current_source: bool = True):
                     and not checked_source_path(ROOT, source).is_file()
                 ):
                     raise ValueError(f"missing source: {source}")
+                if mapping_mode == "exact_blob":
+                    source_blob = op.get("sourceBlob")
+                    if (
+                        not source
+                        or not isinstance(source_blob, str)
+                        or re.fullmatch(r"[0-9a-f]{40}", source_blob) is None
+                    ):
+                        raise ValueError(f"invalid exact source blob: {op['operation']}")
+                    if git("rev-parse", f"{candidate['commit']}:{source}") != source_blob:
+                        raise ValueError(f"source blob drift: {op['operation']}")
             checked_paths.update(
                 verify_source_identity(row, resolved, candidate, check_checkout=False)
             )

@@ -1,0 +1,1078 @@
+"""Repository product caller for the Engineering Control Plane.
+
+The caller runs only after repository qualification jobs succeed. It proves that
+the actual repository CI composes the SQLite v9 named product owner across planning,
+fenced worker lifecycle, durable integration reconciliation and reopen recovery.
+Its in-process signatures/digests are explicit execution fixtures, not independent
+acceptance or external observations. It never grants merge, deployment, promotion,
+release or runtime authority.
+"""
+
+from __future__ import annotations
+
+import argparse
+from collections.abc import Mapping
+from dataclasses import asdict, replace
+import hashlib
+import json
+from pathlib import Path
+import re
+import tempfile
+import time
+
+from .control_plane import DENIED_AUTHORITIES, WorkEnvelope
+from .evidence import HmacTrustStore
+from .integration_controller import IntegrationStageReceipt
+from .git_security import run_git, run_git_bytes
+from .product_runtime import EngineeringControlProduct
+from .orchestration import (
+    CompletionReceipt,
+    EngineeringCapacity,
+    EngineeringWorkPackage,
+    ReviewCapacity,
+    WorkerProfile,
+)
+from .worker_lifecycle import (
+    WorkerHeartbeatReceipt,
+    WorkerRegistrationReceipt,
+    WorkerResultReceipt,
+)
+
+_SHA1 = re.compile(r"[0-9a-f]{40}\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+EXPECTED_REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
+EXPECTED_REPOSITORY_ID = 1320694176
+EXPECTED_JOB = "engineering-product-gate"
+EXPECTED_WORKFLOW_SUFFIX = "/.github/workflows/hepta-consolidated-source.yml"
+CANONICAL_WORK_PACKAGE_PATH = Path("docs/delivery/WORK_PACKAGES.json")
+CANONICAL_ENGINEERING_PACKAGE = "ECP-1-ENGINEERING-CONTROL-PLANE"
+MAX_CANONICAL_REGISTRY_BYTES = 4 * 1024 * 1024
+MAX_REVIEW_OBSERVATIONS = 256
+
+
+class _RejectingTrustStore:
+    """Product caller never substitutes an in-process reference signer for CI identity."""
+
+    def sign(self, value: object, issuer: str, signing_identity: str) -> str:
+        raise RuntimeError("product_local_signing_forbidden")
+
+    def verify(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+        signature: str,
+    ) -> bool:
+        return False
+
+
+def _signed_fixture(value, trust: HmacTrustStore, issuer: str, identity: str):
+    """Sign only the bounded CI lifecycle fixture; never CI/review/merge authority."""
+    return replace(value, signature=trust.sign(value, issuer, identity))
+
+
+def _git(root: Path, *args: str) -> str:
+    return run_git(root, *args)
+
+
+def _git_bytes(root: Path, *args: str) -> bytes:
+    return run_git_bytes(
+        root,
+        *args,
+        maximum_output_bytes=MAX_CANONICAL_REGISTRY_BYTES,
+    )
+
+
+def _sha(value: str, label: str) -> str:
+    if not isinstance(value, str) or _SHA1.fullmatch(value) is None or value == "0" * 40:
+        raise ValueError("invalid_" + label)
+    return value
+
+
+def _canonical_engineering_package(root: Path) -> dict[str, object]:
+    """Bind the product caller to the exact HEAD blob for canonical ECP-1."""
+    relative = CANONICAL_WORK_PACKAGE_PATH.as_posix()
+    try:
+        blob_oid = _sha(
+            _git(root, "rev-parse", f"HEAD:{relative}"),
+            "canonical_work_package_blob",
+        )
+        raw = _git_bytes(root, "cat-file", "blob", blob_oid)
+    except ValueError:
+        raise ValueError("canonical_work_package_registry_unavailable") from None
+    if not raw or len(raw) > MAX_CANONICAL_REGISTRY_BYTES:
+        raise ValueError("canonical_work_package_registry_invalid")
+    try:
+        registry = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise ValueError("canonical_work_package_registry_invalid") from None
+    if (
+        not isinstance(registry, dict)
+        or registry.get("documentClass") != "canonical_registry"
+        or not isinstance(registry.get("schema"), str)
+        or not isinstance(registry.get("schemaVersion"), int)
+        or not isinstance(registry.get("packages"), list)
+    ):
+        raise ValueError("canonical_work_package_registry_invalid")
+    matches = [
+        row
+        for row in registry["packages"]
+        if isinstance(row, dict) and row.get("id") == CANONICAL_ENGINEERING_PACKAGE
+    ]
+    if len(matches) != 1:
+        raise ValueError("canonical_engineering_package_identity")
+    package = matches[0]
+    if (
+        package.get("module") != "control.engineering"
+        or package.get("state") != "source_implemented"
+        or package.get("authorityDelta") != "none"
+        or package.get("owner") != "developer-productivity"
+        or package.get("deputy") != "architecture"
+        or package.get("sourceMutationAllowed") is not True
+        or package.get("allowedWritePaths")
+        != ["tools/hepta-engineering-control/**"]
+        or package.get("developmentAfter")
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
+        or package.get("activationAfter")
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
+    ):
+        raise ValueError("canonical_engineering_package_binding")
+    package_bytes = json.dumps(
+        package,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return {
+        "path": CANONICAL_WORK_PACKAGE_PATH.as_posix(),
+        "schema": registry["schema"],
+        "schemaVersion": registry["schemaVersion"],
+        "packageId": CANONICAL_ENGINEERING_PACKAGE,
+        "blobOid": blob_oid,
+        "registryDigest": hashlib.sha256(raw).hexdigest(),
+        "packageDigest": hashlib.sha256(package_bytes).hexdigest(),
+        "state": package["state"],
+        "authorityDelta": package["authorityDelta"],
+        "owner": package["owner"],
+        "deputy": package["deputy"],
+        "sourceMutationAllowed": package["sourceMutationAllowed"],
+        "allowedWritePaths": package["allowedWritePaths"],
+        "developmentAfter": package["developmentAfter"],
+        "activationAfter": package["activationAfter"],
+    }
+
+
+def build_product_receipt(
+    repository: str | Path,
+    *,
+    repository_full_name: str,
+    repository_id: int,
+    workflow_ref: str,
+    job_name: str,
+    run_id: int,
+    run_attempt: int,
+    source_sha: str,
+    base_sha: str | None,
+    event_name: str,
+    lane: str,
+    pull_request_number: int,
+) -> dict[str, object]:
+    root = Path(repository).resolve()
+    source_sha = _sha(source_sha, "source_sha")
+    if repository_full_name != EXPECTED_REPOSITORY:
+        raise ValueError("repository_identity_mismatch")
+    if type(repository_id) is not int or repository_id != EXPECTED_REPOSITORY_ID:
+        raise ValueError("repository_id_mismatch")
+    if (
+        not isinstance(workflow_ref, str)
+        or EXPECTED_WORKFLOW_SUFFIX not in workflow_ref
+    ):
+        raise ValueError("workflow_identity_mismatch")
+    if job_name != EXPECTED_JOB:
+        raise ValueError("job_identity_mismatch")
+    if type(run_id) is not int or run_id <= 0 or type(run_attempt) is not int or run_attempt <= 0:
+        raise ValueError("run_identity_invalid")
+    if event_name not in {"pull_request", "push"}:
+        raise ValueError("event_identity_invalid")
+    if lane not in {"source-head", "base-merge"}:
+        raise ValueError("execution_lane_invalid")
+    if lane == "base-merge" and event_name != "pull_request":
+        raise ValueError("execution_lane_event_mismatch")
+    if type(pull_request_number) is not int or pull_request_number < 0:
+        raise ValueError("pull_request_identity_invalid")
+    if (event_name == "pull_request") != (pull_request_number > 0):
+        raise ValueError("pull_request_identity_mismatch")
+
+    tested_sha = _sha(_git(root, "rev-parse", "HEAD"), "tested_sha")
+    tested_tree = _sha(_git(root, "rev-parse", "HEAD^{tree}"), "tested_tree")
+    source_tree = _sha(_git(root, "rev-parse", f"{source_sha}^{{tree}}"), "source_tree")
+    parents = tuple(_git(root, "show", "-s", "--format=%P", "HEAD").split())
+
+    if lane == "source-head":
+        if tested_sha != source_sha:
+            raise ValueError("source_head_mismatch")
+        mode = "source-head"
+    else:
+        if base_sha is None:
+            raise ValueError("missing_base_sha")
+        base_sha = _sha(base_sha, "base_sha")
+        if parents != (base_sha, source_sha):
+            raise ValueError("ordered_merge_parent_mismatch")
+        if tested_sha in {base_sha, source_sha}:
+            raise ValueError("synthetic_merge_not_distinct")
+        mode = "base-merge"
+
+    canonical_package = _canonical_engineering_package(root)
+    now = time.time_ns()
+    envelope = WorkEnvelope(
+        envelope_id=f"product-{tested_sha[:24]}",
+        source_commit=tested_sha,
+        source_tree=tested_tree,
+        objective_digest=hashlib.sha256(
+            b"control.engineering.repository-product-caller"
+        ).hexdigest(),
+        contract_digest=str(canonical_package["packageDigest"]),
+        owner="github-actions",
+        allowed_paths=("tools/hepta-engineering-control",),
+        denied_authorities=tuple(sorted(DENIED_AUTHORITIES)),
+        maximum_assignments=1,
+        expires_unix_ns=now + 300_000_000_000,
+    )
+    package = EngineeringWorkPackage(
+        priority=0,
+        package_id="control.engineering.repository-product-gate",
+        predecessors=(),
+        write_paths=("tools/hepta-engineering-control",),
+        required_skills=("engineering-control",),
+        capacity_units=1,
+        ci_units=1,
+        review_roles=("architecture",),
+        expected_value_q32=1,
+        architecture_debt_q32=0,
+        rollback_cost_q32=0,
+    )
+    lifecycle_trust = HmacTrustStore(
+        {
+            ("engineering_worker_identity", "product-worker-registry-key"): b"product-worker-registry",
+            ("github-actions-product-worker", "product-worker-key"): b"product-worker",
+            ("ci_executor", "product-ci-completion-key"): b"product-ci-completion",
+            ("engineering_evidence_binder", "product-candidate-observer-key"): b"product-candidate-observer",
+            ("github_review_observer", "product-review-observer-key"): b"product-review-observer",
+            ("ci_executor", "product-integration-ci-key"): b"product-integration-ci",
+        }
+    )
+    worker_id = "github-actions-product-worker"
+    worker_key = "product-worker-key"
+    result_digest = hashlib.sha256(
+        ("worker-result:" + tested_sha).encode("ascii")
+    ).hexdigest()
+    integration_base_commit = (
+        base_sha
+        if isinstance(base_sha, str)
+        and _SHA1.fullmatch(base_sha) is not None
+        and base_sha != "0" * 40
+        else tested_sha
+    )
+    integration_base_tree = _sha(
+        _git(root, "rev-parse", f"{integration_base_commit}^{{tree}}"),
+        "integration_base_tree",
+    )
+    database_path: Path
+    completed_claim_id = ""
+    completed_state = ""
+    reopened_claim_state = ""
+    queue_generation_id = f"product-integration-{tested_sha[:20]}"
+    integration_state = ""
+    reopened_integration_state = ""
+    with tempfile.TemporaryDirectory(prefix="hepta-engineering-product-") as directory:
+        database_path = Path(directory) / "engineering.sqlite3"
+        with EngineeringControlProduct(
+            database_path,
+            root,
+            expected_repository=EXPECTED_REPOSITORY,
+            trust_store=lifecycle_trust,
+        ) as product:
+            product.admit_repository_envelope(envelope, now_ns=now)
+            plan = product.plan_work(
+                envelope,
+                (package,),
+                (
+                    WorkerProfile(
+                        worker_id,
+                        ("engineering-control",),
+                        1,
+                        ("tools/hepta-engineering-control",),
+                    ),
+                ),
+                (),
+                EngineeringCapacity(1, (ReviewCapacity("architecture", 1),)),
+                generation_id=f"product-generation-{tested_sha[:20]}",
+                now_ns=now,
+            )
+            registration = WorkerRegistrationReceipt(
+                worker_id,
+                worker_key,
+                ("engineering-control",),
+                1,
+                ("tools/hepta-engineering-control",),
+                "engineering_worker_identity",
+                "product-worker-registry-key",
+                now,
+                now + 250_000_000_000,
+            )
+            registration = _signed_fixture(
+                registration,
+                lifecycle_trust,
+                registration.issuer,
+                registration.signing_identity,
+            )
+            registration_digest = product.register_worker(
+                registration,
+                now_ns=now + 1,
+            )
+            lease = product.acquire_lease(
+                f"product-lease-{tested_sha[:20]}",
+                envelope.envelope_id,
+                worker_id,
+                ("tools/hepta-engineering-control",),
+                authority_epoch=1,
+                expires_unix_ns=now + 240_000_000_000,
+                now_ns=now + 2,
+            )
+            claim = product.claim(
+                plan.generation_id,
+                package.package_id,
+                worker_id,
+                lease.lease_id,
+                heartbeat_ttl_ns=60_000_000_000,
+                now_ns=now + 3,
+            )
+            heartbeat = WorkerHeartbeatReceipt(
+                worker_id,
+                worker_key,
+                claim.claim_id,
+                claim.claim_fence,
+                claim.revision,
+                now + 4,
+                now + 120_000_000_000,
+            )
+            heartbeat = _signed_fixture(
+                heartbeat, lifecycle_trust, worker_id, worker_key
+            )
+            running = product.heartbeat(
+                heartbeat,
+                heartbeat_ttl_ns=60_000_000_000,
+                now_ns=now + 4,
+            )
+            result = WorkerResultReceipt(
+                worker_id,
+                worker_key,
+                running.claim_id,
+                running.claim_fence,
+                running.revision,
+                result_digest,
+                "success",
+                now + 5,
+                now + 120_000_000_000,
+            )
+            result = _signed_fixture(result, lifecycle_trust, worker_id, worker_key)
+            submitted = product.submit_result(result, now_ns=now + 5)
+            completion = CompletionReceipt(
+                package.package_id,
+                tested_sha,
+                tested_tree,
+                plan.generation_id,
+                plan.base_schedule_digest,
+                result_digest,
+                "ci_executor",
+                "product-ci-completion-key",
+                now + 6,
+                now + 120_000_000_000,
+                True,
+            )
+            completion = _signed_fixture(
+                completion,
+                lifecycle_trust,
+                completion.issuer,
+                completion.signing_identity,
+            )
+            completed = product.observe_completion(
+                submitted.claim_id,
+                envelope,
+                completion,
+                now_ns=now + 6,
+            )
+            completion_observation_digest = product.completion_observation_digest(
+                completed.claim_id
+            )
+            queue = product.publish_integration_queue(
+                plan,
+                queue_generation_id=queue_generation_id,
+                base_commit=integration_base_commit,
+                base_tree=integration_base_tree,
+                now_ns=now + 7,
+            )
+            candidate_observation = IntegrationStageReceipt(
+                queue.queue_generation_id,
+                package.package_id,
+                "candidate",
+                hashlib.sha256(
+                    ("candidate:" + tested_sha).encode("ascii")
+                ).hexdigest(),
+                True,
+                "engineering_evidence_binder",
+                "product-candidate-observer-key",
+                now + 8,
+                now + 120_000_000_000,
+            )
+            candidate_observation = _signed_fixture(
+                candidate_observation,
+                lifecycle_trust,
+                candidate_observation.issuer,
+                candidate_observation.signing_identity,
+            )
+            review_observation = IntegrationStageReceipt(
+                queue.queue_generation_id,
+                package.package_id,
+                "review",
+                hashlib.sha256(
+                    ("review-observation:" + tested_sha).encode("ascii")
+                ).hexdigest(),
+                True,
+                "github_review_observer",
+                "product-review-observer-key",
+                now + 9,
+                now + 120_000_000_000,
+            )
+            review_observation = _signed_fixture(
+                review_observation,
+                lifecycle_trust,
+                review_observation.issuer,
+                review_observation.signing_identity,
+            )
+            ci_observation = IntegrationStageReceipt(
+                queue.queue_generation_id,
+                package.package_id,
+                "ci",
+                hashlib.sha256(
+                    ("ci-observation:" + tested_sha).encode("ascii")
+                ).hexdigest(),
+                True,
+                "ci_executor",
+                "product-integration-ci-key",
+                now + 10,
+                now + 120_000_000_000,
+            )
+            ci_observation = _signed_fixture(
+                ci_observation,
+                lifecycle_trust,
+                ci_observation.issuer,
+                ci_observation.signing_identity,
+            )
+            product.reconcile_integration(
+                queue.queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=candidate_observation,
+                now_ns=now + 8,
+            )
+            product.reconcile_integration(
+                queue.queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=review_observation,
+                now_ns=now + 9,
+            )
+            integration = product.reconcile_integration(
+                queue.queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=ci_observation,
+                now_ns=now + 10,
+            )
+            anchor = product.audit_anchor()
+            completed_claim_id = completed.claim_id
+            completed_state = completed.state
+            integration_state = integration.state
+
+        with EngineeringControlProduct(
+            database_path,
+            root,
+            expected_repository=EXPECTED_REPOSITORY,
+            trust_store=lifecycle_trust,
+        ) as reopened:
+            replayed_registration_digest = reopened.register_worker(
+                registration,
+                now_ns=now + 9,
+            )
+            replayed_lease = reopened.acquire_lease(
+                lease.lease_id,
+                envelope.envelope_id,
+                worker_id,
+                ("tools/hepta-engineering-control",),
+                authority_epoch=1,
+                expires_unix_ns=now + 240_000_000_000,
+                now_ns=now + 9,
+            )
+            replayed_claim = reopened.claim(
+                plan.generation_id,
+                package.package_id,
+                worker_id,
+                lease.lease_id,
+                heartbeat_ttl_ns=60_000_000_000,
+                now_ns=now + 9,
+            )
+            replayed_heartbeat = reopened.heartbeat(
+                heartbeat,
+                heartbeat_ttl_ns=60_000_000_000,
+                now_ns=now + 9,
+            )
+            replayed_result = reopened.submit_result(
+                result,
+                now_ns=now + 9,
+            )
+            replayed_completion = reopened.observe_completion(
+                completed_claim_id,
+                envelope,
+                completion,
+                now_ns=now + 9,
+            )
+            reopened.reconcile_integration(
+                queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=candidate_observation,
+                now_ns=now + 11,
+            )
+            reopened.reconcile_integration(
+                queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=review_observation,
+                now_ns=now + 11,
+            )
+            replayed_integration = reopened.reconcile_integration(
+                queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                stage_receipt=ci_observation,
+                now_ns=now + 11,
+            )
+            reopened_claim_state = replayed_completion.state
+            reopened_completion_observation_digest = (
+                reopened.completion_observation_digest(completed_claim_id)
+            )
+            reopened_integration_state = replayed_integration.state
+            reopened_anchor = reopened.audit_anchor()
+            if (
+                replayed_registration_digest != registration_digest
+                or replayed_lease.lease_id != lease.lease_id
+                or replayed_claim.claim_id != completed_claim_id
+                or replayed_heartbeat.claim_id != completed_claim_id
+                or replayed_result.claim_id != completed_claim_id
+                or replayed_completion.claim_id != completed_claim_id
+            ):
+                raise RuntimeError("product_reopen_ack_replay_mismatch")
+
+    if completed_state != "completed_observed" or reopened_claim_state != "completed_observed":
+        raise RuntimeError("product_worker_lifecycle_not_recovered")
+    if (
+        completion_observation_digest != reopened_completion_observation_digest
+        or completion_observation_digest == "0" * 64
+    ):
+        raise RuntimeError("product_completion_evidence_not_recovered")
+    if integration_state != "ready_external_merge" or reopened_integration_state != "ready_external_merge":
+        raise RuntimeError("product_integration_reconciliation_not_recovered")
+    if reopened_anchor != anchor:
+        raise RuntimeError("product_reopen_audit_anchor_drift")
+
+    if tuple(row.package_id for row in plan.assignments) != (
+        "control.engineering.repository-product-gate",
+    ):
+        raise RuntimeError("product_assignment_not_composed")
+    if any((plan.runtime_authority, plan.merge_authority, plan.release_authority)):
+        raise RuntimeError("product_caller_authority_delta")
+
+    receipt = {
+        "schema": "hepta.control-engineering-product-execution.v4",
+        "mode": mode,
+        "ciIdentity": {
+            "repository": repository_full_name,
+            "repositoryId": repository_id,
+            "workflowRef": workflow_ref,
+            "job": job_name,
+            "runId": run_id,
+            "runAttempt": run_attempt,
+            "eventName": event_name,
+            "executionLane": lane,
+            "pullRequestNumber": pull_request_number,
+        },
+        "sourceSha": source_sha,
+        "sourceTree": source_tree,
+        "testedSha": tested_sha,
+        "testedTree": tested_tree,
+        "orderedParents": list(parents),
+        "canonicalWorkPackage": canonical_package,
+        "plan": asdict(plan),
+        "auditAnchor": anchor,
+        "workerLifecycle": {
+            "registrationDigest": registration_digest,
+            "leaseId": lease.lease_id,
+            "claimId": completed_claim_id,
+            "completedState": completed_state,
+            "reopenedState": reopened_claim_state,
+            "resultDigest": result_digest,
+            "completionObservationDigest": completion_observation_digest,
+            "independentlyObservedCompletion": False,
+            "completionEvidenceClass": "ci_reference_hmac_fixture",
+            "trustClass": "ci_reference_hmac_fixture",
+        },
+        "integrationReconciliation": {
+            "queueGenerationId": queue_generation_id,
+            "baseCommit": integration_base_commit,
+            "baseTree": integration_base_tree,
+            "state": integration_state,
+            "reopenedState": reopened_integration_state,
+            "mergeAuthority": False,
+            "observationEvidenceClass": "ci_reference_digest_fixture",
+            "externalObservationProved": False,
+        },
+        "productCallerComposed": True,
+        "workerLifecycleFixtureExecuted": True,
+        "integrationReconciliationFixtureExecuted": True,
+        "reopenRecoveryFixtureExecuted": True,
+        "independentCompletionProved": False,
+        "externalIntegrationObservationProved": False,
+        "productTestsUpstreamRequired": True,
+        "runtimeAuthority": False,
+        "mergeAuthority": False,
+        "activationAuthority": False,
+        "promotionAuthority": False,
+        "releaseAuthority": False,
+        "externalEffectAuthority": False,
+    }
+    receipt["receiptDigest"] = hashlib.sha256(
+        json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return receipt
+
+
+def _verify_product_receipt(
+    value: Mapping[str, object],
+    *,
+    expected_lane: str,
+) -> str:
+    if not isinstance(value, Mapping):
+        raise ValueError("product_receipt_shape")
+    if (
+        value.get("schema") != "hepta.control-engineering-product-execution.v4"
+        or value.get("mode") != expected_lane
+        or value.get("productCallerComposed") is not True
+        or value.get("workerLifecycleFixtureExecuted") is not True
+        or value.get("integrationReconciliationFixtureExecuted") is not True
+        or value.get("reopenRecoveryFixtureExecuted") is not True
+        or value.get("independentCompletionProved") is not False
+        or value.get("externalIntegrationObservationProved") is not False
+        or value.get("productTestsUpstreamRequired") is not True
+    ):
+        raise ValueError("product_receipt_identity")
+    for authority in (
+        "runtimeAuthority",
+        "mergeAuthority",
+        "activationAuthority",
+        "promotionAuthority",
+        "releaseAuthority",
+        "externalEffectAuthority",
+    ):
+        if value.get(authority) is not False:
+            raise ValueError("product_receipt_authority_delta")
+    digest = value.get("receiptDigest")
+    if not isinstance(digest, str) or _SHA256.fullmatch(digest) is None:
+        raise ValueError("product_receipt_digest")
+    unsigned = dict(value)
+    unsigned.pop("receiptDigest", None)
+    expected_digest = hashlib.sha256(
+        json.dumps(unsigned, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if digest != expected_digest:
+        raise ValueError("product_receipt_digest_mismatch")
+
+    identity = value.get("ciIdentity")
+    if not isinstance(identity, Mapping):
+        raise ValueError("product_receipt_ci_identity")
+    if identity.get("executionLane") != expected_lane:
+        raise ValueError("product_receipt_lane_mismatch")
+    canonical = value.get("canonicalWorkPackage")
+    if not isinstance(canonical, Mapping):
+        raise ValueError("product_receipt_canonical_binding")
+    if (
+        canonical.get("path") != CANONICAL_WORK_PACKAGE_PATH.as_posix()
+        or canonical.get("packageId") != CANONICAL_ENGINEERING_PACKAGE
+        or canonical.get("state") != "source_implemented"
+        or canonical.get("authorityDelta") != "none"
+        or canonical.get("owner") != "developer-productivity"
+        or canonical.get("deputy") != "architecture"
+        or canonical.get("sourceMutationAllowed") is not True
+        or canonical.get("allowedWritePaths")
+        != ["tools/hepta-engineering-control/**"]
+        or canonical.get("developmentAfter")
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
+        or canonical.get("activationAfter")
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
+    ):
+        raise ValueError("product_receipt_canonical_binding")
+    blob_oid = canonical.get("blobOid")
+    if (
+        not isinstance(blob_oid, str)
+        or _SHA1.fullmatch(blob_oid) is None
+        or blob_oid == "0" * 40
+    ):
+        raise ValueError("product_receipt_canonical_blob")
+    for key in ("registryDigest", "packageDigest"):
+        item = canonical.get(key)
+        if not isinstance(item, str) or _SHA256.fullmatch(item) is None:
+            raise ValueError("product_receipt_canonical_digest")
+
+    plan = value.get("plan")
+    if not isinstance(plan, Mapping):
+        raise ValueError("product_receipt_plan")
+    assignments = plan.get("assignments")
+    if (
+        not isinstance(assignments, list)
+        or len(assignments) != 1
+        or not isinstance(assignments[0], Mapping)
+        or assignments[0].get("package_id")
+        != "control.engineering.repository-product-gate"
+    ):
+        raise ValueError("product_receipt_plan")
+    for authority in ("runtime_authority", "merge_authority", "release_authority"):
+        if plan.get(authority) is not False:
+            raise ValueError("product_receipt_plan_authority_delta")
+    lifecycle = value.get("workerLifecycle")
+    if (
+        not isinstance(lifecycle, Mapping)
+        or lifecycle.get("completedState") != "completed_observed"
+        or lifecycle.get("reopenedState") != "completed_observed"
+        or lifecycle.get("independentlyObservedCompletion") is not False
+        or lifecycle.get("completionEvidenceClass") != "ci_reference_hmac_fixture"
+        or not isinstance(lifecycle.get("completionObservationDigest"), str)
+        or _SHA256.fullmatch(lifecycle["completionObservationDigest"]) is None
+        or lifecycle["completionObservationDigest"] == "0" * 64
+        or lifecycle.get("trustClass") != "ci_reference_hmac_fixture"
+        or not isinstance(lifecycle.get("claimId"), str)
+        or not lifecycle["claimId"]
+    ):
+        raise ValueError("product_receipt_worker_lifecycle")
+    integration = value.get("integrationReconciliation")
+    if (
+        not isinstance(integration, Mapping)
+        or integration.get("state") != "ready_external_merge"
+        or integration.get("reopenedState") != "ready_external_merge"
+        or integration.get("mergeAuthority") is not False
+        or integration.get("observationEvidenceClass") != "ci_reference_digest_fixture"
+        or integration.get("externalObservationProved") is not False
+        or not isinstance(integration.get("queueGenerationId"), str)
+        or not integration["queueGenerationId"]
+    ):
+        raise ValueError("product_receipt_integration_reconciliation")
+    return digest
+
+
+def bind_github_review_observations(
+    reviews: object,
+    *,
+    expected_head_sha: str,
+) -> dict[str, object]:
+    """Bind reviewer identities observed from GitHub's authenticated Reviews API.
+
+    This is an identity/freshness observation only. APPROVED is not converted into
+    independent acceptance, merge authority, or a role qualification.
+    """
+    expected_head_sha = _sha(expected_head_sha, "review_head_sha")
+    if not isinstance(reviews, list) or len(reviews) > MAX_REVIEW_OBSERVATIONS:
+        raise ValueError("github_review_observation_shape")
+    observations: list[dict[str, object]] = []
+    seen: set[int] = set()
+    for row in reviews:
+        if not isinstance(row, Mapping):
+            raise ValueError("github_review_observation_shape")
+        review_id = row.get("id")
+        user = row.get("user")
+        state = row.get("state")
+        commit_id = row.get("commit_id")
+        submitted_at = row.get("submitted_at")
+        if (
+            type(review_id) is not int
+            or review_id <= 0
+            or review_id in seen
+            or not isinstance(user, Mapping)
+            or type(user.get("id")) is not int
+            or int(user["id"]) <= 0
+            or not isinstance(user.get("login"), str)
+            or not user["login"]
+            or state not in {"APPROVED", "CHANGES_REQUESTED", "COMMENTED", "DISMISSED"}
+            or not isinstance(commit_id, str)
+            or _SHA1.fullmatch(commit_id) is None
+            or not isinstance(submitted_at, str)
+            or not submitted_at
+        ):
+            raise ValueError("github_review_observation_shape")
+        seen.add(review_id)
+        observations.append(
+            {
+                "reviewId": review_id,
+                "reviewerLogin": user["login"],
+                "reviewerUserId": int(user["id"]),
+                "state": state,
+                "commitId": commit_id,
+                "submittedAt": submitted_at,
+                "currentHead": commit_id == expected_head_sha,
+            }
+        )
+    observations.sort(key=lambda row: int(row["reviewId"]))
+    value: dict[str, object] = {
+        "schema": "hepta.github-review-observation.v1",
+        "expectedHeadSha": expected_head_sha,
+        "observations": observations,
+        "independentAcceptance": False,
+        "mergeAuthority": False,
+    }
+    value["observationDigest"] = hashlib.sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return value
+
+
+def _verify_github_review_observation(
+    value: Mapping[str, object],
+    *,
+    expected_head_sha: str,
+) -> None:
+    if (
+        value.get("schema") != "hepta.github-review-observation.v1"
+        or value.get("expectedHeadSha") != expected_head_sha
+        or value.get("independentAcceptance") is not False
+        or value.get("mergeAuthority") is not False
+    ):
+        raise ValueError("github_review_observation_identity")
+    digest = value.get("observationDigest")
+    if not isinstance(digest, str) or _SHA256.fullmatch(digest) is None:
+        raise ValueError("github_review_observation_digest")
+    unsigned = dict(value)
+    unsigned.pop("observationDigest", None)
+    expected = hashlib.sha256(
+        json.dumps(unsigned, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if digest != expected:
+        raise ValueError("github_review_observation_digest_mismatch")
+
+
+def verify_product_receipt_pair(
+    source_head: Mapping[str, object],
+    base_merge: Mapping[str, object],
+    *,
+    expected_repository: str,
+    expected_repository_id: int,
+    expected_run_id: int,
+    expected_run_attempt: int,
+    expected_source_sha: str,
+    expected_base_sha: str,
+    expected_pull_request_number: int,
+    github_review_observation: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    """Verify the two independently executed PR product-caller lanes."""
+    expected_source_sha = _sha(expected_source_sha, "source_sha")
+    expected_base_sha = _sha(expected_base_sha, "base_sha")
+    source_digest = _verify_product_receipt(
+        source_head,
+        expected_lane="source-head",
+    )
+    merge_digest = _verify_product_receipt(
+        base_merge,
+        expected_lane="base-merge",
+    )
+
+    source_identity = source_head["ciIdentity"]
+    merge_identity = base_merge["ciIdentity"]
+    if not isinstance(source_identity, Mapping) or not isinstance(
+        merge_identity, Mapping
+    ):
+        raise ValueError("product_receipt_pair_ci_identity")
+    for identity in (source_identity, merge_identity):
+        if (
+            identity.get("repository") != expected_repository
+            or identity.get("repositoryId") != expected_repository_id
+            or identity.get("runId") != expected_run_id
+            or identity.get("runAttempt") != expected_run_attempt
+            or identity.get("eventName") != "pull_request"
+            or identity.get("pullRequestNumber") != expected_pull_request_number
+            or identity.get("job") != EXPECTED_JOB
+        ):
+            raise ValueError("product_receipt_pair_ci_identity")
+        workflow_ref = identity.get("workflowRef")
+        if (
+            not isinstance(workflow_ref, str)
+            or EXPECTED_WORKFLOW_SUFFIX not in workflow_ref
+        ):
+            raise ValueError("product_receipt_pair_workflow_identity")
+
+    if (
+        source_head.get("sourceSha") != expected_source_sha
+        or base_merge.get("sourceSha") != expected_source_sha
+        or source_head.get("testedSha") != expected_source_sha
+    ):
+        raise ValueError("product_receipt_pair_source_identity")
+    source_tree = source_head.get("sourceTree")
+    if (
+        not isinstance(source_tree, str)
+        or _SHA1.fullmatch(source_tree) is None
+        or source_head.get("testedTree") != source_tree
+        or base_merge.get("sourceTree") != source_tree
+    ):
+        raise ValueError("product_receipt_pair_source_tree")
+    merge_sha = base_merge.get("testedSha")
+    merge_tree = base_merge.get("testedTree")
+    if (
+        not isinstance(merge_sha, str)
+        or _SHA1.fullmatch(merge_sha) is None
+        or merge_sha in {expected_base_sha, expected_source_sha}
+        or not isinstance(merge_tree, str)
+        or _SHA1.fullmatch(merge_tree) is None
+        or base_merge.get("orderedParents")
+        != [expected_base_sha, expected_source_sha]
+    ):
+        raise ValueError("product_receipt_pair_merge_identity")
+
+    for receipt in (source_head, base_merge):
+        integration = receipt.get("integrationReconciliation")
+        if (
+            not isinstance(integration, Mapping)
+            or integration.get("baseCommit") != expected_base_sha
+            or not isinstance(integration.get("baseTree"), str)
+            or _SHA1.fullmatch(integration["baseTree"]) is None
+        ):
+            raise ValueError("product_receipt_pair_integration_base")
+    if (
+        source_head["integrationReconciliation"].get("baseTree")
+        != base_merge["integrationReconciliation"].get("baseTree")
+    ):
+        raise ValueError("product_receipt_pair_integration_base")
+
+    source_canonical = source_head["canonicalWorkPackage"]
+    merge_canonical = base_merge["canonicalWorkPackage"]
+    if not isinstance(source_canonical, Mapping) or not isinstance(
+        merge_canonical, Mapping
+    ):
+        raise ValueError("product_receipt_pair_canonical_drift")
+    for key in ("blobOid", "registryDigest", "packageDigest"):
+        if source_canonical.get(key) != merge_canonical.get(key):
+            raise ValueError("product_receipt_pair_canonical_drift")
+
+    if github_review_observation is not None:
+        _verify_github_review_observation(
+            github_review_observation,
+            expected_head_sha=expected_source_sha,
+        )
+
+    pair = {
+        "schema": "hepta.control-engineering-product-receipt-pair.v2",
+        "repository": expected_repository,
+        "repositoryId": expected_repository_id,
+        "runId": expected_run_id,
+        "runAttempt": expected_run_attempt,
+        "pullRequestNumber": expected_pull_request_number,
+        "sourceSha": expected_source_sha,
+        "sourceTree": source_tree,
+        "baseSha": expected_base_sha,
+        "mergeSha": merge_sha,
+        "mergeTree": merge_tree,
+        "sourceProductReceiptDigest": source_digest,
+        "mergeProductReceiptDigest": merge_digest,
+        "canonicalWorkPackageBlobOid": source_canonical["blobOid"],
+        "canonicalWorkPackageDigest": source_canonical["packageDigest"],
+        "runtimeAuthority": False,
+        "mergeAuthority": False,
+        "releaseAuthority": False,
+    }
+    if github_review_observation is not None:
+        pair["githubReviewObservation"] = dict(github_review_observation)
+    expected_readiness_digest = hashlib.sha256(
+        json.dumps(
+            {
+                "baseMerge": merge_digest,
+                "sourceHead": source_digest,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    pair["readinessReceiptSetDigest"] = expected_readiness_digest
+    pair["pairDigest"] = semantic_pair_digest = hashlib.sha256(
+        json.dumps(pair, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if semantic_pair_digest == expected_readiness_digest:
+        raise ValueError("product_receipt_pair_domain_collision")
+    return pair
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repository", required=True)
+    parser.add_argument("--repository-full-name", required=True)
+    parser.add_argument("--repository-id", required=True, type=int)
+    parser.add_argument("--workflow-ref", required=True)
+    parser.add_argument("--job-name", required=True)
+    parser.add_argument("--run-id", required=True, type=int)
+    parser.add_argument("--run-attempt", required=True, type=int)
+    parser.add_argument("--source-sha", required=True)
+    parser.add_argument("--base-sha")
+    parser.add_argument("--event-name", required=True)
+    parser.add_argument("--lane", required=True, choices=("source-head", "base-merge"))
+    parser.add_argument("--pull-request-number", required=True, type=int)
+    parser.add_argument("--output", required=True, type=Path)
+    args = parser.parse_args(argv)
+    try:
+        receipt = build_product_receipt(
+            args.repository,
+            repository_full_name=args.repository_full_name,
+            repository_id=args.repository_id,
+            workflow_ref=args.workflow_ref,
+            job_name=args.job_name,
+            run_id=args.run_id,
+            run_attempt=args.run_attempt,
+            source_sha=args.source_sha,
+            base_sha=args.base_sha,
+            event_name=args.event_name,
+            lane=args.lane,
+            pull_request_number=args.pull_request_number,
+        )
+    except (RuntimeError, ValueError) as error:
+        print(
+            json.dumps(
+                {
+                    "schema": "hepta.control-engineering-product-execution.v4",
+                    "status": "rejected",
+                    "error": str(error),
+                    "authorityGranted": False,
+                },
+                sort_keys=True,
+            )
+        )
+        return 1
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    print(json.dumps(receipt, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -20,10 +20,10 @@ class IntegrationIdentityTests(unittest.TestCase):
             clean_worktree_ok=True, authority_delta=False,
         )
 
-    def test_distinct_source_and_merge_commit_are_eligible_only_for_review(self):
+    def test_distinct_source_and_merge_commit_remain_legacy_diagnostics_only(self):
         decision = decide_integration(self.evidence)
-        self.assertTrue(decision.eligible_for_independent_review)
-        self.assertEqual(decision.reasons, ())
+        self.assertFalse(decision.eligible_for_independent_review)
+        self.assertEqual(decision.reasons, ("legacy_unauthenticated_evidence",))
         self.assertFalse(any((decision.runtime_authority, decision.merge_authority,
                               decision.promotion_authority, decision.release_authority)))
 
