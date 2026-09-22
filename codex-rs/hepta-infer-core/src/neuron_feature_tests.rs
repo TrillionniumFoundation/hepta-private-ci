@@ -1,7 +1,6 @@
 use super::*;
 
 use codex_hepta_types::Generation;
-use pretty_assertions::assert_eq;
 
 fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
     match result {

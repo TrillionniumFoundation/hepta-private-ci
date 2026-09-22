@@ -172,6 +172,8 @@ fn support(label: &str) -> KnowledgeSupportV2 {
         source_revision: Revision::new(1).unwrap_or_else(|error| panic!("revision: {error}")),
         source_fact_digest: digest(&format!("fact:{label}")),
         validity_digest: digest(&format!("validity:{label}")),
+        valid_from_unix_seconds: None,
+        valid_to_unix_seconds: None,
         tombstoned: false,
     }
 }

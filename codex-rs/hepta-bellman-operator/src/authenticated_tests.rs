@@ -161,12 +161,12 @@ fn regularity() -> OperatorRegularityAssessmentV1 {
 
 #[test]
 fn op_02_signed_applicability_requires_authenticated_independent_evaluator() {
-    let verifier = verifier("evaluator-controller");
+    let auth_verifier = verifier("evaluator-controller");
     let certificate = applicability();
     let digest = validate_applicability_certificate(&certificate, 50).expect("structural");
-    let signed = evidence(&verifier, digest.as_array());
+    let signed = evidence(&auth_verifier, digest.as_array());
     let admitted =
-        validate_applicability_with_signed_evidence_v2(&certificate, &signed, &verifier, 50)
+        validate_applicability_with_signed_evidence_v2(&certificate, &signed, &auth_verifier, 50)
             .expect("authenticated applicability");
     assert_eq!(admitted.certificate_digest, digest);
     assert!(!admitted.authority.grants_any());

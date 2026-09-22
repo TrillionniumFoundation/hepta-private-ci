@@ -587,6 +587,7 @@ pub fn select_portfolio_v1(
             query_id: request.graph_query_id,
             generation_digest: graph.generation_digest,
             seed_node_ids: factor_ids.clone(),
+            valid_at_unix_seconds: Some(i64::try_from(now_unix_ms / 1000).map_err(|_| CanonicalPromptError::InvalidTime)?),
             relation_kinds: vec![
                 KnowledgeRelationKindV2::PromptComplements,
                 KnowledgeRelationKindV2::PromptSubstitutes,
@@ -641,7 +642,7 @@ pub fn select_portfolio_v1(
             | KnowledgeRelationKindV2::PromptSubstitutes => {
                 let key = pair_key(left, right);
                 if numeric_edges
-                    .insert(key.clone(), (edge.validity_digest, edge.identity.relation))
+                    .insert(key.clone(), (edge.validity_digest, edge.identity.relation.clone()))
                     .is_some()
                 {
                     return Err(CanonicalPromptError::DuplicateInteraction);

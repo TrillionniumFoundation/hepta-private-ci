@@ -1,4 +1,6 @@
 use super::*;
+use codex_hepta_types::AuthorityFlagsV1;
+use codex_hepta_types::AuthorityPostureError;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid test id: {error}"))
@@ -214,11 +216,13 @@ fn compact_checkpoint_and_proof_are_non_authoritative() {
         .validate()
         .unwrap_or_else(|error| panic!("valid proof: {error}"));
 
-    proof.authority = AuthorityPosture {
-        runtime: true,
-        ..AuthorityPosture::DENY_ALL
-    };
-    assert_eq!(proof.validate(), Err(LaneCContractError::AuthorityGranted));
+    assert_eq!(
+        AuthorityPosture::try_from_flags(AuthorityFlagsV1 {
+            runtime: true,
+            ..AuthorityFlagsV1::default()
+        }),
+        Err(AuthorityPostureError::GrantRequested)
+    );
 }
 
 #[test]
