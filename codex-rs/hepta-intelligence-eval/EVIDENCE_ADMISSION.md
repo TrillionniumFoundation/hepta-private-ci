@@ -6,17 +6,17 @@ journals implement semantic replay and expected-head checks; the host still owns
 exclusive writing, fsync, crash recovery and a trusted persisted head. Their
 existence is not evidence of a running long-term learner.
 
+The normative production surface is [`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md). When this note and compatibility examples are read together, that contract controls which API may be exposed to external callers and which holdout owner is required for multi-writer deployments.
+
 ## Authenticated evidence boundary
 
 `AuthenticatedPrincipalV1::validate`, the legacy evaluator and the V1/V2 dataset
 receipt APIs validate supplied structure and digests. They do not authenticate an
 external caller or prove that an estimate was produced by an independent actor.
-They remain available for trusted in-process composition and compatibility.
+They are available only through the explicit `trusted-inprocess-eval`
+compatibility feature. Default builds do not expose direct evaluator entrypoints.
 
-Qualification-scoped external evaluation uses `decide_with_signed_evidence_v1`
-or `decide_with_signed_evidence_v2`. A `SystemLongitudinal` request now requires
-`decide_with_signed_longitudinal_evidence_v3`: signed window names alone are
-insufficient. V1/V2 authenticate the submitted bytes, then reject that stronger
+Qualification-scoped product evaluation enters through `ProductEvaluationRunnerV1::qualify_and_persist`. The runner derives the exact bundle from sealed estimator receipts and invokes signed V2 verification internally. A `SystemLongitudinal` request uses the same runner with V3 observed-time evidence. The low-level `decide_with_signed_evidence_v2` and `decide_with_signed_longitudinal_evidence_v3` functions are crate-internal verification primitives, not default cross-crate ingress; signed window names alone are insufficient. V1/V2 authenticate the submitted bytes, then reject that stronger
 claim with `MissingLongitudinalTiming`. The host constructs `LearningEvidenceVerifierV1`
 from its authority store and distributes the resulting trust digest to signers.
 Never construct that verifier from the same remote request being evaluated.
@@ -115,6 +115,15 @@ scheduler. Locks exclude cooperating writers, not hostile filesystem mutation.
 Tests in `src/durable_holdout_tests.rs` cover a different loading process,
 idempotent retries, acknowledged-history truncation, corruption, writer collision
 and write uncertainty. They are not production-caller or future-window receipts.
+
+For deployments in which more than one process or machine can contend for this
+authority, the file adapter is insufficient by contract. Use
+`FencedFinalHoldoutOwnerV1` over a host implementation of
+`FinalHoldoutCasStoreV1`. The store must provide linearizable CAS, while
+`HoldoutWriterFenceV1` supplies a monotonic generation and lease digest.
+Takeover preserves the replayable journal and changes the authoritative state
+digest; an old writer therefore fails its next CAS. Accepted-or-unknown store
+writes return `Indeterminate`, poison the handle and require reopen/reconcile.
 
 ## Observed-time longitudinal admission
 

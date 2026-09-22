@@ -1,4 +1,7 @@
-//! Deterministic test inputs only; these signatures and metrics are not learning evidence.
+//! Deterministic product-qualification fixtures only; no measured learning evidence.
+use std::sync::Arc;
+use std::sync::Mutex;
+
 use super::*;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_intuition::*;
@@ -15,17 +18,88 @@ pub(super) fn digest(text: &str) -> Digest32 {
     Digest32::of_bytes(text.as_bytes())
 }
 
+#[derive(Clone, Default)]
+struct MemoryCas(Arc<Mutex<Option<FinalHoldoutCasRecordV1>>>);
+
+impl FinalHoldoutCasStoreV1 for MemoryCas {
+    fn load(
+        &mut self,
+        binding: Digest32,
+    ) -> Result<Option<FinalHoldoutCasRecordV1>, FinalHoldoutCasStoreError> {
+        let state = self
+            .0
+            .lock()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
+        if state.as_ref().is_some_and(|record| record.binding != binding) {
+            return Err(FinalHoldoutCasStoreError::Conflict);
+        }
+        Ok(state.clone())
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        binding: Digest32,
+        expected: Option<Digest32>,
+        next: &FinalHoldoutCasRecordV1,
+    ) -> Result<(), FinalHoldoutCasStoreError> {
+        let mut state = self
+            .0
+            .lock()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
+        if next.binding != binding
+            || state.as_ref().map(|record| record.state_digest) != expected
+        {
+            return Err(FinalHoldoutCasStoreError::Conflict);
+        }
+        *state = Some(next.clone());
+        Ok(())
+    }
+}
+
+struct Provider {
+    manifest: Digest32,
+    inputs: Option<TemporalComparisonInputsV1>,
+}
+
+impl FinalHoldoutProviderV1 for Provider {
+    fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1> {
+        Ok(self.manifest)
+    }
+
+    fn release_after_consumption(
+        &mut self,
+        _receipt: &FinalHoldoutJournalReceiptV1,
+    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
+        self.inputs.take().ok_or(ProductProviderErrorV1::Rejected)
+    }
+}
+
+#[derive(Default)]
+struct Sink;
+
+impl ProductQualificationEvidenceSinkV1 for Sink {
+    fn persist(
+        &mut self,
+        execution_digest: Digest32,
+        decision: &SignedEvaluationDecisionV1,
+    ) -> Result<Digest32, ProductEvidenceSinkErrorV1> {
+        let mut bytes = b"test.evaluated-shadow.product-evidence".to_vec();
+        bytes.extend_from_slice(execution_digest.as_array());
+        bytes.extend_from_slice(decision.decision.evidence_digest.as_array());
+        Ok(Digest32::of_bytes(&bytes))
+    }
+}
+
 pub(super) struct Fixture {
     pub run: LaneFRunRequestV1,
     pub dataset: DatasetSnapshotReceiptV3,
-    pub bundle: IndependentEvaluationBundleV1,
-    pub roles: Vec<MetricRoleContractV2>,
-    pub evidence: SignedEvaluationEvidenceV1,
+    pub qualification: ProductQualificationReceiptV1,
     pub candidate_evidence: SignedLearningEvidenceV1,
     pub intuition: CalibratedDecisionRequestV1,
     pub verifier: LearningEvidenceVerifierV1,
     pub bytes: Vec<u8>,
 }
+
 impl Fixture {
     pub fn new() -> Self {
         let keys = [
@@ -53,9 +127,9 @@ impl Fixture {
                 .iter()
                 .zip(&keys)
                 .enumerate()
-                .map(|(i, (p, key))| TrustedLearningSignerV1 {
-                    principal: p.clone(),
-                    controller_id: p.principal_id.clone(),
+                .map(|(i, (principal, key))| TrustedLearningSignerV1 {
+                    principal: principal.clone(),
+                    controller_id: principal.principal_id.clone(),
                     verifying_key: key.verifying_key().to_bytes(),
                     roles: vec![if i == 0 {
                         LearningEvidenceRoleV1::Generator
@@ -82,16 +156,23 @@ impl Fixture {
                 pending_outcomes: 0,
                 censored_outcomes: 0,
             },
-            /*now*/ 50,
+            50,
         )
         .unwrap();
+
         let roles = vec![MetricRoleContractV2 {
             metric_id: id("qualification-metric"),
             role: MetricRoleV2::PrimarySuperiority {
                 minimum_improvement: FixedQ32::ZERO,
             },
         }];
-        let plan = freeze_cross_fold_plan_v2(
+        let sources = vec![ProductMetricSourceContractV1 {
+            metric_id: id("qualification-metric"),
+            source: ProductMetricSourceV1::DoublyRobust,
+        }];
+        let candidate_plan = temporal_plan("candidate", digest("objective"));
+        let baseline_plan = temporal_plan("baseline", digest("objective"));
+        let frozen = freeze_product_evaluation_plan_v1(
             CrossFoldPlanV1 {
                 plan_id: id("plan"),
                 claim_scope: EvaluationClaimScopeV1::Qualification,
@@ -107,62 +188,97 @@ impl Fixture {
                 }],
                 family_alpha_ppm: 50_000,
                 simultaneous_comparisons: 1,
-                folds: (0..2)
-                    .map(|i| CrossFoldPartitionV1 {
-                        fold_id: id(&format!("fold-{i}")),
-                        training_principals: vec![id("training-person")],
-                        training_episodes: vec![id("training-episode")],
-                        training_windows: vec![id("training-window")],
-                        holdout_principals: vec![id(&format!("person-{i}"))],
-                        holdout_episodes: vec![id(&format!("episode-{i}"))],
-                        holdout_windows: vec![id(&format!("window-{i}"))],
-                        model_digest: digest("test-fold-model"),
-                        predictions_digest: digest("test-predictions"),
-                    })
-                    .collect(),
+                folds: vec![
+                    CrossFoldPartitionV1 {
+                        fold_id: id("fold-0"),
+                        training_principals: vec![id("training-person-0")],
+                        training_episodes: vec![id("training-episode-0")],
+                        training_windows: vec![id("training-window-0")],
+                        holdout_principals: vec![id("person-0")],
+                        holdout_episodes: vec![id("episode-0")],
+                        holdout_windows: vec![id("window-0")],
+                        model_digest: digest("test-fold-model-0"),
+                        predictions_digest: digest("test-predictions-0"),
+                    },
+                    CrossFoldPartitionV1 {
+                        fold_id: id("fold-1"),
+                        training_principals: vec![id("training-person-1")],
+                        training_episodes: vec![id("training-episode-1")],
+                        training_windows: vec![id("training-window-1")],
+                        holdout_principals: vec![id("person-1")],
+                        holdout_episodes: vec![id("episode-1")],
+                        holdout_windows: vec![id("window-1")],
+                        model_digest: digest("test-fold-model-1"),
+                        predictions_digest: digest("test-predictions-1"),
+                    },
+                ],
                 final_holdout_window_id: id("window-1"),
                 final_holdout_digest: digest("test-holdout"),
             },
             roles.clone(),
+            sources,
+            &candidate_plan,
+            &baseline_plan,
         )
         .unwrap();
-        let holdout_use = FinalHoldoutRegistry::new().consume(&plan).unwrap();
-        let bundle = IndependentEvaluationBundleV1 {
-            evaluation_id: id("evaluation"),
-            candidate_id: id("policy"),
-            baseline_id: id("baseline"),
-            claim_scope: EvaluationClaimScopeV1::Qualification,
+
+        let store = MemoryCas::default();
+        let owner = FencedFinalHoldoutOwnerV1::initialize(
+            store,
+            digest("test-holdout-owner"),
+            HoldoutWriterFenceV1 {
+                owner_id: id("learning-eval-owner"),
+                generation: 1,
+                lease_digest: digest("test-holdout-lease"),
+            },
+        )
+        .unwrap();
+        let mut runner = ProductEvaluationRunnerV1::new(owner);
+        let mut provider = provider_inputs(dataset.snapshot.snapshot_id.clone());
+        let temporal = runner
+            .evaluate_temporal_comparison(
+                &frozen,
+                &candidate_plan,
+                &baseline_plan,
+                &mut provider,
+            )
+            .unwrap();
+        let context = ProductQualificationContextV1 {
             generator: principals[0].clone(),
             evaluator: principals[1].clone(),
-            frozen_plan: plan,
-            holdout_use,
-            objective_digest: digest("objective"),
-            dataset_digest: dataset.snapshot.dataset_digest,
-            estimand_digest: digest("qualification-estimand"),
-            estimate_receipt_digest: digest("test-estimate"),
-            support_audit_digest: digest("test-support"),
-            confidence_receipt_digest: digest("test-confidence"),
-            retention_receipt_digests: vec![],
+            retention_receipt_digests: Vec::new(),
             unlearning_receipt_digest: Digest32::ZERO,
-            snapshot_ids: vec![id("dataset")],
-            future_window_ids: vec![id("window-1")],
-            family_alpha_ppm: 50_000,
-            simultaneous_comparisons: 1,
-            metrics: vec![MetricGateV1 {
-                metric_id: id("qualification-metric"),
-                direction: EvaluationDirectionV1::Maximize,
-                candidate: EvaluationIntervalV1 {
-                    lower: FixedQ32::ONE,
-                    upper: FixedQ32::ONE,
-                },
-                baseline: EvaluationIntervalV1 {
-                    lower: FixedQ32::ZERO,
-                    upper: FixedQ32::ZERO,
-                },
-                safety_floor: None,
-                support_digest: digest("test-metric"),
-            }],
         };
+        let bundle = runner.qualification_bundle(&temporal, &context).unwrap();
+        let evidence = SignedEvaluationEvidenceV1 {
+            generator_plan: sign(
+                &verifier,
+                &principals[0],
+                &keys[0],
+                LearningEvidenceRoleV1::Generator,
+                bundle.frozen_plan.plan_digest.as_array(),
+            ),
+            evaluator_bundle: sign(
+                &verifier,
+                &principals[1],
+                &keys[1],
+                LearningEvidenceRoleV1::Evaluator,
+                &evaluation_signing_payload_v2(&bundle, &roles).unwrap(),
+            ),
+        };
+        let mut sink = Sink;
+        let qualification = runner
+            .qualify_and_persist(
+                &temporal,
+                &context,
+                &evidence,
+                ProductTimingEvidenceV1::Qualification,
+                &verifier,
+                50,
+                &mut sink,
+            )
+            .unwrap();
+
         let bytes = b"opaque test policy bytes, never an actual model".to_vec();
         let policy = Digest32::of_bytes(&bytes);
         let run = LaneFRunRequestV1 {
@@ -248,72 +364,44 @@ impl Fixture {
             assignment: AssignmentModeV1::Deterministic,
             candidates,
         };
-        let generator_plan = sign(
-            &verifier,
-            &principals[0],
-            &keys[0],
-            LearningEvidenceRoleV1::Generator,
-            bundle.frozen_plan.plan_digest.as_array(),
-        );
-        let evaluator_bundle = sign(
-            &verifier,
-            &principals[1],
-            &keys[1],
-            LearningEvidenceRoleV1::Evaluator,
-            &evaluation_signing_payload_v2(&bundle, &roles).unwrap(),
-        );
         let candidate_evidence = sign(
             &verifier,
             &principals[1],
             &keys[1],
             LearningEvidenceRoleV1::Evaluator,
-            &evaluated_candidate_signing_payload_v1(&bundle, &roles, &bytes, /*generation*/ 1)
-                .unwrap(),
+            &evaluated_candidate_signing_payload_v2(&qualification, &bytes, 1).unwrap(),
         );
         Self {
             run,
             dataset,
-            bundle,
-            roles,
-            evidence: SignedEvaluationEvidenceV1 {
-                generator_plan,
-                evaluator_bundle,
-            },
+            qualification,
             candidate_evidence,
             intuition,
             verifier,
             bytes,
         }
     }
-    pub fn resign_evaluator(&mut self) {
+
+    pub fn resign_candidate(&mut self) {
         let key = SigningKey::from_bytes(&[22; 32]);
-        self.evidence.evaluator_bundle = sign(
-            &self.verifier,
-            &self.bundle.evaluator,
-            &key,
-            LearningEvidenceRoleV1::Evaluator,
-            &evaluation_signing_payload_v2(&self.bundle, &self.roles).unwrap(),
-        );
         self.candidate_evidence = sign(
             &self.verifier,
-            &self.bundle.evaluator,
+            &self.qualification.evaluator,
             &key,
             LearningEvidenceRoleV1::Evaluator,
-            &evaluated_candidate_signing_payload_v1(
-                &self.bundle,
-                &self.roles,
+            &evaluated_candidate_signing_payload_v2(
+                &self.qualification,
                 &self.bytes,
                 self.run.snapshot.learning_artifact_generation,
             )
             .unwrap(),
         );
     }
+
     pub fn request(&self) -> EvaluatedShadowRequestV1<'_> {
         EvaluatedShadowRequestV1 {
             run: self.run.clone(),
-            evaluation: self.bundle.clone(),
-            metric_roles: self.roles.clone(),
-            evaluation_evidence: &self.evidence,
+            qualification: &self.qualification,
             candidate_bytes: &self.bytes,
             candidate_evidence: &self.candidate_evidence,
             dataset: &self.dataset,
@@ -323,6 +411,117 @@ impl Fixture {
         }
     }
 }
+
+fn temporal_plan(name: &str, objective_digest: Digest32) -> TemporalEvaluationPlan {
+    let mut plan = TemporalEvaluationPlan {
+        plan_digest: Digest32::ZERO,
+        evaluation_id: id(&format!("{name}-evaluation")),
+        objective_digest,
+        fold: TemporalFoldPlan {
+            plan_digest: digest(&format!("{name}-fold-plan")),
+            fold_id: id(&format!("{name}-fold")),
+            training_watermark: 10,
+            evaluation_start: 20,
+            minimum_per_action: 2,
+        },
+        ope: OpePlan {
+            plan_digest: digest(&format!("{name}-ope-plan")),
+            outcome_watermark: 100,
+            minimum_rows: 2,
+            minimum_ess: FixedQ32::ONE,
+            maximum_weight: FixedQ32::from_raw(3_i64 << 31),
+        },
+        confidence: ClusterConfidencePlan {
+            plan_digest: digest(&format!("{name}-confidence-plan")),
+            assumptions_digest: digest("independent-clusters"),
+            family_alpha_ppm: 50_000,
+            simultaneous_comparisons: 1,
+            minimum_clusters: 2,
+        },
+    };
+    plan.plan_digest = plan.canonical_digest().unwrap();
+    plan
+}
+
+fn provider_inputs(snapshot_id: StableId) -> Provider {
+    let mut training = Vec::new();
+    for action in ["a", "b"] {
+        for index in 0..2 {
+            training.push(OutcomeTrainingSample {
+                decision_id: id(&format!("training-{action}-{index}")),
+                principal_lineage: id(&format!("training-principal-{action}-{index}")),
+                episode_lineage: id(&format!("training-episode-{action}-{index}")),
+                window_id: id(&format!("training-window-{action}-{index}")),
+                action_id: id(action),
+                outcome: if action == "a" {
+                    FixedQ32::ONE
+                } else {
+                    FixedQ32::ZERO
+                },
+                observed_at: 5,
+                evidence_digest: digest("training-outcome"),
+            });
+        }
+    }
+
+    let mut targets = Vec::new();
+    let mut candidate_observations = Vec::new();
+    let mut baseline_observations = Vec::new();
+    let mut assignments = Vec::new();
+    for index in 0..1024 {
+        let decision_id = id(&format!("decision-{index}"));
+        targets.push(HeldOutTarget {
+            decision_id: decision_id.clone(),
+            principal_lineage: id(&format!("held-principal-{index}")),
+            episode_lineage: id(&format!("held-episode-{index}")),
+            window_id: id("window-1"),
+            decision_at: 20,
+            actions: vec![id("a"), id("b")],
+        });
+        let observation = |a_probability: u64, b_probability: u64| OpeRow {
+            decision_id: decision_id.clone(),
+            chosen_action: id("a"),
+            complete_candidates: true,
+            actions: vec![
+                OpeAction {
+                    action_id: id("a"),
+                    behavior_probability: ProbabilityQ32::from_raw(1 << 31).unwrap(),
+                    evaluation_probability: ProbabilityQ32::from_raw(a_probability).unwrap(),
+                    predicted_outcome: FixedQ32::ZERO,
+                },
+                OpeAction {
+                    action_id: id("b"),
+                    behavior_probability: ProbabilityQ32::from_raw(1 << 31).unwrap(),
+                    evaluation_probability: ProbabilityQ32::from_raw(b_probability).unwrap(),
+                    predicted_outcome: FixedQ32::ZERO,
+                },
+            ],
+            finalized_outcome: Some(FixedQ32::ONE),
+            outcome_observed_at: 50,
+            outcome_evidence: digest("held-out-outcome"),
+            outcome_model_evidence: digest("ignored-caller-model"),
+        };
+        candidate_observations.push(observation(3 << 30, 1 << 30));
+        baseline_observations.push(observation(1 << 30, 3 << 30));
+        assignments.push(ClusterAssignment {
+            decision_id,
+            cluster_id: id(&format!("cluster-{index}")),
+        });
+    }
+    Provider {
+        manifest: digest("test-holdout"),
+        inputs: Some(TemporalComparisonInputsV1 {
+            training,
+            targets,
+            candidate_observations,
+            baseline_observations,
+            assignments,
+            snapshot_ids: vec![snapshot_id],
+            future_window_ids: vec![id("window-1")],
+        }),
+    }
+}
+
 fn sign(
     verifier: &LearningEvidenceVerifierV1,
     principal: &AuthenticatedPrincipalV1,

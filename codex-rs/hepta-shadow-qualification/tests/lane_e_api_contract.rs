@@ -3,6 +3,31 @@
 //! authority-bearing action; it proves that mapped symbols are public and
 //! available to a real cross-crate consumer.
 
+use codex_hepta_intelligence_eval::FinalHoldoutCasRecordV1;
+use codex_hepta_intelligence_eval::FinalHoldoutCasStoreError;
+use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
+use codex_hepta_types::Digest32;
+
+struct NoCasStore;
+
+impl FinalHoldoutCasStoreV1 for NoCasStore {
+    fn load(
+        &mut self,
+        _binding: Digest32,
+    ) -> Result<Option<FinalHoldoutCasRecordV1>, FinalHoldoutCasStoreError> {
+        Ok(None)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        _binding: Digest32,
+        _expected: Option<Digest32>,
+        _next: &FinalHoldoutCasRecordV1,
+    ) -> Result<(), FinalHoldoutCasStoreError> {
+        Ok(())
+    }
+}
+
 #[test]
 fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_ledger::verify_independent_roles;
@@ -33,7 +58,15 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_intelligence_eval::evaluate_temporal_holdout;
     let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume;
-    let _ = codex_hepta_intelligence_eval::decide_independently;
+    let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
+    let _ = codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+    let _ = codex_hepta_intelligence_eval::longitudinal_evaluation_signing_payload_v3;
+    let _ = codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<NoCasStore>::initialize;
+    let _ = codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::<NoCasStore>::new;
+    let _ = codex_hepta_intelligence_eval::freeze_product_evaluation_plan_v1;
+    let _ = codex_hepta_intelligence_eval::ProductQualificationReceiptV1::validate_integrity;
+    let _ = codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1::create;
+    let _ = codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1::recover;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::consume;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::from_snapshot;
 

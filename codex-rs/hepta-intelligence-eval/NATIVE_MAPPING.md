@@ -25,47 +25,50 @@ efficacy.
 
 ## Added implementation closure
 
+The normative API classification is in
+[`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md).
+
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
-| freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| freeze complete V2 cross-fold + metric-role plan | `freeze_cross_fold_plan_v2` | `src/metric_roles.rs` | production plan-freeze surface |
+| single-host durable holdout owner | `DurableFinalHoldoutJournalV1` | `src/durable_holdout.rs` | implemented; cooperative/single-host only |
+| multi-writer fenced holdout owner | `FencedFinalHoldoutOwnerV1` / `FinalHoldoutCasStoreV1` | `src/fenced_holdout.rs` | implemented canonical owner |
+| concrete locked-file CAS + anti-rollback recovery | `LockedFileFinalHoldoutCasStoreV1` / `FinalHoldoutCasAnchorV1` / `HoldoutFenceIssuerV1` | `src/fenced_holdout_file.rs`, `src/fenced_holdout.rs` | implemented cross-process backend |
+| product preregistration/evaluation/qualification | `freeze_product_evaluation_plan_v1` / `ProductEvaluationRunnerV1` | `src/product_runner.rs` | implemented source product composition |
+| signed independent verification primitive | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | crate-internal; invoked by product runner |
+| signed observed-time longitudinal verification primitive | crate-internal `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | crate-internal V3; invoked by product runner for `SystemLongitudinal` |
+| trusted direct compatibility | `trusted_inprocess::decide_independently{,_v2}` | `src/lib.rs` | feature-gated; not production ingress |
+| legacy threshold comparator | `trusted_inprocess::evaluate_legacy_inprocess_v1` | `src/lib.rs` | deprecated trusted-only compatibility |
 
-`freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
-deduplicates every principal, episode and window set; rejects training/holdout
-leakage within a fold; prevents the final holdout from entering any training
-set; prevents a holdout lineage from appearing in multiple folds; and requires
-the final holdout window to be covered exactly once. The frozen receipt also
-binds claim scope, candidate and baseline identities, objective, dataset,
-estimand, metric direction and safety-floor contract, multiplicity profile,
-final-holdout window and final-holdout bytes. Its deterministic integrity seal
-detects post-freeze field mutation; it is not a signature or issuer credential.
+`freeze_cross_fold_plan_v2` retains the complete V1 lineage and holdout
+invariants while also binding preregistered metric roles and margins into the
+frozen digest. Two to thirty-two folds are canonicalized and checked for
+training/holdout leakage; the final holdout never enters training and is covered
+exactly once. Local seals detect mutation but are not credentials.
 
-`FinalHoldoutRegistry::consume` accepts only the typed sealed frozen-plan
-receipt. An exact retry of the identical plan is idempotent. Reusing the same
-plan identity with changed semantics conflicts, while a different plan using
-either the same final-holdout digest or the same final-holdout window is
-rejected. The emitted holdout-use receipt binds the complete plan semantics,
-registry state and use digest and carries its own deterministic integrity seal.
-A future persistent host adapter must retain this registry under a single
-writer; the pure type and unkeyed seals alone do not prove durable exclusivity
-or authenticated origin.
+`DurableFinalHoldoutJournalV1` persists the semantic journal under an
+authorized regular file, file lock, synchronous writes and an independently
+retained anchor. It is suitable only when the host guarantees one authoritative
+namespace and cooperating local writers.
 
-`decide_independently` consumes authenticated generator and evaluator identities
-from `learning.ledger`. It rejects shared principal, credential-chain or
-signing-key identity and validates expiry and authority epoch. It then
-intersects:
+`FencedFinalHoldoutOwnerV1` is the canonical production boundary for contended
+ownership. `LockedFileFinalHoldoutCasStoreV1` supplies a concrete locked-file
+CAS/replay backend with a separately retained minimum anchor; alternate target
+hosts may implement `FinalHoldoutCasStoreV1` with an equivalent linearizable
+store. `HoldoutWriterFenceV1` binds owner, monotonic generation and
+lease digest. A newer generation takes over only by CAS without rewriting
+journal history; a stale owner then conflicts on its next write. An
+accepted-or-unknown store commit returns `Indeterminate`, poisons the handle
+and requires reload/reconciliation.
 
-- an integrity-checked frozen-plan receipt and the exact consumed
-  holdout-use receipt bound to it;
-- estimate, support-audit and confidence receipt digests;
-- candidate lower confidence bound versus baseline upper bound;
-- every metric safety floor;
-- multiplicity profile;
-- snapshot and future-window coverage;
-- retention receipts and unlearning receipt for system-longitudinal claims.
+`ProductEvaluationRunnerV1::qualify_and_persist` invokes crate-internal `decide_with_signed_evidence_v2`, which authenticates the generator's frozen-plan
+attestation and the evaluator's exact V2 request bytes against host-owned trust,
+then verifies principal/key/credential/controller separation before invoking the
+bound V2 statistical decision. `decide_with_signed_longitudinal_evidence_v3`
+adds an independently signed observer and real observed-time window contract.
+Synthetic future IDs cannot satisfy that stronger claim.
 
-The output is one of:
+The output remains one of:
 
 ```text
 EligibleForIndependentSelection
@@ -73,24 +76,18 @@ Ineligible
 InsufficientEvidence
 ```
 
-Even the first state has `DENY_ALL` authority. A separate selector must consume
-it together with all other gates.
+Even the first state has `DENY_ALL` authority. A separate selector must consume it together with all other gates. The repository's current consumer `codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1` consumes the sealed `ProductQualificationReceiptV1` and does not re-run the low-level evaluator; that composition is still not activation, promotion or release.
 
 ## Identity, causal and statistical obligations
 
-The native closure verifies authenticated identity fields but cannot create the
-underlying trust. A product adapter must verify signatures and credential chains
-against the current trust root before constructing `AuthenticatedPrincipalV1`.
+The default production closure does not trust caller-constructed identity fields. `LearningEvidenceVerifierV1` verifies signed evidence against host-owned current trust before the signed evaluation path accepts generator/evaluator identities. Direct identity-based evaluators are available only behind the explicit `trusted-inprocess-eval` compatibility feature.
 
 Causal identification remains conditional on the frozen plan's assumptions:
 consistency, support, correct propensity, appropriate cluster independence and
 absence or bounded treatment of confounding. Unsupported assumptions produce
 insufficient evidence; an outcome model cannot repair zero support.
 
-Intervals and point estimates do not by themselves implement family-wide alpha
-allocation, privacy review, change-point admission or future-window scheduling.
-The independent decision requires their receipt digests, while the responsible
-owners must provide the actual evidence.
+Cluster and temporal estimator receipts now carry private integrity seals. `ProductEvaluationRunnerV1` derives each final `MetricGateV1` from the sealed candidate/baseline interval selected by the preregistered product metric-source contract; caller-supplied intervals are not part of this product path. Privacy review, change-point admission and real future-window collection remain external evidence obligations.
 
 ## Product integration obligations
 
@@ -117,7 +114,9 @@ Focused tests live in:
 - `src/ope_tests.rs` and `src/ope_confidence_tests.rs`;
 - `src/sequential_tests.rs`;
 - `src/temporal_fold_tests.rs` and `src/temporal_evaluation_tests.rs`;
-- `src/closure_tests.rs`.
+- `src/closure_tests.rs`;
+- `src/durable_holdout_tests.rs`, `src/fenced_holdout_tests.rs` and `src/fenced_holdout_file_tests.rs`;
+- `src/product_runner_tests.rs` and `src/longitudinal_time_tests.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,

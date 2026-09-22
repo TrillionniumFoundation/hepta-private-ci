@@ -1,8 +1,11 @@
 //! Durable owner adapter for the existing final-holdout semantic journal.
 //!
 //! The host supplies an authorized regular file and an independently retained,
-//! authenticated anchor. It owns directory durability and currentness. File
-//! locks serialize cooperating owners, not hostile writers or cloned handles.
+//! authenticated anchor. It owns directory durability and currentness. This is
+//! deliberately a single-host/cooperative-owner adapter: file locks serialize
+//! cooperating local owners, not hostile writers, cloned handles or remote
+//! nodes. Contended production ownership must use `FencedFinalHoldoutOwnerV1`
+//! over a host-provided linearizable `FinalHoldoutCasStoreV1`.
 use std::error::Error;
 use std::fmt;
 use std::fs::File;

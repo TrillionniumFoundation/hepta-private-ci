@@ -11,11 +11,24 @@ use codex_hepta_types::StableId;
 
 mod closure;
 mod durable_holdout;
+mod fenced_holdout;
+mod fenced_holdout_file;
 mod holdout_journal;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorV1;
+pub use fenced_holdout::FencedFinalHoldoutOwnerV1;
+pub use fenced_holdout::FencedHoldoutError;
+pub use fenced_holdout::FinalHoldoutCasRecordV1;
+pub use fenced_holdout::FinalHoldoutCasStoreError;
+pub use fenced_holdout::FinalHoldoutCasStoreV1;
+pub use fenced_holdout::FinalHoldoutCasAnchorV1;
+pub use fenced_holdout::HoldoutFenceIssuerV1;
+pub use fenced_holdout::HoldoutWriterFenceV1;
+pub use fenced_holdout_file::LockedFileCasErrorV1;
+pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
 mod ope;
+mod product_runner;
 mod sequential;
 mod signed_evaluation;
 mod temporal_evaluation;
@@ -38,10 +51,47 @@ pub use closure::MetricContractV1;
 pub use closure::MetricGateV1;
 pub use closure::MetricRoleContractV2;
 pub use closure::MetricRoleV2;
-pub use closure::decide_independently;
-pub use closure::decide_independently_v2;
+pub(crate) use closure::decide_independently;
+pub(crate) use closure::decide_independently_v2;
 pub use closure::freeze_cross_fold_plan;
 pub use closure::freeze_cross_fold_plan_v2;
+
+/// Trusted in-process compatibility surface.
+///
+/// This module is absent from default builds. It must never be used as a
+/// qualification or production ingress because its direct decision functions
+/// consume asserted principals rather than signature-verified evidence.
+#[cfg(feature = "trusted-inprocess-eval")]
+pub mod trusted_inprocess {
+    use super::*;
+
+    /// Legacy threshold comparator retained only for bounded compatibility tests.
+    #[deprecated(
+        note = "trusted in-process compatibility only; production must use signed evaluation admission"
+    )]
+    pub fn evaluate_legacy_inprocess_v1(
+        request: EvaluationRequest,
+    ) -> Result<EvaluationReceipt, Error> {
+        super::evaluate(request)
+    }
+
+    /// Direct V1 evaluator for trusted in-process compatibility only.
+    pub fn decide_independently(
+        bundle: IndependentEvaluationBundleV1,
+        now: u64,
+    ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
+        super::decide_independently(bundle, now)
+    }
+
+    /// Direct V2 evaluator for trusted in-process compatibility only.
+    pub fn decide_independently_v2(
+        bundle: IndependentEvaluationBundleV1,
+        metric_roles: Vec<MetricRoleContractV2>,
+        now: u64,
+    ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
+        super::decide_independently_v2(bundle, metric_roles, now)
+    }
+}
 pub use holdout_journal::FinalHoldoutJournalError;
 pub use holdout_journal::FinalHoldoutJournalReceiptV1;
 pub use holdout_journal::FinalHoldoutJournalRecordV1;
@@ -59,6 +109,21 @@ pub use ope::OpePlan;
 pub use ope::OpeRow;
 pub use ope::estimate_cluster_intervals;
 pub use ope::estimate_ope;
+pub use product_runner::FinalHoldoutProviderV1;
+pub use product_runner::ProductEvidenceSinkErrorV1;
+pub use product_runner::ProductEvaluationError;
+pub use product_runner::ProductEvaluationRunnerV1;
+pub use product_runner::ProductFrozenEvaluationPlanV1;
+pub use product_runner::ProductMetricSourceContractV1;
+pub use product_runner::ProductMetricSourceV1;
+pub use product_runner::ProductProviderErrorV1;
+pub use product_runner::ProductQualificationContextV1;
+pub use product_runner::ProductQualificationEvidenceSinkV1;
+pub use product_runner::ProductQualificationReceiptV1;
+pub use product_runner::ProductTemporalEvaluationReceiptV1;
+pub use product_runner::ProductTimingEvidenceV1;
+pub use product_runner::TemporalComparisonInputsV1;
+pub use product_runner::freeze_product_evaluation_plan_v1;
 pub use sequential::DepthSupport;
 pub use sequential::FiniteHorizonEstimand;
 pub use sequential::SequentialError;
@@ -76,8 +141,9 @@ pub use sequential::estimate_sequential;
 pub use signed_evaluation::SignedEvaluationDecisionV1;
 pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
-pub use signed_evaluation::decide_with_signed_evidence_v1;
-pub use signed_evaluation::decide_with_signed_evidence_v2;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
@@ -159,7 +225,8 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
+fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
     }
@@ -267,6 +334,6 @@ mod tests;
 mod longitudinal_time;
 pub use longitudinal_time::LongitudinalTimeEvidenceV1;
 pub use longitudinal_time::ObservedFutureWindowV1;
-pub use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;
+pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;
 pub use longitudinal_time::future_window_signing_payload_v1;
 pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;

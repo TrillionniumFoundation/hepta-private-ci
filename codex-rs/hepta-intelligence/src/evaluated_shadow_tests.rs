@@ -202,8 +202,8 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
 #[test]
 fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
     let mutations: [fn(&mut Fixture); 9] = [
-        |f| f.evidence.generator_plan.signature[0] ^= 1,
-        |f| f.evidence.evaluator_bundle.signature[0] ^= 1,
+        |f| f.qualification.publication_digest = digest("tampered publication"),
+        |f| f.qualification.decision.authentication_digest = digest("tampered authentication"),
         |f| f.candidate_evidence.signature[0] ^= 1,
         |f| {
             f.bytes[0] ^= 1;
@@ -212,10 +212,7 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
         |f| f.run.snapshot.learning_artifact_generation += 1,
         |f| f.run.snapshot.model_artifact_digest = digest("another artifact"),
         |f| f.dataset.inclusion_policy_digest = digest("changed cut"),
-        |f| {
-            f.bundle.snapshot_ids.push(id("unchecked-snapshot"));
-            f.resign_evaluator();
-        },
+        |f| f.qualification.snapshot_ids.push(id("unchecked-snapshot")),
         |f| f.intuition.state_digest = digest("wrong run"),
     ];
     for mutate in mutations {
@@ -270,16 +267,15 @@ fn old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch() {
 }
 
 #[test]
-fn signed_ineligibility_insufficiency_and_expiry_refuse_all_ports() {
+fn tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports() {
     for case in 0..3 {
         let mut fixture = Fixture::new();
         if case == 0 {
-            fixture.bundle.metrics[0].candidate.lower = codex_hepta_types::FixedQ32::ZERO;
-            fixture.bundle.metrics[0].candidate.upper = codex_hepta_types::FixedQ32::ZERO;
+            fixture.qualification.decision.decision.disposition =
+                IndependentEvaluationDispositionV1::Ineligible;
         } else if case == 1 {
-            fixture.bundle.metrics[0].support_digest = Digest32::ZERO;
+            fixture.qualification.publication_digest = Digest32::ZERO;
         }
-        fixture.resign_evaluator();
         let mut ports = Ports::new(&fixture);
         let temp = tempfile::tempdir().unwrap();
         let mut ledger = ledger_at(&temp.path().join("ledger"));
@@ -291,7 +287,10 @@ fn signed_ineligibility_insufficiency_and_expiry_refuse_all_ports() {
             if case == 2 { 95 } else { 50 },
         );
         if case != 2 {
-            assert!(matches!(result, Err(EvaluatedShadowError::Ineligible(_))));
+            assert!(matches!(
+                result,
+                Err(EvaluatedShadowError::Qualification(_))
+            ));
         } else {
             assert!(matches!(result, Err(EvaluatedShadowError::Evidence(_))));
         }
