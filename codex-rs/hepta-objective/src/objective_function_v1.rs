@@ -340,8 +340,7 @@ pub fn encode_objective_function_v1(
         revision: objective.revision.get(),
     };
     validate_wire(&wire)?;
-    let canonical_bytes =
-        serde_json::to_vec(&wire).map_err(|_| ObjectiveFunctionV1Error::Json)?;
+    let canonical_bytes = serde_json::to_vec(&wire).map_err(|_| ObjectiveFunctionV1Error::Json)?;
     if canonical_bytes.len() > MAX_OBJECTIVE_FUNCTION_V1_BYTES {
         return Err(ObjectiveFunctionV1Error::Capacity);
     }
@@ -366,8 +365,7 @@ pub fn decode_objective_function_v1(
     let value: ObjectiveFunctionWireV1 =
         serde_json::from_slice(input).map_err(|_| ObjectiveFunctionV1Error::Json)?;
     validate_wire(&value)?;
-    let canonical =
-        serde_json::to_vec(&value).map_err(|_| ObjectiveFunctionV1Error::Json)?;
+    let canonical = serde_json::to_vec(&value).map_err(|_| ObjectiveFunctionV1Error::Json)?;
     if canonical != input {
         return Err(ObjectiveFunctionV1Error::NonCanonicalEncoding);
     }
@@ -430,7 +428,11 @@ fn validate_wire(value: &ObjectiveFunctionWireV1) -> Result<(), ObjectiveFunctio
         stable_id(&action.id, "action.id")?;
         match action.confirmation.as_str() {
             "not_required" | "required" => {}
-            _ => return Err(ObjectiveFunctionV1Error::InvalidField("action.confirmation")),
+            _ => {
+                return Err(ObjectiveFunctionV1Error::InvalidField(
+                    "action.confirmation",
+                ));
+            }
         }
     }
     for action in &value.forbidden_action_classes {
@@ -492,7 +494,9 @@ fn relation(value: &str) -> Result<(), ObjectiveFunctionV1Error> {
 }
 
 fn stable_id(value: &str, field: &'static str) -> Result<(), ObjectiveFunctionV1Error> {
-    StableId::new(value).map(|_| ()).map_err(|_| ObjectiveFunctionV1Error::InvalidField(field))
+    StableId::new(value)
+        .map(|_| ())
+        .map_err(|_| ObjectiveFunctionV1Error::InvalidField(field))
 }
 
 fn digest(value: &str, field: &'static str) -> Result<(), ObjectiveFunctionV1Error> {

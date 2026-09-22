@@ -514,13 +514,9 @@ fn measurement_ordinary_admission_compile_v1() {
             .compile_result
             .as_ref()
             .expect("measurement fixture must compile without conflict");
-        let protocol = encode_objective_function_v1(
-            compiled,
-            &envelope,
-            &profile,
-            &outcome.receipt,
-        )
-        .expect("measurement canonical ObjectiveFunctionV1 projection");
+        let protocol =
+            encode_objective_function_v1(compiled, &envelope, &profile, &outcome.receipt)
+                .expect("measurement canonical ObjectiveFunctionV1 projection");
         timings.push(started.elapsed().as_nanos());
         black_box(protocol);
         black_box(outcome);

@@ -31,7 +31,7 @@ use crate::ObjectiveRiskClassV1;
 use crate::ObjectiveRollbackClassV1;
 use crate::ObjectiveSoftDirectionV1;
 use crate::ObjectiveSourceConstraintV1;
-use crate::ObjectiveSourceEnvelope;
+use crate::model::ObjectiveSourceEnvelope;
 use crate::ObjectiveSourceEnvelopeV1;
 use crate::ObjectiveSourcePredicateV1;
 use crate::ObjectiveSourceTrustV1;

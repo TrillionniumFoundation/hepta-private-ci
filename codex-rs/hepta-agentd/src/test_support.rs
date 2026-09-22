@@ -136,6 +136,7 @@ impl CognitiveTestHost {
             Arg0DispatchPaths::default(),
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
+            /*production_writer_host*/ None,
         ));
 
         let deadline = Instant::now() + READY_TIMEOUT;

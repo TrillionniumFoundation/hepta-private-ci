@@ -12,7 +12,7 @@ use crate::ObjectiveCompileReceipt;
 use crate::ObjectiveConflictReceipt;
 use crate::ObjectiveError;
 use crate::ObjectiveFunction;
-use crate::ObjectiveSourceEnvelope;
+use crate::model::ObjectiveSourceEnvelope;
 use crate::SoftPreference;
 use crate::SuccessPredicate;
 

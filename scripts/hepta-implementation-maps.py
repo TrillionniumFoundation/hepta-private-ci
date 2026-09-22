@@ -52,7 +52,9 @@ def load(rel: str):
 def git(*args: str, input_text: str | None = None) -> str:
     # Read the checked-out repository, not ambient GIT_DIR, replacement objects,
     # user aliases, network-backed promisor objects or external diff drivers.
-    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env = {
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+    }
     env.update(
         GIT_CONFIG_NOSYSTEM="1",
         GIT_CONFIG_GLOBAL=os.devnull,
@@ -137,7 +139,8 @@ def require_tracked_paths(commit: str, paths: list[str], *, historical=False) ->
     if ordinary:
         queries = [f"{commit}:{path}" for path in ordinary]
         types = git(
-            "cat-file", "--batch-check=%(objecttype)",
+            "cat-file",
+            "--batch-check=%(objecttype)",
             input_text="\n".join(queries) + "\n",
         ).splitlines()
         if len(types) != len(queries):
@@ -146,14 +149,18 @@ def require_tracked_paths(commit: str, paths: list[str], *, historical=False) ->
             if kind in {"blob", "tree"}:
                 continue
             if historical and kind == query + " missing":
-                raise SourceDrift(f"source/evidence absent at historical anchor: {path}")
+                raise SourceDrift(
+                    f"source/evidence absent at historical anchor: {path}"
+                )
             raise ValueError(f"untracked or invalid source/evidence: {path}")
     for path in unusual:
         try:
             kind = git("cat-file", "-t", f"{commit}:{path}")
         except subprocess.CalledProcessError as exc:
             if historical:
-                raise SourceDrift(f"source/evidence absent at historical anchor: {path!r}") from exc
+                raise SourceDrift(
+                    f"source/evidence absent at historical anchor: {path!r}"
+                ) from exc
             raise ValueError(f"untracked source/evidence: {path!r}") from exc
         if kind not in {"blob", "tree"}:
             raise ValueError(f"invalid source/evidence: {path!r}")
@@ -171,8 +178,10 @@ def verify_source_identity(
     if "observedAtHead" in row:
         observed = checked_identity(row["observedAtHead"], candidate)
         observed_paths = row.get("observedSourcePaths", roots)
-        if not isinstance(observed_paths, list) or not observed_paths or any(
-            not isinstance(path, str) for path in observed_paths
+        if (
+            not isinstance(observed_paths, list)
+            or not observed_paths
+            or any(not isinstance(path, str) for path in observed_paths)
         ):
             raise ValueError("invalid observed source paths")
         if not set(roots).issubset(observed_paths):
@@ -181,7 +190,8 @@ def verify_source_identity(
     else:
         observed = None
     if policy == "candidate_or_exact_observation_v1" and source not in (
-        candidate, observed
+        candidate,
+        observed,
     ):
         raise ValueError("source base is neither candidate nor exact observed source")
     checked_paths = sorted({path for _, items in observations for path in items})
@@ -198,12 +208,19 @@ def verify_source_identity(
         require_tracked_paths(identity["commit"], observed_paths, historical=True)
         if observed_paths:
             changed = git(
-                "diff", "--no-ext-diff", "--no-textconv", "--name-only",
-                identity["commit"], candidate["commit"], "--", *observed_paths,
+                "diff",
+                "--no-ext-diff",
+                "--no-textconv",
+                "--name-only",
+                identity["commit"],
+                candidate["commit"],
+                "--",
+                *observed_paths,
             )
             if changed:
                 raise SourceDrift(
-                    "mapped source/evidence changed after source observation: " + changed
+                    "mapped source/evidence changed after source observation: "
+                    + changed
                 )
     if check_checkout:
         require_clean_candidate(candidate, checked_paths)
@@ -351,7 +368,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     operations = []
     for original in row.get("operations", []):
         op = dict(original)
-        name = op.get("operation") or op.get("designOperation") or "native_mapping_pending"
+        name = (
+            op.get("operation") or op.get("designOperation") or "native_mapping_pending"
+        )
         op.setdefault("operation", name)
         op.setdefault("designOperation", name)
         anchor = op.get("ownerEntrypoint") or {}
@@ -395,9 +414,13 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "declaredRoots": declared,
             "resolvedRoots": resolve_source_roots(ROOT, module),
             "sourceRootPresent": all((ROOT / x).exists() for x in declared),
-            "productionImplementation": bool(row.get("productionImplementation", False)),
+            "productionImplementation": bool(
+                row.get("productionImplementation", False)
+            ),
             "productCallerState": row.get("productCallerState", "not_composed"),
-            "productionWriterState": row.get("productionWriterState", "not_established"),
+            "productionWriterState": row.get(
+                "productionWriterState", "not_established"
+            ),
             "operations": operations,
         }
     )
@@ -407,7 +430,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     migrated["claimBoundary"] = {
         **boundary,
         # Preserve a reviewed claim; migration must not manufacture one.
-        "nativeSourceMappingComplete": boundary.get("nativeSourceMappingComplete", False),
+        "nativeSourceMappingComplete": boundary.get(
+            "nativeSourceMappingComplete", False
+        ),
         "sourceRootPresent": migrated["sourceRootPresent"],
         "productionImplementation": migrated["productionImplementation"],
         "productExecutionProved": bool(boundary.get("productExecutionProved", False)),
@@ -481,7 +506,9 @@ def migrate(selected_modules: list[str] | None = None):
         # Preserve original formatting and anchors when nothing changed. Even a
         # later prose commit must not trigger a global metadata refresh.
         if migrated != row:
-            pending.append((path, json.dumps(migrated, indent=2, ensure_ascii=False) + "\n"))
+            pending.append(
+                (path, json.dumps(migrated, indent=2, ensure_ascii=False) + "\n")
+            )
     require_clean_candidate(source_base, sorted(checked_paths))
     for path, rendered in pending:
         path.write_text(rendered, encoding="utf-8")
@@ -570,11 +597,14 @@ def verify(*, require_current_source: bool = True):
                 if "nativeSymbol" not in op or "sourcePath" not in op:
                     raise ValueError("canonical operation fields")
                 source = op.get("sourcePath")
-                if source is not None and not checked_source_path(ROOT, source).is_file():
+                if (
+                    source is not None
+                    and not checked_source_path(ROOT, source).is_file()
+                ):
                     raise ValueError(f"missing source: {source}")
-            checked_paths.update(verify_source_identity(
-                row, resolved, candidate, check_checkout=False
-            ))
+            checked_paths.update(
+                verify_source_identity(row, resolved, candidate, check_checkout=False)
+            )
             source_bases.add((row["sourceBase"]["commit"], row["sourceBase"]["tree"]))
             if row["sourceBase"] == candidate:
                 candidate_bound_maps += 1
@@ -583,7 +613,11 @@ def verify(*, require_current_source: bool = True):
             if not isinstance(row.get("claimBoundary") or row.get("completion"), dict):
                 raise ValueError("claim boundary")
         except (
-            ValueError, TypeError, KeyError, OSError, subprocess.CalledProcessError
+            ValueError,
+            TypeError,
+            KeyError,
+            OSError,
+            subprocess.CalledProcessError,
         ) as exc:
             failures.append(f"{mid}: {exc}")
     try:

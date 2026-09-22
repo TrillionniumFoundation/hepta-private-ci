@@ -59,9 +59,7 @@ fn record(
         },
         runtime_body_digest: digest(&format!("body:{run_id}")),
         objective_semantic_bytes: objective,
-        objective_function_v1_digest: Digest32::of_bytes(
-            b"{\"objectiveId\":\"fixture\"}",
-        ),
+        objective_function_v1_digest: Digest32::of_bytes(b"{\"objectiveId\":\"fixture\"}"),
         objective_function_v1_bytes: b"{\"objectiveId\":\"fixture\"}".to_vec(),
     }
 }
@@ -122,14 +120,19 @@ fn runtime_consumes_compiled_record_but_not_explicit_abstain() {
     .expect("coordinator");
 
     let compiled = record("run.1", 1, RunStartObjectiveDispositionV1::Compiled);
-    coordinator.start_revalidated_run_start(1, &compiled).expect("compiled run");
+    coordinator
+        .start_revalidated_run_start(1, &compiled)
+        .expect("compiled run");
     assert!(coordinator.run("run.1").is_some());
 
     let abstain = record("run.2", 2, RunStartObjectiveDispositionV1::ExplicitAbstain);
-    assert!(coordinator.start_revalidated_run_start(1, &abstain).is_err());
+    assert!(
+        coordinator
+            .start_revalidated_run_start(1, &abstain)
+            .is_err()
+    );
     assert!(coordinator.run("run.2").is_none());
 }
-
 
 #[test]
 fn legacy_record_without_protocol_identity_is_rejected_at_final_use() {
@@ -172,8 +175,7 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
     let registry = FleetRegistry::initialize(fleet.clone()).expect("registry");
     let workspace = root.join("workspace");
     std::fs::create_dir(&workspace).expect("workspace");
-    let agent =
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id");
+    let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id");
     let manifest = AgentManifest::new(
         agent.clone(),
         WorkspaceBinding::new(&workspace, &fleet).expect("workspace binding"),
@@ -193,11 +195,8 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
         app_server_socket: registered.layout.app_server_socket().to_path_buf(),
         layout: registered.layout,
     };
-    std::fs::set_permissions(
-        &identity.home_root,
-        std::fs::Permissions::from_mode(0o700),
-    )
-    .expect("private home");
+    std::fs::set_permissions(&identity.home_root, std::fs::Permissions::from_mode(0o700))
+        .expect("private home");
 
     let key = SigningKey::from_bytes(&[83; 32]);
     let trust_path = identity.home_root.join("objective-trust.json");
@@ -217,21 +216,14 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
             "revoked": revoked,
             "thread_ids": ["thread.objective"]
         });
-        std::fs::write(
-            &trust_path,
-            serde_json::to_vec(&json).expect("trust json"),
-        )
-        .expect("write trust");
+        std::fs::write(&trust_path, serde_json::to_vec(&json).expect("trust json"))
+            .expect("write trust");
         std::fs::set_permissions(&trust_path, std::fs::Permissions::from_mode(0o600))
             .expect("private trust");
     };
 
     let now_ms = 10_000;
-    let mut durable = record(
-        "run.trust",
-        21,
-        RunStartObjectiveDispositionV1::Compiled,
-    );
+    let mut durable = record("run.trust", 21, RunStartObjectiveDispositionV1::Compiled);
     let claims = SignedMessageClaims {
         issuer_id: id("issuer.objective"),
         key_epoch: codex_hepta_types::Generation::new(1).expect("epoch"),
@@ -274,4 +266,3 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
             .expect("stale authentication")
     );
 }
-

@@ -115,37 +115,55 @@ turn missing/corrupt state into an empty registry.
 1. `claim(signed, expected)` validates the exact binding, signer and signature.
 2. Under the owner mutex it checks the current clock, epoch and revocations,
    rejects a consumed nonce or full registry, and persists the nonce claim.
-3. It samples time again after disk I/O, then returns a private, non-cloneable,
-   non-serializable `VerifiedUseToken`. The claim is the dispatch admission
-   point; rejection or expiry after persistence does not refund the nonce.
-4. The adapter performs its bounded asynchronous HTTPS read. It does not hold
-   the owner mutex over network awaits, so trusted revocations can progress.
-5. `with_verified_use` checks that token and authority share the same owner,
-   validates the binding/time/epoch/revocation again, and invokes the synchronous
-   callback while holding the revocation mutex. A completed revocation cannot
-   slip between this final check and callback entry.
+3. It samples time again after disk I/O, snapshots the exact durable revocation
+   head, and returns a private, non-cloneable, non-serializable
+   `VerifiedUseToken`. Its witness hashes the signed grant plus that exact
+   claim-time authority epoch/revision/revoked-set frontier. The claim is the
+   dispatch admission point; rejection or expiry after persistence does not
+   refund the nonce.
+4. A synchronous consumer may call `with_verified_use`; it verifies that the
+   token and authority share the same owner, rechecks binding/time/epoch/revocation,
+   and additionally requires the current durable head to equal the claim-time
+   head before entering the bounded callback under the revocation mutex.
+5. An asynchronous effect adapter calls `VerifiedUseToken::enter(expected)`
+   immediately before its first effectful await. The same live checks run under
+   the owner mutex and the current head must exactly equal the claim-time head.
+   Any frontier advance requires a fresh claim before effect entry. A successful
+   entry consumes the token and returns a private `EnteredUseToken`; the adapter
+   then releases the mutex before network I/O. The entered token proves one effect
+   entry only and is not permission to retry.
+6. Trusted host ports may read `revocation_head()` to compare an independently
+   authenticated external feed. A fresher head is not discovered automatically:
+   it must arrive through the host's revocation-distribution path and pass
+   `update_revocations` before `claim`/`enter` can enforce it.
 
-The callback must be bounded and must not reenter the authority. Revocation
-waits for an already entered synchronous callback to return; it cannot undo a
-completed effect. A dispatch failure, cancellation or timeout retains the
-claim. If a process dies after claiming, the new process rejects that nonce.
-If it dies after consumer entry but before recording a receipt, the host must
-treat the effect as uncertain and reconcile it before issuing another grant.
+The synchronous callback must be bounded and must not reenter the authority.
+Revocation waits for an already entered synchronous callback to return. For an
+asynchronous effect, a revocation that arrives after `enter` cannot
+retroactively prove the effect did not start. A dispatch failure, cancellation
+or timeout after claim retains the nonce claim. If a process dies after
+claiming, a reopened durable authority rejects that nonce. If it dies after
+effect entry but before recording a receipt, the host must treat the effect as
+accepted-or-unknown and reconcile the same operation identity before any new
+authorization.
 
-`VerifiedUseToken` has no public constructor and cannot be cloned. Keeping an
-outstanding token also keeps its owner and process lock alive. Mutex poisoning
-or persistence failure refuses further operations.
+`VerifiedUseToken` and `EnteredUseToken` have no public constructors and
+cannot be cloned or serialized. Keeping an outstanding verified token also
+keeps its owner and process lock alive. Mutex poisoning or persistence failure
+refuses further operations.
 
 ## APIs and failure semantics
 
 | API / result | Host action |
 | --- | --- |
 | `open_state_dir` | Pin trust, validate private storage, acquire the process lock and load/initialize state |
-| `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
-| `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
-| `with_verified_use` | Consume that token at the final synchronous secret-use boundary |
+| `revocation_head` | Read the locally trusted durable head for comparison; this grants no signing or effect authority and does not fetch a fresher head |
+| `update_revocations` | Apply only an authenticated newer revision; same-epoch revocations cannot be removed |
+| `claim` | Burn one valid nonce, snapshot the exact durable revocation frontier and bind that frontier into the token witness before effect dispatch; never reuse the grant on retry |
+| `with_verified_use` | Consume that token at the final synchronous secret-use boundary only if the claim-time frontier is still exact-current |
+| `VerifiedUseToken::enter` | Recheck and consume the token at an asynchronous first-effect boundary only if the claim-time frontier is still exact-current; the returned `EnteredUseToken` is single-entry and not retry authority |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
-| `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use |
+| `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use under the locally trusted head |
 | `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
 | `InvalidTrust`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner configuration/storage without resetting authority implicitly |
 | `StaleRevocationHead` | Reject a rollback/inconsistent host update |

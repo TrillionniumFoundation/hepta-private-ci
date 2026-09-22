@@ -107,14 +107,22 @@ impl ObjectiveRuntimeHost {
     ) -> Result<(), AgentdError> {
         // Startup attaches the durable service before App Server readiness.
         // Runtime projection is deferred until the daemon owner admits runs.
-        if !agentd.automation_admission_ready()? { return Ok(()); }
+        if !agentd.automation_admission_ready()? {
+            return Ok(());
+        }
         let trust = authbus_ingress::attached(agentd)?.trust(agentd)?;
-        let state = self.state.lock().map_err(|_| AgentdError::Protocol("objective runtime mutex is poisoned".to_string()))?;
+        let state = self.state.lock().map_err(|_| {
+            AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
+        })?;
         let fence = objective_fence(agentd.identity(), current_generation);
         for record in state.journal.records().map_err(store_error)? {
-            if record.snapshot.generation != current_generation || record.snapshot.fence_digest != fence
+            if record.snapshot.generation != current_generation
+                || record.snapshot.fence_digest != fence
                 || record.disposition != RunStartObjectiveDispositionV1::Compiled
-                || record.admission.deadline_unix_micros.div_ceil(1_000) <= now_ms { continue; }
+                || record.admission.deadline_unix_micros.div_ceil(1_000) <= now_ms
+            {
+                continue;
+            }
             if authentication_is_current(record, &trust, agentd.identity(), now_ms)? {
                 agentd.start_current_run_start(&state.journal, &record.snapshot.run_id)?;
             }
@@ -222,6 +230,7 @@ impl ObjectiveRuntimeHost {
                     .journal
                     .get_conflict(&run_id)
                     .map_err(store_error)?
+                    .cloned()
                     .ok_or_else(|| invalid("durable objective conflict publication disappeared"))?;
                 let key = (
                     record.authentication.issuer_id.to_string(),

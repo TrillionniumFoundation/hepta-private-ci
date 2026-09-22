@@ -24,7 +24,6 @@ pub struct AuthBusTextIngress {
     pub body: AuthBusTextBody,
 }
 
-
 /// Product-bounded structured objective body admitted by Agentd. The signed
 /// source JSON is intentionally capped below the generic compiler ceiling so a
 /// complete request remains inside the local control-frame bound.

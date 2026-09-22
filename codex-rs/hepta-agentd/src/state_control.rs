@@ -65,8 +65,18 @@ impl AgentdState {
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
-                    crate::AgentdCapability::new(crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY, 1, 0).map_err(AgentdError::Invalid)?,
-                    crate::AgentdCapability::new(crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_ID, crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR, crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR).map_err(AgentdError::Protocol)?,
+                    crate::AgentdCapability::new(
+                        crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY,
+                        1,
+                        0,
+                    )
+                    .map_err(AgentdError::Invalid)?,
+                    crate::AgentdCapability::new(
+                        crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_ID,
+                        crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR,
+                        crate::AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR,
+                    )
+                    .map_err(AgentdError::Protocol)?,
                 ];
                 if self.objective_runtime.get().is_some() {
                     capabilities.push(

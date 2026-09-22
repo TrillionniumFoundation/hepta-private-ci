@@ -8,9 +8,9 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 use codex_hepta_learning_ledger::DurableRunStartJournal;
+use codex_hepta_learning_ledger::RunStartAnchor;
 use codex_hepta_learning_ledger::RunStartAppendDisposition;
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
-use codex_hepta_learning_ledger::RunStartAnchor;
 use codex_hepta_learning_ledger::RunStartRecovery;
 use codex_hepta_objective::ConstraintClass;
 use codex_hepta_objective::ObjectiveAbstentionRuleProfileV1;
@@ -19,6 +19,7 @@ use codex_hepta_objective::ObjectiveConstraintComparatorV1;
 use codex_hepta_objective::ObjectiveConstraintProfileV1;
 use codex_hepta_objective::ObjectiveEvidenceProfileV1;
 use codex_hepta_objective::ObjectiveEvidenceRequirementV1;
+use codex_hepta_objective::ObjectiveFunctionV1Error;
 use codex_hepta_objective::ObjectivePredicateComparatorV1;
 use codex_hepta_objective::ObjectivePredicateProfileV1;
 use codex_hepta_objective::ObjectiveProvenanceV1;
@@ -39,7 +40,6 @@ use codex_hepta_objective::ObjectiveSourceTrustV1;
 use codex_hepta_objective::ObjectiveStructuredIntentV1;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
 use codex_hepta_objective::decode_objective_function_v1;
-use codex_hepta_objective::ObjectiveFunctionV1Error;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
 
@@ -303,12 +303,9 @@ impl Drop for Fixture {
 #[test]
 fn authenticated_objective_is_durable_before_product_receipt_returns() {
     let fixture = Fixture::new();
-    let mut journal = DurableRunStartJournal::create(
-        fixture.file(),
-        digest("principal-run-start-scope"),
-        16,
-    )
-    .expect("journal");
+    let mut journal =
+        DurableRunStartJournal::create(fixture.file(), digest("principal-run-start-scope"), 16)
+            .expect("journal");
     let profile = profile();
     let envelope = envelope();
     let context = context(&profile, &envelope);
@@ -347,10 +344,7 @@ fn authenticated_objective_is_durable_before_product_receipt_returns() {
         RunStartRecovery::Acknowledged(anchor),
     )
     .expect("recover");
-    let durable = reopened
-        .get(&id("run-1"))
-        .expect("read")
-        .expect("record");
+    let durable = reopened.get(&id("run-1")).expect("read").expect("record");
     assert_eq!(durable.snapshot, receipt.run_start);
     assert_eq!(
         durable.admission.admitted_source_digest,
@@ -366,8 +360,7 @@ fn authenticated_objective_is_durable_before_product_receipt_returns() {
         receipt.objective_function_v1_digest
     );
     assert_ne!(
-        durable.objective_function_v1_digest,
-        receipt.objective.objective.semantic_digest,
+        durable.objective_function_v1_digest, receipt.objective.objective.semantic_digest,
         "registered protocol identity must remain distinct from native semantic identity"
     );
     let decoded = decode_objective_function_v1(&durable.objective_function_v1_bytes)
@@ -387,12 +380,9 @@ fn authenticated_objective_is_durable_before_product_receipt_returns() {
 #[test]
 fn exact_product_retry_is_idempotent_and_semantic_drift_conflicts() {
     let fixture = Fixture::new();
-    let mut journal = DurableRunStartJournal::create(
-        fixture.file(),
-        digest("principal-run-start-scope"),
-        16,
-    )
-    .expect("journal");
+    let mut journal =
+        DurableRunStartJournal::create(fixture.file(), digest("principal-run-start-scope"), 16)
+            .expect("journal");
     let profile = profile();
     let envelope = envelope();
     let context = context(&profile, &envelope);
@@ -416,7 +406,10 @@ fn exact_product_retry_is_idempotent_and_semantic_drift_conflicts() {
         RunStartAppendDisposition::IdempotentReplay,
         retry.publication.disposition
     );
-    assert_eq!(first.publication.chain_digest, retry.publication.chain_digest);
+    assert_eq!(
+        first.publication.chain_digest,
+        retry.publication.chain_digest
+    );
 
     let mut changed = envelope.clone();
     changed.structured_intent.success_predicates[0].bound_q32 += 1;
@@ -437,12 +430,9 @@ fn exact_product_retry_is_idempotent_and_semantic_drift_conflicts() {
 #[test]
 fn compiler_conflict_is_durably_published_without_runtime_snapshot() {
     let fixture = Fixture::new();
-    let mut journal = DurableRunStartJournal::create(
-        fixture.file(),
-        digest("principal-run-start-scope"),
-        16,
-    )
-    .expect("journal");
+    let mut journal =
+        DurableRunStartJournal::create(fixture.file(), digest("principal-run-start-scope"), 16)
+            .expect("journal");
     let profile = profile();
     let mut envelope = envelope();
     envelope.structured_intent.forbidden_action_classes = vec!["read".to_string()];
@@ -462,10 +452,7 @@ fn compiler_conflict_is_durably_published_without_runtime_snapshot() {
         }) => (conflict, publication),
         other => panic!("expected durable conflict, got {other:?}"),
     };
-    assert_eq!(
-        RunStartAppendDisposition::Appended,
-        publication.disposition
-    );
+    assert_eq!(RunStartAppendDisposition::Appended, publication.disposition);
     assert!(journal.records().expect("records").is_empty());
     let durable = journal
         .get_conflict(&id("run-conflict"))

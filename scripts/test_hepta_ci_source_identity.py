@@ -258,7 +258,9 @@ class SourceConformanceTests(unittest.TestCase):
             text=True,
             check=True,
         )
-        self.assertEqual(json.loads(result.stdout)["operations"], LANE_B.OPERATION_COUNT)
+        self.assertEqual(
+            json.loads(result.stdout)["operations"], LANE_B.OPERATION_COUNT
+        )
         evaluation = subprocess.run(
             [sys.executable, str(SCRIPTS / "hepta-lane-e-closure.py"), "self-test"],
             capture_output=True,

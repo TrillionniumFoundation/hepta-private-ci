@@ -8,15 +8,15 @@ use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_fleet::AgentManifest;
+use codex_hepta_fleet::ResourceBudget;
+use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_learning_ledger::RunStartSnapshotV1;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -370,15 +370,11 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
     assert!(run.is_none());
 }
 
-
 #[tokio::test]
 async fn current_durable_run_start_requires_live_owner_trust() {
     let (temp, _registry, state) = fixture().expect("runtime fixture");
-    fs::set_permissions(
-        &state.identity.home_root,
-        fs::Permissions::from_mode(0o700),
-    )
-    .expect("private home");
+    fs::set_permissions(&state.identity.home_root, fs::Permissions::from_mode(0o700))
+        .expect("private home");
 
     let key = SigningKey::from_bytes(&[77; 32]);
     let trust_file = state.identity.home_root.join("run-start-trust.json");
@@ -400,16 +396,12 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         });
         fs::write(&trust_file, serde_json::to_vec(&value).expect("trust json"))
             .expect("write trust");
-        fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600))
-            .expect("private trust");
+        fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600)).expect("private trust");
     };
     write_trust(false);
-    let ingress = crate::authbus_ingress::TextIngress::open(
-        state.identity(),
-        trust_file.clone(),
-    )
-    .await
-    .expect("open trust");
+    let ingress = crate::authbus_ingress::TextIngress::open(state.identity(), trust_file.clone())
+        .await
+        .expect("open trust");
     state
         .authbus
         .set(Arc::new(ingress))
@@ -481,12 +473,9 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         .write(true)
         .open(&journal_path)
         .expect("journal file");
-    let mut journal = DurableRunStartJournal::create(
-        file,
-        Digest32::of_bytes(b"agentd run-start owner"),
-        4,
-    )
-    .expect("create journal");
+    let mut journal =
+        DurableRunStartJournal::create(file, Digest32::of_bytes(b"agentd run-start owner"), 4)
+            .expect("create journal");
     journal
         .append(Digest32::ZERO, record)
         .expect("append run start");
@@ -505,8 +494,7 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         .expect("first record")
         .clone();
     second.snapshot.run_id = second_id.clone();
-    second.authentication.message_id =
-        StableId::new("message:run-start:2").expect("message");
+    second.authentication.message_id = StableId::new("message:run-start:2").expect("message");
     second.authentication.sequence = 2;
     let second_claims = SignedMessageClaims {
         issuer_id: second.authentication.issuer_id.clone(),
@@ -520,14 +508,18 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     };
     second.authentication.signature = key.sign(&second_claims.signing_bytes()).to_bytes();
     let predecessor = journal.head_digest();
-    journal.append(predecessor, second).expect("append revoked candidate");
+    journal
+        .append(predecessor, second)
+        .expect("append revoked candidate");
     assert!(state.start_current_run_start(&journal, &second_id).is_err());
-    assert!(state
-        .runs
-        .lock()
-        .expect("runs")
-        .run(second_id.as_str())
-        .is_none());
+    assert!(
+        state
+            .runs
+            .lock()
+            .expect("runs")
+            .run(second_id.as_str())
+            .is_none()
+    );
 }
 
 #[tokio::test]

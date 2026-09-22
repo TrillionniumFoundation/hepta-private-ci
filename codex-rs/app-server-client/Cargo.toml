@@ -12,6 +12,9 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+test-support = []
+
 [dependencies]
 codex-app-server = { workspace = true }
 codex-app-server-protocol = { workspace = true }

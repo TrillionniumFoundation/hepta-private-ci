@@ -36,26 +36,39 @@ class SourceIdentityTests(unittest.TestCase):
             for mid in ("alpha", "beta")
         ]
         self.write_json("docs/modules/MODULES.json", {"modules": self.modules})
-        self.write_json("docs/readiness/READINESS.json", {
-            "implementationLanes": [{"id": "lane", "modules": ["alpha", "beta"]}]
-        })
+        self.write_json(
+            "docs/readiness/READINESS.json",
+            {"implementationLanes": [{"id": "lane", "modules": ["alpha", "beta"]}]},
+        )
         for mid in ("alpha", "beta"):
             self.write(f"src/{mid}/lib.rs", "pub fn run() {}\n")
         self.write("Cargo.lock", "# Source dependency fixture\n")
         self.commit("source")
-        self.base = {"commit": self.git("rev-parse", "HEAD"),
-                     "tree": self.git("rev-parse", "HEAD^{tree}")}
+        self.base = {
+            "commit": self.git("rev-parse", "HEAD"),
+            "tree": self.git("rev-parse", "HEAD^{tree}"),
+        }
         self.rows = {}
         for mid in ("alpha", "beta"):
             root = f"src/{mid}"
             self.rows[mid] = {
-                "schema": "hepta.module-implementation-map.v3", "schemaVersion": 3,
-                "module": mid, "laneId": "lane", "sourceBase": dict(self.base),
+                "schema": "hepta.module-implementation-map.v3",
+                "schemaVersion": 3,
+                "module": mid,
+                "laneId": "lane",
+                "sourceBase": dict(self.base),
                 "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
-                "declaredRoots": [root], "resolvedRoots": [root],
-                "sourceRootPresent": True, "productionImplementation": False,
-                "operations": [{"operation": "run", "nativeSymbol": "run",
-                                "sourcePath": f"{root}/lib.rs"}],
+                "declaredRoots": [root],
+                "resolvedRoots": [root],
+                "sourceRootPresent": True,
+                "productionImplementation": False,
+                "operations": [
+                    {
+                        "operation": "run",
+                        "nativeSymbol": "run",
+                        "sourcePath": f"{root}/lib.rs",
+                    }
+                ],
                 "claimBoundary": {"productExecutionProved": False},
             }
         self.observed()
@@ -64,8 +77,9 @@ class SourceIdentityTests(unittest.TestCase):
         self.addCleanup(root_patch.stop)
 
     def git(self, *args):
-        return subprocess.run(["git", *args], cwd=self.root, text=True,
-                              capture_output=True, check=True).stdout.strip()
+        return subprocess.run(
+            ["git", *args], cwd=self.root, text=True, capture_output=True, check=True
+        ).stdout.strip()
 
     def write(self, path, text):
         target = self.root / path
@@ -137,7 +151,9 @@ class SourceIdentityTests(unittest.TestCase):
         self.commit("documentation")
         result = self.verify()
         self.assertEqual(result["legacyProvenanceOnlyMaps"], [])
-        self.assertEqual(result["candidateSource"]["commit"], self.git("rev-parse", "HEAD"))
+        self.assertEqual(
+            result["candidateSource"]["commit"], self.git("rev-parse", "HEAD")
+        )
         self.write("src/alpha/lib.rs", "pub fn unobserved() {}\n")
         self.commit("uniform old anchors must not hide changed source")
         self.rejects("changed after source observation")
@@ -151,7 +167,14 @@ class SourceIdentityTests(unittest.TestCase):
 
     def test_empty_module_registry_fails(self):
         self.write_json("docs/modules/MODULES.json", {"modules": []})
-        self.git("commit", "--only", "-qm", "empty registry", "--", "docs/modules/MODULES.json")
+        self.git(
+            "commit",
+            "--only",
+            "-qm",
+            "empty registry",
+            "--",
+            "docs/modules/MODULES.json",
+        )
         self.rejects("module registry must be nonempty")
 
     def test_malformed_identity_fails_without_type_error(self):
@@ -234,8 +257,10 @@ class SourceIdentityTests(unittest.TestCase):
         self.observed()
         self.write("branch-only.md", "not in candidate history\n")
         self.commit("unmerged candidate")
-        other = {"commit": self.git("rev-parse", "HEAD"),
-                 "tree": self.git("rev-parse", "HEAD^{tree}")}
+        other = {
+            "commit": self.git("rev-parse", "HEAD"),
+            "tree": self.git("rev-parse", "HEAD^{tree}"),
+        }
         self.git("checkout", "--detach", "-q", self.base["commit"])
         self.rows["alpha"]["sourceBase"] = dict(other)
         self.rows["alpha"]["observedAtHead"] = dict(other)
@@ -244,8 +269,10 @@ class SourceIdentityTests(unittest.TestCase):
     def test_git_pathspec_metacharacters_are_literal(self):
         self.write("dependency[1]", "original\n")
         self.commit("dependency with literal name")
-        self.base = {"commit": self.git("rev-parse", "HEAD"),
-                     "tree": self.git("rev-parse", "HEAD^{tree}")}
+        self.base = {
+            "commit": self.git("rev-parse", "HEAD"),
+            "tree": self.git("rev-parse", "HEAD^{tree}"),
+        }
         for row in self.rows.values():
             row["sourceBase"] = dict(self.base)
         self.observed()
@@ -256,9 +283,14 @@ class SourceIdentityTests(unittest.TestCase):
 
     def test_strict_flag_is_not_a_mutation_command(self):
         result = subprocess.run(
-            [sys.executable, str(SCRIPTS / "hepta-implementation-maps.py"),
-             "generate", "--require-current-source"],
-            text=True, capture_output=True,
+            [
+                sys.executable,
+                str(SCRIPTS / "hepta-implementation-maps.py"),
+                "generate",
+                "--require-current-source",
+            ],
+            text=True,
+            capture_output=True,
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("applies only to verify", result.stderr)

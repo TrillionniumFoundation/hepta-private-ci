@@ -398,7 +398,6 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
     assert_eq!(coordinator.run("run.1"), None);
 }
 
-
 #[test]
 fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence() {
     let id = |value: &str| StableId::new(value).expect("stable id");

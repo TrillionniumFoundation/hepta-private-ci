@@ -52,8 +52,6 @@ pub use model::ObjectiveConflictReceipt;
 pub use model::ObjectiveFunction;
 #[cfg(feature = "qualification-legacy-compile")]
 pub use model::ObjectiveSourceEnvelope;
-#[cfg(not(feature = "qualification-legacy-compile"))]
-pub(crate) use model::ObjectiveSourceEnvelope;
 pub use model::PredicateTerminality;
 pub use model::SoftDirection;
 pub use model::SoftPreference;

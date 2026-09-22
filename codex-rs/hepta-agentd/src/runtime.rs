@@ -340,9 +340,13 @@ async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
             match probe_app_server(state.identity()).await {
                 Ok(()) => {
                     state.mark_app_server_ready()?;
-            if let Some(host) = state.objective_runtime.get() {
-                host.reconcile(&state, state.current_generation()?, crate::authbus_ingress::now_ms()?)?;
-            }
+                    if let Some(host) = state.objective_runtime.get() {
+                        host.reconcile(
+                            &state,
+                            state.current_generation()?,
+                            crate::authbus_ingress::now_ms()?,
+                        )?;
+                    }
                     app_server_ready = true;
                 }
                 Err(error @ AgentdError::GenerationFenced(_)) => {

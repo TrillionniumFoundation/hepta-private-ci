@@ -27,6 +27,19 @@ fn dispatch() -> NativeDispatch {
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
         owner_context_digest: Some("c".repeat(64)),
+        codex_payload_digest: Some("e".repeat(64)),
+        codex_request_digest: Some("c".repeat(64)),
+        app_server_version: Some("1.2.3".to_string()),
+        protocol_id: Some("codex.app-server.v2".to_string()),
+        codex_source_admission_digest: Some("f".repeat(64)),
+        codex_home_digest: Some("1".repeat(64)),
+        codex_connection_id: Some(7),
+        codex_session_id: Some("session-1".to_string()),
+        codex_deadline_ms: Some(10_000),
+        codex_authority_epoch: Some(9),
+        codex_revocation_revision: Some(3),
+        codex_revocation_head_sha256: Some("3".repeat(64)),
+        codex_authority_witness_sha256: Some("2".repeat(64)),
     }
 }
 
@@ -37,11 +50,19 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         model: "actual-model".to_string(),
         model_provider: "provider".to_string(),
         terminal_observed: status != NativeRunStatus::Indeterminate,
+        boundary_status: match status {
+            NativeRunStatus::Completed => NativeBoundaryStatus::Succeeded,
+            NativeRunStatus::Failed => NativeBoundaryStatus::Failed,
+            NativeRunStatus::Interrupted => NativeBoundaryStatus::Interrupted,
+            NativeRunStatus::Indeterminate => NativeBoundaryStatus::Indeterminate,
+        },
         status,
         output: "observed text".to_string(),
         observed_output_tokens: tokens,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        codex_terminal_correlation_digest: (status != NativeRunStatus::Indeterminate)
+            .then(|| "d".repeat(64)),
     }
 }
 
@@ -49,6 +70,17 @@ fn start(control: &mut DurableInferenceControl, id: &str) {
     control.reserve_native(request(id), 1).unwrap();
     control.dispatch_native(id, dispatch()).unwrap();
     control.native_started(id, "turn-1".to_string()).unwrap();
+}
+
+#[test]
+fn completed_owner_ready_without_codex_witness_is_not_success() {
+    let mut observed = output(NativeRunStatus::Completed, Some(1));
+    observed.owner_authority = NativeOwnerAuthority::ObservedReady;
+    observed.codex_terminal_correlation_digest = None;
+    assert!(!observed.succeeded());
+
+    observed.codex_terminal_correlation_digest = Some("d".repeat(64));
+    assert!(observed.succeeded());
 }
 
 #[test]
@@ -203,9 +235,11 @@ fn post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
     let path = path("finalize-stop");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("r1"), 1).unwrap();
-    control.dispatch_native("r1", dispatch()).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
     let stopped = control
-        .stop_native_before_turn_start("r1", "cognitive final-use revalidation failed".to_string())
+        .stop_native_before_turn_start(token, "cognitive final-use revalidation failed".to_string())
         .unwrap();
     assert_eq!(stopped.state, NativeReservationState::Released);
     assert_eq!(stopped.turn_id, None);
@@ -213,16 +247,145 @@ fn post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal
     assert!(stopped.dispatch.is_some());
 
     control.reserve_native(request("r2"), 1).unwrap();
-    control.dispatch_native("r2", dispatch()).unwrap();
+    let (_, too_late_token) = control
+        .dispatch_native_with_pre_effect_abort("r2", dispatch())
+        .unwrap();
     control.native_started("r2", "turn-1".to_string()).unwrap();
     assert_eq!(
-        control.stop_native_before_turn_start("r2", "too late".to_string()),
+        control.stop_native_before_turn_start(too_late_token, "too late".to_string()),
         Err(Error::InvalidTransition)
     );
 
     drop(control);
     let control = DurableInferenceControl::open(&path, 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&stopped));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn one_shot_pre_effect_abort_releases_only_the_live_write_ahead() {
+    let path = path("pre-effect-abort");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let stopped = control
+        .abort_native_before_effect(token, "final-use denied before send".to_string())
+        .unwrap();
+    assert_eq!(stopped.state, NativeReservationState::Released);
+    assert_eq!(
+        stopped.pre_dispatch_stop.as_deref(),
+        Some("final-use denied before send")
+    );
+    assert_eq!(stopped.observation, None);
+    control.reserve_native(request("r2"), 1).unwrap();
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&stopped));
+    assert_eq!(
+        reopened.stop_native_before_dispatch("r1", "already stopped".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen() {
+    let path = path("pre-effect-recovery");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    drop(token);
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.native_record("r1").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    assert_eq!(
+        reopened.stop_native_before_dispatch("r1", "recovered".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(
+        reopened.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn explicit_dispatch_rejection_releases_without_claiming_provider_terminal() {
+    let path = path("dispatch-rejected");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let rejection = NativeDispatchRejection {
+        status: NativeDispatchRejectionStatus::Overloaded,
+        reason: "Server overloaded; retry later.".to_string(),
+        response_digest: "e".repeat(64),
+        retry_safe_before_admission: true,
+    };
+    let rejected = control
+        .reject_native_before_start("r1", rejection.clone())
+        .unwrap();
+    assert_eq!(rejected.state, NativeReservationState::Released);
+    assert_eq!(rejected.dispatch_rejection, Some(rejection));
+    assert_eq!(rejected.observation, None);
+    assert_eq!(rejected.turn_id, None);
+    control.reserve_native(request("r2"), 1).unwrap();
+    drop(control);
+
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&rejected));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven() {
+    let path = path("dispatch-rejected-unknown");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let rejection = NativeDispatchRejection {
+        status: NativeDispatchRejectionStatus::Rejected,
+        reason: "application error after dispatch".to_string(),
+        response_digest: "f".repeat(64),
+        retry_safe_before_admission: false,
+    };
+    let rejected = control
+        .reject_native_before_start("r1", rejection.clone())
+        .unwrap();
+    assert_eq!(rejected.state, NativeReservationState::Indeterminate);
+    assert_eq!(rejected.dispatch_rejection, Some(rejection));
+    assert_eq!(rejected.observation, None);
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn codex_bound_terminal_requires_adapter_correlation_witness() {
+    let path = path("terminal-witness");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let mut dishonest = output(NativeRunStatus::Completed, Some(1));
+    dishonest.codex_terminal_correlation_digest = None;
+    assert_eq!(
+        control.settle_native("r1", dishonest),
+        Err(Error::TerminalObservationMissing)
+    );
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
@@ -321,6 +484,7 @@ fn late_completed_releases_slot_without_erasing_authority_loss() {
         .unwrap();
     let mut terminal = interrupted_observation;
     terminal.status = NativeRunStatus::Completed;
+    terminal.boundary_status = NativeBoundaryStatus::Quarantined;
     terminal.terminal_observed = true;
     let settled = control.settle_native("r1", terminal.clone()).unwrap();
     assert_eq!(settled.state, NativeReservationState::Released);
@@ -390,6 +554,49 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     control.settle_native("r1", replayed.clone()).unwrap();
     replayed.owner_authority = NativeOwnerAuthority::ObservedReady;
     assert_eq!(control.settle_native("r1", replayed), Err(Error::Conflict));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success() {
+    let path = path("historical-codex-frontier");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let mut historical = dispatch();
+    historical.codex_authority_epoch = None;
+    historical.codex_revocation_revision = None;
+    historical.codex_revocation_head_sha256 = None;
+    control.dispatch_native("r1", historical).unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+    drop(control);
+
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let reopened = control.native_record("r1").unwrap();
+    assert_eq!(
+        reopened
+            .dispatch
+            .as_ref()
+            .unwrap()
+            .codex_revocation_revision,
+        None
+    );
+
+    let mut observed = output(NativeRunStatus::Completed, Some(7));
+    observed.owner_authority = NativeOwnerAuthority::ObservedReady;
+    let settled = control.settle_native("r1", observed).unwrap();
+    let terminal = settled.observation.unwrap();
+    assert_eq!(terminal.status, NativeRunStatus::Completed);
+    assert!(terminal.terminal_observed);
+    assert_eq!(terminal.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert!(!terminal.succeeded());
+    assert!(
+        terminal
+            .stop_reason
+            .as_deref()
+            .is_some_and(|reason| reason.contains("lacks claim-time authority frontier"))
+    );
+
     drop(control);
     std::fs::remove_file(path).unwrap();
 }

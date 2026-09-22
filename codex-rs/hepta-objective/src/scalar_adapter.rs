@@ -11,7 +11,7 @@ use crate::ConstraintAtomV1;
 use crate::ConstraintRelation;
 use crate::FeasibilityOutcomeV1;
 use crate::ObjectiveError;
-use crate::ObjectiveSourceEnvelope;
+use crate::model::ObjectiveSourceEnvelope;
 use crate::OracleBudgetV1;
 use crate::PredicateTerminality;
 use crate::RegisteredAxisV1;

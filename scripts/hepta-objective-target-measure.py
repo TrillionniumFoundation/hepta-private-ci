@@ -42,13 +42,11 @@ def git(*args: str) -> str:
 
 
 def parse_measurement(output: str, expected_path: str) -> dict[str, Any]:
-    rows = [
-        line.split(PREFIX, 1)[1]
-        for line in output.splitlines()
-        if PREFIX in line
-    ]
+    rows = [line.split(PREFIX, 1)[1] for line in output.splitlines() if PREFIX in line]
     if len(rows) != 1:
-        fail(f"expected exactly one measurement row for {expected_path}, received {len(rows)}")
+        fail(
+            f"expected exactly one measurement row for {expected_path}, received {len(rows)}"
+        )
     try:
         value = json.loads(rows[0])
     except ValueError as error:
@@ -109,7 +107,9 @@ def measure(args: argparse.Namespace) -> int:
     source_sha = git("rev-parse", "HEAD")
     source_tree = git("rev-parse", "HEAD^{tree}")
     if source_sha != args.expected_sha:
-        fail(f"source identity mismatch: expected {args.expected_sha}, observed {source_sha}")
+        fail(
+            f"source identity mismatch: expected {args.expected_sha}, observed {source_sha}"
+        )
     if git("status", "--porcelain"):
         fail("working tree is not clean")
 

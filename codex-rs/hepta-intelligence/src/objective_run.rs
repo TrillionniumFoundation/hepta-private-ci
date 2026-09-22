@@ -130,8 +130,7 @@ pub fn compile_and_publish_objective_run_v1(
     let objective = match outcome.compile_result {
         Ok(objective) => objective,
         Err(conflict) => {
-            let conflict_receipt_bytes =
-                canonical_native_objective_conflict_bytes_v1(&conflict);
+            let conflict_receipt_bytes = canonical_native_objective_conflict_bytes_v1(&conflict);
             if Digest32::of_bytes(&conflict_receipt_bytes) != conflict.conflict_digest {
                 return Err(ObjectiveRunError::RunStart(
                     RunStartStoreError::ObjectiveDigestMismatch,

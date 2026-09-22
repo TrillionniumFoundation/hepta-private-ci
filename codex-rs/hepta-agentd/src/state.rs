@@ -7,9 +7,9 @@ use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
@@ -355,7 +355,11 @@ impl AgentdState {
     fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
         crate::authbus_ingress::require_ready(self)?;
         let now_ms = crate::authbus_ingress::now_ms()?;
-        let current_generation = self.runtime.lock().map_err(poisoned_state)?.current_generation;
+        let current_generation = self
+            .runtime
+            .lock()
+            .map_err(poisoned_state)?
+            .current_generation;
         if record.snapshot.generation != current_generation
             || record.snapshot.fence_digest.to_string()
                 != objective_run_fence(&self.identity, current_generation)

@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-codex-adapter/src/lib.rs](../../../codex-rs/hepta-codex-adapter/src/lib.rs); observed identifiers include `CodexOperationIntent`, `AppServerObservation`, `CodexAdapterReceipt`, `adapt`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.codex.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-codex-adapter/src/lib.rs](../../../codex-rs/hepta-codex-adapter/src/lib.rs); the current boundary includes `CodexOperationIntent`, `AppServerRequestBinding`, `TerminalOutcome`, `CodexAdapterReceipt`, typed terminal/rejection adapters, and durable thread-read reconciliation. The named product caller is [codex-rs/hepta-infer-worker-host/src/native_app_server.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server.rs); final-use authority is obtained through [codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs](../../../codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs); the production CLI composition root is [codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs](../../../codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs); and durable request/reconciliation ownership is in [codex-rs/hepta-infer-core/src/native_control.rs](../../../codex-rs/hepta-infer-core/src/native_control.rs). This is repository-controlled source composition, not proof of target-host provider execution, independent acceptance, activation, promotion, or release. Read the [fault matrix](FAULT_MATRIX.md) and [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.codex.md#8-current-native-implementation) together.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -137,7 +137,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.codex.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.codex.md#8-current-native-implementation) and the explicit [runtime.codex fault matrix](FAULT_MATRIX.md). Completed, failed and interrupted terminal outcomes stay distinct; only explicit pre-admission overload is retry-safe; unknown acknowledgement, transport loss and process-loss ambiguity are reconcile-only and never justify blind replay. The durable native journal and thread-read reconciler are repository source mechanisms, but they do not substitute for target-host provider evidence or an external policy for unresolved indeterminate effects.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -161,6 +161,10 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 The deployed execution spine is the existing codex-app-server package under codex-rs/app-server. codex-rs/codex-app-server is a source alias, not another binary. Use its registered thread/turn APIs and observe exact admission; hepta-codex-adapter alone neither starts a model nor proves a tool effect.
 
+The named Hepta native inference caller is deliberately **model-only**: the App Server tool planner returns an empty router for the `hepta-infer-worker` client identity before MCP, connector, extension, dynamic-tool or core-tool planning. That deny-only identity can remove capability but never grant it. Any future external tool effect must enter a separately authorized effect-owner path with its own final-use grant, durable operation identity and terminal observer; the `dispatch_tool` source mapping to codex-core is navigation/delegation evidence only and is not proof of an authorized tool effect.
+
+`IMPLEMENTATION_MAP.sourceBase` is historical provenance only. Exact candidate identity is derived from the checked-out Git candidate by `scripts/hepta-lane-b-truth.py verify`, which emits `exactHead` and `exactTree`; the map records this verifier-derived provenance contract instead of attempting to hard-code its own self-referential commit/tree.
+
 Current operating and state-format references:
 
 - [codex-rs/app-server/README.md](../../../codex-rs/app-server/README.md).
@@ -172,8 +176,13 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs](../../../codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs); named case: `deadline_is_bound_into_the_codex_request_digest`.
-- [codex-rs/hepta-codex-adapter/src/lib_tests.rs](../../../codex-rs/hepta-codex-adapter/src/lib_tests.rs); named case: `exact_terminal_observation_maps_without_authority`.
+- [codex-rs/hepta-codex-adapter/src/lib_tests.rs](../../../codex-rs/hepta-codex-adapter/src/lib_tests.rs): terminal status separation, exact thread/turn/transport correlation, overload classification, and thread-read recovery conflicts.
+- [codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs](../../../codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs): absolute deadline binding, stable request identity, and late terminal evidence.
+- [codex-rs/hepta-infer-core/src/native_control_tests.rs](../../../codex-rs/hepta-infer-core/src/native_control_tests.rs): durable write-ahead, slot retention, pre-effect abort proof, no-replay, and legacy journal safety.
+- [codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs): named caller terminal/cancellation/deadline/owner semantics.
+- [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs): reopen/no-replay and explicit pre-start rejection.
+- [codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs): signed exact-binding grant, denial, peer identity, and revocation rollback.
+- [codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs): launches the real Agentd/App Server product process, drives the named runtime.codex caller through a signed final-use grant into a mock Responses transport, and proves one physical provider request plus a durable terminal correlation receipt.
 
 In `codex-rs`, run `just test -p codex-hepta-codex-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md) separately labels target acceptance designs.
 
@@ -256,4 +265,4 @@ The bootstrap source-location obligation for `runtime.codex` is implemented by w
 - `codex-rs/codex-app-server`
 - `codex-rs/hepta-codex-adapter`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The designated source gate is `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. A workflow definition or prior run is not a pass receipt for this candidate; exact-head and merge-candidate evidence must match the reviewed head. This source evidence grants no deployment or release authority. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

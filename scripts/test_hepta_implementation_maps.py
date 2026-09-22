@@ -1,4 +1,5 @@
 """Behavioral provenance regressions against real, disposable Git repositories."""
+
 from __future__ import annotations
 
 import contextlib
@@ -14,7 +15,9 @@ import unittest
 from unittest.mock import patch
 
 SCRIPTS = Path(__file__).resolve().parent
-SPEC = importlib.util.spec_from_file_location("implementation_maps", SCRIPTS / "hepta-implementation-maps.py")
+SPEC = importlib.util.spec_from_file_location(
+    "implementation_maps", SCRIPTS / "hepta-implementation-maps.py"
+)
 assert SPEC is not None and SPEC.loader is not None
 maps = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(maps)
@@ -34,7 +37,14 @@ class SourceIdentityTests(unittest.TestCase):
         self.git("config", "commit.gpgsign", "false")
         self.modules = [self.module("alpha"), self.module("beta")]
         self.write("docs/modules/MODULES.json", {"modules": self.modules})
-        self.write("docs/readiness/READINESS.json", {"implementationLanes": [{"id": "test-lane", "modules": ["alpha", "beta"]}]})
+        self.write(
+            "docs/readiness/READINESS.json",
+            {
+                "implementationLanes": [
+                    {"id": "test-lane", "modules": ["alpha", "beta"]}
+                ]
+            },
+        )
         for name in ("alpha", "beta"):
             self.write(f"src/{name}/lib.rs", "pub fn calculate() {}\n")
         self.write("tests/native.rs", "#[test] fn qualified() {}\n")
@@ -47,30 +57,71 @@ class SourceIdentityTests(unittest.TestCase):
 
     def git(self, *args):
         env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
-        env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_TERMINAL_PROMPT="0")
-        return subprocess.run(["git", "-c", "core.hooksPath=" + os.devnull, *args], cwd=self.root, env=env, check=True, text=True, capture_output=True).stdout.strip()
+        env.update(
+            GIT_CONFIG_NOSYSTEM="1",
+            GIT_CONFIG_GLOBAL=os.devnull,
+            GIT_TERMINAL_PROMPT="0",
+        )
+        return subprocess.run(
+            ["git", "-c", "core.hooksPath=" + os.devnull, *args],
+            cwd=self.root,
+            env=env,
+            check=True,
+            text=True,
+            capture_output=True,
+        ).stdout.strip()
 
     def write(self, relative, data):
         path = self.root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(data, indent=2) + "\n" if isinstance(data, (dict, list)) else data, encoding="utf-8")
+        path.write_text(
+            json.dumps(data, indent=2) + "\n"
+            if isinstance(data, (dict, list))
+            else data,
+            encoding="utf-8",
+        )
 
     def commit(self, message):
         self.git("add", "-A")
         self.git("commit", "-qm", message)
-        return {"commit": self.git("rev-parse", "HEAD"), "tree": self.git("rev-parse", "HEAD^{tree}")}
+        return {
+            "commit": self.git("rev-parse", "HEAD"),
+            "tree": self.git("rev-parse", "HEAD^{tree}"),
+        }
 
     def module(self, name):
-        return {"id": name, "owner": "owner", "deputy": "reviewer", "rootBindings": [{"path": f"src/{name}"}], "technicalDocument": f"docs/modules/{name}/TECHNICAL.md"}
+        return {
+            "id": name,
+            "owner": "owner",
+            "deputy": "reviewer",
+            "rootBindings": [{"path": f"src/{name}"}],
+            "technicalDocument": f"docs/modules/{name}/TECHNICAL.md",
+        }
 
     def row(self, name, anchor):
         return {
-            "schema": "hepta.module-implementation-map.v3", "schemaVersion": 3,
-            "sourceBase": copy.deepcopy(anchor), "laneId": "test-lane", "module": name,
-            "declaredRoots": [f"src/{name}"], "resolvedRoots": [f"src/{name}"],
-            "sourceRootPresent": True, "productionImplementation": False,
-            "operations": [{"operation": "calculate", "nativeSymbol": "calculate", "sourcePath": f"src/{name}/lib.rs", "tests": [], "delegatedCallees": []}],
-            "claimBoundary": {"nativeSourceMappingComplete": False, "productExecutionProved": False},
+            "schema": "hepta.module-implementation-map.v3",
+            "schemaVersion": 3,
+            "sourceBase": copy.deepcopy(anchor),
+            "laneId": "test-lane",
+            "module": name,
+            "declaredRoots": [f"src/{name}"],
+            "resolvedRoots": [f"src/{name}"],
+            "sourceRootPresent": True,
+            "productionImplementation": False,
+            "operations": [
+                {
+                    "operation": "calculate",
+                    "nativeSymbol": "calculate",
+                    "sourcePath": f"src/{name}/lib.rs",
+                    "tests": [],
+                    "delegatedCallees": [],
+                }
+            ],
+            "claimBoundary": {
+                "nativeSourceMappingComplete": False,
+                "productExecutionProved": False,
+            },
         }
 
     def save_maps(self):
@@ -92,7 +143,9 @@ class SourceIdentityTests(unittest.TestCase):
             self.verify()
 
     def test_unchanged_ancestral_source_passes(self):
-        self.assertEqual(self.verify()["candidateSource"]["commit"], self.git("rev-parse", "HEAD"))
+        self.assertEqual(
+            self.verify()["candidateSource"]["commit"], self.git("rev-parse", "HEAD")
+        )
 
     def test_independent_module_anchors_pass(self):
         self.write("src/beta/lib.rs", "pub fn calculate() { let _x = 1; }\n")
@@ -140,14 +193,18 @@ class SourceIdentityTests(unittest.TestCase):
         self.reject()
 
     def test_delegated_caller_drift_rejects(self):
-        self.rows["alpha"]["operations"][0]["delegatedCallees"] = [{"path": "host/caller.rs"}]
+        self.rows["alpha"]["operations"][0]["delegatedCallees"] = [
+            {"path": "host/caller.rs"}
+        ]
         self.change_maps()
         self.write("host/caller.rs", "fn changed_caller() {}\n")
         self.commit("caller drift")
         self.reject()
 
     def test_missing_mapped_test_rejects(self):
-        self.rows["alpha"]["operations"][0]["tests"] = [{"path": "tests/does_not_exist.rs"}]
+        self.rows["alpha"]["operations"][0]["tests"] = [
+            {"path": "tests/does_not_exist.rs"}
+        ]
         self.change_maps()
         self.reject()
 
@@ -164,7 +221,14 @@ class SourceIdentityTests(unittest.TestCase):
         self.reject()
 
     def test_nonancestor_rejects(self):
-        other = self.git("-c", "commit.gpgsign=false", "commit-tree", self.anchor["tree"], "-m", "unrelated")
+        other = self.git(
+            "-c",
+            "commit.gpgsign=false",
+            "commit-tree",
+            self.anchor["tree"],
+            "-m",
+            "unrelated",
+        )
         for row in self.rows.values():
             row["sourceBase"]["commit"] = other
         self.change_maps()
@@ -245,11 +309,16 @@ class SourceIdentityTests(unittest.TestCase):
         self.reject()
 
     def test_migration_does_not_promote_mapping_claim(self):
-        row = maps.migrate_map(self.rows["alpha"], self.modules[0], {"alpha": "test-lane"}, self.anchor)
+        row = maps.migrate_map(
+            self.rows["alpha"], self.modules[0], {"alpha": "test-lane"}, self.anchor
+        )
         self.assertIs(row["claimBoundary"]["nativeSourceMappingComplete"], False)
 
     def test_generator_does_not_infer_complete_mapping(self):
-        self.write("qualification/module-execution-dossiers/detail/alpha.md", "**Implemented entrypoints:** `calculate` in [src/alpha/lib.rs]\n")
+        self.write(
+            "qualification/module-execution-dossiers/detail/alpha.md",
+            "**Implemented entrypoints:** `calculate` in [src/alpha/lib.rs]\n",
+        )
         row = maps.map_for(self.modules[0], self.anchor, {"alpha": "test-lane"})
         self.assertIs(row["claimBoundary"]["nativeSourceMappingComplete"], False)
 
@@ -261,11 +330,21 @@ class SourceIdentityTests(unittest.TestCase):
         self.assertEqual(beta.read_bytes(), before)
 
     def test_unknown_migration_module_fails_before_writes(self):
-        before = {name: (self.root / f"docs/modules/{name}/IMPLEMENTATION_MAP.json").read_bytes() for name in self.rows}
+        before = {
+            name: (
+                self.root / f"docs/modules/{name}/IMPLEMENTATION_MAP.json"
+            ).read_bytes()
+            for name in self.rows
+        }
         with self.assertRaises(SystemExit):
             maps.migrate(["alpha", "unknown"])
         for name, data in before.items():
-            self.assertEqual((self.root / f"docs/modules/{name}/IMPLEMENTATION_MAP.json").read_bytes(), data)
+            self.assertEqual(
+                (
+                    self.root / f"docs/modules/{name}/IMPLEMENTATION_MAP.json"
+                ).read_bytes(),
+                data,
+            )
 
     def test_empty_registry_rejects(self):
         self.write("docs/modules/MODULES.json", {"modules": []})
@@ -273,14 +352,20 @@ class SourceIdentityTests(unittest.TestCase):
         self.reject()
 
     def test_duplicate_module_identity_rejects(self):
-        self.write("docs/modules/MODULES.json", {"modules": [self.modules[0], self.modules[0]]})
+        self.write(
+            "docs/modules/MODULES.json", {"modules": [self.modules[0], self.modules[0]]}
+        )
         self.commit("duplicate module")
         self.reject()
 
     def test_duplicate_json_keys_reject(self):
         path = self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
         text = path.read_text()
-        path.write_text(text.replace('"schemaVersion": 3,', '"schemaVersion": 3, "schemaVersion": 3,'))
+        path.write_text(
+            text.replace(
+                '"schemaVersion": 3,', '"schemaVersion": 3, "schemaVersion": 3,'
+            )
+        )
         self.commit("ambiguous JSON")
         self.reject()
 
@@ -353,7 +438,6 @@ class SourceIdentityTests(unittest.TestCase):
         self.assertEqual(index.read_bytes(), before)
         self.assertTrue(self.git("ls-files", "-v", "src/alpha/lib.rs").startswith("S "))
 
-
     def migrate(self, selected=None):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
@@ -369,7 +453,12 @@ class SourceIdentityTests(unittest.TestCase):
         }
 
     def map_bytes(self):
-        return {name: (self.root / f"docs/modules/{name}/IMPLEMENTATION_MAP.json").read_bytes() for name in self.rows}
+        return {
+            name: (
+                self.root / f"docs/modules/{name}/IMPLEMENTATION_MAP.json"
+            ).read_bytes()
+            for name in self.rows
+        }
 
     def test_repeated_migration_after_commit_is_noop(self):
         self.normalize_maps()
@@ -391,7 +480,9 @@ class SourceIdentityTests(unittest.TestCase):
         before = self.map_bytes()
         self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 5; }\n")
         current = self.commit("alpha implementation")
-        self.assertEqual(self.migrate()["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
+        self.assertEqual(
+            self.migrate()["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"]
+        )
         self.assertEqual(self.map_bytes()["beta"], before["beta"])
         alpha = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
         self.assertEqual(alpha["sourceBase"], current)
@@ -467,14 +558,19 @@ class SourceIdentityTests(unittest.TestCase):
 
     def test_noop_preserves_custom_json_formatting(self):
         self.normalize_maps()
-        self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", json.dumps(self.rows["alpha"], separators=(",", ":")) + "\n")
+        self.write(
+            "docs/modules/alpha/IMPLEMENTATION_MAP.json",
+            json.dumps(self.rows["alpha"], separators=(",", ":")) + "\n",
+        )
         self.commit("compact existing projection")
         before = self.map_bytes()
         self.assertEqual(self.migrate()["migrated"], 0)
         self.assertEqual(before, self.map_bytes())
 
     def test_migration_rejects_duplicate_module_registry(self):
-        self.write("docs/modules/MODULES.json", {"modules": [self.modules[0], self.modules[0]]})
+        self.write(
+            "docs/modules/MODULES.json", {"modules": [self.modules[0], self.modules[0]]}
+        )
         self.commit("duplicate migration selection")
         before = self.map_bytes()
         with self.assertRaises(ValueError):
@@ -483,10 +579,12 @@ class SourceIdentityTests(unittest.TestCase):
 
     def test_migration_git_failure_is_not_treated_as_drift(self):
         original = maps.git
+
         def fail_diff(*args, **kwargs):
             if args and args[0] == "diff":
                 raise subprocess.CalledProcessError(128, "git diff")
             return original(*args, **kwargs)
+
         before = self.map_bytes()
         with patch.object(maps, "git", side_effect=fail_diff):
             with self.assertRaises(subprocess.CalledProcessError):
@@ -494,7 +592,9 @@ class SourceIdentityTests(unittest.TestCase):
         self.assertEqual(before, self.map_bytes())
 
     def test_repository_verification_scans_checkout_twice_not_per_module(self):
-        with patch.object(maps, "require_clean_candidate", wraps=maps.require_clean_candidate) as scans:
+        with patch.object(
+            maps, "require_clean_candidate", wraps=maps.require_clean_candidate
+        ) as scans:
             self.verify()
         self.assertEqual(scans.call_count, 2)
 
@@ -509,8 +609,16 @@ class SourceIdentityTests(unittest.TestCase):
         self.change_maps()
         with patch.object(maps, "git", wraps=maps.git) as queries:
             self.verify()
-        batches = [call for call in queries.call_args_list if call.args[:2] == ("cat-file", "--batch-check=%(objecttype)")]
-        scalar = [call for call in queries.call_args_list if call.args[:2] == ("cat-file", "-t") and ":" in call.args[2]]
+        batches = [
+            call
+            for call in queries.call_args_list
+            if call.args[:2] == ("cat-file", "--batch-check=%(objecttype)")
+        ]
+        scalar = [
+            call
+            for call in queries.call_args_list
+            if call.args[:2] == ("cat-file", "-t") and ":" in call.args[2]
+        ]
         self.assertEqual(len(batches), 4)
         self.assertEqual(len(scalar), 0)
 
@@ -530,10 +638,12 @@ class SourceIdentityTests(unittest.TestCase):
 
     def test_malformed_batch_response_is_rejected(self):
         original = maps.git
+
         def truncate(*args, **kwargs):
             if args[:2] == ("cat-file", "--batch-check=%(objecttype)"):
                 return ""
             return original(*args, **kwargs)
+
         with patch.object(maps, "git", side_effect=truncate):
             self.reject()
 
