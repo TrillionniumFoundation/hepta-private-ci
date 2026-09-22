@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs); observed identifiers include `CompilationRequest`, `ContextCompilationReceipt`, `CompilationRequirementsV1`, `compile`, `compile_candidate_bound`, `compile_with_requirements`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs). V1 compatibility surfaces include `CompilationRequest`, `ContextCompilationReceipt`, `CompilationRequirementsV1`, `compile`, `compile_candidate_bound` and `compile_with_requirements`. The normative verified V2 surface is implemented in [src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs) and includes `verify_admission_snapshot_v2`, `verify_admission_snapshot_successor_v2`, `verify_admission_v2`, `compile_v2`, `record_serialization`, `build_attachment`, `prepare_delivery_v2` and `observe_delivery`, typed admission snapshots/evidence, exact-tokenizer and serializer adapters, an opaque pre-dispatch safety witness, and provider-invocation evidence validation. The implementation map uses strict module-local source provenance anchored at commit `1ab65444213e47617d16b7fd03f6e141c4a8a400` / tree `ce640923f09262b664856da31369ae6b3d5fbc1c`; verification checks that anchor identity, ancestry and mapped-source/test drift. Source presence still does not prove product composition, independent qualification or provider execution. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -76,9 +76,15 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
+- `admission record/snapshot verifier boundary`
 - `input normalizer`
 - `constraint validator`
 - `deterministic compiler`
+- `mandatory-group provenance binder`
+- `selected-byte realization validator`
+- `profile-bound serializer and exact tokenizer boundary`
+- `attachment revocation revalidator`
+- `provider-invocation evidence validator and terminal delivery receipt emitter`
 - `digest and receipt emitter`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -87,12 +93,28 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Normative verified V2 execution path
+
+The V2 source path is deliberately stronger than a digest-only receipt chain:
+
+1. `ContextAdmissionSnapshotV2` is authenticated by a `ContextAdmissionVerifierV2`, producing a non-forgeable-by-struct-literal `VerifiedAdmissionSnapshotV2`. The snapshot is bound to request scope and authority domain, declares a complete cumulative revocation set and is bounded to 4096 revoked admission ids. `verify_admission_snapshot_successor_v2` binds the predecessor snapshot and rejects scope/domain drift, frontier rollback and removal of any previously revoked admission; an oversized cumulative set fails closed rather than pruning history.
+2. Every candidate, including evidence, carries `VerifiedAdmissionV2` bound to item id, role, content/source/generation digests, request scope, authority domain, verifier-authenticated secret classification, verifier identity, expiry and the snapshot/revocation epoch at which it was verified. Secret status is not a candidate-side caller boolean, and a verified admission classified as secret is rejected before compilation. A trusted instruction is not represented by a caller-supplied admission digest.
+3. `TokenizationReceiptV2::from_exact_bytes` invokes an `ExactTokenizerV2` over actual candidate bytes and binds the tokenizer identity from the exact model profile.
+4. `compile_v2` requires one scope, authority-domain and admission-verifier identity for the request, preserves non-tradable trusted/schema floors, canonicalizes mandatory groups and includes `mandatory_groups_digest` in the compilation receipt. Mandatory-group references are bounded to 4096 in aggregate.
+5. `record_serialization` consumes the actual selected item bytes, verifies every byte sequence against the selected content digest, invokes the profile-bound serializer, hashes the resulting final payload and then invokes the exact tokenizer over those final payload bytes. Final framing/tool/template overhead therefore counts against the real token budget.
+6. `build_attachment` requires a freshly verified admission snapshot and rechecks every selected admission for verifier identity, monotonic snapshot/epoch, expiry and revocation before attachment. Admission expiry is exclusive: a snapshot observed exactly at `expires_unix_ms` is already expired.
+7. `prepare_delivery_v2` revalidates again at the pre-dispatch boundary, rejects snapshot epoch or observation-time rollback relative to attachment, and emits a construction-closed `ContextDeliveryPreparationV2` binding the exact payload, provider/model profile and current admission snapshot. The runtime/provider owner performs the physical request and must bind the exact payload SHA-256 into `ProviderRequestBinding.ephemeral_input_sha256`. The existing `ephemeral_input_witness_sha256` remains a provider-owned exact-attempt witness; it is not redefined as `SHA256(ContextDeliveryPreparationV2)`. `observe_delivery` requires that witness to be present and passes the canonical `ProviderInvocationReceipt` together with the current preparation to an independent `ContextProviderDeliveryVerifierV2`, which must authenticate the provider-owned witness/preparation linkage. The compiler directly checks exact payload, provider/model, attempt/terminal and evidence lineage before emitting `ContextDeliveryReceiptV2`. The compiler itself never opens a provider/network/model effect boundary. `ContextCompilationReceiptV2`, `CompiledContextV2`, `SerializedContextV2`, `ContextSerializationReceiptV2`, `ContextAttachmentV2`, `ContextDeliveryPreparationV2` and `ContextDeliveryReceiptV2` are construction-closed outside this module; callers cannot bypass `compile_v2`, exact serialization/tokenization or current-revocation checks by synthesizing proof structs.
+
+The admission verifier, serializer, tokenizer and provider-evidence verifier are explicit trusted adapter seams. Their digest identities are evidence inputs, not authority grants. A malicious or incorrectly configured adapter is outside the compiler's pure-algorithm proof and must be qualified by the owning integration. The actual runtime/provider adapter must independently satisfy the repository's final-use authority contract; this module never mints or consumes provider authority. V1 APIs remain compatibility source surfaces and do not satisfy this V2 proof chain.
+
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+Produced registered contracts:
 
-- `ContextCompilationReceiptV1`
+- `ContextCompilationReceiptV1` (compatibility surface)
 - `ModulePort::context.compiler::intelligence.control`
+
+Source-local V2 proof types such as `ContextCompilationReceiptV2`, `ContextSerializationReceiptV2`, `ContextAttachmentV2`, `ContextDeliveryPreparationV2` and `ContextDeliveryReceiptV2` are Rust API artifacts, not separately registered wire contracts in `docs/contracts/CONTRACTS.json`. The normative verified V2 compiler-to-runtime handoff is deliberately in-process and typed; V2 proof objects and payload bytes do not cross `platform.wire`. The registered `hepta.context-compilation-receipt.v2` framing remains a compatibility transport for legacy V1 receipt semantics and now admits only canonical producer `context.compiler`; it must not be interpreted as the verified V2 proof chain.
 
 Consumed contracts:
 
@@ -166,13 +188,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Native verified-V2 hard ceilings are 4096 candidates, 256 mandatory groups, 4096 aggregate mandatory references, 4096 cumulative revoked admission ids, 1 MiB raw bytes per candidate/realization, 16 MiB aggregate realized bytes, 1,000,000 context tokens and 16 MiB final serialized payload. Exceeding a hard ceiling fails closed. Those ceilings are not target-host measurements; stricter product profiles may lower them. Current native limits belong to [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs) and the linked implementation components.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Stateless context compiler, embedded before the physical App Server request. Reserve mandatory groups and reject insufficient budget; preserve exact compiled payload/digest through delivery. The host must revalidate current cognitive and factor revocations at attachment; a successful compilation receipt is not a provider send receipt.
+Stateless context compiler, embedded before the physical App Server request. The verified V2 path reserves mandatory groups, binds their canonical provenance, rejects insufficient candidate or final serialized budgets, validates the exact selected bytes used for realization, tokenizes the actual final payload, revalidates current admission/revocation at attachment and again when creating the pre-dispatch safety witness, and validates canonical provider invocation/terminal evidence after the runtime owner performs the request. A compilation, attachment or preparation receipt alone is not a provider-send receipt. Production qualification must prove that the runtime/provider owner consumes current final-use authority, carries the exact payload into its provider binding, derives the provider-owned exact-attempt witness under the real provider policy, and lets the independent delivery verifier authenticate that witness against the current preparation plus persisted provider observation.
 
 Current operating and state-format references:
 
@@ -184,8 +206,9 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs); named case: `omitted_content_is_bound_without_changing_legacy_compilation`.
-- [codex-rs/hepta-context-compiler/src/lib_tests.rs](../../../codex-rs/hepta-context-compiler/src/lib_tests.rs); named case: `evidence_never_becomes_instruction`.
+- [codex-rs/hepta-context-compiler/src/v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/v2_tests.rs); cases cover verifier rejection of otherwise well-formed admission records, scope/authority-domain binding, cumulative revocation no-resurrection, revocation/mandatory/raw-byte ceiling rejection, role-binding confusion, compile-to-attach revocation TOCTOU, actual realization-byte mismatch, exact final-payload tokenization including framing overhead, mandatory-group provenance binding, transport payload mismatch, and revocation after attachment but before delivery.
+- [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs); compatibility case: `omitted_content_is_bound_without_changing_legacy_compilation`.
+- [codex-rs/hepta-context-compiler/src/lib_tests.rs](../../../codex-rs/hepta-context-compiler/src/lib_tests.rs); compatibility case: `evidence_never_becomes_instruction`.
 
 In `codex-rs`, run `just test -p codex-hepta-context-compiler`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) separately labels target acceptance designs.
 
@@ -199,7 +222,7 @@ Applicable work packages:
 
 The bootstrap package is `CTX-1-CONTEXT-COMPILER`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. For the verified V2 path this includes verifier-produced typed admission evidence, scope/authority-domain-bound complete cumulative revocation snapshots with no-resurrection successor checks, bounded mandatory/revocation/raw-byte inputs, canonical mandatory-group provenance, selected-byte realization checks, final-payload exact tokenization, attach/pre-dispatch revocation checks, an opaque dispatch witness, canonical producer admission on the compatibility wire surface and canonical provider-invocation evidence validation. Product caller composition, authoritative admission-verifier qualification, exact tokenizer/serializer qualification, runtime provider-owner authority wiring, provider-owned attempt-witness/preparation verification, independent provider-evidence verification, independent acceptance, activation and release remain separate evidence gates.
 
 ## 14. Activation, compatibility and retirement
 

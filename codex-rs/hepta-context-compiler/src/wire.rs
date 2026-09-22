@@ -217,6 +217,7 @@ impl fmt::Display for ContextWireError {
 impl StdError for ContextWireError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
+            Self::UnexpectedProducer(_) => None,
             Self::Schema(error) => Some(error),
             Self::Codec(error) => Some(error),
             Self::Envelope(error) => Some(error),

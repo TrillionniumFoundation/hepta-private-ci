@@ -1385,16 +1385,48 @@
       "guide": "docs/modules/context.compiler/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/context.compiler.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "compile_context(objective,evidence,portfolio,modelProfile,budget); revalidate_attachment(receipt,currentSnapshot). Compilation is not physical delivery or permission to call a provider.",
-      "stateAndEncoding": "Ephemeral structured payload and exact source/factor/model/tokenizer/template/tool-schema digests; omitted groups and token cost. Cache includes every revision and revocation cutoff.",
-      "linearizationAndRecovery": "Revalidate coherent evidence,pack,hash,then Codex assembly revalidates and observes actual identical payload. Drift returns stale and cannot receive delivered-factor credit.",
-      "algorithmAndBounds": "Reserve mandatory instruction/schema/provenance/contradiction floors. Stable greedy value-per-cost packing preserves required groups; <=128 factors,512 evidence candidates. If floors do not fit, refuse rather than truncate authority.",
-      "acceptanceOracle": "Tiny budget returns insufficient_context. Untrusted evidence cannot occupy a trusted role. Stale source invalidates cache. Actual sent payload mismatch prevents causal attribution.",
+      "apiContract": "Normative verified V2 in-process path: verify_admission_snapshot_v2(snapshot,verifier); verify_admission_snapshot_successor_v2(snapshot,predecessor,verifier); verify_admission_v2(record,snapshot,verifier); compile_v2(request); record_serialization(compiled,modelProfile,realizations,serializer,tokenizer); build_attachment(compiled,serialization,modelProfile,currentSnapshot); prepare_delivery_v2(compiled,serialization,attachment,modelProfile,currentSnapshot); observe_delivery(preparation,attachment,serialization,modelProfile,providerReceipt,deliveryVerifier). The registered wire-V2 receipt is legacy V1 semantic compatibility only. Compilation alone is not physical delivery or provider authority.",
+      "stateAndEncoding": "Stateless verified V2 evidence binds verifier-authenticated item role/content/source/generation/request-scope/authority-domain/secret classification, expiry and complete cumulative revocation snapshot; exact model/tokenizer/template/tool-schema identity; canonical mandatory-group provenance; actual realized bytes; final serialized payload digest/bytes/tokens; attach/pre-dispatch admission snapshots; an opaque dispatch-safety witness; and canonical provider request/attempt/terminal evidence whose exact input and provider-owned witness are independently verified. All proof artifacts remain DENY_ALL.",
+      "linearizationAndRecovery": "Authenticate a complete scope/domain-bound revocation snapshot and records; successor snapshots bind the predecessor and cannot remove a prior revocation. Compile a bounded deterministic set, verify actual selected bytes, serialize and exact-tokenize the final payload, revalidate current admission/revocation at attachment, and revalidate again while creating the pre-dispatch witness. The runtime/provider owner then consumes current final-use authority at the physical boundary. Epoch/time/domain rollback, revocation resurrection, expiry, resource overflow, realization drift, token overflow, provider-input drift, witness drift or provider/model drift fail closed.",
+      "algorithmAndBounds": "Trusted instruction/schema and mandatory groups are non-tradable floors; optional evidence uses stable value-per-token packing. Native hard caps: 4096 candidates, 256 groups, 4096 aggregate mandatory references, 4096 cumulative revoked admission ids, 1 MiB raw bytes per item, 16 MiB aggregate realized bytes, 1,000,000 tokens and 16 MiB final serialized payload. Final serializer framing/template/tool overhead is counted by exact tokenization after serialization; stricter product profiles may lower these ceilings.",
+      "acceptanceOracle": "Verifier-rejected, cross-scope, wrong-authority-domain or secret-classified admission fails before compilation. A successor snapshot cannot resurrect a revoked admission. Oversized revocation/mandatory/raw-byte inputs fail closed. Tiny budget refuses mandatory floors. Canonical group changes alter receipt provenance even with the same selected set. Compile-to-attach and attach-to-send revocation or snapshot rollback deny. Realized-byte drift or final serialized token overflow denies. Delivered requires canonical provider invocation evidence, exact payload/witness binding, matching provider/model identity, completed terminality and independent provider-evidence verification; it does not establish exactly-once external execution.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
       "nativeImplementation": {
         "entrypoints": [
+          {
+            "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+            "symbol": "verify_admission_snapshot_v2"
+          },
+          {
+            "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+            "symbol": "verify_admission_snapshot_successor_v2"
+          },
+          {
+            "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+            "symbol": "verify_admission_v2"
+          },
+          {
+            "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+            "symbol": "compile_v2"
+          },
+          {
+            "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+            "symbol": "record_serialization"
+          },
+          {
+            "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+            "symbol": "build_attachment"
+          },
+          {
+            "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+            "symbol": "prepare_delivery_v2"
+          },
+          {
+            "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+            "symbol": "observe_delivery"
+          },
           {
             "path": "codex-rs/hepta-context-compiler/src/lib.rs",
             "symbol": "compile"
@@ -1408,17 +1440,22 @@
             "symbol": "compile_candidate_bound"
           }
         ],
-        "stateAndRecovery": "Stateless compilation separates trusted instructions from untrusted evidence and binds objective/snapshot/items. Explicit mandatory groups validate exact items before budget selection and cannot be silently omitted.",
+        "stateAndRecovery": "Verified V2 proof objects are construction-closed outside the module and remain in-process. Admission verifier, exact tokenizer, serializer and provider-evidence verifier are explicit digest-bound trusted adapter seams. Current snapshots are scope/authority-domain-bound complete cumulative revocation sets; successor verification rejects no-resurrection violations and hard resource ceilings fail closed. V1 surfaces preserve earlier source compatibility and do not satisfy the full V2 proof chain.",
         "testFiles": [
+          "codex-rs/hepta-context-compiler/src/v2_tests.rs",
           "codex-rs/hepta-context-compiler/src/requirements_tests.rs",
-          "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs"
+          "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs",
+          "codex-rs/hepta-context-compiler/src/lib_tests.rs"
         ],
         "runtimeDocuments": [
+          "docs/modules/context.compiler/TECHNICAL.md",
           "codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md",
           "docs/readiness/LANE_B_NATIVE_HOST.md"
         ],
         "remainingWork": [
-          "Actual tokenizer/model accounting, prompt realization and physical turn delivery belong to the selected caller profile; a compilation receipt alone does not prove them."
+          "Compose and qualify one authenticated named product caller with the authoritative admission verifier, exact provider tokenizer/serializer/template/tool-schema profile, runtime provider adapter and independent provider-evidence resolver.",
+          "Make preparation -> current final-use authority consumption -> exact ProviderRequestBinding -> physical send one effect-bound ceremony, then fault-inject revoke races, adapter/process death, provider indeterminate and retry reconciliation.",
+          "Collect exact-head/synthetic-merge, capacity and target-host evidence before changing productExecutionProved, activation or release."
         ]
       }
     },
