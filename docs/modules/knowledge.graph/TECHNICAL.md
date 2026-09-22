@@ -48,6 +48,10 @@ None.
 
 The registered primary source is [codex-rs/hepta-kg/src/lib.rs](../../../codex-rs/hepta-kg/src/lib.rs); observed identifiers include `KnowledgeEdge`, `KnowledgeProjection`, `rebuild`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) for the implemented subset and remaining product work.
 
+The cognitive knowledge-graph product integration is cross-owner evidence rather than a second module root. `codex-rs/hepta-memory/src/cognitive_kg_store.rs` is the canonical cognitive-facts adapter and SQLite publication owner integration; `codex-rs/hepta-memory/src/cognitive_retrieval.rs` is the product read adapter; migration `0011_kg_generation_semantics.sql` persists the canonical generation/publication receipts. These adapters call `hepta-kg` V2 semantics instead of duplicating a second graph policy.
+
+The prompt-factor projection is a second rebuildable source family, not a second graph kernel. `PromptRegistry::factor_graph_source_v1` is the only constructor of the sealed current owner view; `codex-rs/hepta-kg/src/prompt_factor.rs` maps that exact registry revision/source digest into `KnowledgeGenerationV2`; and `codex-rs/hepta-prompt-optimizer/src/graph.rs` is the generation-bound read consumer. The optimizer cannot construct or mutate the registry relation source.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -77,7 +81,11 @@ The bounded components are:
 
 - `source consumer`
 - `generation builder`
+- `cognitive SQLite canonical adapter` (cross-owner integration in `hepta-memory`)
+- `prompt.registry sealed factor-relation source adapter`
 - `atomic publication step`
+- `digest-bound product query adapter`
+- `generation-bound prompt.optimizer relation consumer`
 - `rebuild and equivalence verifier`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -129,21 +137,35 @@ Read-only data dependencies:
 - `prompt_factor_registry`
 - `prompt_realization_registry`
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+Ownership is deliberately split by layer. `knowledge.graph` is the semantic owner of projection identity, generation/publication digests and relation-query rules. The existing `cognitive.store` / `hepta-memory` owner remains the physical SQLite schema and transaction writer for the cognitive projection, while `prompt.registry` remains the source-fact owner for prompt factors and factor relations. No graph adapter may create a second durable source-of-truth store. Projection mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
+For the cognitive knowledge projection, the existing `cognitive_1.sqlite3` owner remains the only durable store. The adapter derives canonical `KnowledgeGenerationV2` values from immutable/current cognitive facts, invokes `build_complete_generation`, validates predecessor-bound `publish_generation`, writes physical projection rows plus `kg_projection_generation_semantics`, and only then advances the selected generation in the same SQLite transaction. Reopen recomputes the physical output digest, canonical generation digest and predecessor-bound publication digest. Pre-`0011` legacy generations may remain readable history but cannot drive digest-bound graph expansion without a canonical V2 semantic receipt.
+
+Canonical cognitive entity identity is `owner + scope + entity_key`; `entity_type` and `label` are shape fields, not identity fields. All simultaneously live supports for one canonical key must agree on those shape fields or the product mutation fails closed. A correction may change shape only after the predecessor support leaves the current active cut. A rename or alias that must coexist uses a distinct entity key plus an explicit owner-governed custom relation such as `alias_of`; the KG kernel does not silently merge display labels or infer aliases.
+
+For prompt factors, `prompt.registry` remains the fact/lifecycle owner. It stores governed complement/substitute/conflict relation records, includes them in the registry snapshot digest and emits a sealed current `PromptFactorGraphSourceV1` containing only currently admitted governed endpoints. `knowledge.graph` rebuilds that exact source into the same V2 generation type; factor revocation changes the owner source digest and removes relations whose endpoint is no longer admitted. No prompt-factor relation becomes a new source fact inside `knowledge.graph`.
+
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md).
+For the cognitive knowledge projection, `CognitiveStore::refresh_scope_projection_tx` is the durable mutation boundary. One SQLite transaction observes the exact current source cut, derives the canonical V2 generation, reconstructs the exact predecessor, validates `publish_generation`, persists physical rows and semantic receipts, and CAS-advances `kg_projection.generation`. The selected pointer therefore cannot name a generation whose canonical receipt was not durably inserted first.
+
+The product GraphOneHop read path loads the persisted generation through `load_canonical_generation_tx`, requires the persisted `generation_sha256` to match the reconstructed V2 digest, and delegates relation selection, temporal visibility and truncation to `hepta_kg::query_relations`. SQL after that point only maps kernel-selected support identities back to their physical memory occurrences. `apply_incremental_delta` is retained as an equivalence oracle/reference path; the current durable product writer deliberately rebuilds the bounded complete generation on each logical mutation.
+
+The prompt path is `PromptRegistry::factor_graph_source_v1 -> build_prompt_factor_projection_v1 -> optimize_with_factor_graph`. The registry view is sealed outside the owner crate. The optimizer requires every candidate factor to exist in the complete generation and queries complements/substitutes/conflicts against the exact generation digest. `PromptConflicts` are hard co-selection exclusions; `PromptSubstitutes` are hard redundancy exclusions; `PromptComplements` are observed and receipt-bound but do not manufacture a numeric bonus because the relation record carries no calibrated marginal magnitude. Any positive complement utility must come from independently supported causal interaction evidence. The complete canonical query request and result digests are both bound into the graph portfolio receipt. The optimizer remains read-only and `DENY_ALL`.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+
+The cognitive projection transaction has test-only process-crash rendezvous before the canonical semantic receipt and after the semantic receipt/physical rows but before current-generation CAS. The qualification child publishes an fsynced marker, is killed by its parent, and the reopened store must expose only the exact predecessor generation with no tentative source, memory revision, generation receipt or semantic receipt. This is a process-crash/SQLite-WAL test, not a physical power-loss claim. Independent `lane_c` cut-witness tests separately detect restoration of an older internally valid SQLite backup; the stronger descriptor-safe writer `open_with_recovery` contract remains owned by `cognitive.store` and is not implied by this module.
+
+Ordinary product reopen intentionally verifies the current generation plus the exact predecessor needed to reconstruct its publication receipt; it does not perform an unbounded O(history) forensic replay on every startup. Because the graph is rebuildable and current reads are fenced by current source truth, a full historical publication-chain audit is a qualification/forensic operation rather than a product-startup dependency. The cognitive KG oracle now walks every persisted semantic generation and reconstructs each predecessor-bound publication digest, while product startup remains bounded. This keeps startup bounded without weakening current-generation safety.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -159,7 +181,9 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-kg/src/lib.rs](../../../codex-rs/hepta-kg/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) specifies this module's algorithm and pilot ceilings. The current durable writer deliberately performs one bounded complete-generation rebuild for each logical mutation; `apply_incremental_delta` remains the independent equivalence/reference path until measurements justify selecting it as the durable runtime algorithm.
+
+[codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs) is the PERF-LIBRARY qualification probe. Its default fixture performs 256 real `remember_with_kg` transactions with 16 entities and 128 relations each, reaching 4,096 physical nodes and 32,768 physical edges, then samples product retrieval/GraphOneHop and ordinary reopen. It emits mutation/query/reopen p50/p95/p99, integer throughput, database/WAL bytes, RSS and Linux CPU ticks. The repository defines no host-independent millisecond threshold for PERF-LIBRARY, so this receipt is measurement evidence only; target-host/release qualification must supply the actual acceptance budget before full-generation versus durable-incremental selection changes.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -171,6 +195,13 @@ Current operating and state-format references:
 
 - [codex-rs/hepta-kg/src/lib.rs](../../../codex-rs/hepta-kg/src/lib.rs).
 - [codex-rs/hepta-kg/src/generation.rs](../../../codex-rs/hepta-kg/src/generation.rs).
+- [codex-rs/hepta-memory/src/cognitive_kg_store.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_store.rs) for the cognitive source adapter and same-transaction durable publication.
+- [codex-rs/hepta-memory/migrations/0011_kg_generation_semantics.sql](../../../codex-rs/hepta-memory/migrations/0011_kg_generation_semantics.sql) for immutable semantic receipts and current-generation fencing.
+- [codex-rs/hepta-memory/src/cognitive_retrieval.rs](../../../codex-rs/hepta-memory/src/cognitive_retrieval.rs) for the digest-bound product GraphOneHop consumer.
+- [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md) for the durable cognitive owner contract.
+- [codex-rs/hepta-kg/src/prompt_factor.rs](../../../codex-rs/hepta-kg/src/prompt_factor.rs) for the prompt.registry-to-KG adapter.
+- [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs) for governed prompt-factor relation ownership and the sealed graph source.
+- [codex-rs/hepta-prompt-optimizer/src/graph.rs](../../../codex-rs/hepta-prompt-optimizer/src/graph.rs) for the generation-bound real consumer.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -178,8 +209,13 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-kg/src/generation_tests.rs](../../../codex-rs/hepta-kg/src/generation_tests.rs); named case: `incremental_and_full_rebuilds_are_semantically_equal`.
+- [codex-rs/hepta-kg/src/generation_tests.rs](../../../codex-rs/hepta-kg/src/generation_tests.rs); cases cover full/incremental equivalence, predecessor-bound publication, support/tombstone behavior, custom relation identities and temporal visibility.
 - [codex-rs/hepta-kg/src/lib_tests.rs](../../../codex-rs/hepta-kg/src/lib_tests.rs); named case: `rebuild_is_canonical_and_authority_free`.
+- [codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs); the canonical oracle drives the same source cut through full V2 rebuild, incremental V2 rebuild, SQLite materialization, reopen, query, correction and tombstone, compares physical/canonical digests plus visible query behavior, walks the complete persisted publication chain, and verifies the canonical entity shape-evolution contract.
+- [codex-rs/hepta-memory/src/cognitive_store_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_store_tests.rs); reopen integrity includes fail-closed generation/publication receipt tamper cases plus the ignored child-process crash-window matrix.
+- [codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs); ignored PERF-LIBRARY probe reaches the 4,096-node/32,768-edge pilot fixture and emits mutation/query/reopen/storage/process measurements.
+- [codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs); the named Agentd product profile exercises real App Server remember, restart/recall, correction and forget while checking persisted KG receipts and product-visible retrieval. The additional `qualification-cognitive-write` feature only attaches the qualification turn-witness seam; it is not the mutation authority.
+- [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs), [codex-rs/hepta-kg/src/prompt_factor_tests.rs](../../../codex-rs/hepta-kg/src/prompt_factor_tests.rs), and [codex-rs/hepta-prompt-optimizer/src/graph_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/graph_tests.rs) cover owner-bound relation admission, revocation/rebuild, V2 projection/query and graph-conflict enforcement in the read-only optimizer.
 
 In `codex-rs`, run `just test -p codex-hepta-kg`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) separately labels target acceptance designs.
 
@@ -204,6 +240,10 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 ## 15. Definition of module completion
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+
+For `knowledge.graph`, the cognitive knowledge read path is product-composed. This candidate also makes scoped cognitive mutation the default **Agentd** product profile and fails Agentd startup closed when the cognitive owner store is unavailable; ordinary Codex/App Server binaries remain default-off. The separate `qualification-cognitive-write` feature adds only the qualification turn-witness seam. This candidate writer is not treated as established until current exact-head and deterministic synthetic-merge evidence are green.
+
+The prompt-factor graph source/projection/consumer path is now source-composed separately from the cognitive SQLite path: prompt.registry owns relation facts, knowledge.graph rebuilds them, and prompt.optimizer consumes the exact generation-bound relation view. This does not make prompt.registry durable or activated by implication, and it does not turn the optimizer into an authority source. Module-wide `productionImplementation` and `productExecutionProved` remain false until the current exact-head and deterministic synthetic-merge qualification gates are green; independent acceptance, activation and release remain separate external gates.
 
 For `knowledge.graph`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -263,4 +303,4 @@ The bootstrap source-location obligation for `knowledge.graph` is implemented by
 
 - `codex-rs/hepta-kg`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The cross-owner cognitive integration additionally depends on the `codex-hepta-memory` oracle/store tests and the Agentd product qualification suite; prompt-factor composition additionally depends on prompt.registry, the prompt-factor adapter tests and prompt.optimizer graph-consumer tests. These are source/test identities until an exact-candidate run records a passing receipt. The default Agentd crate profile now selects the scoped cognitive writer and fails closed when its store is unavailable, while ordinary Codex/App Server remains default-off. This receipt grants no model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

@@ -11,9 +11,14 @@ path = "src/lib.rs"
 doctest = false
 
 [features]
-default = []
-# Qualification-only host profile. Default binaries keep the writer disabled.
-qualification-cognitive-write = []
+# Agentd is the named Hepta product host for scoped cognitive mutations. This
+# default is local to the Agentd crate; ordinary Codex/App Server binaries do
+# not enable HeptaCognitiveWrite by default.
+default = ["production-cognitive-write"]
+production-cognitive-write = []
+# Adds the qualification-only turn-lifecycle witness seam on top of the real
+# product mutation profile. It never substitutes for production authority.
+qualification-cognitive-write = ["production-cognitive-write"]
 
 [[bin]]
 name = "codex-hepta-agentd"

@@ -309,7 +309,7 @@ fn g3_intelligence_kg_truth_bounds_qualification_without_hiding_later_candidates
         [
             "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
             "two_real_agentd_app_servers_never_cross_recall",
-            "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools",
+            "cognitive_store_unavailable_fails_closed_before_provider",
         ]
     );
     assert_eq!(
@@ -323,6 +323,23 @@ fn g3_intelligence_kg_truth_bounds_qualification_without_hiding_later_candidates
     );
     for field in [
         "write_feature_default_enabled",
+        "agentd_product_profile_default_enabled",
+        "qualification_turn_writer_separate",
+        "writer_store_unavailable_fail_closed",
+    ] {
+        assert_eq!(
+            g3.get(field).and_then(toml::Value::as_bool),
+            Some(true),
+            "{field} must describe the default Agentd cognitive writer profile",
+        );
+    }
+    assert_eq!(
+        g3.get("ordinary_codex_default_enabled")
+            .and_then(toml::Value::as_bool),
+        Some(false),
+        "ordinary Codex must not inherit the Agentd product writer profile",
+    );
+    for field in [
         "unavailable_runtime_mutation_tools_exposed",
         "cross_agent_memory_federation_qualified_in_g3",
         "matrix_or_robrix_qualified_in_g3",

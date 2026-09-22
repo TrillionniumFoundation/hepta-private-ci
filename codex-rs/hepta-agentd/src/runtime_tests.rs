@@ -2,16 +2,16 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use std::time::SystemTime;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTick;
 use codex_hepta_contracts::AgentId;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
@@ -19,28 +19,28 @@ use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::CognitiveRuntime;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::CompactFence;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::H7TrajectoryAppend;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::H7TrajectoryEventKind;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::H7TrajectoryRecord;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::LocalAdmission;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::LocalTurnLifecycleBinding;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::LogicalTurnAttemptRequest;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::LogicalTurnRequest;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::append_h7_trajectory_event_bound;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::h7_trajectory_local_receipt_digest;
 use codex_hepta_paths::HeptaFleetRoot;
 use tokio::time::timeout;
@@ -59,14 +59,14 @@ use super::require_cognitive_runtime_for_profile;
 use crate::AgentdMethod;
 use crate::AgentdPayload;
 use crate::CognitiveRetrievalMode;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use crate::app_runtime::app_server_runtime_options_for_agent;
 use crate::automation::DispatchRetryBudget;
 use crate::automation::handle_automation_tick;
 use crate::automation::run_automation_scheduler;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use crate::qualification_writer::prepare_qualification_turn_writer_input;
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 use codex_hepta_memory::LocalLeaseHeadDisposition;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
@@ -234,19 +234,19 @@ fn hnmf_required_retrieval_mode_fails_closed_without_current_context() {
         .expect("HNMF-required mode accepts an explicitly configured current context");
 }
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 #[test]
-fn qualification_profile_fails_closed_when_cognitive_store_is_unavailable() {
+fn product_write_profile_fails_closed_when_cognitive_store_is_unavailable() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
         codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
     ));
     assert!(matches!(
         result,
-        Err(crate::AgentdError::QualificationCognitiveRuntimeUnavailable)
+        Err(crate::AgentdError::CognitiveWriteRuntimeUnavailable)
     ));
 }
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 #[tokio::test]
 async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
     let fixture = runtime_fixture();
@@ -394,7 +394,7 @@ async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
         .expect("release local lease");
 }
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 #[tokio::test]
 async fn qualification_prepare_takes_over_expired_registry_head_without_evidence() {
     let fixture = runtime_fixture();
@@ -470,7 +470,7 @@ async fn qualification_prepare_takes_over_expired_registry_head_without_evidence
         .expect("release takeover test lease");
 }
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 #[tokio::test]
 async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence() {
     let fixture = runtime_fixture();
@@ -648,13 +648,13 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     );
 }
 
-#[cfg(not(feature = "qualification-cognitive-write"))]
+#[cfg(not(feature = "production-cognitive-write"))]
 #[test]
-fn default_profile_preserves_degraded_cognitive_runtime_behavior() {
+fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
         codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
     ))
-    .expect("default profile remains availability tolerant");
+    .expect("read-only profile remains availability tolerant");
     assert!(matches!(
         result,
         CognitiveRuntime::Unavailable(

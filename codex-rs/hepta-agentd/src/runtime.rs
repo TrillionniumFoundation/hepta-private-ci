@@ -225,18 +225,18 @@ fn require_cognitive_retrieval_context_for_mode(
     }
 }
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
     if runtime.available_store().is_some() {
         Ok(runtime)
     } else {
-        Err(AgentdError::QualificationCognitiveRuntimeUnavailable)
+        Err(AgentdError::CognitiveWriteRuntimeUnavailable)
     }
 }
 
-#[cfg(not(feature = "qualification-cognitive-write"))]
+#[cfg(not(feature = "production-cognitive-write"))]
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {

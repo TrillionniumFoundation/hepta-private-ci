@@ -1,7 +1,16 @@
+use std::path::Path;
+use std::path::PathBuf;
+use std::process::Command;
+use std::process::Stdio;
+use std::thread;
+use std::time::Duration;
+use std::time::Instant;
+
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_paths::HeptaFleetRoot;
 use sqlx::Row;
 
 use crate::CognitiveAccess;
@@ -328,6 +337,148 @@ async fn projection_failure_rolls_back_source_memory_and_facts_before_reopen() {
     assert_eq!(recovered, before);
 }
 
+const KG_CRASH_STAGE_ENV: &str = "HEPTA_KG_CRASH_STAGE";
+const KG_CRASH_MARKER_ENV: &str = "HEPTA_KG_CRASH_MARKER";
+const KG_CRASH_FLEET_ROOT_ENV: &str = "HEPTA_KG_CRASH_FLEET_ROOT";
+const KG_CRASH_CHILD_TEST: &str = "cognitive_store_tests::kg_projection_crash_child";
+const KG_CRASH_OWNER_SUFFIX: u8 = 184;
+
+fn kg_layout_from_fleet_root(fleet_root: &Path) -> codex_hepta_paths::HeptaAgentLayout {
+    let canonical = fleet_root
+        .canonicalize()
+        .expect("canonical KG crash fleet root");
+    let fleet = HeptaFleetRoot::parse(canonical).expect("KG crash fleet root");
+    fleet.layout().agent(&agent_id(KG_CRASH_OWNER_SUFFIX))
+}
+
+#[tokio::test]
+#[ignore = "qualification: child-process KG transaction crash probe"]
+async fn kg_projection_crash_child() {
+    let fleet_root = std::env::var_os(KG_CRASH_FLEET_ROOT_ENV)
+        .map(PathBuf::from)
+        .expect("KG crash child fleet root");
+    let owner = agent_id(KG_CRASH_OWNER_SUFFIX);
+    let owner_layout = kg_layout_from_fleet_root(&fleet_root);
+    let store = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("KG crash child store");
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let memory_id = StableMemoryId::for_key(
+        &owner,
+        &CognitiveScope::AgentPrivate,
+        "projection-integrity-memory",
+    );
+    let content = "Ada updates the crash-window graph.";
+    let revision = MemoryRevisionDraft {
+        scope: CognitiveScope::AgentPrivate,
+        content: content.to_string(),
+        verification: MemoryVerification::Verified,
+        lifecycle: MemoryLifecycleState::Active,
+        valid_from_unix_seconds: 200,
+        valid_to_unix_seconds: None,
+        citations: Vec::new(),
+    };
+    let _never_returns_before_parent_kill = store
+        .correct_with_kg(
+            &access,
+            &memory_id,
+            1,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "kg-crash-window-correction",
+                content,
+            ),
+            &revision,
+            &KgFactSetDraft::default(),
+        )
+        .await
+        .expect("KG crash rendezvous must be reached before correction returns");
+    panic!("KG crash child unexpectedly crossed the configured rendezvous");
+}
+
+async fn assert_kg_crash_predecessor_only(fleet_root: &Path) {
+    let owner = agent_id(KG_CRASH_OWNER_SUFFIX);
+    let owner_layout = kg_layout_from_fleet_root(fleet_root);
+    let store = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("reopen KG crash predecessor");
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let memory_id = StableMemoryId::for_key(
+        &owner,
+        &CognitiveScope::AgentPrivate,
+        "projection-integrity-memory",
+    );
+    let head = store
+        .latest_memory(&access, &memory_id)
+        .await
+        .expect("KG crash predecessor memory");
+    assert_eq!(head.id.revision, 1);
+    let counts: (i64, i64, i64, i64, i64) = sqlx::query_as(
+        "SELECT (SELECT COUNT(*) FROM source_ledger),
+                (SELECT COUNT(*) FROM memory_revisions),
+                (SELECT COUNT(*) FROM kg_projection_generation_receipts),
+                (SELECT COUNT(*) FROM kg_projection_generation_semantics),
+                (SELECT MAX(generation) FROM kg_projection)",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .expect("KG crash recovered counts");
+    assert_eq!(counts, (1, 1, 1, 1, 1));
+    let integrity: String = sqlx::query_scalar("PRAGMA quick_check")
+        .fetch_one(&store.pool)
+        .await
+        .expect("KG crash quick_check");
+    assert_eq!(integrity, "ok");
+    store.pool.close().await;
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "qualification: child-process KG transaction crash/reopen matrix"]
+async fn qualification_kg_projection_crash_windows_restore_exact_predecessor() {
+    let temp = TempDir::new().expect("KG crash qualification temp dir");
+    let owner = agent_id(KG_CRASH_OWNER_SUFFIX);
+    let store = seeded_projection_store(&temp, &owner).await;
+    store.pool.close().await;
+    let fleet_root = temp.path().join("fleet");
+    let executable = std::env::current_exe().expect("KG crash current test executable");
+
+    for stage in [
+        "before_semantic_receipt",
+        "after_semantic_receipt_before_current_pointer",
+    ] {
+        let marker = temp.path().join(format!("kg-crash-{stage}.marker"));
+        let mut child = Command::new(&executable)
+            .arg("--exact")
+            .arg(KG_CRASH_CHILD_TEST)
+            .arg("--ignored")
+            .arg("--nocapture")
+            .env(KG_CRASH_STAGE_ENV, stage)
+            .env(KG_CRASH_MARKER_ENV, &marker)
+            .env(KG_CRASH_FLEET_ROOT_ENV, &fleet_root)
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .expect("spawn KG crash child");
+        let deadline = Instant::now() + Duration::from_secs(20);
+        while !marker.is_file() {
+            if let Some(status) = child.try_wait().expect("poll KG crash child") {
+                panic!("KG crash child exited before {stage} marker: {status}");
+            }
+            assert!(
+                Instant::now() < deadline,
+                "KG crash child did not reach {stage} before timeout"
+            );
+            thread::sleep(Duration::from_millis(5));
+        }
+        child
+            .kill()
+            .expect("kill KG crash child at transaction rendezvous");
+        let status = child.wait().expect("wait killed KG crash child");
+        assert!(!status.success(), "killed KG crash child reported success");
+        assert_kg_crash_predecessor_only(&fleet_root).await;
+    }
+}
+
 #[tokio::test]
 async fn h7_trajectory_schema_is_bound_and_append_only() {
     let temp = TempDir::new().expect("H7 trajectory temp dir");
@@ -633,6 +784,93 @@ async fn reopen_recomputes_current_projection_digests_and_exact_fts_rows() {
 }
 
 #[tokio::test]
+async fn reopen_rejects_canonical_generation_and_publication_digest_tamper() {
+    let generation_temp = TempDir::new().expect("generation semantics temp dir");
+    let generation_owner = agent_id(86);
+    let generation_store = seeded_projection_store(&generation_temp, &generation_owner).await;
+    let mut generation_connection = generation_store
+        .pool
+        .acquire()
+        .await
+        .expect("generation semantics tamper connection");
+    let semantics_trigger: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema
+         WHERE name = 'kg_projection_generation_semantics_no_update'",
+    )
+    .fetch_one(&mut *generation_connection)
+    .await
+    .expect("semantics trigger SQL");
+    sqlx::query("DROP TRIGGER kg_projection_generation_semantics_no_update")
+        .execute(&mut *generation_connection)
+        .await
+        .expect("drop semantics trigger");
+    sqlx::query(
+        "UPDATE kg_projection_generation_semantics
+         SET generation_sha256 = ?",
+    )
+    .bind(Sha256Digest::for_bytes(b"tampered canonical generation").as_str())
+    .execute(&mut *generation_connection)
+    .await
+    .expect("tamper canonical generation digest");
+    sqlx::query(sqlx::AssertSqlSafe(semantics_trigger.as_str()))
+        .execute(&mut *generation_connection)
+        .await
+        .expect("restore semantics trigger");
+    drop(generation_connection);
+    generation_store.pool.close().await;
+    drop(generation_store);
+
+    let generation_error =
+        match CognitiveStore::open(&layout(&generation_temp, &generation_owner)).await {
+            Ok(_) => panic!("tampered canonical generation digest must fail reopen"),
+            Err(error) => error,
+        };
+    expect_corrupt_with(generation_error, "canonical V2 semantics");
+
+    let publication_temp = TempDir::new().expect("publication semantics temp dir");
+    let publication_owner = agent_id(87);
+    let publication_store = seeded_projection_store(&publication_temp, &publication_owner).await;
+    let mut publication_connection = publication_store
+        .pool
+        .acquire()
+        .await
+        .expect("publication semantics tamper connection");
+    let semantics_trigger: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema
+         WHERE name = 'kg_projection_generation_semantics_no_update'",
+    )
+    .fetch_one(&mut *publication_connection)
+    .await
+    .expect("semantics trigger SQL");
+    sqlx::query("DROP TRIGGER kg_projection_generation_semantics_no_update")
+        .execute(&mut *publication_connection)
+        .await
+        .expect("drop semantics trigger");
+    sqlx::query(
+        "UPDATE kg_projection_generation_semantics
+         SET publication_sha256 = ?",
+    )
+    .bind(Sha256Digest::for_bytes(b"tampered canonical publication").as_str())
+    .execute(&mut *publication_connection)
+    .await
+    .expect("tamper canonical publication digest");
+    sqlx::query(sqlx::AssertSqlSafe(semantics_trigger.as_str()))
+        .execute(&mut *publication_connection)
+        .await
+        .expect("restore semantics trigger");
+    drop(publication_connection);
+    publication_store.pool.close().await;
+    drop(publication_store);
+
+    let publication_error =
+        match CognitiveStore::open(&layout(&publication_temp, &publication_owner)).await {
+            Ok(_) => panic!("tampered canonical publication digest must fail reopen"),
+            Err(error) => error,
+        };
+    expect_corrupt_with(publication_error, "publication receipt");
+}
+
+#[tokio::test]
 async fn reopen_rejects_0008_migration_checksum_drift_without_repair() {
     let temp = TempDir::new().expect("migration checksum temp dir");
     let owner = agent_id(85);
@@ -860,6 +1098,6 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
         .fetch_one(&migrated.pool)
         .await
         .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10"
+        "1,2,3,4,5,6,7,8,9,10,11"
     );
 }

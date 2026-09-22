@@ -20,10 +20,15 @@ use crate::AgentdState;
 use crate::error::contextual_io_error;
 use crate::qualification_writer::qualification_turn_writer_host;
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 const COGNITIVE_WRITE_ENABLED: bool = true;
-#[cfg(not(feature = "qualification-cognitive-write"))]
+#[cfg(not(feature = "production-cognitive-write"))]
 const COGNITIVE_WRITE_ENABLED: bool = false;
+
+#[cfg(feature = "qualification-cognitive-write")]
+const QUALIFICATION_TURN_WRITER_ENABLED: bool = true;
+#[cfg(not(feature = "qualification-cognitive-write"))]
+const QUALIFICATION_TURN_WRITER_ENABLED: bool = false;
 
 pub(crate) async fn run_app_server(
     identity: AgentdIdentity,
@@ -71,10 +76,9 @@ fn app_server_config_overrides(cognitive_write_enabled: bool) -> CliConfigOverri
             "features.hepta_turn_recovery=true".to_string(),
             "features.hepta_memory=true".to_string(),
             "features.hepta_memory_read_only=true".to_string(),
-            // The default binary is read-only.  The only positive writer
-            // profile is an explicit build-time qualification binary; it is
-            // still local/host-owned and does not grant production effects,
-            // fleet authority, or promotion.
+            // Agentd exposes the product cognitive feature, while actual mutation
+            // tools still require the externally verified production capability
+            // or the explicitly compiled qualification witness profile.
             format!("features.hepta_cognitive_write={cognitive_write_enabled}"),
         ],
     }
@@ -134,18 +138,13 @@ fn app_server_runtime_options_with_writer(
         // policy-gated local witness writes must be host-invoked and must not
         // create an unbound lease implicitly during turn startup.
         hepta_local_turn_lifecycle_enabled: false,
-        hepta_local_development_policy: Some(
-            codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only(),
-        ),
-        // The qualification build explicitly opts into the writer seam and
-        // receives a capability only from the owning Agentd process.  The
-        // default and production-facing binaries remain inert.
-        hepta_qualification_turn_writer_enabled: COGNITIVE_WRITE_ENABLED,
+        hepta_local_development_policy: QUALIFICATION_TURN_WRITER_ENABLED
+            .then_some(codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only()),
+        hepta_qualification_turn_writer_enabled: QUALIFICATION_TURN_WRITER_ENABLED,
         hepta_qualification_turn_writer: qualification_turn_writer,
-        // This is an embedding-owned capability boundary. It is applied
-        // after managed config and per-request overrides, so those layers
-        // cannot change the selected profile at runtime. The positive value
-        // exists only in the explicit qualification build.
+        // This embedding-owned product capability is applied after managed
+        // config and per-request overrides. Agentd therefore selects the
+        // scoped cognitive mutation profile; ordinary Codex does not.
         required_feature_states: BTreeMap::from([(
             Feature::HeptaCognitiveWrite,
             cognitive_write_enabled,
@@ -162,6 +161,7 @@ mod tests {
     use codex_hepta_paths::HeptaFleetRoot;
 
     use super::COGNITIVE_WRITE_ENABLED;
+    use super::QUALIFICATION_TURN_WRITER_ENABLED;
     use super::app_server_config_overrides;
     use super::app_server_runtime_options;
     use crate::AgentdIdentity;
@@ -228,8 +228,14 @@ mod tests {
         );
         assert!(!options.hepta_local_turn_lifecycle_enabled);
         assert_eq!(
-            Some(codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only()),
+            QUALIFICATION_TURN_WRITER_ENABLED.then_some(
+                codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only()
+            ),
             options.hepta_local_development_policy
+        );
+        assert_eq!(
+            QUALIFICATION_TURN_WRITER_ENABLED,
+            options.hepta_qualification_turn_writer_enabled
         );
         assert_eq!(
             Some(&COGNITIVE_WRITE_ENABLED),

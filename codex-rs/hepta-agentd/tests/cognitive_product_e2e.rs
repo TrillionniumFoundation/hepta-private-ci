@@ -389,8 +389,10 @@ async fn real_agentd_remember_recall_correct_and_forget_revalidate_physical_send
     ensure!(
         before_restart.fact_set_sha256 == remember_projection.fact_set_sha256
             && before_restart.input_heads_sha256 == remember_projection.input_heads_sha256
-            && before_restart.output_sha256 == remember_projection.output_sha256,
-        "physical remember output did not bind the persisted KG receipt digests"
+            && before_restart.output_sha256 == remember_projection.output_sha256
+            && before_restart.generation_sha256 == remember_projection.generation_sha256
+            && before_restart.publication_sha256 == remember_projection.publication_sha256,
+        "physical remember output did not bind the persisted physical and canonical KG receipt digests"
     );
 
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
@@ -1361,7 +1363,7 @@ async fn five_running_agents_share_only_with_the_explicit_consumer() -> Result<(
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-#[cfg(not(feature = "qualification-cognitive-write"))]
+#[cfg(not(feature = "production-cognitive-write"))]
 async fn unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools() -> Result<()> {
     const UNAVAILABLE_CALL: &str = "unavailable-recall";
     const QUERY: &str = "unavailable runtime probe";
@@ -1433,14 +1435,13 @@ async fn unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools() ->
     Ok(())
 }
 
-/// The explicit writer qualification profile has a stronger startup
-/// contract than local read-only development: an unavailable cognitive store
-/// must stop before App Server can serve a turn.  Keep this assertion next to
-/// the default-profile degraded-runtime test so enabling the feature cannot
-/// accidentally weaken the E.24 available-only gate.
-#[cfg(feature = "qualification-cognitive-write")]
+/// The named Agentd product mutation profile has a stronger startup contract
+/// than a read-only build: an unavailable cognitive store must stop before App
+/// Server can serve a turn. The qualification witness feature is deliberately
+/// irrelevant to this gate.
+#[cfg(feature = "production-cognitive-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn qualification_cognitive_store_unavailable_fails_closed_before_provider() -> Result<()> {
+async fn cognitive_store_unavailable_fails_closed_before_provider() -> Result<()> {
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_A, "workspace-a-qualification-unavailable")?;
     let blocking_path = agent.layout.cognitive_root().join("cognitive_1.sqlite3");
@@ -1452,20 +1453,20 @@ async fn qualification_cognitive_store_unavailable_fails_closed_before_provider(
         let report = fleet.supervisor.tick(Instant::now());
         ensure!(
             report.faults.is_empty(),
-            "supervisor faulted while observing qualification startup rejection: {:?}",
+            "supervisor faulted while observing cognitive-writer startup rejection: {:?}",
             report.faults
         );
         let lifecycle = fleet
             .registry
             .load()?
             .agent(&agent.agent_id)
-            .context("qualification Agent disappeared from registry")?
+            .context("cognitive-writer Agent disappeared from registry")?
             .lifecycle
             .lifecycle;
         let snapshot = fleet
             .supervisor
             .snapshot(&agent.agent_id)
-            .context("qualification Agent disappeared from supervisor")?;
+            .context("cognitive-writer Agent disappeared from supervisor")?;
         if lifecycle == AgentLifecycle::Failed && !snapshot.active {
             let logs = snapshot
                 .logs
@@ -1473,18 +1474,18 @@ async fn qualification_cognitive_store_unavailable_fails_closed_before_provider(
                 .map(|log| String::from_utf8_lossy(&log.bytes))
                 .collect::<String>();
             ensure!(
-                logs.contains("qualification cognitive runtime unavailable"),
-                "qualification startup omitted the fail-closed error; logs={logs:?}"
+                logs.contains("cognitive write runtime unavailable"),
+                "cognitive-writer startup omitted the fail-closed error; logs={logs:?}"
             );
             ensure!(
                 !snapshot.healthy,
-                "qualification startup rejection was reported healthy"
+                "cognitive-writer startup rejection was reported healthy"
             );
             return Ok(());
         }
         ensure!(
             Instant::now() < deadline,
-            "qualification Agent did not fail closed; lifecycle={lifecycle:?}; snapshot={snapshot:?}"
+            "cognitive-writer Agent did not fail closed; lifecycle={lifecycle:?}; snapshot={snapshot:?}"
         );
         tokio::time::sleep(Duration::from_millis(25)).await;
     }
@@ -2183,6 +2184,8 @@ struct KgProjectionEvidence {
     fact_set_sha256: String,
     input_heads_sha256: String,
     output_sha256: String,
+    generation_sha256: String,
+    publication_sha256: String,
 }
 
 fn assert_projection_receipt(
@@ -2205,6 +2208,8 @@ fn assert_projection_receipt(
         fact_set_sha256: json_sha256(projection, "fact_set_sha256")?,
         input_heads_sha256: json_sha256(projection, "input_heads_sha256")?,
         output_sha256: json_sha256(projection, "output_sha256")?,
+        generation_sha256: json_sha256(projection, "generation_sha256")?,
+        publication_sha256: json_sha256(projection, "publication_sha256")?,
     };
     ensure!(
         evidence.generation == generation
@@ -2325,14 +2330,30 @@ async fn read_kg_sqlite_evidence(
         receipt_fact_set_sha256,
         input_heads_sha256,
         output_sha256,
+        generation_sha256,
+        publication_sha256,
         entity_count,
         relation_count,
         node_count,
         edge_count,
         actual_node_count,
         actual_edge_count,
-    ): (i64, String, String, String, i64, i64, i64, i64, i64, i64) = sqlx::query_as(
+    ): (
+        i64,
+        String,
+        String,
+        String,
+        String,
+        String,
+        i64,
+        i64,
+        i64,
+        i64,
+        i64,
+        i64,
+    ) = sqlx::query_as(
         "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
+                s.generation_sha256, s.publication_sha256,
                 r.entity_count, r.relation_count, r.node_count, r.edge_count,
                 (SELECT COUNT(*) FROM kg_nodes AS n
                  WHERE n.projection_scope = r.projection_scope
@@ -2347,6 +2368,8 @@ async fn read_kg_sqlite_evidence(
                    AND e.memory_revision = r.trigger_memory_revision
                    AND e.source_id = ? AND e.source_revision = 1)
          FROM kg_projection_generation_receipts AS r
+         JOIN kg_projection_generation_semantics AS s
+           ON s.projection_scope = r.projection_scope AND s.generation = r.generation
          JOIN kg_projection AS p
            ON p.projection_scope = r.projection_scope AND p.generation = r.generation
          WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
@@ -2376,6 +2399,8 @@ async fn read_kg_sqlite_evidence(
         fact_set_sha256,
         input_heads_sha256,
         output_sha256,
+        generation_sha256,
+        publication_sha256,
     })
 }
 

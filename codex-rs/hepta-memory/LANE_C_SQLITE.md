@@ -2,9 +2,11 @@
 
 `CognitiveStore::lane_c_snapshot` projects the existing `cognitive_1.sqlite3`
 database into `hepta-cognitive-types::CognitiveSnapshot`. Existing memory/source
-write APIs remain the only writers. This adapter adds no database, migration,
-background synchronization, or replacement identity format. The in-memory
-`hepta-cognitive-store` V2 implementation is not a durability backend.
+write APIs remain the only source-fact writers. The knowledge-graph integration
+adds no second database, background synchronization, or replacement source
+identity format; migration `0011_kg_generation_semantics.sql` adds immutable
+canonical generation/publication receipts to this same SQLite owner. The
+in-memory `hepta-cognitive-store` V2 implementation is not a durability backend.
 
 The host first derives `CognitiveAccess` and an exact `CognitiveScope` from its
 authenticated identity. The adapter authorizes before querying. A workspace
@@ -30,7 +32,7 @@ Memory-bound facts and are never the fact source of truth.
 | Committed tombstone | Tombstone, effective immediately even if future-dated |
 | Ordered immutable revision chain | Canonical predecessor record digest |
 | Number of scoped memory revisions / source rows / tombstones / fact sets | Corresponding owner frontiers |
-| Scoped SQLite graph generation (zero when absent) | Graph generation plus one |
+| Scoped SQLite graph generation (zero when absent), plus canonical V2 generation digest when available | Graph generation plus one and digest-bound graph-read identity |
 | Number of scoped memory revisions | Snapshot generation plus one |
 | Owner UUID and scope projection-key digest | `cognitive:<UUID>:<SHA256>` scope ID |
 
@@ -105,6 +107,14 @@ five minutes. These are crate-native APIs. `read_ids_v1` is the typed-local Modu
 its canonical bytes and the V2 canonical bytes are not cross-process wire
 protocols. Arbitrary caller-supplied generation vectors remain unauthorized.
 
+Knowledge-graph materialization in `refresh_scope_projection_tx` derives one canonical
+`hepta-kg` V2 generation from the exact current cognitive source cut, validates its
+predecessor-bound publication, persists physical rows and semantic receipts, and only
+then CAS-advances the current generation in the same transaction. GraphOneHop reads
+reconstruct that generation, fence it by the persisted generation digest, and delegate
+relation selection and temporal visibility to `hepta_kg::query_relations`; SQLite only
+maps selected support identities back to physical memory occurrences.
+
 Reopening with existing `CognitiveStore::open` reconstructs the same cut from
 durable rows. `cut_digest` can be retained independently and compared using
 `revalidate_lane_c_cut` after reopen, detecting an older internally valid backup
@@ -140,3 +150,5 @@ context binding, and restoration of an older valid SQLite backup.
 recovery, exclusive fencing, stale/current anchors and hostile file identities.
 Run with `just test -p codex-hepta-memory`; exact-candidate CI also records the
 durable performance profiles described in the module guide.
+
+`cognitive_kg_oracle_tests.rs` additionally verifies full/incremental canonical V2 equivalence against SQLite, persisted physical/canonical digests, reopen, visibility, correction and tombstone; store tamper cases reject invalid canonical generation/publication receipts.
