@@ -226,17 +226,37 @@
       ],
       "guide": "docs/modules/kernel.operations/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/kernel.operations.md",
-      "implementationState": "specified_not_product_evidence",
-      "apiContract": "prepare_intent(id,scope,destination,payload,expectedPredecessor); claim(id,fence); observe_terminal(id,authenticatedEvidence). Duplicate same semantics returns prior receipt; changed semantics conflicts.",
-      "stateAndEncoding": "Owner intent/outbox record has operationId,semanticDigest,state,predecessor,epoch,claimFence,attempt,deadline,nextEligibleTime,observerRef. Destination owns dedupe/apply and its acknowledgement.",
-      "linearizationAndRecovery": "Local state+outbox commit together. Claim CAS follows current fence. Sent with lost acknowledgement stays Indeterminate. A current-fence reconciler alone records Applied/NotApplied/Quarantined; compensation has a new operation ID.",
-      "algorithmAndBounds": "Pending<=100000/shard, claim batch<=256, retries bounded per effect profile. Retry only proven pre-dispatch failures or registered destination idempotency. Never infer not-applied from timeout.",
-      "acceptanceOracle": "Kill before/after commit/send/ack: no pre-commit dispatch, one dedupe identity, no blind resend after unknown send. Reused ID with changed payload and stale-fence settlement reject.",
+      "implementationState": "durable_source_implemented_product_execution_pending",
+      "apiContract": "OperationIntentV1 binds operation/subject/destination/payload/scope/policy-generation/expected-predecessor; ProductionDurableWriter::prepare_operation atomically publishes source operation+event+outbox; durable claim lease gates effect entry; ProductionFinalUseOutboxDispatcher consumes final-use authority; destination observer settles Applied/NotApplied/Quarantined without blind resend.",
+      "stateAndEncoding": "Canonical intent semantics live in hepta-operations. Durable rows live in the existing CognitiveStore SQLite owner: migration 0011 binds immutable operation semantics to event/outbox identity; migration 0012 persists attempt/generation/fence/lease-expiry/next-eligible claim state. Destination facts remain destination-owned.",
+      "linearizationAndRecovery": "Source operation/event/outbox commit together. A bounded claim lease is retryable only before the one-shot effect-entry fence. Final-use is consumed immediately before destination entry. After possible send, restart remains Indeterminate and observer-only reconciliation settles terminality. CognitiveSourceOutboxTarget checks predecessor/CAS inside destination BEGIN IMMEDIATE.",
+      "algorithmAndBounds": "Durable configured capacity rejects before mutation; pilot pending<=100000/shard and reconcile batch<=256. Claim attempts/expiry/renewal/backoff/takeover are bounded. Ordinary mutation uses targeted current-row checks; full append-only chain verification is open/reopen/recovery/audit work. Long-lived segment/checkpoint compaction remains open.",
+      "acceptanceOracle": "Fault before source commit leaves no operation/event/outbox rows. SQLITE_FULL leaves the last committed cut and reopens cleanly. Changed semantic digest/predecessor or stale claim rejects. Destination predecessor mismatch returns NotApplied. Target commit plus lost acknowledgement reconciles through the destination observer without redispatch.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
       "nativeImplementation": {
         "entrypoints": [
+          {
+            "path": "codex-rs/hepta-operations/src/model.rs",
+            "symbol": "OperationIntentV1"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_writer.rs",
+            "symbol": "ProductionDurableWriter::prepare_operation"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+            "symbol": "claim"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+            "symbol": "CognitiveSourceOutboxTarget"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+            "symbol": "AgentdProductionWriterHost"
+          },
           {
             "path": "codex-rs/hepta-operations/src/ledger.rs",
             "symbol": "OperationLedger"
@@ -244,18 +264,35 @@
           {
             "path": "codex-rs/hepta-operations/src/outbox.rs",
             "symbol": "Outbox"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/config.rs",
+            "symbol": "AgentdConfig::with_production_operations"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/runtime.rs",
+            "symbol": "run_production_operation_reconciler"
           }
         ],
-        "stateAndRecovery": "OperationLedger is a BTreeMap reference model capped at 16384 records, with semantic duplicate checks, generation/revision transitions and explicit indeterminate state. Cloning or reopening a caller copy is not durable recovery.",
+        "stateAndRecovery": "SQLite WAL/FULL integrated owner, immutable operation/event/outbox binding, durable dispatch-claim lineage, final-use target entry, predecessor/CAS destination transaction and observer-only reconciliation. Reference oracle remains non-durable. Agentd runtime retains an explicitly supplied verified production-operation host and runs bounded observer-only reconciliation for the daemon lifetime; default startup provides no authority.",
         "testFiles": [
           "codex-rs/hepta-operations/src/ledger_tests.rs",
-          "codex-rs/hepta-operations/src/outbox_tests.rs"
+          "codex-rs/hepta-operations/src/outbox_tests.rs",
+          "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+          "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+          "codex-rs/hepta-memory/src/production_writer.rs",
+          "codex-rs/hepta-agentd/src/runtime_tests.rs"
         ],
         "runtimeDocuments": [
-          "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md"
+          "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
+          "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md",
+          "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json"
         ],
         "remainingWork": [
-          "Bind these transitions to the existing durable effect owner and final-use authority; this reference model does not implement the target transactional production operation ledger."
+          "Enroll an external production authority/grant source and qualify selected-host activation; default process startup remains fail-closed.",
+          "Add destination-owned dedupe/apply/terminal observers before activating remaining registered effect destinations.",
+          "Implement and qualify segment/checkpoint compaction for long-lived append-only history.",
+          "Obtain current exact-head and deterministic synthetic-merge success, target-host storage qualification and independent acceptance."
         ]
       }
     },

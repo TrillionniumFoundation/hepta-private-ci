@@ -26,27 +26,37 @@ Plane `kernel`, kind `durability`, state model `stateful` and architecture role 
 
 ## 2. Source binding and implementation status
 
-Declared exclusive target roots:
+Declared exclusive contract root:
 
 - `codex-rs/hepta-operations`
 
-Existing declared roots at this exact source snapshot:
+Durable implementation/evidence roots used by the current candidate:
 
 - `codex-rs/hepta-operations`
+- `codex-rs/hepta-memory`
+- `codex-rs/hepta-agentd`
+- `codex-rs/hepta-automation` (current-main consumer evidence)
 
-Source implementation evidence roots:
+The exclusive root owns the canonical `OperationIntentV1` semantics and deterministic reference oracles. The durable production-shaped implementation deliberately reuses the existing CognitiveStore SQLite owner instead of creating a second operation database.
 
-- `codex-rs/hepta-operations`
+### Current claim levels
 
-Declared roots not yet present:
+| Claim | Current candidate |
+| --- | --- |
+| target architecture | specified |
+| reference oracle | implemented |
+| durable source implementation | implemented |
+| final-use CognitiveStore destination | implemented |
+| second current-main OperationIntentV1 consumer | implemented in automation.taskflow |
+| Agentd final-use host primitive | source-composed |
+| Agentd daemon lifecycle composition | source-composed through explicit host injection |
+| external authority/grant enrollment | not activated; no default authority is manufactured |
+| exact-head / synthetic-merge execution | pending current candidate CI |
+| independent acceptance / release | false |
 
-None.
+Canonical exact source identity is recorded by `IMPLEMENTATION_MAP.json` with `sourceIdentityPolicy=path_blob_manifest_v1`. The verifier resolves every mapped path through `git rev-parse HEAD:<path>`; a tracked map therefore does not need to contain its own future HEAD/tree hash.
 
-`existing_bound` is a source-location fact: the declared target root now contains a bounded implementation and focused tests. It does not imply activation, operator acceptance, promotion or release. Source moves must update `MODULES.json`, `SOURCE_BINDINGS.json`, the Cargo/Bazel workspace and this guide in one exact candidate.
-
-### Native source and scope
-
-The registered primary source is [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); observed identifiers include `MAX_MODEL_OPERATION_RECORDS`, `OperationLedger`, `begin`, `authorize`, `record_dispatch`, `mark_indeterminate`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) for the implemented subset and remaining product work.
+The 16,384-record limits belong to the in-memory reference oracle. Durable configured limits and fail-before-mutation checks live in the CognitiveStore owner. Long-lived segment/checkpoint compaction remains a separate gap.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -117,30 +127,44 @@ Rust types and canonical JSON represent identical semantics. Tests cover round t
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Owned authoritative/rebuildable domains:
 
 - `cross_owner_outbox`
 - `operation_ledger`
 
-Read-only data dependencies:
+The durable operation surface is stored inside the existing CognitiveStore SQLite owner. Migration `0011_kernel_operations.sql` installs the immutable operation semantic binding; migration `0012_kernel_operation_dispatch_claims.sql` installs per-operation durable dispatch-claim lineage.
 
-None.
+`ProductionDurableWriter::prepare_operation` binds the complete `OperationIntentV1` to one event/outbox identity and commits the source-owned rows atomically. Exact semantic replay is idempotent; changed subject, destination, payload, scope, policy generation or predecessor conflicts.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+Dispatch claims carry bounded attempt, generation/fence, lease expiry and next-eligible state. The destination remains the only writer of its domain fact. The source cannot infer destination success from transport acknowledgement.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+The first concrete destination, `CognitiveSourceOutboxTarget`, reconstructs the full intent and verifies predecessor/CAS inside destination-owned `BEGIN IMMEDIATE`. A mismatch is deterministic `NotApplied`.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Migrations are checksum/lineage verified on open. SQLite must be WAL with `synchronous=FULL`. Deterministic storage exhaustion and transaction fault tests prove source operation/event/outbox rollback to the last committed cut. Physical power-loss claims require target-host evidence.
+
+Append-only local history is not deleted in place. Long-lived retention requires explicit segment/checkpoint compaction with anti-resurrection evidence.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md).
+The source prepare transaction linearizes operation/event/outbox identity. A bounded dispatch lease may be renewed/taken over only while the effect boundary has not been crossed. Before target entry the writer persists a one-shot ambiguous-effect fence; after that point restart/reopen must reconcile rather than resend.
+
+`ProductionDispatchRequest` carries subject, destination, payload digest, scope digest, policy generation, full `OperationIntentV1` semantic digest and optional expected predecessor. `ProductionFinalUseOutboxDispatcher` consumes final-use authority immediately before target entry.
+
+`AgentdProductionWriterHost` is final-use-only and supports stable destination registration plus bounded observer-only reconciliation. It requires externally supplied authority/grants; default daemon startup does not synthesize them.
+
+Ordinary mutation uses targeted current-row checks. Full append-only chain verification is reserved for open/reopen/recovery/audit boundaries, avoiding an O(n) full scan on each mutation.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Crash before source commit leaves no dispatch identity. Crash after source commit reopens the exact queued identity. Once target entry may have occurred, the durable state remains indeterminate until an independent destination observer proves `Applied`, `NotApplied`, `Quarantined` or an unavailable/indeterminate continuation.
+
+Stale claimants, stale generations, changed semantic digests and changed predecessor expectations fail closed. Owner handoff preserves immutable operation/outbox identity and requires a strictly newer fence.
+
+Source qualification includes transaction fault cuts, deterministic `SQLITE_FULL`, corruption/tamper checks, reopen, claim takeover and lost-ack reconciliation. These are not physical power-loss certification; target-host filesystem/storage/controller evidence remains external.
+
+Compensation is always a new authorized operation. Rollback cannot rewrite an already observed external effect.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -157,31 +181,48 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs) and the linked implementation components.
+The durable source ceiling is distinct from the 16,384-record reference-oracle ceiling. Capacity checks reject before visible mutation. The pilot target remains pending intents <= 100000 per configured shard and reconciliation batches <= 256.
+
+Hot-path work is bounded to current occurrence/claim rows plus the owning SQLite transaction. Full historical verification runs at open/reopen/recovery/audit. Benchmark commit/fsync latency, claim age, reconciliation backlog, SQLite write amplification and reopen verification cost on the selected host.
+
+Long-lived append-only history still requires segment/checkpoint compaction before production-scale retention can be claimed.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-OperationLedger and outbox types are embedded owner components. Their state transition result is not a remote effect observation. The host must bind each durable destination/outbox and current-fence reconciler; an in-memory ledger does not supply crash durability by itself.
+Operation state, dispatch claim and destination terminal observation are separate facts. Queue acceptance/transport acknowledgement never reports terminal success.
 
-Current operating and state-format references:
+The host observes at minimum queued age, active claim lease/attempt, indeterminate backlog, stale-claim rejection, destination-observer availability and reconciliation outcome. `AgentdProductionWriterHost::reconcile` is observer-only and bounded; it never invokes target dispatch.
 
-- [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs).
-- [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs).
+Current operating/state-format references include:
+
+- `codex-rs/hepta-operations/src/model.rs`
+- `codex-rs/hepta-memory/migrations/0011_kernel_operations.sql`
+- `codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql`
+- `codex-rs/hepta-memory/src/operation_claims.rs`
+- `codex-rs/hepta-memory/src/production_writer.rs`
+- `codex-rs/hepta-memory/src/production_cognitive_source_target.rs`
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Focused source tests cover:
 
-- [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs); named case: `dispatch_ack_is_not_terminal_success`.
-- [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs); named case: `claim_and_ack_are_generation_fenced`.
+- `OperationIntentV1` semantic digest and reference ledger/outbox parity;
+- operation/event/outbox atomic rollback at every injected source prepare cut;
+- fail-before-mutation capacity boundaries;
+- deterministic `SQLITE_FULL` rollback and clean reopen;
+- durable claim attempt/expiry/renewal/takeover semantics;
+- complete destination semantic reconstruction;
+- predecessor mismatch -> deterministic `NotApplied`;
+- final-use mismatch/revocation before target entry;
+- target commit + lost acknowledgement -> indeterminate -> observer-only reconcile.
 
-In `codex-rs`, run `just test -p codex-hepta-operations`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) separately labels target acceptance designs.
+Run the applicable Rust package tests, strict lint, exact-head qualification and deterministic synthetic-merge qualification. Test names in source are not pass receipts. Any PR-head movement invalidates prior exact-candidate evidence.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain failure, compilation, independent-evidence and target-host obligations.
 
 ## 13. Implementation sequence and work packages
 
@@ -304,13 +345,21 @@ The following additional work packages are source-planning envelopes introduced 
 
 ## 17. Source implementation receipt
 
-This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+This receipt is source-navigation evidence for the current durable candidate; runtime activation and release remain separate.
 
-| Operation | Native symbol | Source path | Tests |
+| Operation | Native symbol | Source path | Evidence |
 |---|---|---|---|
-| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `pending` |
-| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `pending` |
+| canonical intent | `OperationIntentV1` | `codex-rs/hepta-operations/src/model.rs` | semantic-field binding tests |
+| durable prepare | `ProductionDurableWriter::prepare_operation` | `codex-rs/hepta-memory/src/production_writer.rs` | atomic prepare/fault tests |
+| durable claim | `operation_claims::claim/renew` | `codex-rs/hepta-memory/src/operation_claims.rs` | attempt/lease/backoff tests |
+| final-use dispatch | `ProductionFinalUseOutboxDispatcher::dispatch` | `codex-rs/hepta-memory/src/production_writer.rs` | final-use tests |
+| destination CAS/observer | `CognitiveSourceOutboxTarget` | `codex-rs/hepta-memory/src/production_cognitive_source_target.rs` | predecessor/lost-ack tests |
+| Agentd host primitive | `AgentdProductionWriterHost` | `codex-rs/hepta-agentd/src/production_writer_host.rs` | explicit final-use/grant composition |
+| Agentd runtime composition | `AgentdConfig::with_production_operations` + `runtime::run` | `codex-rs/hepta-agentd/src/config.rs`, `runtime.rs` | lifecycle task cleanup/fail-closed default |
+| second current-main consumer | `AutomationStore::dispatch_authorized_effect` | `codex-rs/hepta-automation/src/authorized_effect.rs` | automation authorized-effect tests |
+| reference ledger | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | reference oracle |
+| reference outbox | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | reference oracle |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- Exact mapped source identity is verified through `path_blob_manifest_v1`.
+- `productionImplementation=true` means repository source implementation exists; it does not mean product execution, activation, acceptance or release.
+- Remaining repository gates are current exact-head/synthetic-merge success, remaining destination adapters and long-lived segment/checkpoint compaction. External production authority/grant enrollment remains an activation gate and is not manufactured by Agentd.

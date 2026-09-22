@@ -34,7 +34,7 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
         .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)
         .expect("start generation");
 
-    let config = AgentdConfig::load(
+    let mut config = AgentdConfig::load(
         fleet_path.clone(),
         agent_id.clone(),
         1,
@@ -61,6 +61,10 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
     assert_eq!(
         config.identity().layout.cognitive_root(),
         record.layout.cognitive_root()
+    );
+    assert!(
+        config.take_production_operations().is_none(),
+        "default config must not manufacture production-operation authority"
     );
 
     let duplicate_writer_error = AgentdConfig::load(

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "lane": "LANE-A-FOUNDATION",
   "closureScope": "current executable capabilities only",
-  "entryCount": 32,
+  "entryCount": 36,
   "entries": [
     {
       "capabilityId": "platform.types.bounded-identity.v1",
@@ -545,8 +545,8 @@
           ]
         }
       ],
-      "durability": "not_implemented",
-      "activation": "inactive",
+      "durability": "sqlite_wal_full_integrated_owner",
+      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -585,8 +585,8 @@
           ]
         }
       ],
-      "durability": "not_implemented",
-      "activation": "inactive",
+      "durability": "sqlite_wal_full_integrated_owner",
+      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -624,8 +624,8 @@
           ]
         }
       ],
-      "durability": "not_implemented",
-      "activation": "inactive",
+      "durability": "sqlite_wal_full_integrated_owner",
+      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -1532,6 +1532,246 @@
       ],
       "durability": "external_authority_plus_local_final_use_state",
       "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.operations.durable-owner.v1",
+      "module": "kernel.operations",
+      "summary": "atomic SQLite OperationIntentV1 and source outbox owner",
+      "publicSymbols": [
+        "ProductionDurableWriter::prepare_operation",
+        "OperationIntentV1"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "mustContain": [
+            "pub async fn prepare_operation",
+            "OperationIntentV1"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+          "mustContain": [
+            "admit_operation",
+            "BEGIN IMMEDIATE",
+            "cognitive_operation_ledger"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "mustContain": [
+            "with_production_operations",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "run_production_operation_reconciler",
+            "attach_production_operations",
+            "CompletedRuntimeTask::Operations"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+          "mustContain": [
+            "operation_event_and_outbox_are_one_atomic_transaction_across_every_fault_boundary"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+          "mustContain": [
+            "sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cleanly",
+            "durable_sequence_capacity_rejects_before_mutation_boundary"
+          ]
+        }
+      ],
+      "durability": "sqlite_wal_full_integrated_owner",
+      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.operations.durable-claim-lease.v1",
+      "module": "kernel.operations",
+      "summary": "bounded durable dispatch attempts expiry renewal backoff and takeover",
+      "publicSymbols": [
+        "ProductionDurableWriter::claim_dispatch_lease",
+        "ProductionDurableWriter::renew_dispatch_claim"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+          "mustContain": [
+            "attempt",
+            "lease_expires_at_unix_ms",
+            "next_eligible_at_unix_ms"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "mustContain": [
+            "with_production_operations",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "run_production_operation_reconciler",
+            "attach_production_operations",
+            "CompletedRuntimeTask::Operations"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "mustContain": [
+            "claim_dispatch_lease",
+            "renew_dispatch_claim"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+          "mustContain": [
+            "MAX_DURABLE_DISPATCH_ATTEMPTS",
+            "dispatch claim lease already expired",
+            "expired durable dispatch claim requires a strictly newer owner generation"
+          ]
+        }
+      ],
+      "durability": "sqlite_wal_full_integrated_owner",
+      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.operations.final-use-cas-reconcile.v1",
+      "module": "kernel.operations",
+      "summary": "full semantic final-use dispatch destination CAS and independent terminal reconciliation",
+      "publicSymbols": [
+        "ProductionFinalUseOutboxDispatcher::dispatch",
+        "CognitiveSourceOutboxTarget::observe_terminal"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "mustContain": [
+            "operation_semantic_sha256",
+            "expected_predecessor_sha256",
+            "with_verified_use"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+          "mustContain": [
+            "BEGIN IMMEDIATE",
+            "ProductionTargetOutcome::NotApplied",
+            "observe_terminal"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "mustContain": [
+            "with_production_operations",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "run_production_operation_reconciler",
+            "attach_production_operations",
+            "CompletedRuntimeTask::Operations"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+          "mustContain": [
+            "full_durable_final_use_slice_reconciles_lost_ack_without_redispatch"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+          "mustContain": [
+            "predecessor_mismatch_is_deterministic_not_applied_inside_destination_transaction"
+          ]
+        }
+      ],
+      "durability": "sqlite_wal_full_integrated_owner",
+      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.operations.agentd-daemon-composition.v1",
+      "module": "kernel.operations",
+      "summary": "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default",
+      "publicSymbols": [
+        "AgentdConfig::with_production_operations",
+        "AgentdProductionOperationRuntimeConfig::open"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "mustContain": [
+            "pub fn with_production_operations",
+            "production_operations: None",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "AgentdProductionOperationRuntimeConfig::open",
+            "attach_production_operations",
+            "run_production_operation_reconciler",
+            "CompletedRuntimeTask::Operations"
+          ]
+        },
+        {
+          "path": "CALLERS.toml",
+          "mustContain": [
+            "id = \"agentd_production_operation_runtime\"",
+            "product_callers = [\"codex-rs/hepta-agentd/src/runtime.rs\"]",
+            "forbidden = [\"ProductionAuthorityToken::from_verified_bytes\", \"SigningKey::from_bytes\"]"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "mustContain": [
+            "cleanup_never_polls_the_join_handle_already_consumed_by_select",
+            "operations_task.is_finished()"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/config_tests.rs",
+          "mustContain": [
+            "config_binds_exact_registered_agent_roots_and_workspace",
+            "take_production_operations().is_none()",
+            "default config must not manufacture production-operation authority"
+          ]
+        }
+      ],
+      "durability": "sqlite_wal_full_integrated_owner",
+      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     }

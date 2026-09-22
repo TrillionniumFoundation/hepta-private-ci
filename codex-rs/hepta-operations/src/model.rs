@@ -12,7 +12,7 @@ pub const OPERATION_INTENT_V1_SCHEMA_VERSION: u32 = 1;
 /// This value binds the semantic fields that every cross-owner effect adapter
 /// must agree on before final-use authority is consumed. It grants no authority
 /// by itself and does not claim durable operation-ledger persistence.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct OperationIntentV1 {
     operation_id: StableId,
     subject_id: StableId,
@@ -53,6 +53,20 @@ impl OperationIntentV1 {
             policy_generation,
             expected_predecessor,
         })
+    }
+
+    /// Revalidate an already-constructed intent at storage/dispatch boundaries.
+    pub fn validate(&self) -> Result<(), OperationError> {
+        if self.payload_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("operation intent payload"));
+        }
+        if self.scope_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("operation intent scope"));
+        }
+        if self.expected_predecessor.is_some_and(Digest32::is_zero) {
+            return Err(OperationError::InvalidDigest("operation intent expected predecessor"));
+        }
+        Ok(())
     }
 
     /// Domain-separated canonical semantic identity for cross-owner use.
@@ -288,6 +302,9 @@ impl OperationState {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OperationRecord {
     pub key: OperationKey,
+    /// Canonical full semantic intent for prepared cross-owner operations.
+    /// Legacy `begin` records intentionally retain `None`.
+    pub intent: Option<OperationIntentV1>,
     pub owner_generation: Generation,
     pub revision: Revision,
     pub state: OperationState,

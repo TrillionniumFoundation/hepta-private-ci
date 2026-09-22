@@ -37,9 +37,11 @@ enum CompletedRuntimeTask {
     Monitor,
     Automation,
     AuthBus,
+    Operations,
 }
 
-pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+    let production_operations = config.take_production_operations();
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
@@ -86,6 +88,23 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
     }
+    let production_operations = match production_operations {
+        Some(operations) => {
+            let store = cognitive_runtime.available_store().ok_or_else(|| {
+                AgentdError::Protocol(
+                    "production operations require an available CognitiveStore".to_string(),
+                )
+            })?;
+            let (host, interval) = crate::AgentdProductionOperationRuntimeConfig::open(
+                operations,
+                store.as_ref().clone(),
+            )
+            .await?;
+            state.attach_production_operations(Arc::clone(&host))?;
+            Some((host, interval))
+        }
+        None => None,
+    };
     let cognitive_runtime = attach_federation_after_generation_fence(
         &state,
         cognitive_runtime,
@@ -107,6 +126,21 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         cancellation.clone(),
     )
     .await?;
+    // Spawn long-lived owner tasks only after every fallible bind above has
+    // succeeded. Dropping a JoinHandle does not cancel its task, so spawning
+    // before control bind would leak reconciliation on an early-return path.
+    let operations_cancellation = cancellation.clone();
+    let mut operations_task = tokio::spawn(async move {
+        match production_operations {
+            Some((host, interval)) => {
+                run_production_operation_reconciler(host, interval, operations_cancellation).await
+            }
+            None => {
+                operations_cancellation.cancelled().await;
+                Ok(())
+            }
+        }
+    });
     let mut control_task = tokio::spawn(control.run());
     let mut app_server_task = tokio::spawn(run_app_server(
         identity.clone(),
@@ -159,6 +193,10 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             joined("automation scheduler", result),
             Some(CompletedRuntimeTask::Automation),
         ),
+        result = &mut operations_task => (
+            joined("production operation reconciler", result),
+            Some(CompletedRuntimeTask::Operations),
+        ),
         signal = shutdown_signal() => {
             signal?;
             state.mark_draining()?;
@@ -175,6 +213,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         &mut app_server_task,
         &mut monitor_task,
         &mut automation_task,
+        &mut operations_task,
     )
     .await;
     outcome
@@ -254,6 +293,22 @@ where
     // concurrent with that work cannot reach a serving runtime.
     state.refresh_generation()?;
     Ok(cognitive_runtime)
+}
+
+async fn run_production_operation_reconciler(
+    host: Arc<crate::AgentdProductionWriterHost>,
+    interval: Duration,
+    cancellation: CancellationToken,
+) -> Result<(), AgentdError> {
+    loop {
+        // Reconcile immediately after startup/restart, then at a bounded
+        // cadence. Agentd never dispatches from this recovery loop.
+        host.reconcile(256).await?;
+        tokio::select! {
+            _ = cancellation.cancelled() => return Ok(()),
+            _ = tokio::time::sleep(interval) => {}
+        }
+    }
 }
 
 async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
@@ -350,12 +405,19 @@ async fn abort_and_join<T>(task: &mut JoinHandle<T>) {
     let _ = task.await;
 }
 
-async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, AutomationOutput>(
+async fn cleanup_runtime_tasks<
+    ControlOutput,
+    AppServerOutput,
+    MonitorOutput,
+    AutomationOutput,
+    OperationsOutput,
+>(
     completed_task: Option<CompletedRuntimeTask>,
     control_task: &mut JoinHandle<ControlOutput>,
     app_server_task: &mut JoinHandle<AppServerOutput>,
     monitor_task: &mut JoinHandle<MonitorOutput>,
     automation_task: &mut JoinHandle<AutomationOutput>,
+    operations_task: &mut JoinHandle<OperationsOutput>,
 ) {
     if completed_task != Some(CompletedRuntimeTask::Control) {
         abort_and_join(control_task).await;
@@ -368,6 +430,9 @@ async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, Au
     }
     if completed_task != Some(CompletedRuntimeTask::Automation) {
         abort_and_join(automation_task).await;
+    }
+    if completed_task != Some(CompletedRuntimeTask::Operations) {
+        abort_and_join(operations_task).await;
     }
 }
 

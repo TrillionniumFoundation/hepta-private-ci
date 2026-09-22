@@ -234,38 +234,78 @@
     },
     {
       "module": "kernel.operations",
-      "profile": "bounded_operation_reference_model",
+      "profile": "durable_operation_owner_with_reference_oracle",
       "formalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md",
+      "implementationDetail": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_reference_model",
-        "durability": "not_implemented",
-        "qualification": "model_tests_present",
-        "activation": "inactive",
+        "implementation": "durable_owner_source_implemented",
+        "durability": "sqlite_wal_full_integrated_owner",
+        "qualification": "source_tests_present_exact_candidate_pending",
+        "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "bounded deterministic operation-state reference model",
         "bounded in-memory outbox claim and acknowledgement model",
-        "generation-fenced idempotent terminal observation"
+        "generation-fenced idempotent terminal observation",
+        "atomic SQLite OperationIntentV1 and source outbox owner",
+        "bounded durable dispatch attempts expiry renewal backoff and takeover",
+        "full semantic final-use dispatch destination CAS and independent terminal reconciliation",
+        "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default"
       ],
       "targetOnlyCapabilities": [
-        "durable operation ledger",
-        "transactional durable outbox",
-        "claim lease expiry and crash-reopen takeover",
-        "background reconciliation service"
+        "external production authority/grant enrollment and selected-host activation",
+        "destination-owned adapter and terminal observer for every remaining registered effect destination",
+        "bounded segment checkpoint compaction for long-lived append-only history",
+        "target-host power-loss storage qualification and independent acceptance"
       ],
       "sourceAnchors": [
         {
-          "path": "codex-rs/hepta-operations/src/lib.rs",
+          "path": "codex-rs/hepta-operations/src/model.rs",
           "mustContain": [
-            "In-memory reference model",
-            "does not provide durable storage",
-            "ReferenceAuthorityWitness"
+            "pub struct OperationIntentV1",
+            "pub fn semantic_digest",
+            "expected_predecessor"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "mustContain": [
+            "pub async fn prepare_operation",
+            "pub struct ProductionDispatchRequest",
+            "operation_semantic_sha256",
+            "expected_predecessor_sha256",
+            "ProductionFinalUseOutboxDispatcher"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+          "mustContain": [
+            "pub(crate) async fn claim",
+            "pub(crate) async fn renew",
+            "next_eligible_at_unix_ms",
+            "attempt"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+          "mustContain": [
+            "BEGIN IMMEDIATE",
+            "expected_predecessor",
+            "ProductionTargetOutcome::NotApplied",
+            "observe_terminal"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "mustContain": [
+            "AgentdProductionWriterHost",
+            "ProductionFinalUseOutboxDispatcher",
+            "AgentdFinalUseGrantProvider"
           ]
         },
         {
@@ -273,23 +313,30 @@
           "mustContain": [
             "MAX_MODEL_OPERATION_RECORDS",
             "pub struct OperationLedger",
-            "pub fn observe_terminal",
-            "terminal_matches"
+            "pub fn observe_terminal"
           ]
         },
         {
           "path": "codex-rs/hepta-operations/src/outbox.rs",
           "mustContain": [
             "MAX_MODEL_OUTBOX_RECORDS",
-            "InvalidDigest(\"outbox payload\")",
-            "InvalidDigest(\"outbox acknowledgement\")"
+            "claim_with_lease",
+            "renew_claim"
           ]
         },
         {
-          "path": "codex-rs/hepta-operations/src/model.rs",
+          "path": "codex-rs/hepta-agentd/src/config.rs",
           "mustContain": [
-            "pub struct ReferenceAuthorityWitness",
-            "not a cryptographic credential"
+            "with_production_operations",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "run_production_operation_reconciler",
+            "attach_production_operations",
+            "CompletedRuntimeTask::Operations"
           ]
         }
       ]

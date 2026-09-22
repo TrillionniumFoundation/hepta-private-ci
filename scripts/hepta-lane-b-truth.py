@@ -131,7 +131,58 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
 
 
 def verify_observed_source(row: dict[str, Any], module: str) -> None:
-    """Bind an optional source observation to unchanged product paths at HEAD."""
+    """Bind source observations without relying on a self-referential HEAD hash.
+
+    New maps may use a path/blob manifest.  Each mapped native source path is
+    then checked against the exact Git blob in the candidate checkout.  Legacy
+    observedAtHead records retain their historical commit-diff behavior.
+    """
+    if row.get("sourceIdentityPolicy") == "path_blob_manifest_v1":
+        evidence = row.get("exactSourceEvidence")
+        need(
+            isinstance(evidence, dict)
+            and evidence.get("kind") == "path_blob_manifest_v1",
+            f"{module}: exact source manifest",
+        )
+        entries = evidence.get("entries")
+        need(
+            isinstance(entries, list) and entries,
+            f"{module}: exact source manifest entries",
+        )
+        by_path: dict[str, str] = {}
+        root = ROOT.resolve()
+        for entry in entries:
+            need(isinstance(entry, dict), f"{module}: exact source manifest entry")
+            path = entry.get("path")
+            blob = entry.get("blobSha")
+            need(
+                isinstance(path, str)
+                and path
+                and isinstance(blob, str)
+                and bool(HEX40.fullmatch(blob)),
+                f"{module}: exact source manifest entry",
+            )
+            need(path not in by_path, f"{module}: duplicate exact source path {path}")
+            candidate = (ROOT / path).resolve()
+            need(candidate.is_relative_to(root), f"{module}: exact source path escape")
+            need(candidate.is_file(), f"{module}: missing exact source path {path}")
+            need(
+                git("rev-parse", f"HEAD:{path}") == blob,
+                f"{module}: exact source blob drift {path}",
+            )
+            by_path[path] = blob
+
+        mapped_paths = {
+            item.get("sourcePath")
+            for item in row.get("operations", [])
+            if isinstance(item, dict) and item.get("sourcePath")
+        }
+        need(
+            mapped_paths.issubset(set(by_path)),
+            f"{module}: exact source manifest omits mapped operation paths",
+        )
+        return
+
     observed = row.get("observedAtHead")
     if observed is None:
         return

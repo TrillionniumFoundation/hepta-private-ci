@@ -70,6 +70,14 @@ product_callers = []
 caller_markers = []
 
 [[boundary]]
+id = "agentd_production_operation_runtime"
+symbol = "AgentdProductionOperationRuntimeConfig::open"
+definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
+definition_markers = ["pub struct AgentdProductionOperationRuntimeConfig", "pub(crate) async fn open", "AgentdProductionWriterHost::open_with_store"]
+product_callers = ["codex-rs/hepta-agentd/src/runtime.rs"]
+caller_markers = ["AgentdProductionOperationRuntimeConfig::open", "attach_production_operations", "run_production_operation_reconciler"]
+
+[[boundary]]
 id = "provider_effect_coordinator"
 symbol = "ProviderEffectCoordinator::new"
 definition_path = "codex-rs/hepta-contracts/src/provider_effect.rs"
@@ -352,6 +360,11 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
 required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
 forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = ["AgentdProductionOperationRuntimeConfig::open", "attach_production_operations", "run_production_operation_reconciler"]
+forbidden = ["ProductionAuthorityToken::from_verified_bytes", "SigningKey::from_bytes"]
 
 [[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"
