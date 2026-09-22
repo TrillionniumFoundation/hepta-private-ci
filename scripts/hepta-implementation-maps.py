@@ -49,7 +49,7 @@ def load(rel: str):
     )
 
 
-def git(*args: str) -> str:
+def git(*args: str, input_text: str | None = None) -> str:
     # Read the checked-out repository, not ambient GIT_DIR, replacement objects,
     # user aliases, network-backed promisor objects or external diff drivers.
     env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
@@ -67,6 +67,7 @@ def git(*args: str) -> str:
         env=env,
         text=True,
         capture_output=True,
+        input=input_text,
         check=True,
     )
     return p.stdout.strip()
@@ -120,7 +121,47 @@ def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
     return sorted(paths)
 
 
-def verify_source_identity(row: dict, roots: list[str], candidate: dict[str, str]) -> None:
+class SourceDrift(ValueError):
+    """Valid historical provenance that needs an explicit source rebind."""
+
+
+def require_tracked_paths(commit: str, paths: list[str], *, historical=False) -> None:
+    """Batch ordinary object queries; retain exact handling of newline paths.
+
+    No tree inventory is scanned and no persistent cache can survive a checkout
+    change. The batch format returns only types, never path names to parse.
+    Missing historical evidence is drift; missing candidate evidence is invalid.
+    """
+    ordinary = [path for path in paths if "\n" not in path and "\r" not in path]
+    unusual = [path for path in paths if "\n" in path or "\r" in path]
+    if ordinary:
+        queries = [f"{commit}:{path}" for path in ordinary]
+        types = git(
+            "cat-file", "--batch-check=%(objecttype)",
+            input_text="\n".join(queries) + "\n",
+        ).splitlines()
+        if len(types) != len(queries):
+            raise ValueError("ambiguous Git object query response")
+        for path, query, kind in zip(ordinary, queries, types):
+            if kind in {"blob", "tree"}:
+                continue
+            if historical and kind == query + " missing":
+                raise SourceDrift(f"source/evidence absent at historical anchor: {path}")
+            raise ValueError(f"untracked or invalid source/evidence: {path}")
+    for path in unusual:
+        try:
+            kind = git("cat-file", "-t", f"{commit}:{path}")
+        except subprocess.CalledProcessError as exc:
+            if historical:
+                raise SourceDrift(f"source/evidence absent at historical anchor: {path!r}") from exc
+            raise ValueError(f"untracked source/evidence: {path!r}") from exc
+        if kind not in {"blob", "tree"}:
+            raise ValueError(f"invalid source/evidence: {path!r}")
+
+
+def verify_source_identity(
+    row: dict, roots: list[str], candidate: dict[str, str], *, check_checkout=True
+) -> list[str]:
     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
     if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
         raise ValueError(f"unknown source identity policy: {policy}")
@@ -144,33 +185,29 @@ def verify_source_identity(row: dict, roots: list[str], candidate: dict[str, str
     ):
         raise ValueError("source base is neither candidate nor exact observed source")
     checked_paths = sorted({path for _, items in observations for path in items})
-    require_clean_candidate(candidate, checked_paths)
+    for path in checked_paths:
+        if not checked_source_path(ROOT, path).exists():
+            raise ValueError(f"missing observed source/evidence: {path}")
+    if check_checkout:
+        require_clean_candidate(candidate, checked_paths)
+    # Validate the candidate first: a missing path at both ends is not a rebind.
+    require_tracked_paths(candidate["commit"], checked_paths)
     for identity, observed_paths in observations:
-        for path in observed_paths:
-            local = checked_source_path(ROOT, path)
-            if not local.exists():
-                raise ValueError(f"missing observed source/evidence: {path}")
-            # Missing paths at BOTH revisions must not pass as an empty diff.
-            for commit in (identity["commit"], candidate["commit"]):
-                if git("cat-file", "-t", f"{commit}:{path}") not in {"blob", "tree"}:
-                    raise ValueError(f"untracked source/evidence: {path}")
+        if identity == candidate:
+            continue
+        require_tracked_paths(identity["commit"], observed_paths, historical=True)
         if observed_paths:
             changed = git(
-                "diff",
-                "--no-ext-diff",
-                "--no-textconv",
-                "--name-only",
-                identity["commit"],
-                candidate["commit"],
-                "--",
-                *observed_paths,
+                "diff", "--no-ext-diff", "--no-textconv", "--name-only",
+                identity["commit"], candidate["commit"], "--", *observed_paths,
             )
             if changed:
-                raise ValueError(
+                raise SourceDrift(
                     "mapped source/evidence changed after source observation: " + changed
                 )
-
-    require_clean_candidate(candidate, checked_paths)
+    if check_checkout:
+        require_clean_candidate(candidate, checked_paths)
+    return checked_paths
 
 
 def require_clean_candidate(
@@ -182,10 +219,9 @@ def require_clean_candidate(
     # conceal changed source AND the registries/maps that select that source.
     # Reject them before reading those inputs, without clearing user flags or
     # refreshing the index. NUL records keep unusual filenames unambiguous.
-    selection = ("--", *paths) if paths else ()
     hidden = [
         record[2:]
-        for record in git("ls-files", "-v", "-z", *selection).split("\0")
+        for record in git("ls-files", "-v", "-z").split("\0")
         if record and (record[0] == "S" or record[0].islower())
     ]
     if hidden:
@@ -402,17 +438,23 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
 
 
 def migrate(selected_modules: list[str] | None = None):
+    source_base = current_source_base()
+    require_clean_candidate(source_base)
     modules = load("docs/modules/MODULES.json")["modules"]
+    if not isinstance(modules, list) or not modules:
+        raise ValueError("module registry must be nonempty")
     by_id = {m["id"]: m for m in modules}
+    if len(by_id) != len(modules):
+        raise ValueError("duplicate module identity")
     selected = set(by_id) if selected_modules is None else set(selected_modules)
     unknown = selected - set(by_id)
     if unknown:
         raise SystemExit("unknown modules: " + ", ".join(sorted(unknown)))
     lanes = lane_by_module()
-    source_base = current_source_base()
-    # Prepare all changes before writing, so a malformed/unknown module does
-    # not leave a partially rebound batch. --module confines ordinary updates.
+    # Prepare and validate every selected map before writing any of them.
+    # Invalid identities/evidence must not be silently laundered into HEAD.
     pending = []
+    checked_paths: set[str] = set()
     for mid in sorted(selected):
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
         if not path.is_file():
@@ -420,10 +462,26 @@ def migrate(selected_modules: list[str] | None = None):
         row = load(str(path.relative_to(ROOT)))
         if row.get("module", mid) != mid:
             raise SystemExit(f"{mid}: identity")
-        migrated = migrate_map(row, by_id[mid], lanes, source_base)
-        rendered = json.dumps(migrated, indent=2, ensure_ascii=False) + "\n"
-        if rendered != path.read_text(encoding="utf-8"):
-            pending.append((path, rendered))
+        anchor = checked_identity(row.get("sourceBase"), source_base)
+        migrated = migrate_map(row, by_id[mid], lanes, anchor)
+        if "observedAtHead" in row:
+            migrated["observedAtHead"] = row["observedAtHead"]
+        resolved = migrated["resolvedRoots"]
+        try:
+            paths = verify_source_identity(
+                migrated, resolved, source_base, check_checkout=False
+            )
+        except SourceDrift:
+            migrated = migrate_map(row, by_id[mid], lanes, source_base)
+            paths = verify_source_identity(
+                migrated, resolved, source_base, check_checkout=False
+            )
+        checked_paths.update(paths)
+        # Preserve original formatting and anchors when nothing changed. Even a
+        # later prose commit must not trigger a global metadata refresh.
+        if migrated != row:
+            pending.append((path, json.dumps(migrated, indent=2, ensure_ascii=False) + "\n"))
+    require_clean_candidate(source_base, sorted(checked_paths))
     for path, rendered in pending:
         path.write_text(rendered, encoding="utf-8")
     print(
@@ -472,6 +530,7 @@ def verify():
         raise SystemExit(f"FAIL_HEPTA_IMPLEMENTATION_MAPS: {exc}") from exc
     failures = []
     source_bases = set()
+    checked_paths: set[str] = set()
     for module in modules:
         mid = module["id"]
         try:
@@ -505,7 +564,9 @@ def verify():
                 source = op.get("sourcePath")
                 if source is not None and not checked_source_path(ROOT, source).is_file():
                     raise ValueError(f"missing source: {source}")
-            verify_source_identity(row, resolved, candidate)
+            checked_paths.update(verify_source_identity(
+                row, resolved, candidate, check_checkout=False
+            ))
             source_bases.add((row["sourceBase"]["commit"], row["sourceBase"]["tree"]))
             if not isinstance(row.get("claimBoundary") or row.get("completion"), dict):
                 raise ValueError("claim boundary")
@@ -514,7 +575,9 @@ def verify():
         ) as exc:
             failures.append(f"{mid}: {exc}")
     try:
-        require_clean_candidate(candidate)
+        # Two global scans, not two scans per module. The documented contract
+        # remains a quiescent checkout, never concurrent build attestation.
+        require_clean_candidate(candidate, sorted(checked_paths))
     except (ValueError, subprocess.CalledProcessError) as exc:
         failures.append(str(exc))
     if failures:

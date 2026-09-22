@@ -354,5 +354,196 @@ class SourceIdentityTests(unittest.TestCase):
         self.assertTrue(self.git("ls-files", "-v", "src/alpha/lib.rs").startswith("S "))
 
 
+    def migrate(self, selected=None):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            maps.migrate(selected)
+        return json.loads(output.getvalue())
+
+    def normalize_maps(self):
+        self.migrate()
+        self.commit("normalize projections")
+        self.rows = {
+            name: maps.load(f"docs/modules/{name}/IMPLEMENTATION_MAP.json")
+            for name in self.rows
+        }
+
+    def map_bytes(self):
+        return {name: (self.root / f"docs/modules/{name}/IMPLEMENTATION_MAP.json").read_bytes() for name in self.rows}
+
+    def test_repeated_migration_after_commit_is_noop(self):
+        self.normalize_maps()
+        before = self.map_bytes()
+        self.assertEqual(self.migrate()["migrated"], 0)
+        self.assertEqual(before, self.map_bytes())
+        self.verify()
+
+    def test_prose_edit_does_not_refresh_any_anchor(self):
+        self.normalize_maps()
+        before = self.map_bytes()
+        self.write("README.md", "a later prose-only change\n")
+        self.commit("prose after maps")
+        self.assertEqual(self.migrate()["migrated"], 0)
+        self.assertEqual(before, self.map_bytes())
+
+    def test_all_module_migration_only_rebinds_changed_source(self):
+        self.normalize_maps()
+        before = self.map_bytes()
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 5; }\n")
+        current = self.commit("alpha implementation")
+        self.assertEqual(self.migrate()["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
+        self.assertEqual(self.map_bytes()["beta"], before["beta"])
+        alpha = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertEqual(alpha["sourceBase"], current)
+        self.assertFalse(alpha["claimBoundary"]["productExecutionProved"])
+        self.commit("alpha source observation")
+        self.verify()
+        self.assertEqual(self.migrate()["migrated"], 0)
+
+    def test_observed_additional_input_rebind_is_still_checked(self):
+        row = self.rows["alpha"]
+        row["sourceIdentityPolicy"] = "candidate_or_exact_observation_v1"
+        row["observedAtHead"] = copy.deepcopy(self.anchor)
+        row["observedSourcePaths"] = ["src/alpha", "host/caller.rs"]
+        self.change_maps()
+        self.normalize_maps()
+        self.write("host/caller.rs", "fn caller_v2() {}\n")
+        current = self.commit("change additional observation input")
+        self.migrate(["alpha"])
+        alpha = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertEqual(alpha["observedAtHead"], current)
+        self.assertEqual(alpha["sourceBase"], current)
+        self.commit("rebind additional input")
+        self.verify()
+
+    def test_migration_rejects_invalid_identity_before_any_write(self):
+        self.rows["beta"]["sourceBase"]["tree"] = "0" * 40
+        self.change_maps()
+        before = self.map_bytes()
+        with self.assertRaises(ValueError):
+            self.migrate()
+        self.assertEqual(before, self.map_bytes())
+
+    def test_migration_does_not_repair_unknown_policy(self):
+        self.rows["beta"]["sourceIdentityPolicy"] = "trust_me"
+        self.change_maps()
+        before = self.map_bytes()
+        with self.assertRaises(ValueError):
+            self.migrate()
+        self.assertEqual(before, self.map_bytes())
+
+    def test_migration_rejects_dirty_source_without_writing_maps(self):
+        self.write("src/alpha/lib.rs", "// uncommitted\n")
+        before = self.map_bytes()
+        with self.assertRaises(ValueError):
+            self.migrate()
+        self.assertEqual(before, self.map_bytes())
+
+    def test_migration_rejects_untracked_evidence_without_partial_write(self):
+        self.rows["beta"]["operations"][0]["tests"] = ["tests/new.rs"]
+        self.change_maps()
+        self.write("tests/new.rs", "// not committed\n")
+        before = self.map_bytes()
+        with self.assertRaises(ValueError):
+            self.migrate()
+        self.assertEqual(before, self.map_bytes())
+
+    def test_migration_rejects_missing_evidence_at_both_ends(self):
+        self.rows["beta"]["operations"][0]["tests"] = ["tests/missing.rs"]
+        self.change_maps()
+        before = self.map_bytes()
+        with self.assertRaises(ValueError):
+            self.migrate()
+        self.assertEqual(before, self.map_bytes())
+
+    def test_new_committed_evidence_can_be_explicitly_rebound(self):
+        self.write("tests/new.rs", "#[test] fn new_regression() {}\n")
+        self.rows["alpha"]["operations"][0]["tests"] = ["tests/new.rs"]
+        self.change_maps()
+        self.reject()
+        self.migrate(["alpha"])
+        self.commit("bind new regression")
+        self.verify()
+
+    def test_noop_preserves_custom_json_formatting(self):
+        self.normalize_maps()
+        self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", json.dumps(self.rows["alpha"], separators=(",", ":")) + "\n")
+        self.commit("compact existing projection")
+        before = self.map_bytes()
+        self.assertEqual(self.migrate()["migrated"], 0)
+        self.assertEqual(before, self.map_bytes())
+
+    def test_migration_rejects_duplicate_module_registry(self):
+        self.write("docs/modules/MODULES.json", {"modules": [self.modules[0], self.modules[0]]})
+        self.commit("duplicate migration selection")
+        before = self.map_bytes()
+        with self.assertRaises(ValueError):
+            self.migrate()
+        self.assertEqual(before, self.map_bytes())
+
+    def test_migration_git_failure_is_not_treated_as_drift(self):
+        original = maps.git
+        def fail_diff(*args, **kwargs):
+            if args and args[0] == "diff":
+                raise subprocess.CalledProcessError(128, "git diff")
+            return original(*args, **kwargs)
+        before = self.map_bytes()
+        with patch.object(maps, "git", side_effect=fail_diff):
+            with self.assertRaises(subprocess.CalledProcessError):
+                self.migrate()
+        self.assertEqual(before, self.map_bytes())
+
+    def test_repository_verification_scans_checkout_twice_not_per_module(self):
+        with patch.object(maps, "require_clean_candidate", wraps=maps.require_clean_candidate) as scans:
+            self.verify()
+        self.assertEqual(scans.call_count, 2)
+
+    def test_object_query_count_is_bounded_independent_of_evidence_count(self):
+        paths = [f"tests/evidence {i}.rs" for i in range(128)]
+        for path in paths:
+            self.write(path, "// independent evidence path\n")
+        current = self.commit("many evidence paths")
+        for row in self.rows.values():
+            row["sourceBase"] = copy.deepcopy(current)
+        self.rows["alpha"]["operations"][0]["tests"] = paths
+        self.change_maps()
+        with patch.object(maps, "git", wraps=maps.git) as queries:
+            self.verify()
+        batches = [call for call in queries.call_args_list if call.args[:2] == ("cat-file", "--batch-check=%(objecttype)")]
+        scalar = [call for call in queries.call_args_list if call.args[:2] == ("cat-file", "-t") and ":" in call.args[2]]
+        self.assertEqual(len(batches), 4)
+        self.assertEqual(len(scalar), 0)
+
+    def test_explicit_newline_and_tab_evidence_paths_remain_unambiguous(self):
+        paths = ["tests/line\nbreak.rs", "tests/tab\tfile.rs", "tests/space file.rs"]
+        for path in paths:
+            self.write(path, "// unusual evidence path\n")
+        current = self.commit("unusual explicit evidence")
+        for row in self.rows.values():
+            row["sourceBase"] = copy.deepcopy(current)
+        self.rows["alpha"]["operations"][0]["tests"] = paths
+        self.change_maps()
+        self.verify()
+        self.write(paths[0], "// changed\n")
+        self.commit("newline path drift")
+        self.reject()
+
+    def test_malformed_batch_response_is_rejected(self):
+        original = maps.git
+        def truncate(*args, **kwargs):
+            if args[:2] == ("cat-file", "--batch-check=%(objecttype)"):
+                return ""
+            return original(*args, **kwargs)
+        with patch.object(maps, "git", side_effect=truncate):
+            self.reject()
+
+    def test_hidden_index_remains_rejected_during_migration(self):
+        self.git("update-index", "--assume-unchanged", "README.md")
+        before = self.map_bytes()
+        with self.assertRaises(ValueError):
+            self.migrate()
+        self.assertEqual(before, self.map_bytes())
+
+
 if __name__ == "__main__":
     unittest.main()
