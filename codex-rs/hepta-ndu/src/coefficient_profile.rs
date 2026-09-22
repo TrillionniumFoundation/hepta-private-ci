@@ -123,7 +123,7 @@ pub fn admit_ndu_coefficient_profile(
         specification.z_conversion_profile_digest,
         specification.units_digest,
     ];
-    if digests.iter().any(Digest32::is_zero) {
+    if digests.iter().any(|digest| digest.is_zero()) {
         return Err(NduCoefficientProfileError::MissingDigest);
     }
     if specification.covariance_profile_digest != covariance.digest

@@ -21,6 +21,7 @@ mod owner_service;
 mod pinned;
 mod publication;
 mod registry;
+mod selection;
 mod sensor_core_registry;
 mod storage;
 mod storage_hygiene;
