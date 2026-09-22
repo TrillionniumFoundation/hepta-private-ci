@@ -7,74 +7,6 @@
   "authorityDelta": "none",
   "cases": [
     {
-      "id": "LEDGER-01",
-      "module": "learning.ledger",
-      "requirement": "Acknowledgement loss reconciles the committed event from its original identity and anchor.",
-      "tests": [
-        {
-          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
-          "function": "full_unacknowledged_frame_is_synced_and_deduplicated_on_recover"
-        },
-        {
-          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
-          "function": "failed_write_poisons_memory_and_requires_recovery"
-        }
-      ],
-      "status": "native_test_mapped"
-    },
-    {
-      "id": "LEDGER-02",
-      "module": "learning.ledger",
-      "requirement": "Truncating acknowledged history fails anchored recovery.",
-      "tests": [
-        {
-          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
-          "function": "acknowledged_revocation_cannot_disappear_as_a_valid_prefix_or_partial_tail"
-        },
-        {
-          "source": "codex-rs/hepta-learning-ledger/src/inspection_tests.rs",
-          "function": "missing_and_mismatched_acknowledged_history_never_mutate_file"
-        }
-      ],
-      "status": "native_test_mapped"
-    },
-    {
-      "id": "LEDGER-03",
-      "module": "learning.ledger",
-      "requirement": "A generator posing as an independent observer is rejected by authenticated role identity, not string comparison.",
-      "tests": [
-        {
-          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
-          "function": "ledger_03_rejects_shared_credential_chain"
-        },
-        {
-          "source": "codex-rs/hepta-learning-ledger/src/shadow_tests.rs",
-          "function": "shadow_bridge_does_not_weaken_independent_terminal_outcome_rules"
-        }
-      ],
-      "status": "native_test_mapped"
-    },
-    {
-      "id": "LEDGER-04",
-      "module": "learning.ledger",
-      "requirement": "Delayed or corrected outcomes and revoked ancestry alter dataset eligibility without rewriting history.",
-      "tests": [
-        {
-          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
-          "function": "ledger_04_validates_terminal_watermark_and_correction_lineage"
-        },
-        {
-          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
-          "function": "ledger_dataset_freeze_is_order_independent_and_rejects_duplicates"
-        },
-        {
-          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
-          "function": "persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants"
-        }
-      ],
-      "status": "native_test_mapped"
-    },
-    {
       "id": "OP-01",
       "module": "learning.operator",
       "requirement": "The analytic sensor and Bellman reference produces deterministic canonical targets and action gaps.",
@@ -350,6 +282,250 @@
         {
           "source": "codex-rs/hepta-intelligence-eval/src/longitudinal_time_tests.rs",
           "function": "evaluator_and_observer_cannot_share_identity_key_credential_or_controller"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-01",
+      "module": "learning.ledger",
+      "requirement": "Acknowledgement loss reconciles the committed event from its original identity and independent witness frontier.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
+          "function": "full_unacknowledged_frame_is_synced_and_deduplicated_on_recover"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "production_writer_recovers_against_independent_witness"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/witness_tests.rs",
+          "function": "witness_advances_monotonically_and_recovers_exact_frontier"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-02",
+      "module": "learning.ledger",
+      "requirement": "Truncating acknowledged history fails anchored recovery and invalid witness bindings do not fall back.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/durable_tests.rs",
+          "function": "acknowledged_revocation_cannot_disappear_as_a_valid_prefix_or_partial_tail"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/inspection_tests.rs",
+          "function": "missing_and_mismatched_acknowledged_history_never_mutate_file"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/witness_tests.rs",
+          "function": "witness_rejects_skips_and_binding_mismatch"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-03",
+      "module": "learning.ledger",
+      "requirement": "Generator, observer and allocator admission is bound to signed identity/controller roles rather than string inequality.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
+          "function": "ledger_03_rejects_shared_credential_chain"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs",
+          "function": "trust_distribution_rotation_is_monotonic_and_content_addressed"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-04",
+      "module": "learning.ledger",
+      "requirement": "Correction lineage requires an existing same-episode current predecessor head; stale branches, forks and cycles cannot commit.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
+          "function": "authenticated_corrections_form_one_linear_head_without_forks"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
+          "function": "ledger_04_validates_terminal_watermark_and_correction_lineage"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-05",
+      "module": "learning.ledger",
+      "requirement": "Credit publication is one atomic durable batch and allocations plus residual exactly conserve the current terminal outcome.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
+          "function": "atomic_credit_batch_enforces_terminal_value_and_conservation"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
+          "function": "ledger_credit_batch_enforces_conservation"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-06",
+      "module": "learning.ledger",
+      "requirement": "Dataset freeze derives source rows, eligible frontier, outcome watermark and correction/revocation cuts from canonical ledger state, and counts authenticated decisions with no Outcome row as pending rather than dropping missing observations.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs",
+          "function": "ledger_dataset_freeze_is_order_independent_and_rejects_duplicates"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "dataset_freeze_counts_decisions_without_any_outcome_as_pending"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-07",
+      "module": "learning.ledger",
+      "requirement": "Explicit unlearning verifies exact canonical source-to-dataset membership, persists source and dataset digests, survives replay and prevents causal non-resurrection; dataset-to-artifact fanout remains authoritative in learning.artifacts.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
+          "function": "explicit_unlearning_lineage_revokes_source_and_derived_credit"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs",
+          "function": "checkpoint_revocation_frontier_changes_without_rewriting_history"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-08",
+      "module": "learning.ledger",
+      "requirement": "Registered LearningDecision, Outcome, Credit, Dataset and Episode compatibility views use bounded deny-unknown canonical JSON.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/protocol_tests.rs",
+          "function": "registered_decision_and_outcome_adapters_round_trip_canonical_json"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/protocol_tests.rs",
+          "function": "registered_protocols_reject_unknown_fields"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/protocol_tests.rs",
+          "function": "credit_and_episode_views_bind_exact_snapshot_history"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/protocol_tests.rs",
+          "function": "dataset_v3_has_deterministic_registered_v1_compatibility_view"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-09",
+      "module": "learning.ledger",
+      "requirement": "Rebuildable index checkpoints are content-addressed, validate against canonical history and provide bounded record lookup.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs",
+          "function": "checkpoint_is_content_addressed_and_supports_binary_lookup"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs",
+          "function": "checkpoint_revocation_frontier_changes_without_rewriting_history"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-10",
+      "module": "learning.ledger",
+      "requirement": "Segment rotation and recovery preserve the authenticated production decision and independent witness frontier.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+          "function": "existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+          "function": "bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-11",
+      "module": "learning.ledger",
+      "requirement": "Final artifact use revalidates every frozen dataset source against the current canonical active projection; later correction, revocation or unlearning invalidates stale receipts.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-12",
+      "module": "learning.ledger",
+      "requirement": "Independent witness and directory durability fail closed across lost acknowledgement, witness corruption or loss, and actual process death between ledger sync and witness advancement.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "corrupt_or_missing_witness_history_never_falls_back_to_reinitialization"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "process_death_between_ledger_and_witness_reconciles_without_redispatch"
+        },
+        {
+          "source": "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+          "function": "directory_durability_requires_an_actual_directory_handle"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "LEDGER-13",
+      "module": "learning.ledger",
+      "requirement": "The source-composed intelligence terminal path uses LedgerWriter for authenticated Outcome, correction and conserved CreditBatch and preserves a committed Outcome for exact partial-commit reconciliation.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+          "function": "product_path_records_outcome_correction_then_conserved_credit"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+          "function": "credit_failure_preserves_outcome_for_exact_reconciliation"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+          "function": "run_episode_mismatch_rejects_before_any_outcome_append"
         }
       ],
       "status": "native_test_mapped"

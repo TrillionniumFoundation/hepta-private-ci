@@ -8,7 +8,12 @@ use pretty_assertions::assert_eq;
 
 use super::LearningLedger;
 use crate::AppendDisposition;
+use crate::AuthenticatedDecisionRecordV2;
+use crate::AuthenticatedOutcomeRecordV2;
+use crate::AuthenticatedOutcomeTerminality;
 use crate::CandidateSetCompleteness;
+use crate::CreditAllocationBatchRecordV2;
+use crate::CreditAllocationRecordV2;
 use crate::CreditAssignment;
 use crate::EpisodeDecision;
 use crate::LedgerError;
@@ -16,6 +21,7 @@ use crate::LedgerEvent;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
 use crate::Revocation;
+use crate::UnlearningLineageEventV1;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -206,5 +212,334 @@ fn tampered_snapshot_chain_is_rejected() {
     assert_eq!(
         must_err(LearningLedger::from_snapshot(snapshot)),
         LedgerError::SnapshotRecordMismatch(1)
+    );
+}
+
+fn authenticated_decision() -> AuthenticatedDecisionRecordV2 {
+    AuthenticatedDecisionRecordV2 {
+        record_id: id("record-auth-decision-1"),
+        episode_id: id("episode-1"),
+        run_snapshot_digest: Digest32::of_bytes(b"run-snapshot"),
+        objective_digest: Digest32::of_bytes(b"objective"),
+        policy_digest: Digest32::of_bytes(b"policy"),
+        generator_id: id("generator"),
+        generator_controller_id: id("generator-controller"),
+        generator_credential_chain_digest: Digest32::of_bytes(b"generator-credential"),
+        generator_signing_key_digest: Digest32::of_bytes(b"generator-key"),
+        generator_scope_digest: Digest32::of_bytes(b"learning-scope"),
+        generator_authority_epoch: 7,
+        candidate_ids: vec![id("action"), id("abstain")],
+        selected_candidate_id: id("action"),
+        selected_propensity: ProbabilityQ32::ONE,
+        candidate_completeness_digest: Digest32::of_bytes(b"candidate-completeness"),
+        support_digest: Digest32::of_bytes(b"decision-support-v2"),
+        authentication_digest: Digest32::of_bytes(b"signed-generator-evidence"),
+    }
+}
+
+fn authenticated_outcome(
+    record: &str,
+    outcome_id: &str,
+    predecessor: Option<&str>,
+    value: i64,
+) -> AuthenticatedOutcomeRecordV2 {
+    AuthenticatedOutcomeRecordV2 {
+        record_id: id(record),
+        outcome_id: id(outcome_id),
+        episode_id: id("episode-1"),
+        observer_id: id("independent-observer"),
+        observer_controller_id: id("observer-controller"),
+        observer_credential_chain_digest: Digest32::of_bytes(b"observer-credential"),
+        observer_signing_key_digest: Digest32::of_bytes(b"observer-key"),
+        observer_scope_digest: Digest32::of_bytes(b"learning-scope"),
+        observer_authority_epoch: 7,
+        observed_at: Some(40),
+        value: Some(FixedQ32::from_raw(value)),
+        unit_profile_digest: Digest32::of_bytes(b"reward-unit"),
+        support_digest: Digest32::of_bytes(b"outcome-evidence"),
+        latest_observable_at: 45,
+        expected_delay_profile_digest: Digest32::of_bytes(b"delay-profile"),
+        terminality: AuthenticatedOutcomeTerminality::Terminal,
+        censoring_reason: None,
+        correction_predecessor: predecessor.map(id),
+        finalized_at: Some(46),
+        authentication_digest: Digest32::of_bytes(b"signed-observer-evidence"),
+    }
+}
+
+fn atomic_credit_batch(outcome_id: &str, terminal: i64) -> CreditAllocationBatchRecordV2 {
+    CreditAllocationBatchRecordV2 {
+        record_id: id("record-credit-batch-1"),
+        batch_id: id("credit-batch-1"),
+        episode_id: id("episode-1"),
+        outcome_id: id(outcome_id),
+        allocator_id: id("independent-allocator"),
+        allocator_controller_id: id("allocator-controller"),
+        allocator_credential_chain_digest: Digest32::of_bytes(b"allocator-credential"),
+        allocator_signing_key_digest: Digest32::of_bytes(b"allocator-key"),
+        allocator_scope_digest: Digest32::of_bytes(b"learning-scope"),
+        allocator_authority_epoch: 7,
+        terminal_outcome: FixedQ32::from_raw(terminal),
+        allocations: vec![
+            CreditAllocationRecordV2 {
+                target_artifact_id: id("artifact-b"),
+                credit: FixedQ32::from_raw(50),
+            },
+            CreditAllocationRecordV2 {
+                target_artifact_id: id("artifact-a"),
+                credit: FixedQ32::from_raw(60),
+            },
+        ],
+        conservation_residual: FixedQ32::from_raw(terminal - 110),
+        support_digest: Digest32::of_bytes(b"credit-support-v2"),
+        authentication_digest: Digest32::of_bytes(b"signed-credit-evidence"),
+    }
+}
+
+#[test]
+fn authenticated_corrections_form_one_linear_head_without_forks() {
+    let mut ledger = LearningLedger::new();
+    must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
+    must(
+        ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-1",
+            "auth-outcome-1",
+            None,
+            100,
+        ))),
+    );
+    must(
+        ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-2",
+            "auth-outcome-2",
+            Some("auth-outcome-1"),
+            120,
+        ))),
+    );
+
+    let active_ids: Vec<_> = ledger
+        .active_records()
+        .iter()
+        .map(|record| record.event.record_id().to_string())
+        .collect();
+    assert_eq!(
+        active_ids,
+        vec!["record-auth-decision-1", "record-auth-outcome-2"]
+    );
+
+    let fork = authenticated_outcome(
+        "record-auth-outcome-fork",
+        "auth-outcome-fork",
+        Some("auth-outcome-1"),
+        130,
+    );
+    assert_eq!(
+        must_err(ledger.append(LedgerEvent::AuthenticatedOutcomeV2(fork))),
+        LedgerError::OutcomePredecessorNotHead("auth-outcome-1".to_owned())
+    );
+}
+
+#[test]
+fn atomic_credit_batch_enforces_terminal_value_and_conservation() {
+    let mut ledger = LearningLedger::new();
+    must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
+    must(
+        ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-1",
+            "auth-outcome-1",
+            None,
+            120,
+        ))),
+    );
+
+    let receipt = must(
+        ledger.append(LedgerEvent::CreditBatchV2(atomic_credit_batch(
+            "auth-outcome-1",
+            120,
+        ))),
+    );
+    assert_eq!(receipt.disposition, AppendDisposition::Appended);
+
+    let mut duplicate = atomic_credit_batch("auth-outcome-1", 120);
+    duplicate.record_id = id("record-credit-batch-2");
+    duplicate.batch_id = id("credit-batch-2");
+    assert_eq!(
+        must_err(ledger.append(LedgerEvent::CreditBatchV2(duplicate))),
+        LedgerError::CreditBatchAlreadyAssigned("auth-outcome-1".to_owned())
+    );
+
+    let mut wrong = LearningLedger::new();
+    must(wrong.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
+    must(
+        wrong.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-1",
+            "auth-outcome-1",
+            None,
+            120,
+        ))),
+    );
+    let mut nonconserving = atomic_credit_batch("auth-outcome-1", 120);
+    nonconserving.conservation_residual = FixedQ32::from_raw(9);
+    assert_eq!(
+        must_err(wrong.append(LedgerEvent::CreditBatchV2(nonconserving))),
+        LedgerError::CreditConservation
+    );
+}
+
+#[test]
+fn explicit_unlearning_lineage_revokes_source_and_derived_credit() {
+    let mut ledger = LearningLedger::new();
+    must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
+    must(
+        ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-1",
+            "auth-outcome-1",
+            None,
+            120,
+        ))),
+    );
+    must(
+        ledger.append(LedgerEvent::CreditBatchV2(atomic_credit_batch(
+            "auth-outcome-1",
+            120,
+        ))),
+    );
+    let source_event_digest = ledger
+        .records()
+        .iter()
+        .find(|record| record.event.record_id() == &id("record-auth-outcome-1"))
+        .expect("source record")
+        .event_digest;
+
+    let wrong = UnlearningLineageEventV1 {
+        record_id: id("record-unlearning-wrong"),
+        lineage_id: id("unlearning-wrong"),
+        source_record_id: id("record-auth-outcome-1"),
+        source_event_digest: Digest32::of_bytes(b"wrong-source-event"),
+        dataset_snapshot_id: id("dataset-1"),
+        dataset_digest: Digest32::of_bytes(b"dataset-1-digest"),
+        artifact_id: id("artifact-a"),
+        authority_id: id("privacy-owner"),
+        reason_digest: Digest32::of_bytes(b"withdrawal"),
+        authentication_digest: Digest32::of_bytes(b"signed-unlearning-authority"),
+    };
+    assert_eq!(
+        must_err(ledger.append(LedgerEvent::UnlearningLineageV1(wrong))),
+        LedgerError::UnlearningSourceDigestMismatch
+    );
+
+    must(
+        ledger.append(LedgerEvent::UnlearningLineageV1(UnlearningLineageEventV1 {
+            record_id: id("record-unlearning-1"),
+            lineage_id: id("unlearning-1"),
+            source_record_id: id("record-auth-outcome-1"),
+            source_event_digest,
+            dataset_snapshot_id: id("dataset-1"),
+            dataset_digest: Digest32::of_bytes(b"dataset-1-digest"),
+            artifact_id: id("artifact-a"),
+            authority_id: id("privacy-owner"),
+            reason_digest: Digest32::of_bytes(b"withdrawal"),
+            authentication_digest: Digest32::of_bytes(b"signed-unlearning-authority"),
+        })),
+    );
+
+    let active_ids: Vec<_> = ledger
+        .active_records()
+        .iter()
+        .map(|record| record.event.record_id().to_string())
+        .collect();
+    assert_eq!(
+        active_ids,
+        vec!["record-auth-decision-1", "record-unlearning-1"]
+    );
+
+    let restored = must(LearningLedger::from_snapshot(ledger.snapshot()));
+    assert_eq!(restored.active_records().len(), 2);
+}
+
+#[test]
+fn authenticated_outcome_rejects_legacy_decision_ancestry() {
+    let mut ledger = LearningLedger::new();
+    must(ledger.append(LedgerEvent::Decision(decision())));
+
+    assert_eq!(
+        must_err(
+            ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+                "record-auth-outcome-legacy",
+                "auth-outcome-legacy",
+                None,
+                120,
+            ),))
+        ),
+        LedgerError::AuthenticatedDecisionRequired("episode-1".to_owned())
+    );
+}
+
+#[test]
+fn atomic_credit_rejects_legacy_outcome_and_credential_or_key_reuse() {
+    let mut legacy_outcome = LearningLedger::new();
+    must(legacy_outcome.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
+    must(legacy_outcome.append(LedgerEvent::Outcome(outcome())));
+    let mut batch = atomic_credit_batch("outcome-1", FixedQ32::ONE.raw());
+    batch.terminal_outcome = FixedQ32::ONE;
+    batch.allocations = vec![CreditAllocationRecordV2 {
+        target_artifact_id: id("artifact-a"),
+        credit: FixedQ32::ONE,
+    }];
+    batch.conservation_residual = FixedQ32::ZERO;
+    assert_eq!(
+        must_err(legacy_outcome.append(LedgerEvent::CreditBatchV2(batch))),
+        LedgerError::AuthenticatedOutcomeRequired("outcome-1".to_owned())
+    );
+
+    let mut shared_credential = LearningLedger::new();
+    must(
+        shared_credential.append(LedgerEvent::AuthenticatedDecisionV2(
+            authenticated_decision(),
+        )),
+    );
+    must(
+        shared_credential.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-credential",
+            "auth-outcome-credential",
+            None,
+            120,
+        ))),
+    );
+    let mut credential_batch = atomic_credit_batch("auth-outcome-credential", 120);
+    credential_batch.allocator_credential_chain_digest =
+        Digest32::of_bytes(b"generator-credential");
+    assert_eq!(
+        must_err(shared_credential.append(LedgerEvent::CreditBatchV2(credential_batch))),
+        LedgerError::CreditAllocatorNotIndependent
+    );
+
+    let mut shared_key = LearningLedger::new();
+    must(shared_key.append(LedgerEvent::AuthenticatedDecisionV2(
+        authenticated_decision(),
+    )));
+    must(
+        shared_key.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-key",
+            "auth-outcome-key",
+            None,
+            120,
+        ))),
+    );
+    let mut key_batch = atomic_credit_batch("auth-outcome-key", 120);
+    key_batch.allocator_signing_key_digest = Digest32::of_bytes(b"observer-key");
+    assert_eq!(
+        must_err(shared_key.append(LedgerEvent::CreditBatchV2(key_batch))),
+        LedgerError::CreditAllocatorNotIndependent
     );
 }

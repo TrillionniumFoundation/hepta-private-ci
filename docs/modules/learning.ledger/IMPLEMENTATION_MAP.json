@@ -18,42 +18,216 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "qualification_consumer_composed_live_product_not_established",
+  "productionWriterState": "source_implemented_host_not_established",
   "operations": [
     {
-      "operation": "durableledger",
-      "nativeSymbol": "DurableLedger",
-      "sourcePath": "codex-rs/hepta-learning-ledger/src/durable.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "append_decision",
+      "nativeSymbol": "LedgerWriter::append_decision",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_authenticated_product_writer",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "durableledger",
+      "designOperation": "append_decision",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "DurableLedger",
+        "SegmentedLedger",
+        "LedgerWitnessStore",
+        "LearningEvidenceVerifierV1"
+      ]
+    },
+    {
+      "operation": "append_outcome",
+      "nativeSymbol": "LedgerWriter::append_outcome",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_authenticated_product_writer",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+        "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_outcome",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "learningevidenceverifierv1",
-      "nativeSymbol": "LearningEvidenceVerifierV1",
-      "sourcePath": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "append_credit_batch",
+      "nativeSymbol": "LedgerWriter::append_credit_batch",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_atomic_conserved_credit",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+        "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "learningevidenceverifierv1",
+      "designOperation": "append_credit_batch",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "append_unlearning",
+      "nativeSymbol": "LedgerWriter::append_unlearning",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_verified_source_dataset_membership_artifact_handoff",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_unlearning",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "freeze_dataset",
+      "nativeSymbol": "LedgerWriter::freeze_dataset",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_ledger_derived",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "freeze_dataset",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revalidate_dataset_snapshot",
+      "nativeSymbol": "LedgerWriter::revalidate_dataset_snapshot",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_final_use_currentness",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_dataset_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "rotate_segment",
+      "nativeSymbol": "LedgerWriter::rotate_segment",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_directory_sync_before_witness",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "rotate_segment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ledger_witness_store",
+      "nativeSymbol": "LedgerWitnessStore",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "state": "source_implemented_independent_frontier",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/witness_tests.rs",
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ledger_witness_store",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "activate_learning_trust",
+      "nativeSymbol": "activate_learning_trust",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+      "state": "source_implemented_root_authenticated_distribution_transport_external",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "activate_learning_trust",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "LearningTrustRootV1",
+        "SignedLearningTrustDistributionV1",
+        "LearningEvidenceVerifierV1"
+      ]
+    },
+    {
+      "operation": "canonical_protocol_adapters",
+      "nativeSymbol": "LearningDecisionV1",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/protocol.rs",
+      "state": "source_implemented_registered_v1_views",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/protocol_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_protocol_adapters",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_ledger_index_checkpoint",
+      "nativeSymbol": "build_ledger_index_checkpoint",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/checkpoint.rs",
+      "state": "source_implemented_rebuildable_projection",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "build_ledger_index_checkpoint",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "validate_candidate_set_completeness",
+      "nativeSymbol": "validate_candidate_set_completeness",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
+      "state": "source_implemented_compatibility_validator",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_candidate_set_completeness",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sync_directory_handle",
+      "nativeSymbol": "sync_directory_handle",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_host_authorized_directory_fsync",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sync_directory_handle",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
-  "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "exclusive physical writer and directory ownership on the selected live host",
+    "production root provisioning/rotation ceremony, trust-distribution transport, key custody and independent witness placement",
+    "target-host latency, storage growth, reopen, sustained throughput, RSS and physical power-loss/filesystem qualification",
+    "live independent outcomes and genuine future-window longitudinal evidence",
+    "live learning.artifacts dataset-withdrawal fanout, descendant revocation and rebuild handoff",
+    "independent semantic review, operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -66,5 +240,51 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-learning-ledger"
+  ],
+  "statusDimensions": {
+    "planningState": "lrn_0_and_lrn_1_source_implemented",
+    "sourceImplementationState": "production_writer_and_terminal_closure_source_implemented",
+    "compositionState": "decision_and_terminal_closure_source_composed_live_daemon_binding_pending",
+    "qualificationState": "exact_head_and_synthetic_merge_required_for_current_candidate",
+    "liveProductState": "not_established",
+    "qualification": "current_candidate_exact_head_and_synthetic_merge_pending"
+  },
+  "sourceEvidencePolicy": "module_local_anchor_no_mapped_evidence_drift",
+  "sourceEvidencePaths": [
+    "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+    "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+    "codex-rs/hepta-learning-ledger",
+    "docs/STATUS.md",
+    "docs/contracts/CONTRACTS.json",
+    "docs/contracts/PROTOCOL_SCHEMAS.json",
+    "docs/delivery/WORK_PACKAGES.json",
+    "docs/lane-e/END_TO_END_LEARNING_SEQUENCE.md",
+    "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
+    "docs/lane-e/VERSION_COMPATIBILITY.md",
+    "docs/modules/MODULE_DOCS.json",
+    "docs/modules/learning.ledger/TECHNICAL.md",
+    "qualification/gap-closure/PLAN_AUDIT.json",
+    "qualification/lane-e/TEST_TRACEABILITY.json",
+    "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+    "qualification/module-execution-dossiers/detail/learning.ledger.md",
+    "scripts/hepta-implementation-maps.py",
+    "scripts/hepta-lane-e-closure.py"
+  ],
+  "productCallers": [
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+      "symbol": "run_evaluated_shadow_v1",
+      "state": "source_composed_authenticated_decision_qualification_caller"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "symbol": "append_outcome_credit_v2",
+      "state": "source_composed_authenticated_terminal_closure_live_daemon_binding_pending"
+    }
+  ],
+  "crossLaneRepositoryDependencies": [
+    "runtime.agentd daemon-owned terminal observation binding follows the runtime.agentd owner convergence line",
+    "intelligence.control canonical product composition must consume these LedgerWriter callsites before activation",
+    "learning.artifacts remains authoritative for dataset-to-artifact membership, withdrawal fanout and descendant revocation; learning.ledger only persists the verified source-to-dataset edge plus handoff identity"
   ]
 }

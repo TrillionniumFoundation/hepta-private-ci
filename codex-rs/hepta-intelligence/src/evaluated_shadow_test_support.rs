@@ -95,8 +95,10 @@ pub(super) struct Fixture {
     pub dataset: DatasetSnapshotReceiptV3,
     pub qualification: ProductQualificationReceiptV1,
     pub candidate_evidence: SignedLearningEvidenceV1,
+    pub decision_evidence: SignedLearningEvidenceV1,
     pub intuition: CalibratedDecisionRequestV1,
     pub verifier: LearningEvidenceVerifierV1,
+    pub trust: LearningEvidenceTrustV1,
     pub bytes: Vec<u8>,
 }
 
@@ -119,7 +121,7 @@ impl Fixture {
                 expires_at: 100,
             })
             .collect();
-        let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        let trust = LearningEvidenceTrustV1 {
             scope_digest: digest("scope"),
             objective_digest: digest("objective"),
             authority_epoch: 1,
@@ -139,8 +141,8 @@ impl Fixture {
                     revoked_at: None,
                 })
                 .collect(),
-        })
-        .unwrap();
+        };
+        let verifier = LearningEvidenceVerifierV1::new(trust.clone()).unwrap();
         let dataset = freeze_dataset_receipt_v3(
             DatasetFreezeRequestV1 {
                 snapshot_id: id("dataset"),
@@ -371,13 +373,31 @@ impl Fixture {
             LearningEvidenceRoleV1::Evaluator,
             &evaluated_candidate_signing_payload_v2(&qualification, &bytes, 1).unwrap(),
         );
+        let production_decision = evaluated_shadow_production_decision_v2(
+            &run,
+            &intuition,
+            &id("shadow-episode"),
+            &principals[0].principal_id,
+            dataset.snapshot.dataset_digest,
+            candidate_evidence.payload_digest,
+        )
+        .unwrap();
+        let decision_evidence = sign(
+            &verifier,
+            &principals[0],
+            &keys[0],
+            LearningEvidenceRoleV1::Generator,
+            &decision_signing_payload_v2(&production_decision).unwrap(),
+        );
         Self {
             run,
             dataset,
             qualification,
             candidate_evidence,
+            decision_evidence,
             intuition,
             verifier,
+            trust,
             bytes,
         }
     }
@@ -396,6 +416,63 @@ impl Fixture {
             )
             .unwrap(),
         );
+        self.resign_decision();
+    }
+
+    pub fn trust_activation(&self) -> ActivatedLearningTrustV1 {
+        let root_key = SigningKey::from_bytes(&[99; 32]);
+        let root = LearningTrustRootV1 {
+            root_id: id("evaluated-shadow-test-root"),
+            scope_digest: digest("scope"),
+            verifying_key: root_key.verifying_key().to_bytes(),
+            valid_from: 1,
+            expires_at: 200,
+            revoked_at: None,
+        };
+        let mut signed = SignedLearningTrustDistributionV1 {
+            distribution: LearningTrustDistributionV1 {
+                distribution_id: id("evaluated-shadow-test-trust"),
+                generation: 1,
+                effective_at: 20,
+                trust: self.trust.clone(),
+            },
+            root_id: root.root_id.clone(),
+            issued_at: 15,
+            expires_at: 90,
+            signature: [0; 64],
+        };
+        signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+        activate_learning_trust(&root, signed, None, 50).unwrap()
+    }
+
+    pub fn decision_evidence_for(
+        &self,
+        run: &LaneFRunRequestV1,
+        intuition: &CalibratedDecisionRequestV1,
+        episode_id: &StableId,
+    ) -> SignedLearningEvidenceV1 {
+        let decision = evaluated_shadow_production_decision_v2(
+            run,
+            intuition,
+            episode_id,
+            &self.qualification.generator.principal_id,
+            self.dataset.snapshot.dataset_digest,
+            self.candidate_evidence.payload_digest,
+        )
+        .unwrap();
+        let key = SigningKey::from_bytes(&[11; 32]);
+        sign(
+            &self.verifier,
+            &self.qualification.generator,
+            &key,
+            LearningEvidenceRoleV1::Generator,
+            &decision_signing_payload_v2(&decision).unwrap(),
+        )
+    }
+
+    pub fn resign_decision(&mut self) {
+        self.decision_evidence =
+            self.decision_evidence_for(&self.run, &self.intuition, &id("shadow-episode"));
     }
 
     pub fn request(&self) -> EvaluatedShadowRequestV1<'_> {
@@ -404,6 +481,7 @@ impl Fixture {
             qualification: &self.qualification,
             candidate_bytes: &self.bytes,
             candidate_evidence: &self.candidate_evidence,
+            decision_evidence: self.decision_evidence.clone(),
             dataset: &self.dataset,
             intuition: self.intuition.clone(),
             episode_id: id("shadow-episode"),

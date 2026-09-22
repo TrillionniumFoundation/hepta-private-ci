@@ -306,6 +306,7 @@ pub struct ProductQualificationReceiptV1 {
     pub temporal_execution_digest: Digest32,
     pub candidate_id: StableId,
     pub evaluator: AuthenticatedPrincipalV1,
+    pub generator: AuthenticatedPrincipalV1,
     pub objective_digest: Digest32,
     pub dataset_digest: Digest32,
     pub snapshot_ids: Vec<StableId>,
@@ -490,6 +491,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         let bundle = self.qualification_bundle(temporal, context)?;
         let candidate_id = bundle.candidate_id.clone();
         let evaluator = bundle.evaluator.clone();
+        let generator = bundle.generator.clone();
         let objective_digest = bundle.objective_digest;
         let dataset_digest = bundle.dataset_digest;
         let snapshot_ids = bundle.snapshot_ids.clone();
@@ -528,6 +530,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             temporal_execution_digest: temporal.execution_digest,
             candidate_id,
             evaluator,
+            generator,
             objective_digest,
             dataset_digest,
             snapshot_ids,
@@ -546,7 +549,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v2".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v3".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
         receipt.objective_digest,
@@ -560,6 +563,7 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
     }
     push_id(&mut bytes, &receipt.candidate_id);
     push_principal(&mut bytes, &receipt.evaluator);
+    push_principal(&mut bytes, &receipt.generator);
     bytes.push(match receipt.claim_scope {
         EvaluationClaimScopeV1::Qualification => 0,
         EvaluationClaimScopeV1::SystemLongitudinal => 1,

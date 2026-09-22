@@ -30,7 +30,7 @@ EXPECTED_MODULES = {
     "learning.artifacts",
 }
 EXPECTED_CASES = {
-    *(f"LEDGER-{index:02d}" for index in range(1, 5)),
+    *(f"LEDGER-{index:02d}" for index in range(1, 14)),
     *(f"OP-{index:02d}" for index in range(1, 5)),
     *(f"EVAL-{index:02d}" for index in range(1, 8)),
     *(f"ART-{index:02d}" for index in range(1, 5)),
@@ -38,12 +38,19 @@ EXPECTED_CASES = {
 EXPECTED_EXTERNAL_GATES = {f"RDY-EXT-{index:03d}" for index in range(1, 10)}
 EXPECTED_OPERATIONS = {
     "learning.ledger": {
-        "verify_independent_roles",
-        "validate_authenticated_outcome",
+        "LedgerWriter::append_decision",
+        "LedgerWriter::append_outcome",
+        "LedgerWriter::append_credit_batch",
+        "LedgerWriter::append_unlearning",
+        "LedgerWriter::freeze_dataset",
+        "LedgerWriter::revalidate_dataset_snapshot",
+        "LedgerWriter::rotate_segment",
+        "sync_directory_handle",
+        "LedgerWitnessStore",
+        "activate_learning_trust",
+        "canonical_protocol_adapters",
+        "build_ledger_index_checkpoint",
         "validate_candidate_set_completeness",
-        "finalize_credit_batch",
-        "freeze_dataset",
-        "append_shadow_decision",
     },
     "learning.artifacts": {
         "validate_artifact_manifest_v2",
@@ -260,8 +267,9 @@ def verify_matrix(
                 "native_symbol_unresolved",
                 f"cannot resolve {symbol} in {source_path.relative_to(ROOT)}",
             )
+            status = operation.get("status")
             findings.require(
-                operation.get("status") in {"implemented", "implemented_existing", "implemented_sealed_receipt", "implemented_low_level", "implemented_pairwise_independence"},
+                operation.get("status") in {'implemented_pairwise_independence', 'implemented_rebuildable', 'implemented', 'implemented_sealed_receipt', 'implemented_current_state_revalidation', 'implemented_existing', 'implemented_verified_source_dataset_membership_artifact_handoff', 'implemented_directory_sync_before_witness', 'implemented_ledger_derived', 'implemented_root_authenticated_distribution_transport_external', 'implemented_host_authorized_directory_fsync', 'implemented_atomic_conservation', 'implemented_low_level', 'implemented_compatibility'},
                 "operation_not_implemented",
                 f"{module}.{operation_name} is not source-implemented",
             )
@@ -570,6 +578,39 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
             "learning_eval_api_contract",
             f"cross-crate API contract does not bind: {token}",
         )
+def verify_product_writer_exclusivity(findings: Findings) -> None:
+    """Prevent product crates from bypassing LedgerWriter with raw V1 appends."""
+
+    allowed_roots = {
+        "codex-rs/hepta-learning-ledger",
+        "codex-rs/hepta-shadow-qualification",
+    }
+    forbidden = {
+        r"\bDurableLearningJournal\b": "legacy durable journal trait",
+        r"LedgerEvent::Decision\b": "raw V1 Decision append",
+        r"LedgerEvent::Outcome\b": "raw V1 Outcome append",
+        r"LedgerEvent::Credit\b": "raw V1 Credit append",
+        r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
+    }
+
+    for path in (ROOT / "codex-rs").rglob("*.rs"):
+        relative = path.relative_to(ROOT).as_posix()
+        if any(relative == root or relative.startswith(f"{root}/") for root in allowed_roots):
+            continue
+        if (
+            "/tests/" in relative
+            or path.name.endswith("_tests.rs")
+            or path.name.endswith("_test_support.rs")
+        ):
+            continue
+
+        text = path.read_text(encoding="utf-8")
+        for pattern, description in forbidden.items():
+            findings.require(
+                re.search(pattern, text) is None,
+                "legacy_learning_writer_product_bypass",
+                f"{relative} uses {description}; product learning writes must use LedgerWriter",
+            )
 
 
 def verify_authority_posture(findings: Findings) -> None:
@@ -759,6 +800,7 @@ def verify() -> Findings:
     modules = verify_matrix(matrix, findings)
     verify_traceability(trace, modules, findings)
     verify_learning_eval_production_boundary(findings)
+    verify_product_writer_exclusivity(findings)
     verify_authority_posture(findings)
     verify_workflow(findings)
     return findings

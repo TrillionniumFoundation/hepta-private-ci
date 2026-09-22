@@ -40,3 +40,5 @@ or quality improvement.
 reopen/replay, capacity/corruption, signed-input substitution, upstream failure,
 abstention and slow-path checks. Test signatures and metrics are synthetic
 qualification inputs, not measured learning results.
+
+The durable Decision port now consumes the canonical `LedgerWriter`, requires a separately signed `ProductionDecisionV2` from the qualified generator, and acknowledges only after the independent witness advances. The terminal `ProductQualificationReceiptV1` remains the runtime admission source.
