@@ -12,7 +12,7 @@ No release, activation or external acceptance claims are added. Test results are
 
 ## learning.ledger
 
-Normal merge history retains #738 (`91283d7b133f16ad0ac73cc01ea691bc0f6b156c`) and #869 (`3b361d7ff147d095bebd1749fef476b60884f79d`). The canonical writer, independent witness, typed V2 records, dataset membership, unlearning handoff and protocol adapters come from #738. #869's optional post-append witness facade and competing `trust_root`, `index_checkpoint`, `unlearning` and `convergence_tests` modules are superseded. These cannot be combined by registering both codecs: #869 assigns event tag 4 to authenticated Outcome while #738 assigns it to authenticated Decision V2. V1 tags 0–3 retain the canonical reader; experimental divergent branch formats are not silently accepted as the same protocol.
+Normal merge history retains #738 (`91283d7b133f16ad0ac73cc01ea691bc0f6b156c`) and #869 (`3b361d7ff147d095bebd1749fef476b60884f79d`). The canonical writer, independent witness, typed V2 records, dataset membership, unlearning handoff and protocol adapters come from #738. #869's optional post-append witness facade and competing `trust_root`, `index_checkpoint`, `unlearning` and `convergence_tests` modules are superseded. These cannot be combined by registering both codecs: #869 assigns event tag 4 to authenticated Outcome V1 while #738 assigns it to authenticated Outcome V2 with a different layout. V1 tags 0–3 retain the canonical reader; experimental divergent branch formats are not silently accepted as the same protocol.
 
 Preserved unique #869 semantics:
 

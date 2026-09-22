@@ -30,6 +30,9 @@ pub enum LedgerError {
     OutcomePredecessorEpisodeMismatch,
     OutcomePredecessorNotHead(String),
     PolicySelfLabelsOutcome,
+    DeliveryAlreadyExists(String),
+    InvalidDeliveryObservation,
+    PolicySelfObservesDelivery,
     CreditIdentityAlreadyExists(String),
     CreditAlreadyAssigned,
     CreditBatchIdentityAlreadyExists(String),
@@ -85,7 +88,8 @@ impl LedgerError {
             | Self::OutcomePredecessorNotHead(_)
             | Self::OutcomeLineageRootExists(_)
             | Self::OutcomeStateMismatch => "LRN-E005",
-            Self::PolicySelfLabelsOutcome | Self::CreditAllocatorNotIndependent => "LRN-E006",
+            Self::PolicySelfLabelsOutcome | Self::PolicySelfObservesDelivery | Self::CreditAllocatorNotIndependent => "LRN-E006",
+            Self::DeliveryAlreadyExists(_) | Self::InvalidDeliveryObservation => "LRN-E005",
             Self::CreditAlreadyAssigned
             | Self::CreditBatchAlreadyAssigned(_)
             | Self::DuplicateCreditTarget(_)
@@ -177,6 +181,18 @@ impl fmt::Display for LedgerError {
             }
             Self::PolicySelfLabelsOutcome => {
                 formatter.write_str("evaluated policy cannot label its own outcome")
+            }
+            Self::DeliveryAlreadyExists(id) => {
+                write!(
+                    formatter,
+                    "prompt delivery already exists for episode: {id}"
+                )
+            }
+            Self::InvalidDeliveryObservation => {
+                formatter.write_str("prompt delivery observation is internally inconsistent")
+            }
+            Self::PolicySelfObservesDelivery => {
+                formatter.write_str("evaluated policy cannot certify its own prompt delivery")
             }
             Self::CreditIdentityAlreadyExists(id) => {
                 write!(formatter, "credit identity already exists: {id}")

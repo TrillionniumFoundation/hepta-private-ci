@@ -175,6 +175,7 @@ fn event_kind(event: &LedgerEvent) -> u8 {
         LedgerEvent::CreditBatchV2(_) => 5,
         LedgerEvent::UnlearningLineageV1(_) => 6,
         LedgerEvent::AuthenticatedDecisionV2(_) => 7,
+        LedgerEvent::PromptDelivery(_) => 8,
     }
 }
 
