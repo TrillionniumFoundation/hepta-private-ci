@@ -1,0 +1,97 @@
+name: single-main-consolidation
+
+on:
+  push:
+    branches: [integration/single-main-20260922]
+    paths: [.github/workflows/single-main-consolidation.yml]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: single-main-consolidation
+  cancel-in-progress: false
+
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Snapshot all branch heads and inspect ancestry without changing any remote ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --prune --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          mkdir -p "$RUNNER_TEMP/single-main"
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, datetime
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'single-main'
+          def git(*args, check=True):
+              return subprocess.run(['git', *args], text=True, capture_output=True, check=check)
+          raw = git('for-each-ref', '--format=%(refname)\t%(objectname)\t%(committerdate:unix)', 'refs/remotes/origin/').stdout
+          main = git('rev-parse', 'refs/remotes/origin/main').stdout.strip()
+          rows = []
+          unique = []
+          seen = set()
+          for line in raw.splitlines():
+              ref, sha, timestamp = line.split('\t')
+              name = ref.removeprefix('refs/remotes/origin/')
+              if name == 'HEAD':
+                  continue
+              p = git('merge-base', '--is-ancestor', sha, main, check=False)
+              if p.returncode not in (0, 1):
+                  raise RuntimeError(p.stderr)
+              row = {'branch': name, 'sha': sha, 'committerTimestamp': int(timestamp), 'containedInInitialMain': p.returncode == 0}
+              rows.append(row)
+              if p.returncode == 1 and name != 'integration/single-main-20260922' and sha not in seen:
+                  unique.append(sha)
+                  seen.add(sha)
+          independent = git('merge-base', '--independent', *unique).stdout.splitlines() if unique else []
+          tipset = set(independent)
+          for row in rows:
+              row['independentTip'] = row['sha'] in tipset
+          report = {
+              'schemaVersion': 1,
+              'observedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'initialMain': main,
+              'branchCount': len(rows),
+              'containedBranchCount': sum(r['containedInInitialMain'] for r in rows),
+              'uniqueUnmergedTipCount': len(unique),
+              'independentUnmergedTipCount': len(independent),
+              'branches': rows,
+              'independentUnmergedTips': independent,
+              'remoteMutationsPerformed': False,
+              'qualificationClaim': 'inventory only; no build or product qualification'
+          }
+          (out / 'inventory.json').write_text(json.dumps(report, indent=2) + '\n')
+          (out / 'heads.tsv').write_text(''.join(f"{r['sha']}\trefs/heads/{r['branch']}\n" for r in rows))
+          print(json.dumps({k:v for k,v in report.items() if k not in ('branches', 'independentUnmergedTips')}, indent=2))
+          for row in rows:
+              if row['independentTip']:
+                  print('INDEPENDENT', row['sha'], row['branch'])
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
+              f.write('# Single-main branch inventory\n\n')
+              f.write(f"Initial main: `{main}`\n\nBranches: {len(rows)}; already contained: {report['containedBranchCount']}; independent unmerged tips: {len(independent)}.\n\n")
+              f.write('Read-only inventory. No branch has been deleted and main has not been moved.\n')
+          PY
+      - name: Preserve complete branch history for local integration and recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          git bundle create "$RUNNER_TEMP/single-main/heads.bundle" --branches --remotes
+          git bundle verify "$RUNNER_TEMP/single-main/heads.bundle"
+          sha256sum "$RUNNER_TEMP/single-main/heads.bundle" > "$RUNNER_TEMP/single-main/heads.bundle.sha256"
+      - name: Upload branch inventory and recoverable Git history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: single-main-inventory-${{ github.run_id }}
+          path: ${{ runner.temp }}/single-main/
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
