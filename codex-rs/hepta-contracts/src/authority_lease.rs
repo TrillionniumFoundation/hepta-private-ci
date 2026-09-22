@@ -1088,17 +1088,16 @@ mod tests {
         }
     }
 
-    fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir) {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    fn fixture() -> Result<(AuthorityLeaseRegistry, tempfile::TempDir), Box<dyn std::error::Error>> {
+        let directory = tempfile::tempdir()?;
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+            AuthorityLeaseFrontier::for_empty_epoch(7)?,
             Arc::new(FixedClock(2_000)),
-        )
-        .unwrap();
-        (registry, directory)
+        )?;
+        Ok((registry, directory))
     }
 
     fn binding() -> AuthorityLeaseBinding {
@@ -1125,7 +1124,7 @@ mod tests {
 
     #[test]
     fn lease_is_durable_verified_and_cas_revoked() {
-        let (registry, directory) = fixture();
+        let (registry, directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
@@ -1137,6 +1136,9 @@ mod tests {
             AuthorityLeaseError::Revoked
         );
         let frontier = registry.frontier().unwrap();
+        // The verifier shares the pinned owner lock. A restart begins only
+        // after every handle to the previous owner has been released.
+        drop(verifier);
         drop(registry);
         let reopened = AuthorityLeaseRegistry::open_state_dir(
             directory.path(),
@@ -1148,8 +1150,51 @@ mod tests {
     }
 
     #[test]
+    fn verifier_and_token_keep_writer_fence_until_last_handle_is_released() {
+        let (registry, directory) = fixture().unwrap();
+        registry.put_lease(lease(), 0).unwrap();
+        let verifier = registry.verifier();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
+        let frontier = registry.frontier().unwrap();
+        drop(registry);
+
+        assert_eq!(
+            AuthorityLeaseRegistry::open_state_dir(
+                directory.path(),
+                "security-authority".into(),
+                frontier,
+            )
+            .unwrap_err(),
+            AuthorityLeaseError::StateLocked
+        );
+        drop(verifier);
+        assert_eq!(
+            AuthorityLeaseRegistry::open_state_dir(
+                directory.path(),
+                "security-authority".into(),
+                frontier,
+            )
+            .unwrap_err(),
+            AuthorityLeaseError::StateLocked
+        );
+        drop(token);
+
+        let reopened = AuthorityLeaseRegistry::open_state_dir_with_clock(
+            directory.path(),
+            "security-authority".into(),
+            frontier,
+            Arc::new(FixedClock(2_000)),
+        )
+        .unwrap();
+        assert_eq!(reopened.frontier().unwrap(), frontier);
+        let verifier = reopened.verifier();
+        let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
+        assert_eq!(verifier.with_verified_use(token, &binding(), || 7), Ok(7));
+    }
+
+    #[test]
     fn verified_use_releases_owner_lock_before_consumer_code() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
@@ -1171,12 +1216,12 @@ mod tests {
 
     #[test]
     fn stale_cas_and_binding_drift_fail_closed() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let mut replacement = lease();
         replacement.revision = 2;
         assert_eq!(
-            registry.put_lease(replacement.clone(), 99).unwrap_err(),
+            registry.put_lease(replacement, 99).unwrap_err(),
             AuthorityLeaseError::RevisionMismatch
         );
         let mut wrong = binding();
@@ -1192,7 +1237,7 @@ mod tests {
 
     #[test]
     fn token_is_invalidated_by_lease_replacement() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
@@ -1210,7 +1255,7 @@ mod tests {
 
     #[test]
     fn revoke_retry_reuses_server_owned_timestamp() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let first = registry.revoke("lease-one", 1, [9; 32]).unwrap();
         let retry = registry.revoke("lease-one", 1, [9; 32]).unwrap();
@@ -1224,7 +1269,7 @@ mod tests {
 
     #[test]
     fn bounded_prune_reclaims_only_expired_unrevoked_leases() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         let mut expired = lease();
         expired.expires_at_unix_ms = 1_500;
         registry.put_lease(expired, 0).unwrap();
@@ -1379,7 +1424,7 @@ mod tests {
 
     #[test]
     fn external_frontier_detects_old_snapshot_and_missing_store_reset() {
-        let (registry, directory) = fixture();
+        let (registry, directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let frontier = registry.frontier().unwrap();
         drop(registry);
@@ -1412,7 +1457,7 @@ mod tests {
 
     #[test]
     fn epoch_rollover_is_durable_and_clears_bounded_history() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let before = registry.frontier().unwrap();
         let after = registry.advance_epoch(before.store_revision, 8).unwrap();

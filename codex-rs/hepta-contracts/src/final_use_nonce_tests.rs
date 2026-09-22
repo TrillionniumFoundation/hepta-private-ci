@@ -82,7 +82,7 @@ fn truncated_live_log_fences_the_owner_before_another_claim() {
         .unwrap()
         .set_len(0)
         .unwrap();
-    let mut next = signed.grant.clone();
+    let mut next = signed.grant;
     next.nonce = [9; 32];
     let signed = SignedFinalUseGrant {
         signature: SigningKey::from_bytes(&[47; 32])
