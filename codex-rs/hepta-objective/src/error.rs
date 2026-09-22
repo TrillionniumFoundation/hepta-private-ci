@@ -11,8 +11,10 @@ pub enum ObjectiveError {
         actual: usize,
     },
     DuplicateSemanticId(String),
+    NonCanonicalOutput(&'static str),
     EmptyPrincipalScope,
     EmptyDigest(&'static str),
+    DigestMismatch(&'static str),
     InvalidSoftWeight(String),
     AbstainUnavailable,
     UntrustedAuthorityEscalation,
@@ -27,11 +29,12 @@ impl ObjectiveError {
         match self {
             Self::InvalidBound { .. }
             | Self::DuplicateSemanticId(_)
+            | Self::NonCanonicalOutput(_)
             | Self::InvalidSoftWeight(_)
             | Self::Arithmetic => "OBJ-E001",
             Self::UnsupportedConstraintLanguage => "OBJ-E002",
             Self::EmptyPrincipalScope => "OBJ-E003",
-            Self::EmptyDigest(_) => "OBJ-E004",
+            Self::EmptyDigest(_) | Self::DigestMismatch(_) => "OBJ-E004",
             Self::AbstainUnavailable => "OBJ-E006",
             Self::FeasibilityBudgetExhausted => "OBJ-E007",
             Self::UntrustedAuthorityEscalation => "OBJ-E009",
@@ -48,8 +51,12 @@ impl fmt::Display for ObjectiveError {
                 actual,
             } => write!(formatter, "{kind} count {actual} exceeds maximum {maximum}"),
             Self::DuplicateSemanticId(id) => write!(formatter, "duplicate semantic id: {id}"),
+            Self::NonCanonicalOutput(field) => {
+                write!(formatter, "compiled objective is not canonical: {field}")
+            }
             Self::EmptyPrincipalScope => formatter.write_str("principal scope must not be empty"),
             Self::EmptyDigest(kind) => write!(formatter, "{kind} digest must not be zero"),
+            Self::DigestMismatch(kind) => write!(formatter, "{kind} digest mismatch"),
             Self::InvalidSoftWeight(dimension) => write!(
                 formatter,
                 "soft preference weight must be in [0, 1] for dimension {dimension}"

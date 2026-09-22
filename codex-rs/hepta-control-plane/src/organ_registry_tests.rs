@@ -182,3 +182,40 @@ fn rejects_handler_identity_drift() {
             if expected == id("source") && actual == id("wrong")
     ));
 }
+
+#[test]
+fn one_reviewed_driver_constructs_two_distinct_organ_instances() {
+    let mut registry = OrganHandlerRegistryV1::new();
+    registry
+        .register(id("driver.shared"), digest("shared"), fixture_factory)
+        .expect("register one implementation");
+    let mut selected = bindings();
+    for binding in &mut selected {
+        binding.driver = id("driver.shared");
+        binding.implementation_digest = digest("shared");
+    }
+    let host = registry
+        .create_host(graph(), &selected)
+        .expect("distinct instance identities may share an implementation");
+    assert_eq!(host.statuses().len(), 2);
+    assert_eq!(registry.len(), 1);
+}
+
+#[test]
+fn shared_driver_still_validates_every_digest_before_any_factory_call() {
+    let mut registry = OrganHandlerRegistryV1::new();
+    registry
+        .register(id("driver.shared"), digest("shared"), unused_factory)
+        .expect("register constructor that must not run on invalid input");
+    let mut selected = bindings();
+    for binding in &mut selected {
+        binding.driver = id("driver.shared");
+        binding.implementation_digest = digest("shared");
+    }
+    selected[1].implementation_digest = digest("unreviewed-implementation");
+    assert!(matches!(
+        registry.create_host(graph(), &selected),
+        Err(OrganHandlerRegistryError::DriverDigestMismatch { driver })
+            if driver == id("driver.shared")
+    ));
+}

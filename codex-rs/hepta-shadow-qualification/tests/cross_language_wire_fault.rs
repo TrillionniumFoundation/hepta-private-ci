@@ -70,7 +70,7 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() -> Result<(), Box<dyn E
     let schema = StableId::new("hepta.integration.v1")?;
     let producer = StableId::new("hepta-shadow-qualification")?;
     let generation = Generation::new(7)?;
-    let payload = br#"{\"objective\":\"ndu\",\"authority\":\"deny_all\",\"step\":1}"#.to_vec();
+    let payload = br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec();
     let envelope = WireEnvelope::new(
         schema.clone(),
         producer.clone(),

@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
@@ -9,19 +10,32 @@ use std::fs::{self};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+use codex_hepta_types::Digest32;
+use serde::Deserialize;
+use serde::Serialize;
+
 #[path = "native_control.rs"]
 pub mod native;
+
+#[path = "durable_maintenance.rs"]
+mod maintenance;
+pub use maintenance::MaintenanceStats;
 
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_TOKENS: u32 = 1_000_000;
+const LEGACY_CHECKPOINT_PREFIX: &str = "checkpoint-legacy-v1|";
+const ARCHIVE_SUFFIX_PREFIX: &str = "archive-";
+const COMPACTION_PREFIX: &str = "compaction-v1|";
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RequestState {
     Pending,
     Reserved,
@@ -62,14 +76,11 @@ impl RequestState {
     }
 
     fn terminal(self) -> bool {
-        matches!(
-            self,
-            Self::Completed | Self::Failed | Self::Cancelled | Self::Indeterminate
-        )
+        matches!(self, Self::Completed | Self::Failed | Self::Cancelled)
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct InferenceRequest {
     pub request_id: String,
     pub principal_id: String,
@@ -80,7 +91,7 @@ pub struct InferenceRequest {
     pub semantic_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Reservation {
     pub reservation_id: String,
     pub quota_units: u64,
@@ -89,14 +100,14 @@ pub struct Reservation {
     pub valid_until_ms: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Assignment {
     pub worker_id: String,
     pub worker_generation: u64,
     pub assignment_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct TerminalObservation {
     pub request_id: String,
     pub reservation_id: String,
@@ -111,7 +122,7 @@ pub struct TerminalObservation {
     pub usage_units: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct RequestRecord {
     pub request: InferenceRequest,
     pub revision: u64,
@@ -176,6 +187,48 @@ pub struct DurableInferenceControl {
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
+    cached_stamp: Option<FileStamp>,
+    archive_digest: Option<String>,
+    archive_stamp: Option<FileStamp>,
+    replay_stats: JournalReplayStats,
+    maintenance: std::sync::Arc<maintenance::Counters>,
+}
+
+/// Local work counters, not a throughput claim or a durable fact.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct JournalReplayStats {
+    pub full_replays: u64,
+    pub incremental_replays: u64,
+    pub replayed_bytes: u64,
+    pub unchanged_reuses: u64,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct NativeArchiveReceipt {
+    pub archived: usize,
+    pub remaining_native: usize,
+    pub journal_bytes: u64,
+    pub released_archive_bytes: u64,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct CompactionArchiveRetentionReceipt {
+    pub retained: usize,
+    pub removed: usize,
+    pub retained_bytes: u64,
+}
+
+/// A cache discriminator for cooperating writers in a host-owned directory.
+/// This is not authentication against a privileged filesystem writer. Non-Unix
+/// platforms deliberately take the full-replay path rather than trust mtimes.
+#[derive(Deserialize, Serialize, Clone, Copy, Debug, Eq, PartialEq)]
+struct FileStamp {
+    device: u64,
+    inode: u64,
+    length: u64,
+    modified: (i64, i64),
+    changed: (i64, i64),
+    mode: u32,
 }
 
 impl DurableInferenceControl {
@@ -194,13 +247,17 @@ impl DurableInferenceControl {
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
         }
+        // Lock BEFORE resolving the journal inode: a peer may publish a
+        // compacted generation between open and lock acquisition otherwise.
+        let maintenance = std::sync::Arc::new(maintenance::Counters::default());
+        let lock_file = maintenance::WriterFence::acquire(&path, maintenance.clone())?;
         let file = options.open(&path)?;
-        // Lock before replay: two owners must never admit from the same stale cut.
-        file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        validate_regular_file(&file)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
+        let mut compaction_archive_digest: Option<String> = None;
         let mut line = Vec::new();
         loop {
             line.clear();
@@ -226,17 +283,45 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+            if let Some(digest) = line.strip_prefix(COMPACTION_PREFIX) {
+                validate_digest(digest, "compaction archive")?;
+                if compaction_archive_digest
+                    .replace(digest.to_string())
+                    .is_some()
+                {
+                    return Err(Error::CorruptJournal("duplicate compaction header"));
+                }
+            } else if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
+                let record: RequestRecord = serde_json::from_str(json)
+                    .map_err(|_| Error::CorruptJournal("legacy checkpoint decode"))?;
+                validate_checkpoint_record(&record)?;
+                if records
+                    .insert(record.request.request_id.clone(), record)
+                    .is_some()
+                {
+                    return Err(Error::CorruptJournal("duplicate legacy checkpoint"));
+                }
+            } else if let Some(json) = line.strip_prefix(native::CHECKPOINT_PREFIX) {
+                native.replay_checkpoint(json)?;
+            } else if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
-            {
+            if records.len() + native.records.len() > capacity {
                 return Err(Error::CapacityExceeded);
             }
         }
+        if records.keys().any(|id| native.records.contains_key(id)) {
+            return Err(Error::Conflict);
+        }
+        let archive_stamp = maintenance::verify_archive(
+            &path,
+            compaction_archive_digest.as_deref(),
+            None,
+            &maintenance,
+        )?;
+        let cached_stamp = file_stamp(&file)?;
         #[cfg(unix)]
         {
             let parent = path
@@ -245,6 +330,7 @@ impl DurableInferenceControl {
                 .unwrap_or_else(|| Path::new("."));
             File::open(parent)?.sync_all()?;
         }
+        drop(lock_file);
         Ok(Self {
             path,
             file,
@@ -253,6 +339,16 @@ impl DurableInferenceControl {
             capacity,
             journal_bytes,
             poisoned: false,
+            cached_stamp,
+            archive_digest: compaction_archive_digest,
+            archive_stamp,
+            maintenance,
+            replay_stats: JournalReplayStats {
+                full_replays: 1,
+                incremental_replays: 0,
+                replayed_bytes: journal_bytes,
+                unchanged_reuses: 0,
+            },
         })
     }
 
@@ -262,20 +358,7 @@ impl DurableInferenceControl {
         request: InferenceRequest,
     ) -> Result<ControlReceipt, Error> {
         validate_request(now_ms, &request)?;
-        if let Some(current) = self.records.get(&request.request_id) {
-            if current.request == request {
-                return Ok(receipt(current, /*idempotent*/ true));
-            }
-            return Err(Error::Conflict);
-        }
-        if self.native.records.contains_key(&request.request_id) {
-            return Err(Error::Conflict);
-        }
-        if self.records.len() + self.native.records.len() >= self.capacity {
-            return Err(Error::CapacityExceeded);
-        }
-        let event = Event::Submit(request);
-        self.commit(event)
+        self.commit(Event::Submit(request))
     }
 
     pub fn reserve(
@@ -287,21 +370,6 @@ impl DurableInferenceControl {
     ) -> Result<ControlReceipt, Error> {
         validate_identity(request_id, "request")?;
         validate_reservation(now_ms, &reservation)?;
-        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-        if record.revision != expected_revision {
-            return Err(Error::StaleRevision);
-        }
-        if record.state == RequestState::Reserved
-            && record.reservation.as_ref() == Some(&reservation)
-        {
-            return Ok(receipt(record, /*idempotent*/ true));
-        }
-        if record.state != RequestState::Pending {
-            return Err(Error::InvalidTransition);
-        }
-        if reservation.maximum_tokens < record.request.maximum_tokens {
-            return Err(Error::UsageExceeded);
-        }
         self.commit(Event::Reserve {
             request_id: request_id.to_string(),
             expected_revision,
@@ -317,17 +385,6 @@ impl DurableInferenceControl {
     ) -> Result<ControlReceipt, Error> {
         validate_identity(request_id, "request")?;
         validate_assignment(&assignment)?;
-        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-        if record.revision != expected_revision {
-            return Err(Error::StaleRevision);
-        }
-        if record.state == RequestState::Assigned && record.assignment.as_ref() == Some(&assignment)
-        {
-            return Ok(receipt(record, /*idempotent*/ true));
-        }
-        if record.state != RequestState::Reserved {
-            return Err(Error::InvalidTransition);
-        }
         self.commit(Event::Assign {
             request_id: request_id.to_string(),
             expected_revision,
@@ -341,16 +398,6 @@ impl DurableInferenceControl {
         expected_revision: u64,
     ) -> Result<ControlReceipt, Error> {
         validate_identity(request_id, "request")?;
-        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-        if record.revision != expected_revision {
-            return Err(Error::StaleRevision);
-        }
-        if record.state == RequestState::Cancelled || record.state == RequestState::Cancelling {
-            return Ok(receipt(record, /*idempotent*/ true));
-        }
-        if record.state.terminal() {
-            return Err(Error::InvalidTransition);
-        }
         self.commit(Event::Cancel {
             request_id: request_id.to_string(),
             expected_revision,
@@ -367,36 +414,6 @@ impl DurableInferenceControl {
         validate_identity(request_id, "request")?;
         validate_digest(&observation_digest, "observation")?;
         validate_observation(&observation)?;
-        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-        if record.revision != expected_revision {
-            return Err(Error::StaleRevision);
-        }
-        if record.terminal_observation_digest.as_ref() == Some(&observation_digest) {
-            return Ok(receipt(record, /*idempotent*/ true));
-        }
-        if record.state.terminal() {
-            return Err(Error::Conflict);
-        }
-        let reservation = record
-            .reservation
-            .as_ref()
-            .ok_or(Error::ReservationMismatch)?;
-        let assignment = record
-            .assignment
-            .as_ref()
-            .ok_or(Error::AssignmentMismatch)?;
-        if observation.request_id != record.request.request_id
-            || observation.reservation_id != reservation.reservation_id
-            || observation.worker_id != assignment.worker_id
-            || observation.worker_generation != assignment.worker_generation
-            || observation.model_digest != record.request.model_digest
-            || observation.payload_digest != record.request.payload_digest
-        {
-            return Err(Error::AssignmentMismatch);
-        }
-        if observation.consumed_tokens > reservation.maximum_tokens {
-            return Err(Error::UsageExceeded);
-        }
         if observation.terminal_observed {
             let status = observation
                 .terminal_status
@@ -429,23 +446,688 @@ impl DurableInferenceControl {
         &self.path
     }
 
-    fn commit(&mut self, event: Event) -> Result<ControlReceipt, Error> {
+    pub fn maintenance_stats(&self) -> MaintenanceStats {
+        self.maintenance.snapshot()
+    }
+
+    pub fn replay_stats(&self) -> JournalReplayStats {
+        self.replay_stats
+    }
+
+    /// The active journal reserves enough headroom for dispatch/cancel metadata
+    /// plus one maximal terminal observation. Callers may compact before new
+    /// admission when this returns true; compaction preserves the full previous
+    /// event stream in a content-addressed sibling archive.
+    pub fn needs_compaction(&self) -> bool {
+        self.journal_bytes > MAX_JOURNAL_BYTES - 2 * MAX_JOURNAL_LINE_BYTES as u64
+    }
+
+    /// Acquire the journal writer fence for one short mutation and refresh
+    /// this handle from the latest durable cut. The returned lock must remain
+    /// alive through append + fsync; dropping it releases other workers.
+    fn reload_locked(&mut self) -> Result<maintenance::WriterFence, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        // Reject invalid transitions before durable append; a rejected command
-        // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
+        let lock_file = maintenance::WriterFence::acquire(&self.path, self.maintenance.clone())?;
+        // Another process may have compacted by atomically replacing the active
+        // journal since this handle was opened. Reopen the pathname while the
+        // stable sidecar fence is held so replay and the next append target the
+        // same current inode.
+        let mut options = OpenOptions::new();
+        options.append(true).read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let current_file = options.open(&self.path)?;
+        validate_regular_file(&current_file)?;
+        let current_stamp = file_stamp(&current_file)?;
+        if let (Some(cached), Some(current)) = (self.cached_stamp, current_stamp)
+            && cached == current
+        {
+            // Only reuse a cut whose inode, length, mtime AND ctime are
+            // unchanged. Peer appends use validated suffix replay below;
+            // same-size edits and generation changes take full replay. Archive
+            // disappearance still fails closed.
+            self.archive_stamp = maintenance::verify_archive(
+                &self.path,
+                self.archive_digest.as_deref(),
+                self.archive_stamp,
+                &self.maintenance,
+            )?;
+            self.file = current_file;
+            self.replay_stats.unchanged_reuses =
+                self.replay_stats.unchanged_reuses.saturating_add(1);
+            return Ok(lock_file);
+        }
+
+        // Cooperating writers only append while holding the stable sidecar
+        // fence. If the active inode is unchanged and only its length grew,
+        // replay just the appended suffix. Same-size edits, truncation and
+        // compaction (inode replacement) deliberately fall back to full replay.
+        //
+        // Stage only request records touched by that suffix. This keeps peer
+        // synchronization proportional to peer delta size rather than cloning
+        // the complete hot state on every alternating writer mutation.
+        if let (Some(cached), Some(current)) = (self.cached_stamp, current_stamp)
+            && cached.device == current.device
+            && cached.inode == current.inode
+            && cached.mode == current.mode
+            && current.length > cached.length
+            && cached.length == self.journal_bytes
+        {
+            if current.length > MAX_JOURNAL_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
+            self.archive_stamp = maintenance::verify_archive(
+                &self.path,
+                self.archive_digest.as_deref(),
+                self.archive_stamp,
+                &self.maintenance,
+            )?;
+
+            let mut staged_records = BTreeMap::new();
+            let mut native_json = Vec::new();
+            let mut reader = BufReader::new(current_file.try_clone()?);
+            reader.seek(SeekFrom::Start(cached.length))?;
+            let mut replayed = 0_u64;
+            let mut line = Vec::new();
+            let mut append_only = true;
+            loop {
+                line.clear();
+                let remaining = current.length.saturating_sub(cached.length + replayed) + 1;
+                let limit = remaining.min(MAX_JOURNAL_LINE_BYTES as u64 + 1);
+                let count = (&mut reader).take(limit).read_until(b'\n', &mut line)?;
+                if count == 0 {
+                    break;
+                }
+                replayed = replayed
+                    .checked_add(count as u64)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                if count > MAX_JOURNAL_LINE_BYTES || cached.length + replayed > current.length {
+                    return Err(Error::CapacityExceeded);
+                }
+                if line.pop() != Some(b'\n') {
+                    return Err(Error::CorruptJournal("incomplete appended line"));
+                }
+                if line.last() == Some(&b'\r') {
+                    line.pop();
+                }
+                let line = std::str::from_utf8(&line).map_err(|_| Error::CorruptJournal("utf8"))?;
+                if line.is_empty() {
+                    continue;
+                }
+                // Checkpoints/compaction headers are generation publication,
+                // never normal append traffic. A cooperating compactor uses
+                // atomic replacement and therefore changes the inode.
+                if line.starts_with(COMPACTION_PREFIX)
+                    || line.starts_with(LEGACY_CHECKPOINT_PREFIX)
+                    || line.starts_with(native::CHECKPOINT_PREFIX)
+                {
+                    append_only = false;
+                    break;
+                }
+                if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                    native_json.push(json.to_string());
+                } else {
+                    let event = decode_event(line)?;
+                    let request_id = event.request_id().to_string();
+                    if !staged_records.contains_key(&request_id)
+                        && let Some(record) = self.records.get(&request_id)
+                    {
+                        staged_records.insert(request_id.clone(), record.clone());
+                    }
+                    apply_event(&mut staged_records, &event, /*replay*/ true)?;
+                }
+            }
+
+            if append_only && cached.length + replayed == current.length {
+                let native_delta = self.native.stage_replay_suffix(&native_json)?;
+                if staged_records.keys().any(|id| {
+                    self.native.records.contains_key(id) || native_delta.records.contains_key(id)
+                }) || native_delta
+                    .records
+                    .keys()
+                    .any(|id| self.records.contains_key(id))
+                {
+                    return Err(Error::Conflict);
+                }
+                let new_legacy_ids = staged_records
+                    .keys()
+                    .filter(|id| !self.records.contains_key(*id))
+                    .count();
+                if self.records.len()
+                    + new_legacy_ids
+                    + self.native.records.len()
+                    + native_delta.new_ids
+                    > self.capacity
+                {
+                    return Err(Error::CapacityExceeded);
+                }
+
+                for (request_id, record) in staged_records {
+                    self.records.insert(request_id, record);
+                }
+                self.native.apply_replay_suffix(native_delta);
+                self.journal_bytes = current.length;
+                self.file = current_file;
+                self.cached_stamp = current_stamp;
+                self.replay_stats.incremental_replays =
+                    self.replay_stats.incremental_replays.saturating_add(1);
+                self.replay_stats.replayed_bytes =
+                    self.replay_stats.replayed_bytes.saturating_add(replayed);
+                return Ok(lock_file);
+            }
+        }
+
+        let mut records = BTreeMap::new();
+        let mut native = native::NativeJournal::default();
+        let mut reader = BufReader::new(current_file.try_clone()?);
+        let mut journal_bytes = 0_u64;
+        let mut compaction_archive_digest: Option<String> = None;
+        let mut line = Vec::new();
+        loop {
+            line.clear();
+            let remaining = MAX_JOURNAL_BYTES.saturating_sub(journal_bytes) + 1;
+            let limit = remaining.min(MAX_JOURNAL_LINE_BYTES as u64 + 1);
+            let count = (&mut reader).take(limit).read_until(b'\n', &mut line)?;
+            if count == 0 {
+                break;
+            }
+            journal_bytes += count as u64;
+            if count > MAX_JOURNAL_LINE_BYTES || journal_bytes > MAX_JOURNAL_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
+            if line.pop() != Some(b'\n') {
+                return Err(Error::CorruptJournal("incomplete line"));
+            }
+            if line.last() == Some(&b'\r') {
+                line.pop();
+            }
+            let line = std::str::from_utf8(&line).map_err(|_| Error::CorruptJournal("utf8"))?;
+            if line.is_empty() {
+                continue;
+            }
+            if let Some(digest) = line.strip_prefix(COMPACTION_PREFIX) {
+                validate_digest(digest, "compaction archive")?;
+                if compaction_archive_digest
+                    .replace(digest.to_string())
+                    .is_some()
+                {
+                    return Err(Error::CorruptJournal("duplicate compaction header"));
+                }
+            } else if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
+                let record: RequestRecord = serde_json::from_str(json)
+                    .map_err(|_| Error::CorruptJournal("legacy checkpoint decode"))?;
+                validate_checkpoint_record(&record)?;
+                if records
+                    .insert(record.request.request_id.clone(), record)
+                    .is_some()
+                {
+                    return Err(Error::CorruptJournal("duplicate legacy checkpoint"));
+                }
+            } else if let Some(json) = line.strip_prefix(native::CHECKPOINT_PREFIX) {
+                native.replay_checkpoint(json)?;
+            } else if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                native.replay(json)?;
+            } else {
+                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+            }
+            if records.len() + native.records.len() > self.capacity {
+                return Err(Error::CapacityExceeded);
+            }
+        }
+        if records.keys().any(|id| native.records.contains_key(id)) {
+            return Err(Error::Conflict);
+        }
+        let archive_stamp = maintenance::verify_archive(
+            &self.path,
+            compaction_archive_digest.as_deref(),
+            None,
+            &self.maintenance,
+        )?;
+        self.records = records;
+        self.native = native;
+        self.journal_bytes = journal_bytes;
+        self.file = current_file;
+        self.cached_stamp = current_stamp;
+        self.archive_digest = compaction_archive_digest;
+        self.archive_stamp = archive_stamp;
+        self.replay_stats.full_replays = self.replay_stats.full_replays.saturating_add(1);
+        self.replay_stats.replayed_bytes = self
+            .replay_stats
+            .replayed_bytes
+            .saturating_add(journal_bytes);
+        Ok(lock_file)
+    }
+
+    /// Move released native runs out of the hot replay set while preserving
+    /// exact idempotence identity in owner-only per-request archives. The full
+    /// pre-compaction event stream is still retained by the content-addressed
+    /// compaction archive, so this is a hot-state optimization rather than
+    /// history deletion.
+    pub fn archive_released_native(&mut self) -> Result<NativeArchiveReceipt, Error> {
+        let _writer_fence = self.reload_locked()?;
+        let mut inventory = maintenance::load_inventory(&self.path, &self.maintenance)?;
+        let released = self
+            .native
+            .records
+            .iter()
+            .filter_map(|(id, record)| {
+                (record.state == native::NativeReservationState::Released).then(|| id.clone())
+            })
+            .collect::<BTreeSet<_>>();
+
+        if released.is_empty() {
+            if self.needs_compaction() {
+                let native_state = self.native.clone();
+                self.compact_current_with_archive(&native_state)?;
+            }
+            return Ok(NativeArchiveReceipt {
+                archived: 0,
+                remaining_native: self.native.records.len(),
+                journal_bytes: self.journal_bytes,
+                released_archive_bytes: inventory.bytes,
+            });
+        }
+
+        ensure_released_archive_dir(&self.path)?;
+        maintenance::invalidate_inventory(&self.path)?;
+        #[cfg(test)]
+        maintenance::crash_point("inventory-invalidated");
+        for request_id in &released {
+            let record = self
+                .native
+                .records
+                .get(request_id)
+                .ok_or(Error::RequestNotFound)?;
+            let added = self.persist_released_native_record(record)?;
+            if added > 0 {
+                inventory.bytes = inventory
+                    .bytes
+                    .checked_add(added)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                inventory.records = inventory
+                    .records
+                    .checked_add(1)
+                    .ok_or(Error::ArithmeticOverflow)?;
+            }
+        }
+        sync_released_archive_dir(&self.path)?;
+        #[cfg(test)]
+        maintenance::crash_point("directory-synced");
+        maintenance::save_inventory(&self.path, &inventory)?;
+        #[cfg(test)]
+        maintenance::crash_point("inventory-published");
+
+        // Stage hot-state removal separately. Publication of the compacted
+        // journal happens before the in-memory cut changes, so a failed rename
+        // never lets this handle forget a command identity while still usable.
+        let mut staged_native = self.native.clone();
+        for request_id in &released {
+            staged_native.records.remove(request_id);
+        }
+        self.compact_current_with_archive(&staged_native)?;
+        self.native = staged_native;
+        #[cfg(test)]
+        maintenance::crash_point("hot-compacted");
+
+        Ok(NativeArchiveReceipt {
+            archived: released.len(),
+            remaining_native: self.native.records.len(),
+            journal_bytes: self.journal_bytes,
+            released_archive_bytes: inventory.bytes,
+        })
+    }
+
+    pub(super) fn archived_native_record(
+        &self,
+        request_id: &str,
+    ) -> Result<Option<native::NativeRunRecord>, Error> {
+        validate_identity(request_id, "native archived request")?;
+        let path = released_record_path(&self.path, request_id)?;
+        let file = match File::open(&path) {
+            Ok(file) => file,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+            Err(error) => return Err(error.into()),
+        };
+        validate_private_file(&file)?;
+        if file.metadata()?.len() > MAX_JOURNAL_LINE_BYTES as u64 {
+            return Err(Error::CorruptJournal("native released archive size"));
+        }
+        let mut bytes = Vec::new();
+        file.take(MAX_JOURNAL_LINE_BYTES as u64 + 1)
+            .read_to_end(&mut bytes)?;
+        if bytes.len() > MAX_JOURNAL_LINE_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+        let record: native::NativeRunRecord = serde_json::from_slice(&bytes)
+            .map_err(|_| Error::CorruptJournal("native released archive decode"))?;
+        native::validate_checkpoint(&record)?;
+        if record.request.request_id != request_id
+            || record.state != native::NativeReservationState::Released
+        {
+            return Err(Error::CorruptJournal("native released archive identity"));
+        }
+        Ok(Some(record))
+    }
+
+    fn persist_released_native_record(
+        &self,
+        record: &native::NativeRunRecord,
+    ) -> Result<u64, Error> {
+        if record.state != native::NativeReservationState::Released {
+            return Err(Error::InvalidTransition);
+        }
+        native::validate_checkpoint(record)?;
+        let path = released_record_path(&self.path, &record.request.request_id)?;
+        let encoded = serde_json::to_vec(record)
+            .map_err(|_| Error::CorruptJournal("native released archive encode"))?;
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+        maintenance::publish_released(&path, &encoded)
+    }
+
+    /// Bound locally retained compaction history only after an external archive
+    /// owner has acknowledged the exact content digest. The archive referenced
+    /// by the active journal is never removable. If there are not enough
+    /// acknowledged older archives to meet the requested local bound, this
+    /// fails before deleting anything.
+    pub fn prune_exported_compaction_archives(
+        &mut self,
+        exported_digests: &BTreeSet<String>,
+        maximum_local_archives: usize,
+    ) -> Result<CompactionArchiveRetentionReceipt, Error> {
+        if maximum_local_archives == 0 {
+            return Err(Error::InvalidIdentity(
+                "at least one local compaction archive is required",
+            ));
+        }
+        for digest in exported_digests {
+            validate_digest(digest, "exported compaction archive")?;
+        }
+
+        let _writer_fence = self.reload_locked()?;
+        let archives = compaction_archives(&self.path)?;
+        if archives.len() <= maximum_local_archives {
+            return Ok(CompactionArchiveRetentionReceipt {
+                retained: archives.len(),
+                removed: 0,
+                retained_bytes: archives.iter().try_fold(0_u64, |total, (_, _, bytes)| {
+                    total.checked_add(*bytes).ok_or(Error::ArithmeticOverflow)
+                })?,
+            });
+        }
+
+        let required = archives.len() - maximum_local_archives;
+        let current = self.archive_digest.as_deref();
+        let removable = archives
+            .iter()
+            .filter(|(digest, _, _)| {
+                Some(digest.as_str()) != current && exported_digests.contains(digest)
+            })
+            .take(required)
+            .map(|(digest, path, bytes)| (digest.clone(), path.clone(), *bytes))
+            .collect::<Vec<_>>();
+        if removable.len() != required {
+            return Err(Error::CapacityExceeded);
+        }
+
+        let removed_digests = removable
+            .iter()
+            .map(|(digest, _, _)| digest.as_str())
+            .collect::<BTreeSet<_>>();
+        for (_, path, _) in &removable {
+            fs::remove_file(path)?;
+        }
+        sync_parent(&self.path)?;
+
+        let retained_bytes = archives
+            .iter()
+            .filter(|(digest, _, _)| !removed_digests.contains(digest.as_str()))
+            .try_fold(0_u64, |total, (_, _, bytes)| {
+                total.checked_add(*bytes).ok_or(Error::ArithmeticOverflow)
+            })?;
+        Ok(CompactionArchiveRetentionReceipt {
+            retained: maximum_local_archives,
+            removed: required,
+            retained_bytes,
+        })
+    }
+
+    /// Rewrite the active journal to one canonical checkpoint per current
+    /// request while preserving the complete pre-compaction event stream in a
+    /// content-addressed sibling archive. Indeterminate/in-flight records stay
+    /// in the compacted active journal, so compaction never makes them
+    /// replayable or releases their capacity.
+    pub fn compact_with_archive(&mut self) -> Result<PathBuf, Error> {
+        let _writer_fence = self.reload_locked()?;
+        let native_state = self.native.clone();
+        self.compact_current_with_archive(&native_state)
+    }
+
+    fn compact_current_with_archive(
+        &mut self,
+        native_state: &native::NativeJournal,
+    ) -> Result<PathBuf, Error> {
+        let mut source = File::open(&self.path)?;
+        let archive_digest = digest_hex(Digest32::of_reader(&mut source, MAX_JOURNAL_BYTES)?);
+        let archive = archive_path(&self.path, &archive_digest)?;
+        if archive.exists() {
+            verify_archive_file(&archive, &archive_digest)?;
+        } else {
+            let archive_tmp = sibling_temp_path(&archive, "tmp");
+            let mut archived = fresh_private_temporary(&archive_tmp)?;
+            source.seek(SeekFrom::Start(0))?;
+            let copied = std::io::copy(&mut source.take(MAX_JOURNAL_BYTES + 1), &mut archived)?;
+            if copied > MAX_JOURNAL_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
+            archived.flush()?;
+            archived.sync_all()?;
+            verify_archive_file(&archive_tmp, &archive_digest)?;
+            fs::rename(&archive_tmp, &archive)?;
+            sync_parent(&self.path)?;
+        }
+
+        // Emit one bounded record at a time. Do not hold both the complete
+        // source stream and the complete checkpoint image in memory.
+        let tmp = sibling_temp_path(&self.path, "compact");
+        let mut compact_file = fresh_private_temporary(&tmp)?;
+        let mut compacted_bytes = 0;
+        write_checkpoint_line(
+            &mut compact_file,
+            &mut compacted_bytes,
+            &format!("{COMPACTION_PREFIX}{archive_digest}\n"),
+        )?;
+        for record in self.records.values() {
+            let json = serde_json::to_string(record)
+                .map_err(|_| Error::CorruptJournal("legacy checkpoint encode"))?;
+            write_checkpoint_line(
+                &mut compact_file,
+                &mut compacted_bytes,
+                &format!("{LEGACY_CHECKPOINT_PREFIX}{json}\n"),
+            )?;
+        }
+        for line in native_state.checkpoint_lines() {
+            write_checkpoint_line(&mut compact_file, &mut compacted_bytes, &line?)?;
+        }
+        compact_file.flush()?;
+        compact_file.sync_all()?;
+
+        // Once publication is attempted, any I/O error requires reopen. Never
+        // continue through an old inode after an uncertain rename/dir fsync.
+        self.poisoned = true;
+        fs::rename(&tmp, &self.path)?;
+        sync_parent(&self.path)?;
+        self.file = OpenOptions::new()
+            .append(true)
+            .read(true)
+            .open(&self.path)?;
+        validate_private_file(&self.file)?;
+        self.cached_stamp = file_stamp(&self.file)?;
+        self.archive_stamp = maintenance::verify_archive(
+            &self.path,
+            Some(&archive_digest),
+            None,
+            &self.maintenance,
+        )?;
+        self.archive_digest = Some(archive_digest);
+        self.journal_bytes = compacted_bytes;
+        self.poisoned = false;
+        Ok(archive)
+    }
+
+    fn commit(&mut self, event: Event) -> Result<ControlReceipt, Error> {
+        let _writer_fence = self.reload_locked()?;
+        // Idempotence, capacity and record-bound validation are evaluated under
+        // the same writer fence as the append. A stale handle can therefore
+        // never return a receipt from its pre-refresh cache.
+        if let Some(existing) = self.validate_latest_event(&event)? {
+            return Ok(existing);
+        }
+        let request_id = event.request_id().to_string();
+        // Preparation copies only the affected record; the durable append
+        // still precedes publication and validation failures leave state alone.
+        let mut prepared = BTreeMap::new();
+        if let Some(record) = self.records.get(&request_id) {
+            prepared.insert(request_id.clone(), record.clone());
+        }
+        apply_event(&mut prepared, &event, /*replay*/ false)?;
+        let next = prepared.remove(&request_id).ok_or(Error::RequestNotFound)?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
-        let request_id = event.request_id().to_string();
-        self.records = next;
+        self.records.insert(request_id.clone(), next);
         let record = self
             .records
             .get(&request_id)
             .ok_or(Error::RequestNotFound)?;
         Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    fn validate_latest_event(&self, event: &Event) -> Result<Option<ControlReceipt>, Error> {
+        match event {
+            Event::Submit(request) => {
+                if self.native.records.contains_key(&request.request_id)
+                    || self.archived_native_record(&request.request_id)?.is_some()
+                {
+                    return Err(Error::Conflict);
+                }
+                if let Some(current) = self.records.get(&request.request_id) {
+                    if current.request == *request {
+                        return Ok(Some(receipt(current, /*idempotent*/ true)));
+                    }
+                    return Err(Error::Conflict);
+                }
+                if self.records.len() + self.native.records.len() >= self.capacity {
+                    return Err(Error::CapacityExceeded);
+                }
+            }
+            Event::Reserve {
+                request_id,
+                expected_revision,
+                reservation,
+            } => {
+                let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+                if record.state == RequestState::Reserved
+                    && record.reservation.as_ref() == Some(reservation)
+                    && is_exact_event_replay(record, *expected_revision)
+                {
+                    return Ok(Some(receipt(record, /*idempotent*/ true)));
+                }
+                require_revision(record, *expected_revision, /*replay*/ false)?;
+                if record.state != RequestState::Pending {
+                    return Err(Error::InvalidTransition);
+                }
+                if reservation.maximum_tokens < record.request.maximum_tokens {
+                    return Err(Error::UsageExceeded);
+                }
+            }
+            Event::Assign {
+                request_id,
+                expected_revision,
+                assignment,
+            } => {
+                let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+                if record.state == RequestState::Assigned
+                    && record.assignment.as_ref() == Some(assignment)
+                    && is_exact_event_replay(record, *expected_revision)
+                {
+                    return Ok(Some(receipt(record, /*idempotent*/ true)));
+                }
+                require_revision(record, *expected_revision, /*replay*/ false)?;
+                if record.state != RequestState::Reserved {
+                    return Err(Error::InvalidTransition);
+                }
+            }
+            Event::Cancel {
+                request_id,
+                expected_revision,
+            } => {
+                let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+                if matches!(
+                    record.state,
+                    RequestState::Cancelled | RequestState::Cancelling
+                ) && is_exact_event_replay(record, *expected_revision)
+                {
+                    return Ok(Some(receipt(record, /*idempotent*/ true)));
+                }
+                require_revision(record, *expected_revision, /*replay*/ false)?;
+                if record.state.terminal() {
+                    return Err(Error::InvalidTransition);
+                }
+            }
+            Event::Settle {
+                request_id,
+                expected_revision,
+                observation_digest,
+                observation,
+            } => {
+                let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+                if record.terminal_observation_digest.as_ref() == Some(observation_digest)
+                    && is_exact_event_replay(record, *expected_revision)
+                {
+                    return Ok(Some(receipt(record, /*idempotent*/ true)));
+                }
+                require_revision(record, *expected_revision, /*replay*/ false)?;
+                if record.state.terminal() {
+                    return Err(Error::Conflict);
+                }
+                if record.state == RequestState::Indeterminate && !observation.terminal_observed {
+                    return Err(Error::InvalidTransition);
+                }
+                if record.state == RequestState::Indeterminate
+                    && (observation.consumed_tokens < record.consumed_tokens
+                        || observation.usage_units < record.usage_units)
+                {
+                    return Err(Error::UsageExceeded);
+                }
+                let reservation = record
+                    .reservation
+                    .as_ref()
+                    .ok_or(Error::ReservationMismatch)?;
+                let assignment = record
+                    .assignment
+                    .as_ref()
+                    .ok_or(Error::AssignmentMismatch)?;
+                if observation.request_id != record.request.request_id
+                    || observation.reservation_id != reservation.reservation_id
+                    || observation.worker_id != assignment.worker_id
+                    || observation.worker_generation != assignment.worker_generation
+                    || observation.model_digest != record.request.model_digest
+                    || observation.payload_digest != record.request.payload_digest
+                {
+                    return Err(Error::AssignmentMismatch);
+                }
+                if observation.consumed_tokens > reservation.maximum_tokens {
+                    return Err(Error::UsageExceeded);
+                }
+            }
+        }
+        Ok(None)
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
@@ -471,8 +1153,260 @@ impl DurableInferenceControl {
             return Err(error.into());
         }
         self.journal_bytes = next_bytes;
+        match file_stamp(&self.file) {
+            Ok(stamp) => self.cached_stamp = stamp,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        }
         Ok(())
     }
+}
+
+fn compaction_archives(path: &Path) -> Result<Vec<(String, PathBuf, u64)>, Error> {
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or(Error::InvalidIdentity("journal path"))?;
+    let prefix = format!("{file_name}.{ARCHIVE_SUFFIX_PREFIX}");
+    let mut archives = Vec::new();
+    for entry in fs::read_dir(parent)? {
+        let entry = entry?;
+        let name = entry.file_name();
+        let Some(name) = name.to_str() else {
+            continue;
+        };
+        let Some(digest) = name.strip_prefix(&prefix) else {
+            continue;
+        };
+        validate_digest(digest, "compaction archive")?;
+        if !entry.file_type()?.is_file() {
+            return Err(Error::InvalidIdentity(
+                "compaction archive must be a regular file",
+            ));
+        }
+        verify_archive_file(&entry.path(), digest)?;
+        let bytes = entry.metadata()?.len();
+        archives.push((digest.to_string(), entry.path(), bytes));
+    }
+    archives.sort_by(|left, right| left.0.cmp(&right.0));
+    Ok(archives)
+}
+
+fn released_archive_dir(path: &Path) -> PathBuf {
+    sibling_temp_path(path, "released")
+}
+
+fn ensure_released_archive_dir(path: &Path) -> Result<(), Error> {
+    let directory = released_archive_dir(path);
+    match fs::symlink_metadata(&directory) {
+        Ok(metadata) if !metadata.is_dir() => {
+            return Err(Error::InvalidIdentity(
+                "native released archive must be a directory",
+            ));
+        }
+        Ok(metadata) => {
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                if metadata.permissions().mode() & 0o077 != 0 {
+                    return Err(Error::InvalidIdentity(
+                        "native released archive must be owner-only",
+                    ));
+                }
+            }
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            fs::create_dir(&directory)?;
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                fs::set_permissions(&directory, fs::Permissions::from_mode(0o700))?;
+            }
+            sync_parent(path)?;
+        }
+        Err(error) => return Err(error.into()),
+    }
+    Ok(())
+}
+
+fn released_record_path(path: &Path, request_id: &str) -> Result<PathBuf, Error> {
+    validate_identity(request_id, "native archived request")?;
+    let name = digest_hex(Digest32::of_bytes(request_id.as_bytes()));
+    Ok(released_archive_dir(path).join(format!("{name}.json")))
+}
+
+fn sync_released_archive_dir(path: &Path) -> Result<(), Error> {
+    File::open(released_archive_dir(path))?.sync_all()?;
+    Ok(())
+}
+
+fn acquire_writer_lock(path: &Path) -> Result<File, Error> {
+    let lock_path = sibling_temp_path(path, "writer.lock");
+    let mut options = OpenOptions::new();
+    options.create(true).read(true).write(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let lock = options.open(lock_path)?;
+    lock.try_lock().map_err(|_| Error::WriterUnavailable)?;
+    Ok(lock)
+}
+
+fn sibling_temp_path(path: &Path, suffix: &str) -> PathBuf {
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("inference.journal");
+    path.with_file_name(format!("{file_name}.{suffix}"))
+}
+
+fn digest_hex(digest: Digest32) -> String {
+    let mut hex = String::with_capacity(64);
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    for &byte in digest.as_array() {
+        hex.push(HEX[(byte >> 4) as usize] as char);
+        hex.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+    hex
+}
+
+fn archive_path(path: &Path, digest: &str) -> Result<PathBuf, Error> {
+    validate_digest(digest, "compaction archive")?;
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or(Error::InvalidIdentity("journal path"))?;
+    Ok(path.with_file_name(format!("{file_name}.{ARCHIVE_SUFFIX_PREFIX}{digest}")))
+}
+
+fn validate_regular_file(file: &File) -> Result<(), Error> {
+    if !file.metadata()?.is_file() {
+        return Err(Error::InvalidIdentity("journal must be a regular file"));
+    }
+    Ok(())
+}
+
+fn validate_private_file(file: &File) -> Result<(), Error> {
+    validate_regular_file(file)?;
+    let metadata = file.metadata()?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if metadata.permissions().mode() & 0o077 != 0 {
+            return Err(Error::InvalidIdentity("journal must be owner-only"));
+        }
+    }
+    Ok(())
+}
+
+fn file_stamp(file: &File) -> Result<Option<FileStamp>, Error> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let metadata = file.metadata()?;
+        // Legacy journals may be readable with broader modes. They never
+        // earn a cached cut; native writes still require owner-only access.
+        if metadata.mode() & 0o077 != 0 {
+            return Ok(None);
+        }
+        Ok(Some(FileStamp {
+            device: metadata.dev(),
+            inode: metadata.ino(),
+            length: metadata.len(),
+            modified: (metadata.mtime(), metadata.mtime_nsec()),
+            changed: (metadata.ctime(), metadata.ctime_nsec()),
+            mode: metadata.mode(),
+        }))
+    }
+    #[cfg(not(unix))]
+    {
+        file.metadata()?;
+        Ok(None)
+    }
+}
+
+fn sync_parent(path: &Path) -> Result<(), Error> {
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    File::open(parent)?.sync_all()?;
+    Ok(())
+}
+
+fn fresh_private_temporary(path: &Path) -> Result<File, Error> {
+    // The caller holds the stable owner fence. A regular temporary left by a
+    // killed compactor is not authoritative history; never follow a symlink.
+    match fs::symlink_metadata(path) {
+        Ok(metadata) if metadata.is_file() => fs::remove_file(path)?,
+        Ok(_) => return Err(Error::InvalidIdentity("non-regular compaction temporary")),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Err(error) => return Err(error.into()),
+    }
+    let mut options = OpenOptions::new();
+    options.create_new(true).write(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    Ok(options.open(path)?)
+}
+
+fn write_checkpoint_line(file: &mut File, total: &mut u64, line: &str) -> Result<(), Error> {
+    let next = total
+        .checked_add(line.len() as u64)
+        .ok_or(Error::ArithmeticOverflow)?;
+    if line.len() > MAX_JOURNAL_LINE_BYTES || next > MAX_JOURNAL_BYTES {
+        return Err(Error::CapacityExceeded);
+    }
+    file.write_all(line.as_bytes())?;
+    *total = next;
+    Ok(())
+}
+
+fn verify_archive_file(path: &Path, expected_digest: &str) -> Result<Option<FileStamp>, Error> {
+    let mut file = File::open(path)?;
+    validate_private_file(&file)?;
+    if digest_hex(Digest32::of_reader(&mut file, MAX_JOURNAL_BYTES)?) != expected_digest {
+        return Err(Error::CorruptJournal("compaction archive digest"));
+    }
+    file_stamp(&file)
+}
+
+fn validate_checkpoint_record(record: &RequestRecord) -> Result<(), Error> {
+    validate_request(0, &record.request)?;
+    if record.revision == 0 {
+        return Err(Error::CorruptJournal("checkpoint revision"));
+    }
+    if let Some(reservation) = &record.reservation {
+        validate_identity(&reservation.reservation_id, "reservation")?;
+        if reservation.quota_units == 0
+            || reservation.maximum_tokens == 0
+            || reservation.maximum_tokens > MAX_TOKENS
+            || reservation.authority_epoch == 0
+        {
+            return Err(Error::CorruptJournal("checkpoint reservation"));
+        }
+    }
+    if let Some(assignment) = &record.assignment {
+        validate_assignment(assignment)?;
+    }
+    if let Some(digest) = &record.terminal_observation_digest {
+        validate_digest(digest, "observation")?;
+    }
+    if record.consumed_tokens > MAX_TOKENS {
+        return Err(Error::UsageExceeded);
+    }
+    Ok(())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -590,9 +1524,18 @@ fn apply_event(
             require_revision(record, *expected_revision, replay)?;
             if !matches!(
                 record.state,
-                RequestState::Assigned | RequestState::Cancelling
+                RequestState::Assigned | RequestState::Cancelling | RequestState::Indeterminate
             ) {
                 return Err(Error::InvalidTransition);
+            }
+            if record.state == RequestState::Indeterminate && !observation.terminal_observed {
+                return Err(Error::InvalidTransition);
+            }
+            if record.state == RequestState::Indeterminate
+                && (observation.consumed_tokens < record.consumed_tokens
+                    || observation.usage_units < record.usage_units)
+            {
+                return Err(Error::UsageExceeded);
             }
             record.state = if observation.terminal_observed {
                 observation
@@ -608,6 +1551,12 @@ fn apply_event(
         }
     }
     Ok(())
+}
+
+fn is_exact_event_replay(record: &RequestRecord, expected: u64) -> bool {
+    expected
+        .checked_add(1)
+        .is_some_and(|committed_revision| committed_revision == record.revision)
 }
 
 fn require_revision(record: &RequestRecord, expected: u64, replay: bool) -> Result<(), Error> {
@@ -706,7 +1655,7 @@ fn receipt(record: &RequestRecord, idempotent: bool) -> ControlReceipt {
         revision: record.revision,
         state: record.state,
         idempotent,
-        terminal_observed: record.state.terminal() && record.state != RequestState::Indeterminate,
+        terminal_observed: record.state.terminal(),
     }
 }
 
@@ -888,3 +1837,11 @@ fn parse_u32(value: &str) -> Result<u32, Error> {
 #[cfg(test)]
 #[path = "durable_control_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_scalability_tests.rs"]
+mod scalability_tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_maintenance_tests.rs"]
+mod maintenance_tests;

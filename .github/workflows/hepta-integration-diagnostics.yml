@@ -1,0 +1,169 @@
+name: Hepta integration diagnostics
+
+# Read-only development feedback continues even when a conflicted PR cannot run
+# pull_request CI. These push jobs NEVER replace exact-head/prospective-merge
+# qualification, independent review, repository controls, or deployment gates.
+on:
+  push:
+    branches: [work/architecture-scalability-convergence-20260918]
+    paths:
+      - .github/workflows/hepta-integration-diagnostics.yml
+      - scripts/hepta_integration_diagnostics.py
+      - scripts/test_hepta_integration_feedback.py
+      - scripts/test_hepta_preflight_logging.py
+      - scripts/hepta_workspace.py
+      - scripts/test_hepta_workspace*.py
+      - scripts/hepta-implementation-maps.py
+      - scripts/test_hepta_implementation*.py
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - codex-rs/.cargo/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-operations/**
+      - codex-rs/hepta-automation/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-integration-diagnostics-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  source-preflight:
+    name: Integration source preflight (not qualification)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          mkdir -p "$RUNNER_TEMP/hepta-source-preflight"
+          git --no-replace-objects rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/hepta-source-preflight/identity.txt"
+      - name: Test Git, workspace and source-identity rejection semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p 'test_hepta_integration_feedback.py' -v
+          python3 -m unittest discover -s scripts -p 'test_hepta_preflight_logging.py' -v
+          python3 -m unittest discover -s scripts -p 'test_hepta_workspace*.py' -v
+          python3 -m unittest discover -s scripts -p 'test_hepta_implementation*.py' -v
+      - name: Check structural workspace before native work
+        id: manifest
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_workspace.py 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/workspace-preflight.log"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        if: ${{ !cancelled() && steps.manifest.outcome == 'success' }}
+      - name: Resolve the exact checkout without updating the lockfile
+        id: metadata
+        if: ${{ !cancelled() && steps.manifest.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --locked --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-source-preflight/cargo-metadata.json" 2> "$RUNNER_TEMP/hepta-source-preflight/cargo-metadata.stderr.log"
+      - name: Check contract formatting
+        if: ${{ !cancelled() && steps.metadata.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --check -p codex-hepta-contracts 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/contracts-format.log"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        id: native-tools
+        if: ${{ !cancelled() && steps.metadata.outcome == 'success' }}
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Compile the durable operation and timer boundary
+        if: ${{ !cancelled() && steps.metadata.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked --lib -p codex-hepta-contracts -p codex-hepta-operations -p codex-hepta-automation 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/cargo-check.log"
+      - name: Execute contract unit tests
+        if: ${{ !cancelled() && steps.native-tools.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-contracts 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/contracts-tests.log"
+      - name: Execute timer retirement and operation-owner regressions
+        if: ${{ !cancelled() && steps.native-tools.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-automation --test retirement_recovery --test operation_timer_fence --test kernel_operations_destination 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/timer-tests.log"
+      - name: Lint the durable authority without weakening warnings
+        if: ${{ !cancelled() && steps.metadata.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-contracts --lib --tests -- -D warnings 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/contracts-clippy.log"
+      - name: Verify no tracked source was changed
+        if: ${{ always() && !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain source diagnostic output
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-integration-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-source-preflight/
+          if-no-files-found: warn
+          retention-days: 7
+
+  merge-diagnostics:
+    name: Integration conflict diagnostics (not qualification)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Inspect exact source against freshly fetched main
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Checkout fetched this ref; freeze it once rather than hard-coding a
+          # historical main SHA or querying a mutable branch throughout the job.
+          TARGET_SHA="$(git --no-replace-objects rev-parse 'refs/remotes/origin/main^{commit}')"
+          python3 scripts/hepta_integration_diagnostics.py \
+            --source "$SOURCE_SHA" --target "$TARGET_SHA" \
+            --output "$RUNNER_TEMP/hepta-integration" --archives
+      - name: Retain conflicts even when integration fails
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-integration-inputs-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-integration/
+          if-no-files-found: warn
+          retention-days: 7

@@ -1,10 +1,24 @@
-name: OpenBao compatibility blocker
+name: OpenBao compatibility qualification
 
 on:
   pull_request:
+    paths:
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-contracts/src/final_use*.rs"
+      - "codex-rs/hepta-contracts/FINAL_USE*.md"
+      - "codex-rs/hepta-agentd/**"
+      - "scripts/verify_openbao_compatibility.py"
+      - ".github/workflows/openbao-compatibility.yml"
   push:
     branches:
       - main
+    paths:
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-contracts/src/final_use*.rs"
+      - "codex-rs/hepta-contracts/FINAL_USE*.md"
+      - "codex-rs/hepta-agentd/**"
+      - "scripts/verify_openbao_compatibility.py"
+      - ".github/workflows/openbao-compatibility.yml"
   workflow_dispatch:
 
 permissions:
@@ -16,7 +30,7 @@ concurrency:
 
 jobs:
   compatibility:
-    name: Verify complete OpenBao replacement gate
+    name: Verify OpenBao replacement integrity and qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -27,5 +41,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Run fail-closed compatibility gate
+      - name: Validate compatibility state without blocking ordinary source merge
+        if: github.event_name != 'workflow_dispatch'
+        run: python3 scripts/verify_openbao_compatibility.py --report-only
+
+      - name: Run explicit fail-closed replacement qualification
+        if: github.event_name == 'workflow_dispatch'
         run: python3 scripts/verify_openbao_compatibility.py

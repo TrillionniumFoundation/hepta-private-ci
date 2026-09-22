@@ -115,7 +115,10 @@ For a normal guide prose edit, run from the repository root:
 
 ```sh
 python3 scripts/hepta-module-docs.py verify
+python3 scripts/hepta-module-docs.py refresh-derived --check
 ```
+
+`MODULES.json` owns repeated module status, lifecycle, bootstrap and technical-path facts. `SOURCE_BINDINGS.json` and `MODULE_DOCS.json` retain their independent evidence/navigation data, but their duplicated status plus contract/domain/work/threat projections are generated with `refresh-derived`; ordinary changes should update the canonical owner and regenerate rather than hand-edit the same fact in three files.
 
 Contract, readiness, source-map and qualification-detail changes additionally run their affected existing verifiers. A qualification detail whose digest is consumed as evidence still requires the existing `refresh-indexes` and `hepta-technical-closure.py verify` path; ordinary guide navigation is not such evidence.
 

@@ -133,8 +133,6 @@ def refresh_indexes(check):
                     words=len(re.findall(r"\b[\w.-]+\b", text)),
                 )
             row.update(updates)
-        # Preserve each existing index's representation; refreshing derived
-        # values must not expand the compact detail index into a formatting diff.
         rendered = (
             json.dumps(document, indent=2, ensure_ascii=False)
             if include_metrics
@@ -147,6 +145,105 @@ def refresh_indexes(check):
                 path.write_text(rendered, encoding="utf-8")
     need(not check or not changed, "derived index drift: " + ", ".join(changed))
     print(json.dumps({"updatedIndexes": changed, "checkOnly": check}))
+    return 0
+
+
+def refresh_derived(check):
+    """Generate duplicate module projections from their canonical owners."""
+    modules = load("docs/modules/MODULES.json")
+    bindings = load("docs/modules/SOURCE_BINDINGS.json")
+    docs = load("docs/modules/MODULE_DOCS.json")
+    contracts = load("docs/contracts/CONTRACTS.json")["contracts"]
+    protocols = load("docs/contracts/PROTOCOL_SCHEMAS.json")["protocols"]
+    domains = load("docs/data/DATA_AUTHORITY.json")["domains"]
+    packages = load("docs/delivery/WORK_PACKAGES.json")["packages"]
+    threats = load("docs/security/THREAT_MODEL.json")["threats"]
+
+    def unique_rows(rows, key, label):
+        result = {}
+        for row in rows:
+            identity = row[key]
+            need(identity not in result, "duplicate " + label + " " + identity)
+            result[identity] = row
+        return result
+
+    module_map = unique_rows(modules["modules"], "id", "canonical module")
+    old_bindings = unique_rows(bindings["bindings"], "module", "binding")
+    old_docs = unique_rows(docs["modules"], "module", "document")
+    need(bool(module_map), "empty canonical module registry")
+    # Preflight the entire input before writing either derived file. Missing
+    # guides remain real work; a generated row must not fabricate documentation.
+    for module_id, module in module_map.items():
+        need(re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*", module_id),
+             "invalid canonical module ID")
+        expected = f"docs/modules/{module_id}/TECHNICAL.md"
+        guide = (ROOT / expected).resolve()
+        need(module["technicalDocument"] == expected, module_id + " stable doc path")
+        need(guide.is_relative_to(ROOT.resolve()) and guide.is_file(),
+             module_id + " guide missing or outside repository")
+        need(bool(guide.read_text(encoding="utf-8").strip()), module_id + " empty guide")
+
+    # Membership comes only from MODULES.json: additions and removals do not
+    # require hand-edited projection rows. Preserve module-local navigation
+    # metadata for surviving rows, but never inherit another module's evidence.
+    bindings["bindings"] = []
+    docs["modules"] = []
+    for module_id, module in module_map.items():
+        row = dict(old_bindings.get(module_id, {
+            "module": module_id,
+            "sourceEvidenceRoots": [],
+            "interpretation": "generated_navigation_only_not_execution_evidence",
+        }))
+        declared = [binding["path"] for binding in module["rootBindings"]]
+        existing = [item for item in declared if (ROOT / item).exists()]
+        row.update(
+            lifecycle=module["lifecycle"],
+            sourceStatus=module["sourceStatus"],
+            source_root_present=module["source_root_present"],
+            production_implementation=module["production_implementation"],
+            declaredRoots=declared,
+            existingDeclaredRoots=existing,
+            missingDeclaredRoots=[item for item in declared if item not in existing],
+            bootstrapWorkPackage=module["bootstrapWorkPackage"],
+            technicalDocument=module["technicalDocument"],
+        )
+        bindings["bindings"].append(row)
+        row = dict(old_docs.get(module_id, {"module": module_id}))
+        produced = sorted(c["id"] for c in contracts if c["producer"] == module_id)
+        consumed = sorted(c["id"] for c in contracts if module_id in c["consumers"])
+        touched = set(produced + consumed)
+        row.update(
+            path=module["technicalDocument"],
+            sourceStatus=module["sourceStatus"],
+            source_root_present=module["source_root_present"],
+            production_implementation=module["production_implementation"],
+            bootstrapWorkPackage=module["bootstrapWorkPackage"],
+            requiredSections=HEADINGS,
+            producedContracts=produced,
+            consumedContracts=consumed,
+            protocols=sorted(p["id"] for p in protocols if p.get("contractId") in touched),
+            ownedDomains=sorted(d["id"] for d in domains if d["authoritativeWriter"] == module_id),
+            readDomains=sorted(d["id"] for d in domains if module_id in d.get("readers", [])),
+            workPackages=sorted(
+                p["id"]
+                for p in packages
+                if p["module"] == module_id or module_id in p.get("coOwnerModules", [])
+            ),
+            threats=sorted(t["id"] for t in threats if t["owner"] == module_id),
+        )
+        docs["modules"].append(row)
+
+    rendered = {
+        "docs/modules/SOURCE_BINDINGS.json": json.dumps(bindings, indent=2, ensure_ascii=False) + "\n",
+        "docs/modules/MODULE_DOCS.json": json.dumps(docs, indent=2, ensure_ascii=False) + "\n",
+    }
+    changed = [path for path, text in rendered.items()
+               if (ROOT / path).read_text(encoding="utf-8") != text]
+    need(not check or not changed, "generated module projection drift: " + ", ".join(changed))
+    if not check:
+        for path in changed:
+            (ROOT / path).write_text(rendered[path], encoding="utf-8")
+    print(json.dumps({"updatedDerived": changed, "checkOnly": check}))
     return 0
 
 
@@ -344,13 +441,15 @@ def self_test():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["verify", "self-test", "refresh-indexes"])
+    p.add_argument("command", choices=["verify", "self-test", "refresh-indexes", "refresh-derived"])
     p.add_argument("--check", action="store_true")
     args = p.parse_args()
     if args.command == "refresh-indexes":
         return refresh_indexes(args.check)
+    if args.command == "refresh-derived":
+        return refresh_derived(args.check)
     if args.check:
-        p.error("--check applies only to refresh-indexes")
+        p.error("--check applies only to refresh-indexes or refresh-derived")
     return verify() if args.command == "verify" else self_test()
 
 

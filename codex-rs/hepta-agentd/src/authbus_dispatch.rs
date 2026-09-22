@@ -36,7 +36,7 @@ pub(crate) async fn run(
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
-    if state.authbus.get().is_none() {
+    if state.authbus()?.is_none() {
         cancellation.cancelled().await;
         return Ok(());
     }

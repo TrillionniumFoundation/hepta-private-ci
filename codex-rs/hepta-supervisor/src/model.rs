@@ -241,6 +241,8 @@ pub enum SupervisorEventKind {
     StopRequested,
     KillRequested,
     RestartQueued,
+    AutomaticRestartQueued { attempt: u32 },
+    AutomaticRestartBudgetExhausted { attempts: u32 },
     UpgradeQueued { previous: String, target: String },
     UpgradeCommitted { previous: String, target: String },
     AutomaticRollbackQueued { failed: String, target: String },
@@ -261,6 +263,7 @@ pub enum SupervisorEventKind {
     MatrixOrphanMissing,
     MatrixOrphanRejected,
     MatrixDegraded(String),
+    MatrixRestartBudgetExhausted { attempts: u32 },
     GenerationFenced { runtime: u64, registry: u64 },
     DriverFault(String),
 }

@@ -1,0 +1,43 @@
+name: Hepta self-iteration activation gate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: read
+
+jobs:
+  repository-control:
+    name: Verify live repository controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Observe exact main, protection and explicit write-transport denial
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEPTA_EVALUATOR_APP_ID: ${{ vars.HEPTA_EVALUATOR_APP_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          # Observation failures (including 403) are fatal. Do not provide an
+          # administration token or release credentials to checked-out code.
+          python3 scripts/hepta_repository_controls.py \
+            --repo "$REPO" --expected-sha "$GITHUB_SHA" --probe-write-denial
+
+      - name: Verify source-side independent integration semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/hepta-engineering-control/test_integration_identity.py -v
+          python3 scripts/tests/test_hepta_repository_controls.py -v
+          python3 scripts/test_hepta_control_hardening.py -v

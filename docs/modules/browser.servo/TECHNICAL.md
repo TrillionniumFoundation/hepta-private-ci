@@ -31,24 +31,30 @@ Declared exclusive target roots:
 - `apps/hepta-browser`
 - `third_party/servo-patches`
 
-Existing declared roots at this exact source snapshot:
+Existing declared roots at this source candidate:
 
 - `apps/hepta-browser`
 - `third_party/servo-patches`
 
-Non-authoritative implementation evidence roots:
+Non-authoritative implementation evidence roots: none. Declared roots not yet present: none.
 
-None.
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
+`existing_bound` is a source-location fact. It does not establish runtime composition, operator acceptance, selection, promotion or release.
 
 ### Native source and scope
 
-The registered primary source is [apps/hepta-browser/src/browser.js](../../../apps/hepta-browser/src/browser.js); observed identifiers include `buildNavigationIntent`, `projectPageState`, `buildLocalNavigationProposalFromCanonicalJson`, `projectPageStateFromLocalCanonicalJson`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/browser.servo.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/browser.servo.md) for the implemented subset and remaining product work.
+The registered navigation source remains [apps/hepta-browser/src/browser.js](../../../apps/hepta-browser/src/browser.js). The owner operation anchors remain explicit in [apps/hepta-browser/src/runtime.js](../../../apps/hepta-browser/src/runtime.js), which delegates to the hardened state machine in `runtime-host.js` while preserving the implementation-map symbols.
+
+Current repository-owned implementation components are:
+
+- `browser.js` — authority-free navigation/page projections;
+- `action.js` — closed bounded typed browser effects;
+- `bridge.js` — navigation-intent to exact effect-payload bridge;
+- `runtime.js` / `runtime-host.js` — serialized owner state machine and effect/recovery boundary;
+- `journal.js` — durable browser operation journal;
+- `worker-protocol.js` — private bounded worker framing;
+- `worker-driver.js` — exact-artifact subprocess driver and Linux Bubblewrap launch path.
+
+The exact current Servo source pin remains `third_party/servo-patches/MANIFEST.json`. The repository still does **not** contain a qualified current-pin Servo worker executable; see [SERVO_WORKER.md](SERVO_WORKER.md) and the [module implementation dossier](../../../qualification/module-execution-dossiers/detail/browser.servo.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -66,24 +72,28 @@ Explicitly denied capabilities:
 - `credential_export`
 - `ungranted_network`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The module accepts only bounded typed inputs, rejects unknown critical action/frame fields and never interprets page/model prose as authority. Cross-owner facts remain externally owned. The browser owner may retain durable operation identities and terminal observations, but cannot mint the authority it consumes.
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+Non-goals include becoming a general state store, exposing raw WebDriver/CDP as the Hepta API, exporting profile/cookie/storage state, bypassing the Codex execution spine or converting qualification evidence into deployment authority.
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The implemented bounded components are:
 
-- `bounded ingress`
-- `isolated execution cell`
-- `resource guard`
-- `terminal receipt reporter`
+- authority-free proposal/projection ingress;
+- typed action normalizer and digest binder;
+- proposal-to-effect bridge;
+- per-profile single-writer runtime state machine;
+- final-use authority/effect linearization boundary;
+- durable operation journal and reconciliation path;
+- private framed worker protocol;
+- exact-artifact subprocess driver;
+- Linux namespace launcher;
+- terminal receipt reporter.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+A browser effect cannot reach `driver.dispatch` until its page generation, typed payload, destination, grant, epoch and deadline are validated. The runtime then enters `authority.withVerifiedUse(request, callback)`. Inside that final-use fence it binds the VerifiedUse witness, fsyncs the durable dispatch identity and performs one local worker dispatch. A successful revocation update therefore cannot race between final validation and effect dispatch.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+Remote/browser/business completion is intentionally outside that authority fence. Dispatch acknowledgement and terminal outcome are separate facts; unknown outcomes remain indeterminate and are reconciled using the original operation identity.
 
 ## 5. Contracts, ports and compatibility
 
@@ -100,17 +110,13 @@ Consumed contracts:
 - `ModulePort::runtime.agentd::browser.servo`
 - `VerifiedUseTokenWitnessV1`
 
-Critical protocol schemas:
+The private worker frame is package-local implementation protocol, not a new cross-module authority contract. It binds protocol version, session, generation, sequence, request identity and canonical payload digest. Unknown/non-canonical frames fail closed.
 
-None.
-
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Typed browser actions are closed-world: `navigate`, `click`, `type`, `credential`, `upload`, `focus`, `scroll`, `wait`, `download`. Navigation binds normalized URL, policy digest and expected revision. Credential/upload actions accept only references plus bounded metadata; raw secret values and ambient host paths are not legal action fields.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Owned authoritative/recoverable domain:
 
 - `browser_profile_state`
 
@@ -120,136 +126,153 @@ Read-only data dependencies:
 - `capability_revocation`
 - `runtime_health_observation`
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+Profile/page state remains process-local for the live generation. Effect identities and observations have a durable path through `FileBrowserOperationJournal`:
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+- append-only records;
+- SHA-256 checksum per envelope;
+- bounded line/file sizes;
+- fsync before effect dispatch;
+- private mode on Unix;
+- non-regular/symlink journal rejection;
+- conflicting reused operation identities fail closed.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+A restart can reconcile a persisted indeterminate operation without issuing another dispatch. Terminal operation objects are bounded in memory; their durable tombstones remain available for idempotent replay. Journal format changes require versioned migration rather than silent reinterpretation.
+
+Raw credential bytes are not journal fields. Credential references remain external identities until a separately qualified credential broker resolves them at the isolated use boundary.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/browser.servo.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/browser.servo.md).
+One profile identity is one serialization domain. `openProfile`, `admitEffectGrant`, `observePage`, `navigateOrAct`, reconciliation and close cannot race each other inside the same host instance.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+For new effects:
+
+1. admit immutable request semantics;
+2. consult memory and durable journal for an existing operation identity;
+3. enter final-use authority fence;
+4. bind witness, fsync durable intent, dispatch locally once;
+5. persist terminal/indeterminate observation;
+6. never redispatch an identity that may already have crossed the effect boundary.
+
+Driver exceptions and deadlines after durable dispatch become `indeterminate`. Reconciliation does not re-enter new-effect authorization and remains available after the original profile/effect deadline expires. Expiry/revocation blocks new mutation, not observation/cleanup of prior mutation.
+
+A page observation outside the allowed-origin set is quarantined by removing it from actionable document state rather than merely reporting an informational flag.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/browser.servo.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/browser.servo.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+The runtime distinguishes pre-effect rejection from post-boundary uncertainty. Before durable dispatch, validation or authority denial rejects without claiming an external effect. After durable dispatch, timeout, transport loss or driver error retains the operation and requires reconciliation.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+Profile close refuses while any durable or live operation lacks a terminal observation. A process restart uses `reconcilePersistedOperation()` against the original request/semantic digest; it cannot fabricate a fresh identity to retry the action.
+
+Worker protocol corruption, sequence drift, cross-session/generation frames, artifact-digest drift and malformed/non-canonical payloads fail closed. The subprocess driver refuses launchers that do not state the required inherited-channel/network/environment/home/parent-death isolation posture.
+
+Rollback never exports credentials and never deletes an unresolved effect merely to free capacity. Deployment rollback must preserve or quarantine the operation journal until terminal reconciliation or explicit operator disposition.
 
 ## 9. Security, privacy and threat controls
 
-Owned threat entries:
+Owned threat entry:
 
 - `browser_ungranted_network`
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+Security controls now include typed final-payload binding, per-profile serialization, final-use authority fencing, durable no-redispatch identity, origin quarantine, artifact SHA-256 verification and a private worker protocol with no TCP/WebDriver control surface.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+The Linux launcher uses Bubblewrap `--unshare-all` without `--share-net`, clears the environment, hides ambient `/home`, `/root`, `/run` and `/tmp`, binds a private profile directory and uses parent-death cleanup. The host root remains read-only bound for runtime dependencies; target qualification must inventory/narrow readable paths and prove namespace/egress behavior on the selected host.
+
+These source controls are not evidence that a real Servo worker or credential broker has passed isolation testing. Cross-profile cookie/cache/storage tests, secret-use tests and listener/egress probes against the real worker remain mandatory.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/browser.servo.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [apps/hepta-browser/src/browser.js](../../../apps/hepta-browser/src/browser.js) and the linked implementation components.
+Current hard source bounds include:
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+- <=128 origins/profile;
+- <=1024 admitted effect grants/profile;
+- <=1024 nonterminal operations/profile;
+- <=256 terminal operations retained in memory;
+- <=1 MiB page observation budget at the host API;
+- <=1 MiB private worker frame;
+- <=64 MiB browser operation journal;
+- bounded selector/text/URL/wait/upload/download fields;
+- explicit driver/authority call deadlines.
+
+The dossier pilot target of <=16 concurrent tabs/profile remains a target rather than a measured current worker capability. Real Servo RSS, renderer descendants, descriptors, observation cost, reconciliation latency and download behavior require target measurements.
 
 ## 11. Observability and operations
 
-JavaScript driver boundary around an injected browser host. Unit drivers do not provide a reproducible Servo binary, process sandbox or credential store. Supply the actual pinned host and OS isolation before deployment; preserve profile/page generations and reconcile unknown remote submissions rather than submitting twice.
+Safe source-level observations include profile/process/page generations, operation/request/semantic digests, worker artifact digest, terminal/indeterminate state and redacted failure reason. Raw credential values, upload host paths and raw page secrets are not observability fields.
 
-Current operating and state-format references:
+The private subprocess path is artifact-bound before launch and allocates a fresh private profile directory. The current Linux launcher is executable host code, but no source statement upgrades it to deployed isolation evidence. The actual selected Bubblewrap/kernel/worker tuple must be probed for egress, listener, descendant cleanup and filesystem exposure.
 
-- [apps/hepta-browser/README.md](../../../apps/hepta-browser/README.md).
-- [docs/modules/browser.servo/IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json).
+Operating references:
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+- [apps/hepta-browser/README.md](../../../apps/hepta-browser/README.md)
+- [SERVO_WORKER.md](SERVO_WORKER.md)
+- [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json)
+- [implementation dossier](../../../qualification/module-execution-dossiers/detail/browser.servo.md)
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Run all browser package tests from the repository root:
 
-- [apps/hepta-browser/test/browser.test.js](../../../apps/hepta-browser/test/browser.test.js); named case: `navigation intent is normalized and authority free`.
-- [apps/hepta-browser/test/runtime.test.js](../../../apps/hepta-browser/test/runtime.test.js); named case: `opens, observes, reconciles indeterminate action, and closes`.
+```sh
+node --test apps/hepta-browser/test/*.test.js
+```
 
-From the repository root, run `node --test apps/hepta-browser/test/browser.test.js apps/hepta-browser/test/runtime.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/browser.servo.md) separately labels target acceptance designs.
+Focused sources cover:
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+- `browser.test.js` — canonical authority-free proposal and page projection inputs;
+- `action.test.js` — typed payload/policy/secret-reference bounds;
+- `bridge.test.js` — proposal -> exact effect binding;
+- `runtime.test.js` — duplicate exclusion, final-use fencing, timeouts, expiry recovery, durable crash reconciliation and bounded retention;
+- `journal.test.js` — reopen, permissions and tamper failure;
+- `worker-protocol.test.js` — frame canonicalization, digest/size/partial-frame failure;
+- `worker-driver.test.js` — artifact binding, private subprocess request path and Linux namespace argv posture.
+
+These remain source tests. Completion of BROWSER-01..04 against the real current-pin Servo worker requires exact worker artifact/build evidence plus target isolation and real terminal observations.
 
 ## 13. Implementation sequence and work packages
 
-Applicable work packages:
+Applicable work package:
 
 - `BROWSER-WEB-C1`
 
-The bootstrap package is `BROWSER-WEB-C1`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
+The bootstrap package remains `BROWSER-WEB-C1`. Development, activation and evidence predecessor graphs are distinct. The current source hardening does not change the canonical delivery registry's state by itself.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+The next source sequence is defined in [SERVO_WORKER.md](SERVO_WORKER.md): revalidate the current Servo pin's embedding API/feature topology, build the Hepta-owned one-WebView worker, bind reproducible artifact/SBOM evidence, execute the private protocol inside the Linux sandbox, then add equivalent macOS/Windows launchers and the named product caller.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Activation requires a named non-test caller through registered `runtime.agentd` / authority ports, exact worker artifact identity, target sandbox configuration, durable journal path, final-use authority implementation, resource limits and failure/recovery evidence.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Shadow/fake drivers and protocol fixture workers are not production callers. A Linux sandbox result does not certify macOS/Windows. A source-complete module remains inactive until activation predecessors and evidence gates pass.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and exact-candidate tests. Composition requires a named caller. Qualification requires the current worker/build/host tuple and independent evidence. Acceptance, selection, promotion and release remain separately governed.
 
-For `browser.servo`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+Current source can claim a hardened durable owner boundary, private worker protocol and concrete artifact-bound Linux subprocess launch path. It cannot claim a built Servo worker, real Servo WebView execution, credential-store integration, cross-platform sandbox qualification, production caller, real external-effect completion, operator acceptance, promotion or release.
 
-### Work-package execution envelopes
+### Work-package execution envelope
 
 #### `BROWSER-WEB-C1`
 
 - State: `planned`; priority: `2`; parallel class: `independent_source_preparation`.
 - Owner/deputy: `browser-platform` / `security-authority`.
-- Allowed write paths:
-- `apps/hepta-browser/**`
-- `third_party/servo-patches/**`
-- Development predecessors:
-- `DOC-1-V8-SEMANTIC-UPGRADE`
-- Activation predecessors:
-- `P0.7B-B2-TOOL-NET-FS`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- `source_baseline_selected`
-- `declared_root_materialized`
-- `module_technical_doc_current`
-- `source_binding_registry_updated`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+- Allowed write paths: `apps/hepta-browser/**`, `third_party/servo-patches/**`.
+- Development predecessor: `DOC-1-V8-SEMANTIC-UPGRADE`.
+- Activation predecessor: `P0.7B-B2-TOOL-NET-FS`.
+- Required deliverables: exact source identity/inventory; static/focused/package tests; all-target/lint/clean-tree evidence; exact-head and merge-candidate execution; source baseline/root/doc/source-binding updates.
+- Stop conditions: authority violation, base drift, claim/evidence mismatch, cross-owner write, unbounded resource/retry.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
-The canonical readiness overlay binds `browser.servo` to primary lane `LANE-B-RUNTIME`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+The canonical readiness overlay binds `browser.servo` to `LANE-B-RUNTIME`. Mandatory shared specifications remain:
 
 - [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
 - [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
 - [`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md)
 
-Owned readiness protocols:
+Owned readiness protocols: none. Consumed readiness protocol: `SensorCalibrationManifestV1`.
 
-- None.
-
-Consumed readiness protocols:
-
-- `SensorCalibrationManifestV1`
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+Ordinary authorized coding identifies the Git baseline, contracts, owned paths, fixtures, deterministic fallback and rollback. A runtime coordinator still verifies current source receipt, frozen digests, expiry and zero authority delta. This overlay does not change activation, acceptance, selection, promotion or release.
 
 ## 17. Source implementation receipt
 

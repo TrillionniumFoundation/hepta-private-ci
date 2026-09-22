@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - "docs/readiness/**"
-      - "docs/modules/**"
+      - "docs/modules/MODULES.json"
+      - "docs/modules/MODULE_DOCS.json"
+      - "docs/modules/SOURCE_BINDINGS.json"
       - "qualification/module-execution-dossiers/**"
       - "scripts/hepta-readiness.py"
       - ".github/workflows/hepta-implementation-readiness.yml"
@@ -14,7 +16,9 @@ on:
       - main
     paths:
       - "docs/readiness/**"
-      - "docs/modules/**"
+      - "docs/modules/MODULES.json"
+      - "docs/modules/MODULE_DOCS.json"
+      - "docs/modules/SOURCE_BINDINGS.json"
       - "qualification/module-execution-dossiers/**"
       - "scripts/hepta-readiness.py"
       - ".github/workflows/hepta-implementation-readiness.yml"

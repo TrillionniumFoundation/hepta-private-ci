@@ -1,0 +1,215 @@
+name: Hepta Browser Servo worker dev
+
+on:
+  push:
+    branches: [codex/browser-servo-effect-correctness-20260917]
+    paths:
+      - 'apps/hepta-browser/servo-worker/**'
+      - 'apps/hepta-browser/src/**'
+      - 'apps/hepta-browser/test/**'
+      - 'apps/hepta-browser/scripts/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - '.github/workflows/hepta-browser-servo-worker-dev.yml'
+      - '.github/workflows/hepta-browser-servo-deployment-qualification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-browser-servo-worker-dev-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SERVO_PIN: 84bcc9ac701874fa9819e5cdee06356b961d736c
+  WORKER_MANIFEST: apps/hepta-browser/servo-worker/Cargo.toml
+  WORKER_LOCK: apps/hepta-browser/servo-worker/Cargo.lock
+
+jobs:
+  worker-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD HEAD^{tree} | tee source-identity.txt
+
+      - name: Install Rust 1.88.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup override set 1.88.0
+          rustc -vV | tee rustc-vV.txt
+          cargo -vV | tee cargo-vV.txt
+
+      - name: Install Servo and isolation prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            bubblewrap build-essential cmake curl git libdbus-1-dev \
+            libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglib2.0-dev \
+            libssl-dev libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config python3
+          command -v llvm-objdump
+          llvm-objdump --version | head -n 1
+          command -v bwrap
+          bwrap --version
+
+      - name: Resolve or verify exact dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p worker-evidence
+          if test -s "$WORKER_LOCK"; then
+            printf 'committed\n' > worker-evidence/cargo-lock-source.txt
+          else
+            cargo generate-lockfile --manifest-path "$WORKER_MANIFEST"
+            printf 'generated-candidate\n' > worker-evidence/cargo-lock-source.txt
+          fi
+          test -s "$WORKER_LOCK"
+          grep -F "$SERVO_PIN" "$WORKER_LOCK"
+          cp "$WORKER_LOCK" worker-evidence/Cargo.lock
+          sha256sum "$WORKER_LOCK" | tee worker-evidence/Cargo.lock.sha256
+
+      - name: Verify dependency and feature graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --locked --format-version 1 --manifest-path "$WORKER_MANIFEST" \
+            > worker-evidence/cargo-metadata.json
+          cargo tree --locked --manifest-path "$WORKER_MANIFEST" -e features \
+            > worker-evidence/cargo-tree-features.txt
+          if grep -Eq '(^|[[:space:]])webdriver_server([[:space:]]|$)' worker-evidence/cargo-tree-features.txt; then
+            echo 'webdriver_server entered the worker dependency graph' >&2
+            exit 1
+          fi
+          grep -F "$SERVO_PIN" worker-evidence/cargo-metadata.json
+
+      - name: Check current-pin worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
+            | tee worker-evidence/cargo-check.log
+
+      - name: Exercise Browser owner, protocol and isolation tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/*.test.js 2>&1 \
+            | tee worker-evidence/node-tests.log
+
+      - name: Probe real Bubblewrap namespace and egress denial
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/linux-sandbox-probe.js \
+            | tee worker-evidence/linux-sandbox-probe.json
+
+      - name: Build worker twice from the same exact inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
+          export CARGO_INCREMENTAL=0
+          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src -C debuginfo=0"
+          export CARGO_TERM_COLOR=never
+          printf '%s\n' "$SOURCE_DATE_EPOCH" > worker-evidence/source-date-epoch.txt
+          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-a" \
+            cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
+            | tee worker-evidence/build-a.log
+          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-b" \
+            cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
+            | tee worker-evidence/build-b.log
+          first="$RUNNER_TEMP/servo-worker-build-a/release/hepta-servo-worker"
+          second="$RUNNER_TEMP/servo-worker-build-b/release/hepta-servo-worker"
+          test -x "$first"
+          test -x "$second"
+          sha256sum "$first" "$second" | tee worker-evidence/reproducible-sha256.txt
+          cmp --silent "$first" "$second" || {
+            echo 'independent release builds are not byte-identical' >&2
+            exit 1
+          }
+          install -m 0555 "$first" worker-evidence/hepta-servo-worker
+          sha256sum worker-evidence/hepta-servo-worker \
+            | tee worker-evidence/hepta-servo-worker.sha256
+          ldd worker-evidence/hepta-servo-worker | tee worker-evidence/hepta-servo-worker.ldd.txt
+          ! grep -F 'not found' worker-evidence/hepta-servo-worker.ldd.txt
+
+      - name: Smoke the real worker through the real sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/real-worker-smoke.js \
+            worker-evidence/hepta-servo-worker \
+            | tee worker-evidence/real-worker-smoke.json
+
+      - name: Generate deterministic SPDX 2.3 SBOM and build receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_date_epoch="$(cat worker-evidence/source-date-epoch.txt)"
+          python3 apps/hepta-browser/scripts/spdx-sbom.py \
+            --metadata worker-evidence/cargo-metadata.json \
+            --lock worker-evidence/Cargo.lock \
+            --binary worker-evidence/hepta-servo-worker \
+            --source-sha "$GITHUB_SHA" \
+            --source-date-epoch "$source_date_epoch" \
+            --servo-pin "$SERVO_PIN" \
+            --output worker-evidence/hepta-servo-worker.spdx.json
+          sha256sum worker-evidence/hepta-servo-worker.spdx.json \
+            | tee worker-evidence/hepta-servo-worker.spdx.json.sha256
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('worker-evidence')
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          receipt = {
+              'schema': 'hepta.browser.servo-worker-build-receipt.v1',
+              'sourceSha': os.environ['GITHUB_SHA'],
+              'sourceTree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'servoPin': os.environ['SERVO_PIN'],
+              'cargoLockSha256': digest(root / 'Cargo.lock'),
+              'workerSha256': digest(root / 'hepta-servo-worker'),
+              'sbomSha256': digest(root / 'hepta-servo-worker.spdx.json'),
+              'reproducibleIndependentBuilds': True,
+              'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
+              'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
+          }
+          (root / 'build-receipt.json').write_text(
+              json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          sha256sum worker-evidence/build-receipt.json \
+            | tee worker-evidence/build-receipt.json.sha256
+
+      - name: Preserve worker evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-browser-servo-worker-evidence-${{ github.sha }}
+          path: worker-evidence
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Verify tracked source remains clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

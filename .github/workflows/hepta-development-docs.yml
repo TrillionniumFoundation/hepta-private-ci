@@ -4,8 +4,16 @@ on:
   pull_request:
     paths:
       - "docs/**"
-      - "scripts/hepta*.py"
-      - "scripts/test_hepta*.py"
+      - "scripts/hepta-docs.py"
+      - "scripts/hepta-module-docs.py"
+      - "scripts/hepta-algorithm-docs.py"
+      - "scripts/hepta-readiness.py"
+      - "scripts/hepta-cns.py"
+      - "scripts/hepta-hnmf.py"
+      - "scripts/hepta_module_registry.py"
+      - "scripts/hepta_module_doc_metadata.py"
+      - "scripts/test_hepta_module*.py"
+      - "scripts/test_hepta_doc*.py"
       - "qualification/module-execution-dossiers/**"
       - "docs/modules/**"
       - "scripts/hepta_module_registry.py"
@@ -17,8 +25,16 @@ on:
       - main
     paths:
       - "docs/**"
-      - "scripts/hepta*.py"
-      - "scripts/test_hepta*.py"
+      - "scripts/hepta-docs.py"
+      - "scripts/hepta-module-docs.py"
+      - "scripts/hepta-algorithm-docs.py"
+      - "scripts/hepta-readiness.py"
+      - "scripts/hepta-cns.py"
+      - "scripts/hepta-hnmf.py"
+      - "scripts/hepta_module_registry.py"
+      - "scripts/hepta_module_doc_metadata.py"
+      - "scripts/test_hepta_module*.py"
+      - "scripts/test_hepta_doc*.py"
       - "qualification/module-execution-dossiers/**"
       - ".github/workflows/hepta-development-docs.yml"
       - ".github/actions/hepta-synthetic-merge/**"
@@ -52,22 +68,18 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta_workspace.py
+          python3 scripts/hepta-module-docs.py refresh-derived --check
           python3 scripts/hepta_module_registry.py --strict
-          python3 scripts/test_hepta_module_registry.py -v
           python3 scripts/hepta-docs.py self-test
+          # Discovery includes test_hepta_module_registry.py; do not run it twice.
           python3 -m unittest discover -v -s scripts -p 'test_hepta_*.py'
           python3 scripts/hepta-docs.py inventory-legacy
           python3 scripts/hepta-docs.py generate-status
           git diff --exit-code -- docs/STATUS.md
-          python3 scripts/hepta-module-docs.py self-test
-          python3 scripts/hepta-algorithm-docs.py self-test
           python3 scripts/hepta-algorithm-docs.py verify-sources
           python3 scripts/hepta-algorithm-docs.py generate-status --check
-          python3 scripts/hepta-readiness.py self-test
           python3 scripts/hepta-readiness.py generate-status --check
-          python3 scripts/hepta-cns.py self-test
           python3 scripts/hepta-cns.py generate-status --check
-          python3 scripts/hepta-hnmf.py self-test
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
           python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json

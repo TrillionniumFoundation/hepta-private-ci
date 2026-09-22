@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.objective-retry-policy.v1",
+  "schemaVersion": 1,
+  "owner": "objective.compiler",
+  "authorityDelta": "none",
+  "errorCode": "OBJ-E007",
+  "legacyRetryable": true,
+  "blindRetrySafe": false,
+  "rustApi": {
+    "directiveType": "ObjectiveRetryDirectiveV1",
+    "classifier": "objective_admission_retry_directive_v1",
+    "blindRetryClassifier": "objective_admission_blind_retry_safe_v1"
+  },
+  "variantPolicies": [
+    {
+      "rustVariant": "ObjectiveError::FeasibilityBudgetExhausted",
+      "directive": "retry_same_input",
+      "blindRetrySafe": true,
+      "reason": "bounded feasibility capacity may be transient at a product host"
+    },
+    {
+      "rustVariant": "ObjectiveAdmissionError::SourceFromFuture",
+      "directive": "retry_after_time",
+      "blindRetrySafe": false,
+      "reason": "the same authenticated observation may enter the allowed future-skew window as time advances"
+    },
+    {
+      "rustVariant": "ObjectiveAdmissionError::SourceStale",
+      "directive": "refresh_source",
+      "blindRetrySafe": false,
+      "reason": "the rejected observation only becomes older; a fresh source digest is required"
+    },
+    {
+      "rustVariant": "ObjectiveAdmissionError::LocaleNotAllowed",
+      "directive": "correct_request",
+      "blindRetrySafe": false,
+      "reason": "an unchanged locale/profile pairing will remain rejected"
+    },
+    {
+      "rustVariant": "ObjectiveAdmissionError::DeadlineMissing",
+      "directive": "correct_request",
+      "blindRetrySafe": false,
+      "reason": "the profile requires a deadline absent from the request"
+    },
+    {
+      "rustVariant": "ObjectiveAdmissionError::DeadlineBeforeObservation",
+      "directive": "correct_request",
+      "blindRetrySafe": false,
+      "reason": "the deadline ordering is semantically invalid"
+    },
+    {
+      "rustVariant": "ObjectiveAdmissionError::DeadlineExpired",
+      "directive": "correct_request",
+      "blindRetrySafe": false,
+      "reason": "the original deadline is already expired and requires a new request"
+    }
+  ]
+}

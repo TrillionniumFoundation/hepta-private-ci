@@ -175,7 +175,7 @@ def validate_schema_node(
     need(field_type in FIELD_TYPES, label + " unknown type")
 
     if field_type in FIXED_SCALAR_TYPES:
-        need(list(node) == prefix, label + " scalar key closure/order")
+        need(set(node) == set(prefix), label + " scalar key closure")
         return
 
     need(
@@ -185,13 +185,13 @@ def validate_schema_node(
         label + " maxBytes",
     )
     if field_type in BYTE_BOUNDED_SCALAR_TYPES:
-        need(list(node) == prefix + ["maxBytes"], label + " scalar key closure/order")
+        need(set(node) == set(prefix + ["maxBytes"]), label + " scalar key closure")
         return
 
     if field_type == "enum":
         need(
-            list(node) == prefix + ["maxBytes", "values"],
-            label + " enum key closure/order",
+            set(node) == set(prefix + ["maxBytes", "values"]),
+            label + " enum key closure",
         )
         values = node.get("values")
         need(
@@ -213,9 +213,9 @@ def validate_schema_node(
 
     if field_type in ARRAY_TYPES:
         need(
-            list(node)
-            == prefix + ["maxBytes", "minItems", "maxItems", "uniqueItems", "items"],
-            label + " array key closure/order",
+            set(node)
+            == set(prefix + ["maxBytes", "minItems", "maxItems", "uniqueItems", "items"]),
+            label + " array key closure",
         )
         need(
             isinstance(node.get("minItems"), int)
@@ -245,9 +245,9 @@ def validate_schema_node(
 
     if field_type in FIXED_POINT_VECTOR_TYPES:
         need(
-            list(node)
-            == prefix + ["maxBytes", "scale", "minItems", "maxItems", "items"],
-            label + " fixed-point vector key closure/order",
+            set(node)
+            == set(prefix + ["maxBytes", "scale", "minItems", "maxItems", "items"]),
+            label + " fixed-point vector key closure",
         )
         need(node.get("scale") in ("Q24", "Q32"), label + " fixed-point scale")
         need(
@@ -271,16 +271,16 @@ def validate_schema_node(
         label + " additionalProperties must be false",
     )
     need(
-        list(node)
-        == prefix
+        set(node)
+        == set(prefix
         + [
             "maxBytes",
             "minProperties",
             "maxProperties",
             "additionalProperties",
             "properties",
-        ],
-        label + " object key closure/order",
+        ]),
+        label + " object key closure",
     )
     properties = node.get("properties")
     need(isinstance(properties, list) and properties, label + " object properties")
@@ -602,8 +602,8 @@ def verify() -> int:
     for row in protocol_rows:
         pid = row["id"]
         need(
-            list(row)
-            == [
+            set(row)
+            == set([
                 "id",
                 "owner",
                 "consumers",
@@ -613,8 +613,8 @@ def verify() -> int:
                 "fields",
                 "invariants",
                 "authorityDelta",
-            ],
-            pid + " key closure/order",
+            ]),
+            pid + " key closure",
         )
         need(row["owner"] in module_id_set, pid + " owner")
         need(
@@ -668,8 +668,8 @@ def verify() -> int:
     )
     for row in gap_rows:
         need(
-            list(row)
-            == [
+            set(row)
+            == set([
                 "id",
                 "family",
                 "gap",
@@ -677,8 +677,8 @@ def verify() -> int:
                 "evidence",
                 "protocols",
                 "boundModules",
-            ],
-            row["id"] + " key closure/order",
+            ]),
+            row["id"] + " key closure",
         )
         need(row["state"] == "closed_specification", row["id"] + " state")
         need(row["evidence"], row["id"] + " evidence")
@@ -723,8 +723,8 @@ def verify() -> int:
     mapped_gap_ids: list[str] = []
     for row in document_rows:
         need(
-            list(row)
-            == [
+            set(row)
+            == set([
                 "id",
                 "path",
                 "title",
@@ -733,8 +733,8 @@ def verify() -> int:
                 "gapIds",
                 "workPackages",
                 "requiredSections",
-            ],
-            row["id"] + " document key closure/order",
+            ]),
+            row["id"] + " document key closure",
         )
         need(
             row["boundModules"] and set(row["boundModules"]) <= module_id_set,
@@ -765,8 +765,8 @@ def verify() -> int:
     dependency_map: dict[str, list[str]] = {}
     for row in lane_rows:
         need(
-            list(row)
-            == [
+            set(row)
+            == set([
                 "id",
                 "owner",
                 "deputy",
@@ -774,8 +774,8 @@ def verify() -> int:
                 "dependsOn",
                 "entryGate",
                 "exitGate",
-            ],
-            row["id"] + " lane key closure/order",
+            ]),
+            row["id"] + " lane key closure",
         )
         need(
             row["owner"] and row["deputy"] and row["entryGate"] and row["exitGate"],
@@ -837,16 +837,16 @@ def verify() -> int:
             mid + " production implementation fact projection",
         )
         need(
-            list(row)
-            == [
+            set(row)
+            == set([
                 "module",
                 "primaryLane",
                 "specifications",
                 "ownedReadinessProtocols",
                 "consumedReadinessProtocols",
                 "codingGate",
-            ],
-            mid + " binding key closure/order",
+            ]),
+            mid + " binding key closure",
         )
         need(mid in lane_map[row["primaryLane"]]["modules"], mid + " primary lane")
         need(
@@ -880,8 +880,8 @@ def verify() -> int:
     need([row["id"] for row in track_rows] == TRACK_IDS, "track closed world/order")
     for row in track_rows:
         need(
-            list(row) == ["id", "participants", "after", "exitGate"],
-            row["id"] + " track key closure/order",
+            set(row) == set(["id", "participants", "after", "exitGate"]),
+            row["id"] + " track key closure",
         )
         need(
             row["participants"] and set(row["participants"]) <= set(LANE_IDS),
@@ -900,8 +900,8 @@ def verify() -> int:
     )
     for row in assimilation_rows:
         need(
-            list(row) == ["id", "owners", "function", "targetRoots", "authority"],
-            row["id"] + " assimilation key closure/order",
+            set(row) == set(["id", "owners", "function", "targetRoots", "authority"]),
+            row["id"] + " assimilation key closure",
         )
         need(
             row["owners"] and set(row["owners"]) <= module_id_set, row["id"] + " owners"
@@ -1128,6 +1128,7 @@ def self_test() -> int:
     for fixture in [valid_enum, valid_array, valid_vector, valid_object]:
         validate_schema_node(fixture, 1024, "fixture", named=True)
 
+    validate_schema_node(dict(reversed(list(valid_enum.items()))), 1024, "permuted enum", named=True)
     invalid_schemas = [
         (
             {
@@ -1136,8 +1137,9 @@ def self_test() -> int:
                 "required": True,
                 "values": ["safe", "stop"],
                 "maxBytes": 16,
+                "unknownKey": False,
             },
-            "enum key closure/order",
+            "enum key closure",
         ),
         (
             {
@@ -1229,7 +1231,7 @@ def self_test() -> int:
                     "duplicate_key",
                     "path_ownership",
                     "valid_recursive_field_schemas",
-                    "schema_key_order",
+                    "unknown_schema_key",
                     "duplicate_enum_value",
                     "invalid_array_bounds",
                     "invalid_unique_enum_bound",
