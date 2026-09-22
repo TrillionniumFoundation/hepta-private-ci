@@ -97,3 +97,13 @@ Rollback removes the new Agentd capability and exact-ID consumer together or res
 - **Operating reference:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
 - **Remaining repository evidence:** exact-head and deterministic synthetic-merge execution receipts for the candidate.
 - **Remaining external gates:** independent semantic review, target-host qualification, operator acceptance, canary/promotion and release. None is granted by this dossier.
+
+
+### Canonical MemoryEvent shadow adapter
+
+- **Implemented entrypoints:** `read_v2` in [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); `read_authoritative` and shadow-only `adapt_authoritative_read_to_canonical_shadow_v1` in [src/authoritative.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative.rs); `DurableCognitiveSnapshot` in [codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs). The canonical adapter requires exact legacy record ID/revision/digest bindings and carries the same authoritative snapshot/generation/read receipts.
+- **State and recovery:** read_v2 reuses V1 selection, adds request-bound canonical bytes, sorts citations and accounts for byte-limit omissions. DurableCognitiveSnapshot reads an owner-acquired SQLite cut; native bytes are not an admitted ModulePort/wire protocol.
+- **Source tests:** [codex-rs/hepta-cognitive-read/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-read/src/v2_tests.rs), [src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs), [src/tombstone_resurrection_tests.rs](../../../codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs), [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs). Canonical shadow tests cover exact-cut binding, identity/provenance/lifecycle rejection and row/receipt tampering. These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
+- **Remaining work:** Before delivery revalidate exact fetched revision/digest and current host authority; the historical read cut does not lease future effects. Legacy citations still lack source revision, so the shadow adapter cannot claim full canonical provenance equivalence. Migrate named callers only after authoritative record-to-event bridge ownership exists; `ReadResultV2` remains compatibility until then. Register cross-module formats through their existing owner.
+

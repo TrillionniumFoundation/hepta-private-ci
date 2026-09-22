@@ -177,6 +177,10 @@ Current operating references:
 - [`codex-rs/hepta-memory/LANE_C_SQLITE.md`](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md)
 - [`docs/readiness/LANE_B_NATIVE_HOST.md`](../../readiness/LANE_B_NATIVE_HOST.md)
 
+### Canonical MemoryEvent authoritative shadow read
+
+`adapt_authoritative_read_to_canonical_shadow_v1` accepts only an already validated `AuthoritativeReadResultV1`, not an arbitrary caller snapshot. Each returned legacy record must have an explicit ID/revision/digest binding to a complete canonical `MemoryEventV1`; the adapter never infers event identity or reuses the legacy record digest as the canonical event digest. It verifies citation source ID/digest sets against canonical provenance, rejects live/tombstone lifecycle disagreement, binds the source snapshot receipt, generation vector and exact read receipt into one deny-all shadow receipt, and revalidates every canonical event/digest when the shadow receipt is checked. Legacy citations do not carry source revision, so source-revision equivalence remains an explicit gap. `ReadResultV2` remains the compatibility read and this shadow receipt grants no final-use/model-attachment authority.
+
 ## 12. Verification and qualification
 
 Focused source tests include:

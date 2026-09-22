@@ -105,13 +105,36 @@
         "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
         "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
       ]
+    },
+    {
+      "operation": "adapt_authoritative_read_to_canonical_shadow_v1",
+      "nativeSymbol": "adapt_authoritative_read_to_canonical_shadow_v1",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "state": "source_implemented_shadow_only_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_authoritative_read_shadow",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "symbol": "AuthoritativeReadResultV1::validate",
+          "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs"
+        }
+      ]
     }
   ],
   "repositoryControlledGaps": [
     "Obtain exact-head and deterministic synthetic-merge execution receipts for the candidate.",
     "Obtain exact-candidate execution receipts for the implemented real Agentd/native-worker fresh-context acceptance plus concurrent tombstone/correction rejection, owner-cut validity-expiry/rollback detection, and stale host-generation rejection; source presence is not a pass receipt.",
     "Keep the current durable SQLite kind capability Fact-only until an explicit owner schema migration qualifies additional memory kinds.",
-    "Add target-host p50/p95/p99 CPU, RSS and SQLite measurements before performance qualification."
+    "Add target-host p50/p95/p99 CPU, RSS and SQLite measurements before performance qualification.",
+    "Qualify adapt_authoritative_read_to_canonical_shadow_v1 on exact source-head and deterministic synthetic merge.",
+    "Supply authoritative source-revision bindings before claiming full canonical provenance equivalence; legacy MemoryRecord citations do not carry source revisions.",
+    "Migrate named downstream callers from legacy ReadResultV2 only after exact record-to-event bridge ownership is established.",
+    "Revalidate the canonical shadow against the current final-use snapshot before physical model-request attachment; a historical read receipt grants no future-use authority."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -276,5 +299,19 @@
     "commit": "3074b7f9952dfe634f4a8964bb20a2b09de3202a",
     "tree": "77fa7fa9dabb26313e5523d24fb3104c2ecad4a0",
     "interpretation": "exact cognitive.read product-source observation after exact-ID, final-use freshness, owner-safe read-unavailability, and executable qualification-prerequisite fixes. Later commits may update only documentation/source-truth metadata; current mapped operations and product callers remain independently bound by exact HEAD blob objects."
+  },
+  "canonicalMemoryEventReadMigration": {
+    "state": "authoritative_shadow_adapter_source_candidate",
+    "predecessorSurface": "AuthoritativeReadResultV1 / ReadResultV2",
+    "targetSurface": "cognitive.types::hnmf::MemoryEventV1",
+    "exactRecordIdentityBridgeRequired": true,
+    "bindsSnapshotReceipt": true,
+    "bindsGenerationVector": true,
+    "bindsReadReceipt": true,
+    "verifiesCitationProvenanceIdDigest": true,
+    "verifiesSourceRevisionEquivalence": false,
+    "verifiesLifecycleAgainstRecordState": true,
+    "replacesLegacyRead": false,
+    "productComposed": false
   }
 }

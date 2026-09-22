@@ -1,7 +1,7 @@
 # memory.retrieval: implementation design
 
 Parent: `docs/modules/memory.retrieval/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded native ranking, V2 input binding and generation-bound recall implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded native ranking, V2 input binding and generation-bound recall are implemented; a shadow-only explicit adapter to canonical cognitive.types RecallPacketV1 is source-implemented on this candidate, while product replacement, exact execution evidence and independent acceptance remain separate gates listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `retrieve_v2` in [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); `build_candidate_union` in [codex-rs/hepta-memory-retrieval/src/generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs); `recall` in [codex-rs/hepta-memory-retrieval/src/generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs). Bounded native ranking, V2 input binding and generation-bound recall implemented.
+- **Implemented entrypoints:** `retrieve_v2` in [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); `build_candidate_union`, `recall`, and shadow-only `adapt_generation_bound_recall_to_canonical_shadow_v1` in [codex-rs/hepta-memory-retrieval/src/generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs). The adapter requires exact legacy packet digests plus explicit legacy-record-to-canonical-event bindings and never infers identities or reuses the legacy cue digest as the canonical cue digest.
 - **State and recovery:** Native receipts bind the supplied candidate set, including omitted candidates, and retain explicit channel/score/generation data. Ranking is stateless; existing hepta-memory SQLite retrieval remains the physical content/index owner.
 - **Source tests:** [codex-rs/hepta-memory-retrieval/src/v2_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/v2_tests.rs), [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md), [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md).
-- **Remaining work:** Input completeness/freshness still needs the real generator and owner. Do not infer a complete HNMF/embedding execution pipeline from caller-supplied candidates or scores.
+- **Remaining work:** Input completeness/freshness still needs the real generator and owner. The canonical adapter is shadow-only until exact source-head/synthetic-merge qualification and downstream consumer-owned callsite migration complete; the legacy generation-bound packet remains a compatibility surface. Do not infer canonical event identity, cue identity, product composition, or a complete HNMF/embedding execution pipeline from caller-supplied candidates or scores.

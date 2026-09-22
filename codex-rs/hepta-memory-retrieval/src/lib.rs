@@ -18,6 +18,9 @@ use codex_hepta_types::StableId;
 
 pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
+pub use generation_bound::CanonicalRecallSelectionBindingV1;
+pub use generation_bound::CanonicalRecallShadowContextV1;
+pub use generation_bound::adapt_generation_bound_recall_to_canonical_shadow_v1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
 pub use generation_bound::MAX_GENERATION_BOUND_RESULTS;
 pub use generation_bound::MemoryCueV1;

@@ -21,6 +21,11 @@ use codex_hepta_types::StableId;
 
 pub use authoritative::AuthoritativeCognitiveSnapshotProvider;
 pub use authoritative::AuthoritativeReadResultV1;
+pub use authoritative::CanonicalAuthoritativeReadShadowV1;
+pub use authoritative::CanonicalReadRecordBindingV1;
+pub use authoritative::CanonicalReadShadowError;
+pub use authoritative::CanonicalReadShadowRowV1;
+pub use authoritative::adapt_authoritative_read_to_canonical_shadow_v1;
 pub use authoritative::AuthoritativeSnapshotV1;
 pub use authoritative::SnapshotAcquisitionRequestV1;
 pub use authoritative::SnapshotProviderError;

@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); observed identifiers include `RetrievalReceiptV2`, `retrieve_v2`, `binding_digest_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs), with generation-bound recall and the HNMF side-by-side migration adapter in [src/generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs); observed identifiers include `RetrievalReceiptV2`, `retrieve_v2`, `binding_digest_v2`, `RecallPacketV1`, and `adapt_generation_bound_recall_to_canonical_shadow_v1`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -164,7 +164,7 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named case: `channel_completion_order_cannot_change_union_or_recall`.
+- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); covers deterministic channel union/recall plus exact legacy-to-canonical selection binding, abstention mapping, candidate-receipt binding, cross-packet rejection, and identity-drift rejection.
 - [codex-rs/hepta-memory-retrieval/src/lib_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/lib_tests.rs); named case: `ranking_is_deterministic_and_explainable`.
 
 In `codex-rs`, run `just test -p codex-hepta-memory-retrieval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) separately labels target acceptance designs.
@@ -186,6 +186,10 @@ Source implementation completes only when the declared target root exists, publi
 Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+
+### Canonical HNMF recall migration
+
+The current `generation_bound::RecallPacketV1` remains the compatibility receipt during migration; it is **not** silently reinterpreted as `cognitive.types::hnmf_learning::RecallPacketV1`. `adapt_generation_bound_recall_to_canonical_shadow_v1` emits only a shadow canonical packet and requires an explicit bridge that binds the exact legacy cue/candidate-union/generation-vector digests plus every selected legacy record ID/revision/digest to an independently supplied canonical event identity/revision/digest. A legacy binary cue digest is never reused as the canonical JSON cue digest, and a legacy record ID is never inferred to be a canonical event ID. The adapter carries no attachment, model-call, writer, selection, promotion, or release authority. Product replacement remains false until downstream owner callsites have migrated and exact-candidate qualification is current.
 
 ## 15. Definition of module completion
 
