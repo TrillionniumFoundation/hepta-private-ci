@@ -72,3 +72,9 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 Repository-controlled source coverage is checked by `../../../scripts/hepta-lane-e-closure.py`; exact-head and ordered-parent synthetic-merge execution are defined in `.github/workflows/hepta-lane-e-gap-closure.yml`. The workflow compiles all targets, runs owner and cross-crate tests, strict Clippy and rustfmt.
 
 The repository cannot self-issue live outcome authentication, a product scheduler and durable holdout-use writer, real future-calendar windows, independent snapshots, statistical power/precision, subgroup/privacy review, retention/change-point observations, backup non-resurrection, independent operator acceptance, selection, canary, promotion or release. These remain external exact-candidate evidence gates.
+
+- EVAL-05: The product runner must durably consume the fenced final holdout before release, derive MetricGate intervals only from sealed candidate/baseline estimator receipts, build the signed bundle internally and require durable evidence publication..
+
+- EVAL-06: The concrete locked-file CAS owner must replay committed history, fence failover, expose cross-process exclusion and reject restoring a backup older than the independently retained minimum anchor..
+
+- EVAL-07: SystemLongitudinal admission requires generator, evaluator and observer to be pairwise independent by principal, credential chain, signing key and controller..

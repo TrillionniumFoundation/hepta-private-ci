@@ -16,6 +16,11 @@ default = []
 # Production and qualification consumers must use signed admission APIs.
 trusted-inprocess-eval = []
 
+[[test]]
+name = "operator_claim"
+path = "tests/operator_claim.rs"
+required-features = ["trusted-inprocess-eval"]
+
 [lints]
 workspace = true
 

@@ -30,7 +30,6 @@ tokio = { workspace = true, features = ["io-util", "macros", "net", "process", "
 toml = { workspace = true }
 
 [dev-dependencies]
-ed25519-dalek = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
@@ -39,5 +38,6 @@ codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-objective = { path = "../hepta-objective" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
+ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }

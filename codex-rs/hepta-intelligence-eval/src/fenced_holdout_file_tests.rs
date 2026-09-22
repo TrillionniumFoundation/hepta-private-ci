@@ -106,13 +106,13 @@ fn plan(name: &str) -> crate::CrossFoldPlanReceiptV1 {
                 training_windows: vec![id("train-window-b")],
                 holdout_principals: vec![id("holdout-b")],
                 holdout_episodes: vec![id("holdout-episode-b")],
-                holdout_windows: vec![id("final-window")],
+                holdout_windows: vec![id(&format!("{name}-final-window"))],
                 model_digest: digest("model-b"),
                 predictions_digest: digest("predictions-b"),
             },
         ],
-        final_holdout_window_id: id("final-window"),
-        final_holdout_digest: digest("final-holdout"),
+        final_holdout_window_id: id(&format!("{name}-final-window")),
+        final_holdout_digest: digest(&format!("{name}-final-holdout")),
     }) {
         Ok(value) => value,
         Err(error) => panic!("freeze plan: {error}"),
@@ -154,7 +154,7 @@ fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
         Ok(value) => value,
         Err(error) => panic!("create store: {error}"),
     };
-    let mut first = owner(store, None);
+    let first = owner(store, None);
     let first_anchor = first.anchor();
     let store = first.into_store();
     drop(store);
@@ -258,7 +258,7 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
     let temp = TempFile::new();
     let store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding"))
         .unwrap_or_else(|error| panic!("create store: {error}"));
-    let mut first = owner(store, None);
+    let first = owner(store, None);
     let fence = first.fence().clone();
     let store = first.into_store();
     drop(store);

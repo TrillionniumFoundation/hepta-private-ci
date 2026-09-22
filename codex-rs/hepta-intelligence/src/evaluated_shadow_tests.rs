@@ -271,8 +271,7 @@ fn tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports() {
     for case in 0..3 {
         let mut fixture = Fixture::new();
         if case == 0 {
-            fixture.qualification.decision.decision.disposition =
-                IndependentEvaluationDispositionV1::Ineligible;
+            fixture.qualification.decision.decision.evidence_digest = Digest32::ZERO;
         } else if case == 1 {
             fixture.qualification.publication_digest = Digest32::ZERO;
         }

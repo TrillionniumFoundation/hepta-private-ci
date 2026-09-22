@@ -1,6 +1,7 @@
 //! Independent deterministic candidate evaluation. Eligibility is not promotion.
 #![forbid(unsafe_code)]
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -16,6 +17,7 @@ mod fenced_holdout_file;
 mod holdout_journal;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
+pub use durable_holdout::HoldoutAnchorAuthorityV1;
 pub use durable_holdout::HoldoutAnchorV1;
 pub use fenced_holdout::FencedFinalHoldoutOwnerV1;
 pub use fenced_holdout::FencedHoldoutError;
@@ -51,6 +53,7 @@ pub use closure::MetricContractV1;
 pub use closure::MetricGateV1;
 pub use closure::MetricRoleContractV2;
 pub use closure::MetricRoleV2;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub(crate) use closure::decide_independently;
 pub(crate) use closure::decide_independently_v2;
 pub use closure::freeze_cross_fold_plan;
@@ -159,6 +162,7 @@ pub use temporal_fold::TemporalFoldPlan;
 pub use temporal_fold::TemporalFoldReceipt;
 pub use temporal_fold::fit_temporal_fold;
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 const MAX_METRICS: usize = 128;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -278,6 +282,7 @@ fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> 
     })
 }
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let raw = i128::from(left.raw()) - i128::from(right.raw());
     Ok(FixedQ32::from_raw(
@@ -285,6 +290,7 @@ fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     ))
 }
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[StableId]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.intelligence-eval.v1");
@@ -337,3 +343,7 @@ pub use longitudinal_time::ObservedFutureWindowV1;
 pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;
 pub use longitudinal_time::future_window_signing_payload_v1;
 pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
+
+#[cfg(test)]
+#[path = "signed_qualification_e2e_tests.rs"]
+mod signed_qualification_e2e_tests;

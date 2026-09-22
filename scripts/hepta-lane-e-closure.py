@@ -17,6 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MATRIX_PATH = ROOT / "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json"
 TRACE_PATH = ROOT / "qualification/lane-e/TEST_TRACEABILITY.json"
 WORKFLOW_PATH = ROOT / ".github/workflows/hepta-lane-e-gap-closure.yml"
+PRODUCTION_CONTRACT_PATH = ROOT / "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"
+EVIDENCE_SCRIPT_PATH = ROOT / "scripts/hepta-learning-eval-evidence.py"
 TEMPORARY_WORKFLOW_PATH = (
     ROOT / ".github/workflows/hepta-lane-e-materialize-generated.yml"
 )
@@ -30,7 +32,7 @@ EXPECTED_MODULES = {
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 5)),
     *(f"OP-{index:02d}" for index in range(1, 5)),
-    *(f"EVAL-{index:02d}" for index in range(1, 5)),
+    *(f"EVAL-{index:02d}" for index in range(1, 8)),
     *(f"ART-{index:02d}" for index in range(1, 5)),
 }
 EXPECTED_EXTERNAL_GATES = {f"RDY-EXT-{index:03d}" for index in range(1, 10)}
@@ -136,13 +138,19 @@ def relative_path(value: object, findings: Findings, context: str) -> Path | Non
 def verify_symbol(source: str, native_symbol: str) -> bool:
     parts = native_symbol.split("::")
     function = parts[-1]
-    if not re.search(rf"\b(?:pub\s+)?fn\s+{re.escape(function)}\s*\(", source):
+    if function[:1].isupper():
+        return bool(re.search(rf"\b(?:struct|enum|type|trait)\s+{re.escape(function)}\b", source))
+    if not re.search(
+        rf"\b(?:pub(?:\([^)]*\))?\s+)?fn\s+{re.escape(function)}"
+        rf"(?:\s*<[^{{}};]*>)?\s*\(",
+        source,
+    ):
         return False
     if len(parts) >= 2 and parts[-2][:1].isupper():
         owner = parts[-2]
         return bool(
             re.search(rf"\b(?:struct|enum|type)\s+{re.escape(owner)}\b", source)
-            and re.search(rf"\bimpl\s+{re.escape(owner)}\b", source)
+            and re.search(rf"\bimpl(?:\s*<[^{{}};]*>)?\s+{re.escape(owner)}\b", source)
         )
     return True
 
@@ -189,7 +197,10 @@ def verify_matrix(
         f"matrix modules must be exactly {sorted(EXPECTED_MODULES)}",
     )
     for module, item in modules.items():
-        for key in ("sourceRoot", "stableGuide", "dossier", "nativeMapping"):
+        required_paths = ["sourceRoot", "stableGuide", "dossier", "nativeMapping"]
+        if module == "learning.eval":
+            required_paths.append("productionContract")
+        for key in required_paths:
             path = relative_path(item.get(key), findings, f"{module}.{key}")
             if path is not None:
                 findings.require(
@@ -250,7 +261,7 @@ def verify_matrix(
                 f"cannot resolve {symbol} in {source_path.relative_to(ROOT)}",
             )
             findings.require(
-                operation.get("status") in {"implemented", "implemented_existing"},
+                operation.get("status") in {"implemented", "implemented_existing", "implemented_sealed_receipt", "implemented_low_level", "implemented_pairwise_independence"},
                 "operation_not_implemented",
                 f"{module}.{operation_name} is not source-implemented",
             )
@@ -451,6 +462,116 @@ def verify_traceability(
                 )
 
 
+
+def verify_learning_eval_production_boundary(findings: Findings) -> None:
+    lib_path = ROOT / "codex-rs/hepta-intelligence-eval/src/lib.rs"
+    closure_path = ROOT / "codex-rs/hepta-intelligence-eval/src/closure.rs"
+    metric_path = ROOT / "codex-rs/hepta-intelligence-eval/src/metric_roles.rs"
+    durable_path = ROOT / "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs"
+    cargo_path = ROOT / "codex-rs/hepta-intelligence-eval/Cargo.toml"
+    api_contract_path = (
+        ROOT / "codex-rs/hepta-shadow-qualification/tests/lane_e_api_contract.rs"
+    )
+    required = [
+        lib_path,
+        closure_path,
+        metric_path,
+        durable_path,
+        cargo_path,
+        api_contract_path,
+        PRODUCTION_CONTRACT_PATH,
+        EVIDENCE_SCRIPT_PATH,
+    ]
+    for path in required:
+        findings.require(
+            path.is_file(),
+            "learning_eval_boundary_file_missing",
+            f"missing learning.eval production boundary file: {path.relative_to(ROOT)}",
+        )
+    if not all(path.is_file() for path in required):
+        return
+
+    lib = lib_path.read_text(encoding="utf-8")
+    closure = closure_path.read_text(encoding="utf-8")
+    metric = metric_path.read_text(encoding="utf-8")
+    durable = durable_path.read_text(encoding="utf-8")
+    cargo = cargo_path.read_text(encoding="utf-8")
+    api_contract = api_contract_path.read_text(encoding="utf-8")
+    production = PRODUCTION_CONTRACT_PATH.read_text(encoding="utf-8")
+    evidence_script = EVIDENCE_SCRIPT_PATH.read_text(encoding="utf-8")
+
+    findings.require(
+        "pub fn evaluate(mut request: EvaluationRequest)" not in lib,
+        "learning_eval_legacy_public",
+        "legacy evaluate() must not be part of the default public surface",
+    )
+    findings.require(
+        "pub fn decide_independently(" not in closure,
+        "learning_eval_unsigned_public",
+        "unsigned decide_independently() must remain crate-private",
+    )
+    findings.require(
+        "pub fn decide_independently_v2(" not in metric,
+        "learning_eval_unsigned_v2_public",
+        "unsigned decide_independently_v2() must remain crate-private",
+    )
+    for token in (
+        'trusted-inprocess-eval = []',
+        'pub mod trusted_inprocess',
+        'pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;',
+        'pub(crate) use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;',
+    ):
+        findings.require(
+            token in (cargo + "\n" + lib),
+            "learning_eval_signed_surface",
+            f"missing required production/compatibility surface token: {token}",
+        )
+    for token in (
+        "pub trait FinalHoldoutCasStoreV1",
+        "pub struct FencedFinalHoldoutOwnerV1",
+        "pub fn consume(",
+    ):
+        findings.require(
+            token in durable,
+            "learning_eval_holdout_fencing",
+            f"missing durable holdout boundary: {token}",
+        )
+    for token in (
+        "ProductEvaluationRunnerV1",
+        "FencedFinalHoldoutOwnerV1",
+        "DENY_ALL",
+    ):
+        findings.require(
+            token in production,
+            "learning_eval_production_contract",
+            f"production contract is missing normative token: {token}",
+        )
+    for token in (
+        "sourceTree",
+        "candidate SHA/tree binding mismatch",
+        "synthetic-merge first parent mismatch",
+        "qualificationOutputs",
+        "lineCoverageThresholdPct",
+        "stressIterations",
+        "stressLog",
+    ):
+        findings.require(
+            token in evidence_script,
+            "learning_eval_evidence_binding",
+            f"evidence verifier is missing provenance/output binding: {token}",
+        )
+    for token in (
+        "ProductEvaluationRunnerV1",
+        "freeze_product_evaluation_plan_v1",
+        "FencedFinalHoldoutOwnerV1",
+    ):
+        findings.require(
+            token in api_contract,
+            "learning_eval_api_contract",
+            f"cross-crate API contract does not bind: {token}",
+        )
+
+
 def verify_authority_posture(findings: Findings) -> None:
     sources = [
         ROOT / "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -573,6 +694,35 @@ def verify_workflow(findings: Findings) -> None:
             message,
         )
     findings.require(
+        "signed_qualification_e2e" in text
+        and "--features trusted-inprocess-eval" in text,
+        "learning_eval_workflow_tests",
+        "workflow must execute signed E2E and explicit trusted compatibility tests",
+    )
+    for token in (
+        "scripts/hepta-learning-eval-evidence.py emit",
+        "scripts/hepta-learning-eval-evidence.py verify",
+        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8",
+        "id-token: write",
+        "attestations: write",
+        "cargo-llvm-cov@0.9.0",
+        "--fail-under-lines 85",
+        "Adversarial qualification stress",
+        "evaluated_shadow",
+        "Strict merged Lane E lint",
+        "--coverage .hepta-evidence/learning-eval/coverage.json",
+        "--stress .hepta-evidence/learning-eval/stress.json",
+        "--stress-log .hepta-evidence/learning-eval/stress.log",
+        "--runtime-log .hepta-evidence/learning-eval/runtime-e2e.log",
+        "github.event.before",
+    ):
+        findings.require(
+            token in text,
+            "learning_eval_workflow_evidence",
+            f"workflow is missing qualification evidence control: {token}",
+        )
+    findings.require(
         not TEMPORARY_WORKFLOW_PATH.exists(),
         "temporary_workflow_present",
         "temporary generated-file materializer must not remain in the candidate",
@@ -608,6 +758,7 @@ def verify() -> Findings:
     trace = load_json(TRACE_PATH, findings)
     modules = verify_matrix(matrix, findings)
     verify_traceability(trace, modules, findings)
+    verify_learning_eval_production_boundary(findings)
     verify_authority_posture(findings)
     verify_workflow(findings)
     return findings

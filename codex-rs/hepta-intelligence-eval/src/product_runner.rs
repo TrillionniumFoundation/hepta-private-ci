@@ -650,8 +650,8 @@ fn derive_metric_gates(
     candidate: &ClusterOpeEstimate,
     baseline: &ClusterOpeEstimate,
 ) -> Result<Vec<MetricGateV1>, ProductEvaluationError> {
-    candidate.validate_integrity()?;
-    baseline.validate_integrity()?;
+    candidate.validate_integrity().map_err(TemporalEvaluationError::Confidence)?;
+    baseline.validate_integrity().map_err(TemporalEvaluationError::Confidence)?;
     if plan.metric_contracts.len() != plan.metric_sources.len() {
         return Err(ProductEvaluationError::Integrity("metric source coverage"));
     }
