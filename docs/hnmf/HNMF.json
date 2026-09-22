@@ -73,10 +73,10 @@
       "id": "ModalitySpanRefV1",
       "maximumEncodedBytes": 32768,
       "requiredFields": [
+        "spanId",
         "modality",
         "assetSha256",
-        "start",
-        "end",
+        "range",
         "preprocessorManifestSha256",
         "uncertaintyPpm",
         "privacyClass"
@@ -91,12 +91,16 @@
         "scope",
         "observedInterval",
         "modalitySpans",
+        "crossModalBindings",
         "semanticKeys",
         "provenance",
         "verification",
         "retentionPolicy",
         "objectiveDigest",
-        "nduStateDigest"
+        "nduStateDigest",
+        "causalParents",
+        "temporalNeighbors",
+        "lifecycle"
       ]
     },
     {
@@ -118,10 +122,12 @@
         "nodeId",
         "population",
         "modalityMask",
+        "semanticKeys",
         "supportManifestSha256",
         "thresholdQ16",
         "targetActivityPpm",
         "confidencePpm",
+        "validFromUnixMs",
         "snapshotGeneration"
       ]
     },
@@ -135,6 +141,7 @@
         "weightQ16",
         "delaySteps",
         "plasticityClass",
+        "eligibilityPpm",
         "supportManifestSha256",
         "snapshotGeneration"
       ]
@@ -167,7 +174,6 @@
         "coveragePpm",
         "confidencePpm",
         "oodPpm",
-        "abstain",
         "resourceReceipt"
       ]
     },
@@ -210,15 +216,18 @@
     },
     {
       "id": "TopologyProposalV1",
-      "maximumEncodedBytes": 65536,
+      "maximumEncodedBytes": 262144,
       "requiredFields": [
-        "predecessorGeneration",
-        "nextGeneration",
+        "proposalId",
+        "predecessorTopologyDigest",
         "operation",
-        "capabilityTyped",
-        "sandboxOnly",
-        "operatorAccepted",
-        "productionActivationAllowed"
+        "typedNodesEdges",
+        "compatibilityPlanDigest",
+        "resourceDelta",
+        "securityReviewDigest",
+        "lesionPlanDigest",
+        "rollbackPlanDigest",
+        "state"
       ]
     },
     {
@@ -244,7 +253,11 @@
     "modulatorEquation": "clip(w_u*utility + w_p*prediction_error + w_n*novelty - w_r*risk - w_o*ood)",
     "plasticityEquation": "candidate_delta = clip(eta * modulator * eligibility - decay - interference)",
     "currentRunMutationAllowed": false,
-    "onlineTopologyActivationAllowed": false
+    "onlineTopologyActivationAllowed": false,
+    "q16One": 65536,
+    "q16UnitRange": "[-65536,65536]",
+    "q16ToPpm": "trunc_toward_zero(q16*1000000/65536)",
+    "proposalDeltaBinding": "deltaPpm == trunc_toward_zero((newQ16-oldQ16)*1000000/65536)"
   },
   "candidateChannels": [
     "lexical",
@@ -447,7 +460,7 @@
       "source-aware multimodal recall packet compilation"
     ],
     "intelligence.control": [
-      "composition fa\u00e7ade only; no durable fact or model execution ownership"
+      "composition façade only; no durable fact or model execution ownership"
     ]
   },
   "prohibitedSubstitutions": [

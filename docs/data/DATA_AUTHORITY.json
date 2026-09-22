@@ -960,10 +960,10 @@
         "knowledge.graph"
       ],
       "projection": false,
-      "createPolicy": "transactional_create_or_append_only",
+      "createPolicy": "memory_revision_bound_transactional_fact_set",
       "retentionClass": "policy_bound",
-      "deletionAndCorrection": "lineage_propagating",
-      "recovery": "reopen_verify_reconcile_or_quarantine",
+      "deletionAndCorrection": "memory_revision_lineage_propagating",
+      "recovery": "reopen_verify_memory_revision_fact_set_binding_or_quarantine",
       "forbiddenWriters": [
         "auth.authbus",
         "automation.taskflow",

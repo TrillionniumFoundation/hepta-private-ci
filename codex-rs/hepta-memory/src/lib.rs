@@ -1,5 +1,8 @@
 #![forbid(unsafe_code)]
 
+pub use codex_hepta_memory_federation::FederatedCoverageV2;
+pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;
+
 mod cognitive_compact;
 mod cognitive_federation;
 mod cognitive_intelligence_writer;
@@ -8,6 +11,7 @@ mod cognitive_memory_store;
 mod cognitive_model;
 mod cognitive_path;
 mod cognitive_retrieval;
+mod cognitive_retrieval_adapter;
 mod cognitive_runtime;
 mod cognitive_store;
 mod compact_persistence;
@@ -37,8 +41,15 @@ mod shadow_advisory;
 mod shadow_model_runtime;
 
 pub use lane_c_snapshot::CognitiveOwnerFrontiers;
+pub use lane_c_snapshot::DURABLE_SQLITE_MEMORY_KIND;
 pub use lane_c_snapshot::DurableCognitiveSnapshot;
+pub use lane_c_snapshot::DurableCognitiveSnapshotCursor;
+pub use lane_c_snapshot::DurableCognitiveSnapshotPage;
+pub use lane_c_snapshot::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
+pub use lane_c_snapshot::MAX_LANE_C_PAGE_CITATIONS;
+pub use lane_c_snapshot::MAX_LANE_C_SNAPSHOT_PAGE_HEADS;
 
+pub use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_NAMESPACE;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION;
 pub use cognitive_compact::CognitiveCompactError;
@@ -84,6 +95,7 @@ pub use cognitive_model::KgEntityFactDraft;
 pub use cognitive_model::KgFactSetDraft;
 pub use cognitive_model::KgNode;
 pub use cognitive_model::KgRelationFactDraft;
+pub use cognitive_model::KgRelationSemanticV1;
 pub use cognitive_model::LedgerSourceKind;
 pub use cognitive_model::MemoryDraft;
 pub use cognitive_model::MemoryLifecycleState;
@@ -106,6 +118,7 @@ pub use cognitive_retrieval::RetrievalBatch;
 pub use cognitive_retrieval::RetrievalCandidate;
 pub use cognitive_retrieval::RetrievalChannel;
 pub use cognitive_retrieval::RetrievalChannelObservation;
+pub use cognitive_retrieval::RetrievalChannelRank;
 pub use cognitive_retrieval::RetrievalLimitObservation;
 pub use cognitive_retrieval::RetrievalObservation;
 pub use cognitive_retrieval::RetrievalRequest;
@@ -113,6 +126,11 @@ pub use cognitive_retrieval::RevalidationDrift;
 pub use cognitive_retrieval::RevalidationStatus;
 pub use cognitive_retrieval::SourceCitationRecord;
 pub use cognitive_retrieval::SourceRevalidationBinding;
+pub use cognitive_retrieval_adapter::OwnerRetrievalExecutionV1;
+pub use cognitive_retrieval_adapter::RetrievalExecutionContextV1;
+pub use cognitive_retrieval_adapter::execute_owner_observation;
+pub use cognitive_retrieval_adapter::sqlite_owner_cue_profile_digest;
+pub use cognitive_retrieval_adapter::sqlite_owner_retrieval_policy_v1;
 pub use cognitive_runtime::CognitiveRuntime;
 pub use cognitive_runtime::CognitiveUnavailableReason;
 pub use cognitive_store::CognitiveRecoveryAnchor;
@@ -355,6 +373,8 @@ pub use production_cognitive_source_target::CognitiveSourceOperationV1;
 pub use production_cognitive_source_target::CognitiveSourceOutboxTarget;
 pub use production_cognitive_source_target::CognitiveSourceTerminalObservation;
 pub use production_writer::FinalUseProductionOutboxTarget;
+pub use production_writer::PRODUCTION_COGNITIVE_MUTATION_NAMESPACE;
+pub use production_writer::PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION;
 pub use production_writer::PRODUCTION_DURABLE_WRITER_JOURNAL_MODE;
 pub use production_writer::PRODUCTION_DURABLE_WRITER_NAMESPACE;
 pub use production_writer::PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION;
@@ -362,6 +382,11 @@ pub use production_writer::PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL;
 pub use production_writer::ProductionAuthorityLease;
 pub use production_writer::ProductionAuthorityToken;
 pub use production_writer::ProductionAuthorityVerifier;
+pub use production_writer::ProductionCognitiveMutation;
+pub use production_writer::ProductionCognitiveMutationCapability;
+pub use production_writer::ProductionCognitiveMutationError;
+pub use production_writer::ProductionCognitiveMutationFuture;
+pub use production_writer::ProductionCognitiveMutationReceiptV1;
 pub use production_writer::ProductionDispatchFuture;
 pub use production_writer::ProductionDispatchReceipt;
 pub use production_writer::ProductionDispatchRequest;
@@ -373,6 +398,8 @@ pub use production_writer::ProductionOutcomeReceipt;
 pub use production_writer::ProductionQueuedReceipt;
 pub use production_writer::ProductionRecoveryReceipt;
 pub use production_writer::ProductionTargetOutcome;
+pub use production_writer::ProductionTerminalObservation;
+pub use production_writer::ProductionTerminalObservationFuture;
 pub use production_writer::ProductionWriterError;
 pub use recall::RECALL_OBSERVATION_SCHEMA_VERSION;
 pub use recall::RecallCandidate;
@@ -414,6 +441,14 @@ mod cognitive_memory_store_tests;
 #[cfg(test)]
 #[path = "cognitive_kg_store_tests.rs"]
 mod cognitive_kg_store_tests;
+
+#[cfg(test)]
+#[path = "cognitive_kg_oracle_tests.rs"]
+mod cognitive_kg_oracle_tests;
+
+#[cfg(test)]
+#[path = "cognitive_kg_benchmark_tests.rs"]
+mod cognitive_kg_benchmark_tests;
 
 #[cfg(test)]
 #[path = "cognitive_intelligence_writer_tests.rs"]

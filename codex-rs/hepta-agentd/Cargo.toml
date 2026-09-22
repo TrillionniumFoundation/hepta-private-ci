@@ -11,9 +11,14 @@ path = "src/lib.rs"
 doctest = false
 
 [features]
-default = []
-# Qualification-only host profile. Default binaries keep the writer disabled.
-qualification-cognitive-write = []
+# Agentd is the named Hepta product host for scoped cognitive mutations. This
+# default is local to the Agentd crate; ordinary Codex/App Server binaries do
+# not enable HeptaCognitiveWrite by default.
+default = ["production-cognitive-write"]
+production-cognitive-write = []
+# Adds the qualification-only turn-lifecycle witness seam on top of the real
+# product mutation profile. It never substitutes for production authority.
+qualification-cognitive-write = ["production-cognitive-write"]
 
 [[bin]]
 name = "codex-hepta-agentd"
@@ -24,6 +29,10 @@ test = false
 name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
 test = false
+[[example]]
+name = "h4_persistent_writer"
+path = "examples/h4_persistent_writer.rs"
+required-features = ["qualification-cognitive-write"]
 
 [lints]
 workspace = true
@@ -40,14 +49,17 @@ codex-hepta-agent-protocol = { workspace = true }
 codex-hepta-automation = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-evidence = { workspace = true }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
+codex-hepta-cognitive-store = { path = "../hepta-cognitive-store" }
 codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
 codex-hepta-memory = { workspace = true }
+codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 codex-hepta-memory-extension = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-model-provider = { workspace = true }
@@ -75,6 +87,7 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 app_test_support = { workspace = true }
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }

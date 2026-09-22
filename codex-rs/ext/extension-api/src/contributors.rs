@@ -40,6 +40,7 @@ pub use model_provider_input::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS;
 pub use model_provider_input::EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION;
 pub use model_provider_input::EphemeralModelInputContext;
 pub use model_provider_input::EphemeralModelInputContributor;
+pub use model_provider_input::EphemeralModelInputFinalUseGuard;
 pub use model_provider_input::EphemeralModelInputProposal;
 pub use model_provider_input::EphemeralModelInputSource;
 pub use model_provider_policy::MODEL_PROVIDER_POLICY_INPUT_SCHEMA_VERSION;

@@ -17,6 +17,7 @@ pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
 pub const HEPTA_AGENT_HOME_ENV: &str = "HEPTA_AGENT_HOME";
 pub const HEPTA_AGENT_RUN_ROOT_ENV: &str = "HEPTA_AGENT_RUN_ROOT";
+pub const HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV: &str = "HEPTA_COGNITIVE_RETRIEVAL_MODE";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdIdentity {
@@ -32,6 +33,44 @@ pub struct AgentdIdentity {
     pub app_server_socket: PathBuf,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CognitiveRetrievalMode {
+    Compatibility,
+    HnmfRequired,
+}
+
+impl CognitiveRetrievalMode {
+    #[must_use]
+    pub const fn requires_current_context(self) -> bool {
+        matches!(self, Self::HnmfRequired)
+    }
+}
+
+fn parse_cognitive_retrieval_mode(
+    value: Option<OsString>,
+) -> Result<CognitiveRetrievalMode, AgentdError> {
+    let Some(value) = value.filter(|value| !value.is_empty()) else {
+        return Ok(CognitiveRetrievalMode::Compatibility);
+    };
+    let value = value.into_string().map_err(|_| {
+        AgentdError::Invalid(format!(
+            "{HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV} must be UTF-8"
+        ))
+    })?;
+    match value.as_str() {
+        "compatibility" => Ok(CognitiveRetrievalMode::Compatibility),
+        "hnmf-required" => Ok(CognitiveRetrievalMode::HnmfRequired),
+        _ => Err(AgentdError::Invalid(format!(
+            "{HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV} must be compatibility or hnmf-required"
+        ))),
+    }
+}
+
+fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrievalMode, AgentdError>
+{
+    parse_cognitive_retrieval_mode(std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV))
+}
+
 pub struct AgentdConfig {
     identity: AgentdIdentity,
     registry: FleetRegistry,
@@ -43,10 +82,15 @@ pub struct AgentdConfig {
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
+    production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
+    cognitive_retrieval_mode: CognitiveRetrievalMode,
+    cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
 }
 
 impl AgentdConfig {
     pub fn from_process_environment() -> Result<Self, AgentdError> {
+        let cognitive_retrieval_mode = cognitive_retrieval_mode_from_process_environment()?;
         let fleet_root = required_path(codex_hepta_paths::HEPTA_FLEET_ROOT_ENV)?;
         let agent_id = required_utf8(HEPTA_AGENT_ID_ENV)?;
         let spawn_generation = required_utf8(HEPTA_AGENT_GENERATION_ENV)?
@@ -69,6 +113,7 @@ impl AgentdConfig {
             codex_home,
             current_dir,
         )
+        .map(|config| config.with_cognitive_retrieval_mode(cognitive_retrieval_mode))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -153,6 +198,10 @@ impl AgentdConfig {
             evidence_recovery_frontier_trust_file: None,
             cognitive_ranker: None,
             production_operations: None,
+            production_writer_host: None,
+            cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
+            cognitive_retrieval_context: None,
+            cognitive_retrieval_learning: None,
         })
     }
 
@@ -256,6 +305,108 @@ impl AgentdConfig {
         &mut self,
     ) -> Option<crate::AgentdProductionOperationRuntimeConfig> {
         self.production_operations.take()
+    }
+
+    /// Attach an externally verified production cognitive writer to normal
+    /// Agentd composition. Agentd never manufactures this authority.
+    pub fn with_production_writer_host(
+        mut self,
+        host: std::sync::Arc<crate::AgentdProductionWriterHost>,
+    ) -> Result<Self, AgentdError> {
+        if self.production_writer_host.is_some() {
+            return Err(AgentdError::Invalid(
+                "production cognitive writer host already configured".to_string(),
+            ));
+        }
+        let writer = host.writer();
+        if writer.owner_agent_id() != &self.identity.agent_id {
+            return Err(AgentdError::GenerationFenced(
+                "production cognitive writer owner does not match Agentd identity".to_string(),
+            ));
+        }
+        if writer.generation() != self.identity.spawn_generation {
+            return Err(AgentdError::GenerationFenced(format!(
+                "production cognitive writer generation {} does not match Agentd spawn generation {}",
+                writer.generation(),
+                self.identity.spawn_generation
+            )));
+        }
+        self.production_writer_host = Some(host);
+        Ok(self)
+    }
+
+    pub(crate) fn production_writer_host(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdProductionWriterHost>> {
+        self.production_writer_host.clone()
+    }
+
+    /// Select the retrieval product profile explicitly. Compatibility preserves
+    /// the legacy owner-ranked path. HnmfRequired forbids startup without a
+    /// current authenticated retrieval context and never silently falls back.
+    pub fn with_cognitive_retrieval_mode(mut self, mode: CognitiveRetrievalMode) -> Self {
+        self.cognitive_retrieval_mode = mode;
+        self
+    }
+
+    pub(crate) fn cognitive_retrieval_mode(&self) -> CognitiveRetrievalMode {
+        self.cognitive_retrieval_mode
+    }
+
+    /// Attach an authenticated external-generation/engram currentness source.
+    /// The ordinary CLI never manufactures one. Once attached, any currentness
+    /// failure closes HNMF retrieval instead of falling back to an older view.
+    pub fn with_cognitive_retrieval_context(
+        mut self,
+        current: std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>,
+    ) -> Result<Self, AgentdError> {
+        if self.cognitive_retrieval_context.is_some() {
+            return Err(AgentdError::Invalid(
+                "cognitive retrieval context already configured".to_string(),
+            ));
+        }
+        let context = current
+            .current(&self.identity.agent_id, self.identity.spawn_generation)
+            .map_err(AgentdError::Invalid)?;
+        context
+            .validate()
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        self.cognitive_retrieval_context = Some(current);
+        Ok(self)
+    }
+
+    pub(crate) fn cognitive_retrieval_context(
+        &self,
+    ) -> Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>> {
+        self.cognitive_retrieval_context.clone()
+    }
+
+    /// Attach the actual durable learning-ledger sink for HNMF assignment
+    /// evidence. The retrieval currentness provider must already be configured;
+    /// Agentd never records generator-relative assignments on the compatibility
+    /// path that lacks a frozen HNMF generation.
+    pub fn with_cognitive_retrieval_learning(
+        mut self,
+        sink: std::sync::Arc<crate::CognitiveRetrievalLearningSink>,
+    ) -> Result<Self, AgentdError> {
+        if self.cognitive_retrieval_context.is_none() {
+            return Err(AgentdError::Invalid(
+                "retrieval learning requires a configured current retrieval context".to_string(),
+            ));
+        }
+        if self.cognitive_retrieval_learning.is_some() {
+            return Err(AgentdError::Invalid(
+                "cognitive retrieval learning sink already configured".to_string(),
+            ));
+        }
+        self.cognitive_retrieval_learning = Some(sink);
+        Ok(self)
+    }
+
+    pub(crate) fn cognitive_retrieval_learning(
+        &self,
+    ) -> Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>> {
+        self.cognitive_retrieval_learning.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

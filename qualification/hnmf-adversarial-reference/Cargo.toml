@@ -15,4 +15,5 @@ doctest = false
 unsafe_code = "forbid"
 
 [dependencies]
+codex-hepta-cognitive-types = { path = "../../codex-rs/hepta-cognitive-types" }
 hnmf-reference = { package = "hepta-hnmf-reference", path = "../hnmf-reference" }

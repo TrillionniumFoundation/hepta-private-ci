@@ -4,7 +4,9 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_cognitive_store::DurableCognitiveStoreError;
 use codex_hepta_fleet::FleetRegistryError;
+use codex_hepta_memory::ProductionCognitiveMutationError;
 use codex_hepta_memory::ProductionWriterError;
 
 #[derive(Debug, thiserror::Error)]
@@ -13,8 +15,8 @@ pub enum AgentdError {
     Invalid(String),
     #[error("agentd generation fenced: {0}")]
     GenerationFenced(String),
-    #[error("qualification cognitive runtime unavailable")]
-    QualificationCognitiveRuntimeUnavailable,
+    #[error("cognitive write runtime unavailable")]
+    CognitiveWriteRuntimeUnavailable,
     #[error("agentd protocol error: {0}")]
     Protocol(String),
     #[error(transparent)]
@@ -27,6 +29,10 @@ pub enum AgentdError {
     Json(#[from] serde_json::Error),
     #[error(transparent)]
     ProductionWriter(#[from] ProductionWriterError),
+    #[error(transparent)]
+    ProductionCognitiveMutation(#[from] ProductionCognitiveMutationError),
+    #[error(transparent)]
+    CognitiveStore(#[from] DurableCognitiveStoreError),
 }
 
 #[derive(Debug)]

@@ -14,4 +14,8 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-hepta-kg = { path = "../hepta-kg" }
 codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }

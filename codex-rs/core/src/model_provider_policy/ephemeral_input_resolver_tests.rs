@@ -182,7 +182,8 @@ async fn active_local_turn_resolves_one_fresh_attempt_input() {
         .await
         .expect("resolved input")
         .expect("one proposal");
-    let (_item, binding) = prepared.into_parts();
+    let (_item, binding, final_use_guard) = prepared.into_parts();
+    assert!(final_use_guard.is_none());
 
     assert_eq!(calls.load(Ordering::SeqCst), 1);
     assert_eq!(binding.input_sha256().as_str().len(), 64);

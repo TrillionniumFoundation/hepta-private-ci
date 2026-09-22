@@ -38,6 +38,7 @@ const AUTOMATION_EFFECT_UNAVAILABLE_MESSAGE: &str =
 const COGNITIVE_CONTROL_UNAVAILABLE_CODE: &str = "cognitive_control_unavailable";
 const COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private cognitive control storage is unavailable";
+const COGNITIVE_READ_UNAVAILABLE_CODE: &str = "cognitive_read_unavailable";
 
 impl AgentdState {
     pub(crate) async fn response(
@@ -90,6 +91,14 @@ impl AgentdState {
                             .map_err(AgentdError::Protocol)?,
                     );
                 }
+                capabilities.push(
+                    crate::AgentdCapability::new(
+                        crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY,
+                        1,
+                        0,
+                    )
+                    .map_err(AgentdError::Protocol)?,
+                );
                 AgentdPayload::Capabilities(
                     crate::AgentdCapabilitySet::new(capabilities).map_err(AgentdError::Protocol)?,
                 )
@@ -161,13 +170,16 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
-                let result = crate::cognitive_context::read(
+                let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
+                    self.cognitive_retrieval_context.get(),
+                    self.cognitive_retrieval_learning.get(),
+                    Some(request_id),
                 )
                 .await;
                 self.refresh_generation()?;
@@ -188,11 +200,102 @@ impl AgentdState {
                             error,
                         );
                     }
+                    Err(CognitiveContextError::ReadUnavailable(message)) => AgentdPayload::Error {
+                        code: COGNITIVE_READ_UNAVAILABLE_CODE.to_string(),
+                        message,
+                    },
                     Err(CognitiveContextError::RankerUnavailable) => AgentdPayload::Error {
                         code: "cognitive_ranker_unavailable".to_string(),
                         message: "selected ranker is unavailable; explicit reload required"
                             .to_string(),
                     },
+                    Err(CognitiveContextError::RetrievalContextUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "cognitive_retrieval_context_unavailable".to_string(),
+                            message: "selected retrieval context is unavailable or no longer current; explicit reload required".to_string(),
+                        }
+                    }
+                    Err(CognitiveContextError::RetrievalLearningUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "cognitive_retrieval_learning_unavailable".to_string(),
+                            message: "retrieval assignment could not be durably recorded by the learning ledger owner".to_string(),
+                        }
+                    }
+                }
+            }
+            crate::AgentdMethod::CognitiveContextRevalidate {
+                snapshot_digest,
+                read_digest,
+                omitted_records,
+                items,
+                plan,
+            } => {
+                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                let result = crate::cognitive_context::revalidate_with_retrieval_context(
+                    store.as_ref(),
+                    &self.identity.agent_id,
+                    &snapshot_digest,
+                    &read_digest,
+                    omitted_records,
+                    &items,
+                    plan.as_ref(),
+                    self.cognitive_ranker.get(),
+                    self.identity.spawn_generation,
+                    self.cognitive_retrieval_context.get(),
+                )
+                .await;
+                self.refresh_generation()?;
+                {
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.fenced,
+                    )?;
+                }
+                match result {
+                    Ok(revalidation) => AgentdPayload::CognitiveContextRevalidated(revalidation),
+                    Err(CognitiveContextError::Store(error)) => {
+                        return self.cognitive_error_response(
+                            request_id,
+                            current_generation,
+                            error,
+                        );
+                    }
+                    Err(CognitiveContextError::ReadUnavailable(message)) => AgentdPayload::Error {
+                        code: COGNITIVE_READ_UNAVAILABLE_CODE.to_string(),
+                        message,
+                    },
+                    Err(CognitiveContextError::RankerUnavailable) => {
+                        return self.response_with_payload(
+                            request_id,
+                            current_generation,
+                            AgentdPayload::Error {
+                                code: "cognitive_ranker_unavailable".to_string(),
+                                message: "current cognitive ranking artifact is unavailable"
+                                    .to_string(),
+                            },
+                        );
+                    }
+                    Err(CognitiveContextError::RetrievalContextUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "cognitive_retrieval_context_unavailable".to_string(),
+                            message: "selected retrieval context is unavailable or no longer current; explicit reload required".to_string(),
+                        }
+                    }
+                    Err(CognitiveContextError::RetrievalLearningUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "cognitive_retrieval_learning_unavailable".to_string(),
+                            message: "retrieval assignment could not be durably recorded by the learning ledger owner".to_string(),
+                        }
+                    }
                 }
             }
             crate::AgentdMethod::Events {

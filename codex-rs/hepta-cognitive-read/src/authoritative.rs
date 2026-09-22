@@ -1,16 +1,26 @@
-//! Authoritative snapshot acquisition boundary for `cognitive.read`.
+//! Generic authoritative-snapshot envelope for non-owner adapters and fixtures.
 //!
-//! The legacy read functions intentionally validate only caller-supplied bytes.
-//! This module adds the missing provider boundary: a product adapter must acquire
-//! one coherent, scope-bound generation vector from an authoritative owner before
-//! any read result can be attached to downstream context.
+//! Product composition in this repository uses the existing durable
+//! `hepta-memory::CognitiveStore -> DurableCognitiveSnapshot` boundary. This
+//! synchronous trait is retained for compatibility with callers that already
+//! possess a fully owner-bound `AuthoritativeSnapshotV1`; it is not a second
+//! product snapshot owner, database, or alternative to the durable SQLite cut.
+//! The read functions intentionally validate only supplied snapshot bytes, so
+//! non-product adapters still need an authoritative source before downstream use.
 
+use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_cognitive_types::CognitiveSnapshot;
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCContractError;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -22,6 +32,8 @@ use crate::read_v2;
 
 const SNAPSHOT_RECEIPT_DOMAIN: &[u8] = b"hepta.cognitive.authoritative-snapshot.v1";
 const AUTHORITATIVE_READ_DOMAIN: &[u8] = b"hepta.cognitive.authoritative-read.v1";
+const CANONICAL_READ_SHADOW_DOMAIN: &[u8] =
+    b"hepta.cognitive.authoritative-read.canonical-shadow.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SnapshotAcquisitionRequestV1 {
@@ -59,10 +71,13 @@ impl SnapshotAcquisitionRequestV1 {
     }
 }
 
-/// Product adapters implement this trait against the canonical cognitive owner.
+/// Compatibility abstraction for adapters that already have one owner-defined
+/// coherent cut.
 ///
-/// Implementations must not manufacture a snapshot from independent reads. They
-/// acquire one owner-defined cut and return it with a lease and receipt.
+/// The repository product path does not use this trait to reacquire SQLite
+/// state; it uses `hepta-memory::DurableCognitiveSnapshot` directly. New
+/// product callers must not introduce a parallel owner through this trait.
+/// Implementations must never manufacture a snapshot from independent reads.
 pub trait AuthoritativeCognitiveSnapshotProvider {
     fn acquire(
         &self,
@@ -229,6 +244,249 @@ impl AuthoritativeReadResultV1 {
         }
         Ok(())
     }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalReadRecordBindingV1 {
+    pub legacy_record_id: StableId,
+    pub legacy_record_revision: codex_hepta_types::Revision,
+    pub legacy_record_digest: Digest32,
+    pub event: MemoryEventV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalReadShadowRowV1 {
+    pub legacy_record_id: StableId,
+    pub legacy_record_revision: codex_hepta_types::Revision,
+    pub legacy_record_digest: Digest32,
+    pub event_id: ContractIdV1,
+    pub event_digest: Digest32,
+    pub event: MemoryEventV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalAuthoritativeReadShadowV1 {
+    pub request_digest: Digest32,
+    pub snapshot_receipt_digest: Digest32,
+    pub generation_vector_digest: Digest32,
+    pub read_receipt_digest: Digest32,
+    pub rows: Vec<CanonicalReadShadowRowV1>,
+    pub omitted_count: usize,
+    pub binding_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl CanonicalAuthoritativeReadShadowV1 {
+    #[must_use]
+    pub fn compute_binding_digest(&self) -> Digest32 {
+        let mut bytes = CANONICAL_READ_SHADOW_DOMAIN.to_vec();
+        for digest in [
+            self.request_digest,
+            self.snapshot_receipt_digest,
+            self.generation_vector_digest,
+            self.read_receipt_digest,
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        bytes.extend_from_slice(
+            &u64::try_from(self.omitted_count)
+                .unwrap_or(u64::MAX)
+                .to_be_bytes(),
+        );
+        bytes.extend_from_slice(
+            &u64::try_from(self.rows.len())
+                .unwrap_or(u64::MAX)
+                .to_be_bytes(),
+        );
+        for row in &self.rows {
+            push_stable_id(&mut bytes, &row.legacy_record_id);
+            bytes.extend_from_slice(&row.legacy_record_revision.get().to_be_bytes());
+            bytes.extend_from_slice(row.legacy_record_digest.as_array());
+            push_raw_id(&mut bytes, row.event_id.as_str());
+            bytes.extend_from_slice(row.event_digest.as_array());
+        }
+        Digest32::of_bytes(&bytes)
+    }
+
+    pub fn validate(&self) -> Result<(), CanonicalReadShadowError> {
+        for digest in [
+            self.request_digest,
+            self.snapshot_receipt_digest,
+            self.generation_vector_digest,
+            self.read_receipt_digest,
+            self.binding_digest,
+        ] {
+            if digest.is_zero() {
+                return Err(CanonicalReadShadowError::EmptyDigest);
+            }
+        }
+        if self.authority.grants_any() {
+            return Err(CanonicalReadShadowError::AuthorityGranted);
+        }
+        for row in &self.rows {
+            row.event
+                .validate()
+                .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
+            let digest = canonical_contract_digest_v1(&row.event)
+                .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
+            if row.event_id != row.event.event_id || row.event_digest != digest {
+                return Err(CanonicalReadShadowError::EventDigestMismatch(
+                    row.legacy_record_id.to_string(),
+                ));
+            }
+        }
+        if self.binding_digest != self.compute_binding_digest() {
+            return Err(CanonicalReadShadowError::BindingDigestMismatch);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum CanonicalReadShadowError {
+    Authoritative(SnapshotProviderError),
+    CanonicalContract(String),
+    BindingCountMismatch,
+    MissingExactRecordBinding(String),
+    DuplicateRecordBinding(String),
+    CitationProvenanceMismatch(String),
+    LifecycleMismatch(String),
+    EventDigestMismatch(String),
+    EmptyDigest,
+    BindingDigestMismatch,
+    AuthorityGranted,
+}
+
+impl fmt::Display for CanonicalReadShadowError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl StdError for CanonicalReadShadowError {}
+
+/// Project an already-authoritative legacy read into canonical MemoryEventV1
+/// rows using an explicit exact record-to-event bridge.
+///
+/// The caller supplies complete canonical events. This function never derives a
+/// canonical event identity from a legacy record identity and never treats a
+/// legacy record digest as a canonical event digest.
+pub fn adapt_authoritative_read_to_canonical_shadow_v1(
+    read: &AuthoritativeReadResultV1,
+    bindings: Vec<CanonicalReadRecordBindingV1>,
+) -> Result<CanonicalAuthoritativeReadShadowV1, CanonicalReadShadowError> {
+    read.validate()
+        .map_err(CanonicalReadShadowError::Authoritative)?;
+    let records = read.read_result.records();
+    if bindings.len() != records.len() {
+        return Err(CanonicalReadShadowError::BindingCountMismatch);
+    }
+
+    let mut used = vec![false; bindings.len()];
+    let mut rows = Vec::with_capacity(records.len());
+    for record in records {
+        let record_digest = record.record_digest();
+        let Some((index, binding)) = bindings.iter().enumerate().find(|(index, binding)| {
+            !used[*index]
+                && binding.legacy_record_id == record.record_id
+                && binding.legacy_record_revision == record.revision
+                && binding.legacy_record_digest == record_digest
+        }) else {
+            return Err(CanonicalReadShadowError::MissingExactRecordBinding(
+                record.record_id.to_string(),
+            ));
+        };
+        used[index] = true;
+        validate_read_record_event_binding(record, &binding.event)?;
+        let event_digest = canonical_contract_digest_v1(&binding.event)
+            .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
+        rows.push(CanonicalReadShadowRowV1 {
+            legacy_record_id: record.record_id.clone(),
+            legacy_record_revision: record.revision,
+            legacy_record_digest: record_digest,
+            event_id: binding.event.event_id.clone(),
+            event_digest,
+            event: binding.event.clone(),
+        });
+    }
+    if used.iter().any(|used| !*used) {
+        return Err(CanonicalReadShadowError::DuplicateRecordBinding(
+            "unused canonical binding".to_string(),
+        ));
+    }
+
+    let mut result = CanonicalAuthoritativeReadShadowV1 {
+        request_digest: read.request_digest,
+        snapshot_receipt_digest: read.snapshot_receipt_digest,
+        generation_vector_digest: read.generation_vector_digest,
+        read_receipt_digest: read.read_result.receipt_digest(),
+        rows,
+        omitted_count: read.read_result.omitted_count(),
+        binding_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    result.binding_digest = result.compute_binding_digest();
+    Ok(result)
+}
+
+fn validate_read_record_event_binding(
+    record: &MemoryRecord,
+    event: &MemoryEventV1,
+) -> Result<(), CanonicalReadShadowError> {
+    event
+        .validate()
+        .map_err(|error| CanonicalReadShadowError::CanonicalContract(error.to_string()))?;
+
+    let lifecycle_matches = match record.state {
+        RecordState::Live => !matches!(event.lifecycle, MemoryLifecycleV1::Tombstoned { .. }),
+        RecordState::Tombstone => matches!(event.lifecycle, MemoryLifecycleV1::Tombstoned { .. }),
+    };
+    if !lifecycle_matches {
+        return Err(CanonicalReadShadowError::LifecycleMismatch(
+            record.record_id.to_string(),
+        ));
+    }
+
+    let mut citation_sources = BTreeMap::<String, Digest32>::new();
+    for citation in &record.citations {
+        if citation_sources
+            .insert(citation.source_id.to_string(), citation.source_digest)
+            .is_some()
+        {
+            return Err(CanonicalReadShadowError::CitationProvenanceMismatch(
+                record.record_id.to_string(),
+            ));
+        }
+    }
+    let mut provenance_sources = BTreeMap::<String, Digest32>::new();
+    for provenance in &event.provenance {
+        if provenance_sources
+            .insert(
+                provenance.source_id.to_string(),
+                provenance.source_sha256.digest(),
+            )
+            .is_some()
+        {
+            return Err(CanonicalReadShadowError::CitationProvenanceMismatch(
+                record.record_id.to_string(),
+            ));
+        }
+    }
+    if citation_sources != provenance_sources {
+        return Err(CanonicalReadShadowError::CitationProvenanceMismatch(
+            record.record_id.to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn push_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
+    push_raw_id(bytes, value.as_str());
+}
+
+fn push_raw_id(bytes: &mut Vec<u8>, value: &str) {
+    bytes.extend_from_slice(&u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
 }
 
 pub fn read_authoritative<P: AuthoritativeCognitiveSnapshotProvider>(

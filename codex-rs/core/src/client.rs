@@ -1921,6 +1921,7 @@ impl ModelClientSession {
                 session_telemetry_for_request(session_telemetry, &request);
             let mut effective_request = None;
             let mut has_ephemeral_input = false;
+            let mut ephemeral_final_use_guard = None;
             let mut recovery_checkpoint_authorized = false;
             let mut admitted_provider_attempt = if let Some((context, active_policies)) =
                 provider_policy_context
@@ -1962,7 +1963,8 @@ impl ModelClientSession {
                 .await
                 .map_err(model_provider_policy_error)?;
                 let ephemeral_binding = ephemeral_input.map(|prepared| {
-                    let (item, binding) = prepared.into_parts();
+                    let (item, binding, final_use_guard) = prepared.into_parts();
+                    ephemeral_final_use_guard = final_use_guard;
                     let request = effective_request.get_or_insert_with(|| request.clone());
                     request.prompt_cache_key = None;
                     request.store = false;
@@ -2102,6 +2104,19 @@ impl ModelClientSession {
             } else {
                 client
             };
+            if let Some(guard) = ephemeral_final_use_guard.take()
+                && let Err(error) = guard.revalidate().await
+            {
+                if let Some(attempt) = admitted_provider_attempt.take()
+                    && let Err(terminal_error) = attempt
+                        .finish_immediate(None, "ephemeral_final_use_revalidation")
+                        .await
+                {
+                    return Err(terminal_error);
+                }
+                return Err(model_provider_policy_error(error));
+            }
+
             let stream_result = match admitted_provider_attempt.as_ref() {
                 Some(attempt) => {
                     client

@@ -1,11 +1,17 @@
 use std::fs;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::publish_generation;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -26,7 +32,10 @@ use crate::cognitive_kg_store::MAX_SCOPE_NODES;
 use crate::cognitive_kg_store::ProjectionEdge;
 use crate::cognitive_kg_store::ProjectionHead;
 use crate::cognitive_kg_store::ProjectionNode;
+use crate::cognitive_kg_store::canonical_generation_from_projection;
+use crate::cognitive_kg_store::graph_source_vector_digest_tx;
 use crate::cognitive_kg_store::input_heads_digest;
+use crate::cognitive_kg_store::load_canonical_generation_tx;
 use crate::cognitive_kg_store::output_digest;
 use crate::cognitive_model::COGNITIVE_SCHEMA_VERSION;
 use crate::cognitive_model::CognitiveAccess;
@@ -46,6 +55,9 @@ pub use recovery::CognitiveRecoveryRequirement;
 pub use recovery::RecoveredCognitiveReadOnly;
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
+const COGNITIVE_ACTIVE_DB_POINTER: &str = ".cognitive-active-v1";
+const COGNITIVE_STORE_LOCK_FILENAME: &str = ".cognitive-store.lock";
+const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
@@ -98,6 +110,11 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("kg_projection_generation_receipts_no_update", "trigger"),
     ("kg_projection_generation_receipts_no_delete", "trigger"),
     ("kg_projection_generation_receipts_trigger_lookup", "index"),
+    ("kg_projection_generation_semantics", "table"),
+    ("kg_projection_generation_semantics_no_update", "trigger"),
+    ("kg_projection_generation_semantics_no_delete", "trigger"),
+    ("kg_projection_generation_semantics_digest_lookup", "index"),
+    ("kg_projection_current_semantics_on_update", "trigger"),
     ("kg_projection_node_entities", "table"),
     ("kg_projection_node_entities_no_update", "trigger"),
     ("kg_projection_node_entities_no_delete", "trigger"),
@@ -165,7 +182,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_ledger_lease_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "ae52b47126c510d36e89cf378a9df11f985527cea24111da7b2cf38b020cab6c";
+    "9a5bcdb83b4ce7302cafee907d257a8cb2f485043b2888c5c0c387957cda278c";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -186,6 +203,78 @@ pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
+    _open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
+}
+
+#[derive(Debug)]
+pub(crate) struct CognitiveStoreOpenGuard {
+    _file: File,
+    _path: PathBuf,
+}
+
+impl CognitiveStoreOpenGuard {
+    fn open_lock_file(root: &Path) -> Result<(File, PathBuf), CognitiveStoreError> {
+        let path = root.join(COGNITIVE_STORE_LOCK_FILENAME);
+        #[cfg(unix)]
+        let file = {
+            use std::os::unix::fs::OpenOptionsExt;
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create(true)
+                .truncate(false)
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+                .open(&path)
+                .map_err(unavailable)?
+        };
+        #[cfg(not(unix))]
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(&path)
+            .map_err(unavailable)?;
+
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            let metadata = file.metadata().map_err(unavailable)?;
+            if !metadata.is_file() || metadata.nlink() != 1 || metadata.mode() & 0o7777 != 0o600 {
+                return Err(CognitiveStoreError::Invalid(
+                    "cognitive store lock must be one private regular file".to_string(),
+                ));
+            }
+        }
+        Ok((file, path))
+    }
+
+    pub(crate) fn acquire_shared(root: &Path) -> Result<Arc<Self>, CognitiveStoreError> {
+        let (file, path) = Self::open_lock_file(root)?;
+        file.try_lock_shared().map_err(|error| {
+            CognitiveStoreError::Unavailable(format!(
+                "cognitive store is fenced by recovery: {error}"
+            ))
+        })?;
+        Ok(Arc::new(Self {
+            _file: file,
+            _path: path,
+        }))
+    }
+
+    pub(crate) fn acquire_exclusive(root: &Path) -> Result<Self, CognitiveStoreError> {
+        let (file, path) = Self::open_lock_file(root)?;
+        file.try_lock().map_err(|error| {
+            CognitiveStoreError::Unavailable(format!(
+                "cognitive recovery cannot fence active store handles: {error}"
+            ))
+        })?;
+        Ok(Self {
+            _file: file,
+            _path: path,
+        })
+    }
 }
 
 impl CognitiveStore {
@@ -198,6 +287,7 @@ impl CognitiveStore {
             pool,
             owner_agent_id,
             path,
+            _open_guard: None,
         }
     }
 
@@ -207,7 +297,8 @@ impl CognitiveStore {
     /// must use `open_with_recovery` and never fall back here on recovery failure.
     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
         let root = create_private_directory(layout.cognitive_root())?;
-        let path = root.join(COGNITIVE_DB_FILENAME);
+        let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
+        let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
@@ -230,6 +321,7 @@ impl CognitiveStore {
             pool,
             owner_agent_id: layout.agent_id().clone(),
             path,
+            _open_guard: Some(open_guard),
         })
     }
 
@@ -744,10 +836,11 @@ async fn verify_migration_ledger(pool: &SqlitePool) -> Result<(), CognitiveStore
             (10, true),
             (11, true),
             (12, true),
+            (13, true),
         ]
     {
         return Err(CognitiveStoreError::Corrupt(format!(
-            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011/0012 set: {migrations:?}"
+            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011/0012/0013 set: {migrations:?}"
         )));
     }
 
@@ -807,11 +900,17 @@ async fn verify_current_projection_contents(
     let mut transaction = pool.begin().await.map_err(unavailable)?;
     let current_rows = sqlx::query(
         "SELECT p.projection_scope, p.generation,
-                r.input_heads_sha256, r.output_sha256
+                r.input_heads_sha256, r.output_sha256,
+                s.source_snapshot_sha256, s.generation_vector_sha256,
+                s.graph_profile_sha256, s.generation_sha256,
+                s.publication_sha256
          FROM kg_projection p
          JOIN kg_projection_generation_receipts r
            ON r.projection_scope = p.projection_scope
           AND r.generation = p.generation
+         LEFT JOIN kg_projection_generation_semantics s
+           ON s.projection_scope = p.projection_scope
+          AND s.generation = p.generation
          ORDER BY p.projection_scope LIMIT ?",
     )
     .bind(bounded_limit(MAX_PROJECTION_SCOPES)?)
@@ -828,6 +927,13 @@ async fn verify_current_projection_contents(
         let projection_scope: String = current.try_get("projection_scope").map_err(unavailable)?;
         let generation: i64 = current.try_get("generation").map_err(unavailable)?;
         let (scope_kind, workspace_sha256) = projection_scope_database_parts(&projection_scope)?;
+        let cognitive_scope = match workspace_sha256.as_ref() {
+            None => CognitiveScope::AgentPrivate,
+            Some(workspace_sha256) => CognitiveScope::WorkspacePrivate {
+                workspace_sha256: Sha256Digest::parse(workspace_sha256.clone())
+                    .map_err(CognitiveStoreError::Corrupt)?,
+            },
+        };
 
         let head_rows = sqlx::query(
             "SELECT r.memory_id, r.revision, r.content_sha256,
@@ -1131,6 +1237,100 @@ async fn verify_current_projection_contents(
                 "KG current projection `{projection_scope}` output digest failed canonical recomputation"
             )));
         }
+
+        let semantic_fields = (
+            current
+                .try_get::<Option<String>, _>("source_snapshot_sha256")
+                .map_err(unavailable)?,
+            current
+                .try_get::<Option<String>, _>("generation_vector_sha256")
+                .map_err(unavailable)?,
+            current
+                .try_get::<Option<String>, _>("graph_profile_sha256")
+                .map_err(unavailable)?,
+            current
+                .try_get::<Option<String>, _>("generation_sha256")
+                .map_err(unavailable)?,
+            current
+                .try_get::<Option<String>, _>("publication_sha256")
+                .map_err(unavailable)?,
+        );
+        match semantic_fields {
+            (None, None, None, None, None) => {
+                // A projection created before migration 0011 is valid legacy
+                // history. It cannot drive digest-bound graph expansion.
+            }
+            (
+                Some(source_snapshot),
+                Some(generation_vector),
+                Some(graph_profile),
+                Some(generation_sha256),
+                Some(publication_sha256),
+            ) => {
+                let generation_u64 = u64::try_from(generation).map_err(|_| {
+                    CognitiveStoreError::Corrupt("negative KG generation".to_string())
+                })?;
+                let expected_generation_vector = graph_source_vector_digest_tx(
+                    &mut transaction,
+                    owner.as_str(),
+                    &cognitive_scope,
+                    expected_input
+                        .as_str()
+                        .parse::<codex_hepta_types::Digest32>()
+                        .map_err(|error| {
+                            CognitiveStoreError::Corrupt(format!(
+                                "invalid recomputed KG source snapshot digest: {error}"
+                            ))
+                        })?,
+                )
+                .await?;
+                let canonical = canonical_generation_from_projection(
+                    generation_u64,
+                    &expected_input,
+                    expected_generation_vector,
+                    &expected_nodes,
+                    &expected_edges,
+                )?;
+                if source_snapshot != canonical.source_snapshot_digest.to_string()
+                    || generation_vector != expected_generation_vector.to_string()
+                    || generation_vector != canonical.generation_vector_digest.to_string()
+                    || graph_profile != canonical.graph_profile_digest.to_string()
+                    || generation_sha256 != canonical.generation_digest.to_string()
+                {
+                    return Err(CognitiveStoreError::Corrupt(format!(
+                        "KG current projection `{projection_scope}` canonical V2 semantics failed reconstruction"
+                    )));
+                }
+                let predecessor = if generation_u64 == 1 {
+                    None
+                } else {
+                    Some(
+                        load_canonical_generation_tx(
+                            &mut transaction,
+                            &projection_scope,
+                            generation - 1,
+                        )
+                        .await?,
+                    )
+                };
+                let publication =
+                    publish_generation(predecessor.as_ref(), &canonical).map_err(|error| {
+                        CognitiveStoreError::Corrupt(format!(
+                            "KG current projection `{projection_scope}` publication receipt failed canonical reconstruction: {error}"
+                        ))
+                    })?;
+                if publication_sha256 != publication.publication_digest.to_string() {
+                    return Err(CognitiveStoreError::Corrupt(format!(
+                        "KG current projection `{projection_scope}` publication receipt failed canonical reconstruction"
+                    )));
+                }
+            }
+            _ => {
+                return Err(CognitiveStoreError::Corrupt(format!(
+                    "KG current projection `{projection_scope}` has a partial canonical V2 receipt"
+                )));
+            }
+        }
     }
     transaction.commit().await.map_err(unavailable)?;
     Ok(())
@@ -1157,6 +1357,184 @@ fn bounded_limit(maximum: usize) -> Result<i64, CognitiveStoreError> {
         .ok_or_else(|| {
             CognitiveStoreError::Corrupt("KG reopen verification limit exceeds i64".to_string())
         })
+}
+
+pub(crate) fn recovered_database_filename(
+    anchor: &CognitiveRecoveryAnchor,
+    writer_fence: &Sha256Digest,
+) -> String {
+    let mut hasher = Sha256::new();
+    frame_part(&mut hasher, b"hepta:cognitive:recovered-generation:v1");
+    frame_part(&mut hasher, anchor.state_digest.as_str().as_bytes());
+    frame_part(&mut hasher, writer_fence.as_str().as_bytes());
+    frame_part(&mut hasher, &std::process::id().to_be_bytes());
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |duration| duration.as_nanos());
+    frame_part(&mut hasher, &nonce.to_be_bytes());
+    let generation = Sha256Digest::from_sha256_output(hasher.finalize());
+    format!(
+        "{COGNITIVE_RECOVERED_DB_PREFIX}{}.sqlite3",
+        generation.as_str()
+    )
+}
+
+fn valid_recovered_database_filename(value: &str) -> bool {
+    let Some(digest) = value
+        .strip_prefix(COGNITIVE_RECOVERED_DB_PREFIX)
+        .and_then(|value| value.strip_suffix(".sqlite3"))
+    else {
+        return false;
+    };
+    digest.len() == 64
+        && digest
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+}
+
+fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
+
+    #[cfg(unix)]
+    let pointer_file = {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::OpenOptionsExt;
+
+        let file = match OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+            .open(&pointer)
+        {
+            Ok(file) => file,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                return Ok(root.join(COGNITIVE_DB_FILENAME));
+            }
+            Err(error) => return Err(unavailable(error)),
+        };
+        let metadata = file.metadata().map_err(unavailable)?;
+        if !metadata.is_file()
+            || metadata.nlink() != 1
+            || metadata.mode() & 0o7777 != 0o600
+            || metadata.len() > 256
+        {
+            return Err(CognitiveStoreError::Corrupt(
+                "cognitive active database pointer is not one private regular file".to_string(),
+            ));
+        }
+        file
+    };
+    #[cfg(not(unix))]
+    let pointer_file = match File::open(&pointer) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            return Ok(root.join(COGNITIVE_DB_FILENAME));
+        }
+        Err(error) => return Err(unavailable(error)),
+    };
+
+    let mut value = String::new();
+    pointer_file
+        .take(257)
+        .read_to_string(&mut value)
+        .map_err(unavailable)?;
+    if value.len() > 256 {
+        return Err(CognitiveStoreError::Corrupt(
+            "cognitive active database pointer exceeds its bound".to_string(),
+        ));
+    }
+    let value = value.trim();
+    if !valid_recovered_database_filename(value) {
+        return Err(CognitiveStoreError::Corrupt(
+            "cognitive active database pointer is invalid".to_string(),
+        ));
+    }
+    let path = root.join(value);
+    let canonical = canonical_path_without_redirection(&path)
+        .map_err(unavailable)?
+        .ok_or_else(|| {
+            CognitiveStoreError::Corrupt(
+                "cognitive active database target is missing or redirected".to_string(),
+            )
+        })?;
+    if canonical.parent() != Some(root) || canonical != path {
+        return Err(CognitiveStoreError::Corrupt(
+            "cognitive active database escapes the private root".to_string(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let metadata = fs::metadata(&canonical).map_err(unavailable)?;
+        if !metadata.is_file() || metadata.nlink() != 1 || metadata.mode() & 0o7777 != 0o600 {
+            return Err(CognitiveStoreError::Corrupt(
+                "active cognitive database is not one private regular file".to_string(),
+            ));
+        }
+    }
+    Ok(path)
+}
+
+pub(crate) fn publish_active_database(
+    root: &Path,
+    database: &Path,
+) -> Result<(), CognitiveStoreError> {
+    if database.parent() != Some(root) {
+        return Err(CognitiveStoreError::Invalid(
+            "recovered cognitive database must remain in the private root".to_string(),
+        ));
+    }
+    let file_name = database
+        .file_name()
+        .and_then(|value| value.to_str())
+        .filter(|value| valid_recovered_database_filename(value))
+        .ok_or_else(|| {
+            CognitiveStoreError::Invalid(
+                "recovered cognitive database has an invalid generation name".to_string(),
+            )
+        })?;
+    let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
+    let generation = file_name
+        .strip_prefix(COGNITIVE_RECOVERED_DB_PREFIX)
+        .and_then(|value| value.strip_suffix(".sqlite3"))
+        .unwrap_or("invalid");
+    let temporary = root.join(format!(
+        "{COGNITIVE_ACTIVE_DB_POINTER}.tmp-{}-{}",
+        std::process::id(),
+        &generation[..generation.len().min(16)]
+    ));
+
+    #[cfg(unix)]
+    let mut file = {
+        use std::os::unix::fs::OpenOptionsExt;
+        OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+            .open(&temporary)
+            .map_err(unavailable)?
+    };
+    #[cfg(not(unix))]
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&temporary)
+        .map_err(unavailable)?;
+
+    let result = (|| {
+        file.write_all(file_name.as_bytes()).map_err(unavailable)?;
+        file.write_all(b"\n").map_err(unavailable)?;
+        file.sync_all().map_err(unavailable)?;
+        fs::rename(&temporary, &pointer).map_err(unavailable)?;
+        File::open(root)
+            .and_then(|directory| directory.sync_all())
+            .map_err(unavailable)?;
+        Ok(())
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
 }
 
 fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError> {

@@ -26,6 +26,7 @@ fn dispatch() -> NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
+        owner_context_digest: Some("c".repeat(64)),
     }
 }
 
@@ -190,6 +191,35 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
         control.stop_native_before_dispatch("r2", "cancelled".to_string()),
         Err(Error::InvalidTransition)
     );
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&stopped));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal() {
+    let path = path("finalize-stop");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let stopped = control
+        .stop_native_before_turn_start("r1", "cognitive final-use revalidation failed".to_string())
+        .unwrap();
+    assert_eq!(stopped.state, NativeReservationState::Released);
+    assert_eq!(stopped.turn_id, None);
+    assert_eq!(stopped.observation, None);
+    assert!(stopped.dispatch.is_some());
+
+    control.reserve_native(request("r2"), 1).unwrap();
+    control.dispatch_native("r2", dispatch()).unwrap();
+    control.native_started("r2", "turn-1".to_string()).unwrap();
+    assert_eq!(
+        control.stop_native_before_turn_start("r2", "too late".to_string()),
+        Err(Error::InvalidTransition)
+    );
+
     drop(control);
     let control = DurableInferenceControl::open(&path, 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&stopped));

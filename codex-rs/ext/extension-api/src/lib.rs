@@ -51,6 +51,7 @@ pub use contributors::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS;
 pub use contributors::EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION;
 pub use contributors::EphemeralModelInputContext;
 pub use contributors::EphemeralModelInputContributor;
+pub use contributors::EphemeralModelInputFinalUseGuard;
 pub use contributors::EphemeralModelInputProposal;
 pub use contributors::EphemeralModelInputSource;
 pub use contributors::ExtensionFuture;

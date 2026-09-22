@@ -69,9 +69,10 @@ class SourceRootTests(unittest.TestCase):
             {"owner": "owner", "deputy": "deputy", "technicalDocument": "guide"}
         )
         source_base = {"commit": "a" * 40, "tree": "b" * 40}
+        stale_source_base = {"commit": "c" * 40, "tree": "d" * 40}
         row = {
             "module": self.module["id"],
-            "sourceBase": source_base,
+            "sourceBase": stale_source_base,
             "operations": [
                 {
                     "operation": "run",
@@ -104,6 +105,7 @@ class SourceRootTests(unittest.TestCase):
             result["operations"][0]["tests"], row["operations"][0]["tests"]
         )
         self.assertEqual(result["sourceBase"], source_base)
+        self.assertNotEqual(result["sourceBase"], stale_source_base)
         self.assertFalse(result["claimBoundary"]["activation"])
 
     def test_exact_rust_observation_requires_workspace_manifest_and_lock(self):

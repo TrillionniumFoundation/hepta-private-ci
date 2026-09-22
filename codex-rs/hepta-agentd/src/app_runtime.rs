@@ -20,21 +20,34 @@ use crate::AgentdState;
 use crate::error::contextual_io_error;
 use crate::qualification_writer::qualification_turn_writer_host;
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 const COGNITIVE_WRITE_ENABLED: bool = true;
-#[cfg(not(feature = "qualification-cognitive-write"))]
+#[cfg(not(feature = "production-cognitive-write"))]
 const COGNITIVE_WRITE_ENABLED: bool = false;
+
+#[cfg(feature = "qualification-cognitive-write")]
+const QUALIFICATION_TURN_WRITER_ENABLED: bool = true;
+#[cfg(not(feature = "qualification-cognitive-write"))]
+const QUALIFICATION_TURN_WRITER_ENABLED: bool = false;
 
 pub(crate) async fn run_app_server(
     identity: AgentdIdentity,
     arg0_paths: Arg0DispatchPaths,
     cognitive_runtime: CognitiveRuntime,
     state: Arc<AgentdState>,
+    production_writer_host: Option<Arc<crate::AgentdProductionWriterHost>>,
 ) -> std::io::Result<()> {
     let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
-    let config_overrides = app_server_config_overrides();
-    let runtime_options =
-        app_server_runtime_options_for_agent(&identity, state, cognitive_runtime)?;
+    let production_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>> =
+        production_writer_host.and_then(|host| host.production_mutation());
+    let cognitive_write_enabled = COGNITIVE_WRITE_ENABLED || production_mutation.is_some();
+    let config_overrides = app_server_config_overrides(cognitive_write_enabled);
+    let runtime_options = app_server_runtime_options_for_agent(
+        &identity,
+        state,
+        cognitive_runtime,
+        production_mutation,
+    )?;
     codex_app_server::run_main_with_transport_options(
         arg0_paths,
         config_overrides,
@@ -56,18 +69,17 @@ pub(crate) async fn run_app_server(
     })
 }
 
-fn app_server_config_overrides() -> CliConfigOverrides {
+fn app_server_config_overrides(cognitive_write_enabled: bool) -> CliConfigOverrides {
     CliConfigOverrides {
         raw_overrides: vec![
             "features.hepta_governance=true".to_string(),
             "features.hepta_turn_recovery=true".to_string(),
             "features.hepta_memory=true".to_string(),
             "features.hepta_memory_read_only=true".to_string(),
-            // The default binary is read-only.  The only positive writer
-            // profile is an explicit build-time qualification binary; it is
-            // still local/host-owned and does not grant production effects,
-            // fleet authority, or promotion.
-            format!("features.hepta_cognitive_write={COGNITIVE_WRITE_ENABLED}"),
+            // Agentd exposes the product cognitive feature, while actual mutation
+            // tools still require the externally verified production capability
+            // or the explicitly compiled qualification witness profile.
+            format!("features.hepta_cognitive_write={cognitive_write_enabled}"),
         ],
     }
 }
@@ -80,6 +92,7 @@ pub(crate) fn app_server_runtime_options(
     app_server_runtime_options_with_writer(
         identity,
         cognitive_runtime,
+        /*production_cognitive_mutation*/ None,
         /*qualification_turn_writer*/ None,
     )
 }
@@ -88,16 +101,25 @@ pub(crate) fn app_server_runtime_options_for_agent(
     identity: &AgentdIdentity,
     state: Arc<AgentdState>,
     cognitive_runtime: CognitiveRuntime,
+    production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);
-    app_server_runtime_options_with_writer(identity, cognitive_runtime, writer)
+    app_server_runtime_options_with_writer(
+        identity,
+        cognitive_runtime,
+        production_cognitive_mutation,
+        writer,
+    )
 }
 
 fn app_server_runtime_options_with_writer(
     identity: &AgentdIdentity,
     cognitive_runtime: CognitiveRuntime,
+    production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
     qualification_turn_writer: Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
+    let cognitive_write_enabled =
+        COGNITIVE_WRITE_ENABLED || production_cognitive_mutation.is_some();
     let turn_queue_capacity = usize::try_from(identity.resources.turn_queue_capacity)
         .map_err(|_| std::io::Error::other("turn queue capacity does not fit this platform"))?;
     let turn_queue_capacity = NonZeroUsize::new(turn_queue_capacity).ok_or_else(|| {
@@ -110,26 +132,22 @@ fn app_server_runtime_options_with_writer(
         required_sqlite_home: Some(AbsolutePathBuf::from_absolute_path(&identity.home_root)?),
         required_thread_store_mode: Some(ThreadStoreConfig::Local),
         hepta_cognitive_runtime: cognitive_runtime,
+        hepta_cognitive_production_mutation: production_cognitive_mutation,
         // The owning agent supplies the qualification-only policy to the
         // explicit host owner.  The legacy turn callback remains disabled:
         // policy-gated local witness writes must be host-invoked and must not
         // create an unbound lease implicitly during turn startup.
         hepta_local_turn_lifecycle_enabled: false,
-        hepta_local_development_policy: Some(
-            codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only(),
-        ),
-        // The qualification build explicitly opts into the writer seam and
-        // receives a capability only from the owning Agentd process.  The
-        // default and production-facing binaries remain inert.
-        hepta_qualification_turn_writer_enabled: COGNITIVE_WRITE_ENABLED,
+        hepta_local_development_policy: QUALIFICATION_TURN_WRITER_ENABLED
+            .then_some(codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only()),
+        hepta_qualification_turn_writer_enabled: QUALIFICATION_TURN_WRITER_ENABLED,
         hepta_qualification_turn_writer: qualification_turn_writer,
-        // This is an embedding-owned capability boundary. It is applied
-        // after managed config and per-request overrides, so those layers
-        // cannot change the selected profile at runtime. The positive value
-        // exists only in the explicit qualification build.
+        // This embedding-owned product capability is applied after managed
+        // config and per-request overrides. Agentd therefore selects the
+        // scoped cognitive mutation profile; ordinary Codex does not.
         required_feature_states: BTreeMap::from([(
             Feature::HeptaCognitiveWrite,
-            COGNITIVE_WRITE_ENABLED,
+            cognitive_write_enabled,
         )]),
         ..Default::default()
     })
@@ -143,6 +161,7 @@ mod tests {
     use codex_hepta_paths::HeptaFleetRoot;
 
     use super::COGNITIVE_WRITE_ENABLED;
+    use super::QUALIFICATION_TURN_WRITER_ENABLED;
     use super::app_server_config_overrides;
     use super::app_server_runtime_options;
     use crate::AgentdIdentity;
@@ -151,7 +170,7 @@ mod tests {
 
     #[test]
     fn agentd_forces_hepta_turn_recovery_on() {
-        let overrides = app_server_config_overrides();
+        let overrides = app_server_config_overrides(COGNITIVE_WRITE_ENABLED);
         assert!(
             overrides
                 .raw_overrides
@@ -162,7 +181,7 @@ mod tests {
 
     #[test]
     fn agentd_forces_explicit_cognitive_write_profile_state() {
-        let overrides = app_server_config_overrides();
+        let overrides = app_server_config_overrides(COGNITIVE_WRITE_ENABLED);
         assert!(overrides.raw_overrides.iter().any(|value| {
             value == &format!("features.hepta_cognitive_write={COGNITIVE_WRITE_ENABLED}")
         }));
@@ -209,8 +228,14 @@ mod tests {
         );
         assert!(!options.hepta_local_turn_lifecycle_enabled);
         assert_eq!(
-            Some(codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only()),
+            QUALIFICATION_TURN_WRITER_ENABLED.then_some(
+                codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only()
+            ),
             options.hepta_local_development_policy
+        );
+        assert_eq!(
+            QUALIFICATION_TURN_WRITER_ENABLED,
+            options.hepta_qualification_turn_writer_enabled
         );
         assert_eq!(
             Some(&COGNITIVE_WRITE_ENABLED),

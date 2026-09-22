@@ -92,8 +92,13 @@ pub enum NativeReservationState {
 pub struct NativeDispatch {
     pub thread_id: String,
     pub model_provider: String,
-    /// Exact serialized additional context, including its owner snapshot.
+    /// Exact serialized additional context passed to turn/start.
     pub context_digest: String,
+    /// Digest of the owner-native CognitiveContextSnapshot nested inside the
+    /// additional context. It joins retrieval assignment evidence to this
+    /// durable dispatch without claiming provider acceptance by itself.
+    #[serde(default)]
+    pub owner_context_digest: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -254,6 +259,32 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Release a synced dispatch intent only when the trusted host can prove it
+    /// has not sent provider `turn/start` yet. This permits final cognitive
+    /// freshness validation after the durable dispatch record and immediately
+    /// before the external model effect.
+    pub fn stop_native_before_turn_start(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != NativeReservationState::Dispatching || record.turn_id.is_some() {
+            return Err(Error::InvalidTransition);
+        }
+        self.commit_native(
+            request_id,
+            Event::Stop {
+                request_id: request_id.to_string(),
+                reason,
+            },
+        )
+    }
+
     /// Trusted host port: validates exact assignment and monotonic observations.
     /// Only matching terminal observations release local execution capacity.
     /// Missing usage never becomes zero and unknown execution may later settle.
@@ -384,6 +415,9 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                if let Some(owner_context_digest) = &dispatch.owner_context_digest {
+                    validate_digest(owner_context_digest, "native owner context")?;
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -405,7 +439,10 @@ impl NativeJournal {
                 record.state = NativeReservationState::Cancelling;
             }
             Event::Stop { reason, .. } => {
-                if record.state != NativeReservationState::Reserved
+                if !matches!(
+                    record.state,
+                    NativeReservationState::Reserved | NativeReservationState::Dispatching
+                ) || record.turn_id.is_some()
                     || reason.is_empty()
                     || reason.len() > 4096
                 {

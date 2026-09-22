@@ -39,6 +39,7 @@ use codex_hepta_contracts::RevisionStamp;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_memory::LocalDevelopmentLifecyclePolicy;
+use codex_hepta_memory::ProductionCognitiveMutation;
 use codex_hepta_memory::RecallObservation;
 use codex_hepta_memory::RecallObservationReason;
 use codex_hepta_memory::shadow_recall;
@@ -689,6 +690,7 @@ where
         builder,
         state_db,
         cognitive_runtime,
+        /*production_cognitive_mutation*/ None,
         local_turn_lifecycle_enabled,
         local_development_policy,
         /*qualification_turn_writer_enabled*/ false,
@@ -711,6 +713,7 @@ pub fn install_with_turn_writer<C, F>(
     builder: &mut ExtensionRegistryBuilder<C>,
     state_db: Option<Arc<StateRuntime>>,
     cognitive_runtime: CognitiveRuntime,
+    production_cognitive_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
     local_turn_lifecycle_enabled: bool,
     local_development_policy: Option<LocalDevelopmentLifecyclePolicy>,
     qualification_turn_writer_enabled: bool,
@@ -748,12 +751,16 @@ where
     builder.turn_input_contributor(extension.clone());
     builder.ephemeral_model_input_contributor(extension.clone());
     if !matches!(&cognitive_runtime, CognitiveRuntime::Absent) {
-        let federation = cognitive_runtime.federation().cloned();
-        let cognitive = Arc::new(CognitiveExtension::new(cognitive_runtime));
+        let has_federation = cognitive_runtime.has_product_federation();
+        let cognitive = Arc::new(CognitiveExtension::new_with_mutation(
+            cognitive_runtime.clone(),
+            production_cognitive_mutation,
+            qualification_turn_writer_enabled,
+        ));
         builder.turn_input_contributor(cognitive.clone());
         builder.tool_contributor(cognitive.clone());
-        if let Some(federation) = federation {
-            let federated = Arc::new(FederatedCognitiveExtension::new(federation));
+        if has_federation {
+            let federated = Arc::new(FederatedCognitiveExtension::from_runtime(cognitive_runtime));
             builder.turn_input_contributor(federated.clone());
             builder.ephemeral_model_input_contributor(Arc::new(
                 CombinedCognitiveEphemeralContributor::new(cognitive, federated),

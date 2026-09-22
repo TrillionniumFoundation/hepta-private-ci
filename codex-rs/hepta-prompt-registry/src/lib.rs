@@ -41,6 +41,146 @@ pub enum Lifecycle {
     Revoked,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum PromptFactorRelationKind {
+    Complements,
+    Substitutes,
+    Conflicts,
+}
+
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct PromptFactorRelation {
+    pub relation_id: StableId,
+    pub left_factor_id: StableId,
+    pub right_factor_id: StableId,
+    pub kind: PromptFactorRelationKind,
+    pub evidence_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptFactorGraphNodeV1 {
+    pub factor_id: StableId,
+    pub semantic_version: StableId,
+    pub content_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptFactorGraphSourceV1 {
+    registry_revision: Revision,
+    registry_snapshot_digest: Digest32,
+    lifecycle_frontier: u64,
+    revocation_frontier: u64,
+    factors: Vec<PromptFactorGraphNodeV1>,
+    relations: Vec<PromptFactorRelation>,
+    source_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl PromptFactorGraphSourceV1 {
+    #[must_use]
+    pub const fn registry_revision(&self) -> Revision {
+        self.registry_revision
+    }
+
+    #[must_use]
+    pub const fn registry_snapshot_digest(&self) -> Digest32 {
+        self.registry_snapshot_digest
+    }
+
+    #[must_use]
+    pub fn factors(&self) -> &[PromptFactorGraphNodeV1] {
+        &self.factors
+    }
+
+    #[must_use]
+    pub fn relations(&self) -> &[PromptFactorRelation] {
+        &self.relations
+    }
+
+    #[must_use]
+    pub const fn source_digest(&self) -> Digest32 {
+        self.source_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
+    #[must_use]
+    pub fn compute_source_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.prompt-factor-graph-source.v1".to_vec();
+        bytes.extend_from_slice(&self.registry_revision.get().to_be_bytes());
+        bytes.extend_from_slice(self.registry_snapshot_digest.as_array());
+        bytes.extend_from_slice(&self.lifecycle_frontier.to_be_bytes());
+        bytes.extend_from_slice(&self.revocation_frontier.to_be_bytes());
+        bytes.extend_from_slice(
+            &u64::try_from(self.factors.len())
+                .unwrap_or(u64::MAX)
+                .to_be_bytes(),
+        );
+        for factor in &self.factors {
+            push_id(&mut bytes, &factor.factor_id);
+            push_id(&mut bytes, &factor.semantic_version);
+            bytes.extend_from_slice(factor.content_digest.as_array());
+        }
+        bytes.extend_from_slice(
+            &u64::try_from(self.relations.len())
+                .unwrap_or(u64::MAX)
+                .to_be_bytes(),
+        );
+        for relation in &self.relations {
+            push_relation(&mut bytes, relation);
+        }
+        Digest32::of_bytes(&bytes)
+    }
+
+    pub fn validate(&self) -> Result<(), Error> {
+        if self.registry_snapshot_digest.is_zero() || self.source_digest.is_zero() {
+            return Err(Error::EmptyDigest("factor graph source"));
+        }
+        if self.revocation_frontier > self.lifecycle_frontier
+            || self.lifecycle_frontier > self.registry_revision.get()
+            || self.authority.grants_any()
+        {
+            return Err(Error::InvalidFactorGraphSource);
+        }
+        if self
+            .factors
+            .windows(2)
+            .any(|pair| pair[0].factor_id >= pair[1].factor_id)
+            || self
+                .relations
+                .windows(2)
+                .any(|pair| pair[0].relation_id >= pair[1].relation_id)
+        {
+            return Err(Error::InvalidFactorGraphSource);
+        }
+        let factor_ids = self
+            .factors
+            .iter()
+            .map(|factor| factor.factor_id.clone())
+            .collect::<std::collections::BTreeSet<_>>();
+        if self
+            .factors
+            .iter()
+            .any(|factor| factor.content_digest.is_zero())
+            || self.relations.iter().any(|relation| {
+                relation.evidence_digest.is_zero()
+                    || relation.left_factor_id >= relation.right_factor_id
+                    || !factor_ids.contains(&relation.left_factor_id)
+                    || !factor_ids.contains(&relation.right_factor_id)
+            })
+        {
+            return Err(Error::InvalidFactorGraphSource);
+        }
+        if self.source_digest != self.compute_source_digest() {
+            return Err(Error::InvalidFactorGraphSource);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptFactor {
     pub factor_id: StableId,
@@ -83,12 +223,15 @@ pub enum Error {
     EmptyDigest(&'static str),
     FactorConflict(String),
     RealizationConflict(String),
+    RelationConflict(String),
     FactorNotFound(String),
     FactorNotAdmitted(String),
     ExternalSelfAdmission,
     SelfReview,
     InvalidTransition,
     RevisionOverflow,
+    InvalidRelation,
+    InvalidFactorGraphSource,
 }
 
 impl fmt::Display for Error {
@@ -104,6 +247,7 @@ pub struct PromptRegistry {
     factors: BTreeMap<StableId, PromptFactor>,
     realizations: BTreeMap<StableId, PromptRealization>,
     realization_bindings: BTreeMap<StableId, PromptRealizationBindingV2>,
+    relations: BTreeMap<StableId, PromptFactorRelation>,
     revision: Revision,
     lifecycle_frontier: u64,
     revocation_frontier: u64,
@@ -122,6 +266,7 @@ impl PromptRegistry {
             factors: BTreeMap::new(),
             realizations: BTreeMap::new(),
             realization_bindings: BTreeMap::new(),
+            relations: BTreeMap::new(),
             revision,
             lifecycle_frontier: 0,
             revocation_frontier: 0,
@@ -217,6 +362,88 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
+    pub fn register_factor_relation(
+        &mut self,
+        relation: PromptFactorRelation,
+    ) -> Result<RegistryReceipt, Error> {
+        if relation.evidence_digest.is_zero() {
+            return Err(Error::EmptyDigest("factor relation evidence"));
+        }
+        if relation.left_factor_id >= relation.right_factor_id {
+            return Err(Error::InvalidRelation);
+        }
+        for factor_id in [&relation.left_factor_id, &relation.right_factor_id] {
+            let Some(factor) = self.factors.get(factor_id) else {
+                return Err(Error::FactorNotFound(factor_id.to_string()));
+            };
+            if factor.source != FactorSource::GovernedInternal
+                || factor.lifecycle != Lifecycle::Admitted
+            {
+                return Err(Error::FactorNotAdmitted(factor_id.to_string()));
+            }
+        }
+        if let Some(existing) = self.relations.get(&relation.relation_id) {
+            if existing == &relation {
+                return Ok(self.receipt(MutationDisposition::Unchanged));
+            }
+            return Err(Error::RelationConflict(relation.relation_id.to_string()));
+        }
+        if self.relations.values().any(|existing| {
+            existing.left_factor_id == relation.left_factor_id
+                && existing.right_factor_id == relation.right_factor_id
+                && existing.kind == relation.kind
+        }) {
+            return Err(Error::InvalidRelation);
+        }
+        self.ensure_capacity(/*additional*/ 1)?;
+        let next_revision = self.next_revision()?;
+        self.relations
+            .insert(relation.relation_id.clone(), relation);
+        self.commit_revision(next_revision, /*revocation*/ false);
+        Ok(self.receipt(MutationDisposition::Inserted))
+    }
+
+    #[must_use]
+    pub fn factor_graph_source_v1(&self) -> PromptFactorGraphSourceV1 {
+        let factors = self
+            .factors
+            .values()
+            .filter(|factor| {
+                factor.source == FactorSource::GovernedInternal
+                    && factor.lifecycle == Lifecycle::Admitted
+            })
+            .map(|factor| PromptFactorGraphNodeV1 {
+                factor_id: factor.factor_id.clone(),
+                semantic_version: factor.semantic_version.clone(),
+                content_digest: factor.content_digest,
+            })
+            .collect::<Vec<_>>();
+        let live = factors
+            .iter()
+            .map(|factor| factor.factor_id.clone())
+            .collect::<std::collections::BTreeSet<_>>();
+        let relations = self
+            .relations
+            .values()
+            .filter(|relation| {
+                live.contains(&relation.left_factor_id) && live.contains(&relation.right_factor_id)
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+        let mut source = PromptFactorGraphSourceV1 {
+            registry_revision: self.revision,
+            registry_snapshot_digest: self.snapshot_digest(),
+            lifecycle_frontier: self.lifecycle_frontier,
+            revocation_frontier: self.revocation_frontier,
+            factors,
+            relations,
+            source_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        source.source_digest = source.compute_source_digest();
+        source
+    }
+
     pub fn retire_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
         let Some(factor) = self.factors.get(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
@@ -309,6 +536,9 @@ impl PromptRegistry {
         for binding in self.realization_bindings.values() {
             bytes.extend_from_slice(binding.digest().as_array());
         }
+        for relation in self.relations.values() {
+            push_relation(&mut bytes, relation);
+        }
         Digest32::of_bytes(&bytes)
     }
 
@@ -321,7 +551,11 @@ impl PromptRegistry {
     }
 
     fn ensure_capacity(&self, additional: usize) -> Result<(), Error> {
-        let current = self.factors.len().saturating_add(self.realizations.len());
+        let current = self
+            .factors
+            .len()
+            .saturating_add(self.realizations.len())
+            .saturating_add(self.relations.len());
         if current.saturating_add(additional) > self.maximum_records {
             return Err(Error::CapacityExceeded);
         }
@@ -357,6 +591,18 @@ fn lifecycle_code(lifecycle: Lifecycle) -> u8 {
         Lifecycle::Retired => 2,
         Lifecycle::Revoked => 3,
     }
+}
+
+fn push_relation(bytes: &mut Vec<u8>, relation: &PromptFactorRelation) {
+    push_id(bytes, &relation.relation_id);
+    push_id(bytes, &relation.left_factor_id);
+    push_id(bytes, &relation.right_factor_id);
+    bytes.push(match relation.kind {
+        PromptFactorRelationKind::Complements => 0,
+        PromptFactorRelationKind::Substitutes => 1,
+        PromptFactorRelationKind::Conflicts => 2,
+    });
+    bytes.extend_from_slice(relation.evidence_digest.as_array());
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {

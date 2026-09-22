@@ -190,7 +190,7 @@ impl SourceRevisionId {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SourceDraft {
     pub scope: CognitiveScope,
     pub kind: LedgerSourceKind,
@@ -295,13 +295,13 @@ impl MemoryLifecycleState {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct MemoryDraft {
     pub stable_key: String,
     pub revision: MemoryRevisionDraft,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct MemoryRevisionDraft {
     pub scope: CognitiveScope,
     pub content: String,
@@ -349,6 +349,30 @@ pub struct KgRelationFactDraft {
     pub relation: String,
 }
 
+/// Closed-world relation semantics consumed by typed retrieval channels.
+///
+/// KG draft predicates are canonicalized to lower-case tokens before storage.
+/// These exact tokens are therefore the only predicates that may enter the
+/// causal, procedural, or contradiction-support retrieval channels.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum KgRelationSemanticV1 {
+    Causes,
+    ProcedureStep,
+    Contradicts,
+}
+
+impl KgRelationSemanticV1 {
+    #[must_use]
+    pub const fn relation(self) -> &'static str {
+        match self {
+            Self::Causes => "causes",
+            Self::ProcedureStep => "procedure_step",
+            Self::Contradicts => "contradicts",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
 pub struct KgFactSetDraft {
     pub entities: Vec<KgEntityFactDraft>,
@@ -360,7 +384,13 @@ pub struct CognitiveProjectionReceipt {
     pub generation: ProjectionGeneration,
     pub fact_set_sha256: Sha256Digest,
     pub input_heads_sha256: Sha256Digest,
+    /// Digest of the physical SQLite occurrence projection retained for
+    /// reopen/integrity verification.
     pub output_sha256: Sha256Digest,
+    /// Canonical hepta-kg V2 generation digest for this exact source cut.
+    pub generation_sha256: Sha256Digest,
+    /// hepta-kg V2 predecessor-bound publication receipt digest.
+    pub publication_sha256: Sha256Digest,
     pub entity_count: u64,
     pub relation_count: u64,
     pub node_count: u64,

@@ -43,9 +43,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-use super::MAX_EVENT_ROWS;
-use super::MAX_OUTBOX_ROWS;
-use super::bounded_next_sequence;
+use crate::local_lease_outbox::MAX_EVENT_ROWS;
+use crate::local_lease_outbox::MAX_OUTBOX_ROWS;
+use crate::local_lease_outbox::bounded_next_sequence;
 
 async fn opened_store(temp: &TempDir, number: u8) -> CognitiveStore {
     let owner = agent_id(number);
@@ -2819,10 +2819,14 @@ async fn sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cl
         .fetch_one(&store.pool)
         .await
         .expect("page count");
-    sqlx::query(&format!("PRAGMA max_page_count = {page_count}"))
-        .execute(&store.pool)
-        .await
-        .expect("freeze page budget");
+    // SQLite PRAGMA does not bind this setting. The interpolated value is an
+    // i64 from page_count, so no SQL syntax can enter through this fixture.
+    sqlx::query(sqlx::AssertSqlSafe(format!(
+        "PRAGMA max_page_count = {page_count}"
+    )))
+    .execute(&store.pool)
+    .await
+    .expect("freeze page budget");
 
     let before = handle.snapshot_counts().await.expect("before counts");
     let before_operations = operation_rows(&store, lease_id).await;

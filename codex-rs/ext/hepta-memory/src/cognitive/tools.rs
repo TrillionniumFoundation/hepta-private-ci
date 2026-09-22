@@ -21,6 +21,8 @@ use codex_hepta_memory::MemoryDraft;
 use codex_hepta_memory::MemoryLifecycleState;
 use codex_hepta_memory::MemoryRevisionDraft;
 use codex_hepta_memory::MemoryVerification;
+use codex_hepta_memory::ProductionCognitiveMutation;
+use codex_hepta_memory::ProductionCognitiveMutationError;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::SourceDraft;
 use codex_hepta_memory::StableMemoryId;
@@ -107,6 +109,8 @@ struct CognitiveTool {
     thread_id: String,
     witness: ExactDirectiveWitness,
     operation: CognitiveToolOperation,
+    qualification_write_enabled: bool,
+    production_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
 }
 
 #[derive(Clone)]
@@ -116,6 +120,8 @@ struct DeferredCognitiveTool {
     expected_turn_id: String,
     witnesses: Arc<CognitiveTurnWitnesses>,
     operation: CognitiveToolOperation,
+    qualification_write_enabled: bool,
+    production_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
 }
 
 pub(super) fn deferred_cognitive_tools(
@@ -123,8 +129,10 @@ pub(super) fn deferred_cognitive_tools(
     thread_id: String,
     expected_turn_id: String,
     witnesses: Arc<CognitiveTurnWitnesses>,
-    write_enabled: bool,
+    qualification_write_enabled: bool,
+    production_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
 ) -> Vec<Arc<dyn ToolExecutor<ToolCall>>> {
+    let write_enabled = qualification_write_enabled || production_mutation.is_some();
     [
         CognitiveToolOperation::Remember,
         CognitiveToolOperation::Recall,
@@ -147,6 +155,8 @@ pub(super) fn deferred_cognitive_tools(
             expected_turn_id: expected_turn_id.clone(),
             witnesses: witnesses.clone(),
             operation,
+            qualification_write_enabled,
+            production_mutation: production_mutation.clone(),
         }) as Arc<dyn ToolExecutor<ToolCall>>
     })
     .collect()
@@ -171,6 +181,8 @@ impl ToolExecutor<ToolCall> for DeferredCognitiveTool {
         let expected_turn_id = self.expected_turn_id.clone();
         let witnesses = self.witnesses.clone();
         let operation = self.operation;
+        let qualification_write_enabled = self.qualification_write_enabled;
+        let production_mutation = self.production_mutation.clone();
         Box::pin(async move {
             if call.turn_id != expected_turn_id {
                 return Err(typed_error(
@@ -191,7 +203,9 @@ impl ToolExecutor<ToolCall> for DeferredCognitiveTool {
                         "cognitive runtime is not configured",
                     ));
                 }
-                CognitiveRuntime::Available(_) | CognitiveRuntime::AvailableFederated { .. } => {}
+                CognitiveRuntime::Available(_)
+                | CognitiveRuntime::AvailableFederated { .. }
+                | CognitiveRuntime::AvailableFederatedV2 { .. } => {}
             }
             let Some(witness) = witnesses.get(call.turn_id.as_str()) else {
                 return Err(typed_error(
@@ -204,6 +218,8 @@ impl ToolExecutor<ToolCall> for DeferredCognitiveTool {
                 thread_id,
                 witness,
                 operation,
+                qualification_write_enabled,
+                production_mutation,
             }
             .handle_call(call)
             .await
@@ -233,7 +249,8 @@ impl CognitiveTool {
     async fn handle_call(&self, call: ToolCall) -> Result<Box<dyn ToolOutput>, FunctionCallError> {
         let store = match &self.runtime {
             CognitiveRuntime::Available(store)
-            | CognitiveRuntime::AvailableFederated { store, .. } => store,
+            | CognitiveRuntime::AvailableFederated { store, .. }
+            | CognitiveRuntime::AvailableFederatedV2 { store, .. } => store,
             CognitiveRuntime::Unavailable(reason) => {
                 return Err(typed_error(
                     "hepta_cognitive_unavailable",
@@ -310,10 +327,25 @@ impl CognitiveTool {
                 citations: Vec::new(),
             },
         };
-        let receipt = store
-            .remember_with_kg(&access, &source, &draft, &facts)
-            .await
-            .map_err(store_error)?;
+        let receipt = match &self.production_mutation {
+            Some(mutation) => {
+                mutation
+                    .remember_with_kg(&access, &source, &draft, &facts)
+                    .await
+                    .map_err(mutation_error)?
+                    .write
+            }
+            None if self.qualification_write_enabled => store
+                .remember_with_kg(&access, &source, &draft, &facts)
+                .await
+                .map_err(store_error)?,
+            None => {
+                return Err(typed_error(
+                    "hepta_cognitive_write_authority_unavailable",
+                    "production cognitive mutation capability is unavailable",
+                ));
+            }
+        };
         write_receipt_output("remembered", &receipt)
     }
 
@@ -401,17 +433,39 @@ impl CognitiveTool {
             valid_to_unix_seconds: args.valid_to_unix_seconds,
             citations: Vec::new(),
         };
-        let receipt = store
-            .correct_with_kg(
-                &access,
-                &memory_id,
-                args.expected_revision,
-                &source,
-                &revision,
-                &facts,
-            )
-            .await
-            .map_err(store_error)?;
+        let receipt = match &self.production_mutation {
+            Some(mutation) => {
+                mutation
+                    .correct_with_kg(
+                        &access,
+                        &memory_id,
+                        args.expected_revision,
+                        &source,
+                        &revision,
+                        &facts,
+                    )
+                    .await
+                    .map_err(mutation_error)?
+                    .write
+            }
+            None if self.qualification_write_enabled => store
+                .correct_with_kg(
+                    &access,
+                    &memory_id,
+                    args.expected_revision,
+                    &source,
+                    &revision,
+                    &facts,
+                )
+                .await
+                .map_err(store_error)?,
+            None => {
+                return Err(typed_error(
+                    "hepta_cognitive_write_authority_unavailable",
+                    "production cognitive mutation capability is unavailable",
+                ));
+            }
+        };
         write_receipt_output("corrected", &receipt)
     }
 
@@ -440,21 +494,43 @@ impl CognitiveTool {
             content: args.reason.as_bytes().to_vec(),
             observed_at_unix_seconds: now,
         };
-        let receipt = store
-            .forget_with_kg(
-                &access,
-                &memory_id,
-                args.expected_revision,
-                &source,
-                &ForgetMemoryDraft {
-                    scope: current.scope,
-                    reason: args.reason,
-                    valid_from_unix_seconds: now,
-                    citations: Vec::new(),
-                },
-            )
-            .await
-            .map_err(store_error)?;
+        let forget = ForgetMemoryDraft {
+            scope: current.scope,
+            reason: args.reason,
+            valid_from_unix_seconds: now,
+            citations: Vec::new(),
+        };
+        let receipt = match &self.production_mutation {
+            Some(mutation) => {
+                mutation
+                    .forget_with_kg(
+                        &access,
+                        &memory_id,
+                        args.expected_revision,
+                        &source,
+                        &forget,
+                    )
+                    .await
+                    .map_err(mutation_error)?
+                    .write
+            }
+            None if self.qualification_write_enabled => store
+                .forget_with_kg(
+                    &access,
+                    &memory_id,
+                    args.expected_revision,
+                    &source,
+                    &forget,
+                )
+                .await
+                .map_err(store_error)?,
+            None => {
+                return Err(typed_error(
+                    "hepta_cognitive_write_authority_unavailable",
+                    "production cognitive mutation capability is unavailable",
+                ));
+            }
+        };
         write_receipt_output("forgotten", &receipt)
     }
 
@@ -520,6 +596,10 @@ impl CognitiveTool {
                 "kg_projection_generation": explanation
                     .kg_projection_generation
                     .map(codex_hepta_memory::ProjectionGeneration::get),
+                "kg_projection_generation_sha256": explanation
+                    .kg_projection_generation_sha256
+                    .as_ref()
+                    .map(codex_hepta_contracts::Sha256Digest::as_str),
             }),
             MAX_EXPLAIN_OUTPUT_BYTES,
         )
@@ -806,6 +886,16 @@ fn store_error(error: CognitiveStoreError) -> FunctionCallError {
     }
 }
 
+fn mutation_error(error: ProductionCognitiveMutationError) -> FunctionCallError {
+    match error {
+        ProductionCognitiveMutationError::Store(error) => store_error(error),
+        ProductionCognitiveMutationError::Authority(_) => typed_error(
+            "hepta_cognitive_write_authority_rejected",
+            "production cognitive mutation authority was rejected",
+        ),
+    }
+}
+
 fn structured_kg_error(error: StructuredKgError) -> FunctionCallError {
     typed_error(error.code(), error.message())
 }
@@ -860,6 +950,8 @@ fn write_receipt_output(
                 "fact_set_sha256": receipt.projection.fact_set_sha256.as_str(),
                 "input_heads_sha256": receipt.projection.input_heads_sha256.as_str(),
                 "output_sha256": receipt.projection.output_sha256.as_str(),
+                "generation_sha256": receipt.projection.generation_sha256.as_str(),
+                "publication_sha256": receipt.projection.publication_sha256.as_str(),
                 "entity_count": receipt.projection.entity_count,
                 "relation_count": receipt.projection.relation_count,
                 "fact_count": fact_count,

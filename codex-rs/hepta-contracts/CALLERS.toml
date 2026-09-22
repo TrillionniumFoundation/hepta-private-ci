@@ -591,12 +591,16 @@ qualification_callers = [
 qualification_tests = [
   "real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends",
   "two_real_agentd_app_servers_never_cross_recall",
-  "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools",
+  "cognitive_store_unavailable_fails_closed_before_provider",
 ]
 qualification_lifecycle_actions = ["kill", "restart"]
 product_caller_named = true
 write_feature = "hepta_cognitive_write"
-write_feature_default_enabled = false
+write_feature_default_enabled = true
+agentd_product_profile_default_enabled = true
+ordinary_codex_default_enabled = false
+qualification_turn_writer_separate = true
+writer_store_unavailable_fail_closed = true
 governance_required_for_write = true
 mutation_writer_composed = true
 source_memory_revision_and_kg_projection_one_transaction = true

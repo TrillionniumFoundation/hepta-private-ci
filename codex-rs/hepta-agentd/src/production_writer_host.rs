@@ -11,18 +11,30 @@ use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
 
+use codex_hepta_cognitive_store::CognitiveAccess;
+use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
+use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_cognitive_store::ForgetMemoryDraft;
+use codex_hepta_cognitive_store::KgFactSetDraft;
+use codex_hepta_cognitive_store::MemoryDraft;
+use codex_hepta_cognitive_store::MemoryRevisionDraft;
+use codex_hepta_cognitive_store::ProductionAuthorityLease;
+use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionCognitiveMutation;
+use codex_hepta_cognitive_store::ProductionCognitiveMutationCapability;
+use codex_hepta_cognitive_store::ProductionCognitiveMutationReceiptV1;
+use codex_hepta_cognitive_store::ProductionDispatchReceipt;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
+use codex_hepta_cognitive_store::ProductionQueuedReceipt;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_cognitive_store::ProductionWriterError;
+use codex_hepta_cognitive_store::SourceDraft;
+use codex_hepta_cognitive_store::StableMemoryId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FinalUseProductionOutboxTarget;
-use codex_hepta_memory::ProductionAuthorityLease;
-use codex_hepta_memory::ProductionAuthorityVerifier;
-use codex_hepta_memory::ProductionDispatchReceipt;
-use codex_hepta_memory::ProductionDurableWriter;
 use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
-use codex_hepta_memory::ProductionQueuedReceipt;
-use codex_hepta_memory::ProductionWriterError;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
@@ -138,9 +150,12 @@ impl AgentdProductionOperationRuntimeConfig {
         Ok(())
     }
 
-    pub(crate) async fn open(
+    /// Attach operation dispatch to the same independently recovered owner
+    /// used for semantic mutations. This never opens a second writer or falls
+    /// back to an unauthenticated legacy store after recovery failure.
+    pub(crate) async fn attach(
         self,
-        store: CognitiveStore,
+        recovered_host: Arc<AgentdProductionWriterHost>,
     ) -> Result<(Arc<AgentdProductionWriterHost>, Duration), AgentdError> {
         let Self {
             authority,
@@ -153,15 +168,29 @@ impl AgentdProductionOperationRuntimeConfig {
             reconcile_interval,
             additional_targets,
         } = self;
-        let mut host = AgentdProductionWriterHost::open_with_store(
-            store,
-            authority,
-            verifier.as_ref(),
-            lease_id,
-            lease_generation,
-        )
-        .await?
-        .attach_target(final_use, target, Arc::clone(&grants))?;
+        if recovered_host.writer.authority() != &authority
+            || recovered_host.writer.lease_id() != lease_id
+            || recovered_host.writer.generation() != lease_generation
+            || recovered_host.production_mutation().is_none()
+        {
+            return Err(AgentdError::GenerationFenced(
+                "production operation configuration differs from the recovered writer owner"
+                    .to_string(),
+            ));
+        }
+        verifier
+            .verify(&authority, recovered_host.writer.owner_agent_id())
+            .map_err(|reason| {
+                AgentdError::GenerationFenced(format!(
+                    "production operation authority rejected: {reason}"
+                ))
+            })?;
+        recovered_host.writer.verify_current_authority().await?;
+        let mut host = recovered_host.as_ref().clone().attach_target(
+            final_use,
+            target,
+            Arc::clone(&grants),
+        )?;
         for (additional_final_use, additional_target) in additional_targets {
             host = host.attach_additional_target(additional_final_use, additional_target)?;
         }
@@ -176,6 +205,11 @@ pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
     grants: Option<Arc<dyn AgentdFinalUseGrantProvider>>,
+    // Private read-side clone of the exact recovered generation. Runtime
+    // composition can reuse the same fenced owner without reopening by path or
+    // exposing ProductionDurableWriter's crate-private raw-store handle.
+    cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
+    mutation: Option<Arc<ProductionCognitiveMutationCapability>>,
 }
 
 impl fmt::Debug for AgentdProductionWriterHost {
@@ -185,41 +219,88 @@ impl fmt::Debug for AgentdProductionWriterHost {
             .field("writer", &self.writer)
             .field("destination_count", &self.dispatchers.len())
             .field("grant_provider_attached", &self.grants.is_some())
+            .field(
+                "cognitive_runtime_available",
+                &self.cognitive_runtime.available_store().is_some(),
+            )
+            .field("production_mutation_attached", &self.mutation.is_some())
             .finish()
     }
 }
 
 impl AgentdProductionWriterHost {
-    /// Open the writer against Agentd's exact private cognitive store. The
-    /// verifier is mandatory and runs before any lease/event/outbox mutation.
-    pub async fn open<V>(
+    /// Open a production writer only from an independently authenticated exact
+    /// current cut. No ordinary writable `CognitiveStore::open` fallback exists
+    /// at this product boundary.
+    pub async fn open(
         config: &AgentdConfig,
+        requirement: CognitiveRecoveryRequirement<'_>,
         authority: ProductionAuthorityLease,
-        verifier: &V,
+        verifier: Arc<dyn ProductionAuthorityVerifier>,
         lease_id: impl Into<String>,
         lease_generation: u64,
-    ) -> Result<Self, AgentdError>
-    where
-        V: ProductionAuthorityVerifier + ?Sized,
-    {
-        let store = CognitiveStore::open(&config.identity().layout)
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!("open production cognitive store: {error}"))
-            })?;
-        let writer =
-            ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
-                .await?;
+    ) -> Result<Self, AgentdError> {
+        Self::open_with_recovery(
+            config,
+            requirement,
+            authority,
+            verifier,
+            lease_id,
+            lease_generation,
+        )
+        .await
+    }
+
+    /// Recover the exact independently retained current cut and immediately
+    /// bind the recovered generation to the same externally verified authority
+    /// lease used by the production writer. Recovery keeps its exclusive store
+    /// fence for the lifetime of the returned writer generation.
+    pub async fn open_with_recovery(
+        config: &AgentdConfig,
+        requirement: CognitiveRecoveryRequirement<'_>,
+        authority: ProductionAuthorityLease,
+        verifier: Arc<dyn ProductionAuthorityVerifier>,
+        lease_id: impl Into<String>,
+        lease_generation: u64,
+    ) -> Result<Self, AgentdError> {
+        let store = CognitiveStore::open_with_recovery(
+            &config.identity().layout,
+            requirement,
+            &authority,
+            verifier.as_ref(),
+        )
+        .await
+        .map_err(|error| {
+            AgentdError::Protocol(format!("recover production cognitive store: {error}"))
+        })?;
+        let runtime_store = store.clone();
+        let writer = Arc::new(
+            ProductionDurableWriter::open_with_live_verifier(
+                store,
+                authority,
+                verifier,
+                lease_id,
+                lease_generation,
+            )
+            .await?,
+        );
+        let mutation = Arc::new(writer.cognitive_mutation_capability()?);
         Ok(Self {
-            writer: Arc::new(writer),
+            writer,
+            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
+                runtime_store,
+            )),
+            mutation: Some(mutation),
             dispatchers: BTreeMap::new(),
             grants: None,
         })
     }
 
-    /// Build a host handle around an already-open Agentd-owned store. This is
-    /// useful when the runtime has already attached a CognitiveStore and keeps
-    /// the same mandatory external verifier contract.
+    /// Qualification-only compatibility seam around an already-open store.
+    /// It does not retain the verifier, so production semantic mutation methods
+    /// below reject this handle with `LiveVerifierRequired`. The seam does not
+    /// exist in the default/product build.
+    #[cfg(feature = "qualification-cognitive-write")]
     pub async fn open_with_store<V>(
         store: CognitiveStore,
         authority: ProductionAuthorityLease,
@@ -230,6 +311,7 @@ impl AgentdProductionWriterHost {
     where
         V: ProductionAuthorityVerifier + ?Sized,
     {
+        let runtime_store = store.clone();
         let writer =
             ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
                 .await?;
@@ -237,11 +319,85 @@ impl AgentdProductionWriterHost {
             writer: Arc::new(writer),
             dispatchers: BTreeMap::new(),
             grants: None,
+            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
+                runtime_store,
+            )),
+            mutation: None,
         })
+    }
+
+    pub async fn remember_with_kg(
+        &self,
+        access: &CognitiveAccess,
+        source: &SourceDraft,
+        draft: &MemoryDraft,
+        facts: &KgFactSetDraft,
+    ) -> Result<ProductionCognitiveMutationReceiptV1, AgentdError> {
+        let mutation = self.production_mutation().ok_or_else(|| {
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
+        })?;
+        Ok(mutation
+            .remember_with_kg(access, source, draft, facts)
+            .await?)
+    }
+
+    pub async fn correct_with_kg(
+        &self,
+        access: &CognitiveAccess,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &MemoryRevisionDraft,
+        facts: &KgFactSetDraft,
+    ) -> Result<ProductionCognitiveMutationReceiptV1, AgentdError> {
+        let mutation = self.production_mutation().ok_or_else(|| {
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
+        })?;
+        Ok(mutation
+            .correct_with_kg(access, memory_id, expected_revision, source, draft, facts)
+            .await?)
+    }
+
+    pub async fn forget_with_kg(
+        &self,
+        access: &CognitiveAccess,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &ForgetMemoryDraft,
+    ) -> Result<ProductionCognitiveMutationReceiptV1, AgentdError> {
+        let mutation = self.production_mutation().ok_or_else(|| {
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
+        })?;
+        Ok(mutation
+            .forget_with_kg(access, memory_id, expected_revision, source, draft)
+            .await?)
     }
 
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {
         Arc::clone(&self.writer)
+    }
+
+    /// Reuse the exact recovered generation for Agentd's read side without
+    /// reopening by path and without widening the durable writer's raw-store
+    /// visibility beyond the owner crate.
+    pub(crate) fn cognitive_runtime(&self) -> codex_hepta_memory::CognitiveRuntime {
+        self.cognitive_runtime.clone()
+    }
+
+    /// Return the sealed production mutation capability, if this host was
+    /// created through exact-cut recovery with a retained live verifier.
+    pub fn production_mutation(&self) -> Option<Arc<dyn ProductionCognitiveMutation>> {
+        self.mutation.as_ref().map(|capability| {
+            let capability: Arc<dyn ProductionCognitiveMutation> = capability.clone();
+            capability
+        })
     }
 
     /// Attach the provider/host target together with the kernel-owned final-use

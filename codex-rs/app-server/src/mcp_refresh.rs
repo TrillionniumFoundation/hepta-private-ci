@@ -347,6 +347,7 @@ enabled = false
                         http_client_factory: good_config.http_client_factory(),
                         queue_service: None,
                         hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Absent,
+                        hepta_cognitive_production_mutation: None,
                         hepta_local_turn_lifecycle_enabled: false,
                         hepta_local_development_policy: None,
                         hepta_qualification_turn_writer_enabled: false,

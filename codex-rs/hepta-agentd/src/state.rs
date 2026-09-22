@@ -2,9 +2,9 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_memory::CognitiveStore;
 
 use crate::AgentdError;
 use crate::AgentdEventKind;
@@ -16,6 +16,10 @@ mod control;
 
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
+    pub(crate) cognitive_retrieval_context:
+        std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub(crate) cognitive_retrieval_learning:
+        std::sync::OnceLock<Arc<crate::CognitiveRetrievalLearningSink>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
     pub(crate) production_operations: std::sync::OnceLock<Arc<crate::AgentdProductionWriterHost>>,
     pub(crate) evidence: std::sync::OnceLock<Arc<crate::evidence_host::EvidenceHost>>,
@@ -54,6 +58,8 @@ impl AgentdState {
             automation_effect: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
             production_operations: std::sync::OnceLock::new(),
+            cognitive_retrieval_context: std::sync::OnceLock::new(),
+            cognitive_retrieval_learning: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,

@@ -59,17 +59,33 @@ caller_markers = ["run_supervisord_with_grant_verifier", "H7H89ProductionGrantVe
 
 [[boundary]]
 id = "memory_production_writer_open"
-symbol = "ProductionDurableWriter::open"
+symbol = "ProductionDurableWriter::open_with_live_verifier"
 definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
-definition_markers = ["pub struct ProductionDurableWriter", "pub async fn open", "ProductionAuthorityVerifier"]
+definition_markers = ["pub struct ProductionDurableWriter", "pub async fn open_with_live_verifier", "ProductionAuthorityVerifier"]
 product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
-caller_markers = ["ProductionDurableWriter::open", "verifier"]
+caller_markers = ["ProductionDurableWriter::open_with_live_verifier", "verifier"]
+
+[[boundary]]
+id = "cognitive_store_recovery_open"
+symbol = "CognitiveStore::open_with_recovery"
+definition_path = "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+definition_markers = ["pub async fn open_with_recovery", "ProductionAuthorityVerifier", "CognitiveStoreOpenGuard::acquire_exclusive"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier"]
+
+[[boundary]]
+id = "cognitive_production_mutation_capability"
+symbol = "ProductionDurableWriter::cognitive_mutation_capability"
+definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
+definition_markers = ["pub struct ProductionCognitiveMutationCapability", "pub fn cognitive_mutation_capability", "production_cognitive_mutation_sealed"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["cognitive_mutation_capability", "production_mutation"]
 
 [[boundary]]
 id = "agentd_production_writer_host"
-symbol = "AgentdProductionWriterHost::open_with_store"
+symbol = "AgentdProductionWriterHost::open"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-definition_markers = ["pub struct AgentdProductionWriterHost", "pub async fn open_with_store", "ProductionAuthorityVerifier"]
+definition_markers = ["pub struct AgentdProductionWriterHost", "pub async fn open", "CognitiveRecoveryRequirement"]
 product_callers = []
 caller_markers = []
 
@@ -362,8 +378,23 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
-forbidden = ["AllowVerifier", "permit_all"]
+required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "ProductionDurableWriter::open_with_live_verifier", "CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier", "cognitive_mutation_capability", "production_mutation"]
+forbidden = ["codex_hepta_memory::CognitiveStore", "AllowVerifier", "permit_all", ".writer.store()"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/runtime.rs"
+required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "CognitiveStore::open"]
+forbidden = ["codex_hepta_memory::CognitiveStore"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/app_runtime.rs"
+required = ["production_writer_host.and_then", "host.production_mutation", "hepta_cognitive_production_mutation"]
+forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
+
+[[protected_file]]
+path = "codex-rs/ext/hepta-memory/src/cognitive/tools.rs"
+required = ["ProductionCognitiveMutation", "production_mutation", "hepta_cognitive_write_authority_unavailable"]
+forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"

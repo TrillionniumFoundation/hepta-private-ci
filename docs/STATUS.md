@@ -13,8 +13,8 @@ Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion an
 ## Registry closure
 
 - Modules: **40**
-- Contracts: **194**
-- Critical protocols: **46**
+- Contracts: **205**
+- Critical protocols: **57**
 - Durable data domains: **67**
 - Work packages: **91**
 - Module technical guides: **40**
@@ -33,9 +33,9 @@ Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion an
 | State | Count |
 |---|---:|
 | `blocked_external` | 2 |
-| `planned` | 50 |
+| `planned` | 47 |
 | `source_implemented` | 21 |
-| `source_implemented_execution_pending` | 16 |
+| `source_implemented_execution_pending` | 19 |
 | `source_implemented_semantic_review_pending` | 2 |
 
 ## Baseline claims

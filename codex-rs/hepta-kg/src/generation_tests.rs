@@ -26,6 +26,8 @@ fn support(label: &str, tombstoned: bool) -> KnowledgeSupportV2 {
         source_revision: revision(1),
         source_fact_digest: digest(&format!("fact:{label}")),
         validity_digest: digest(&format!("validity:{label}")),
+        valid_from_unix_seconds: None,
+        valid_to_unix_seconds: None,
         tombstoned,
     }
 }
@@ -180,6 +182,7 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
             generation_digest: second.generation_digest,
             seed_node_ids: vec![id("node:a")],
             relation_kinds: vec![KnowledgeRelationKindV2::Causes],
+            valid_at_unix_seconds: None,
             maximum_edges: 8,
         },
     )
@@ -195,6 +198,7 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
                 generation_digest: digest("stale"),
                 seed_node_ids: vec![id("node:a")],
                 relation_kinds: Vec::new(),
+                valid_at_unix_seconds: None,
                 maximum_edges: 8,
             }
         ),
@@ -224,4 +228,260 @@ fn supports_and_contradicts_remain_distinct_edges() {
     .unwrap_or_else(|error| panic!("valid contradictory graph: {error}"));
     assert_eq!(generation.edges.len(), 2);
     assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
+}
+
+#[test]
+fn custom_relation_identities_are_lossless_and_queryable() {
+    let studies = KnowledgeRelationKindV2::Custom(id("relation-kind:studies"));
+    let teaches = KnowledgeRelationKindV2::Custom(id("relation-kind:teaches"));
+    let generation = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b")],
+            vec![
+                edge("a", "b", studies.clone(), "studies-edge"),
+                edge("a", "b", teaches, "teaches-edge"),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid custom-relation graph: {error}"));
+    assert_eq!(generation.edges.len(), 2);
+    assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
+
+    let result = query_relations(
+        &generation,
+        KnowledgeRelationQueryV2 {
+            query_id: id("query:custom"),
+            generation_digest: generation.generation_digest,
+            seed_node_ids: vec![id("node:a")],
+            relation_kinds: vec![studies],
+            valid_at_unix_seconds: None,
+            maximum_edges: 8,
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid custom query: {error}"));
+    assert_eq!(result.edges.len(), 1);
+    assert_eq!(
+        result.edges[0].identity.relation,
+        KnowledgeRelationKindV2::Custom(id("relation-kind:studies"))
+    );
+}
+
+#[test]
+fn composed_owner_can_retain_more_than_sixty_four_supports() {
+    let mut canonical = node("shared", "shared");
+    canonical.supports = (1..=65)
+        .map(|index| support(&format!("shared-{index}"), false))
+        .collect();
+    let generation = build_complete_generation(generation(1), input(vec![canonical], Vec::new()))
+        .unwrap_or_else(|error| panic!("65 explicit supports remain within owner bounds: {error}"));
+    assert_eq!(generation.nodes[0].supports.len(), 65);
+}
+
+#[test]
+fn temporal_visibility_matches_inclusive_start_and_exclusive_end() {
+    let mut timed = edge("a", "b", KnowledgeRelationKindV2::Supports, "timed-edge");
+    timed.supports[0].valid_from_unix_seconds = Some(100);
+    timed.supports[0].valid_to_unix_seconds = Some(200);
+    let generation = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], vec![timed]),
+    )
+    .unwrap_or_else(|error| panic!("valid timed graph: {error}"));
+
+    let query_at = |at| {
+        query_relations(
+            &generation,
+            KnowledgeRelationQueryV2 {
+                query_id: id(&format!("query:at:{at}")),
+                generation_digest: generation.generation_digest,
+                seed_node_ids: vec![id("node:a")],
+                relation_kinds: Vec::new(),
+                valid_at_unix_seconds: Some(at),
+                maximum_edges: 8,
+            },
+        )
+        .unwrap_or_else(|error| panic!("valid timed query: {error}"))
+    };
+    assert!(query_at(99).edges.is_empty());
+    assert_eq!(query_at(100).edges.len(), 1);
+    assert_eq!(query_at(199).edges.len(), 1);
+    assert!(query_at(200).edges.is_empty());
+
+    let structural = query_relations(
+        &generation,
+        KnowledgeRelationQueryV2 {
+            query_id: id("query:structural"),
+            generation_digest: generation.generation_digest,
+            seed_node_ids: vec![id("node:a")],
+            relation_kinds: Vec::new(),
+            valid_at_unix_seconds: None,
+            maximum_edges: 8,
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid structural query: {error}"));
+    assert_eq!(structural.edges.len(), 1);
+}
+
+#[test]
+fn invalid_temporal_support_window_is_rejected() {
+    let mut invalid = node("a", "a");
+    invalid.supports[0].valid_from_unix_seconds = Some(200);
+    invalid.supports[0].valid_to_unix_seconds = Some(200);
+    assert_eq!(
+        build_complete_generation(generation(1), input(vec![invalid], Vec::new())),
+        Err(KnowledgeGenerationErrorV2::InvalidValidityWindow)
+    );
+}
+
+#[test]
+fn duplicate_incremental_upserts_are_rejected_before_last_write_wins() {
+    let first = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a-v1"), node("b", "b-v1")],
+            vec![edge("a", "b", KnowledgeRelationKindV2::Supports, "edge-ab")],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid predecessor: {error}"));
+
+    let duplicate_node = KnowledgeProjectionDeltaV2 {
+        expected_predecessor_digest: first.generation_digest,
+        source_snapshot_digest: digest("snapshot:2"),
+        generation_vector_digest: digest("vector:2"),
+        graph_profile_digest: digest("profile:1"),
+        remove_node_ids: Vec::new(),
+        upsert_nodes: vec![node("a", "a-v2"), node("a", "a-v3")],
+        remove_edge_identities: Vec::new(),
+        upsert_edges: Vec::new(),
+    };
+    assert_eq!(
+        apply_incremental_delta(&first, generation(2), duplicate_node),
+        Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity)
+    );
+
+    let duplicate_edge_value = edge("a", "b", KnowledgeRelationKindV2::Supports, "edge-ab-v2");
+    let duplicate_edge = KnowledgeProjectionDeltaV2 {
+        expected_predecessor_digest: first.generation_digest,
+        source_snapshot_digest: digest("snapshot:2"),
+        generation_vector_digest: digest("vector:2"),
+        graph_profile_digest: digest("profile:1"),
+        remove_node_ids: Vec::new(),
+        upsert_nodes: Vec::new(),
+        remove_edge_identities: Vec::new(),
+        upsert_edges: vec![duplicate_edge_value.clone(), duplicate_edge_value],
+    };
+    assert_eq!(
+        apply_incremental_delta(&first, generation(2), duplicate_edge),
+        Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity)
+    );
+}
+
+#[test]
+fn adversarial_mixed_delta_matches_full_rebuild_canonically() {
+    let first = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("c", "c-v1"), node("a", "a-v1"), node("b", "b-v1")],
+            vec![
+                edge("b", "c", KnowledgeRelationKindV2::Causes, "edge-bc-v1"),
+                edge("a", "b", KnowledgeRelationKindV2::Supports, "edge-ab-v1"),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid predecessor: {error}"));
+
+    let removed_ab = KnowledgeEdgeIdentityV2 {
+        source_node_id: id("node:a"),
+        relation: KnowledgeRelationKindV2::Supports,
+        target_node_id: id("node:b"),
+    };
+    let mut tombstoned = edge(
+        "a",
+        "c",
+        KnowledgeRelationKindV2::Contradicts,
+        "edge-ac-deleted",
+    );
+    tombstoned.supports[0].tombstoned = true;
+    let replacement = edge(
+        "c",
+        "a",
+        KnowledgeRelationKindV2::Custom(id("relation-kind:references")),
+        "edge-ca-v2",
+    );
+
+    let incremental = apply_incremental_delta(
+        &first,
+        generation(2),
+        KnowledgeProjectionDeltaV2 {
+            expected_predecessor_digest: first.generation_digest,
+            source_snapshot_digest: digest("snapshot:adversarial:2"),
+            generation_vector_digest: digest("vector:adversarial:2"),
+            graph_profile_digest: digest("profile:1"),
+            remove_node_ids: vec![id("node:b")],
+            upsert_nodes: vec![node("c", "c-v2"), node("a", "a-v1")],
+            remove_edge_identities: vec![removed_ab],
+            upsert_edges: vec![tombstoned, replacement.clone()],
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid mixed delta: {error}"));
+
+    let full = build_complete_generation(
+        generation(2),
+        KnowledgeProjectionInputV2 {
+            source_snapshot_digest: digest("snapshot:adversarial:2"),
+            generation_vector_digest: digest("vector:adversarial:2"),
+            graph_profile_digest: digest("profile:1"),
+            complete_source_cut: true,
+            nodes: vec![node("a", "a-v1"), node("c", "c-v2")],
+            edges: vec![replacement],
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid full rebuild: {error}"));
+
+    assert_eq!(incremental, full);
+    assert_eq!(incremental.generation_digest, full.generation_digest);
+}
+
+#[test]
+fn query_result_digest_binds_complete_request_even_when_edges_match() {
+    let graph = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b")],
+            vec![edge("a", "b", KnowledgeRelationKindV2::Causes, "edge-ab")],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid graph: {error}"));
+
+    let run = |seeds: Vec<StableId>, kinds: Vec<KnowledgeRelationKindV2>, maximum_edges| {
+        query_relations(
+            &graph,
+            KnowledgeRelationQueryV2 {
+                query_id: id("query:request-binding"),
+                generation_digest: graph.generation_digest,
+                seed_node_ids: seeds,
+                relation_kinds: kinds,
+                valid_at_unix_seconds: None,
+                maximum_edges,
+            },
+        )
+        .unwrap_or_else(|error| panic!("valid query: {error}"))
+    };
+
+    let baseline = run(vec![id("node:a")], vec![KnowledgeRelationKindV2::Causes], 8);
+    let broader_seed = run(
+        vec![id("node:a"), id("node:b")],
+        vec![KnowledgeRelationKindV2::Causes],
+        8,
+    );
+    let broader_filter = run(vec![id("node:a")], Vec::new(), 8);
+    let broader_limit = run(vec![id("node:a")], vec![KnowledgeRelationKindV2::Causes], 9);
+
+    for changed in [&broader_seed, &broader_filter, &broader_limit] {
+        assert_eq!(baseline.edges, changed.edges);
+        assert_eq!(baseline.omitted_count, changed.omitted_count);
+        assert_ne!(baseline.request_digest, changed.request_digest);
+        assert_ne!(baseline.result_digest, changed.result_digest);
+    }
 }

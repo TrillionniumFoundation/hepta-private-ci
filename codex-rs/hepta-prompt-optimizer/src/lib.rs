@@ -14,7 +14,11 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+mod graph;
 pub mod local_shadow;
+
+pub use graph::GraphBoundPromptPortfolioReceipt;
+pub use graph::optimize_with_factor_graph;
 
 const MAX_CANDIDATES: usize = 4_096;
 const MAX_SELECTED: usize = 128;
@@ -51,6 +55,8 @@ pub enum CandidateDisposition {
     NonPositiveGain,
     OverBudget,
     SelectionLimit,
+    GraphConflict,
+    GraphSubstitute,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -82,6 +88,7 @@ pub enum Error {
     ZeroCost(String),
     RegistrySnapshotMismatch(String),
     Arithmetic,
+    FactorGraph(String),
 }
 
 impl fmt::Display for Error {
@@ -92,7 +99,15 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-pub fn optimize(mut request: OptimizationRequest) -> Result<PromptPortfolioReceipt, Error> {
+pub fn optimize(request: OptimizationRequest) -> Result<PromptPortfolioReceipt, Error> {
+    optimize_with_factor_graph_constraints(request, &BTreeSet::new(), &BTreeSet::new())
+}
+
+pub(crate) fn optimize_with_factor_graph_constraints(
+    mut request: OptimizationRequest,
+    conflicts: &BTreeSet<(StableId, StableId)>,
+    substitutes: &BTreeSet<(StableId, StableId)>,
+) -> Result<PromptPortfolioReceipt, Error> {
     validate_request(&request)?;
     request.candidates.sort_by(|left, right| {
         right
@@ -123,6 +138,7 @@ pub fn optimize(mut request: OptimizationRequest) -> Result<PromptPortfolioRecei
     }
 
     let mut selected = Vec::new();
+    let mut selected_factor_ids = BTreeSet::new();
     let mut decisions = Vec::with_capacity(request.candidates.len());
     let mut remaining = request.budget;
     let mut total_gain = FixedQ32::ZERO;
@@ -135,6 +151,16 @@ pub fn optimize(mut request: OptimizationRequest) -> Result<PromptPortfolioRecei
             CandidateDisposition::Illegal
         } else if candidate.expected_gain <= FixedQ32::ZERO {
             CandidateDisposition::NonPositiveGain
+        } else if selected_factor_ids.iter().any(|selected_factor| {
+            let pair = canonical_factor_pair(&candidate.factor_id, selected_factor);
+            conflicts.contains(&pair)
+        }) {
+            CandidateDisposition::GraphConflict
+        } else if selected_factor_ids.iter().any(|selected_factor| {
+            let pair = canonical_factor_pair(&candidate.factor_id, selected_factor);
+            substitutes.contains(&pair)
+        }) {
+            CandidateDisposition::GraphSubstitute
         } else if selected.len() >= request.maximum_selected {
             marginal_excluded_gain = marginal_excluded_gain.max(candidate.expected_gain);
             CandidateDisposition::SelectionLimit
@@ -149,6 +175,7 @@ pub fn optimize(mut request: OptimizationRequest) -> Result<PromptPortfolioRecei
                 .checked_add(candidate.expected_gain)
                 .map_err(|_| Error::Arithmetic)?;
             selected.push(candidate.candidate_id.clone());
+            selected_factor_ids.insert(candidate.factor_id.clone());
             CandidateDisposition::Selected
         };
         decisions.push(CandidateDecision {
@@ -245,6 +272,14 @@ fn digest_receipt(
     Digest32::of_bytes(&bytes)
 }
 
+fn canonical_factor_pair(left: &StableId, right: &StableId) -> (StableId, StableId) {
+    if left <= right {
+        (left.clone(), right.clone())
+    } else {
+        (right.clone(), left.clone())
+    }
+}
+
 fn disposition_code(value: CandidateDisposition) -> u8 {
     match value {
         CandidateDisposition::Selected => 0,
@@ -253,6 +288,8 @@ fn disposition_code(value: CandidateDisposition) -> u8 {
         CandidateDisposition::NonPositiveGain => 3,
         CandidateDisposition::OverBudget => 4,
         CandidateDisposition::SelectionLimit => 5,
+        CandidateDisposition::GraphConflict => 6,
+        CandidateDisposition::GraphSubstitute => 7,
     }
 }
 

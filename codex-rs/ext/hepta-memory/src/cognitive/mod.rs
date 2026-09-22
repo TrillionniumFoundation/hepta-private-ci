@@ -14,6 +14,7 @@ use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION;
 use codex_extension_api::EphemeralModelInputContext;
 use codex_extension_api::EphemeralModelInputContributor;
+use codex_extension_api::EphemeralModelInputFinalUseGuard;
 use codex_extension_api::EphemeralModelInputProposal;
 use codex_extension_api::EphemeralModelInputSource;
 use codex_extension_api::ExtensionData;
@@ -39,6 +40,7 @@ use codex_hepta_memory::MemoryLifecycleState;
 use codex_hepta_memory::MemoryRevalidationBinding;
 use codex_hepta_memory::MemoryRevisionRecord;
 use codex_hepta_memory::MemoryVerification;
+use codex_hepta_memory::ProductionCognitiveMutation;
 use codex_hepta_memory::RetrievalBatch;
 use codex_hepta_memory::RetrievalChannel;
 use codex_hepta_memory::RetrievalRequest;
@@ -207,6 +209,35 @@ pub(super) struct CognitiveProposalMaterial {
     pub(super) content_sha256: Sha256Digest,
     pub(super) content: String,
     pub(super) claimed_token_count: u32,
+    pub(super) final_use_guard: Option<Box<dyn EphemeralModelInputFinalUseGuard>>,
+}
+
+struct ChainedFinalUseGuard {
+    guards: Vec<Box<dyn EphemeralModelInputFinalUseGuard>>,
+}
+
+impl EphemeralModelInputFinalUseGuard for ChainedFinalUseGuard {
+    fn revalidate(self: Box<Self>) -> ModelProviderPolicyFuture<'static, ()> {
+        Box::pin(async move {
+            for guard in self.guards {
+                guard.revalidate().await?;
+            }
+            Ok(())
+        })
+    }
+}
+
+pub(super) fn chain_final_use_guards(
+    left: Option<Box<dyn EphemeralModelInputFinalUseGuard>>,
+    right: Option<Box<dyn EphemeralModelInputFinalUseGuard>>,
+) -> Option<Box<dyn EphemeralModelInputFinalUseGuard>> {
+    match (left, right) {
+        (None, None) => None,
+        (Some(guard), None) | (None, Some(guard)) => Some(guard),
+        (Some(left), Some(right)) => Some(Box::new(ChainedFinalUseGuard {
+            guards: vec![left, right],
+        })),
+    }
 }
 
 impl CognitiveProposalMaterial {
@@ -214,7 +245,7 @@ impl CognitiveProposalMaterial {
         self,
         input: &EphemeralModelInputContext<'_>,
     ) -> Result<EphemeralModelInputProposal, ModelProviderPolicyError> {
-        EphemeralModelInputProposal::new(
+        let proposal = EphemeralModelInputProposal::new(
             EphemeralModelInputSource::parse(self.source)?,
             input.attempt_id,
             input.base_logical_request_sha256.clone(),
@@ -224,21 +255,45 @@ impl CognitiveProposalMaterial {
             api_digest(&self.content_sha256)?,
             self.content,
             self.claimed_token_count,
-        )
+        )?;
+        Ok(match self.final_use_guard {
+            Some(guard) => proposal.with_final_use_guard(guard),
+            None => proposal,
+        })
     }
 }
 
 pub(crate) struct CognitiveExtension {
     runtime: CognitiveRuntime,
     recall: Option<Arc<dyn CognitiveRecallBackend>>,
+    production_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
+    qualification_write_enabled: bool,
 }
 
 impl CognitiveExtension {
     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+        Self::new_with_mutation(runtime, None, false)
+    }
+
+    pub(crate) fn new_with_mutation(
+        runtime: CognitiveRuntime,
+        production_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
+        qualification_write_enabled: bool,
+    ) -> Self {
         let recall = runtime
             .available_store()
             .map(|store| store.clone() as Arc<dyn CognitiveRecallBackend>);
-        Self { runtime, recall }
+        let production_mutation = production_mutation.filter(|mutation| {
+            runtime
+                .available_store()
+                .is_some_and(|store| mutation.owner_agent_id() == store.owner_agent_id())
+        });
+        Self {
+            runtime,
+            recall,
+            production_mutation,
+            qualification_write_enabled,
+        }
     }
 
     #[cfg(test)]
@@ -246,6 +301,8 @@ impl CognitiveExtension {
         Self {
             runtime: CognitiveRuntime::Available(store),
             recall: Some(recall),
+            production_mutation: None,
+            qualification_write_enabled: false,
         }
     }
 
@@ -373,6 +430,7 @@ impl CognitiveExtension {
             content_sha256,
             content,
             claimed_token_count,
+            final_use_guard: None,
         })
     }
 }
@@ -618,7 +676,14 @@ impl ToolContributor for CognitiveExtension {
             thread_store.level_id().to_string(),
             step_store.level_id().to_string(),
             witnesses,
-            thread_state.write_enabled && self.store().is_some(),
+            thread_state.write_enabled
+                && self.qualification_write_enabled
+                && self.store().is_some(),
+            if thread_state.write_enabled {
+                self.production_mutation.clone()
+            } else {
+                None
+            },
         )
     }
 }

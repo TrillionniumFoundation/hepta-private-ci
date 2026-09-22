@@ -213,3 +213,99 @@ fn exhausted_revision_preserves_realizations_during_retirement_and_revocation() 
     );
     assert_eq!(registry, active);
 }
+
+#[test]
+fn governed_factor_relations_are_owner_bound_and_rebuildable() {
+    let mut registry = PromptRegistry::new(64).expect("registry");
+    for (factor_id, proposer) in [("factor:a", "proposer:a"), ("factor:b", "proposer:b")] {
+        registry
+            .register_factor(PromptFactor {
+                factor_id: id(factor_id),
+                proposer_id: id(proposer),
+                semantic_version: id("v1"),
+                content_digest: digest(factor_id.as_bytes()),
+                source: FactorSource::GovernedInternal,
+                lifecycle: Lifecycle::Draft,
+            })
+            .expect("factor");
+        registry
+            .admit_factor(
+                &id(factor_id),
+                &id("reviewer:independent"),
+                digest(b"admission"),
+            )
+            .expect("admit");
+    }
+    let relation = PromptFactorRelation {
+        relation_id: id("relation:a:b:conflict"),
+        left_factor_id: id("factor:a"),
+        right_factor_id: id("factor:b"),
+        kind: PromptFactorRelationKind::Conflicts,
+        evidence_digest: digest(b"relation-evidence"),
+    };
+    registry
+        .register_factor_relation(relation.clone())
+        .expect("relation");
+    let first = registry.factor_graph_source_v1();
+    first.validate().expect("valid factor graph source");
+    assert_eq!(first.factors.len(), 2);
+    assert_eq!(first.relations, vec![relation.clone()]);
+    assert!(!first.authority.grants_any());
+
+    assert_eq!(
+        registry.register_factor_relation(relation),
+        Ok(registry.receipt(MutationDisposition::Unchanged))
+    );
+
+    registry.revoke_factor(&id("factor:b")).expect("revoke");
+    let after_revoke = registry.factor_graph_source_v1();
+    after_revoke.validate().expect("valid post-revoke source");
+    assert_eq!(after_revoke.factors.len(), 1);
+    assert!(after_revoke.relations.is_empty());
+    assert_ne!(first.source_digest, after_revoke.source_digest);
+}
+
+#[test]
+fn factor_relation_requires_live_governed_canonical_endpoints() {
+    let mut registry = PromptRegistry::new(64).expect("registry");
+    registry
+        .register_factor(PromptFactor {
+            factor_id: id("factor:a"),
+            proposer_id: id("proposer:a"),
+            semantic_version: id("v1"),
+            content_digest: digest(b"a"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        })
+        .expect("factor");
+    registry
+        .admit_factor(
+            &id("factor:a"),
+            &id("reviewer:independent"),
+            digest(b"admission"),
+        )
+        .expect("admit");
+    let missing = PromptFactorRelation {
+        relation_id: id("relation:a:b"),
+        left_factor_id: id("factor:a"),
+        right_factor_id: id("factor:b"),
+        kind: PromptFactorRelationKind::Complements,
+        evidence_digest: digest(b"evidence"),
+    };
+    assert_eq!(
+        registry.register_factor_relation(missing),
+        Err(Error::FactorNotFound("factor:b".to_string()))
+    );
+
+    let reversed = PromptFactorRelation {
+        relation_id: id("relation:reversed"),
+        left_factor_id: id("factor:b"),
+        right_factor_id: id("factor:a"),
+        kind: PromptFactorRelationKind::Conflicts,
+        evidence_digest: digest(b"evidence"),
+    };
+    assert_eq!(
+        registry.register_factor_relation(reversed),
+        Err(Error::InvalidRelation)
+    );
+}

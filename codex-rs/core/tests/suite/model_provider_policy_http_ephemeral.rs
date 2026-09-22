@@ -2,9 +2,11 @@ use anyhow::Result;
 use codex_core::config::Config;
 use codex_extension_api::EphemeralModelInputContext;
 use codex_extension_api::EphemeralModelInputContributor;
+use codex_extension_api::EphemeralModelInputFinalUseGuard;
 use codex_extension_api::EphemeralModelInputProposal;
 use codex_extension_api::EphemeralModelInputSource;
 use codex_extension_api::ExtensionRegistryBuilder;
+use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderPolicyFuture;
 use codex_extension_api::ModelProviderSha256Digest;
 use codex_extension_api::ModelProviderTransport;
@@ -76,6 +78,63 @@ impl TestEphemeralInput {
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner)
             .clone()
+    }
+}
+
+struct RejectingFinalUseGuard {
+    calls: Arc<AtomicUsize>,
+    policy: Arc<ProviderPolicyState>,
+}
+
+impl EphemeralModelInputFinalUseGuard for RejectingFinalUseGuard {
+    fn revalidate(self: Box<Self>) -> ModelProviderPolicyFuture<'static, ()> {
+        Box::pin(async move {
+            assert_eq!(
+                self.policy.begin_count.load(Ordering::SeqCst),
+                1,
+                "final-use guard must run after provider policy admission"
+            );
+            self.calls.fetch_add(1, Ordering::SeqCst);
+            Err(ModelProviderPolicyError::new(
+                "test_ephemeral_final_use_blocked",
+                "test guard rejected the physical send",
+            ))
+        })
+    }
+}
+
+struct GuardedEphemeralInput {
+    calls: Arc<AtomicUsize>,
+    guard_calls: Arc<AtomicUsize>,
+    policy: Arc<ProviderPolicyState>,
+}
+
+impl EphemeralModelInputContributor for GuardedEphemeralInput {
+    fn contribute<'a>(
+        &'a self,
+        input: EphemeralModelInputContext<'a>,
+    ) -> ModelProviderPolicyFuture<'a, Option<EphemeralModelInputProposal>> {
+        self.calls.fetch_add(1, Ordering::SeqCst);
+        let proposal = (|| {
+            let proposal = EphemeralModelInputProposal::new(
+                EphemeralModelInputSource::parse("hepta_memory_same_thread_v1")?,
+                input.attempt_id,
+                input.base_logical_request_sha256.clone(),
+                input.thread_id,
+                input.turn_id,
+                digest(b"guarded-source-binding"),
+                digest(b"guarded-final-use-marker"),
+                "guarded-final-use-marker",
+                4,
+            )?;
+            Ok(Some(proposal.with_final_use_guard(Box::new(
+                RejectingFinalUseGuard {
+                    calls: Arc::clone(&self.guard_calls),
+                    policy: Arc::clone(&self.policy),
+                },
+            ))))
+        })();
+        Box::pin(std::future::ready(proposal))
     }
 }
 
@@ -174,6 +233,46 @@ fn attached_http_send_changes_only_the_physical_request() -> Result<()> {
         let rollout = std::fs::read_to_string(test.codex.rollout_path().expect("rollout path"))?;
         assert!(!rollout.contains(MARKER_PREFIX));
         assert!(!rollout.contains("hepta_memory_reference"));
+        Ok(())
+    })
+}
+
+#[test]
+fn final_use_guard_runs_after_policy_admission_and_before_http_dispatch() -> Result<()> {
+    run_http_policy_test(async {
+        let server = start_mock_server().await;
+        let policy = ProviderPolicyState::new(true, TestDecision::Allow);
+        policy.terminal_release.add_permits(4);
+        let calls = Arc::new(AtomicUsize::new(0));
+        let guard_calls = Arc::new(AtomicUsize::new(0));
+        let input = Arc::new(GuardedEphemeralInput {
+            calls: Arc::clone(&calls),
+            guard_calls: Arc::clone(&guard_calls),
+            policy: Arc::clone(&policy),
+        });
+        let mut builder = ExtensionRegistryBuilder::<Config>::new();
+        builder.model_provider_policy_contributor(test_provider_policy(Arc::clone(&policy)));
+        builder.ephemeral_model_input_contributor(input);
+        let test = test_codex()
+            .with_extensions(Arc::new(builder.build()))
+            .build(&server)
+            .await?;
+
+        test.submit_turn("final-use guard must fence transport")
+            .await?;
+
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(guard_calls.load(Ordering::SeqCst), 1);
+        assert_eq!(policy.begin_count.load(Ordering::SeqCst), 1);
+        assert_eq!(policy.terminal_count.load(Ordering::SeqCst), 1);
+        assert!(
+            server
+                .received_requests()
+                .await
+                .unwrap_or_default()
+                .is_empty(),
+            "rejected final-use guard must prevent physical provider dispatch"
+        );
         Ok(())
     })
 }

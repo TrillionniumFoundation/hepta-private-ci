@@ -92,24 +92,66 @@ REQUIRED_FILES = [
     "docs/hnmf/MIGRATION.md",
     "docs/hnmf/HNMF.json",
     "docs/hnmf/GAPS.json",
+    "docs/contracts/CONTRACTS.json",
+    "docs/contracts/PROTOCOL_SCHEMAS.json",
+    "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
+    "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+    "codex-rs/hepta-cognitive-types/src/wire.rs",
+    "codex-rs/hepta-cognitive-types/src/contract_tests.rs",
+    "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
+    "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs",
+    "qualification/cognitive-types-v1/verify_vectors.py",
     "qualification/hnmf-reference/Cargo.toml",
     "qualification/hnmf-reference/Cargo.lock",
     "qualification/hnmf-reference/README.md",
     "qualification/hnmf-reference/src/lib.rs",
+    "qualification/hnmf-contract-reference/Cargo.toml",
+    "qualification/hnmf-contract-reference/README.md",
+    "qualification/hnmf-contract-reference/src/lib.rs",
     ".github/workflows/hnmf-qualification.yml",
 ]
 
-RUST_TOKENS = [
-    "pub enum ModalityKind",
-    "pub enum EngramPopulation",
-    "pub struct MemoryEvent",
-    "pub struct EngramNode",
-    "pub struct Synapse",
-    "pub struct RecallPacket",
-    "pub struct OutcomeSignal",
-    "pub struct PlasticityBatch",
-    "pub enum TopologyOperation",
-    "pub struct ForgetBatch",
+CANONICAL_RUST_TOKENS = [
+    "pub struct ModalitySpanRefV1",
+    "pub struct MemoryEventV1",
+    "pub struct CrossModalBindingV1",
+    "pub struct EngramNodeV1",
+    "pub struct SynapseV1",
+    "pub struct MemoryCueV1",
+    "pub struct RecallPacketV1",
+    "pub struct OutcomeSignalV1",
+    "pub struct ReplaySelectionReceiptV1",
+    "pub struct PlasticityBatchV1",
+    "pub struct TopologyProposalV1",
+    "pub struct ForgetPropagationReceiptV1",
+    "pub fn encode_wire_v1",
+    "pub fn decode_wire_v1",
+    "pub fn canonical_contract_digest_v1",
+    "pub fn validate_cross_modal_binding_against_event_v1",
+    "pub valid_from_unix_ms: u64",
+    "pub eligibility_ppm: i32",
+    "pub const Q16_ONE: i32 = 65_536",
+    "abstaining recall contains selected events",
+    "selectedEvent.revision",
+    "weight proposal delta",
+    "threshold proposal delta",
+]
+
+REFERENCE_RUST_TOKENS = [
+    "ModalityKindV1 as ReferenceModalityKind",
+    "EngramPopulationV1 as ReferenceEngramPopulation",
+    "PrivacyClassV1 as ReferencePrivacyClass",
+    "SynapseRelationV1 as ReferenceSynapseRelation",
+    "pub fn from_canonical",
+    "pub struct ReferenceEventFeatures",
+    "pub struct ReferenceEngramState",
+    "pub struct ReferenceSynapseState",
+    "pub struct ReferenceRecallState",
+    "pub struct ReferenceOutcomeFeatures",
+    "pub struct ReferencePlasticityProposalSet",
+    "pub enum ReferenceTopologyOperation",
+    "pub struct ReferenceForgetPlan",
     "pub fn recall",
     "pub fn propose_plasticity",
     "pub fn apply_plasticity",
@@ -121,6 +163,56 @@ RUST_TOKENS = [
     "ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false",
     "PRODUCTION_AUTHORITY: bool = false",
     "EXTERNAL_EFFECTS_ALLOWED: bool = false",
+]
+
+FORBIDDEN_REFERENCE_CONTRACT_TOKENS = [
+    "pub enum ReferenceModalityKind",
+    "pub enum ReferenceEngramPopulation",
+    "pub enum ReferenceSynapseRelation",
+    "pub enum ReferencePrivacyClass",
+    "pub enum ModalityKind",
+    "pub enum EngramPopulation",
+    "pub enum SynapseRelation",
+    "pub struct MemoryEvent",
+    "pub struct EngramNode",
+    "pub struct Synapse",
+    "pub struct MemoryCue",
+    "pub struct RecallPacket",
+    "pub struct OutcomeSignal",
+    "pub struct PlasticityBatch",
+    "pub enum TopologyOperation",
+    "pub struct ForgetBatch",
+]
+
+EXPECTED_PORT_TARGETS = {
+    "ModulePort::cognitive.types::cognitive.read": "cognitive.read",
+    "ModulePort::cognitive.types::cognitive.store": "cognitive.store",
+    "ModulePort::cognitive.types::knowledge.graph": "knowledge.graph",
+    "ModulePort::cognitive.types::learning.ledger": "learning.ledger",
+}
+
+EXPECTED_LOCAL_PORT_TYPES = {
+    "ModulePort::cognitive.types::cognitive.store": [
+        "MemoryAdmissionCandidateV1",
+        "MemoryWriteIntentV1",
+        "MemoryWriteReceiptV1",
+    ],
+}
+
+EXPECTED_REGISTERED_CONSUMER_TARGETS = [
+    "cognitive.read",
+    "cognitive.store",
+    "memory.retrieval",
+    "compact.engine",
+    "intelligence.control",
+]
+
+EXPECTED_LEGACY_CONSUMER_SURFACES = [
+    "cognitive.read: MemoryRecord/CognitiveSnapshot compatibility surface",
+    "cognitive.store: MemoryRecord and Lane C local write contracts",
+    "memory.retrieval: generation_bound::RecallPacketV1 compatibility contract",
+    "compact.engine: MemoryRecord and Lane C compaction surface",
+    "intelligence.control: CognitiveSnapshot compatibility surface",
 ]
 
 RUST_TESTS = [
@@ -186,6 +278,11 @@ def verify() -> int:
 
     spec = load_json("docs/hnmf/HNMF.json")
     gaps = load_json("docs/hnmf/GAPS.json")
+    contracts = load_json("docs/contracts/CONTRACTS.json")
+    protocol_schemas = load_json("docs/contracts/PROTOCOL_SCHEMAS.json")
+    implementation_map = load_json(
+        "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
+    )
 
     need(spec.get("schema") == "hepta.hnmf.qualification.v1", "spec schema")
     need(has_schema_version(spec, 1), "spec schema version")
@@ -204,6 +301,103 @@ def verify() -> int:
         [item.get("id") for item in spec.get("protocols", [])] == PROTOCOLS,
         "protocol closure",
     )
+    canonical_protocols = {
+        item.get("id"): item for item in protocol_schemas.get("protocols", [])
+    }
+    contract_rows = {item.get("id"): item for item in contracts.get("contracts", [])}
+    need(
+        implementation_map.get("module") == "cognitive.types",
+        "cognitive.types implementation-map identity",
+    )
+    need(
+        implementation_map.get("canonicalTypeSource")
+        == "codex-rs/hepta-cognitive-types",
+        "canonical cognitive type source",
+    )
+    need(
+        implementation_map.get("sourceBaseSemantics")
+        == "legacy_registry_baseline_only_not_exact_head_evidence"
+        and implementation_map.get("exactCandidateIdentitySource")
+        == "exact_head_and_synthetic_merge_ci_receipts",
+        "implementation-map source identity semantics",
+    )
+    need(
+        implementation_map.get("nativeConsumerState")
+        == "registry_bound_shadow_migration",
+        "consumer state must not overclaim native convergence",
+    )
+    need(
+        implementation_map.get("registeredConsumerTargets")
+        == EXPECTED_REGISTERED_CONSUMER_TARGETS,
+        "registered consumer target closure",
+    )
+    need(
+        implementation_map.get("legacyConsumerSurfacesPresent")
+        == EXPECTED_LEGACY_CONSUMER_SURFACES,
+        "legacy consumer surface inventory",
+    )
+    need(
+        implementation_map.get("canonicalConsumerConvergenceProved") is False
+        and implementation_map.get("authenticatedProductCompositionState")
+        == "not_composed"
+        and implementation_map.get("productionImplementation") is False,
+        "consumer/product claim boundary",
+    )
+    port_bindings = implementation_map.get("portSchemaBindings")
+    need(
+        isinstance(port_bindings, dict)
+        and set(port_bindings) == set(EXPECTED_PORT_TARGETS),
+        "cognitive.types port schema binding closure",
+    )
+    canonical_protocol_ids = {
+        item.get("id") for item in protocol_schemas.get("protocols", [])
+    }
+    for port_id, target in EXPECTED_PORT_TARGETS.items():
+        expected = sorted(
+            row["id"]
+            for row in contracts.get("contracts", [])
+            if row.get("kind") == "typed_protocol"
+            and row.get("producer") == "cognitive.types"
+            and target in row.get("consumers", [])
+        )
+        actual = sorted(port_bindings.get(port_id, []))
+        need(actual == expected, port_id + " exact schema projection")
+        need(
+            set(actual) <= canonical_protocol_ids,
+            port_id + " registered schema closure",
+        )
+    need(
+        implementation_map.get("portLocalTypeBindings") == EXPECTED_LOCAL_PORT_TYPES,
+        "cognitive.types typed-local port binding closure",
+    )
+    for item in spec["protocols"]:
+        protocol_id = item["id"]
+        canonical = canonical_protocols.get(protocol_id)
+        need(canonical is not None, protocol_id + " global protocol registration")
+        required_fields = [
+            field["name"]
+            for field in canonical.get("fields", [])
+            if field.get("required")
+        ]
+        need(
+            item.get("maximumEncodedBytes") == canonical.get("maximumEncodedBytes"),
+            protocol_id + " encoded-byte bound projection",
+        )
+        need(
+            item.get("requiredFields") == required_fields,
+            protocol_id + " required-field projection",
+        )
+        contract = contract_rows.get(protocol_id)
+        need(contract is not None, protocol_id + " typed-contract registration")
+        expected_producer = (
+            "learning.plasticity"
+            if protocol_id == "TopologyProposalV1"
+            else "cognitive.types"
+        )
+        need(
+            contract.get("producer") == expected_producer,
+            protocol_id + " canonical producer",
+        )
     need(
         [item.get("id") for item in spec.get("workPackages", [])] == WORK_PACKAGES,
         "work-package closure",
@@ -306,13 +500,54 @@ def verify() -> int:
     for phase in ["M0", "M1", "M2", "M3", "M4", "M5"]:
         need(f"Phase {phase}" in migration, f"migration phase {phase}")
 
+    canonical_rust = "\n".join(
+        (ROOT / path).read_text(encoding="utf-8")
+        for path in [
+            "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+            "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+            "codex-rs/hepta-cognitive-types/src/wire.rs",
+        ]
+    )
+    for token in CANONICAL_RUST_TOKENS:
+        need(token in canonical_rust, f"canonical cognitive contract token {token}")
+
+    fuzz_source = (
+        ROOT / "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
+    ).read_text(encoding="utf-8")
+    for protocol_id in PROTOCOLS:
+        need(
+            f"decode_wire_v1::<{protocol_id}>" in fuzz_source,
+            protocol_id + " fuzz decoder coverage",
+        )
+
     rust_path = "qualification/hnmf-reference/src/lib.rs"
     rust = (ROOT / rust_path).read_text(encoding="utf-8")
-    need(len(rust.encode("utf-8")) >= 35_000, "reference runtime too small")
-    for token in RUST_TOKENS + RUST_TESTS:
-        need(token in rust, f"reference token {token}")
+    need(len(rust.encode("utf-8")) >= 25_000, "algorithm reference runtime too small")
+    for token in REFERENCE_RUST_TOKENS + RUST_TESTS:
+        need(token in rust, f"algorithm reference token {token}")
+    for token in FORBIDDEN_REFERENCE_CONTRACT_TOKENS:
+        need(token not in rust, f"reference redefines canonical contract token {token}")
+    need(
+        "canonical cognitive/memory contracts" in rust
+        and "codex-rs/hepta-cognitive-types" in rust,
+        "reference canonical owner declaration",
+    )
     need(
         "unsafe" not in rust.replace("#![forbid(unsafe_code)]", ""), "unsafe code token"
+    )
+
+    contract_reference = (
+        ROOT / "qualification/hnmf-contract-reference/src/lib.rs"
+    ).read_text(encoding="utf-8")
+    for token in FORBIDDEN_REFERENCE_CONTRACT_TOKENS:
+        need(
+            token not in contract_reference,
+            f"contract reference redefines canonical contract token {token}",
+        )
+    need(
+        "CANONICAL_CRATE_PATH" in contract_reference
+        and "PRODUCTION_AUTHORITY: bool = false" in contract_reference,
+        "contract reference ownership shim",
     )
 
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
@@ -323,6 +558,12 @@ def verify() -> int:
         "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
         "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
         "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
+        "python3 qualification/cognitive-types-v1/verify_vectors.py",
+        "cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check",
+        "cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets",
+        "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings",
+        "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types",
+        "cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets",
     ]:
         need(command in workflow, f"workflow command {command}")
 

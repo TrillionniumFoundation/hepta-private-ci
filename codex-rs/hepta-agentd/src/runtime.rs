@@ -1,8 +1,6 @@
 use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
@@ -10,9 +8,8 @@ use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_arg0::Arg0DispatchPaths;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_memory::CognitiveRuntime;
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::FederatedRecallSet;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::task::JoinHandle;
 use tokio::time::timeout;
@@ -23,6 +20,7 @@ use crate::AgentdControlServer;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
+use crate::CognitiveRetrievalMode;
 use crate::app_runtime::run_app_server;
 use crate::automation::run_automation_scheduler;
 
@@ -58,6 +56,17 @@ pub async fn run(
         .automation_effect_host_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let mut production_writer_host = config.production_writer_host();
+    if production_operations.is_some() && production_writer_host.is_none() {
+        return Err(AgentdError::Invalid(
+            "production operations require an independently recovered production writer host"
+                .to_string(),
+        ));
+    }
+    let retrieval_mode = config.cognitive_retrieval_mode();
+    let retrieval_context = config.cognitive_retrieval_context();
+    let retrieval_learning = config.cognitive_retrieval_learning();
+    require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -77,6 +86,19 @@ pub async fn run(
             .cognitive_ranker
             .set(ranker)
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
+    }
+    if let Some(current) = retrieval_context {
+        state
+            .cognitive_retrieval_context
+            .set(current)
+            .map_err(|_| {
+                AgentdError::Invalid("cognitive retrieval context already attached".to_string())
+            })?;
+    }
+    if let Some(sink) = retrieval_learning {
+        state.cognitive_retrieval_learning.set(sink).map_err(|_| {
+            AgentdError::Invalid("cognitive retrieval learning sink already attached".to_string())
+        })?;
     }
     if let Some(path) = trust_file {
         state.refresh_generation()?;
@@ -101,11 +123,21 @@ pub async fn run(
             "kernel evidence recovery frontier requires --evidence-trust-file".to_string(),
         ));
     }
-    let cognitive_layout = identity.layout.clone();
-    let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
-        CognitiveStore::open(&cognitive_layout).await
-    })
-    .await?;
+    let cognitive_runtime = match production_writer_host.as_ref() {
+        Some(host) => {
+            state.refresh_generation()?;
+            let runtime = host.cognitive_runtime();
+            state.refresh_generation()?;
+            runtime
+        }
+        None => {
+            let cognitive_layout = identity.layout.clone();
+            open_cognitive_runtime_after_generation_fence(&state, || async move {
+                CognitiveStore::open(&cognitive_layout).await
+            })
+            .await?
+        }
+    };
     // The writer-enabled qualification binary must never start in a
     // degraded CognitiveRuntime state.  The default/production binary keeps
     // the existing availability-tolerant behavior; only the explicit
@@ -116,17 +148,14 @@ pub async fn run(
     }
     let production_operations = match production_operations {
         Some(operations) => {
-            let store = cognitive_runtime.available_store().ok_or_else(|| {
+            let recovered_host = production_writer_host.as_ref().ok_or_else(|| {
                 AgentdError::Protocol(
-                    "production operations require an available CognitiveStore".to_string(),
+                    "production operations require the recovered writer owner".to_string(),
                 )
             })?;
-            let (host, interval) = crate::AgentdProductionOperationRuntimeConfig::open(
-                operations,
-                store.as_ref().clone(),
-            )
-            .await?;
+            let (host, interval) = operations.attach(Arc::clone(recovered_host)).await?;
             state.attach_production_operations(Arc::clone(&host))?;
+            production_writer_host = Some(Arc::clone(&host));
             Some((host, interval))
         }
         None => None,
@@ -180,6 +209,7 @@ pub async fn run(
         arg0_paths,
         cognitive_runtime,
         Arc::clone(&state),
+        production_writer_host,
     ));
     let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
     let automation_cancellation = cancellation.clone();
@@ -252,18 +282,36 @@ pub async fn run(
     outcome
 }
 
-#[cfg(feature = "qualification-cognitive-write")]
+fn require_cognitive_retrieval_context_for_mode(
+    mode: CognitiveRetrievalMode,
+    configured: bool,
+) -> Result<(), AgentdError> {
+    match (mode, configured) {
+        (CognitiveRetrievalMode::Compatibility, false)
+        | (CognitiveRetrievalMode::HnmfRequired, true) => Ok(()),
+        (CognitiveRetrievalMode::Compatibility, true) => Err(AgentdError::Invalid(
+            "compatibility retrieval profile forbids an HNMF current context; select HnmfRequired explicitly"
+                .to_string(),
+        )),
+        (CognitiveRetrievalMode::HnmfRequired, false) => Err(AgentdError::Invalid(
+            "HNMF-required retrieval profile requires a current authenticated retrieval context"
+                .to_string(),
+        )),
+    }
+}
+
+#[cfg(feature = "production-cognitive-write")]
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
     if runtime.available_store().is_some() {
         Ok(runtime)
     } else {
-        Err(AgentdError::QualificationCognitiveRuntimeUnavailable)
+        Err(AgentdError::CognitiveWriteRuntimeUnavailable)
     }
 }
 
-#[cfg(not(feature = "qualification-cognitive-write"))]
+#[cfg(not(feature = "production-cognitive-write"))]
 fn require_cognitive_runtime_for_profile(
     runtime: CognitiveRuntime,
 ) -> Result<CognitiveRuntime, AgentdError> {
@@ -297,18 +345,11 @@ async fn attach_federation_after_generation_fence(
         return Ok(runtime);
     }
     state.refresh_generation()?;
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|error| AgentdError::Protocol(error.to_string()))?
-        .as_secs();
-    let now = i64::try_from(now)
-        .map_err(|_| AgentdError::Protocol("system clock overflow".to_string()))?;
-    let federation =
-        FederatedRecallSet::discover(state.identity().agent_id.clone(), owner_layouts, now).await;
-    // Discovery reads other owner stores and can outlive a lifecycle update.
-    // Fence once more before the read-only set reaches App Server.
+    let runtime = runtime.with_federation_sources(state.identity().agent_id.clone(), owner_layouts);
+    // Physical federation reads rediscover current grants. Fence the fleet
+    // generation on both sides of composition without freezing a reader set.
     state.refresh_generation()?;
-    Ok(runtime.with_federation(federation))
+    Ok(runtime)
 }
 
 async fn open_cognitive_runtime_after_generation_fence<Open, OpenFuture>(

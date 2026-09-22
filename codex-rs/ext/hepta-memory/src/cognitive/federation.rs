@@ -6,6 +6,7 @@ use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION;
 use codex_extension_api::EphemeralModelInputContext;
 use codex_extension_api::EphemeralModelInputContributor;
+use codex_extension_api::EphemeralModelInputFinalUseGuard;
 use codex_extension_api::EphemeralModelInputProposal;
 use codex_extension_api::EphemeralModelInputSource;
 use codex_extension_api::ExtensionData;
@@ -19,9 +20,11 @@ use codex_extension_api::TurnInputContext;
 use codex_extension_api::TurnInputContributor;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_memory::CognitiveRuntime;
+use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_memory::FederatedCoverageV2;
 use codex_hepta_memory::FederatedMemoryExplanation;
 use codex_hepta_memory::FederatedMemoryRevalidationBinding;
-use codex_hepta_memory::FederatedRecallSet;
 use codex_hepta_memory::FederatedRetrievalBatch;
 use codex_hepta_memory::FederatedRevalidationStatus;
 use codex_hepta_memory::FederationConsumerAccess;
@@ -35,6 +38,7 @@ use serde_json::json;
 use super::CognitiveExtension;
 use super::CognitiveProposalMaterial;
 use super::capture_directive;
+use super::chain_final_use_guards;
 use super::now_unix_seconds;
 use super::secret_like;
 use crate::extension::HeptaMemoryThreadState;
@@ -44,9 +48,49 @@ use crate::framing::workspace_digest;
 
 const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
 const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
-const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 1;
+const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTO_CITATIONS_PER_MEMORY: usize = 8;
 const MAX_COMBINED_CITATIONS_PER_MEMORY: usize = 1;
+
+#[derive(Clone, Default, Serialize)]
+struct FederatedAttachmentFailureCoverage {
+    discovery_unavailable: u32,
+    deadline_or_cancelled: u32,
+    authority_rejected: u32,
+    integrity_rejected: u32,
+    transport_unavailable: u32,
+}
+
+#[derive(Clone, Default, Serialize)]
+struct FederatedAttachmentCoverage {
+    requested_peers: u32,
+    completed_peers: u32,
+    failed_peers: u32,
+    truncated_peers: u32,
+    omitted_peer_candidates: u32,
+    truncated_items: u32,
+    failures: FederatedAttachmentFailureCoverage,
+}
+
+impl From<&FederatedCoverageV2> for FederatedAttachmentCoverage {
+    fn from(coverage: &FederatedCoverageV2) -> Self {
+        Self {
+            requested_peers: coverage.requested_peers,
+            completed_peers: coverage.completed_peers,
+            failed_peers: coverage.failed_peers,
+            truncated_peers: coverage.truncated_peers,
+            omitted_peer_candidates: coverage.omitted_peer_candidates,
+            truncated_items: coverage.truncated_items,
+            failures: FederatedAttachmentFailureCoverage {
+                discovery_unavailable: coverage.failures.discovery_unavailable,
+                deadline_or_cancelled: coverage.failures.deadline_or_cancelled,
+                authority_rejected: coverage.failures.authority_rejected,
+                integrity_rejected: coverage.failures.integrity_rejected,
+                transport_unavailable: coverage.failures.transport_unavailable,
+            },
+        }
+    }
+}
 
 #[derive(Clone)]
 struct PreparedFederatedAttachment {
@@ -54,19 +98,109 @@ struct PreparedFederatedAttachment {
     turn_id: String,
     workspace: std::path::PathBuf,
     query_sha256: Sha256Digest,
+    coverage: FederatedAttachmentCoverage,
     bindings: Vec<FederatedMemoryRevalidationBinding>,
     source_binding_sha256: Sha256Digest,
     content_sha256: Sha256Digest,
     claimed_token_count: u32,
 }
 
+struct FederatedFinalUseGuard {
+    runtime: CognitiveRuntime,
+    access: FederationConsumerAccess,
+    bindings: Vec<FederatedMemoryRevalidationBinding>,
+}
+
+impl EphemeralModelInputFinalUseGuard for FederatedFinalUseGuard {
+    fn revalidate(self: Box<Self>) -> ModelProviderPolicyFuture<'static, ()> {
+        Box::pin(async move {
+            let now = now_unix_seconds().ok_or_else(|| {
+                ModelProviderPolicyError::new(
+                    "federated_memory_final_use_clock_unavailable",
+                    "current wall clock is unavailable before provider dispatch",
+                )
+            })?;
+            let statuses = self
+                .runtime
+                .revalidate_product_federated_batch(&self.access, &self.bindings, now)
+                .await
+                .map_err(|error| {
+                    ModelProviderPolicyError::new(
+                        "federated_memory_final_use_unavailable",
+                        format!("final-use federation revalidation failed: {error}"),
+                    )
+                })?;
+            if statuses.len() != self.bindings.len()
+                || statuses
+                    .iter()
+                    .any(|status| !matches!(status, FederatedRevalidationStatus::Current(_)))
+            {
+                return Err(ModelProviderPolicyError::new(
+                    "federated_memory_final_use_stale",
+                    "federated memory changed or was revoked after request assembly",
+                ));
+            }
+            let final_use_now = now_unix_seconds().ok_or_else(|| {
+                ModelProviderPolicyError::new(
+                    "federated_memory_final_use_clock_unavailable",
+                    "current wall clock is unavailable after federation revalidation",
+                )
+            })?;
+            if statuses.iter().any(|status| match status {
+                FederatedRevalidationStatus::Current(explanation) => {
+                    !final_use_capability_window_current(
+                        now,
+                        final_use_now,
+                        explanation.capability.effective_at_unix_seconds(),
+                        explanation.capability.expires_at_unix_seconds(),
+                    )
+                }
+                FederatedRevalidationStatus::Stale(_) => true,
+            }) {
+                return Err(ModelProviderPolicyError::new(
+                    "federated_memory_final_use_stale",
+                    "federated memory capability expired or the clock regressed before provider dispatch",
+                ));
+            }
+            Ok(())
+        })
+    }
+}
+
 pub(crate) struct FederatedCognitiveExtension {
-    federation: Arc<FederatedRecallSet>,
+    runtime: CognitiveRuntime,
 }
 
 impl FederatedCognitiveExtension {
-    pub(crate) fn new(federation: Arc<FederatedRecallSet>) -> Self {
-        Self { federation }
+    pub(crate) fn from_runtime(runtime: CognitiveRuntime) -> Self {
+        Self { runtime }
+    }
+
+    fn consumer_agent_id(&self) -> Option<AgentId> {
+        self.runtime.federation_consumer_agent_id().cloned()
+    }
+
+    async fn retrieve(
+        &self,
+        access: &FederationConsumerAccess,
+        request: &RetrievalRequest,
+    ) -> Result<(FederatedRetrievalBatch, FederatedAttachmentCoverage), CognitiveStoreError> {
+        let (batch, coverage) = self
+            .runtime
+            .retrieve_product_federated(access, request)
+            .await?;
+        Ok((batch, FederatedAttachmentCoverage::from(&coverage)))
+    }
+
+    async fn revalidate_many(
+        &self,
+        access: &FederationConsumerAccess,
+        bindings: &[FederatedMemoryRevalidationBinding],
+        now_unix_seconds: i64,
+    ) -> Result<Vec<FederatedRevalidationStatus>, CognitiveStoreError> {
+        self.runtime
+            .revalidate_product_federated_batch(access, bindings, now_unix_seconds)
+            .await
     }
 
     fn has_prepared_attachment(
@@ -114,15 +248,16 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let now = now_unix_seconds()?;
-        let access = FederationConsumerAccess::new(
-            self.federation.consumer_agent_id().clone(),
-            workspace_digest(input.cwd),
-        );
+        let access =
+            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+        let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
+            return None;
+        };
+        if statuses.len() != prepared.bindings.len() {
+            return None;
+        }
         let mut explanations = Vec::with_capacity(prepared.bindings.len());
-        for binding in &prepared.bindings {
-            let Ok(status) = self.federation.revalidate(&access, binding, now).await else {
-                return None;
-            };
+        for status in statuses {
             let FederatedRevalidationStatus::Current(explanation) = status else {
                 return None;
             };
@@ -139,13 +274,14 @@ impl FederatedCognitiveExtension {
             }
             explanations.push(*explanation);
         }
-        let content = compile_explanations(&explanations)?;
+        let content = compile_explanations(&explanations, &prepared.coverage)?;
         let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
             input.cwd,
             &prepared.query_sha256,
+            &prepared.coverage,
             &prepared.bindings,
             &content_sha256,
         )?;
@@ -159,12 +295,18 @@ impl FederatedCognitiveExtension {
         {
             return None;
         }
+        let final_use_guard = Box::new(FederatedFinalUseGuard {
+            runtime: self.runtime.clone(),
+            access,
+            bindings: prepared.bindings.clone(),
+        });
         Some(CognitiveProposalMaterial {
             source: FEDERATED_COGNITIVE_SOURCE,
             source_binding_sha256,
             content_sha256,
             content,
             claimed_token_count,
+            final_use_guard: Some(final_use_guard),
         })
     }
 }
@@ -258,12 +400,14 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             let Some(now) = now_unix_seconds() else {
                 return Vec::new();
             };
+            let Some(consumer_agent_id) = self.consumer_agent_id() else {
+                return Vec::new();
+            };
             let access = FederationConsumerAccess::new(
-                self.federation.consumer_agent_id().clone(),
+                consumer_agent_id,
                 workspace_digest(workspace.as_path()),
             );
-            let Ok(batch) = self
-                .federation
+            let Ok((batch, coverage)) = self
                 .retrieve(&access, &RetrievalRequest::new(query, now))
                 .await
             else {
@@ -279,7 +423,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             let item_budget =
                 usize::try_from(thread_state.limits.max_item_tokens()).unwrap_or(usize::MAX);
             let Some((bindings, content)) =
-                compile_retrieval_batch(&batch, byte_budget, item_budget)
+                compile_retrieval_batch(&batch, byte_budget, item_budget, &coverage)
             else {
                 return Vec::new();
             };
@@ -289,6 +433,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 input.turn_id.as_str(),
                 workspace.as_path(),
                 &batch.query_sha256,
+                &coverage,
                 &bindings,
                 &content_sha256,
             ) else {
@@ -302,6 +447,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 turn_id: input.turn_id,
                 workspace,
                 query_sha256: batch.query_sha256,
+                coverage,
                 bindings,
                 source_binding_sha256,
                 content_sha256,
@@ -314,10 +460,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
 
 impl EphemeralModelInputContributor for FederatedCognitiveExtension {
     fn is_active(&self, thread_store: &ExtensionData, turn_store: &ExtensionData) -> bool {
-        thread_store
-            .get::<HeptaMemoryThreadState>()
-            .is_some_and(|state| state.attachment_proposal_enabled)
-            && turn_store.get::<PreparedFederatedAttachment>().is_some()
+        self.has_prepared_attachment(thread_store, turn_store)
     }
 
     fn contribute<'a>(
@@ -325,110 +468,10 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
         input: EphemeralModelInputContext<'a>,
     ) -> ModelProviderPolicyFuture<'a, Option<EphemeralModelInputProposal>> {
         Box::pin(async move {
-            // Federation is optional context. A revoked/expired/corrupt owner
-            // capability removes the whole proposal and never blocks the turn.
-            if input.schema_version != EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION
-                || input.request_kind != ModelProviderRequestKind::Turn
-                || !input.generate
-                || input.thread_id != input.thread_store.level_id()
-                || input.turn_id != input.turn_store.level_id()
-                || !input.cwd.is_absolute()
-            {
-                return Ok(None);
-            }
-            let Some(thread_state) = input.thread_store.get::<HeptaMemoryThreadState>() else {
-                return Ok(None);
-            };
-            if !thread_state.attachment_proposal_enabled {
-                return Ok(None);
-            }
-            let Some(prepared) = input.turn_store.get::<PreparedFederatedAttachment>() else {
-                return Ok(None);
-            };
-            if prepared.thread_id != input.thread_id
-                || prepared.turn_id != input.turn_id
-                || path_identity_bytes(prepared.workspace.as_path())
-                    != path_identity_bytes(input.cwd)
-            {
-                return Ok(None);
-            }
-            let Some(model_context_window) = input
-                .model_context_window
-                .and_then(|value| u64::try_from(value).ok())
-            else {
-                return Ok(None);
-            };
-            let context_budget = model_context_window
-                .saturating_mul(u64::from(thread_state.limits.max_context_window_ppm()))
-                / 1_000_000;
-            if u64::from(prepared.claimed_token_count) > context_budget {
-                return Ok(None);
-            }
-            let Some(now) = now_unix_seconds() else {
-                return Ok(None);
-            };
-            let access = FederationConsumerAccess::new(
-                self.federation.consumer_agent_id().clone(),
-                workspace_digest(input.cwd),
-            );
-            let mut explanations = Vec::with_capacity(prepared.bindings.len());
-            for binding in &prepared.bindings {
-                let Ok(status) = self.federation.revalidate(&access, binding, now).await else {
-                    return Ok(None);
-                };
-                let FederatedRevalidationStatus::Current(explanation) = status else {
-                    return Ok(None);
-                };
-                if explanation.explanation.memory.verification != MemoryVerification::Verified
-                    || explanation.explanation.memory.lifecycle != MemoryLifecycleState::Active
-                    || secret_like(explanation.explanation.memory.content.as_bytes())
-                    || explanation
-                        .explanation
-                        .citations
-                        .iter()
-                        .any(|citation| secret_like(&citation.content))
-                {
-                    return Ok(None);
-                }
-                explanations.push(*explanation);
-            }
-            let Some(content) = compile_explanations(&explanations) else {
-                return Ok(None);
-            };
-            let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
-            let Some(source_binding_sha256) = federation_source_binding(
-                input.thread_id,
-                input.turn_id,
-                input.cwd,
-                &prepared.query_sha256,
-                &prepared.bindings,
-                &content_sha256,
-            ) else {
-                return Ok(None);
-            };
-            let Ok(claimed_token_count) = u32::try_from(content.len()) else {
-                return Ok(None);
-            };
-            if source_binding_sha256 != prepared.source_binding_sha256
-                || content_sha256 != prepared.content_sha256
-                || claimed_token_count != prepared.claimed_token_count
-                || content.is_empty()
-                || content.len() > input.max_content_bytes as usize
-                || claimed_token_count > input.max_content_tokens
-            {
-                return Ok(None);
-            }
-            Ok(Some(EphemeralModelInputProposal::new(
-                EphemeralModelInputSource::parse(FEDERATED_COGNITIVE_SOURCE)?,
-                input.attempt_id,
-                input.base_logical_request_sha256.clone(),
-                input.thread_id,
-                input.turn_id,
-                api_digest(&source_binding_sha256)?,
-                api_digest(&content_sha256)?,
-                content,
-                claimed_token_count,
-            )?))
+            self.revalidate_prepared_attachment(&input)
+                .await
+                .map(|material| material.into_proposal(&input))
+                .transpose()
         })
     }
 }
@@ -437,6 +480,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
 struct FederatedAttachment<'a> {
     schema_version: u32,
     source: &'static str,
+    coverage: &'a FederatedAttachmentCoverage,
     memories: &'a [FederatedAttachmentMemory],
 }
 
@@ -471,8 +515,34 @@ fn combine_cognitive_materials(
     let local_memory = compact_local_memory(local_value.get("memories")?.as_array()?.first()?)?;
     let federated_memory =
         compact_federated_memory(federated_value.get("memories")?.as_array()?.first()?)?;
+    let federation_coverage = federated_value.get("coverage")?.as_object()?;
+    for field in [
+        "requested_peers",
+        "completed_peers",
+        "failed_peers",
+        "truncated_peers",
+        "omitted_peer_candidates",
+        "truncated_items",
+    ] {
+        if federation_coverage.get(field)?.as_u64().is_none() {
+            return None;
+        }
+    }
+    let failures = federation_coverage.get("failures")?.as_object()?;
+    for field in [
+        "discovery_unavailable",
+        "deadline_or_cancelled",
+        "authority_rejected",
+        "integrity_rejected",
+        "transport_unavailable",
+    ] {
+        if failures.get(field)?.as_u64().is_none() {
+            return None;
+        }
+    }
     let content = serde_json::to_string(&json!({
         "s": "verified_cognitive_v1",
+        "f": federated_value.get("coverage")?,
         "m": [local_memory, federated_memory],
     }))
     .ok()?;
@@ -504,12 +574,14 @@ fn combine_cognitive_materials(
             content_sha256.as_str().as_bytes(),
         ],
     );
+    let final_use_guard = chain_final_use_guards(local.final_use_guard, federated.final_use_guard);
     Some(CognitiveProposalMaterial {
         source: COMBINED_COGNITIVE_SOURCE,
         source_binding_sha256,
         content_sha256,
         content,
         claimed_token_count,
+        final_use_guard,
     })
 }
 
@@ -571,6 +643,7 @@ fn compile_retrieval_batch(
     batch: &FederatedRetrievalBatch,
     max_bytes: usize,
     max_item_bytes: usize,
+    coverage: &FederatedAttachmentCoverage,
 ) -> Option<(Vec<FederatedMemoryRevalidationBinding>, String)> {
     let max_bytes = max_bytes
         .min(EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES as usize)
@@ -593,7 +666,7 @@ fn compile_retrieval_batch(
         );
         let mut proposed = selected_memories.clone();
         proposed.push(record);
-        let Ok(content) = serialize_attachment(&proposed) else {
+        let Ok(content) = serialize_attachment(&proposed, coverage) else {
             continue;
         };
         if content.len() > max_bytes {
@@ -605,11 +678,14 @@ fn compile_retrieval_batch(
     if selected_bindings.is_empty() {
         return None;
     }
-    let content = serialize_attachment(&selected_memories).ok()?;
+    let content = serialize_attachment(&selected_memories, coverage).ok()?;
     Some((selected_bindings, content))
 }
 
-fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<String> {
+fn compile_explanations(
+    explanations: &[FederatedMemoryExplanation],
+    coverage: &FederatedAttachmentCoverage,
+) -> Option<String> {
     let memories = explanations
         .iter()
         .map(|explanation| {
@@ -635,6 +711,10 @@ fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<S
                         })
                         .collect(),
                     kg_projection_generation: explanation.explanation.kg_projection_generation,
+                    kg_projection_generation_sha256: explanation
+                        .explanation
+                        .kg_projection_generation_sha256
+                        .clone(),
                 },
             };
             attachment_record(
@@ -644,7 +724,7 @@ fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<S
             )
         })
         .collect::<Vec<_>>();
-    serialize_attachment(&memories).ok()
+    serialize_attachment(&memories, coverage).ok()
 }
 
 fn attachment_record(
@@ -678,10 +758,12 @@ fn attachment_record(
 
 fn serialize_attachment(
     memories: &[FederatedAttachmentMemory],
+    coverage: &FederatedAttachmentCoverage,
 ) -> Result<String, serde_json::Error> {
     serde_json::to_string(&FederatedAttachment {
         schema_version: FEDERATED_ATTACHMENT_SCHEMA_VERSION,
         source: "explicit_federated_verified_memory",
+        coverage,
         memories,
     })
 }
@@ -691,17 +773,20 @@ fn federation_source_binding(
     turn_id: &str,
     workspace: &Path,
     query_sha256: &Sha256Digest,
+    coverage: &FederatedAttachmentCoverage,
     bindings: &[FederatedMemoryRevalidationBinding],
     content_sha256: &Sha256Digest,
 ) -> Option<Sha256Digest> {
     let serialized = serde_json::to_vec(bindings).ok()?;
+    let serialized_coverage = serde_json::to_vec(coverage).ok()?;
     Some(digest_many(
-        b"hepta:cognitive:federated-ephemeral-source-binding:v1",
+        b"hepta:cognitive:federated-ephemeral-source-binding:v2",
         &[
             thread_id.as_bytes(),
             turn_id.as_bytes(),
             path_identity_bytes(workspace).as_slice(),
             query_sha256.as_str().as_bytes(),
+            serialized_coverage.as_slice(),
             serialized.as_slice(),
             content_sha256.as_str().as_bytes(),
         ],
@@ -712,6 +797,17 @@ fn api_digest(
     digest: &Sha256Digest,
 ) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
     ModelProviderSha256Digest::parse(digest.as_str())
+}
+
+fn final_use_capability_window_current(
+    revalidation_started_at: i64,
+    final_use_now: i64,
+    effective_at: i64,
+    expires_at: i64,
+) -> bool {
+    final_use_now >= revalidation_started_at
+        && effective_at <= final_use_now
+        && final_use_now < expires_at
 }
 
 #[cfg(test)]
@@ -730,10 +826,9 @@ mod tests {
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_memory::CognitiveAccess;
+    use codex_hepta_memory::CognitiveRuntime;
     use codex_hepta_memory::CognitiveScope;
     use codex_hepta_memory::CognitiveStore;
-    use codex_hepta_memory::FederatedMemoryReader;
-    use codex_hepta_memory::FederatedRecallSet;
     use codex_hepta_memory::FederationGrantRequest;
     use codex_hepta_memory::FederationGrantScope;
     use codex_hepta_memory::LedgerSourceKind;
@@ -750,6 +845,8 @@ mod tests {
     use super::FEDERATED_COGNITIVE_SOURCE;
     use super::FederatedCognitiveExtension;
     use super::combine_cognitive_materials;
+    use super::federation_source_binding;
+    use super::final_use_capability_window_current;
     use super::now_unix_seconds;
     use crate::cognitive::CognitiveProposalMaterial;
     use crate::extension::HeptaMemoryThreadState;
@@ -758,6 +855,58 @@ mod tests {
     const THREAD_ID: &str = "00000000-0000-4000-8000-000000000711";
     const OWNER_ID: &str = "00000000-0000-4000-8000-000000000712";
     const CONSUMER_ID: &str = "00000000-0000-4000-8000-000000000713";
+
+    #[test]
+    fn final_use_capability_window_rejects_expiry_and_clock_regression() {
+        assert!(final_use_capability_window_current(100, 100, 99, 101));
+        assert!(!final_use_capability_window_current(100, 101, 99, 101));
+        assert!(!final_use_capability_window_current(100, 99, 99, 101));
+        assert!(!final_use_capability_window_current(100, 100, 101, 102));
+    }
+
+    #[test]
+    fn federated_source_binding_changes_when_coverage_changes() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().canonicalize().expect("workspace");
+        let query_sha256 = Sha256Digest::for_bytes(b"same query");
+        let content_sha256 = Sha256Digest::for_bytes(b"same content");
+        let complete_coverage = FederatedAttachmentCoverage {
+            requested_peers: 1,
+            completed_peers: 1,
+            ..FederatedAttachmentCoverage::default()
+        };
+        let complete = federation_source_binding(
+            "thread",
+            "turn",
+            &workspace,
+            &query_sha256,
+            &complete_coverage,
+            &[],
+            &content_sha256,
+        )
+        .expect("complete binding");
+        let partial_coverage = FederatedAttachmentCoverage {
+            requested_peers: 2,
+            completed_peers: 1,
+            failed_peers: 1,
+            failures: FederatedAttachmentFailureCoverage {
+                transport_unavailable: 1,
+                ..FederatedAttachmentFailureCoverage::default()
+            },
+            ..FederatedAttachmentCoverage::default()
+        };
+        let partial = federation_source_binding(
+            "thread",
+            "turn",
+            &workspace,
+            &query_sha256,
+            &partial_coverage,
+            &[],
+            &content_sha256,
+        )
+        .expect("partial binding");
+        assert_ne!(complete, partial);
+    }
 
     #[test]
     fn combined_proposal_is_exact_bounded_and_owner_capability_sensitive() {
@@ -818,6 +967,18 @@ mod tests {
         );
         let payload =
             serde_json::from_str::<serde_json::Value>(&boundary.content).expect("combined payload");
+        assert_eq!(
+            payload["f"]["requested_peers"],
+            serde_json::json!(2),
+            "combined payload must preserve requested peer coverage",
+        );
+        assert_eq!(payload["f"]["completed_peers"], serde_json::json!(1));
+        assert_eq!(payload["f"]["failed_peers"], serde_json::json!(1));
+        assert_eq!(
+            payload["f"]["failures"]["transport_unavailable"],
+            serde_json::json!(1),
+            "combined payload must preserve typed failure coverage",
+        );
         let memories = payload["m"].as_array().expect("combined memories");
         assert_eq!(memories.len(), 2);
         assert_eq!(memories[0]["h"], "22".repeat(32));
@@ -895,8 +1056,23 @@ mod tests {
         padding: usize,
     ) -> CognitiveProposalMaterial {
         let content = serde_json::to_string(&serde_json::json!({
-            "schema_version": 1,
+            "schema_version": 2,
             "source": "explicit_federated_verified_memory",
+            "coverage": {
+                "requested_peers": 2,
+                "completed_peers": 1,
+                "failed_peers": 1,
+                "truncated_peers": 0,
+                "omitted_peer_candidates": 0,
+                "truncated_items": 0,
+                "failures": {
+                    "discovery_unavailable": 0,
+                    "deadline_or_cancelled": 0,
+                    "authority_rejected": 0,
+                    "integrity_rejected": 0,
+                    "transport_unavailable": 1
+                }
+            },
             "memories": [{
                 "source_agent_id": owner_agent_id,
                 "capability_id": capability_id,
@@ -940,9 +1116,13 @@ mod tests {
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");
         let owner_layout = fleet.agent(&owner_id);
+        let consumer_layout = fleet.agent(&consumer_id);
         let owner = CognitiveStore::open(&owner_layout)
             .await
             .expect("owner store");
+        let consumer = CognitiveStore::open(&consumer_layout)
+            .await
+            .expect("consumer store");
         let owner_access = CognitiveAccess::agent_private(owner_id.clone());
         let now = now_unix_seconds().expect("time");
         let citation = owner
@@ -994,12 +1174,9 @@ mod tests {
             )
             .await
             .expect("grant");
-        let readers = FederatedMemoryReader::discover(&owner_layout, &consumer_id, now)
-            .await
-            .expect("discover");
-        let extension = FederatedCognitiveExtension::new(std::sync::Arc::new(
-            FederatedRecallSet::new(consumer_id, readers).expect("recall set"),
-        ));
+        let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
+            .with_federation_sources(consumer_id.clone(), vec![owner_layout.clone()]);
+        let extension = FederatedCognitiveExtension::from_runtime(runtime);
         let session_store = ExtensionData::new("session-federation");
         let thread_store = ExtensionData::new(THREAD_ID);
         thread_store.insert(HeptaMemoryThreadState::for_cognitive_test(true));
@@ -1060,12 +1237,25 @@ mod tests {
         .expect("contributor")
         .expect("proposal before revoke");
         assert_eq!(first.source().as_str(), FEDERATED_COGNITIVE_SOURCE);
-        assert!(first.into_content().contains(OWNER_ID));
+        let (first_content, final_use_guard) = first.into_content_and_final_use_guard();
+        assert!(first_content.contains(OWNER_ID));
+        assert!(first_content.contains("\"requested_peers\":1"));
+        assert!(first_content.contains("\"completed_peers\":1"));
+        assert!(first_content.contains("\"failed_peers\":0"));
+        let final_use_guard = final_use_guard.expect("federated proposal final-use guard");
 
         owner
             .revoke_federated_recall(&owner_access, &capability, now)
             .await
             .expect("revoke");
+        let final_use_error = final_use_guard
+            .revalidate()
+            .await
+            .expect_err("revocation after assembly must fence provider dispatch");
+        assert_eq!(
+            final_use_error.reason_code(),
+            "federated_memory_final_use_stale"
+        );
         let next = EphemeralModelInputContributor::contribute(
             &extension,
             input("model-provider-attempt:v1:after-revoke"),

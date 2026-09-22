@@ -3476,13 +3476,17 @@ dependencies = [
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
  "codex-hepta-cognitive-read",
+ "codex-hepta-cognitive-store",
+ "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
  "codex-hepta-evidence",
  "codex-hepta-fleet",
  "codex-hepta-learning-artifacts",
+ "codex-hepta-learning-ledger",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
+ "codex-hepta-memory-retrieval",
  "codex-hepta-paths",
  "codex-hepta-supervisor",
  "codex-hepta-types",
@@ -3598,6 +3602,7 @@ name = "codex-hepta-cognitive-store"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
+ "codex-hepta-memory",
  "codex-hepta-types",
 ]
 
@@ -3606,6 +3611,8 @@ name = "codex-hepta-cognitive-types"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3722,6 +3729,7 @@ dependencies = [
  "codex-hepta-infer-core",
  "codex-hepta-types",
  "codex-utils-absolute-path",
+ "core_test_support",
  "serde_json",
  "sha2 0.10.9",
  "tokio",
@@ -3777,6 +3785,7 @@ dependencies = [
 name = "codex-hepta-kg"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-prompt-registry",
  "codex-hepta-types",
 ]
 
@@ -3793,6 +3802,7 @@ name = "codex-hepta-learning-ledger"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-intuition",
+ "codex-hepta-memory-retrieval",
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
@@ -3887,12 +3897,17 @@ dependencies = [
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
+ "codex-hepta-kg",
+ "codex-hepta-memory-federation",
+ "codex-hepta-memory-retrieval",
  "codex-hepta-operations",
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
  "ed25519-dalek",
+ "futures",
+ "libc",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -4024,6 +4039,8 @@ dependencies = [
 name = "codex-hepta-prompt-optimizer"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-kg",
+ "codex-hepta-prompt-registry",
  "codex-hepta-types",
 ]
 

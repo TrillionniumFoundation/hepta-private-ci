@@ -1052,40 +1052,55 @@
       "guide": "docs/modules/cognitive.store/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/cognitive.store.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "Current semantic component: hepta-cognitive-store::CognitiveStore::append/get/snapshot_records. Existing durable owner: hepta-memory::CognitiveStore and lane_c_snapshot/revalidation over cognitive_1.sqlite3. Target event/correction/tombstone contracts must bind this owner, not a replacement database.",
-      "stateAndEncoding": "Observed baseline CognitiveStore uses BTreeMap and caps live records at 16384; no persistent store is proved. Proposed SQLite profile defines frontier,event,current_record,revocation,mutation,publication_intent; it does not replace existing bytes silently.",
-      "linearizationAndRecovery": "BEGIN IMMEDIATE; verify current fence/frontier; preflight counters; append immutable revision; advance current reference; append mutation receipt then local publication intent; commit with WAL+FULL; acknowledge after committed frontier witness. Apply current deletion overlay before reads.",
-      "algorithmAndBounds": "Preserve 16384 live-ID cap until separately qualified; metadata<=256 KiB,batch<=256. Same identity/digest returns prior receipt; changed semantics require predecessor+revision CAS. Retention does not discard acknowledged anchors.",
-      "acceptanceOracle": "Two writers with same predecessor yield one success and one conflict. Reopen after commit retains event. Restoring a pre-forget snapshot overlays tombstone before reads. A tombstone alone is not model unlearning.",
+      "apiContract": "Canonical module fa\u00e7ade: hepta-cognitive-store::AdmittedCognitiveStoreV2 remains the semantic qualification model; durable product writes use the existing hepta-memory SQLite owner only through a live-verified ProductionDurableWriter that mints the sealed ProductionCognitiveMutationCapability. Agentd carries that capability through normal App Server composition without introducing a replacement database.",
+      "stateAndEncoding": "The semantic V1/V2 ledgers are bounded in-memory models. The physical authoritative owner is hepta-memory::CognitiveStore over cognitive_1.sqlite3. memory_ledger owns Memory/source/tombstone lineage; knowledge_fact_ledger is the memory-revision-bound authoritative fact-set subledger in kg_revision_fact_sets/entities/relations, committed with the owning Memory revision and never given an independent fact writer/head. WAL+FULL writer fencing, exact-cut recovery anchors and the active-generation pointer protect the physical owner.",
+      "linearizationAndRecovery": "BEGIN IMMEDIATE/CAS mutations remain single-owner. Production semantic mutation revalidates the retained external verifier immediately before the owner mutation. Writable recovery fences ordinary store handles, copies identity-bound database/WAL/journal descriptors into a private generation, checks exact current-cut equality, schema/integrity and production authority/fence, checkpoints, then publishes the active generation; post-rename publication uncertainty is Indeterminate. Ordinary open is not a production-writer recovery fallback.",
+      "algorithmAndBounds": "V2 accepts only Verified admission, reserves hard revision capacity for tombstones, bounds the intent journal and binds image receipts/frontiers to retained history. Semantic pages bind exact generation-vector+sequence. Durable pages keyset-page <=512 heads and reconstruct complete selected ancestry under 16384-revision/65536-citation page budgets while binding global deletion/source/fact/KG state.",
+      "acceptanceOracle": "Two writers with the same Memory predecessor yield one success and one conflict; correction publishes one complete successor fact set and forget publishes a tombstoned revision with an empty fact set. Reopen after commit retains the exact owner cut. Restoring a pre-forget valid backup is rejected by the independently retained cut. Revocation between writer open and a later semantic write prevents the owner cut from advancing. A tombstone alone is not model unlearning.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
       "nativeImplementation": {
         "entrypoints": [
           {
-            "path": "codex-rs/hepta-cognitive-store/src/lib.rs",
-            "symbol": "CognitiveStore"
+            "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
+            "symbol": "AdmittedCognitiveStoreV2"
           },
           {
-            "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
-            "symbol": "CognitiveStore"
+            "path": "codex-rs/hepta-cognitive-store/src/durable.rs",
+            "symbol": "DurableCognitiveStore"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+            "symbol": "open_with_recovery"
           },
           {
             "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-            "symbol": "lane_c_snapshot"
+            "symbol": "lane_c_snapshot_page"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+            "symbol": "AgentdProductionWriterHost"
           }
         ],
-        "stateAndRecovery": "hepta-cognitive-store V1/V2 are in-memory semantic components. The real durable owner remains hepta-memory::CognitiveStore and cognitive_1.sqlite3; lane_c_snapshot reads one authorized SQLite transaction and revalidation compares the exact cut, including corrections/tombstones.",
+        "stateAndRecovery": "The canonical cognitive-store fa\u00e7ade delegates durable ownership to the one existing hepta-memory SQLite owner. Descriptor-bound writable recovery, shared/exclusive open fencing, proof-bound durable paging, live final-use authority revalidation and a sealed semantic mutation capability are source-implemented. Normal Agentd/App Server composition can carry only the minted capability; independent currentness/authority inputs, standalone deployment bootstrap and activation remain external.",
         "testFiles": [
           "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
-          "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+          "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+          "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+          "codex-rs/state/src/sqlite_recovery_tests.rs",
+          "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs"
         ],
         "runtimeDocuments": [
-          "codex-rs/hepta-memory/LANE_C_SQLITE.md"
+          "codex-rs/hepta-memory/LANE_C_SQLITE.md",
+          "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+          ".github/workflows/hepta-consolidated-source.yml"
         ],
         "remainingWork": [
-          "Do not create another memory database. Descriptor-safe SQLite VFS/currentness prerequisites for open_with_recovery remain unimplemented; ordinary reopen/snapshot comparison does not satisfy that separate recovery admission.",
-          "Retain an authenticated current cut witness independently and implement bounded retention/paging without breaking ancestry or deletion frontiers."
+          "Retain and authenticate the latest exact current-cut witness outside the cognitive database and supply a current externally verified production authority lease/verifier; the standalone Agentd binary must not self-mint either.",
+          "Obtain exact-head and synthetic-merge execution receipts, the child-process crash/reopen receipt, 256/16384 PERF-DURABLE artifacts, independent semantic review and target-host qualification before raising productionImplementation or activation/acceptance.",
+          "Keep physical erasure, derived-artifact revocation and model unlearning separate from logical tombstones."
         ]
       }
     },
@@ -1100,37 +1115,51 @@
       ],
       "guide": "docs/modules/cognitive.read/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/cognitive.read.md",
-      "implementationState": "specified_not_product_evidence",
-      "apiContract": "acquire_snapshot(scope,frontiers,generations); read_ids(snapshot,ids,fields); revalidate(packet,currentRevocation). Export a read port, never a writer/SQL connection.",
-      "stateAndEncoding": "Ephemeral pins and scoped projection cache. Key includes purpose,source revision,tombstone frontier,KG/engram generation,encoder/preprocessor and requested fields.",
-      "linearizationAndRecovery": "Acquire coherent declared source cut; redact and apply current revocations; release pins on cancel/expiry. Revalidate at actual model-request assembly; individually valid reads from mixed cuts are not a coherent snapshot.",
-      "algorithmAndBounds": "IDs<=512,result<=1 MiB subject to context limit; lifetime<=request deadline; host-bounded pins/cache. Slow readers expire instead of retaining unbounded history.",
-      "acceptanceOracle": "Changing one source revision invalidates packet. Equal query from another principal cannot hit cache. Cancel releases pins. Partial projection generation returns unavailable rather than complete empty result.",
+      "implementationState": "source_implemented_product_composed_requires_candidate_evidence",
+      "apiContract": "Acquire one authorized SQLite cut through the durable owner; read_ids_v1(snapshot, ids<=512, fields) performs an all-or-error typed-local exact-ID projection. The composed response binds the actual selected-ID read receipt. Agentd final-use revalidation reacquires the current snapshot and verifies snapshot digest, exact selected read receipt, every selected ID/revision/content digest, and any configured PinnedCognitiveRanker current registry/model witness before model TurnStart. No writer or SQL handle is exported.",
+      "stateAndEncoding": "Stateless read module. No cache, pin registry, durable state, or background synchronizer is owned. ReadIdsRequestV1/ReadIdsResultV1 are typed-local ModulePort values; V2 canonical bytes remain module-native integrity evidence and are not a registered wire protocol.",
+      "linearizationAndRecovery": "The SQLite owner authorizes and materializes one coherent transaction cut. Retrieval candidates are validated by exact ID against that cut. The native worker syncs its durable dispatch intent before final-use validation; Agentd then reacquires the current owner snapshot and recomputes the exact selected-ID read receipt. A stale receipt, item, or ranker witness records a durable pre-TurnStart stop, so no provider terminality is fabricated and no stale context reaches TurnStart.",
+      "algorithmAndBounds": "Exact-ID request<=512; generic V2 envelope<=1 MiB; the composed Agentd/model context budget is one shared 8 KiB constant; current SQLite materialization remains bounded by the Lane C owner. Exact-ID lookup uses a canonical current-head map instead of candidate-by-prefix linear scans.",
+      "acceptanceOracle": "A requested ID beyond the legacy 1024 global prefix remains readable. A correction, tombstone, expiry, snapshot/read-receipt drift, content substitution, wrong principal, malformed digest or missing final-use revalidation capability prevents stale model attachment. Existing v2 CognitiveContext response shape remains wire-compatible.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
       "nativeImplementation": {
         "entrypoints": [
           {
-            "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
-            "symbol": "read_v2"
+            "path": "codex-rs/hepta-cognitive-read/src/ids.rs",
+            "symbol": "read_ids_v1"
           },
           {
             "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
             "symbol": "DurableCognitiveSnapshot"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "symbol": "revalidate"
           }
         ],
-        "stateAndRecovery": "read_v2 reuses V1 selection, adds request-bound canonical bytes, sorts citations and accounts for byte-limit omissions. DurableCognitiveSnapshot reads an owner-acquired SQLite cut; native bytes are not an admitted ModulePort/wire protocol.",
+        "stateAndRecovery": "The durable owner is hepta-memory::CognitiveStore/cognitive_1.sqlite3. cognitive.read owns no state. The current durable schema carries no memory-kind discriminator and therefore explicitly projects durable memory as Fact only. V2 canonical bytes are not an admitted cross-process format.",
         "testFiles": [
+          "codex-rs/hepta-cognitive-read/src/ids_tests.rs",
           "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
-          "codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs",
-          "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+          "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+          "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+          "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+          "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+          "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+          "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
         ],
         "runtimeDocuments": [
-          "codex-rs/hepta-memory/LANE_C_SQLITE.md"
+          "codex-rs/hepta-memory/LANE_C_SQLITE.md",
+          "docs/readiness/LANE_B_NATIVE_HOST.md"
         ],
         "remainingWork": [
-          "Before delivery revalidate exact fetched revision/digest and current host authority; the historical read cut does not lease future effects. Register cross-module formats through their existing owner."
+          "Obtain exact-head and deterministic synthetic-merge execution receipts for this candidate, including real worker tombstone/correction races, owner-cut validity-expiry/rollback evidence, and stale generation fencing.",
+          "Independent semantic review, target-host qualification, operator acceptance, promotion and release remain external evidence gates.",
+          "Episode/Preference/Procedure durable semantics require an explicit owner-schema migration before callers may claim those kinds."
         ]
       }
     },
@@ -1146,11 +1175,11 @@
       "guide": "docs/modules/memory.retrieval/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/memory.retrieval.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "compile_cue(objective,approvedContext,snapshot); retrieve(cue,channelBudgets); recall(candidateUnion,engram,policy). Log enumerated/truncated generator-relative candidates through ledger owner.",
-      "stateAndEncoding": "No fact writer. Recall/cache binds full snapshot,cue,retrieval/encoder profile,quotas,truncation and revocation. Source IDs/revisions and support remain resolvable.",
-      "linearizationAndRecovery": "Parallel channel results are canonicalized before assignment; stable exact-revision dedupe,source quotas and bounded truncation precede logged propensity. Current source revalidation precedes attachment.",
-      "algorithmAndBounds": "<=512 events,4096 nodes,32768 edges,4 settling steps,16 results,64 active units/population. Contradictory high-risk support abstains; similarity is not truth.",
-      "acceptanceOracle": "Permute channel completion order: identical candidate digest. Revoke top-ranked source before delivery: it cannot attach. Equal-budget lexical/no-recurrence/no-inhibition baselines retain independent outcome labels.",
+      "apiContract": "compile_cue(objective,approvedContext,request,snapshot); owner generators emit authenticated bounded RetrievalGeneratorBatchV1 values; build_candidate_union_from_generated(cue,policy,input); recall_generated_with_engram(cue,policy,input,engram,dynamics); observe_retrieval_assignment(...) records enumerated/legal/selected evidence. Agentd product composition enters only through hepta-memory::execute_owner_observation.",
+      "stateAndEncoding": "No source-fact writer. The SQLite owner observation binds exact memory/source revision, per-channel rank and completeness before legacy top-four truncation; HNMF inputs bind the Lane C generation vector, cue/profile, retrieval policy, generator owner/generation, engram generation and dynamics policy. learning.ledger separately owns durable assignment and final-delivery evidence.",
+      "linearizationAndRecovery": "Acquire one coherent Lane C cut; observe the complete bounded SQLite-owner candidate set before top-k; adapt only owner-observed ranks/support into generator batches; canonicalize and recall; optionally rerank only the HNMF-admitted set; batch-revalidate exact selected revisions/sources before materializing content; revalidate cut/current retrieval context/ranker before publication. HnmfRequired never falls back to Compatibility.",
+      "algorithmAndBounds": "Product HNMF admits at most 512 generator candidate events, 4096 engram nodes, 32768 synapses, four settling steps, 64 active units per population and 16 returned events. Sparse competition, recurrent association, contradiction-aware abstention and explicit OOD/coverage gates are deterministic; similarity never establishes source truth.",
+      "acceptanceOracle": "Channel/generator completion permutations yield one canonical union/recall. A candidate below legacy top-four can win before final truncation. Missing positive-weight generator owners, cross-generation rebinding, stale/revoked final support, recomputed malformed receipts and HnmfRequired-without-current-context fail closed. RET-04 plain/lexical-only/no-recurrence/no-inhibition fixtures remain independently observable.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -1161,26 +1190,45 @@
             "symbol": "retrieve_v2"
           },
           {
-            "path": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-            "symbol": "build_candidate_union"
+            "path": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+            "symbol": "compile_cue"
           },
           {
-            "path": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-            "symbol": "recall"
+            "path": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+            "symbol": "build_candidate_union_from_generated"
+          },
+          {
+            "path": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+            "symbol": "recall_generated_with_engram"
+          },
+          {
+            "path": "codex-rs/hepta-memory-retrieval/src/engram.rs",
+            "symbol": "settle_engram"
+          },
+          {
+            "path": "codex-rs/hepta-memory-retrieval/src/decision.rs",
+            "symbol": "observe_retrieval_assignment"
           }
         ],
-        "stateAndRecovery": "Native receipts bind the supplied candidate set, including omitted candidates, and retain explicit channel/score/generation data. Ranking is stateless; existing hepta-memory SQLite retrieval remains the physical content/index owner.",
+        "stateAndRecovery": "The retrieval/HNMF core is stateless and deny-all authority. hepta-memory::CognitiveStore remains the durable SQLite content/index and owner-observation boundary; only its sealed adapter derives product generator evidence. Agentd exposes explicit Compatibility versus HnmfRequired composition, and learning.ledger owns durable enumerated/legal/selected/final-delivered assignment evidence.",
         "testFiles": [
           "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
           "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
-          "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+          "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+          "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
+          "codex-rs/hepta-memory-retrieval/src/decision_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+          "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs"
         ],
         "runtimeDocuments": [
           "codex-rs/hepta-memory/LANE_C_SQLITE.md",
-          "docs/readiness/LANE_B_NATIVE_HOST.md"
+          "docs/readiness/LANE_B_NATIVE_HOST.md",
+          "qualification/memory-retrieval/TARGET_HOST.md"
         ],
         "remainingWork": [
-          "Input completeness/freshness still needs the real generator and owner. Do not infer a complete HNMF/embedding execution pipeline from caller-supplied candidates or scores."
+          "Obtain green exact-head and ordered-parent synthetic-merge receipts for this candidate and preserve the explicit HnmfRequired fail-closed product profile.",
+          "The durable SQLite KG owner supplies typed causal/procedural/contradiction-support batches and generic graph excludes those reserved edges; Vector remains disabled until an authenticated current encoder/vector-index owner is composed and qualified.",
+          "Run named target-host SQLite/revalidation and 512-candidate/4096-node/32768-synapse/four-step measurements, then obtain independent semantic acceptance and real downstream outcome evidence before any activation or causal-uplift claim."
         ]
       }
     },
@@ -1197,10 +1245,10 @@
       "design": "qualification/module-execution-dossiers/detail/memory.federation.md",
       "implementationState": "specified_not_product_evidence",
       "apiContract": "query_peer(enrollment,scopedQuery,snapshotPolicy,lease); revalidate_remote(result,epoch); cancel_query(id). No peer enrollment,remote mutation or inherited credentials.",
-      "stateAndEncoding": "Remote evidence remains owned remotely; local cache stores peer/principal/query/frontier/expiry/deletion cutoff and bounded references. Consent comes from authority/fleet owners.",
-      "linearizationAndRecovery": "Validate enrolled peer and current read grant before send; verify returned producer/scope/frontier. Timeout returns partial coverage/unavailable, not valid empty evidence. Restore discards revoked cache.",
-      "algorithmAndBounds": "Peers<=16/request,total IDs<=512,explicit per-peer deadline and bounded read retry. Never widen query scope to compensate for missing coverage.",
-      "acceptanceOracle": "One unavailable peer produces a partial result with missing coverage. Wrong principal denies. A discovered peer receives no query/credential until enrolled. Remote deletion invalidates cached and restored results.",
+      "stateAndEncoding": "Remote evidence remains owned by the source owner. The canonical V2 engine is stateless across attempts and the current Agentd product composition adds no federation cache or retry queue; request-local captured candidates are released only after canonical V2 admission. Any future cache remains a non-authoritative projection bound to peer/principal/query/frontier/effective-expiry/deletion-revocation cutoff.",
+      "linearizationAndRecovery": "For one peer: validate query/lease; observe live Current authority; run exactly one interruptible read attempt; recompute and verify the query-bound ordered response digest; observe authority again after I/O; suppress revoked/stale evidence; clamp effective expiry; seal the result digest. The product orchestrator owns bounded multi-peer aggregation. At physical model-request assembly, bindings from the same owner/capability are batch-revalidated in one owner SQLite read snapshot under one total bounded deadline; different owners remain independent federation snapshots. No engine-owned retry or durable replay state exists.",
+      "algorithmAndBounds": "Canonical engine: exactly one requested peer per attempt, <=512 remote evidence items. Product orchestrator: <=16 admitted peers and the existing final retrieval bound under one 2-second total in-process recall horizon. The current source does not claim cross-host concurrency or latency qualification and never widens scope to compensate for missing coverage.",
+      "acceptanceOracle": "One unavailable peer contributes failed/partial aggregate coverage rather than valid-empty. Partial plus an empty item set remains partial. Reordering prefix-sensitive response items changes the response digest. Wrong principal/scope denies. Preflight revoke prevents dispatch; post-I/O revoke suppresses evidence. Legacy compatibility composition cannot downgrade an already-composed V2 product runtime. Remote deletion/revocation must invalidate any future cached/restored result.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -1211,19 +1259,26 @@
             "symbol": "execute_once"
           },
           {
-            "path": "codex-rs/hepta-memory-federation/src/v2.rs",
-            "symbol": "observe_cancellation"
+            "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+            "symbol": "retrieve_product_federated"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/runtime.rs",
+            "symbol": "build_cognitive_runtime"
           }
         ],
-        "stateAndRecovery": "FederatedQueryV2/LeaseV2 bind peer, principal, scope, purpose, generation, epoch, nonce and deadline; results distinguish completeness, validity and indeterminate transport. The module owns no peer registry, remote writer or retry queue.",
+        "stateAndRecovery": "Canonical V2 verifies exact query-bound remote response digests, observes live capability authority before and after one interruptible transport attempt, clamps evidence lifetime to response/lease/query/live-authority horizons, and preserves explicit product coverage. Agentd composes AvailableFederatedV2 over existing read-only CognitiveStore capability/reader surfaces; Memory-extension product registration requires the V2-only product APIs, which reject the legacy AvailableFederated variant. The module owns no peer registry, remote writer, retry queue or alternate memory store.",
         "testFiles": [
-          "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+          "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs"
         ],
         "runtimeDocuments": [
-          "docs/modules/memory.federation/TECHNICAL.md"
+          "docs/modules/memory.federation/TECHNICAL.md",
+          "docs/modules/memory.federation/V2_HARDENING.md"
         ],
         "remainingWork": [
-          "A product host must supply an enrolled authenticated FederationTransportV2, current peer/revocation observations and cancellation evidence; native test transports do not establish a deployed federation."
+          "Exact-current-head and deterministic merge-candidate execution must pass before productExecutionProved changes.",
+          "A cross-process or multi-host federation still requires an authenticated transport and coherent remote data-frontier qualification; the current product composition is the existing in-process/read-only owner-store path."
         ]
       }
     },

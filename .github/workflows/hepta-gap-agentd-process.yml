@@ -7,6 +7,10 @@ on:
   pull_request:
     paths:
       - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-cognitive-read/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-infer-worker-host/**
       - codex-rs/hepta-fleet/**
       - codex-rs/hepta-control-plane/**
       - codex-rs/hepta-automation/**
@@ -61,7 +65,15 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_workspace.py
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd --package codex-hepta-fleet --package codex-hepta-control-plane --package codex-hepta-automation -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agent-protocol \
+            --package codex-hepta-cognitive-read \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-fleet \
+            --package codex-hepta-control-plane \
+            --package codex-hepta-automation -- --check
 
       - name: Install repository test entry point
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -74,13 +86,17 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Exercise local fences, reconciliation and organ lifecycle
+      # Run the cognitive.read-owned closure chain before broader Agentd/fleet
+      # regressions so unrelated failures cannot mask the exact module evidence.
+      - name: Exercise cognitive exact-ID and final-use chain
         working-directory: codex-rs
-        run: just test --locked --lib -p codex-hepta-fleet -p codex-hepta-control-plane -p codex-hepta-agentd
-
-      - name: Exercise durable retirement and reconciliation
-        working-directory: codex-rs
-        run: just test --locked -p codex-hepta-automation --test retirement_recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-cognitive-read
+          cargo test --locked -p codex-hepta-agent-protocol
+          cargo test --locked -p codex-hepta-infer-core
+          cargo test --locked -p codex-hepta-infer-worker-host --lib
 
       - name: Execute local writer qualification
         working-directory: codex-rs
@@ -99,6 +115,14 @@ jobs:
           cargo test --locked -p codex-hepta-agentd \
             --features qualification-cognitive-write \
             --test cognitive_product_e2e -- --nocapture --test-threads=1
+
+      - name: Exercise local fences, reconciliation and organ lifecycle
+        working-directory: codex-rs
+        run: just test --locked --lib -p codex-hepta-fleet -p codex-hepta-control-plane -p codex-hepta-agentd
+
+      - name: Exercise durable retirement and reconciliation
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-automation --test retirement_recovery
 
       - name: Strict Agentd lint
         working-directory: codex-rs

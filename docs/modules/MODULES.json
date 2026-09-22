@@ -1159,7 +1159,8 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-cognitive-store"
+        "codex-rs/hepta-cognitive-store",
+        "codex-rs/hepta-memory"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-1-STORE",
@@ -1201,7 +1202,7 @@
       },
       "sourceStatus": "existing_bound",
       "source_root_present": true,
-      "production_implementation": false,
+      "production_implementation": true,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-cognitive-read"
       ],
