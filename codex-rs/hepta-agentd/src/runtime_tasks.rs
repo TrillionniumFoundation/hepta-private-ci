@@ -418,7 +418,16 @@ impl RuntimeTasks {
             }
             Err(error) if abort_requested && error.is_cancelled() => {
                 self.entries.remove(&id);
-                Ok(())
+                if retiring {
+                    // Stopping a task cannot complete an owner retirement.
+                    // Keep the failure latched without calling the owner or
+                    // publishing an acknowledgement for unresolved work.
+                    Err(AgentdError::Protocol(
+                        "service retirement aborted before owner acknowledgement".to_string(),
+                    ))
+                } else {
+                    Ok(())
+                }
             }
             completion => self.observe(completion),
         };
