@@ -104,7 +104,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
             "kernel.authority",
             "implementation",
         ): "final_use_and_authority_lease_owner",
-        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0010",
+        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0011",
         (
             "secrets.heptabao",
             "implementation",

@@ -19,6 +19,7 @@ pub(crate) struct AgentdState {
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
     pub(crate) production_operations:
         std::sync::OnceLock<Arc<crate::AgentdProductionWriterHost>>,
+    pub(crate) evidence: std::sync::OnceLock<Arc<crate::evidence_host::EvidenceHost>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -48,6 +49,7 @@ impl AgentdState {
         });
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
+            evidence: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
             production_operations: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {

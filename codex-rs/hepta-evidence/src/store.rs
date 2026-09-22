@@ -26,6 +26,7 @@ use crate::governance_store::verify_receipt;
 use crate::governance_validation::validate_decision;
 use crate::governance_validation::validate_receipt_binding;
 use crate::provider_effect_store::verify_provider_effect_rows;
+use crate::qualification::verify_qualification_evidence_rows;
 use crate::schema_validation::classify_migrate_error;
 use crate::schema_validation::classify_sqlx_error;
 use crate::schema_validation::verify_foreign_keys;
@@ -38,7 +39,7 @@ use crate::schema_validation::verify_schema_manifest;
 // The filename is the store-lineage boundary. Frozen vNext used lineage 1 with
 // a different meaning for migration 0004, so this migration set must never
 // open or extend that database.
-const EVIDENCE_DB_FILENAME: &str = "hepta_evidence_2.sqlite";
+use crate::recovery_frontier::EVIDENCE_DATABASE_LINEAGE;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -71,7 +72,7 @@ pub struct HeptaEvidenceStore {
 
 impl HeptaEvidenceStore {
     pub async fn open(sqlite: &SqliteConfig) -> Result<Self, EvidenceError> {
-        let path = sqlite.home().join(EVIDENCE_DB_FILENAME);
+        let path = sqlite.home().join(EVIDENCE_DATABASE_LINEAGE);
         let pool = sqlite
             .open_durable_evidence_pool(&path)
             .await
@@ -123,6 +124,13 @@ impl HeptaEvidenceStore {
 
     pub fn path(&self) -> &std::path::Path {
         &self.path
+    }
+
+    /// Close all SQLite connections so backup/restore tooling can take or
+    /// replace a transactionally quiescent image without relying on Drop
+    /// timing.
+    pub async fn close(self) {
+        self.pool.close().await;
     }
 
     pub async fn append_decision(
@@ -340,6 +348,7 @@ async fn verify_existing_store(pool: &SqlitePool) -> Result<(), EvidenceError> {
     verify_provider_host_bindings(pool).await?;
     verify_provider_ephemeral_input_projection(pool).await?;
     verify_provider_effect_rows(pool).await?;
+    verify_qualification_evidence_rows(pool).await?;
     verify_foreign_keys(pool).await
 }
 

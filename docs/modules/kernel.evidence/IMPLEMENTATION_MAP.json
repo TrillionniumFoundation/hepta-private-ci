@@ -17,17 +17,84 @@
     "codex-rs/hepta-evidence"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "agentd_composed_config_gated",
+  "productionWriterState": "agentd_authenticated_writer_established_config_gated",
   "operations": [
+    {
+      "operation": "append_receipt",
+      "nativeSymbol": "QualificationEvidenceStore::append_receipt",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "authenticated_evidence_append_only",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "query_claim",
+      "nativeSymbol": "QualificationEvidenceStore::query_claim",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "read_only",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "query_claim",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_chain",
+      "nativeSymbol": "QualificationEvidenceStore::verify_chain",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "read_only_verification",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_chain",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "recovery_snapshot",
+      "nativeSymbol": "HeptaEvidenceStore::recovery_snapshot",
+      "sourcePath": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
+      "state": "source_implemented_product_consumed",
+      "authority": "read_only_recovery_snapshot",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recovery_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "sourcePath": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+          "nativeSymbol": "verify_evidence_recovery_frontier",
+          "role": "product_restore_verifier"
+        }
+      ]
+    },
     {
       "operation": "append_provider_effect_intent",
       "nativeSymbol": "append_provider_effect_intent",
       "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_qualification_only",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-evidence/src/provider_effect_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "append_provider_effect_intent",
       "mappingClass": "owner_native",
@@ -37,28 +104,27 @@
       "operation": "reconcile_provider_effect_lookup",
       "nativeSymbol": "reconcile_provider_effect_lookup",
       "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_qualification_only",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-evidence/src/provider_effect_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "reconcile_provider_effect_lookup",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
-  "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent exact-candidate acceptance",
+    "external monotonic CAS/latest-frontier backend and backup publication ceremony",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,

@@ -13,6 +13,8 @@ mod provider_effect_store;
 mod provider_insert;
 mod provider_record;
 mod provider_store;
+mod qualification;
+mod recovery_frontier;
 mod schema_validation;
 mod store;
 mod summary;
@@ -47,6 +49,31 @@ pub use provider_effect_store::StoredProviderEffectUncertainty;
 pub use provider_store::StoredProviderAttemptEvidence;
 pub use provider_store::StoredProviderIntent;
 pub use provider_store::StoredProviderReceipt;
+pub use qualification::EvidenceCandidateV1;
+pub use qualification::EvidenceClaimClassV1;
+pub use qualification::EvidenceDispositionV1;
+pub use qualification::EvidenceId;
+pub use qualification::EvidenceIssuerRoleV1;
+pub use qualification::EvidenceIssuerTrustBindingV1;
+pub use qualification::EvidenceReceiptKindV1;
+pub use qualification::EvidenceReferenceV1;
+pub use qualification::IndependentDecisionReceiptV1;
+pub use qualification::IndependentDecisionRoleV1;
+pub use qualification::IndependentDecisionV1;
+pub use qualification::QualificationEvidenceEnvelopeV1;
+pub use qualification::QualificationEvidenceStore;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_ASSETS;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_CHAIN_EDGES;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES;
+pub use qualification::QUALIFICATION_EVIDENCE_SCHEMA_VERSION;
+pub use qualification::VerifyChainRequestV1;
+pub use qualification::evidence_set_digest;
+pub use qualification::qualification_append_scope_digest;
+pub use qualification::qualification_envelope_bytes;
+pub use qualification::qualification_subject;
+pub use recovery_frontier::EVIDENCE_DATABASE_LINEAGE;
+pub use recovery_frontier::EvidenceRecoverySnapshotV1;
 pub use store::AppendDisposition;
 pub use store::HeptaEvidenceStore;
 pub use store::StoredActionEvidence;
@@ -100,3 +127,7 @@ mod authbus_outbox_tests;
 #[cfg(test)]
 #[path = "authbus_outbox_quarantine_tests.rs"]
 mod authbus_outbox_quarantine_tests;
+
+#[cfg(test)]
+#[path = "qualification_tests.rs"]
+mod qualification_tests;

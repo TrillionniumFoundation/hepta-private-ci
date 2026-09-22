@@ -53,6 +53,13 @@ class ExecutionReceipt:
 
 @dataclass(frozen=True)
 class EvaluatorIndependenceReceipt:
+    """Compatibility/pre-review projection, not canonical acceptance evidence.
+
+    kernel.evidence owns IndependentDecisionReceiptV1 and the authoritative
+    principal/signing-identity decision record. This local structure can only
+    help decide whether a candidate is eligible to request that independent
+    review; it cannot mint or replace the canonical receipt.
+    """
     generator_principal: str
     generator_signing_identity: str
     evaluator_principal: str
