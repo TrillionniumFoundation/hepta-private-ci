@@ -8,6 +8,7 @@
 
 mod evaluated_shadow;
 mod ndu_stochastic_admission;
+mod neuron_runtime;
 mod outcome_credit_v2;
 
 pub use evaluated_shadow::EvaluatedShadowError;
@@ -82,6 +83,7 @@ pub use intuition_qualification::QualifiedEvaluatedShadowRequestV2;
 pub use intuition_qualification::decide_authenticated_intuition_v1;
 pub use intuition_qualification::decide_authenticated_intuition_v2;
 pub use intuition_qualification::run_qualified_evaluated_shadow_v2;
+pub use neuron_runtime::run_neuron_tick_v1;
 
 mod capability_snapshot;
 

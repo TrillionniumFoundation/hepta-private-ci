@@ -97,6 +97,20 @@ def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
 
 def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
     paths = set(resolved_roots)
+    guide = row.get("technicalGuide")
+    if guide is not None:
+        if not isinstance(guide, str) or not guide:
+            raise ValueError("invalid technical guide evidence path")
+        paths.add(guide)
+    for caller in row.get("productCallers", []):
+        if not isinstance(caller, dict):
+            raise ValueError("product caller evidence requires a typed binding")
+        for field in ("sourcePath", "path"):
+            source = caller.get(field)
+            if source is not None:
+                if not isinstance(source, str) or not source:
+                    raise ValueError("invalid product caller evidence path")
+                paths.add(source)
     for root in row.get("declaredRoots", []):
         # Alias declarations are source selection inputs, not ownership transfers.
         alias = checked_source_path(ROOT, root) / "BINDING.json"
@@ -119,6 +133,30 @@ def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
                 path = entry.get("path") if isinstance(entry, dict) else entry
                 if not isinstance(path, str) or not path:
                     raise ValueError(f"{key} evidence requires an explicit source path")
+                if key == "tests" and ".rs::" in path:
+                    source, identity = path.split(".rs::", 1)
+                    path = source + ".rs"
+                    if (
+                        re.fullmatch(
+                            r"[A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)*",
+                            identity,
+                        )
+                        is None
+                    ):
+                        raise ValueError("invalid Rust test identity")
+                    local = checked_source_path(ROOT, path)
+                    leaf = identity.rsplit("::", 1)[-1]
+                    if (
+                        not local.is_file()
+                        or re.search(
+                            rf"\bfn\s+{re.escape(leaf)}\s*\(",
+                            local.read_text(encoding="utf-8"),
+                        )
+                        is None
+                    ):
+                        raise ValueError(
+                            "Rust test identity does not name a source function"
+                        )
                 paths.add(path)
     for path in paths:
         local = checked_source_path(ROOT, path)

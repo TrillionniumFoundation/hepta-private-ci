@@ -47,6 +47,7 @@ class SourceIdentityTests(unittest.TestCase):
         )
         for name in ("alpha", "beta"):
             self.write(f"src/{name}/lib.rs", "pub fn calculate() {}\n")
+            self.write(f"docs/modules/{name}/TECHNICAL.md", "Mapped source guide")
         self.write("tests/native.rs", "#[test] fn qualified() {}\n")
         self.write("host/caller.rs", "fn caller() {}\n")
         self.write("README.md", "source identity fixture\n")
@@ -210,6 +211,43 @@ class SourceIdentityTests(unittest.TestCase):
             maps.validate_operation_inventory(
                 "learning.operator", [{"operation": "build_targets"}]
             )
+
+    def test_rust_function_test_identity_resolves_to_exact_source(self):
+        row = {
+            "operations": [
+                {
+                    "sourcePath": "src/alpha/lib.rs",
+                    "tests": ["src/alpha/lib.rs::tests::calculate"],
+                }
+            ]
+        }
+        self.assertEqual(maps.evidence_paths(row, []), ["src/alpha/lib.rs"])
+        row["operations"][0]["tests"] = ["src/alpha/lib.rs::tests::missing_function"]
+        with self.assertRaises(ValueError):
+            maps.evidence_paths(row, [])
+
+    def test_test_identity_does_not_admit_invalid_paths_or_symbols(self):
+        for identity in [
+            "../escape.rs::test",
+            "src/alpha/lib.rs::tests::*",
+            "src/alpha/lib.rs::",
+            "src/alpha/lib.rs::../calculate",
+        ]:
+            with self.subTest(identity=identity), self.assertRaises(ValueError):
+                maps.evidence_paths({"operations": [{"tests": [identity]}]}, [])
+
+    def test_guide_and_legacy_caller_spelling_are_exact_evidence(self):
+        row = {
+            "operations": [],
+            "technicalGuide": "src/alpha/lib.rs",
+            "productCallers": [{"path": "src/beta/lib.rs"}],
+        }
+        self.assertEqual(
+            maps.evidence_paths(row, []), ["src/alpha/lib.rs", "src/beta/lib.rs"]
+        )
+        row["productCallers"][0]["path"] = "../outside.rs"
+        with self.assertRaises(ValueError):
+            maps.evidence_paths(row, [])
 
     def test_unchanged_ancestral_source_passes(self):
         self.assertEqual(

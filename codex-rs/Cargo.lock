@@ -3495,6 +3495,7 @@ dependencies = [
  "codex-hepta-memory-extension",
  "codex-hepta-memory-retrieval",
  "codex-hepta-objective",
+ "codex-hepta-neuron",
  "codex-hepta-paths",
  "codex-hepta-prompt-optimizer",
  "codex-hepta-prompt-registry",
@@ -4025,8 +4026,11 @@ dependencies = [
 name = "codex-hepta-neuron"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-infer-core",
  "codex-hepta-types",
  "pretty_assertions",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

@@ -42,8 +42,7 @@ configuration, replay, quota, and cooperating-writer fencing checks remain intac
 The legacy `open` method remains available for bootstrap and explicitly
 unanchored qualification use. It is not an anti-rollback API. A host that has
 acknowledged history must call the anchored method and must never retry a failed
-anchored open through the unanchored method. This patch does not install such a
-host, authenticate the witness, or create an external witness store.
+anchored open through the unanchored method. The closure line now provides `FileAnchorWitnessStore` as a separate locked and synced witness store and `NeuronRuntime` orders journal commit before witness compare-and-swap. The store itself does not authenticate selected-artifact/current-owner truth or grant freshness/revocation authority; those facts still belong to the composing host.
 
 The host transaction order is: durably commit the journal, durably retain its
 acknowledgement witness, then acknowledge externally. If witness publication is

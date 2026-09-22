@@ -173,6 +173,64 @@ impl SparseCheckpoint {
         self.digest
     }
 
+    pub fn sequence(&self) -> u64 {
+        self.sequence
+    }
+
+    /// Canonical digest of the recurrent temporal-state vector only.
+    ///
+    /// This is intentionally distinct from the full checkpoint digest so the
+    /// registered NeuronSignalReceiptV1/NeuronCheckpointV1 protocol cannot
+    /// silently substitute whole-checkpoint identity for temporal state.
+    pub fn temporal_state_digest(&self) -> Digest32 {
+        digest_q24(b"hepta.neuron.temporal-state.q24.v1", &self.temporal)
+    }
+
+    pub fn activation_digest(&self) -> Digest32 {
+        digest_q24(b"hepta.neuron.activation.q24.v1", &self.activation)
+    }
+
+    pub fn threshold_digest(&self) -> Digest32 {
+        digest_q24(b"hepta.neuron.threshold.q24.v1", &self.threshold)
+    }
+
+    pub fn eligibility_digest(&self) -> Digest32 {
+        digest_q24(b"hepta.neuron.eligibility.q24.v1", &self.eligibility)
+    }
+
+    pub(crate) fn activation_q24(&self) -> &[i64] {
+        &self.activation
+    }
+
+    /// Upper bound for a canonical checkpoint encoding of the current state.
+    pub fn bounded_encoded_bytes(&self) -> usize {
+        let fixed = 6 * std::mem::size_of::<Digest32>() + 2 * std::mem::size_of::<u64>();
+        let vector_headers = 5 * std::mem::size_of::<u64>();
+        let vector_values = [
+            self.temporal.len(),
+            self.activation.len(),
+            self.activity.len(),
+            self.threshold.len(),
+            self.eligibility.len(),
+        ]
+        .into_iter()
+        .sum::<usize>()
+            * std::mem::size_of::<i64>();
+        fixed + vector_headers + vector_values
+    }
+
+    pub(crate) fn matches_segment_context(
+        &self,
+        config_digest: Digest32,
+        scope_digest: Digest32,
+        objective_digest: Digest32,
+    ) -> bool {
+        self.calculate_digest() == self.digest
+            && self.config == config_digest
+            && self.scope == scope_digest
+            && self.objective == objective_digest
+    }
+
     /// Diagonal local-head eligibility sufficient statistics, not model weights.
     pub fn eligibility_q24(&self) -> &[i64] {
         &self.eligibility
@@ -366,6 +424,15 @@ pub fn sparse_tick(
         authority: AuthorityPosture::DENY_ALL,
     };
     Ok((next, receipt))
+}
+
+fn digest_q24(domain: &[u8], values: &[i64]) -> Digest32 {
+    let mut bytes = domain.to_vec();
+    bytes.extend_from_slice(&(values.len() as u64).to_be_bytes());
+    for value in values {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
 }
 
 // Inputs are bounded before this helper. i128 handles products exactly.

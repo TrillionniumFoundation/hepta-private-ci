@@ -175,12 +175,51 @@
       "nativeSymbol": "crate::AgentdMethod::RunStart",
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "agentd_neuron_owner",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+        "symbol": "pub struct AgentdNeuronOwner",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-neuron/src/runtime.rs",
+          "symbol": "pub struct NeuronRuntime",
+          "buildTarget": "codex-hepta-neuron",
+          "ownerModule": "neuron.runtime"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+          "symbol": "pub trait NeuronInferenceControlPort",
+          "buildTarget": "codex-hepta-neuron",
+          "ownerModule": "neuron.runtime"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
+          "kind": "compiled_owner_boundary",
+          "command": "just test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "Owns one long-lived NeuronRuntime plus its inference-control port; construction remains explicit and does not self-activate the daemon lifecycle.",
+      "operation": "agentd_neuron_owner",
+      "nativeSymbol": "pub struct AgentdNeuronOwner",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
     "Compose a canonical non-test caller that supplies authenticated request/objective/body/artifact/authority identities to run.lifecycle without synthetic hashes.",
     "Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.",
-    "Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable."
+    "Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.",
+    "Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton."
   ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",

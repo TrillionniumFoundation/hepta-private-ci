@@ -1933,38 +1933,82 @@
       ],
       "guide": "docs/modules/neuron.runtime/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/neuron.runtime.md",
-      "implementationState": "specified_not_product_evidence",
-      "apiContract": "Reuse sparse_tick,SparseCheckpoint,SparseSignalReceipt,SparseJournal and JournalAnchor. The older step API is a distinct profile; a model digest does not prove encoder execution.",
-      "stateAndEncoding": "Checkpoint binds scope,objective/body/config/encoder/profile,sequence/time,recurrent state,sparse activation,activity mean,threshold,eligibility and predecessor. Weight/topology bytes are immutable selected artifacts.",
-      "linearizationAndRecovery": "Pure tick precedes owner journal CAS/sync/ack. Two successors to one anchor cannot both publish. Clock/model/body mismatch rejects before mutation. Current revocation is not frozen by a checkpoint.",
-      "algorithmAndBounds": "Validate,recurrence,inhibition,stable top-k,activity/threshold,eligibility,prediction error,receipt. h<=256,z<=512 only if native profile permits; active1%-20%,modulator<=8,state[-8,8],eligibility norm<=4,checkpoint<=1 MiB. No implicit parameter-group broadcasting.",
-      "acceptanceOracle": "Tie/order goldens,one-winner anchor race,restart parity. Uncalibrated signal forces slow path. No-inhibition/homeostasis/eligibility/replay and shuffled-modulator ablations use independent future/retention slices.",
+      "implementationState": "source_owner_implemented_not_product_evidence",
+      "apiContract": "NeuronRuntime::tick over canonical owner-local NeuronRuntimeConfigV1/NeuronTickInputV1/NeuronTickReceiptV1/NeuronSignalReceiptV1, an inference.control NeuronFeatureReceiptV1 model port, SparseJournal and independent AnchorWitnessStore. Raw sparse_tick remains a compatibility mechanism; no owner receipt grants effect authority.",
+      "stateAndEncoding": "The owner binds exact model manifest/weights/tokenizer/preprocessor/quantization/runtime/device identity, scope/objective/NDU/body, logical sequence/time, recurrent state, sparse activation, moving activity, thresholds, committed eligibility history, calibration/OOD/resource evidence and predecessor/witness digests. Current selected weights/topology are immutable.",
+      "linearizationAndRecovery": "inference.control feature execution -> deterministic successor -> durable SparseJournal commit -> calibrated/resource disposition -> independent witness CAS -> owner output. Lost acknowledgement is reconciled from committed history; write/sync uncertainty poisons the handle. Successor segments preserve the exact checkpoint. Deletion rebuild requires an exact successor generation and no state reuse.",
+      "algorithmAndBounds": "Durable V1 profile: single-population same-width Q24 recurrence/inhibition/stable top-k/homeostasis/eligibility with width<=256, active1%-20%, state[-8,8], eligibility L1<=4. PopulationSparseConfigV2 is a separately versioned pure mechanism with temporal_width<=256, activation_width<=512, explicit temporal-to-activation projection, complete registered populations, population-first then global competition, and the same bounded Q24/homeostatic/eligibility posture. Independent modulator<=8 and explicit parameter-group projections produce next-snapshot sufficient statistics only.",
+      "acceptanceOracle": "Exact model tuple drift rejects. Journal/witness one-winner and lost-ack recovery preserve committed identity. Missing/stale calibration, OOD, low confidence, unhealthy sparsity/projection or resource breach forces abstain/slow path. Deletion rebuild cannot reuse predecessor state. Ablation/resource bindings are evidence surfaces, not empirical acceptance.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
       "nativeImplementation": {
         "entrypoints": [
           {
-            "path": "codex-rs/hepta-neuron/src/sparse.rs",
-            "symbol": "sparse_tick"
+            "path": "codex-rs/hepta-neuron/src/runtime.rs",
+            "symbol": "NeuronRuntime::tick"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+            "symbol": "InferenceControlModelPort"
           },
           {
             "path": "codex-rs/hepta-neuron/src/journal.rs",
             "symbol": "SparseJournal"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/witness.rs",
+            "symbol": "FileAnchorWitnessStore"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/plasticity.rs",
+            "symbol": "accumulate_plasticity"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/deletion.rs",
+            "symbol": "validate_deletion_rebuild"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/qualification.rs",
+            "symbol": "summarize_resource_samples"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/protocol.rs",
+            "symbol": "canonical_runtime_config_v1 / canonical_checkpoint_v1"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/population_v2.rs",
+            "symbol": "population_sparse_tick_v2"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+            "symbol": "AgentdNeuronOwner"
           }
         ],
-        "stateAndRecovery": "sparse_tick binds actual drive/prediction bytes, frozen config, scope/body/objective, sequence and monotonic clock. SparseJournal persists owned checkpoints through a host-authorized file and anchor; this is separate from the legacy Q32 step profile.",
+        "stateAndRecovery": "NeuronRuntime is the durable V1 source owner composition. It accepts an exact inference-control feature receipt, commits deterministic state to the journal, derives calibrated/OOD/resource disposition, advances a separately synced acknowledgement witness, and can derive the registered canonical checkpoint only from committed owner state. Segment continuation, poison-on-uncertainty, committed eligibility history and fail-closed deletion rebuild are implemented. PopulationSparseConfigV2 is a pure versioned target mechanism and does not silently reuse the V1 journal encoding.",
         "testFiles": [
-          "codex-rs/hepta-neuron/src/sparse_tests.rs",
-          "codex-rs/hepta-neuron/src/journal_anchor_tests.rs"
+          "codex-rs/hepta-neuron/src/runtime_tests.rs",
+          "codex-rs/hepta-neuron/src/inference_control_tests.rs",
+          "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
+          "codex-rs/hepta-neuron/src/journal_segment_tests.rs",
+          "codex-rs/hepta-neuron/src/witness_tests.rs",
+          "codex-rs/hepta-neuron/src/plasticity_tests.rs",
+          "codex-rs/hepta-neuron/src/deletion_tests.rs",
+          "codex-rs/hepta-neuron/src/qualification_tests.rs",
+          "codex-rs/hepta-neuron/src/protocol_tests.rs",
+          "codex-rs/hepta-neuron/src/population_v2_tests.rs",
+          "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
         ],
         "runtimeDocuments": [
           "codex-rs/hepta-neuron/EXECUTION.md",
           "codex-rs/hepta-neuron/JOURNAL.md",
-          "codex-rs/hepta-neuron/RECOVERY_ANCHOR.md"
+          "codex-rs/hepta-neuron/RECOVERY_ANCHOR.md",
+          "docs/modules/neuron.runtime/TECHNICAL.md"
         ],
         "remainingWork": [
-          "Invoke and authenticate the actual encoder, qualify calibration/OOD, deletion rebuild and host recovery, and produce functional/longitudinal evidence before claiming adaptive intelligence."
+          "Stack/rebase AgentdNeuronOwner onto the daemon-owned runtime.agentd run lifecycle and bind the selected artifact/current inference.control/witness lifecycle there; source compilation is not activation.",
+          "If PopulationSparseConfigV2 is promoted beyond qualification, implement a separately versioned durable journal/owner migration rather than changing V1 replay bytes in place.",
+          "Collect exact target-host product execution, resource, calibration/OOD, future-window, retention and deletion non-resurrection evidence; independent acceptance/activation/promotion/release remain external."
         ]
       }
     },

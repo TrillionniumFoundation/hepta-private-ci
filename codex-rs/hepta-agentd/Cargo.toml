@@ -67,10 +67,10 @@ codex-hepta-memory = { workspace = true }
 codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 codex-hepta-memory-extension = { workspace = true }
 codex-hepta-objective = { path = "../hepta-objective" }
+codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-paths = { workspace = true }
 codex-model-provider = { workspace = true }
 codex-hepta-ndu = { path = "../hepta-ndu" }
-codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-protocol = { workspace = true }
 codex-uds = { workspace = true }
@@ -97,8 +97,8 @@ tokio-util = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
-app_test_support = { workspace = true }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
+app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
 codex-hepta-supervisor = { workspace = true }
