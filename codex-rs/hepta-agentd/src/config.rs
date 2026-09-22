@@ -89,6 +89,7 @@ pub struct AgentdConfig {
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
+    intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
 }
 
 impl AgentdConfig {
@@ -208,6 +209,7 @@ impl AgentdConfig {
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
+            intuition_policy_host: None,
         })
     }
 
@@ -458,6 +460,30 @@ impl AgentdConfig {
         &mut self,
     ) -> Option<crate::PlasticityRuntimeBootstrapV1> {
         self.plasticity_bootstrap.take()
+    }
+
+    /// Attach the authenticated current intuition-policy product caller.
+    /// The caller is pinned to this exact Agentd identity/generation and owns
+    /// no model, scorer, RNG or learning facts itself.
+    pub fn with_intuition_policy_host(
+        mut self,
+        host: std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>,
+    ) -> Result<Self, AgentdError> {
+        host.require_identity(&self.identity.agent_id, self.identity.spawn_generation)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        if self.intuition_policy_host.is_some() {
+            return Err(AgentdError::Invalid(
+                "intuition policy host already configured".to_string(),
+            ));
+        }
+        self.intuition_policy_host = Some(host);
+        Ok(self)
+    }
+
+    pub(crate) fn intuition_policy_host(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>> {
+        self.intuition_policy_host.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

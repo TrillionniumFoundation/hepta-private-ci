@@ -85,6 +85,7 @@ pub async fn run(
     let retrieval_context = config.cognitive_retrieval_context();
     let retrieval_learning = config.cognitive_retrieval_learning();
     require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
+    let intuition_policy_host = config.intuition_policy_host();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -101,6 +102,11 @@ pub async fn run(
     )?);
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
+    if let Some(host) = intuition_policy_host {
+        state.intuition_policy.set(host).map_err(|_| {
+            AgentdError::Invalid("intuition policy host already attached".to_string())
+        })?;
+    }
     if let Some(ranker) = ranker {
         state
             .cognitive_ranker
