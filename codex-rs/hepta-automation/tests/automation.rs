@@ -274,6 +274,46 @@ async fn prepare_direct_dispatch(store: &AutomationStore, lease: &AutomationLeas
 }
 
 #[tokio::test]
+async fn drain_blockers_require_classification_but_allow_durable_uncertainty() {
+    let fixture = FleetFixture::new(1);
+    let store = AutomationStore::open(&fixture.layouts[0])
+        .await
+        .expect("open store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75031",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    assert_eq!(store.drain_blockers().await.expect("empty blockers"), 0);
+
+    let lease = store
+        .claim_due(100, 1, 60_000)
+        .await
+        .expect("claim due")
+        .expect("lease");
+    assert_eq!(
+        store.drain_blockers().await.expect("leased blocker"),
+        1,
+        "an unclassified durable lease must block graceful drain"
+    );
+
+    prepare_direct_dispatch(&store, &lease, 101).await;
+    assert_eq!(
+        store.drain_blockers().await.expect("classified uncertainty"),
+        0,
+        "a matching durable uncertain witness is already a fail-closed classification"
+    );
+    let unknown = store
+        .uncertain_dispatches(8)
+        .await
+        .expect("query durable uncertainty");
+    assert_eq!(unknown.len(), 1);
+    assert_eq!(unknown[0].task_id, task.task_id);
+    assert_eq!(unknown[0].occurrence, lease.occurrence);
+}
+
+#[tokio::test]
 async fn one_shot_periodic_disable_and_cancel_are_durable() {
     let fixture = FleetFixture::new(1);
     let store = AutomationStore::open(&fixture.layouts[0])

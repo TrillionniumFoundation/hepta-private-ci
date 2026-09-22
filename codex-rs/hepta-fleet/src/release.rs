@@ -31,6 +31,8 @@ const AGENTD_RELEASE_PROGRAM: &str = "bin/hepta-agentd";
 const MATRIXD_RELEASE_PROGRAM: &str = "bin/hepta-matrixd";
 const RELEASE_ALLOW_PREFIX: &str = "allow-";
 const RELEASE_ALLOW_SUFFIX: &str = ".json";
+const RELEASE_REVOKE_PREFIX: &str = "revoke-";
+const RELEASE_REVOKE_SUFFIX: &str = ".json";
 const RELEASE_STATE_PREFIX: &str = "release-state-";
 const RELEASE_STATE_SUFFIX: &str = ".json";
 const MAX_RELEASE_MANIFEST_BYTES: u64 = 32 * 1024;
@@ -151,6 +153,17 @@ pub struct RegisteredRelease {
     pub matrixd: Option<RegisteredProgram>,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReleaseBinding {
+    pub release_id: ReleaseId,
+    pub manifest_sha256: String,
+    pub agentd_program_sha256: String,
+    pub matrixd_program_sha256: Option<String>,
+    /// Digest of the complete per-Agent allow/revoke marker set observed at
+    /// this admission boundary. Any later policy mutation changes the digest.
+    pub admission_frontier_sha256: String,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AgentReleaseState {
@@ -176,6 +189,15 @@ impl AgentReleaseState {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 struct ReleaseAllowance {
+    schema_version: u32,
+    agent_id: AgentId,
+    release_id: ReleaseId,
+    manifest_sha256: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+struct ReleaseRevocation {
     schema_version: u32,
     agent_id: AgentId,
     release_id: ReleaseId,
@@ -322,6 +344,80 @@ impl FleetRegistry {
         sync_directory(record.layout.releases_root())
     }
 
+    pub fn revoke_release(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+    ) -> Result<(), FleetRegistryError> {
+        let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
+            FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
+        })?;
+        let path = revocation_path(record.layout.releases_root(), release_id);
+        if path.exists() {
+            let actual: ReleaseRevocation = read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
+            let manifest = release_manifest_path(self.layout().releases_root(), release_id);
+            let manifest_sha256 = sha256_file(&manifest)?;
+            if actual.schema_version == RELEASE_METADATA_SCHEMA_VERSION
+                && actual.agent_id == *agent_id
+                && actual.release_id == *release_id
+                && actual.manifest_sha256 == manifest_sha256
+            {
+                return Ok(());
+            }
+            return Err(FleetRegistryError::Corrupt(format!(
+                "release revocation changed for agent {agent_id} release {release_id}"
+            )));
+        }
+
+        // Admission is revalidated immediately before the append-only revocation
+        // marker is created, including the exact per-Agent allowance and immutable
+        // manifest/program digests.
+        let binding = self.resolve_release_binding(agent_id, release_id)?;
+        let revocation = ReleaseRevocation {
+            schema_version: RELEASE_METADATA_SCHEMA_VERSION,
+            agent_id: agent_id.clone(),
+            release_id: release_id.clone(),
+            manifest_sha256: binding.manifest_sha256,
+        };
+        write_new_json(&path, &revocation)?;
+        set_mode(&path, /*mode*/ 0o444)?;
+        sync_directory(record.layout.releases_root())
+    }
+
+    pub fn resolve_release_binding(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+    ) -> Result<ReleaseBinding, FleetRegistryError> {
+        let _ = self.resolve_release(agent_id, release_id)?;
+        let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
+            FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
+        })?;
+        let admission_frontier_sha256 =
+            release_admission_frontier_sha256(record.layout.releases_root())?;
+        // Re-admit after observing the frontier so a revocation racing the
+        // first lookup cannot be hidden behind a stale successful resolve.
+        let _ = self.resolve_release(agent_id, release_id)?;
+        let manifest = release_manifest_path(self.layout().releases_root(), release_id);
+        let manifest_sha256 = sha256_file(&manifest)?;
+        let metadata: CatalogReleaseMetadata =
+            read_bounded_json(&manifest, MAX_RELEASE_MANIFEST_BYTES)?;
+        let (agentd_program_sha256, matrixd_program_sha256) = match metadata {
+            CatalogReleaseMetadata::V2(metadata) => (
+                metadata.agentd.program_sha256,
+                metadata.matrixd.map(|program| program.program_sha256),
+            ),
+            CatalogReleaseMetadata::V1(metadata) => (metadata.program_sha256, None),
+        };
+        Ok(ReleaseBinding {
+            release_id: release_id.clone(),
+            manifest_sha256,
+            agentd_program_sha256,
+            matrixd_program_sha256,
+            admission_frontier_sha256,
+        })
+    }
+
     pub fn resolve_release(
         &self,
         agent_id: &AgentId,
@@ -330,6 +426,12 @@ impl FleetRegistry {
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
+        if revocation_path(record.layout.releases_root(), release_id).exists() {
+            return Err(FleetRegistryError::ReleaseRevoked {
+                agent_id: agent_id.clone(),
+                release_id: release_id.to_string(),
+            });
+        }
         let allowance_path = allowance_path(record.layout.releases_root(), release_id);
         let allowance: ReleaseAllowance =
             match read_bounded_json(&allowance_path, MAX_RELEASE_MANIFEST_BYTES) {
@@ -384,7 +486,11 @@ impl FleetRegistry {
                 continue;
             };
             let release_id = ReleaseId::parse(value)?;
-            self.resolve_release(agent_id, &release_id)?;
+            match self.resolve_release(agent_id, &release_id) {
+                Ok(_) => {}
+                Err(FleetRegistryError::ReleaseRevoked { .. }) => continue,
+                Err(error) => return Err(error),
+            }
             if !releases.insert(release_id) || releases.len() > MAX_ALLOWED_RELEASES {
                 return Err(FleetRegistryError::Corrupt(
                     "agent release allowance set is duplicate or exceeds its bound".to_string(),
@@ -647,9 +753,71 @@ fn validate_source_program(path: &Path) -> Result<PathBuf, FleetRegistryError> {
     Ok(path.to_path_buf())
 }
 
+fn release_admission_frontier_sha256(root: &Path) -> Result<String, FleetRegistryError> {
+    let mut markers = Vec::new();
+    for entry in std::fs::read_dir(root)? {
+        let entry = entry?;
+        let Some(name) = entry.file_name().to_str().map(str::to_owned) else {
+            return Err(FleetRegistryError::Corrupt(
+                "release admission marker filename is not UTF-8".to_string(),
+            ));
+        };
+        let is_allow =
+            name.starts_with(RELEASE_ALLOW_PREFIX) && name.ends_with(RELEASE_ALLOW_SUFFIX);
+        let is_revoke =
+            name.starts_with(RELEASE_REVOKE_PREFIX) && name.ends_with(RELEASE_REVOKE_SUFFIX);
+        if !is_allow && !is_revoke {
+            continue;
+        }
+        if markers.len() >= MAX_ALLOWED_RELEASES * 2 {
+            return Err(FleetRegistryError::Corrupt(
+                "release admission marker set exceeds its bound".to_string(),
+            ));
+        }
+        let metadata = std::fs::symlink_metadata(entry.path())?;
+        if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
+            return Err(FleetRegistryError::Corrupt(
+                "release admission marker must be a regular non-symlink file".to_string(),
+            ));
+        }
+        if metadata.len() > MAX_RELEASE_MANIFEST_BYTES {
+            return Err(FleetRegistryError::Corrupt(
+                "release admission marker exceeds its byte bound".to_string(),
+            ));
+        }
+        markers.push((name, std::fs::read(entry.path())?));
+    }
+    markers.sort_by(|left, right| left.0.cmp(&right.0));
+    let mut hasher = Sha256::new();
+    hasher.update(b"hepta-fleet:release-admission-frontier:v1\0");
+    for (name, bytes) in markers {
+        let name_len = u64::try_from(name.len()).map_err(|_| {
+            FleetRegistryError::Corrupt("release marker name length overflow".to_string())
+        })?;
+        let bytes_len = u64::try_from(bytes.len()).map_err(|_| {
+            FleetRegistryError::Corrupt("release marker byte length overflow".to_string())
+        })?;
+        hasher.update(name_len.to_be_bytes());
+        hasher.update(name.as_bytes());
+        hasher.update(bytes_len.to_be_bytes());
+        hasher.update(bytes);
+    }
+    Ok(hasher
+        .finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect())
+}
+
 fn allowance_path(root: &Path, release_id: &ReleaseId) -> PathBuf {
     root.join(format!(
         "{RELEASE_ALLOW_PREFIX}{release_id}{RELEASE_ALLOW_SUFFIX}"
+    ))
+}
+
+fn revocation_path(root: &Path, release_id: &ReleaseId) -> PathBuf {
+    root.join(format!(
+        "{RELEASE_REVOKE_PREFIX}{release_id}{RELEASE_REVOKE_SUFFIX}"
     ))
 }
 

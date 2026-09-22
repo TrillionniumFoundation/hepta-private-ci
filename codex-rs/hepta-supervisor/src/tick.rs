@@ -18,6 +18,14 @@ use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+use crate::restart_budget::RestartBudgetError;
+
+enum RuntimeTickOutcome {
+    Keep,
+    Exited {
+        restart_fault: Option<SupervisorError>,
+    },
+}
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn tick_slot(
@@ -26,31 +34,94 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        let mut post_exit_fault = None;
         if let Some(mut runtime) = slot.runtime.take() {
-            let keep = match self.tick_runtime(agent_id, slot, &mut runtime, now) {
-                Ok(keep) => keep,
+            let outcome = match self.tick_runtime(agent_id, slot, &mut runtime, now) {
+                Ok(outcome) => outcome,
                 Err(error) => {
                     slot.runtime = Some(runtime);
                     return Err(error);
                 }
             };
-            if keep {
-                slot.runtime = Some(runtime);
-            } else if !self.continue_release_change_after_exit(agent_id, slot, now)?
-                && slot.restart_pending
-            {
-                slot.restart_pending = false;
-                let release = slot.active_release.clone().or_else(|| {
-                    slot.last_command
-                        .clone()
-                        .and_then(|command| crate::AgentRelease::unversioned(command).ok())
-                });
-                let release =
-                    release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
-                self.start_release_slot(agent_id, slot, release, now)?;
+            match outcome {
+                RuntimeTickOutcome::Keep => slot.runtime = Some(runtime),
+                RuntimeTickOutcome::Exited { restart_fault } => {
+                    let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
+                    post_exit_fault = restart_fault;
+                }
             }
         }
-        self.tick_matrix_companion(agent_id, slot, now)
+        if slot.runtime.is_none()
+            && slot.release_change.is_none()
+            && slot.restart_pending
+            && slot
+                .restart_not_before
+                .is_none_or(|eligible| now >= eligible)
+        {
+            let release = slot.active_release.clone().or_else(|| {
+                slot.last_command
+                    .clone()
+                    .and_then(|command| crate::AgentRelease::unversioned(command).ok())
+            });
+            let release =
+                release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
+            if let Err(error) = self.start_release_slot(agent_id, slot, release, now) {
+                let record = self.record(agent_id)?;
+                crate::restart_budget::complete_restart(record.layout.run_root())
+                    .map_err(|persist| SupervisorError::Invalid(persist.to_string()))?;
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+                return Err(error);
+            }
+            slot.restart_pending = false;
+        }
+        self.tick_matrix_companion(agent_id, slot, now)?;
+        if let Some(error) = post_exit_fault {
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    fn queue_automatic_restart_before_exit(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Option<SupervisorError> {
+        let record = match self.record(agent_id) {
+            Ok(record) => record,
+            Err(error) => return Some(error),
+        };
+        match crate::restart_budget::claim_restart(
+            record.layout.run_root(),
+            self.config.restart_max_attempts,
+            self.config.restart_window,
+            self.config.restart_backoff_base,
+        ) {
+            Ok(claim) => {
+                slot.restart_attempt = claim.attempt;
+                slot.restart_not_before = match deadline(now, claim.backoff) {
+                    Ok(value) => Some(value),
+                    Err(error) => return Some(error),
+                };
+                slot.restart_pending = true;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::RestartQueued,
+                );
+                None
+            }
+            Err(RestartBudgetError::Exhausted) => {
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+                Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
+            }
+            Err(error) => {
+                slot.restart_pending = false;
+                slot.restart_not_before = None;
+                Some(SupervisorError::Invalid(error.to_string()))
+            }
+        }
     }
 
     fn tick_runtime(
@@ -59,7 +130,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         runtime: &mut AgentRuntime<D::Process>,
         now: Instant,
-    ) -> Result<bool, SupervisorError> {
+    ) -> Result<RuntimeTickOutcome, SupervisorError> {
         let registry_generation = self.record(agent_id)?.lifecycle.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
             self.kill_matrix_now(agent_id, slot)?;
@@ -83,11 +154,24 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| driver_error(agent_id, error))?;
         self.push_logs(slot, observation.logs);
         if let ProcessState::Exited(exit) = observation.state {
+            // Persist the automatic-restart claim before the lifecycle/lease
+            // exit finalization. If supervisord crashes between these durable
+            // boundaries, recovery reuses the same pending attempt rather than
+            // losing the restart intent after publishing Failed.
+            let restart_fault = if !runtime.fenced
+                && matches!(runtime.phase, RuntimePhase::Running)
+                && slot.release_change.is_none()
+                && !slot.restart_pending
+            {
+                self.queue_automatic_restart_before_exit(agent_id, slot, now)
+            } else {
+                None
+            };
             self.finalize_exit(agent_id, slot, runtime, exit)?;
-            return Ok(false);
+            return Ok(RuntimeTickOutcome::Exited { restart_fault });
         }
         if runtime.fenced {
-            return Ok(true);
+            return Ok(RuntimeTickOutcome::Keep);
         }
         let ProcessState::Running { healthy, drained } = observation.state else {
             unreachable!("exited state returned above")
@@ -108,6 +192,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 );
                 slot.event(next.generation, SupervisorEventKind::Healthy);
                 self.release_became_healthy(agent_id, slot, next.generation)?;
+                let record = self.record(agent_id)?;
+                crate::restart_budget::complete_restart(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.restart_not_before = None;
             }
             RuntimePhase::AwaitingHealth { deadline: limit } if now >= limit => {
                 let next = self.registry.compare_and_transition(
@@ -147,13 +235,35 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .map_err(|error| driver_error(agent_id, error))?;
                 slot.event(runtime.generation, SupervisorEventKind::KillRequested);
             }
+            RuntimePhase::Running
+                if healthy
+                    && slot.release_change.as_ref().is_some_and(|change| {
+                        matches!(
+                            change.phase,
+                            crate::runtime::ReleaseChangePhase::TargetStarting
+                                | crate::runtime::ReleaseChangePhase::AutomaticRollbackStarting
+                        )
+                    }) =>
+            {
+                // Recovery may adopt a process after it already crossed the
+                // Starting -> Running lifecycle boundary but before the
+                // release-state/transaction terminal writes completed. A
+                // fresh exact health observation closes that crash cut.
+                self.release_became_healthy(agent_id, slot, runtime.generation)?;
+            }
+            RuntimePhase::Running if healthy && slot.restart_not_before.is_some() => {
+                let record = self.record(agent_id)?;
+                crate::restart_budget::complete_restart(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                slot.restart_not_before = None;
+            }
             RuntimePhase::AwaitingHealth { .. }
             | RuntimePhase::Running
             | RuntimePhase::Draining { .. }
             | RuntimePhase::Stopping { .. }
             | RuntimePhase::Killing => {}
         }
-        Ok(true)
+        Ok(RuntimeTickOutcome::Keep)
     }
 
     fn finalize_exit(

@@ -236,6 +236,24 @@ impl AgentdRequest {
         }
     }
 
+    pub fn readiness(request_id: u64, spawn_generation: u64) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::Readiness,
+        }
+    }
+
+    pub fn drain(request_id: u64, spawn_generation: u64) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::Drain,
+        }
+    }
+
     pub fn session_ingress(request_id: u64, spawn_generation: u64) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -555,6 +573,8 @@ pub enum AgentdMethod {
     Capabilities,
     Health,
     Lifecycle,
+    Readiness,
+    Drain,
     SessionIngress,
     ObjectiveStart {
         request: AuthBusObjectiveIngress,
@@ -716,6 +736,8 @@ pub enum AgentdPayload {
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
+    Readiness(ReadinessSnapshot),
+    Drain(DrainSnapshot),
     SessionIngress(SessionIngress),
     ObjectiveRun(ObjectiveRunAdmission),
     ObjectiveConflict {
@@ -809,6 +831,35 @@ pub struct HealthSnapshot {
 pub struct LifecycleSnapshot {
     pub lifecycle: AgentLifecycle,
     pub app_server_ready: bool,
+    pub fenced: bool,
+}
+
+/// Explicit promotion/readiness inputs owned by this Agentd generation.
+///
+/// `revocation_ready` means the configured authority posture has a current
+/// revocation witness. The default zero-effect-authority host establishes this
+/// locally; any effect-authorized production composition must install and keep
+/// its external witness current before opening admission.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ReadinessSnapshot {
+    pub critical_stores_ready: bool,
+    pub revocation_ready: bool,
+    pub required_ports_ready: bool,
+    pub admission_open: bool,
+}
+
+/// Exact drain acknowledgement from the owning Agentd/App Server composition.
+/// New RPC admission is closed before this can report admission_closed=true.
+/// running_turns is the App Server authoritative running assistant-turn count;
+/// drained=true is emitted only after it reaches zero.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DrainSnapshot {
+    pub admission_closed: bool,
+    pub running_turns: u32,
+    pub drained: bool,
+    pub lifecycle: AgentLifecycle,
     pub fenced: bool,
 }
 

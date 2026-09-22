@@ -132,6 +132,9 @@ pub struct SupervisorConfig {
     pub log_capacity: usize,
     pub max_log_bytes: usize,
     pub driver_poll_batch: usize,
+    pub restart_max_attempts: u32,
+    pub restart_window: Duration,
+    pub restart_backoff_base: Duration,
 }
 
 impl SupervisorConfig {
@@ -148,6 +151,9 @@ impl SupervisorConfig {
             log_capacity: 256,
             max_log_bytes: 4_096,
             driver_poll_batch: 64,
+            restart_max_attempts: 3,
+            restart_window: Duration::from_secs(300),
+            restart_backoff_base: Duration::from_millis(250),
         }
     }
 
@@ -159,9 +165,14 @@ impl SupervisorConfig {
             || !(1..=16_384).contains(&self.log_capacity)
             || !(1..=65_536).contains(&self.max_log_bytes)
             || !(1..=1_024).contains(&self.driver_poll_batch)
+            || !(1..=64).contains(&self.restart_max_attempts)
+            || self.restart_window.is_zero()
+            || self.restart_backoff_base.is_zero()
+            || self.restart_backoff_base > self.restart_window
         {
             return Err(SupervisorError::Invalid(
-                "supervisor deadlines and buffer bounds must be finite and non-zero".to_string(),
+                "supervisor deadlines, buffer bounds, and restart budget must be finite and non-zero"
+                    .to_string(),
             ));
         }
         Ok(())
@@ -286,6 +297,7 @@ pub struct AgentSupervisorSnapshot {
     pub logs: Vec<ProcessLog>,
     pub(crate) control_revision: u64,
     pub(crate) restart_pending: bool,
+    pub(crate) restart_attempt: u32,
     pub(crate) release_state_generation: u64,
     pub(crate) runtime_phase: Option<ControlRuntimePhase>,
     pub(crate) runtime_release: Option<String>,

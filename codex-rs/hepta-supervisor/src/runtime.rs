@@ -16,6 +16,7 @@ use crate::SupervisorConfig;
 use crate::SupervisorError;
 use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
+use crate::release_transaction::DurableReleaseTransaction;
 use crate::signed_intent::SignedSupervisorIntent;
 
 pub(crate) const MAX_FAULT_BYTES: usize = 512;
@@ -141,6 +142,8 @@ pub(crate) struct AgentSlot<P> {
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
     pub restart_pending: bool,
+    pub restart_not_before: Option<Instant>,
+    pub restart_attempt: u32,
     pub active_release: Option<AgentRelease>,
     pub previous_release: Option<AgentRelease>,
     pub release_change: Option<ReleaseChange>,
@@ -148,6 +151,9 @@ pub(crate) struct AgentSlot<P> {
     pub control_revision: u64,
     pub events: BoundedQueue<SupervisorEvent>,
     pub logs: BoundedQueue<ProcessLog>,
+    /// Durable witness for the one release transition currently being
+    /// processed, for both local and externally-authorized callers.
+    pub release_transaction: Option<DurableReleaseTransaction>,
     /// Durable witness for the one externally-authorized release mutation
     /// currently being processed, if any.
     pub signed_intent: Option<SignedSupervisorIntent>,
@@ -161,6 +167,8 @@ impl<P> AgentSlot<P> {
             deferred_agent_action: None,
             last_command: None,
             restart_pending: false,
+            restart_not_before: None,
+            restart_attempt: 0,
             active_release: None,
             previous_release: None,
             release_change: None,
@@ -168,6 +176,7 @@ impl<P> AgentSlot<P> {
             control_revision: 0,
             events: BoundedQueue::new(config.event_capacity),
             logs: BoundedQueue::new(config.log_capacity),
+            release_transaction: None,
             signed_intent: None,
         }
     }

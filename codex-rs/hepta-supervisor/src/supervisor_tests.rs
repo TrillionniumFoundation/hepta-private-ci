@@ -136,6 +136,9 @@ fn config() -> SupervisorConfig {
         log_capacity: 3,
         max_log_bytes: 8,
         driver_poll_batch: 16,
+        restart_max_attempts: 3,
+        restart_window: Duration::from_secs(60),
+        restart_backoff_base: Duration::from_millis(1),
     }
 }
 
@@ -571,6 +574,256 @@ fn restart_drains_one_agent_and_spawns_a_new_generation() -> Result<(), Supervis
 }
 
 #[test]
+fn recovery_reuses_restart_claim_persisted_before_exit_finalize(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let claim = crate::restart_budget::claim_restart(
+        record.layout.run_root(),
+        config().restart_max_attempts,
+        config().restart_window,
+        config().restart_backoff_base,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    assert_eq!(claim.attempt, 1);
+    control.set_exit(&fleet.first);
+
+    // Crash before the old daemon gets to remove the lease or publish Failed.
+    drop(supervisor);
+
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    let snapshot = recovered.snapshot(&fleet.first).expect("recovered snapshot");
+    assert!(!snapshot.active);
+    assert!(snapshot.restart_pending);
+    assert_eq!(snapshot.restart_attempt, 1);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
+
+    assert_eq!(
+        recovered.tick(now + Duration::from_millis(20)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    assert!(
+        recovered
+            .snapshot(&fleet.first)
+            .expect("replacement snapshot")
+            .active
+    );
+    Ok(())
+}
+
+#[test]
+fn unexpected_running_exit_uses_durable_restart_budget_and_backoff(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let crashed = supervisor.snapshot(&fleet.first).expect("crash snapshot");
+    assert!(!crashed.active);
+    assert!(crashed.restart_pending);
+    assert_eq!(crashed.restart_attempt, 1);
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(0)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(2)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    assert!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("replacement snapshot")
+            .active
+    );
+    Ok(())
+}
+
+#[test]
+fn flapping_running_agent_stops_after_restart_budget_is_exhausted(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let start = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), start)?;
+    supervisor.start(&fleet.first, command()?, start)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(start), TickReport::default());
+
+    let mut now = start;
+    for expected_attempt in 1..=3 {
+        control.set_exit(&fleet.first);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        let failed = supervisor.snapshot(&fleet.first).expect("failed snapshot");
+        assert!(failed.restart_pending);
+        assert_eq!(failed.restart_attempt, expected_attempt);
+
+        now += Duration::from_millis(20);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        control.set_healthy(&fleet.first);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+    }
+
+    control.set_exit(&fleet.first);
+    let exhausted = supervisor.tick(now);
+    assert_eq!(exhausted.faults.len(), 1);
+    assert_eq!(exhausted.faults[0].agent_id, fleet.first);
+    assert!(exhausted.faults[0].message.contains("restart budget"));
+    let stopped = supervisor.snapshot(&fleet.first).expect("exhausted snapshot");
+    assert!(!stopped.active);
+    assert!(!stopped.restart_pending);
+    assert_eq!(stopped.restart_attempt, 3);
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(20)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+    Ok(())
+}
+
+#[test]
+fn recovered_running_restart_settles_pending_budget_before_next_claim(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .expect("registered agent")
+        .clone();
+    let first_claim = crate::restart_budget::claim_restart(
+        record.layout.run_root(),
+        config().restart_max_attempts,
+        config().restart_window,
+        config().restart_backoff_base,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    assert_eq!(first_claim.attempt, 1);
+    drop(supervisor);
+
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    let adopted = recovered.snapshot(&fleet.first).expect("adopted replacement");
+    assert!(adopted.active);
+    assert_eq!(adopted.restart_attempt, 1);
+
+    // Exact adoption is not enough to settle the attempt; a fresh ready
+    // observation of the running replacement is required.
+    assert_eq!(recovered.tick(now), TickReport::default());
+    recovered.restart(&fleet.first, now)?;
+    assert_eq!(
+        recovered
+            .snapshot(&fleet.first)
+            .expect("second restart claim")
+            .restart_attempt,
+        2
+    );
+    Ok(())
+}
+
+#[test]
+fn failed_restart_spawn_does_not_retry_forever_on_one_budget_claim(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    supervisor.restart(&fleet.first, now)?;
+    control.set_drained(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.reject_spawn_program(fake_program("hepta-agentd"));
+
+    let failed = supervisor.tick(now + Duration::from_millis(2));
+    assert_eq!(failed.faults.len(), 1);
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert!(
+        !supervisor
+            .snapshot(&fleet.first)
+            .expect("failed restart snapshot")
+            .restart_pending
+    );
+
+    // A later tick cannot silently retry the same durable claim.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(20)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+
+    // A new explicit restart obtains the next bounded attempt.
+    control
+        .world
+        .lock()
+        .expect("fake world lock")
+        .reject_spawn_programs
+        .clear();
+    supervisor.restart(&fleet.first, now + Duration::from_millis(20))?;
+    assert_eq!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("second restart claim")
+            .restart_attempt,
+        2
+    );
+    Ok(())
+}
+
+#[test]
 fn recovery_adopts_one_orphan_and_rejects_another() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
@@ -671,6 +924,375 @@ fn recovery_closes_running_release_state_crash_window() -> Result<(), Supervisor
         .release_state;
     assert_eq!(release_state.current.as_ref(), Some(&release_id));
     assert_eq!(release_state.previous, None);
+    Ok(())
+}
+
+#[test]
+fn recovery_ignores_revoked_previous_release_and_adopts_current() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = fleet.write_release_source()?;
+    let first_release = ReleaseId::parse("recovery-previous-v1")?;
+    let current_release = ReleaseId::parse("recovery-current-v2")?;
+    fleet
+        .registry
+        .install_release(first_release.clone(), &source, Vec::new())?;
+    fleet
+        .registry
+        .install_release(current_release.clone(), &source, Vec::new())?;
+    fleet
+        .registry
+        .allow_release(&fleet.first, &first_release)?;
+    fleet
+        .registry
+        .allow_release(&fleet.first, &current_release)?;
+
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let first =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &first_release)?)?;
+    supervisor.start_release(&fleet.first, first, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let target =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &current_release)?)?;
+    supervisor.upgrade(&fleet.first, target, now)?;
+    finish_release_drain(&mut supervisor, &control, &fleet.first, now);
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("upgraded snapshot")
+            .previous_release
+            .as_deref(),
+        Some(first_release.as_str())
+    );
+    drop(supervisor);
+
+    fleet
+        .registry
+        .revoke_release(&fleet.first, &first_release)?;
+    let (recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    let snapshot = recovered
+        .snapshot(&fleet.first)
+        .expect("recovered current release");
+    assert!(snapshot.active);
+    assert!(snapshot.healthy == false);
+    assert_eq!(
+        snapshot.active_release.as_deref(),
+        Some(current_release.as_str())
+    );
+    assert_eq!(snapshot.previous_release, None);
+    assert_eq!(control.counts(&fleet.first).2, 0);
+    Ok(())
+}
+
+#[test]
+fn process_recovery_fault_does_not_hide_signed_recovery_required(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = fleet.write_release_source()?;
+    let release_id = ReleaseId::parse("recovery-signed-revoked-current")?;
+    fleet
+        .registry
+        .install_release(release_id.clone(), &source, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &release_id)?;
+
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let release =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &release_id)?)?;
+    supervisor.start_release(&fleet.first, release, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    drop(supervisor);
+
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        Sha256Digest::for_bytes(b"recovery-revoked-signed-grant"),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        release_id.to_string(),
+        "recovery-signed-target",
+        0,
+        record.lifecycle.generation,
+        1,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .expect("queued signed intent");
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .expect("write queued intent");
+    fleet.registry.revoke_release(&fleet.first, &release_id)?;
+
+    let (recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report.faults.len(), 1);
+    assert_eq!(report.faults[0].agent_id, fleet.first);
+    assert!(
+        recovered.production_recovery_required(&fleet.first)?,
+        "process recovery fault must not hide durable signed recovery"
+    );
+    assert_eq!(control.counts(&fleet.first).2, 1);
+    Ok(())
+}
+
+#[test]
+fn recovery_fences_current_release_revoked_while_supervisor_is_down(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = fleet.write_release_source()?;
+    let release_id = ReleaseId::parse("recovery-revoked-current")?;
+    fleet
+        .registry
+        .install_release(release_id.clone(), &source, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &release_id)?;
+
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let release =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &release_id)?)?;
+    supervisor.start_release(&fleet.first, release, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    drop(supervisor);
+
+    fleet.registry.revoke_release(&fleet.first, &release_id)?;
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report.faults.len(), 1);
+    assert_eq!(report.faults[0].agent_id, fleet.first);
+    assert_eq!(control.counts(&fleet.first).2, 1);
+    let snapshot = recovered
+        .snapshot(&fleet.first)
+        .expect("fenced revoked current release");
+    assert!(snapshot.active);
+    assert!(snapshot.runtime_fenced);
+    assert!(!snapshot.healthy);
+    assert_eq!(snapshot.active_release, None);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
+
+    control.set_exit(&fleet.first);
+    assert_eq!(recovered.tick(now), TickReport::default());
+    assert!(
+        !recovered
+            .snapshot(&fleet.first)
+            .expect("post-exit snapshot")
+            .active
+    );
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
+    Ok(())
+}
+
+#[test]
+fn recovery_terminalizes_unsigned_target_from_exact_release_state_cas(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let program = fleet.write_release_source()?;
+    let source_id = ReleaseId::parse("unsigned-crash-source")?;
+    let target_id = ReleaseId::parse("unsigned-crash-target")?;
+    fleet
+        .registry
+        .install_release(source_id.clone(), &program, Vec::new())?;
+    fleet
+        .registry
+        .install_release(target_id.clone(), &program, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &source_id)?;
+    fleet.registry.allow_release(&fleet.first, &target_id)?;
+
+    let source_state = fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(source_id.clone()),
+        None,
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    let running = fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let draining = fleet.registry.compare_and_transition(
+        &fleet.first,
+        running.generation,
+        AgentLifecycle::Draining,
+    )?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        draining.generation,
+        AgentLifecycle::Stopped,
+    )?;
+
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::Upgrade,
+        source_id.to_string(),
+        target_id.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source_id)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target_id)?),
+        source_state.generation,
+        running.generation,
+    )
+    .expect("prepared transaction")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::TargetStarting)
+    .expect("target starting");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write transaction");
+
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        source_state.generation,
+        Some(target_id.clone()),
+        Some(source_id),
+    )?;
+
+    let (_recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    let transaction = crate::release_transaction::read_release_transaction(
+        record.layout.run_root(),
+    )
+    .expect("read release transaction")
+    .expect("release transaction");
+    assert_eq!(
+        transaction.phase,
+        crate::release_transaction::ReleaseTransactionPhase::Committed
+    );
+    assert_eq!(transaction.target_release, target_id.to_string());
+    Ok(())
+}
+
+#[test]
+fn recovery_required_unsigned_source_is_terminalized_as_aborted(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let program = fleet.write_release_source()?;
+    let source_id = ReleaseId::parse("unsigned-abort-source")?;
+    let target_id = ReleaseId::parse("unsigned-abort-target")?;
+    fleet
+        .registry
+        .install_release(source_id.clone(), &program, Vec::new())?;
+    fleet
+        .registry
+        .install_release(target_id.clone(), &program, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &source_id)?;
+    fleet.registry.allow_release(&fleet.first, &target_id)?;
+    let source_state = fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(source_id.clone()),
+        None,
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    let running = fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let draining = fleet.registry.compare_and_transition(
+        &fleet.first,
+        running.generation,
+        AgentLifecycle::Draining,
+    )?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        draining.generation,
+        AgentLifecycle::Stopped,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::Upgrade,
+        source_id.to_string(),
+        target_id.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source_id)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target_id)?),
+        source_state.generation,
+        running.generation,
+    )
+    .expect("prepared transaction")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::RecoveryRequired)
+    .expect("recovery required");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write recovery transaction");
+
+    let (_recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    let transaction = crate::release_transaction::read_release_transaction(
+        record.layout.run_root(),
+    )
+    .expect("read release transaction")
+    .expect("release transaction");
+    assert_eq!(
+        transaction.phase,
+        crate::release_transaction::ReleaseTransactionPhase::Aborted
+    );
+    assert!(transaction.phase.terminal());
     Ok(())
 }
 
@@ -1261,25 +1883,311 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     crate::signed_intent::write_intent(record.layout.run_root(), &intent)
         .expect("persist unresolved intent");
 
-    let error = match Supervisor::recover(
+    let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
         FakeControl::default().driver(),
         config(),
         Instant::now(),
-    ) {
-        Ok(_) => panic!("matching target must not infer a signed commit"),
-        Err(error) => error,
-    };
-    assert!(matches!(
-        error,
-        SupervisorError::SignedIntentRecoveryRequired(agent_id) if agent_id == fleet.first
-    ));
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(recovered.production_recovery_required(&fleet.first)?);
     assert_eq!(
         crate::signed_intent::read_intent(record.layout.run_root())
             .expect("read unresolved intent")
             .expect("intent remains durable")
             .status,
-        crate::signed_intent::SignedIntentStatus::Queued
+        crate::signed_intent::SignedIntentStatus::RecoveryRequired
+    );
+    Ok(())
+}
+
+#[test]
+fn recovery_reconciles_terminal_release_transaction_into_signed_intent(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = ReleaseId::parse("signed-terminal-source")?;
+    let target = ReleaseId::parse("signed-terminal-target")?;
+    let source_program = fleet.write_release_source()?;
+    for release_id in [&source, &target] {
+        fleet
+            .registry
+            .install_release(release_id.clone(), &source_program, Vec::new())?;
+        fleet.registry.allow_release(&fleet.first, release_id)?;
+    }
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(target.clone()),
+        Some(source.clone()),
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let grant = Sha256Digest::for_bytes(b"terminal-transaction-grant");
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        4,
+        record.lifecycle.generation,
+        999,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .expect("queued signed intent");
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .expect("write queued intent");
+
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target)?),
+        record.release_state.generation,
+        record.lifecycle.generation,
+    )
+    .expect("release transaction")
+    .with_authority(grant, 999)
+    .expect("bind grant")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::Committed)
+    .expect("terminal release transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write terminal transaction");
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(!recovered.production_recovery_required(&fleet.first)?);
+    let state = recovered
+        .production_mutation_state(&fleet.first)?
+        .expect("production mutation state");
+    assert_eq!(
+        state.receipt.status,
+        crate::ProductionMutationStatus::Committed
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read reconciled intent")
+            .expect("intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::Committed
+    );
+    Ok(())
+}
+
+#[test]
+fn recovery_reconciles_terminal_signed_rollback_to_target(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = ReleaseId::parse("signed-rollback-source")?;
+    let target = ReleaseId::parse("signed-rollback-target")?;
+    let source_program = fleet.write_release_source()?;
+    for release_id in [&source, &target] {
+        fleet
+            .registry
+            .install_release(release_id.clone(), &source_program, Vec::new())?;
+        fleet.registry.allow_release(&fleet.first, release_id)?;
+    }
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(target.clone()),
+        Some(source.clone()),
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let grant = Sha256Digest::for_bytes(b"signed-rollback-terminal-grant");
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Rollback,
+        source.to_string(),
+        target.to_string(),
+        4,
+        record.lifecycle.generation,
+        999,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .expect("queued signed rollback");
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .expect("write queued rollback intent");
+
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::ExplicitRollback,
+        source.to_string(),
+        target.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target)?),
+        0,
+        record.lifecycle.generation,
+    )
+    .expect("rollback transaction")
+    .with_authority(grant, 999)
+    .expect("bind rollback grant")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::RolledBack)
+    .expect("terminal rollback transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write terminal rollback transaction");
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(!recovered.production_recovery_required(&fleet.first)?);
+    let state = recovered
+        .production_mutation_state(&fleet.first)?
+        .expect("production rollback state");
+    assert_eq!(
+        state.receipt.status,
+        crate::ProductionMutationStatus::RolledBack
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read reconciled rollback intent")
+            .expect("rollback intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::RolledBack
+    );
+    Ok(())
+}
+
+#[test]
+fn recovery_reconciles_signed_upgrade_automatic_rollback_to_source(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = ReleaseId::parse("signed-upgrade-rollback-source")?;
+    let target = ReleaseId::parse("signed-upgrade-rollback-target")?;
+    let source_program = fleet.write_release_source()?;
+    for release_id in [&source, &target] {
+        fleet
+            .registry
+            .install_release(release_id.clone(), &source_program, Vec::new())?;
+        fleet.registry.allow_release(&fleet.first, release_id)?;
+    }
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(source.clone()),
+        None,
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let grant = Sha256Digest::for_bytes(b"signed-upgrade-auto-rollback-grant");
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        8,
+        record.lifecycle.generation,
+        1001,
+        crate::signed_intent::SignedIntentStatus::Queued,
+    )
+    .expect("queued signed upgrade");
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .expect("write queued upgrade intent");
+
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        None,
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &source)?),
+        Some(fleet.registry.resolve_release_binding(&fleet.first, &target)?),
+        record.release_state.generation,
+        record.lifecycle.generation,
+    )
+    .expect("upgrade transaction")
+    .with_authority(grant, 1001)
+    .expect("bind upgrade grant")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::RolledBack)
+    .expect("automatic rollback transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.run_root(),
+        &transaction,
+    )
+    .expect("write automatic rollback transaction");
+
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(!recovered.production_recovery_required(&fleet.first)?);
+    let state = recovered
+        .production_mutation_state(&fleet.first)?
+        .expect("production auto-rollback state");
+    assert_eq!(
+        state.receipt.status,
+        crate::ProductionMutationStatus::RolledBack
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read reconciled upgrade intent")
+            .expect("upgrade intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::RolledBack
     );
     Ok(())
 }

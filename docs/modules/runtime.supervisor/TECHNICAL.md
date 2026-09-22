@@ -55,6 +55,8 @@ Direct dependencies:
 - `kernel.authority`
 - `kernel.operations`
 
+Native implementation coupling additionally uses `runtime.fleet` for the immutable release catalog and lifecycle/release-state CAS, `runtime.agentd`'s local control protocol for exact readiness/drain acknowledgement, and the H7 signed-artifact types from the memory qualification boundary. These are implementation dependencies, not transferred data authority: the supervisor remains the release-selection/lifecycle owner and does not become a memory, model, tool, or secret owner.
+
 Authoritative write domains:
 
 - `fleet_registry`
@@ -141,13 +143,23 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md).
+The current supervisor serializes one Agent mutation at the owner lock, generation-fences every managed process, and persists crash-relevant state below the Agent run root: the exact process lease, bounded automatic-restart budget, unified release transaction and, for externally authorized transitions, a signed intent.
+
+The release transaction is the durable execution journal for both local and signed transitions. Before drain it records source/target release identities, immutable manifest and agentd/matrixd program digests, the exact per-Agent allow/revoke admission-frontier digest, a deterministic compatibility-binding digest over the source/target pair, expected Fleet release-state generation, lifecycle generation, rollback predecessor and optional production grant/authority epoch. Phase is fsynced before each process boundary. A production daemon configured with the external grant/H7 verifier rejects unsigned Upgrade/Rollback RPCs.
+
+Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new App Server admission first and waits for RPC handlers that already crossed the admission gate, so a late `thread/queue/reconcile` handler cannot publish new durable work after drain has been declared terminal. It then requires the running assistant-turn count to reach zero and checks the durable Automation/TaskFlow owner for unclassified `leased`, `claimed`, `admitted` or `running` work. Durable `uncertain`/`indeterminate` effects remain classified unknown for restart reconciliation and are never relabelled as success or failure merely to drain. A supervisord crash after durable Draining replays the idempotent typed request. If the optional automation store is unavailable, graceful drain fails closed and the supervisor may only advance through its bounded timeout/stop escalation.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+
+Unexpected Agent exits use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. A process whose lease publication fails remains tracked and hard-kill quarantined until exit is observed; a failed first cleanup signal cannot discard the only process handle.
+
+Rollback and automatic rollback are fresh admissions. Immediately before process start the supervisor re-resolves the release through Fleet, so revoked or no-longer-allowed releases fail closed, then compares current manifest/program digests and the complete allow/revoke admission frontier against the durable transaction. A changed policy frontier is not silently accepted because the predecessor was valid earlier.
+
+Ambiguous signed transitions become `recovery_required`. Supervisord remains reachable for read-only transaction/status queries and the signed recovery ceremony, but reports not-ready and rejects ordinary mutation of that Agent except emergency kill. Recovery may become `committed` or `rolled_back` only when an independently signed decision binds the grant, intent digest, transaction digest, observed immutable release bytes, current lifecycle generation and current daemon authority epoch; the current Fleet admission frontier is revalidated once more before terminalization.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -171,6 +183,8 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 Build hepta-supervisord from codex-hepta-supervisor; its native CLI requires --fleet-root with an absolute path. Grant and H7 verifier options are complete trust tuples, not request-supplied switches. The signer binaries require the production-authority build feature; lifecycle startup alone never enrolls effect authority.
 
+Supplying the complete external grant/H7 verifier tuple selects the production release-authority posture: ordinary owner-local `Upgrade` and `Rollback` compatibility RPCs are rejected and release changes must use signed variants. Fleet owns the immutable release catalog plus per-Agent allow/revoke markers. The supervisor snapshots their bounded aggregate admission frontier into every registered source/target transaction and rejects any frontier drift at final start/rollback/recovery use. The deterministic compatibility-binding digest proves the exact source/target pair and policy cut used by this transaction; it is not by itself an independent semantic-compatibility approval. External selection/compatibility policy, signer rotation and deployment remain separately governed evidence.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-supervisor/src/main.rs](../../../codex-rs/hepta-supervisor/src/main.rs).
@@ -183,10 +197,15 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-supervisor/src/supervisor_tests.rs](../../../codex-rs/hepta-supervisor/src/supervisor_tests.rs) — lifecycle fencing, typed drain, bounded restart/recovery, release-transaction crash cuts, upgrade/rollback, revocation and signed recovery.
+- [codex-rs/hepta-supervisor/src/unix_tests.rs](../../../codex-rs/hepta-supervisor/src/unix_tests.rs) — exact process identity, readiness gates and generation-fenced Agentd drain acknowledgement.
+- [codex-rs/hepta-supervisor/src/release_transaction.rs](../../../codex-rs/hepta-supervisor/src/release_transaction.rs) — durable transition integrity, phase recovery, admission-frontier and compatibility-binding digest checks.
+- [codex-rs/hepta-supervisor/src/signed_authority.rs](../../../codex-rs/hepta-supervisor/src/signed_authority.rs) — production grant and independently signed recovery-decision contracts.
 - [codex-rs/hepta-supervisor/src/daemon_platform_tests.rs](../../../codex-rs/hepta-supervisor/src/daemon_platform_tests.rs); named case: `unsupported_host_rejects_daemon_before_accessing_fleet_state`.
 - [codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs](../../../codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs); named case: `cross_directory_publish_rejects_without_changing_either_file`.
+- [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs) — App Server readiness/drain semantics and admission closure.
 
-In `codex-rs`, run `just test -p codex-hepta-supervisor`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-supervisor` and `just test -p codex-hepta-agentd`. Commands are invocations, not stored pass receipts. Exact-head and deterministic synthetic-merge workflows remain authoritative for the candidate.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -350,10 +369,18 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `start_instance` | `pub fn start(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
-| `observe_health` | `pub fn tick(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
-| `drain` | `pub fn drain(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
-| `load_next` | `pub fn upgrade(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
+| `observe_health` | `pub fn tick(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs`, `unix_tests.rs` |
+| `drain` | `pub fn drain(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs`, `unix_tests.rs` |
+| `stop_instance` | `pub fn stop(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
+| `kill_instance` | `pub fn kill(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
+| `restart_instance` | `pub fn restart(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
+| `load_next` | `pub fn upgrade(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs`, `release_transaction.rs`, `signed_authority.rs` |
+| `rollback_release` | `pub fn rollback(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
+| `signed_upgrade` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
+| `signed_rollback` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
+| `reconcile_signed_intent` | `pub fn resolve_production_recovery(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- `sourceBase` in the implementation map is historical provenance. The exact source-head or deterministic merge candidate is derived from Git by Lane B verification and is never hard-coded into a self-referential candidate file. The final repository-controlled implementation observation is separately pinned in `IMPLEMENTATION_MAP.json.observedAtHead`; verification accepts it only while every declared `observedSourcePaths` path is unchanged at the candidate head.
+- The daemon product never executes unsigned `Upgrade` or `Rollback`; those wire variants are compatibility rejection surfaces. Ordinary `Supervisor::upgrade/rollback` remain library-level qualification/fault-injection APIs.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

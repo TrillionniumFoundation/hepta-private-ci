@@ -75,6 +75,9 @@ pub struct UnixManagedProcess {
     handle: UnixProcessHandle,
     logs: Receiver<ProcessLog>,
     health_probe: HealthProbe,
+    agent_control: Option<AgentHealthProbeIdentity>,
+    drain_requested: bool,
+    next_drain_request_id: u64,
 }
 
 enum UnixProcessHandle {
@@ -100,37 +103,64 @@ impl ManagedProcess for UnixManagedProcess {
                 Err(TryRecvError::Empty | TryRecvError::Disconnected) => break,
             }
         }
-        let state = match &mut self.handle {
+        let running = match &mut self.handle {
             UnixProcessHandle::Child(child) => match child.try_wait()? {
                 Some(status) => {
                     self.health_probe.shutdown();
-                    ProcessState::Exited(ProcessExit {
-                        success: status.success(),
-                        code: status.code(),
-                    })
+                    return Ok(ProcessObservation {
+                        state: ProcessState::Exited(ProcessExit {
+                            success: status.success(),
+                            code: status.code(),
+                        }),
+                        logs,
+                    });
                 }
-                None => ProcessState::Running {
-                    healthy: self.health_probe.ready(),
-                    drained: false,
-                },
+                None => true,
             },
             UnixProcessHandle::Adopted { process_id } => {
                 if let Some(exit) = poll_adopted_process(*process_id)? {
                     self.health_probe.shutdown();
-                    ProcessState::Exited(exit)
-                } else {
-                    ProcessState::Running {
-                        healthy: self.health_probe.ready(),
-                        drained: false,
-                    }
+                    return Ok(ProcessObservation {
+                        state: ProcessState::Exited(exit),
+                        logs,
+                    });
                 }
+                true
             }
         };
-        Ok(ProcessObservation { state, logs })
+        debug_assert!(running);
+        let drained = if self.drain_requested {
+            match self.agent_control.as_ref() {
+                Some(identity) => {
+                    let request_id = self.next_drain_request_id;
+                    self.next_drain_request_id = self.next_drain_request_id.wrapping_add(1).max(1);
+                    query_agent_drain_once(identity, request_id)?
+                }
+                None => false,
+            }
+        } else {
+            false
+        };
+        Ok(ProcessObservation {
+            state: ProcessState::Running {
+                healthy: self.health_probe.ready(),
+                drained,
+            },
+            logs,
+        })
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGTERM)
+        let Some(identity) = self.agent_control.as_ref() else {
+            return Err(ProcessDriverError::new(
+                "managed process does not expose the Agentd drain protocol",
+            ));
+        };
+        let request_id = self.next_drain_request_id;
+        self.next_drain_request_id = self.next_drain_request_id.wrapping_add(1).max(1);
+        let _ = query_agent_drain_once(identity, request_id)?;
+        self.drain_requested = true;
+        Ok(())
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
@@ -164,15 +194,15 @@ impl ProcessDriver for UnixProcessDriver {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
         let mut child = command.spawn()?;
-        let health_probe = match HealthProbe::spawn(HealthProbeIdentity::Agentd(
-            AgentHealthProbeIdentity::from_spawn(spec, child.id()),
-        )) {
-            Ok(probe) => probe,
-            Err(error) => {
-                let _ = child.kill();
-                return Err(error);
-            }
-        };
+        let agent_control = AgentHealthProbeIdentity::from_spawn(spec, child.id());
+        let health_probe =
+            match HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone())) {
+                Ok(probe) => probe,
+                Err(error) => {
+                    let _ = child.kill();
+                    return Err(error);
+                }
+            };
         let Some(stdout) = child.stdout.take() else {
             let _ = child.kill();
             return Err(ProcessDriverError::new("child stdout pipe is missing"));
@@ -195,6 +225,9 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Child(child),
                 logs,
                 health_probe,
+                agent_control: Some(agent_control),
+                drain_requested: false,
+                next_drain_request_id: 1,
             },
         })
     }
@@ -205,8 +238,8 @@ impl ProcessDriver for UnixProcessDriver {
         }
         let process_id = u32::try_from(spec.identity.system_id())
             .map_err(|_| ProcessDriverError::new("stored child PID does not fit u32"))?;
-        let health_identity =
-            HealthProbeIdentity::Agentd(AgentHealthProbeIdentity::from_adopt(spec, process_id));
+        let agent_control = AgentHealthProbeIdentity::from_adopt(spec, process_id);
+        let health_identity = HealthProbeIdentity::Agentd(agent_control.clone());
         if prove_adoption_identity(&health_identity) {
             let health_probe = HealthProbe::spawn(health_identity)?;
             let (_sender, logs) = std::sync::mpsc::sync_channel(1);
@@ -214,6 +247,9 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Adopted { process_id },
                 logs,
                 health_probe,
+                agent_control: Some(agent_control),
+                drain_requested: false,
+                next_drain_request_id: 1,
             }));
         }
 
@@ -291,6 +327,9 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Child(child),
                 logs,
                 health_probe,
+                agent_control: None,
+                drain_requested: false,
+                next_drain_request_id: 1,
             },
         })
     }
@@ -313,6 +352,9 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Adopted { process_id },
                 logs,
                 health_probe,
+                agent_control: None,
+                drain_requested: false,
+                next_drain_request_id: 1,
             }));
         }
 
@@ -370,6 +412,7 @@ impl HealthProbeIdentity {
     }
 }
 
+#[derive(Clone)]
 struct AgentHealthProbeIdentity {
     agent_id: AgentId,
     spawn_generation: u64,
@@ -570,6 +613,57 @@ fn query_agent_health_once(
         exact_identity,
         ready: exact_identity && readiness_matches,
     })
+}
+
+fn query_agent_drain_once(
+    identity: &AgentHealthProbeIdentity,
+    request_id: u64,
+) -> Result<bool, ProcessDriverError> {
+    let request = AgentdRequest::drain(request_id, identity.spawn_generation);
+    let mut bytes = serde_json::to_vec(&request)?;
+    bytes.push(b'\n');
+    if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
+        return Err(ProcessDriverError::new(
+            "Agentd drain request exceeded the bounded control frame",
+        ));
+    }
+    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.write_all(&bytes)?;
+    stream.shutdown(Shutdown::Write)?;
+    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
+    let mut response_bytes = Vec::new();
+    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
+        return Err(ProcessDriverError::new(
+            "Agentd drain response was not a bounded complete frame",
+        ));
+    }
+    let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
+    let exact_envelope = response.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
+        && response.request_id == request_id
+        && response.agent_id == identity.agent_id
+        && response.spawn_generation == identity.spawn_generation
+        && identity
+            .spawn_generation
+            .checked_add(2)
+            .is_some_and(|generation| response.current_generation == generation);
+    let AgentdPayload::Drain(snapshot) = response.payload else {
+        return Err(ProcessDriverError::new(
+            "Agentd drain request did not return a drain acknowledgement",
+        ));
+    };
+    if !exact_envelope
+        || snapshot.lifecycle != AgentLifecycle::Draining
+        || snapshot.fenced
+        || !snapshot.admission_closed
+    {
+        return Err(ProcessDriverError::new(
+            "Agentd drain acknowledgement did not bind the current draining generation",
+        ));
+    }
+    Ok(snapshot.drained && snapshot.running_turns == 0)
 }
 
 fn query_matrix_health_once(

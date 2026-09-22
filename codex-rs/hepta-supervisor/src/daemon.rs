@@ -79,6 +79,8 @@ use crate::H7H89ProductionTransition;
 #[cfg(unix)]
 use crate::ProcessDriver;
 #[cfg(unix)]
+use crate::ProductionRecoveryDecision;
+#[cfg(unix)]
 use crate::Supervisor;
 #[cfg(unix)]
 use crate::SupervisorConfig;
@@ -404,8 +406,13 @@ async fn handle_request<D: ProcessDriver>(
                     );
                 }
             };
+            let recovery_required = state
+                .supervisor
+                .lock()
+                .await
+                .any_production_recovery_required();
             SupervisordPayload::Health(SupervisordHealth {
-                ready: true,
+                ready: !recovery_required,
                 supervisor_epoch: state.supervisor_epoch.clone(),
                 process_id: std::process::id(),
                 registered_agents,
@@ -458,6 +465,24 @@ async fn handle_request<D: ProcessDriver>(
                 safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
             }
         },
+        SupervisordMethod::ReleaseSelection { agent_id } => {
+            let supervisor = state.supervisor.lock().await;
+            match supervisor.release_selection_snapshot(&agent_id) {
+                Ok(selection) => SupervisordPayload::ReleaseSelection { selection },
+                Err(error) => {
+                    safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
+                }
+            }
+        }
+        SupervisordMethod::ProductionMutationStatus { agent_id } => {
+            let supervisor = state.supervisor.lock().await;
+            match supervisor.production_mutation_state(&agent_id) {
+                Ok(state) => SupervisordPayload::ProductionMutationStatus { state },
+                Err(error) => {
+                    safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
+                }
+            }
+        }
         SupervisordMethod::Start { fence, release_id } => {
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
@@ -563,6 +588,65 @@ async fn handle_request<D: ProcessDriver>(
             )
             .await
         }
+        SupervisordMethod::ResolveProductionRecovery { fence, decision } => {
+            handle_recovery_resolution(state, fence, decision).await
+        }
+    }
+}
+
+#[cfg(unix)]
+async fn handle_recovery_resolution<D: ProcessDriver>(
+    state: Arc<DaemonState<D>>,
+    fence: SupervisordControlFence,
+    decision: ProductionRecoveryDecision,
+) -> SupervisordPayload {
+    if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production recovery is disabled in this build",
+            /*actual*/ None,
+        );
+    }
+    let Some(verifier) = state.production_grant_verifier.clone() else {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production recovery requires an externally pinned verifier",
+            /*actual*/ None,
+        );
+    };
+    let agent_id = fence.agent_id.clone();
+    let mut supervisor = state.supervisor.lock().await;
+    let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
+        Ok(actual) => actual,
+        Err(error) => {
+            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
+        }
+    };
+    if !control_fence_matches(&fence, &actual.control_fence) {
+        return error_payload(
+            "stale_control_fence",
+            "selected Agent changed; refresh before recovery",
+            Some(actual),
+        );
+    }
+    let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
+    if let Err(error) = supervisor.resolve_production_recovery(
+        &agent_id,
+        &decision,
+        &verifier,
+        authority_epoch,
+        unix_seconds_now(),
+    ) {
+        let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
+        return safe_rejection(
+            error,
+            post.or(Some(actual)),
+            /*mutation_started*/ false,
+        );
+    }
+    match supervisor.production_mutation_state(&agent_id) {
+        Ok(state) => SupervisordPayload::ProductionMutationStatus { state },
+        Err(error) => safe_rejection(error, Some(actual), /*mutation_started*/ true),
     }
 }
 
@@ -610,6 +694,19 @@ async fn handle_signed_mutation<D: ProcessDriver>(
             "selected Agent changed; refresh before retry",
             Some(actual),
         );
+    }
+    match supervisor.production_recovery_required(&agent_id) {
+        Ok(true) => {
+            return error_payload(
+                "signed_intent_recovery_required",
+                "resolve the quarantined production mutation before admitting another signed transition",
+                Some(actual),
+            );
+        }
+        Ok(false) => {}
+        Err(error) => {
+            return safe_rejection(error, Some(actual), /*mutation_started*/ false);
+        }
     }
     let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
     let receipt = match supervisor.apply_production_grant(
@@ -678,6 +775,31 @@ async fn handle_mutation<D: ProcessDriver>(
         return error_payload(
             "stale_control_fence",
             "selected Agent changed; refresh before retry",
+            Some(actual),
+        );
+    }
+    match supervisor.production_recovery_required(&agent_id) {
+        Ok(true) if operation != SupervisordMutation::Kill => {
+            return error_payload(
+                "signed_intent_recovery_required",
+                "this Agent has a quarantined production mutation; only status, recovery, or emergency kill is allowed",
+                Some(actual),
+            );
+        }
+        Ok(_) => {}
+        Err(error) => {
+            return safe_rejection(error, Some(actual), /*mutation_started*/ false);
+        }
+    }
+    if state.production_grant_verifier.is_some()
+        && matches!(
+            operation,
+            SupervisordMutation::Upgrade | SupervisordMutation::Rollback
+        )
+    {
+        return error_payload(
+            "signed_release_authority_required",
+            "production mode requires SignedUpgrade or SignedRollback for release transitions",
             Some(actual),
         );
     }
@@ -947,6 +1069,7 @@ struct HiddenControlState<'a> {
     registry_current_release: &'a Option<ReleaseId>,
     registry_previous_release: &'a Option<ReleaseId>,
     restart_pending: bool,
+    restart_attempt: u32,
     runtime_phase: &'a Option<crate::ControlRuntimePhase>,
     runtime_release: &'a Option<String>,
     runtime_incarnation: &'a Option<String>,
@@ -981,6 +1104,7 @@ fn control_state_digest(
             registry_current_release: &record.release_state.current,
             registry_previous_release: &record.release_state.previous,
             restart_pending: snapshot.restart_pending,
+            restart_attempt: snapshot.restart_attempt,
             runtime_phase: &snapshot.runtime_phase,
             runtime_release: &snapshot.runtime_release,
             runtime_incarnation: &snapshot.runtime_incarnation,
@@ -1038,6 +1162,11 @@ fn safe_rejection(
             "selected release is not allowed for this Agent",
             actual,
         ),
+        SupervisorError::Registry(FleetRegistryError::ReleaseRevoked { .. }) => error_payload(
+            "release_revoked",
+            "selected release is revoked for this Agent",
+            actual,
+        ),
         SupervisorError::NoPreviousRelease(_) => error_payload(
             "no_previous_release",
             "selected Agent has no previous release",
@@ -1051,6 +1180,11 @@ fn safe_rejection(
         SupervisorError::ReleaseChangePending(_) => error_payload(
             "release_change_pending",
             "selected Agent already has a lifecycle change in progress",
+            actual,
+        ),
+        SupervisorError::RestartBudgetExhausted(_) => error_payload(
+            "restart_budget_exhausted",
+            "selected Agent exhausted its bounded restart budget",
             actual,
         ),
         SupervisorError::TargetReleaseUnchanged(_) => error_payload(
@@ -1395,6 +1529,7 @@ mod tests {
             logs: Vec::new(),
             control_revision: 0,
             restart_pending: false,
+            restart_attempt: 0,
             release_state_generation: record.release_state.generation,
             runtime_phase: None,
             runtime_release: None,
@@ -1498,7 +1633,7 @@ mod tests {
 
     #[cfg(unix)]
     #[tokio::test(flavor = "current_thread")]
-    async fn unresolved_signed_intent_blocks_daemon_startup_before_socket_bind() {
+    async fn unresolved_signed_intent_keeps_daemon_reachable_but_not_ready() {
         let temp = tempfile::tempdir().expect("create temporary fleet");
         let fleet_root = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("fleet root");
         let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
@@ -1547,19 +1682,64 @@ mod tests {
         crate::signed_intent::write_intent(record.layout.run_root(), &intent)
             .expect("persist signed intent");
 
-        let error =
-            match run_supervisord_inner(fleet_root.clone(), CancellationToken::new(), None).await {
-                Ok(_) => panic!("unresolved signed intent must stop daemon startup"),
-                Err(error) => error,
-            };
-        assert!(matches!(
-            error,
-            SupervisorError::SignedIntentRecoveryRequired(id) if id == agent_id
+        let cancellation = CancellationToken::new();
+        let daemon = tokio::spawn(run_supervisord_inner(
+            fleet_root.clone(),
+            cancellation.clone(),
+            None,
         ));
+        let client = crate::SupervisordClient::new(
+            registry.layout().supervisor_socket().to_path_buf(),
+        )
+        .expect("client");
+        let deadline = Instant::now() + Duration::from_secs(2);
+        let health = loop {
+            match client.health().await {
+                Ok(health) => break health,
+                Err(error) => {
+                    assert!(
+                        Instant::now() < deadline,
+                        "recovery daemon did not bind a reachable socket: {error}"
+                    );
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            }
+        };
         assert!(
-            !registry.layout().supervisor_socket().exists(),
-            "daemon must not bind a control socket after fail-closed recovery"
+            !health.ready,
+            "unresolved production recovery must keep daemon health not-ready"
         );
+
+        let mutation = client
+            .production_mutation_status(agent_id.clone())
+            .await
+            .expect("query recovery status")
+            .expect("durable recovery status");
+        assert_eq!(
+            mutation.receipt.status,
+            crate::ProductionMutationStatus::RecoveryRequired
+        );
+
+        let status = client
+            .snapshot(agent_id.clone())
+            .await
+            .expect("recovery snapshot");
+        let restart_error = client
+            .restart(status.control_fence)
+            .await
+            .expect_err("ordinary mutation must remain blocked during production recovery");
+        assert!(
+            restart_error
+                .to_string()
+                .contains("signed_intent_recovery_required"),
+            "unexpected recovery rejection: {restart_error}"
+        );
+
+        cancellation.cancel();
+        daemon
+            .await
+            .expect("join recovery daemon")
+            .expect("shutdown recovery daemon");
     }
 }
 

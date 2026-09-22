@@ -22,6 +22,8 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::RwLock;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 use crate::analytics_utils::analytics_events_client_from_config;
 use crate::config_manager::ConfigManager;
@@ -205,8 +207,68 @@ enum ShutdownAction {
 #[derive(Clone, Copy)]
 enum ShutdownSignal {
     Forceable,
-    #[cfg(unix)]
     GracefulOnly,
+}
+
+/// Embedding-owned graceful drain control.
+///
+/// The handle closes new RPC admission, exposes the exact running assistant-turn
+/// count already maintained by App Server, and becomes drained only after the
+/// graceful shutdown state machine has observed zero running turns.
+#[derive(Clone)]
+pub struct AppServerDrainHandle {
+    request: CancellationToken,
+    running_turns: Arc<AtomicUsize>,
+    drained: Arc<AtomicBool>,
+}
+
+impl AppServerDrainHandle {
+    pub fn new() -> Self {
+        Self {
+            request: CancellationToken::new(),
+            running_turns: Arc::new(AtomicUsize::new(0)),
+            drained: Arc::new(AtomicBool::new(false)),
+        }
+    }
+
+    pub fn request_drain(&self) {
+        self.drained.store(false, Ordering::Release);
+        self.request.cancel();
+    }
+
+    pub fn running_turns(&self) -> usize {
+        self.running_turns.load(Ordering::Acquire)
+    }
+
+    pub fn drained(&self) -> bool {
+        self.drained.load(Ordering::Acquire)
+    }
+
+    async fn wait_requested(&self) {
+        self.request.cancelled().await;
+    }
+
+    fn observe_running_turns(&self, running_turns: usize) {
+        self.running_turns.store(running_turns, Ordering::Release);
+    }
+
+    fn mark_drained(&self) {
+        self.running_turns.store(0, Ordering::Release);
+        self.drained.store(true, Ordering::Release);
+    }
+}
+
+impl Default for AppServerDrainHandle {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+async fn wait_for_embedded_drain(handle: Option<AppServerDrainHandle>) {
+    match handle {
+        Some(handle) => handle.wait_requested().await,
+        None => std::future::pending::<()>().await,
+    }
 }
 
 async fn shutdown_signal() -> IoResult<ShutdownSignal> {
@@ -450,6 +512,10 @@ pub struct AppServerRuntimeOptions {
     pub plugin_startup_tasks: PluginStartupTasks,
     pub remote_control_startup_mode: RemoteControlStartupMode,
     pub install_shutdown_signal_handler: bool,
+    /// Optional embedding-owned graceful drain control. When requested, App
+    /// Server closes new per-connection RPC admission and waits for the exact
+    /// running assistant-turn count to reach zero before declaring drained.
+    pub graceful_drain: Option<AppServerDrainHandle>,
     /// Optional maximum pending turn rows in this runtime's queue database.
     ///
     /// Ordinary Codex leaves this unset and retains only its historical
@@ -518,6 +584,7 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
                 "install_shutdown_signal_handler",
                 &self.install_shutdown_signal_handler,
             )
+            .field("graceful_drain", &self.graceful_drain.is_some())
             .field("turn_queue_capacity", &self.turn_queue_capacity)
             .field("required_sqlite_home", &self.required_sqlite_home)
             .field(
@@ -557,6 +624,14 @@ impl PartialEq for AppServerRuntimeOptions {
             && self.plugin_startup_tasks == other.plugin_startup_tasks
             && self.remote_control_startup_mode == other.remote_control_startup_mode
             && self.install_shutdown_signal_handler == other.install_shutdown_signal_handler
+            && match (&self.graceful_drain, &other.graceful_drain) {
+                (Some(left), Some(right)) => {
+                    Arc::ptr_eq(&left.running_turns, &right.running_turns)
+                        && Arc::ptr_eq(&left.drained, &right.drained)
+                }
+                (None, None) => true,
+                _ => false,
+            }
             && self.turn_queue_capacity == other.turn_queue_capacity
             && self.required_sqlite_home == other.required_sqlite_home
             && self.required_thread_store_mode == other.required_thread_store_mode
@@ -637,6 +712,7 @@ impl Default for AppServerRuntimeOptions {
             plugin_startup_tasks: PluginStartupTasks::Start,
             remote_control_startup_mode: RemoteControlStartupMode::ResolvePersisted,
             install_shutdown_signal_handler: true,
+            graceful_drain: None,
             turn_queue_capacity: None,
             required_sqlite_home: None,
             required_thread_store_mode: None,
@@ -1117,6 +1193,7 @@ pub async fn run_main_with_transport_options(
             outgoing_tx,
             analytics_events_client.clone(),
         ));
+        let graceful_drain = runtime_options.graceful_drain.clone();
         let initialize_notification_sender = outgoing_message_sender.clone();
         let outbound_control_tx = outbound_control_tx;
         let processor = Arc::new(MessageProcessor::new(MessageProcessorArgs {
@@ -1164,6 +1241,9 @@ pub async fn run_main_with_transport_options(
                     let running_turn_count = running_turn_count_rx.borrow();
                     *running_turn_count
                 };
+                if let Some(handle) = graceful_drain.as_ref() {
+                    handle.observe_running_turns(running_turn_count);
+                }
                 if matches!(
                     shutdown_state.update(running_turn_count, connections.len()),
                     ShutdownAction::Finish
@@ -1172,10 +1252,35 @@ pub async fn run_main_with_transport_options(
                     let _ = outbound_control_tx
                         .send(OutboundControlEvent::DisconnectAll)
                         .await;
+                    if let Some(handle) = graceful_drain.as_ref() {
+                        handle.mark_drained();
+                    }
                     break "shutdown_requested";
                 }
 
                 tokio::select! {
+                    _ = wait_for_embedded_drain(graceful_drain.clone()), if graceful_drain.is_some() && !shutdown_state.requested() => {
+                        let running_turn_count = *running_turn_count_rx.borrow();
+                        shutdown_state.on_signal(
+                            ShutdownSignal::GracefulOnly,
+                            connections.len(),
+                            running_turn_count,
+                        );
+                        // Close every existing RPC admission gate before waiting
+                        // on any one connection. A one-pass shutdown loop could block
+                        // on the first in-flight handler while later connection gates
+                        // were still accepting queued work. The first pass establishes
+                        // the global no-new-admission cut; the second pass waits for
+                        // handlers that already crossed a gate. Their resulting turns
+                        // are then covered by the running-turn drain below.
+                        for connection_state in connections.values() {
+                            connection_state.session.rpc_gate.close().await;
+                        }
+                        for connection_state in connections.values() {
+                            connection_state.session.rpc_gate.shutdown().await;
+                        }
+                        transport_shutdown_token.cancel();
+                    }
                     shutdown_signal_result = shutdown_signal(), if graceful_signal_restart_enabled && !shutdown_state.forced() => {
                         let signal = match shutdown_signal_result {
                             Ok(signal) => signal,

@@ -488,10 +488,12 @@ pub(crate) const fn map_final_use_error(error: FinalUseError) -> AdmissionError 
         FinalUseError::BindingMismatch => AdmissionError::FactorBindingMismatch,
         FinalUseError::InvalidGrant
         | FinalUseError::InvalidTrust
+        | FinalUseError::AntiRollbackViolation
         | FinalUseError::InvalidSignature
         | FinalUseError::EpochMismatch
         | FinalUseError::StaleRevocationHead
         | FinalUseError::CapacityExceeded
+        | FinalUseError::DispatchInProgress
         | FinalUseError::UnsafeStateDirectory => AdmissionError::InvalidGrant,
     }
 }

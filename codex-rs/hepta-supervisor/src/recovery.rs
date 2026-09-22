@@ -3,6 +3,7 @@ use std::time::Instant;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentRecord;
+use codex_hepta_fleet::FleetRegistryError;
 
 use crate::AdoptSpec;
 use crate::Adoption;
@@ -35,26 +36,55 @@ impl<D: ProcessDriver> Supervisor<D> {
         record: &AgentRecord,
     ) -> Result<(), SupervisorError> {
         slot.release_state_generation = record.release_state.generation;
-        slot.active_release = record
-            .release_state
-            .current
-            .as_ref()
-            .map(|release_id| self.registry.resolve_release(agent_id, release_id))
-            .transpose()?
-            .map(AgentRelease::try_from)
-            .transpose()?;
-        slot.previous_release = record
-            .release_state
-            .previous
-            .as_ref()
-            .map(|release_id| self.registry.resolve_release(agent_id, release_id))
-            .transpose()?
-            .map(AgentRelease::try_from)
-            .transpose()?;
+        slot.active_release = match record.release_state.current.as_ref() {
+            Some(release_id) => self.resolve_persisted_release(agent_id, release_id)?,
+            None => None,
+        };
+        slot.previous_release = match record.release_state.previous.as_ref() {
+            Some(release_id) => self.resolve_persisted_release(agent_id, release_id)?,
+            None => None,
+        };
         slot.last_command = slot
             .active_release
             .as_ref()
             .map(|release| release.command().clone());
+        Ok(())
+    }
+
+    fn resolve_persisted_release(
+        &self,
+        agent_id: &AgentId,
+        release_id: &codex_hepta_fleet::ReleaseId,
+    ) -> Result<Option<AgentRelease>, SupervisorError> {
+        match self.registry.resolve_release(agent_id, release_id) {
+            Ok(release) => AgentRelease::try_from(release).map(Some),
+            Err(
+                FleetRegistryError::ReleaseRevoked { .. }
+                | FleetRegistryError::ReleaseNotAllowed { .. },
+            ) => Ok(None),
+            Err(error) => Err(error.into()),
+        }
+    }
+
+    pub(crate) fn recover_restart_budget(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        let record = self.record(agent_id)?;
+        let pending = crate::restart_budget::pending_restart(
+            record.layout.run_root(),
+            self.config.restart_max_attempts,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        if let Some(claim) = pending {
+            slot.restart_attempt = claim.attempt;
+            slot.restart_not_before = Some(deadline(now, claim.backoff)?);
+            // An adopted replacement is already satisfying this durable
+            // restart. Only a missing runtime needs the replacement queued.
+            slot.restart_pending = slot.runtime.is_none();
+        }
         Ok(())
     }
 
@@ -185,20 +215,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             record.lifecycle.generation,
             record.lifecycle.lifecycle,
         )?;
-        if lease.release_id.as_str() != "unversioned" {
-            let needs_resolution = slot
-                .active_release
-                .as_ref()
-                .is_none_or(|active| active.release_id() != &lease.release_id);
-            if needs_resolution {
-                let leased = AgentRelease::try_from(
-                    self.registry.resolve_release(agent_id, &lease.release_id)?,
-                )?;
-                slot.previous_release = slot.active_release.take();
-                slot.last_command = Some(leased.command().clone());
-                slot.active_release = Some(leased);
-            }
-        }
         let spec = AdoptSpec {
             agent_id: agent_id.clone(),
             registry_generation: record.lifecycle.generation,
@@ -215,6 +231,53 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| driver_error(agent_id, error))?
         {
             Adoption::Adopted(mut process) => {
+                if lease.release_id.as_str() != "unversioned" {
+                    let needs_resolution = slot
+                        .active_release
+                        .as_ref()
+                        .is_none_or(|active| active.release_id() != &lease.release_id);
+                    if needs_resolution {
+                        let leased = match self.registry.resolve_release(agent_id, &lease.release_id)
+                        {
+                            Ok(release) => AgentRelease::try_from(release)?,
+                            Err(error) => {
+                                // Exact process identity has already been proven by adoption.
+                                // If the active release is no longer currently admitted (or
+                                // its admission state cannot be verified), fail closed by
+                                // fencing and killing the child before returning the fault.
+                                // Keep the runtime handle until exit is observed so recovery
+                                // never leaves a live unmanaged process behind.
+                                let runtime_generation = record.lifecycle.generation;
+                                let _ = process.kill();
+                                slot.runtime = Some(AgentRuntime {
+                                    process,
+                                    identity: lease.identity.clone(),
+                                    spawn_generation: lease.spawn_generation,
+                                    release_id: lease.release_id.clone(),
+                                    generation: runtime_generation,
+                                    phase: RuntimePhase::Killing,
+                                    healthy: false,
+                                    fenced: true,
+                                });
+                                if is_live_lifecycle(record.lifecycle.lifecycle) {
+                                    let failed = self.transition_without_runtime(
+                                        agent_id,
+                                        slot,
+                                        runtime_generation,
+                                        AgentLifecycle::Failed,
+                                    )?;
+                                    if let Some(runtime) = slot.runtime.as_mut() {
+                                        runtime.generation = failed;
+                                    }
+                                }
+                                return Err(error.into());
+                            }
+                        };
+                        slot.previous_release = slot.active_release.take();
+                        slot.last_command = Some(leased.command().clone());
+                        slot.active_release = Some(leased);
+                    }
+                }
                 let phase = match record.lifecycle.lifecycle {
                     AgentLifecycle::Starting => RuntimePhase::AwaitingHealth {
                         deadline: deadline(now, self.config.health_timeout)?,

@@ -104,7 +104,7 @@ Stop new admission; persist drain intent; cancel only provably pre-effect work; 
 
 ## 15. Source maturity
 
-The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Agentd owns its run coordinator and the automation TaskFlow Codex-activity caller. `automation.taskflow` now has repository-complete durable schedule/occurrence/run/step/effect-attempt wiring, Calendar V2 source semantics and restart reconciliation. This does not close concrete external-effect provider activation, target-host/tzdb qualification or independent acceptance. Fleet, inference, Matrix, Browser/Web/Native retain their separately recorded repository/external gaps; one module's closure cannot certify another owner.
+The truth registry records source-boundary mappings for all 46 operations. Supervisor and Codex are native runtime spines; Agentd owns its run coordinator and the automation TaskFlow Codex-activity caller. `automation.taskflow` now has repository-complete durable schedule/occurrence/run/step/effect-attempt wiring, Calendar V2 source semantics and restart reconciliation. This does not close concrete external-effect provider activation, target-host/tzdb qualification or independent acceptance. Fleet, inference, Matrix, Browser/Web/Native retain their separately recorded repository/external gaps; one module's closure cannot certify another owner.
 
 ## 16. Evidence package required for activation
 
