@@ -62,6 +62,8 @@ pub(crate) fn digest_profile(profile: &UtilityProfile) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(PROFILE_DIGEST_DOMAIN);
     push_id(&mut bytes, &profile.profile_id);
+    bytes.extend_from_slice(profile.axis_registry_digest.as_array());
+    bytes.extend_from_slice(profile.normalization_manifest_digest.as_array());
     push_len(&mut bytes, profile.dimensions.len());
     for (axis, direction) in &profile.dimensions {
         push_id(&mut bytes, axis);

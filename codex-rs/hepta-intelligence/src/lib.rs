@@ -7,6 +7,7 @@
 #![forbid(unsafe_code)]
 
 mod evaluated_shadow;
+mod ndu_stochastic_admission;
 mod outcome_credit_v2;
 
 pub use evaluated_shadow::EvaluatedShadowError;
@@ -25,6 +26,11 @@ pub use outcome_credit_v2::append_outcome_credit_v2;
 
 mod objective_run;
 
+pub use ndu_stochastic_admission::NduStochasticAdmissionError;
+pub use ndu_stochastic_admission::NduStochasticAdmissionReceiptV1;
+pub use ndu_stochastic_admission::NduStochasticAdmissionRequestV1;
+pub use ndu_stochastic_admission::admit_ndu_stochastic_candidate_v1;
+pub use ndu_stochastic_admission::canonical_ndu_stochastic_solver_digest_v1;
 pub use objective_run::ObjectiveRunBindingsV1;
 pub use objective_run::ObjectiveRunError;
 pub use objective_run::PublishedObjectiveRunV1;

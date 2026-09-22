@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `utility.ndu`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation and strict lint. Exact-head qualification is a separate evidence state and is true only when the exact candidate has a passing receipt; the workflow definition or `existing_bound` label is not that receipt. This status does not activate `utility.ndu`, create an authenticated production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -177,7 +177,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. Projection journals are bounded owner-local references and must not be substituted for an independently selected production writer.
+Embed the deterministic evaluator under a frozen objective and versioned policy. A real request-local read-only caller is established through `runtime.agentd cognitive_context -> control plan_observed_context -> evaluate_prepared_plan_with_ndu -> NDU V2 evaluator`; this does not establish the authenticated production NDU owner/caller or activate global adaptive reconfiguration. `NduProjectionJournalV1` remains the semantic journal, while `NduProjectionStoreV1` is a crash-bounded durable-writer source candidate with exclusive writer locking, complete-image temp write + file sync, atomic rename, Unix parent-directory sync, indeterminate-handle fencing and monotonic backup restore. Neither source existence nor local qualification substitutes for governed production writer selection, host enrollment, retention/off-host backup policy, monitoring or target-host acceptance.
 
 Current operating and state-format references:
 
@@ -194,8 +194,11 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-ndu/src/covariance_tests.rs](../../../codex-rs/hepta-ndu/src/covariance_tests.rs); named case: `scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds`.
 - [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); named case: `hard_violation_is_filtered_before_utility`.
+- [codex-rs/hepta-ndu/src/projection_store_tests.rs](../../../codex-rs/hepta-ndu/src/projection_store_tests.rs); durable reopen/restore, single-writer and indeterminate-fencing cases.
+- [codex-rs/hepta-ndu/src/z_conversion_tests.rs](../../../codex-rs/hepta-ndu/src/z_conversion_tests.rs); whitening-coordinate and signed-Q24 ties-to-even cases.
+- [codex-rs/hepta-control-plane/src/planner_context_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_context_tests.rs) and [planner_ndu_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu_tests.rs); real request-local Control caller regressions.
 
-In `codex-rs`, run `just test -p codex-hepta-ndu`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-ndu`. The dedicated NDU qualification workflow also runs focused `codex-hepta-control-plane` planner-context/planner-NDU regressions so the established read-only caller cannot drift independently of the evaluator. These commands are test invocations, not stored results. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -213,13 +216,13 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Current source already contains a named request-local read-only caller through Agentd and Control. Production activation is a stronger state: it composes an authenticated production NDU owner/caller through registered ports, selects the durable writer, and verifies current authority/revocation, configuration, resource, recovery and failure behavior on the target host. Read-only, shadow and qualification callers are not production activation. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Request-local composition requires a named bounded caller; authenticated production composition additionally requires the production owner/caller, selected writer and current authority/revocation fences. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `utility.ndu`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 

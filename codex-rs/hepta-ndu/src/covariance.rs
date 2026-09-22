@@ -11,6 +11,8 @@ use crate::conditional_moments::duration_seconds;
 pub struct ZEstimateV1 {
     /// Utility x driver sensitivity in the original increment coordinates.
     pub z: Vec<Vec<f64>>,
+    /// Exact admitted covariance profile used to derive this estimate.
+    pub covariance_profile_digest: Digest32,
     /// Conservative matrix 1-norm diagnostic, not a statistical certificate.
     pub condition_estimate: f64,
     pub increment_eigenvalue_lower_estimate: f64,
@@ -200,6 +202,7 @@ pub fn solve_backward_regression(
     }
     Ok(ZEstimateV1 {
         z,
+        covariance_profile_digest: profile.digest,
         condition_estimate,
         increment_eigenvalue_lower_estimate: eigenvalue_floor,
         maximum_relative_residual,

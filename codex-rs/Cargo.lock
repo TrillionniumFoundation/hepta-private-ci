@@ -3784,6 +3784,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-intelligence-eval",
  "codex-hepta-intuition",
+ "codex-hepta-learning-artifacts",
  "codex-hepta-learning-ledger",
  "codex-hepta-ndu",
  "codex-hepta-neuron",
@@ -4009,8 +4010,11 @@ dependencies = [
 name = "codex-hepta-ndu"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
+ "ed25519-dalek",
  "pretty_assertions",
+ "tempfile",
 ]
 
 [[package]]
