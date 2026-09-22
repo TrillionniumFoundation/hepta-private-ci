@@ -35,10 +35,22 @@
       "designOperation": "append_decision",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "DurableLedger",
-        "SegmentedLedger",
-        "LedgerWitnessStore",
-        "LearningEvidenceVerifierV1"
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+          "symbol": "DurableLedger"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/segments.rs",
+          "symbol": "SegmentedLedger"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/witness.rs",
+          "symbol": "LedgerWitnessStore"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+          "symbol": "LearningEvidenceVerifierV1"
+        }
       ]
     },
     {
@@ -158,9 +170,18 @@
       "designOperation": "activate_learning_trust",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "LearningTrustRootV1",
-        "SignedLearningTrustDistributionV1",
-        "LearningEvidenceVerifierV1"
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+          "symbol": "LearningTrustRootV1"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+          "symbol": "SignedLearningTrustDistributionV1"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+          "symbol": "LearningEvidenceVerifierV1"
+        }
       ]
     },
     {

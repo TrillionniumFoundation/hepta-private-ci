@@ -239,7 +239,10 @@
       "designOperation": "consume_product_qualification_receipt",
       "mappingClass": "delegated_product_consumer",
       "delegatedCallees": [
-        "ProductQualificationReceiptV1::validate_integrity"
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+          "symbol": "ProductQualificationReceiptV1::validate_integrity"
+        }
       ]
     }
   ],
