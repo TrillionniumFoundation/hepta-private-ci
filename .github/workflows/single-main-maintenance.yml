@@ -9,134 +9,82 @@ concurrency:
   group: single-main-maintenance
   cancel-in-progress: false
 jobs:
-  observe:
+  compiler-tools:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    permissions:
-      contents: read
-      actions: read
-      checks: read
-      pull-requests: read
-      statuses: read
     steps:
-      - name: Read current pull-request heads and prerequisite check evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPOSITORY: ${{ github.repository }}
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Preserve only the public compiler distribution for offline integration
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/single-main-observation"
+          mkdir -p "$RUNNER_TEMP/compiler-tools"
+          sysroot="$(rustc +1.95.0 --print sysroot)"
+          rustc +1.95.0 --version --verbose > "$RUNNER_TEMP/compiler-tools/version.txt"
+          tar -C "$sysroot" -czf "$RUNNER_TEMP/compiler-tools/rust-1.95.0-linux.tar.gz" bin lib libexec
+          sha256sum "$RUNNER_TEMP/compiler-tools/rust-1.95.0-linux.tar.gz" > "$RUNNER_TEMP/compiler-tools/compiler.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: single-main-compiler-${{ github.run_id }}
+          path: ${{ runner.temp }}/compiler-tools/
+          compression-level: 0
+          retention-days: 3
+  focused-rust:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,cargo-nextest
+      - name: Execute tests and strict Clippy against the unmodified exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 - <<'PY'
-          import json, os, pathlib, urllib.request, datetime
-          root = 'https://api.github.com/repos/' + os.environ['GH_REPOSITORY']
-          output = pathlib.Path(os.environ['RUNNER_TEMP']) / 'single-main-observation'
-          def get(path):
-              req = urllib.request.Request(root + path, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'})
-              with urllib.request.urlopen(req, timeout=60) as response:
-                  return json.load(response)
-          prs = []
-          for page in range(1, 21):
-              batch = get(f'/pulls?state=open&per_page=100&page={page}')
-              prs.extend({'number': x['number'], 'title': x['title'], 'body': x['body'], 'draft': x['draft'], 'base': x['base']['ref'], 'baseSha': x['base']['sha'], 'head': x['head']['ref'], 'headSha': x['head']['sha'], 'headRepository': x['head']['repo']['full_name'] if x['head']['repo'] else None, 'updatedAt': x['updated_at']} for x in batch)
-              if len(batch) < 100:
-                  break
-          else:
-              raise RuntimeError('PR pagination bound reached')
-          evidence = []
-          for number in [983, 974, 966, 989]:
-              p = get(f'/pulls/{number}')
-              sha = p['head']['sha']
-              checks = []
-              for page in range(1, 11):
-                  batch = get(f'/commits/{sha}/check-runs?per_page=100&page={page}')['check_runs']
-                  checks.extend({'name': x['name'], 'status': x['status'], 'conclusion': x['conclusion'], 'headSha': x['head_sha'], 'id': x['id'], 'detailsUrl': x['details_url'], 'startedAt': x['started_at'], 'completedAt': x['completed_at'], 'output': x['output']} for x in batch)
-                  if len(batch) < 100:
-                      break
-              else:
-                  raise RuntimeError('check pagination bound reached')
-              statuses = get(f'/commits/{sha}/status')
-              evidence.append({'number': number, 'headSha': sha, 'mergeable': p['mergeable'], 'mergeableState': p['mergeable_state'], 'state': p['state'], 'draft': p['draft'], 'checks': checks, 'statuses': statuses})
-              print('PR', number, sha, p['mergeable_state'])
-              for c in checks:
-                  print(c['status'], c['conclusion'], c['name'], c['detailsUrl'])
-          (output / 'open-pulls.json').write_text(json.dumps(prs, indent=2) + '\n')
-          (output / 'prerequisite-checks.json').write_text(json.dumps(evidence, indent=2) + '\n')
-          (output / 'observation.json').write_text(json.dumps({'observedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'openPullCount': len(prs), 'remoteMutationsPerformed': False}, indent=2) + '\n')
-          print('OPEN_PULL_COUNT', len(prs))
+          import datetime, json, os, pathlib, subprocess
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'foundation-rust'
+          out.mkdir()
+          sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          assert sha == 'a8f71be5d5eccd39090e054dc441e3e5f2a842a6'
+          assert tree == '121cb9e5050c8d36e6130d178a38828b6d59bf57'
+          packages = ['codex-hepta-operations', 'codex-hepta-wire', 'codex-hepta-context-compiler', 'codex-hepta-codex-adapter', 'codex-hepta-automation']
+          selection = [value for package in packages for value in ['-p', package]]
+          commands = [('focused-tests', ['just', 'test', *selection]), ('strict-clippy', ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--tests', *selection, '--', '-D', 'warnings'])]
+          results = []
+          for name, command in commands:
+              with (out / (name + '.log')).open('w') as log:
+                  process = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, text=True)
+              results.append({'name': name, 'command': command, 'exitCode': process.returncode})
+              print(name, process.returncode)
+          with (out / 'candidate-mutation.patch').open('w') as patch:
+              subprocess.run(['git', 'diff', '--binary'], stdout=patch, text=True, check=True)
+          clean = not subprocess.check_output(['git', 'status', '--porcelain'], text=True).strip()
+          receipt = {'candidateSha': sha, 'candidateTree': tree, 'observedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'results': results, 'worktreeRemainedClean': clean, 'allListedCommandsPassed': clean and all(r['exitCode'] == 0 for r in results), 'wholeRepositoryQualified': False, 'productQualified': False, 'remoteRefsMutated': False}
+          (out / 'rust-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          print(json.dumps(receipt, indent=2))
+          raise SystemExit(0 if receipt['allListedCommandsPassed'] else 1)
           PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: single-main-observation-${{ github.run_id }}
-          path: ${{ runner.temp }}/single-main-observation/
-          retention-days: 7
-  prune-contained:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    permissions:
-      contents: write
-    steps:
-      - name: Delete only exact branch heads already reachable from retained main
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPOSITORY: ${{ github.repository }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/single-main-prune"
-          cd "$RUNNER_TEMP/single-main-prune"
-          git init --bare repository.git
-          python3 - <<'PY'
-          import base64, datetime, json, os, pathlib, subprocess
-          root = pathlib.Path.cwd()
-          repo = root / 'repository.git'
-          expected_initial_main = 'a74246c4d7657d4c6b09fc50c41f1d715ace5e0e'
-          url = 'https://github.com/' + os.environ['GH_REPOSITORY'] + '.git'
-          env = os.environ.copy()
-          env['GIT_CONFIG_COUNT'] = '1'
-          env['GIT_CONFIG_KEY_0'] = 'http.https://github.com/.extraheader'
-          env['GIT_CONFIG_VALUE_0'] = 'AUTHORIZATION: basic ' + base64.b64encode(('x-access-token:' + os.environ['GH_TOKEN']).encode()).decode()
-          env['GIT_TERMINAL_PROMPT'] = '0'
-          def git(*args, check=True):
-              return subprocess.run(['git', '-C', str(repo), *args], env=env, text=True, capture_output=True, check=check)
-          git('remote', 'add', 'origin', url)
-          git('fetch', '--no-tags', 'origin', '+refs/heads/*:refs/remotes/origin/*')
-          main = git('rev-parse', 'refs/remotes/origin/main').stdout.strip()
-          git('merge-base', '--is-ancestor', expected_initial_main, main)
-          rows = []
-          for line in git('for-each-ref', '--format=%(refname)\t%(objectname)', 'refs/remotes/origin/').stdout.splitlines():
-              ref, sha = line.split('\t')
-              name = ref.removeprefix('refs/remotes/origin/')
-              if name in ('main', 'HEAD', 'integration/single-main-20260922'):
-                  continue
-              p = git('merge-base', '--is-ancestor', sha, main, check=False)
-              if p.returncode not in (0, 1):
-                  raise RuntimeError('ancestry check failed')
-              if p.returncode:
-                  continue
-              remote_ref = 'refs/heads/' + name
-              # Deletion uses an exact lease. A concurrent update is rejected,
-              # never erased. Main is never rewritten by this maintenance job.
-              result = git('push', '--porcelain', '--force-with-lease=' + remote_ref + ':' + sha, 'origin', ':' + remote_ref, check=False)
-              row = {'branch': name, 'sha': sha, 'retainedMain': main, 'containedInMain': True, 'deleted': result.returncode == 0, 'exitCode': result.returncode, 'result': result.stdout, 'error': result.stderr}
-              rows.append(row)
-              (root / 'pruned-branches.json').write_text(json.dumps(rows, indent=2) + '\n')
-              print('DELETED' if row['deleted'] else 'PRESERVED', sha, name)
-          remaining = git('ls-remote', '--heads', 'origin').stdout
-          (root / 'remaining-heads.tsv').write_text(remaining)
-          summary = {'observedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'retainedMain': main, 'deletedCount': sum(x['deleted'] for x in rows), 'preservedOnFailureCount': sum(not x['deleted'] for x in rows), 'remainingBranchCount': len(remaining.splitlines()), 'mainChangedByThisJob': False, 'unmergedBranchesDeleted': 0}
-          (root / 'prune-summary.json').write_text(json.dumps(summary, indent=2) + '\n')
-          print(json.dumps(summary, indent=2))
-          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
-              f.write('# Already-absorbed branch cleanup\n\n' + json.dumps(summary, indent=2) + '\n')
-          PY
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: single-main-prune-${{ github.run_id }}
-          path: |
-            ${{ runner.temp }}/single-main-prune/*.json
-            ${{ runner.temp }}/single-main-prune/*.tsv
+          name: single-main-foundation-rust-${{ github.run_id }}
+          path: ${{ runner.temp }}/foundation-rust/
           retention-days: 30
-          if-no-files-found: error
