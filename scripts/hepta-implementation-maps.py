@@ -177,6 +177,17 @@ def verify_source_identity(
             raise ValueError("invalid observed source paths")
         if not set(roots).issubset(observed_paths):
             raise ValueError("observed source paths omit resolved roots")
+        if policy == "candidate_or_exact_observation_v1" and any(
+            source_root == "codex-rs" or source_root.startswith("codex-rs/")
+            for source_root in roots
+        ):
+            required_workspace_inputs = {"codex-rs/Cargo.toml", "codex-rs/Cargo.lock"}
+            missing_workspace_inputs = sorted(required_workspace_inputs.difference(observed_paths))
+            if missing_workspace_inputs:
+                raise ValueError(
+                    "observed source paths omit Rust workspace build inputs "
+                    + ", ".join(missing_workspace_inputs)
+                )
         observations.append((observed, sorted(set(paths + observed_paths))))
     else:
         observed = None

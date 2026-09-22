@@ -17,6 +17,8 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
+    pub(crate) automation_effect:
+        std::sync::OnceLock<Arc<crate::automation_effect_host::AgentdAutomationEffectHost>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -46,6 +48,7 @@ impl AgentdState {
         });
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
+            automation_effect: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
@@ -97,6 +100,23 @@ impl AgentdState {
         }
         *automation = Some(store);
         Ok(())
+    }
+
+    pub(crate) fn attach_automation_effect_host(
+        &self,
+        host: Arc<crate::automation_effect_host::AgentdAutomationEffectHost>,
+    ) -> Result<(), AgentdError> {
+        self.automation_effect
+            .set(host)
+            .map_err(|_| AgentdError::Protocol(
+                "automation effect host was attached more than once".to_string(),
+            ))
+    }
+
+    pub(crate) fn automation_effect_host(
+        &self,
+    ) -> Option<Arc<crate::automation_effect_host::AgentdAutomationEffectHost>> {
+        self.automation_effect.get().cloned()
     }
 
     pub(crate) fn mark_automation_unavailable(&self) -> Result<(), AgentdError> {

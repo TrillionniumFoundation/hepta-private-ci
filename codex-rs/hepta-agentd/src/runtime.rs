@@ -43,6 +43,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    let automation_effect_host_file = config
+        .automation_effect_host_file()
+        .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -99,6 +102,15 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     .await?;
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
+    }
+    if let Some(path) = automation_effect_host_file {
+        state.refresh_generation()?;
+        let host = crate::automation_effect_host::AgentdAutomationEffectHost::open(
+            &identity,
+            &path,
+        )?;
+        state.refresh_generation()?;
+        state.attach_automation_effect_host(Arc::new(host))?;
     }
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(

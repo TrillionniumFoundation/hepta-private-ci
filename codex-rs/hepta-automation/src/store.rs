@@ -1141,6 +1141,7 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     if invalid_legacy_reconciliations != 0 {
         return Err(AutomationError::Corrupt);
     }
+    crate::lifecycle::verify_occurrence_store(pool, owner_agent_id.as_str()).await?;
     verify_taskflow_store(pool, owner_agent_id)
         .await
         .map_err(map_taskflow_verify_error)?;

@@ -29,6 +29,8 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
@@ -374,6 +376,116 @@ async fn forbid_overlap_parks_recurrence_until_terminal_observation() {
 }
 
 #[tokio::test]
+async fn terminal_observer_cursor_is_durable_bounded_progress() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75108",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    scheduler.tick(100).await.expect("queue admission");
+
+    let occurrence = store
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("occurrence")
+        .expect("materialized");
+    let payload = Sha256Digest::for_bytes(b"terminal observer payload");
+    let running = store
+        .record_occurrence_turn(
+            task.task_id,
+            1,
+            &occurrence.client_user_message_id,
+            "turn-known-but-old",
+            payload.as_str(),
+            101,
+        )
+        .await
+        .expect("record turn");
+    assert!(running.terminal_scan_cursor.is_none());
+
+    let cursor_one = r#"{"turn_id":"page-anchor-1600","include_anchor":false}"#;
+    let advanced = store
+        .record_terminal_scan_cursor(task.task_id, 1, "turn-known-but-old", None, cursor_one, 102)
+        .await
+        .expect("persist first bounded continuation");
+    assert_eq!(advanced.terminal_scan_cursor.as_deref(), Some(cursor_one));
+
+    assert!(matches!(
+        store
+            .record_terminal_scan_cursor(
+                task.task_id,
+                1,
+                "turn-known-but-old",
+                Some(cursor_one),
+                cursor_one,
+                103,
+            )
+            .await,
+        Err(AutomationError::Invalid)
+    ));
+
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen cursor state");
+    let durable = reopened
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("read reopened occurrence")
+        .expect("reopened materialized occurrence");
+    assert_eq!(durable.terminal_scan_cursor.as_deref(), Some(cursor_one));
+
+    let cursor_two = r#"{"turn_id":"page-anchor-3200","include_anchor":false}"#;
+    assert!(matches!(
+        reopened
+            .record_terminal_scan_cursor(
+                task.task_id,
+                1,
+                "turn-known-but-old",
+                None,
+                cursor_two,
+                104,
+            )
+            .await,
+        Err(AutomationError::Conflict)
+    ));
+    let advanced = reopened
+        .record_terminal_scan_cursor(
+            task.task_id,
+            1,
+            "turn-known-but-old",
+            Some(cursor_one),
+            cursor_two,
+            105,
+        )
+        .await
+        .expect("advance exact cursor");
+    assert_eq!(advanced.terminal_scan_cursor.as_deref(), Some(cursor_two));
+
+    let missing = Sha256Digest::for_bytes(b"full history exhausted");
+    let indeterminate = reopened
+        .mark_occurrence_indeterminate(task.task_id, 1, &missing, 106)
+        .await
+        .expect("terminal scan exhaustion");
+    assert_eq!(
+        indeterminate.state,
+        AutomationOccurrenceState::Indeterminate
+    );
+    assert!(indeterminate.terminal_scan_cursor.is_none());
+}
+
+#[tokio::test]
 async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
     let fixture = Fixture::new();
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
@@ -559,6 +671,32 @@ async fn retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurren
         store.task(task.task_id).await.expect("task").unwrap().state,
         AutomationTaskState::Disabled
     );
+
+    drop(scheduler);
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen after provider-absence cancellation");
+    let reopened_occurrence = reopened
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("reopened occurrence")
+        .expect("reopened materialized occurrence");
+    assert_eq!(
+        reopened_occurrence.state,
+        AutomationOccurrenceState::Cancelled
+    );
+    assert_eq!(
+        reopened_occurrence.terminal_receipt_digest.as_ref(),
+        Some(&proof)
+    );
+    let reopened_run = reopened
+        .taskflow_run(&reopened_occurrence.taskflow_run_id)
+        .await
+        .expect("reopened run")
+        .expect("reopened TaskFlow run");
+    assert_eq!(reopened_run.state, TaskFlowRunState::Cancelled);
+    reopened.close().await;
 }
 
 #[tokio::test]
@@ -670,4 +808,57 @@ async fn retired_stale_generation_before_uncertainty_closes_without_provider_con
             .state,
         TaskFlowRunState::Cancelled
     );
+}
+
+#[tokio::test]
+async fn reopen_rejects_tampered_canonical_occurrence_identity() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75107",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let lease = store
+        .claim_due(100, 1, 30_000)
+        .await
+        .expect("claim")
+        .expect("lease");
+    let occurrence = store
+        .materialize_occurrence(&lease, 100)
+        .await
+        .expect("materialize");
+    let database_path = store.path().to_path_buf();
+    store.close().await;
+
+    let sqlite_home =
+        AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root()).expect("sqlite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(&database_path)
+        .await
+        .expect("inspection pool");
+    sqlx::query("DROP TRIGGER automation_occurrence_identity_no_update")
+        .execute(&pool)
+        .await
+        .expect("drop identity trigger");
+    let forged = format!("automation-occurrence:{}", "a".repeat(64));
+    assert_ne!(forged, occurrence.occurrence_id);
+    sqlx::query(
+        "UPDATE automation_occurrence_lifecycle
+         SET occurrence_id = ?
+         WHERE task_id = ? AND occurrence = ?",
+    )
+    .bind(forged)
+    .bind(task.task_id.to_string())
+    .bind(1_i64)
+    .execute(&pool)
+    .await
+    .expect("tamper occurrence identity");
+    pool.close().await;
+
+    assert!(matches!(
+        AutomationStore::open(&fixture.layout).await,
+        Err(AutomationError::Corrupt)
+    ));
 }

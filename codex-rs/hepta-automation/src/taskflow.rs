@@ -1082,12 +1082,14 @@ impl AutomationStore {
         run.state_digest = run.compute_state_digest()?;
         update_taskflow_run(&mut tx, &run, /*fence*/ None).await?;
         let previous = previous_event_digest(&mut tx, &run).await?;
+        let claim_command_id = format!("taskflow:claim:{}:{}", fence.owner_epoch, fence.generation);
+        let claim_command_digest = Sha256Digest::for_bytes(claim_command_id.as_bytes());
         append_taskflow_event(
             &mut tx,
             &run,
             "lease_claimed",
-            "taskflow:claim",
-            &Sha256Digest::for_bytes(b"taskflow:claim"),
+            &claim_command_id,
+            &claim_command_digest,
             "{}",
             &previous,
         )
@@ -2131,7 +2133,12 @@ fn verify_taskflow_event_rows(
                 && run.cancel_requested;
             if !(matches!(
                 transition.as_str(),
-                "succeeded" | "failed" | "cancelled" | "reconciled" | "requeued_proven_absent"
+                "succeeded"
+                    | "failed"
+                    | "cancelled"
+                    | "reconciled"
+                    | "requeued_proven_absent"
+                    | "cancelled_proven_absent"
             ) || index == 0 && transition == "run_created"
                 || sticky_cancel_resume)
             {

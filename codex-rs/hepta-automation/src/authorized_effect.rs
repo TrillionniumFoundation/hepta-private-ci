@@ -145,6 +145,22 @@ impl AuthorizedEffectIntent {
         Ok(())
     }
 
+    /// Derive the exact final-use binding inside the automation owner.
+    ///
+    /// Product callers may transport the signed grant, but they do not get to
+    /// supply a second independently mutable binding alongside the effect
+    /// intent.
+    pub fn final_use_binding(&self) -> Result<FinalUseBinding, TaskFlowError> {
+        let intent_digest = self.digest()?;
+        Ok(FinalUseBinding {
+            subject_id: self.subject_id.clone(),
+            destination_id: self.destination_id.clone(),
+            request_sha256: digest_bytes(&intent_digest)?,
+            scope_sha256: digest_bytes(&self.final_use_scope_digest)?,
+            payload_sha256: digest_bytes(&self.payload_digest)?,
+        })
+    }
+
     /// Build the kernel-owned authority-free operation contract consumed at
     /// the effect boundary. TaskFlow orchestration identity is layered on top
     /// by `digest()`; it is not duplicated into kernel.operations.
@@ -251,6 +267,9 @@ pub struct AuthorizedEffectRequest<'a> {
     pub operation_intent: &'a OperationIntentV1,
     pub intent: &'a AuthorizedEffectIntent,
     pub intent_digest: &'a Sha256Digest,
+    /// Exact immutable provider bytes whose digest is bound by `intent` and
+    /// the signed final-use grant. Drivers must send these bytes unchanged.
+    pub wire_payload: &'a [u8],
     pub binding: &'a FinalUseBinding,
 }
 
@@ -324,6 +343,7 @@ impl AutomationStore {
         authority: &FinalUseAuthority,
         driver: &mut D,
         intent: &AuthorizedEffectIntent,
+        wire_payload: &[u8],
         fence: &TaskFlowFence,
         signed_grant: &SignedFinalUseGrant,
         expected_binding: &FinalUseBinding,
@@ -331,6 +351,9 @@ impl AutomationStore {
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
         let operation_intent = intent.operation_intent_v1()?;
+        if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
+            return Err(AuthorizedEffectError::BindingMismatch);
+        }
         let intent_digest = intent.digest()?;
         let payload_digest = &intent.payload_digest;
         let current = self
@@ -430,6 +453,7 @@ impl AutomationStore {
             operation_intent: &operation_intent,
             intent,
             intent_digest: &intent_digest,
+            wire_payload,
             binding: expected_binding,
         };
         let provider = match authority
@@ -487,6 +511,43 @@ impl AutomationStore {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
         }
+    }
+
+    /// Read one exact durable provider-contact attempt by its immutable
+    /// TaskFlow identity. This avoids bounded-list intersection in product
+    /// reconciliation and never authorizes redispatch.
+    pub async fn authorized_taskflow_effect_attempt(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<AuthorizedEffectPending>, AuthorizedEffectError> {
+        Ok(self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .await?
+            .map(AuthorizedEffectPending::from))
+    }
+
+    /// Settle already-durable local provider evidence into TaskFlow before a
+    /// product reconciler performs any fresh provider status I/O. A missing
+    /// observation returns `None`; an indeterminate observation remains
+    /// non-terminal and callers may then perform owner-specific lookup.
+    pub async fn settle_authorized_taskflow_effect_observation(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+    ) -> Result<Option<AuthorizedEffectRecoveryResult>, AuthorizedEffectError> {
+        let Some(durable) = self.effect_dispatch_attempt(run_id, step_id, attempt).await? else {
+            return Ok(None);
+        };
+        if durable.observation.is_none() {
+            return Ok(None);
+        }
+        Ok(Some(
+            self.settle_effect_dispatch_attempt(&durable, fence).await?,
+        ))
     }
 
     /// Return bounded provider-contact attempts that have no durable provider
@@ -772,7 +833,7 @@ impl AutomationStore {
                     fence,
                     &durable.intent_digest,
                     &durable.payload_digest,
-                    &effect_command_id("step-absent", durable),
+                    &provider_absence_step_command_id(durable),
                     &observation.evidence_digest,
                     observation.observed_at_ms,
                 )
@@ -906,6 +967,19 @@ fn effect_command_id(phase: &str, durable: &EffectDispatchAttempt) -> String {
     bytes.extend_from_slice(&durable.attempt.to_be_bytes());
     format!(
         "effect:{phase}:{}",
+        Sha256Digest::for_bytes(&bytes).as_str()
+    )
+}
+
+fn provider_absence_step_command_id(durable: &EffectDispatchAttempt) -> String {
+    let mut bytes = b"hepta.automation.step.provider-absent.v1\0".to_vec();
+    bytes.extend_from_slice(durable.run_id.as_bytes());
+    bytes.push(0);
+    bytes.extend_from_slice(durable.step_id.as_bytes());
+    bytes.extend_from_slice(&durable.attempt.to_be_bytes());
+    bytes.extend_from_slice(durable.binding_digest.as_str().as_bytes());
+    format!(
+        "automation:step:provider-absent:effect:{}",
         Sha256Digest::for_bytes(&bytes).as_str()
     )
 }

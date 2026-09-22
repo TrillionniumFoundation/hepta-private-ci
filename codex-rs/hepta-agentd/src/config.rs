@@ -37,6 +37,7 @@ pub struct AgentdConfig {
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
+    automation_effect_host_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
 }
 
@@ -142,6 +143,7 @@ impl AgentdConfig {
             registry,
             _writer_lock: writer_lock,
             authbus_trust_file: None,
+            automation_effect_host_file: None,
             cognitive_ranker: None,
         })
     }
@@ -155,6 +157,18 @@ impl AgentdConfig {
 
     pub(crate) fn authbus_trust_file(&self) -> Option<&Path> {
         self.authbus_trust_file.as_deref()
+    }
+
+    /// Attach one protected host-owned provider/final-use configuration for
+    /// automation external effects. The file is validated once at process
+    /// startup and cannot be swapped behind in-flight effects.
+    pub fn with_automation_effect_host_file(mut self, path: PathBuf) -> Self {
+        self.automation_effect_host_file = Some(path);
+        self
+    }
+
+    pub(crate) fn automation_effect_host_file(&self) -> Option<&Path> {
+        self.automation_effect_host_file.as_deref()
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must

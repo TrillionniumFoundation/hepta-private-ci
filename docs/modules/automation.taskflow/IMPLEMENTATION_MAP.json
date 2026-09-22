@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8ee011669150d80e8ec153e354f0b9dec8f4144b",
-    "tree": "3846ceec33b48b1237ecaead2c8e02d9af451d3e"
+    "commit": "86cc384cc71f5c36293c3d9c34ff7f125d29faea",
+    "tree": "beec89393ef9c52d15b08f9d2f29be63ec2a113b"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -37,13 +37,32 @@
           "path": "codex-rs/hepta-automation/tests/automation.rs",
           "kind": "legacy_schedule_compatibility",
           "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+          "kind": "real_agentd_calendar_v2_capability_negotiation_and_product_control",
+          "command": "cargo test -p codex-hepta-agentd --test five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers"
         }
       ],
-      "sourceSemantics": "Persists append-only Calendar V2 revisions with explicit timezone/tzdb identity, start/end, DST gap/overlap policy and bounded recurrence while preserving Once/FixedInterval compatibility records.",
+      "sourceSemantics": "Persists append-only Calendar V2 revisions with explicit timezone/tzdb identity, start/end, DST gap/overlap policy and bounded recurrence while preserving Once/FixedInterval compatibility records; Agentd advertises automation.calendar_v2@1.0 and generation-fences the typed creation call.",
       "operation": "register_schedule",
       "nativeSymbol": "pub async fn create_calendar_task_v2(",
       "sourcePath": "codex-rs/hepta-automation/src/schedule_v2.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "productCallers": [
+        {
+          "role": "product_control_dispatch",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "AgentdMethod::AutomationCreateCalendarV2",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "typed_product_client",
+          "path": "codex-rs/hepta-agentd/src/client.rs",
+          "symbol": "pub async fn automation_create_calendar_v2(",
+          "ownerModule": "runtime.agentd"
+        }
+      ]
     },
     {
       "designOperation": "materialize_due",
@@ -153,13 +172,15 @@
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "productCallers": [],
+      "productCompositionState": "pending_independent_final_use_host_and_attested_provider_product_caller"
     }
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",
-    "concrete registered downstream effect owner and trusted terminal/reconciliation evidence for every activated external effect",
+    "independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect",
     "real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification",
     "independent acceptance, activation, promotion and release evidence"
   ],
@@ -176,11 +197,17 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "repositoryControlledProductCompositionGapsClosed": false,
+    "calendarV2ProductControlComplete": true,
+    "externalEffectProductCompositionComplete": false,
+    "agedTurnRecoveryLivenessGapClosed": true,
+    "terminalObserverPerPassBounded": true,
+    "terminalObserverDurableContinuation": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_composed_for_codex_activity_operation_intent_v1_and_final_use_effect_seam_composed_concrete_effect_owner_pending",
+  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
   "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
@@ -190,16 +217,40 @@
   ],
   "observedSourcePaths": [
     "codex-rs/hepta-automation",
-    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-agent-protocol",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/automation.rs",
+    "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/src/client.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/app-server/src/request_processors/thread_processor.rs",
+    "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
     "codex-rs/hepta-operations",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-types",
-    "codex-rs/Cargo.lock"
+    "codex-rs/Cargo.toml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs"
   ],
   "observedAtHead": {
-    "commit": "8ee011669150d80e8ec153e354f0b9dec8f4144b",
-    "tree": "3846ceec33b48b1237ecaead2c8e02d9af451d3e",
-    "interpretation": "exact final TaskFlow/Agentd/kernel.operations owner-source observation after durable causal-chain convergence, schedule-revision claim linearization, producer-owned OperationIntentV1 composition, final-use nonce hardening, revocation-race/compensation-crash coverage, after-provider-contact fault injection, Calendar V2 bounded missed-run/DST coverage, and legacy revision-unknown dispatch reconciliation; later commits are documentation/projection truth updates only, and qualification results remain separate"
+    "commit": "86cc384cc71f5c36293c3d9c34ff7f125d29faea",
+    "tree": "beec89393ef9c52d15b08f9d2f29be63ec2a113b",
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations owner-source observation after workspace dependency restoration, Calendar V2 revision-1 repair and capability-negotiated Agentd control, real five-Agent process coverage that creates one Calendar V2 task through AgentdClient and executes it through the existing scheduler/App Server spine, step-attempt-scoped restart identity, generation-scoped immutable lease-claim identity plus structural replay validation plus regression coverage that binds scoped claim IDs to persisted owner epoch/generation while preserving legacy immutable claim history, canonical provider-absence recovery identity, reopen-safe proof-bound cancellation, canonical occurrence identity revalidation, schema-v16 durable terminal-observer continuation cursor with exact-CAS progress, reopen/CAS regression coverage, Calendar V2 capability type export, repository-current rustfmt, and CI-stable independent peer-scheduler qualification timing without weakening the blocked-owner isolation assertion; later documentation/projection commits may follow only if every declared observed source path remains byte-unchanged"
   },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "repositoryControlledProductCompositionGaps": [
+    "External-effect product composition remains open: no registered product caller currently binds the TaskFlow AuthorizedEffectDriver seam to an independently provisioned FinalUseAuthority host and an independently attested concrete provider/terminal observer."
+  ],
+  "sourceObservationRequirements": {
+    "policy": "candidate_or_exact_observation_v1",
+    "rustWorkspaceBuildInputs": [
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock"
+    ],
+    "verifier": "scripts/hepta-implementation-maps.py::verify_source_identity",
+    "regression": "scripts/test_hepta_module_source_roots.py::SourceRootTests::test_exact_rust_observation_requires_workspace_manifest_and_lock",
+    "semantics": "Any strict exact observation whose resolved source roots enter codex-rs must include the root Cargo workspace manifest and lockfile; omission is a verification failure."
+  }
 }

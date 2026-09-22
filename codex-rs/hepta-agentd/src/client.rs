@@ -3,10 +3,15 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
+use codex_hepta_automation::AuthorizedEffectIntent;
+use codex_hepta_automation::AutomationCalendarScheduleV2;
+use codex_hepta_automation::AutomationMissedRunPolicy;
+use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationTask;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_uds::UnixStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
@@ -16,6 +21,8 @@ use tokio::time::timeout;
 
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
 use crate::AgentdCapabilitySet;
+use crate::AutomationEffectReconcileSnapshot;
+use crate::AutomationEffectSnapshot;
 use crate::AgentdError;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
@@ -67,7 +74,10 @@ impl AgentdClient {
             .await?
             .payload
         {
-            AgentdPayload::Capabilities(capabilities) => Ok(capabilities),
+            AgentdPayload::Capabilities(capabilities) => {
+                capabilities.validate().map_err(AgentdError::Protocol)?;
+                Ok(capabilities)
+            }
             payload => unexpected(payload),
         }
     }
@@ -205,6 +215,113 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::AutomationTask(task) => Ok(task),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn automation_create_calendar_v2(
+        &self,
+        draft: AutomationTaskDraft,
+        schedule: AutomationCalendarScheduleV2,
+        missed_run: AutomationMissedRunPolicy,
+        overlap: AutomationOverlapPolicy,
+    ) -> Result<AutomationTask, AgentdError> {
+        let capabilities = self.capabilities().await?;
+        let supported = capabilities.capabilities.iter().any(|capability| {
+            capability.id == crate::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2
+                && capability.major == 1
+        });
+        if !supported {
+            return Err(AgentdError::Protocol(
+                "agentd does not advertise Calendar V2 automation control".to_string(),
+            ));
+        }
+        match self
+            .send(AgentdRequest::automation_create_calendar_v2(
+                self.request_id(),
+                self.spawn_generation,
+                draft,
+                schedule,
+                missed_run,
+                overlap,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AutomationTask(task) => Ok(task),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn automation_execute_effect(
+        &self,
+        intent: AuthorizedEffectIntent,
+        wire_payload: &[u8],
+        signed_grant: SignedFinalUseGrant,
+        command_id: String,
+    ) -> Result<AutomationEffectSnapshot, AgentdError> {
+        if wire_payload.is_empty()
+            || wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES
+        {
+            return Err(AgentdError::Invalid(
+                "automation effect wire payload is empty or too large".to_string(),
+            ));
+        }
+        let capabilities = self.capabilities().await?;
+        let supported = capabilities.capabilities.iter().any(|capability| {
+            capability.id == crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT
+                && capability.major == 1
+        });
+        if !supported {
+            return Err(AgentdError::Protocol(
+                "agentd does not advertise automation external-effect control".to_string(),
+            ));
+        }
+        match self
+            .send(AgentdRequest::automation_execute_effect(
+                self.request_id(),
+                self.spawn_generation,
+                intent,
+                encode_hex(wire_payload),
+                signed_grant,
+                command_id,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AutomationEffect(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn automation_reconcile_effect(
+        &self,
+        run_id: String,
+        step_id: String,
+        attempt: u32,
+    ) -> Result<AutomationEffectReconcileSnapshot, AgentdError> {
+        let capabilities = self.capabilities().await?;
+        let supported = capabilities.capabilities.iter().any(|capability| {
+            capability.id == crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT
+                && capability.major == 1
+        });
+        if !supported {
+            return Err(AgentdError::Protocol(
+                "agentd does not advertise automation external-effect control".to_string(),
+            ));
+        }
+        match self
+            .send(AgentdRequest::automation_reconcile_effect(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                step_id,
+                attempt,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AutomationEffectReconcile(receipt) => Ok(receipt),
             payload => unexpected(payload),
         }
     }
@@ -383,6 +500,16 @@ impl AgentdClient {
     fn request_id(&self) -> u64 {
         self.next_request_id.fetch_add(1, Ordering::Relaxed)
     }
+}
+
+fn encode_hex(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut output = String::with_capacity(bytes.len().saturating_mul(2));
+    for byte in bytes {
+        output.push(char::from(HEX[usize::from(byte >> 4)]));
+        output.push(char::from(HEX[usize::from(byte & 0x0f)]));
+    }
+    output
 }
 
 fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {

@@ -8,6 +8,8 @@ pub use authbus::AuthBusTextBody;
 pub use authbus::AuthBusTextIngress;
 pub use authbus::AuthBusTextState;
 pub use authbus::AuthBusTextStatus;
+pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
+pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
 pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;
@@ -16,11 +18,16 @@ pub use capabilities::negotiate_capabilities;
 
 use std::path::PathBuf;
 
+use codex_hepta_automation::AuthorizedEffectIntent;
+use codex_hepta_automation::AutomationCalendarScheduleV2;
+use codex_hepta_automation::AutomationMissedRunPolicy;
+use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationTask;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
 use serde::Serialize;
@@ -31,6 +38,7 @@ pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
 pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
+pub const MAX_AUTOMATION_EFFECT_WIRE_BYTES: usize = 24 * 1024;
 pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 const FEDERATION_CAPABILITY_ID_PREFIX: &str = "federation:v1:";
@@ -163,6 +171,67 @@ impl AgentdRequest {
         }
     }
 
+    pub fn automation_create_calendar_v2(
+        request_id: u64,
+        spawn_generation: u64,
+        draft: AutomationTaskDraft,
+        schedule: AutomationCalendarScheduleV2,
+        missed_run: AutomationMissedRunPolicy,
+        overlap: AutomationOverlapPolicy,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationCreateCalendarV2 {
+                draft,
+                schedule,
+                missed_run,
+                overlap,
+            },
+        }
+    }
+
+    pub fn automation_execute_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        intent: AuthorizedEffectIntent,
+        wire_payload_hex: String,
+        signed_grant: SignedFinalUseGrant,
+        command_id: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationExecuteEffect {
+                intent,
+                wire_payload_hex,
+                signed_grant,
+                command_id,
+            },
+        }
+    }
+
+    pub fn automation_reconcile_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        step_id: String,
+        attempt: u32,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationReconcileEffect {
+                run_id,
+                step_id,
+                attempt,
+            },
+        }
+    }
+
     pub fn automation_list(request_id: u64, spawn_generation: u64, limit: u16) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -283,6 +352,23 @@ pub enum AgentdMethod {
     AutomationCreate {
         draft: AutomationTaskDraft,
     },
+    AutomationCreateCalendarV2 {
+        draft: AutomationTaskDraft,
+        schedule: AutomationCalendarScheduleV2,
+        missed_run: AutomationMissedRunPolicy,
+        overlap: AutomationOverlapPolicy,
+    },
+    AutomationExecuteEffect {
+        intent: AuthorizedEffectIntent,
+        wire_payload_hex: String,
+        signed_grant: SignedFinalUseGrant,
+        command_id: String,
+    },
+    AutomationReconcileEffect {
+        run_id: String,
+        step_id: String,
+        attempt: u32,
+    },
     AutomationList {
         limit: u16,
     },
@@ -310,6 +396,40 @@ pub enum AgentdMethod {
     },
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationEffectObservation {
+    Succeeded,
+    Failed,
+    Indeterminate,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationEffectSnapshot {
+    pub run_id: String,
+    pub step_id: String,
+    pub attempt: u32,
+    pub event_seq: u64,
+    pub receipt_digest: Option<Sha256Digest>,
+    pub observation: AutomationEffectObservation,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationEffectReconcileState {
+    Terminal,
+    Indeterminate,
+    ProvenAbsent,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationEffectReconcileSnapshot {
+    pub state: AutomationEffectReconcileState,
+    pub effect: Option<AutomationEffectSnapshot>,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AgentdResponse {
@@ -332,6 +452,8 @@ pub enum AgentdPayload {
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),
+    AutomationEffect(AutomationEffectSnapshot),
+    AutomationEffectReconcile(AutomationEffectReconcileSnapshot),
     AutomationTasks {
         tasks: Vec<AutomationTask>,
     },
@@ -633,6 +755,111 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse request"),
             request
+        );
+
+        let schedule = codex_hepta_automation::AutomationCalendarScheduleV2 {
+            timezone_id: "Etc/UTC".to_string(),
+            tzdb_digest: Sha256Digest::for_bytes(b"tzdb-test"),
+            start_at_utc_ms: 123,
+            end_at_utc_ms: Some(86_400_123),
+            every_days: 1,
+            local_time_ms: 123,
+            dst_gap_policy: codex_hepta_automation::AutomationDstGapPolicy::Skip,
+            dst_overlap_policy: codex_hepta_automation::AutomationDstOverlapPolicy::First,
+            clock_profile: codex_hepta_automation::AutomationTimeZoneProfileV1 {
+                timezone_id: "Etc/UTC".to_string(),
+                tzdb_digest: Sha256Digest::for_bytes(b"tzdb-test"),
+                valid_from_utc_ms: 0,
+                valid_until_utc_ms: 172_800_000,
+                initial_offset_seconds: 0,
+                transitions: Vec::new(),
+            },
+        };
+        let calendar = AgentdRequest::automation_create_calendar_v2(
+            10,
+            3,
+            AutomationTaskDraft::new(
+                "019153a4-3088-7e03-a56a-9b1964f75ddd",
+                "calendar task",
+                codex_hepta_automation::AutomationSchedule::Once,
+                123,
+                100,
+            ),
+            schedule,
+            codex_hepta_automation::AutomationMissedRunPolicy::Coalesce,
+            codex_hepta_automation::AutomationOverlapPolicy::Forbid,
+        );
+        let calendar_bytes = serde_json::to_vec(&calendar).expect("serialize calendar request");
+        assert!(calendar_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&calendar_bytes)
+                .expect("parse calendar request"),
+            calendar
+        );
+    }
+
+    #[test]
+    fn automation_effect_wire_round_trip_is_strict_and_bounded() {
+        let payload = b"{\"effect\":\"test\"}";
+        let payload_digest = Sha256Digest::for_bytes(payload);
+        let intent = AuthorizedEffectIntent {
+            run_id: "run-effect".to_string(),
+            step_id: "effect".to_string(),
+            attempt: 1,
+            operation_id: "provider.deliver".to_string(),
+            subject_id: "019153a4-3088-7e03-a56a-9b1964f75ddd".to_string(),
+            destination_id: "provider:fixture".to_string(),
+            payload_digest,
+            final_use_scope_digest: Sha256Digest::for_bytes(b"scope"),
+            policy_generation: 1,
+            expected_predecessor_digest: None,
+            dependencies: Vec::new(),
+            compensation_for: None,
+        };
+        let binding = intent.final_use_binding().expect("binding");
+        let signed_grant = SignedFinalUseGrant {
+            grant: codex_hepta_contracts::FinalUseGrant {
+                schema_version: 1,
+                signer_id: "security-owner".to_string(),
+                authority_epoch: 1,
+                grant_id: "effect-grant".to_string(),
+                nonce: [7_u8; 32],
+                binding,
+                not_before_unix_ms: 1,
+                expires_at_unix_ms: 1_001,
+            },
+            signature: vec![9_u8; 64],
+        };
+        let wire_payload_hex = payload
+            .iter()
+            .flat_map(|byte| format!("{byte:02x}").chars().collect::<Vec<_>>())
+            .collect::<String>();
+        let request = AgentdRequest::automation_execute_effect(
+            11,
+            3,
+            intent,
+            wire_payload_hex,
+            signed_grant,
+            "effect-command".to_string(),
+        );
+        let bytes = serde_json::to_vec(&request).expect("serialize effect request");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse effect request"),
+            request
+        );
+
+        let response = AgentdPayload::AutomationEffectReconcile(
+            AutomationEffectReconcileSnapshot {
+                state: AutomationEffectReconcileState::Indeterminate,
+                effect: None,
+            },
+        );
+        let response_bytes = serde_json::to_vec(&response).expect("serialize effect response");
+        assert_eq!(
+            serde_json::from_slice::<AgentdPayload>(&response_bytes)
+                .expect("parse effect response"),
+            response
         );
     }
 

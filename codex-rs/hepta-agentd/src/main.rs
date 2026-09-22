@@ -8,13 +8,29 @@ fn main() -> anyhow::Result<()> {
     codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
-        if let Some(flag) = args.next() {
-            anyhow::ensure!(flag == "--authbus-trust-file", "unknown Agentd argument");
-            let path = args
-                .next()
-                .ok_or_else(|| anyhow::anyhow!("--authbus-trust-file requires a path"))?;
-            anyhow::ensure!(args.next().is_none(), "unexpected Agentd arguments");
-            config = config.with_authbus_trust_file(path.into());
+        let mut authbus_configured = false;
+        let mut automation_effect_configured = false;
+        while let Some(flag) = args.next() {
+            if flag == "--authbus-trust-file" {
+                anyhow::ensure!(!authbus_configured, "duplicate --authbus-trust-file");
+                let path = args
+                    .next()
+                    .ok_or_else(|| anyhow::anyhow!("--authbus-trust-file requires a path"))?;
+                config = config.with_authbus_trust_file(path.into());
+                authbus_configured = true;
+            } else if flag == "--automation-effect-host-file" {
+                anyhow::ensure!(
+                    !automation_effect_configured,
+                    "duplicate --automation-effect-host-file"
+                );
+                let path = args.next().ok_or_else(|| {
+                    anyhow::anyhow!("--automation-effect-host-file requires a path")
+                })?;
+                config = config.with_automation_effect_host_file(path.into());
+                automation_effect_configured = true;
+            } else {
+                anyhow::bail!("unknown Agentd argument");
+            }
         }
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())

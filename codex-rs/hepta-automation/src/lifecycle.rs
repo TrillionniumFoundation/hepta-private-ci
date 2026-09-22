@@ -7,6 +7,7 @@
 //! distinct from terminal execution.
 
 use codex_hepta_contracts::Sha256Digest;
+use serde::Deserialize;
 use serde::Serialize;
 use sqlx::Row;
 
@@ -20,8 +21,9 @@ use crate::AutomationTaskId;
 const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
 const MAX_CATCH_UP: u16 = 1_024;
 const MAX_RECOVERY_SCAN: usize = 1_024;
+const MAX_TERMINAL_SCAN_CURSOR_BYTES: usize = 2_048;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AutomationMissedRunPolicy {
     Skip,
@@ -59,7 +61,7 @@ impl AutomationMissedRunPolicy {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AutomationOverlapPolicy {
     /// Do not materialize the next occurrence until this occurrence is terminal.
@@ -171,6 +173,9 @@ pub struct AutomationOccurrence {
     pub queued_submission_id: Option<String>,
     pub provider_payload_sha256: Option<String>,
     pub turn_id: Option<String>,
+    /// Opaque App Server pagination cursor for bounded terminal observation.
+    /// It is durable recovery progress, not occurrence identity or terminal evidence.
+    pub terminal_scan_cursor: Option<String>,
     pub terminal_receipt_digest: Option<Sha256Digest>,
     pub updated_at_ms: u64,
     pub terminal_at_ms: Option<u64>,
@@ -627,6 +632,7 @@ impl AutomationStore {
         let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
              SET state = 'running', turn_id = ?, provider_payload_sha256 = ?,
+                 terminal_scan_cursor = NULL,
                  recovery_phase = 'awaiting_terminal', updated_at_ms = ?
              WHERE task_id = ? AND occurrence = ? AND state = 'admitted'",
         )
@@ -664,6 +670,65 @@ impl AutomationStore {
         Ok(next)
     }
 
+    /// Advance the bounded terminal-observer scan without changing the
+    /// occurrence's semantic execution state. The opaque cursor is persisted
+    /// under an exact previous-cursor CAS so process loss can only repeat a
+    /// bounded page range; it cannot skip history or fork recovery progress.
+    pub async fn record_terminal_scan_cursor(
+        &self,
+        task_id: AutomationTaskId,
+        occurrence: u64,
+        turn_id: &str,
+        expected_cursor: Option<&str>,
+        next_cursor: &str,
+        observed_at_ms: u64,
+    ) -> Result<AutomationOccurrence, AutomationError> {
+        if turn_id.is_empty()
+            || turn_id.len() > 256
+            || next_cursor.is_empty()
+            || next_cursor.len() > MAX_TERMINAL_SCAN_CURSOR_BYTES
+            || expected_cursor == Some(next_cursor)
+        {
+            return Err(AutomationError::Invalid);
+        }
+        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let current = load_occurrence_row(&mut transaction, self, task_id, occurrence)
+            .await?
+            .ok_or(AutomationError::Conflict)?;
+        if current.state != AutomationOccurrenceState::Running
+            || current.turn_id.as_deref() != Some(turn_id)
+            || current.terminal_scan_cursor.as_deref() != expected_cursor
+        {
+            return Err(AutomationError::Conflict);
+        }
+        let changed = sqlx::query(
+            "UPDATE automation_occurrence_lifecycle
+             SET terminal_scan_cursor = ?, updated_at_ms = ?
+             WHERE task_id = ? AND occurrence = ? AND state = 'running'
+               AND turn_id = ?
+               AND ((terminal_scan_cursor IS NULL AND ? IS NULL)
+                    OR terminal_scan_cursor = ?)",
+        )
+        .bind(next_cursor)
+        .bind(to_i64(observed_at_ms)?)
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(turn_id)
+        .bind(expected_cursor)
+        .bind(expected_cursor)
+        .execute(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if changed.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
+        let next = load_occurrence_row(&mut transaction, self, task_id, occurrence)
+            .await?
+            .ok_or(AutomationError::Corrupt)?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(next)
+    }
+
     pub async fn mark_occurrence_indeterminate(
         &self,
         task_id: AutomationTaskId,
@@ -686,6 +751,7 @@ impl AutomationStore {
         let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
              SET state = 'indeterminate', terminal_receipt_digest = ?,
+                 terminal_scan_cursor = NULL,
                  recovery_phase = 'reconciliation_required', updated_at_ms = ?
              WHERE task_id = ? AND occurrence = ?
                AND state IN ('claimed', 'admitted', 'running')",
@@ -862,8 +928,8 @@ impl AutomationStore {
         let event_kind = terminal_state.as_str();
         let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
-             SET state = ?, terminal_receipt_digest = ?, recovery_phase = 'terminal',
-                 updated_at_ms = ?, terminal_at_ms = ?
+             SET state = ?, terminal_receipt_digest = ?, terminal_scan_cursor = NULL,
+                 recovery_phase = 'terminal', updated_at_ms = ?, terminal_at_ms = ?
              WHERE task_id = ? AND occurrence = ?
                AND state IN ('claimed', 'admitted', 'running', 'indeterminate')",
         )
@@ -1083,6 +1149,21 @@ async fn load_occurrence_row(
         .transpose()
 }
 
+pub(crate) async fn verify_occurrence_store(
+    pool: &sqlx::SqlitePool,
+    expected_owner: &str,
+) -> Result<(), AutomationError> {
+    let rows =
+        sqlx::query("SELECT * FROM automation_occurrence_lifecycle ORDER BY task_id, occurrence")
+            .fetch_all(pool)
+            .await
+            .map_err(unavailable)?;
+    for row in &rows {
+        occurrence_from_row(row, expected_owner)?;
+    }
+    Ok(())
+}
+
 fn occurrence_from_row(
     row: &sqlx::sqlite::SqliteRow,
     expected_owner: &str,
@@ -1097,6 +1178,32 @@ fn occurrence_from_row(
         .try_get("task_id")
         .map_err(|_| AutomationError::Corrupt)?;
     let task_id = AutomationTaskId::parse(&task_raw).map_err(|_| AutomationError::Corrupt)?;
+    let occurrence = to_u64(
+        row.try_get("occurrence")
+            .map_err(|_| AutomationError::Corrupt)?,
+    )?;
+    let schedule_revision = to_u64(
+        row.try_get("schedule_revision")
+            .map_err(|_| AutomationError::Corrupt)?,
+    )?;
+    let scheduled_for_ms = to_u64(
+        row.try_get("scheduled_for_ms")
+            .map_err(|_| AutomationError::Corrupt)?,
+    )?;
+    let occurrence_id: String = row
+        .try_get("occurrence_id")
+        .map_err(|_| AutomationError::Corrupt)?;
+    let expected_occurrence_id =
+        deterministic_occurrence_id(expected_owner, task_id, schedule_revision, scheduled_for_ms);
+    if occurrence_id != expected_occurrence_id {
+        return Err(AutomationError::Corrupt);
+    }
+    let taskflow_run_id: String = row
+        .try_get("taskflow_run_id")
+        .map_err(|_| AutomationError::Corrupt)?;
+    if taskflow_run_id != format!("automation-run:{}", digest_suffix(&occurrence_id)) {
+        return Err(AutomationError::Corrupt);
+    }
     let state_raw: String = row.try_get("state").map_err(|_| AutomationError::Corrupt)?;
     let overlap_raw: String = row
         .try_get("overlap_policy")
@@ -1112,21 +1219,10 @@ fn occurrence_from_row(
         .transpose()?;
     Ok(AutomationOccurrence {
         task_id,
-        occurrence: to_u64(
-            row.try_get("occurrence")
-                .map_err(|_| AutomationError::Corrupt)?,
-        )?,
-        occurrence_id: row
-            .try_get("occurrence_id")
-            .map_err(|_| AutomationError::Corrupt)?,
-        schedule_revision: to_u64(
-            row.try_get("schedule_revision")
-                .map_err(|_| AutomationError::Corrupt)?,
-        )?,
-        scheduled_for_ms: to_u64(
-            row.try_get("scheduled_for_ms")
-                .map_err(|_| AutomationError::Corrupt)?,
-        )?,
+        occurrence,
+        occurrence_id,
+        schedule_revision,
+        scheduled_for_ms,
         client_user_message_id: row
             .try_get("client_user_message_id")
             .map_err(|_| AutomationError::Corrupt)?,
@@ -1144,9 +1240,7 @@ fn occurrence_from_row(
                 .map_err(|_| AutomationError::Corrupt)?,
         )
         .map_err(|_| AutomationError::Corrupt)?,
-        taskflow_run_id: row
-            .try_get("taskflow_run_id")
-            .map_err(|_| AutomationError::Corrupt)?,
+        taskflow_run_id,
         queued_submission_id: row
             .try_get("queued_submission_id")
             .map_err(|_| AutomationError::Corrupt)?,
@@ -1156,6 +1250,17 @@ fn occurrence_from_row(
         turn_id: row
             .try_get("turn_id")
             .map_err(|_| AutomationError::Corrupt)?,
+        terminal_scan_cursor: {
+            let cursor: Option<String> = row
+                .try_get("terminal_scan_cursor")
+                .map_err(|_| AutomationError::Corrupt)?;
+            if cursor.as_ref().is_some_and(|value| {
+                value.is_empty() || value.len() > MAX_TERMINAL_SCAN_CURSOR_BYTES
+            }) {
+                return Err(AutomationError::Corrupt);
+            }
+            cursor
+        },
         terminal_receipt_digest,
         updated_at_ms: to_u64(
             row.try_get("updated_at_ms")
