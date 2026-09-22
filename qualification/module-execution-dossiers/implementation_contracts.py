@@ -248,7 +248,11 @@ def verify_bundle(root: Path) -> dict[str, Any]:
         for key in ('apiContract','stateAndEncoding','linearizationAndRecovery','algorithmAndBounds','acceptanceOracle'):
             if not isinstance(row[key],str) or len(row[key]) < 80:
                 raise Invalid(mid+': missing concrete '+key)
-        if row['implementationState'] != 'specified_not_product_evidence' or row['nativeMappingRequired'] is not True or row['productTestsExecuted'] is not False or row['deploymentQualified'] is not False:
+        allowed_implementation_states = {
+            'specified_not_product_evidence',
+            'source_implemented_product_composed_requires_candidate_evidence',
+        }
+        if row['implementationState'] not in allowed_implementation_states or row['nativeMappingRequired'] is not True or row['productTestsExecuted'] is not False or row['deploymentQualified'] is not False:
             raise Invalid(mid+': false source or deployment closure')
         if not row['declaredRoots'] or not row['workPackages']:
             raise Invalid(mid+': absent canonical references')

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "3074b7f9952dfe634f4a8964bb20a2b09de3202a",
+    "tree": "77fa7fa9dabb26313e5523d24fb3104c2ecad4a0"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -17,38 +17,101 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed_local_host",
+  "productionWriterState": "not_applicable_read_only",
   "operations": [
+    {
+      "operation": "read_ids_v1",
+      "nativeSymbol": "read_ids_v1",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/ids.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/ids_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_ids",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context.rs"
+      ]
+    },
     {
       "operation": "read_v2",
       "nativeSymbol": "read_v2",
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_library",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "read_v2",
+      "designOperation": "bounded_compatibility_projection",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "durablecognitivesnapshot",
-      "nativeSymbol": "DurableCognitiveSnapshot",
-      "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "read_authoritative_compatibility",
+      "nativeSymbol": "read_authoritative",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "state": "source_implemented_compatibility_library",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "durablecognitivesnapshot",
+      "designOperation": "compatibility_authoritative_provider",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "durable_cognitive_snapshot",
+      "nativeSymbol": "DurableCognitiveSnapshot",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "acquire_snapshot",
+      "mappingClass": "existing_owner_adapter",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "final_use_revalidate",
+      "nativeSymbol": "revalidate",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+        "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+        "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate",
+      "mappingClass": "consumer_integration",
+      "delegatedCallees": [
+        "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "codex-rs/hepta-agentd/src/client.rs",
+        "codex-rs/hepta-infer-core/src/native_control.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+        "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain exact-head and deterministic synthetic-merge execution receipts for the candidate.",
+    "Obtain exact-candidate execution receipts for the implemented real Agentd/native-worker fresh-context acceptance plus concurrent tombstone/correction rejection, owner-cut validity-expiry/rollback detection, and stale host-generation rejection; source presence is not a pass receipt.",
+    "Keep the current durable SQLite kind capability Fact-only until an explicit owner schema migration qualifies additional memory kinds.",
+    "Add target-host p50/p95/p99 CPU, RSS and SQLite measurements before performance qualification."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -58,7 +121,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -66,5 +129,152 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-read"
-  ]
+  ],
+  "observedImplementationBase": {
+    "commit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
+    "interpretation": "latest reviewed main base for this rebased closure candidate; sourceBase remains repository-wide generated-map baseline while exact production source objects bind current candidate bytes"
+  },
+  "sourceIdentityMode": "repository_baseline_plus_exact_head_objects",
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/ids.rs",
+      "blobSha": "e56b2ef34038c35a0d7c179375ce21ad463f0347"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/lib.rs",
+      "blobSha": "b3cc0d4ea8d98941ab35ed444e92dbb0b68c47b1"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "blobSha": "b6928256d01d24bfbd12d3d6ca10f9848d14134c"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "blobSha": "8b183bae3e194ea12cca7c2471074baec5bc4e4f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "blobSha": "1d1199f4a9acacd723124cc62da037b86fac4d1f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "blobSha": "6841d61a101df9bdb3334fd08847b3a9620a17b5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "blobSha": "2e8d12a493d6b17c41e3ecf1062139ba68eb24d6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "blobSha": "b25135846b4701bc9b6a9608fed48f810d40e3a2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "blobSha": "6de1f49090a9ffd64b490237de5b07bf021d7099"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "blobSha": "a4507245b9b98f76a5736f63b9f7ba0dc90ecb6e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "blobSha": "40bb297d256f061bbdeb58afd5c91e501bb81840"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/ids_tests.rs",
+      "blobSha": "2d36e6ed95eb5c08cad4dafd3082542e4b56dcfe"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "blobSha": "263a32755e6efb1f5bc59765d5947cdde82838c1"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "blobSha": "b75d108013453a7b8aa293199848e1082ec4128f"
+    },
+    {
+      "path": "scripts/hepta-implementation-maps.py",
+      "blobSha": "b214fac56268d8e5118d23b0ca6eb568452d8f2e"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
+      "blobSha": "67135f3f56c4779fbd27568ee69c389a38522e5c"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
+      "blobSha": "ef0e9b6837e591c1047065be5e6e87a180cc92ad"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "blobSha": "fce217f8dd9e14fe42dd9bd672131e89d9f3e48b"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+      "blobSha": "8e28611b0d2aecb576c0bf0ea57783026bf79bbe"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "blobSha": "99e0fb69ab9fee402de49be187a3f1c8e2be0c89"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "blobSha": "1c5da35ed6d3c3ab404de25920f6088db8b5ce32"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+      "blobSha": "e7e6d082565079f2004c3994b74cf51d5b4d3de9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/test_support.rs",
+      "blobSha": "a308acfd96e6f2d3c325e47de82859dc6bcba70f"
+    }
+  ],
+  "productCallers": [
+    {
+      "role": "owner_read_adapter",
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "symbol": "pub(crate) async fn read(",
+      "blobSha": "1d1199f4a9acacd723124cc62da037b86fac4d1f"
+    },
+    {
+      "role": "owner_final_use_revalidation",
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "symbol": "pub(crate) async fn revalidate(",
+      "blobSha": "1d1199f4a9acacd723124cc62da037b86fac4d1f"
+    },
+    {
+      "role": "control_protocol",
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "symbol": "CognitiveContextRevalidate {",
+      "blobSha": "8b183bae3e194ea12cca7c2471074baec5bc4e4f"
+    },
+    {
+      "role": "control_client",
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "symbol": "pub async fn revalidate_cognitive_context(",
+      "blobSha": "2e8d12a493d6b17c41e3ecf1062139ba68eb24d6"
+    },
+    {
+      "role": "model_effect_consumer",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "owner.revalidate_cognitive_context(snapshot).await",
+      "blobSha": "a4507245b9b98f76a5736f63b9f7ba0dc90ecb6e"
+    },
+    {
+      "role": "durable_pre_turn_stop",
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "symbol": "pub fn stop_native_before_turn_start(",
+      "blobSha": "40bb297d256f061bbdeb58afd5c91e501bb81840"
+    }
+  ],
+  "exactCandidateEvidence": {
+    "mode": "runtime_verifier",
+    "statement": "hepta-implementation-maps.py verify emits current HEAD/tree; tracked maps bind exact relevant HEAD blobs to avoid self-referential commit/tree hashes"
+  },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "3074b7f9952dfe634f4a8964bb20a2b09de3202a",
+    "tree": "77fa7fa9dabb26313e5523d24fb3104c2ecad4a0",
+    "interpretation": "exact cognitive.read product-source observation after exact-ID, final-use freshness, owner-safe read-unavailability, and executable qualification-prerequisite fixes. Later commits may update only documentation/source-truth metadata; current mapped operations and product callers remain independently bound by exact HEAD blob objects."
+  }
 }

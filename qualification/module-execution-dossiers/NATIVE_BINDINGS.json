@@ -256,13 +256,14 @@
     },
     {
       "module": "cognitive.read",
-      "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "blobSha": "67135f3f56c4779fbd27568ee69c389a38522e5c",
+      "path": "codex-rs/hepta-cognitive-read/src/ids.rs",
+      "blobSha": "e56b2ef34038c35a0d7c179375ce21ad463f0347",
       "exports": [
-        "ReadRequestV2",
-        "ReadResultV2",
-        "read_v2",
-        "binding_digest"
+        "ReadFieldV1",
+        "ReadIdsRequestV1",
+        "ReadIdsResultV1",
+        "ReadProjectionRecordV1",
+        "read_ids_v1"
       ]
     },
     {

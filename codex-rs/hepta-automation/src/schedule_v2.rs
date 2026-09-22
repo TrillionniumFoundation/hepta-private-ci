@@ -347,23 +347,30 @@ impl AutomationStore {
         .execute(&mut *tx)
         .await
         .map_err(constraint_or_unavailable)?;
-        sqlx::query(
-            "INSERT INTO automation_schedule_metadata (
-                task_id, owner_agent_id, revision, missed_run_policy,
-                max_catch_up_occurrences, catch_up_remaining, overlap_policy,
-                created_at_ms, updated_at_ms, catch_up_active
-             ) VALUES (?, ?, 1, ?, ?, 0, ?, ?, ?, 0)",
+        // Schema v8 installs automation_task_default_policy, which creates
+        // the revision-1 metadata row in the same transaction as the task
+        // insert. Calendar V2 specializes that exact authoritative row instead
+        // of attempting to insert a duplicate revision-1 identity.
+        let policy = sqlx::query(
+            "UPDATE automation_schedule_metadata
+             SET missed_run_policy = ?, max_catch_up_occurrences = ?,
+                 catch_up_remaining = 0, overlap_policy = ?,
+                 created_at_ms = ?, updated_at_ms = ?, catch_up_active = 0
+             WHERE task_id = ? AND owner_agent_id = ? AND revision = 1",
         )
-        .bind(draft.task_id.to_string())
-        .bind(self.taskflow_owner_agent_id().as_str())
         .bind(missed_kind)
         .bind(i64::from(maximum))
         .bind(overlap_str(overlap))
         .bind(to_i64(draft.created_at_ms)?)
         .bind(to_i64(draft.created_at_ms)?)
+        .bind(draft.task_id.to_string())
+        .bind(self.taskflow_owner_agent_id().as_str())
         .execute(&mut *tx)
         .await
         .map_err(constraint_or_unavailable)?;
+        if policy.rows_affected() != 1 {
+            return Err(AutomationError::Corrupt);
+        }
         sqlx::query(
             "INSERT INTO automation_calendar_schedule_versions (
                 task_id, owner_agent_id, revision, schedule_json, schedule_digest,

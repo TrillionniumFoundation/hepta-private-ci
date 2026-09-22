@@ -982,7 +982,7 @@
       "consumers": [
         "compact.engine"
       ],
-      "transport": "typed_local_or_versioned_wire",
+      "transport": "snapshot_bound_read_port",
       "bounded": true,
       "authorityDelta": "none",
       "payloadClass": "digest_bound_summary_or_request",
@@ -996,7 +996,7 @@
       "consumers": [
         "context.compiler"
       ],
-      "transport": "typed_local_or_versioned_wire",
+      "transport": "snapshot_bound_read_port",
       "bounded": true,
       "authorityDelta": "none",
       "payloadClass": "digest_bound_summary_or_request",
@@ -1010,7 +1010,7 @@
       "consumers": [
         "memory.federation"
       ],
-      "transport": "typed_local_or_versioned_wire",
+      "transport": "snapshot_bound_read_port",
       "bounded": true,
       "authorityDelta": "none",
       "payloadClass": "digest_bound_summary_or_request",
@@ -1024,7 +1024,7 @@
       "consumers": [
         "memory.retrieval"
       ],
-      "transport": "typed_local_or_versioned_wire",
+      "transport": "snapshot_bound_read_port",
       "bounded": true,
       "authorityDelta": "none",
       "payloadClass": "digest_bound_summary_or_request",
@@ -1038,7 +1038,7 @@
       "consumers": [
         "neuron.runtime"
       ],
-      "transport": "typed_local_or_versioned_wire",
+      "transport": "snapshot_bound_read_port",
       "bounded": true,
       "authorityDelta": "none",
       "payloadClass": "digest_bound_summary_or_request",
@@ -1052,7 +1052,7 @@
       "consumers": [
         "objective.compiler"
       ],
-      "transport": "typed_local_or_versioned_wire",
+      "transport": "snapshot_bound_read_port",
       "bounded": true,
       "authorityDelta": "none",
       "payloadClass": "digest_bound_summary_or_request",
@@ -1066,7 +1066,7 @@
       "consumers": [
         "utility.ndu"
       ],
-      "transport": "typed_local_or_versioned_wire",
+      "transport": "snapshot_bound_read_port",
       "bounded": true,
       "authorityDelta": "none",
       "payloadClass": "digest_bound_summary_or_request",

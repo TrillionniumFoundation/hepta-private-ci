@@ -664,6 +664,66 @@ async fn real_agentd_local_memory_review_is_read_only_and_replayable() -> Result
     Ok(())
 }
 
+/// A context published by the real Agentd socket must not remain valid after
+/// the canonical owner commits a tombstone. This exercises the exact product
+/// cut/read receipt and the final-use control RPC, not a fixture provider.
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn real_agentd_final_use_revalidation_rejects_concurrent_tombstone() -> Result<()> {
+    const MEMORY: &str = "Final-use vermilion observatory checkpoint must not survive withdrawal.";
+    const QUERY: &str = "vermilion observatory checkpoint";
+    const FORGET_REASON: &str = "final-use concurrent tombstone regression";
+
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(AGENT_A, "workspace-final-use-tombstone")?;
+    let model = responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    let (memory_id, _, source_citation) =
+        seed_verified_agent_memory_with_receipt(&agent, "final-use-tombstone", MEMORY).await?;
+
+    fleet.start(&agent)?;
+    let (control, _) = fleet.wait_ready(&agent, 1).await?;
+    let stale = control.cognitive_context(QUERY.to_string(), 4).await?;
+    ensure!(
+        stale.items.iter().any(|item| item.content == MEMORY),
+        "real Agentd did not publish the seeded memory"
+    );
+    let current = control.revalidate_cognitive_context(&stale).await?;
+    ensure!(
+        current.snapshot_digest == stale.snapshot_digest
+            && current.read_digest == stale.read_digest
+            && usize::from(current.verified_item_count) == stale.items.len(),
+        "unchanged context did not pass exact final-use validation"
+    );
+
+    let store = CognitiveStore::open(&agent.layout).await?;
+    store
+        .forget_memory(
+            &CognitiveAccess::agent_private(agent.agent_id.clone()),
+            &codex_hepta_memory::StableMemoryId::parse(memory_id).map_err(anyhow::Error::msg)?,
+            1,
+            &ForgetMemoryDraft {
+                scope: CognitiveScope::AgentPrivate,
+                reason: FORGET_REASON.to_string(),
+                valid_from_unix_seconds: i64::try_from(
+                    SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
+                )?,
+                citations: vec![source_citation],
+            },
+        )
+        .await?;
+
+    ensure!(
+        control.revalidate_cognitive_context(&stale).await.is_err(),
+        "historical snapshot/read receipt survived a committed tombstone"
+    );
+    let fresh = control.cognitive_context(QUERY.to_string(), 4).await?;
+    ensure!(
+        fresh.items.is_empty() && fresh.snapshot_digest != stale.snapshot_digest,
+        "reacquired context did not observe the committed tombstone"
+    );
+    Ok(())
+}
+
 /// A host-owned tombstone must become visible to the real read-only product
 /// without granting the live Agent any cognitive write tool.  This closes the
 /// semantic gap between a store-level forget regression and the process path

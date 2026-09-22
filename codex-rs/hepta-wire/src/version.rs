@@ -49,9 +49,8 @@ impl WireCapabilities {
     pub const METADATA_BOUND_DIGEST: Self = Self(1 << 0);
     pub const SCHEMA_ADMISSION: Self = Self(1 << 1);
     pub const STREAM_DECODING: Self = Self(1 << 2);
-    pub const CURRENT: Self = Self(
-        Self::METADATA_BOUND_DIGEST.0 | Self::SCHEMA_ADMISSION.0 | Self::STREAM_DECODING.0,
-    );
+    pub const CURRENT: Self =
+        Self(Self::METADATA_BOUND_DIGEST.0 | Self::SCHEMA_ADMISSION.0 | Self::STREAM_DECODING.0);
     const KNOWN_MASK: u64 = Self::CURRENT.0;
     const VERSION_SCOPED: Self = Self(Self::METADATA_BOUND_DIGEST.0);
 
@@ -169,7 +168,11 @@ impl NegotiationOffer {
         }
         let capabilities = WireCapabilities::from_bits(read_u64(encoded, 8)?)?;
         let expected = NEGOTIATION_FIXED_BYTES
-            .checked_add(count.checked_mul(2).ok_or(NegotiationError::LengthMismatch)?)
+            .checked_add(
+                count
+                    .checked_mul(2)
+                    .ok_or(NegotiationError::LengthMismatch)?,
+            )
             .ok_or(NegotiationError::LengthMismatch)?;
         if encoded.len() != expected {
             return Err(NegotiationError::LengthMismatch);
@@ -297,7 +300,10 @@ impl fmt::Display for NegotiationError {
                 write!(formatter, "invalid advertised wire version {version}")
             }
             Self::Reserved(value) => {
-                write!(formatter, "wire negotiation reserved byte is non-zero: {value}")
+                write!(
+                    formatter,
+                    "wire negotiation reserved byte is non-zero: {value}"
+                )
             }
             Self::UnknownCapabilities(bits) => {
                 write!(formatter, "unknown wire capability bits 0x{bits:016x}")

@@ -33,9 +33,9 @@ Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion an
 | State | Count |
 |---|---:|
 | `blocked_external` | 2 |
-| `planned` | 48 |
+| `planned` | 47 |
 | `source_implemented` | 21 |
-| `source_implemented_execution_pending` | 18 |
+| `source_implemented_execution_pending` | 19 |
 | `source_implemented_semantic_review_pending` | 2 |
 
 ## Baseline claims

@@ -261,6 +261,7 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
     let directory = tempfile::tempdir().unwrap();
     let fleet = directory.path().join("fleet");
     std::fs::create_dir(&fleet).unwrap();
+    let fleet = std::fs::canonicalize(&fleet).unwrap();
     let layout = HeptaFleetRoot::parse(fleet)
         .unwrap()
         .layout()
@@ -470,6 +471,10 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         "lifecycle epoch must not become a substitute launch identity"
     );
     assert!(client.health().await.unwrap().ready);
+    let capabilities = client.capabilities().await.unwrap();
+    assert!(capabilities.capabilities.iter().any(|capability| {
+        capability.id == crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY && capability.major == 1
+    }));
     let ranked = client
         .cognitive_context("lemon".to_string(), 1)
         .await
@@ -503,14 +508,15 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         )
         .await
         .unwrap();
-    assert_eq!(
-        client
-            .cognitive_context("lemon".to_string(), 1)
-            .await
-            .unwrap()
-            .items,
-        vec![baseline.items[0].clone()]
+    assert!(
+        client.revalidate_cognitive_context(&ranked).await.is_err(),
+        "a committed tombstone must invalidate final-use context bindings"
     );
+    let after_tombstone = client
+        .cognitive_context("lemon".to_string(), 1)
+        .await
+        .unwrap();
+    assert_eq!(after_tombstone.items, vec![baseline.items[0].clone()]);
     fixture
         .registry
         .append(ArtifactEvent::Revoke(StateChange {
@@ -528,6 +534,13 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     )
     .unwrap();
     *fixture.view.0.lock().unwrap() = Some((revoked, receipt));
+    assert!(
+        client
+            .revalidate_cognitive_context(&after_tombstone)
+            .await
+            .is_err(),
+        "ranker revocation between context publication and final use must fail closed"
+    );
     for _ in 0..2 {
         assert!(
             client

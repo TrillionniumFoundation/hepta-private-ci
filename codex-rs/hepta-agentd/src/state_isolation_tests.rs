@@ -1,13 +1,14 @@
 use std::fs;
 
 use super::*;
-use crate::AgentdPayload;
-use crate::LifecycleSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
+
+use crate::AgentdPayload;
+use crate::LifecycleSnapshot;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
@@ -124,4 +125,23 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
         state.refresh_generation(),
         Err(AgentdError::GenerationFenced(_))
     ));
+}
+
+#[tokio::test]
+async fn final_use_revalidation_rejects_stale_spawn_generation_before_store_access() {
+    let (_temp, _registry, state) = fixture().expect("runtime fixture");
+    let result = state
+        .response(
+            /*request_id*/ 9,
+            /*stale spawn_generation*/ 0,
+            crate::AgentdMethod::CognitiveContextRevalidate {
+                snapshot_digest: "11".repeat(32),
+                read_digest: "22".repeat(32),
+                omitted_records: 0,
+                items: Vec::new(),
+                plan: None,
+            },
+        )
+        .await;
+    assert!(matches!(result, Err(AgentdError::GenerationFenced(_))));
 }

@@ -109,6 +109,45 @@ class CargoWorkspaceManifestPolicyTest(unittest.TestCase):
             any("remove `features = [...]`" in error for error in self.errors(path, manifest))
         )
 
+    def test_isolated_cargo_fuzz_workspace_is_narrowly_recognized(self) -> None:
+        path = policy.CARGO_RS_ROOT / "hepta-wire" / "fuzz" / "Cargo.toml"
+        manifest = {
+            "package": {"metadata": {"cargo-fuzz": True}},
+            "workspace": {},
+        }
+        self.assertTrue(policy.is_isolated_cargo_fuzz_workspace(path, manifest))
+
+        near_misses = (
+            policy.CARGO_RS_ROOT / "hepta-wire" / "not-fuzz" / "Cargo.toml",
+            policy.CARGO_RS_ROOT / "fuzz" / "Cargo.toml",
+        )
+        for wrong_path in near_misses:
+            with self.subTest(path=wrong_path):
+                self.assertFalse(
+                    policy.is_isolated_cargo_fuzz_workspace(wrong_path, manifest)
+                )
+
+        for changed in (
+            {"package": {"metadata": {"cargo-fuzz": False}}, "workspace": {}},
+            {"package": {"metadata": {"cargo-fuzz": True}}},
+            {"workspace": {}},
+        ):
+            with self.subTest(manifest=changed):
+                self.assertFalse(
+                    policy.is_isolated_cargo_fuzz_workspace(path, changed)
+                )
+
+    def test_isolated_fuzz_exception_does_not_hide_ordinary_manifest_errors(self) -> None:
+        path, manifest = self.manifest("hepta-wire")
+        manifest.pop("lints", None)
+        self.assertFalse(policy.is_isolated_cargo_fuzz_workspace(path, manifest))
+        self.assertTrue(
+            any(
+                "add `[lints]` with `workspace = true`" in error
+                for error in self.errors(path, manifest)
+            )
+        )
+
     def test_removed_profile_requires_removal_of_its_temporary_exception(self) -> None:
         failures: dict[str, list[str]] = {}
         retired_path = "codex-rs/hepta-contracts/Cargo.toml"

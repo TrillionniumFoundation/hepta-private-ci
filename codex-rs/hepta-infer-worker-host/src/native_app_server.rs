@@ -30,7 +30,9 @@ use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
 use codex_hepta_agentd::HealthSnapshot;
+use codex_hepta_agentd::MAX_COGNITIVE_CONTEXT_BYTES;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
@@ -49,9 +51,40 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
-const MAX_MODEL_CONTEXT_BYTES: usize = 8 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
+
+#[cfg(test)]
+struct FinalRevalidationTestHook {
+    reached: tokio::sync::Notify,
+    release: tokio::sync::Notify,
+}
+
+#[cfg(test)]
+static FINAL_REVALIDATION_TEST_HOOK: std::sync::OnceLock<
+    std::sync::Mutex<Option<std::sync::Arc<FinalRevalidationTestHook>>>,
+> = std::sync::OnceLock::new();
+
+#[cfg(test)]
+fn install_final_revalidation_test_hook(hook: std::sync::Arc<FinalRevalidationTestHook>) {
+    *FINAL_REVALIDATION_TEST_HOOK
+        .get_or_init(|| std::sync::Mutex::new(None))
+        .lock()
+        .expect("final revalidation test hook lock") = Some(hook);
+}
+
+#[cfg(test)]
+async fn pause_before_final_revalidation_for_test() {
+    let hook = FINAL_REVALIDATION_TEST_HOOK
+        .get_or_init(|| std::sync::Mutex::new(None))
+        .lock()
+        .expect("final revalidation test hook lock")
+        .take();
+    if let Some(hook) = hook {
+        hook.reached.notify_one();
+        hook.release.notified().await;
+    }
+}
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
@@ -110,14 +143,26 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
+        if context_query.is_some() {
+            let capabilities = owner.capabilities().await?;
+            let supports_revalidation = capabilities.capabilities.iter().any(|capability| {
+                capability.id == COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY && capability.major == 1
+            });
+            if !supports_revalidation {
+                return Err(
+                    "owning Agent does not support final-use cognitive revalidation".into(),
+                );
+            }
+        }
         let context = match context_query {
             Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
             None => None,
         };
         let additional_context = context
+            .as_ref()
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_MODEL_CONTEXT_BYTES {
+                if value.len() > MAX_COGNITIVE_CONTEXT_BYTES {
                     return Err("verified context exceeds the model attachment byte limit".into());
                 }
                 Ok(HashMap::from([(
@@ -177,6 +222,10 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
+        // Persist the exact model-dispatch binding first. The final cognitive
+        // freshness check then runs against the canonical owner immediately
+        // before provider TurnStart. A failed final check can release this
+        // locally proven pre-TurnStart state without inventing provider success.
         control.dispatch_native(
             request_id,
             NativeDispatch {
@@ -185,6 +234,49 @@ impl AppServerModelDriver {
                 context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
             },
         )?;
+        #[cfg(test)]
+        if context.is_some() {
+            pause_before_final_revalidation_for_test().await;
+        }
+        if let Some(snapshot) = context.as_ref() {
+            let revalidated = match owner.revalidate_cognitive_context(snapshot).await {
+                Ok(revalidated) => revalidated,
+                Err(error) => {
+                    let reason: String =
+                        format!("cognitive final-use revalidation failed: {error}")
+                            .chars()
+                            .take(1024)
+                            .collect();
+                    let stopped = control.stop_native_before_turn_start(request_id, reason);
+                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                    stopped?;
+                    return Err(error.into());
+                }
+            };
+            if revalidated.snapshot_digest != snapshot.snapshot_digest
+                || revalidated.read_digest != snapshot.read_digest
+                || usize::from(revalidated.verified_item_count) != snapshot.items.len()
+            {
+                let stopped = control.stop_native_before_turn_start(
+                    request_id,
+                    "cognitive final-use revalidation returned a mismatched receipt".to_string(),
+                );
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                stopped?;
+                return Err(
+                    "cognitive final-use revalidation returned a mismatched receipt".into(),
+                );
+            }
+        }
+        if cancellation.is_cancelled() {
+            let stopped = control.stop_native_before_turn_start(
+                request_id,
+                "cancelled before model dispatch".to_string(),
+            );
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            stopped?;
+            return Err("cancelled before model dispatch".into());
+        }
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
