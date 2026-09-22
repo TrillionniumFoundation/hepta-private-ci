@@ -474,7 +474,7 @@ async fn prepare(root: &Path) -> HarnessResult<()> {
     .await?;
     let writer = host.writer();
     let queued = writer.admit(OCCURRENCE_KEY, TOPIC, PAYLOAD).await?;
-    let database = inspect_database(writer.store().path(), LEASE_ID).await?;
+    let database = inspect_database(writer.database_path(), LEASE_ID).await?;
     validate_database_evidence(&database)?;
     let marker = PrepareMarker {
         schema_version: HARNESS_SCHEMA_VERSION,
@@ -486,7 +486,7 @@ async fn prepare(root: &Path) -> HarnessResult<()> {
         prepared_at_unix_seconds: now_unix_seconds()?,
         boot_id: boot_id(),
         fleet_root: root.join("fleet-v1").display().to_string(),
-        database_path: writer.store().path().display().to_string(),
+        database_path: writer.database_path().display().to_string(),
         agent_id,
         lease_id: LEASE_ID.to_string(),
         generation,
@@ -537,7 +537,8 @@ async fn recover(root: &Path) -> HarnessResult<()> {
     )
     .await?;
     let writer = host.writer();
-    let database_before_terminalization = inspect_database(writer.store().path(), LEASE_ID).await?;
+    let database_before_terminalization =
+        inspect_database(writer.database_path(), LEASE_ID).await?;
     validate_database_evidence(&database_before_terminalization)?;
     let replay = writer
         .admit(
@@ -581,7 +582,7 @@ async fn recover(root: &Path) -> HarnessResult<()> {
         )
         .await?;
     let release = writer.release().await?;
-    let database_path = writer.store().path().to_path_buf();
+    let database_path = writer.database_path().to_path_buf();
     drop(host);
     drop(writer);
     let database_after_terminalization = inspect_database(&database_path, LEASE_ID).await?;

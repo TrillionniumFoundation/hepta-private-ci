@@ -242,6 +242,7 @@ async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
         &fixture.identity,
         Arc::clone(&fixture.state),
         runtime,
+        /*production_cognitive_mutation*/ None,
     )
     .expect("runtime options");
     assert!(

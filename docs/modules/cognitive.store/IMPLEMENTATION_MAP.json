@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "9479742ccb58636717f1c510a0b9963f19dc9de5",
+    "tree": "c512e2b94aa7861611ec39a083159ea9bd48362e"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -18,53 +18,169 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "normal_agentd_runtime_capability_composed_external_bootstrap_pending",
+  "productionWriterState": "sealed_same_transaction_provenance_writer_source_bound_qualification_pending",
   "operations": [
     {
-      "operation": "cognitivestore",
-      "nativeSymbol": "CognitiveStore",
-      "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "semantic_revision_ledger",
+      "nativeSymbol": "AdmittedCognitiveStoreV2",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivestore",
+      "designOperation": "append_event_append_correction_forget_open_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "cognitivestore",
-      "nativeSymbol": "CognitiveStore",
-      "sourcePath": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "durable_owner",
+      "nativeSymbol": "DurableCognitiveStore",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/durable.rs",
+      "state": "canonical_durable_owner_source_implemented_qualification_pending",
+      "authority": "externally_verified",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivestore",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "designOperation": "authoritative_memory_and_memory_revision_bound_fact_set_storage",
+      "mappingClass": "canonical_facade",
+      "delegatedCallees": [
+        {
+          "symbol": "hepta-memory::CognitiveStore",
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs"
+        }
+      ]
     },
     {
       "operation": "lane_c_snapshot",
-      "nativeSymbol": "lane_c_snapshot",
+      "nativeSymbol": "lane_c_snapshot_page",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "durable_snapshot_source_implemented",
+      "authority": "deny_all_read",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "lane_c_snapshot",
+      "designOperation": "open_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "writable_recovery",
+      "nativeSymbol": "open_with_recovery",
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "state": "descriptor_bound_recovery_source_implemented",
+      "authority": "externally_verified",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+        "codex-rs/state/src/sqlite_recovery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_with_recovery",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "product_writer_host",
+      "nativeSymbol": "AgentdProductionWriterHost",
+      "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "state": "normal_runtime_composition_source_bound_external_bootstrap_pending",
+      "authority": "externally_verified",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "production_writer_host",
+      "mappingClass": "product_caller",
+      "delegatedCallees": [
+        {
+          "symbol": "cognitive.store::DurableCognitiveStore",
+          "path": "codex-rs/hepta-cognitive-store/src/durable.rs"
+        },
+        {
+          "symbol": "cognitive.store::ProductionDurableWriter",
+          "path": "codex-rs/hepta-memory/src/production_writer.rs"
+        },
+        {
+          "symbol": "cognitive.store::ProductionCognitiveMutationCapability",
+          "path": "codex-rs/hepta-memory/src/production_writer.rs"
+        }
+      ]
+    },
+    {
+      "operation": "production_mutation_capability",
+      "nativeSymbol": "ProductionCognitiveMutationCapability",
+      "sourcePath": "codex-rs/hepta-memory/src/production_writer.rs",
+      "state": "sealed_live_verified_same_transaction_provenance_source_implemented_qualification_pending",
+      "authority": "externally_verified_final_use",
+      "tests": [
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "remember_correct_forget_with_atomic_authority_and_operation_provenance",
+      "mappingClass": "canonical_capability",
+      "delegatedCallees": [
+        {
+          "symbol": "hepta-memory::CognitiveStore",
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs"
+        }
+      ]
+    },
+    {
+      "operation": "canonical_memory_event_shadow",
+      "nativeSymbol": "AdmittedCognitiveStoreV2::append_admitted_with_canonical_shadow",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "state": "source_implemented_shadow_only_not_product_composed",
+      "authority": "existing_store_authority_only_no_new_authority",
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_memory_event_shadow_write",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "symbol": "AdmittedCognitiveStoreV2::append_admitted",
+          "path": "codex-rs/hepta-cognitive-store/src/v2.rs"
+        }
+      ]
+    },
+    {
+      "operation": "canonical_durable_memory_event_binding",
+      "nativeSymbol": "bind_canonical_event_to_durable_receipt",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "state": "source_implemented_product_receipt_bound_qualification_pending",
+      "authority": "deny_all_binding_receipt",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "bind_memory_event_to_authoritative_source_revision_and_production_receipt",
+      "mappingClass": "canonical_bridge",
+      "delegatedCallees": [
+        {
+          "symbol": "ProductionCognitiveMutationReceiptV1",
+          "path": "codex-rs/hepta-memory/src/production_writer.rs"
+        }
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for this source baseline, including child-process crash/reopen and 256/16384 PERF-DURABLE artifacts.",
+    "Obtain terminal-success exact-candidate execution evidence for the same-transaction semantic-validation failure, response-loss/restart duplicate rejection, and live-authority revocation cases already present in source tests.",
+    "Define and qualify long-term ancestry-safe retention/pruning beyond bounded paging; logical tombstones must not be reported as physical erasure, backup deletion, derived-artifact revocation or model unlearning.",
+    "Keep productionImplementation false until the normal-runtime sealed capability path compiles/tests on the exact candidate and product execution evidence is current.",
+    "Standalone deployment must receive an independently authenticated current-cut witness and externally verified live production authority from its host; Agentd must not self-mint either."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "trusted host bootstrap and target-host product qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
@@ -78,5 +194,27 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-store"
-  ]
+  ],
+  "sourceBaseSemantics": "exact_non_projection_source_snapshot",
+  "canonicalMemoryEventMigration": {
+    "state": "shadow_and_production_durable_bridge_source_integrated",
+    "legacyAuthoritativeSurface": "MemoryAdmissionCandidateV1 -> MemoryRecord / MemoryWriteReceiptV1",
+    "canonicalObservedSurface": "cognitive.types::hnmf::MemoryEventV1",
+    "provesPayloadSemanticEquivalence": false,
+    "verifiesVerificationState": true,
+    "verifiesSourceIdDigestObservedTime": true,
+    "verifiesSourceRevisionEquivalence": false,
+    "legacyShadowSourceRevisionLimit": "MemoryAdmissionEvidenceV1 has no source_revision",
+    "productionDurableBridge": {
+      "sourceImplemented": true,
+      "verifiesSourceId": true,
+      "verifiesSourceDigest": true,
+      "verifiesSourceRevision": true,
+      "verifiesObservedTime": true,
+      "bindsProductionReceiptDigest": true,
+      "authority": "DENY_ALL"
+    },
+    "postCommitFailurePossible": false,
+    "productionWriterReplacement": false
+  }
 }

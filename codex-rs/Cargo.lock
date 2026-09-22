@@ -3465,9 +3465,9 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "app_test_support",
- "codex-app-server",
  "codex-app-server-client",
  "codex-app-server-protocol",
+ "codex-app-server",
  "codex-arg0",
  "codex-config",
  "codex-features",
@@ -3476,13 +3476,15 @@ dependencies = [
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
  "codex-hepta-cognitive-read",
+ "codex-hepta-cognitive-store",
+ "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
  "codex-hepta-evidence",
  "codex-hepta-fleet",
  "codex-hepta-learning-artifacts",
- "codex-hepta-memory",
  "codex-hepta-memory-extension",
+ "codex-hepta-memory",
  "codex-hepta-paths",
  "codex-hepta-supervisor",
  "codex-hepta-types",
@@ -3495,13 +3497,13 @@ dependencies = [
  "codex-utils-home-dir",
  "core_test_support",
  "ed25519-dalek",
- "serde",
  "serde_json",
+ "serde",
  "sqlx",
  "tempfile",
  "thiserror 2.0.18",
- "tokio",
  "tokio-util",
+ "tokio",
  "wiremock",
 ]
 
@@ -3527,12 +3529,9 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-fleet",
- "codex-hepta-operations",
  "codex-hepta-paths",
- "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
- "ed25519-dalek",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -3595,6 +3594,7 @@ name = "codex-hepta-cognitive-store"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
+ "codex-hepta-memory",
  "codex-hepta-types",
 ]
 
@@ -3889,6 +3889,7 @@ dependencies = [
  "codex-state",
  "codex-utils-absolute-path",
  "ed25519-dalek",
+ "libc",
  "pretty_assertions",
  "serde",
  "serde_json",

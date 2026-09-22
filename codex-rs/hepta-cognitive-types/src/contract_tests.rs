@@ -445,7 +445,11 @@ fn all_registered_v1_contracts_have_distinct_cross_language_golden_digests() {
     ];
     assert!(values.iter().all(|(value, _)| !value.is_zero()));
     assert_eq!(
-        values.iter().map(|(value, _)| *value).collect::<BTreeSet<_>>().len(),
+        values
+            .iter()
+            .map(|(value, _)| *value)
+            .collect::<BTreeSet<_>>()
+            .len(),
         12
     );
     for (actual, expected) in values {

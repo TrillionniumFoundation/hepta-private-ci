@@ -74,6 +74,26 @@ impl CognitiveStore {
         draft: &MemoryDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let receipt = self
+            .remember_with_kg_tx(&mut transaction, access, source, draft, facts)
+            .await?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(receipt)
+    }
+
+    pub(crate) async fn remember_with_kg_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        source: &SourceDraft,
+        draft: &MemoryDraft,
+        facts: &KgFactSetDraft,
+    ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
         validate_source_binding(source, &draft.revision.scope, &draft.revision.content)?;
         if draft.revision.lifecycle != MemoryLifecycleState::Active {
             return Err(CognitiveStoreError::Invalid(
@@ -81,33 +101,19 @@ impl CognitiveStore {
             ));
         }
         validate_fact_eligibility(&draft.revision, facts)?;
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
-        let citation = self
-            .append_source_tx(&mut transaction, access, source)
-            .await?;
+        let citation = self.append_source_tx(transaction, access, source).await?;
         let mut bound_draft = draft.clone();
         bind_exact_citation(&mut bound_draft.revision, &citation)?;
         let memory = self
-            .create_memory_revision_tx(&mut transaction, access, &bound_draft)
+            .create_memory_revision_tx(transaction, access, &bound_draft)
             .await?;
         let canonical =
             self.canonicalize_fact_set(&memory, &citation, facts, EXTRACTOR_CONTRACT)?;
-        self.insert_revision_facts_tx(&mut transaction, &memory, &citation, &canonical)
+        self.insert_revision_facts_tx(transaction, &memory, &citation, &canonical)
             .await?;
         let projection = self
-            .refresh_scope_projection_tx(
-                &mut transaction,
-                &memory.scope,
-                &memory,
-                &citation,
-                &canonical,
-            )
+            .refresh_scope_projection_tx(transaction, &memory.scope, &memory, &citation, &canonical)
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
         Ok(CognitiveWriteReceipt {
             memory,
             source: citation,
@@ -127,6 +133,36 @@ impl CognitiveStore {
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let receipt = self
+            .correct_with_kg_tx(
+                &mut transaction,
+                access,
+                memory_id,
+                expected_revision,
+                source,
+                draft,
+                facts,
+            )
+            .await?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(receipt)
+    }
+
+    pub(crate) async fn correct_with_kg_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &MemoryRevisionDraft,
+        facts: &KgFactSetDraft,
+    ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active
@@ -136,19 +172,12 @@ impl CognitiveStore {
             ));
         }
         validate_fact_eligibility(draft, facts)?;
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
-        let citation = self
-            .append_source_tx(&mut transaction, access, source)
-            .await?;
+        let citation = self.append_source_tx(transaction, access, source).await?;
         let mut bound_draft = draft.clone();
         bind_exact_citation(&mut bound_draft, &citation)?;
         let memory = self
             .revise_memory_revision_tx(
-                &mut transaction,
+                transaction,
                 access,
                 memory_id,
                 expected_revision,
@@ -157,18 +186,11 @@ impl CognitiveStore {
             .await?;
         let canonical =
             self.canonicalize_fact_set(&memory, &citation, facts, EXTRACTOR_CONTRACT)?;
-        self.insert_revision_facts_tx(&mut transaction, &memory, &citation, &canonical)
+        self.insert_revision_facts_tx(transaction, &memory, &citation, &canonical)
             .await?;
         let projection = self
-            .refresh_scope_projection_tx(
-                &mut transaction,
-                &memory.scope,
-                &memory,
-                &citation,
-                &canonical,
-            )
+            .refresh_scope_projection_tx(transaction, &memory.scope, &memory, &citation, &canonical)
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
         Ok(CognitiveWriteReceipt {
             memory,
             source: citation,
@@ -181,6 +203,34 @@ impl CognitiveStore {
     /// receipt so composition cannot be confused with a writer that never ran.
     pub async fn forget_with_kg(
         &self,
+        access: &CognitiveAccess,
+        memory_id: &StableMemoryId,
+        expected_revision: u64,
+        source: &SourceDraft,
+        draft: &ForgetMemoryDraft,
+    ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let receipt = self
+            .forget_with_kg_tx(
+                &mut transaction,
+                access,
+                memory_id,
+                expected_revision,
+                source,
+                draft,
+            )
+            .await?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(receipt)
+    }
+
+    pub(crate) async fn forget_with_kg_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
         memory_id: &StableMemoryId,
         expected_revision: u64,
@@ -200,19 +250,12 @@ impl CognitiveStore {
             citations: Vec::new(),
         };
         let facts = KgFactSetDraft::default();
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
-        let citation = self
-            .append_source_tx(&mut transaction, access, source)
-            .await?;
+        let citation = self.append_source_tx(transaction, access, source).await?;
         let mut bound_revision = revision;
         bind_exact_citation(&mut bound_revision, &citation)?;
         let memory = self
             .revise_memory_revision_tx(
-                &mut transaction,
+                transaction,
                 access,
                 memory_id,
                 expected_revision,
@@ -221,18 +264,11 @@ impl CognitiveStore {
             .await?;
         let canonical =
             self.canonicalize_fact_set(&memory, &citation, &facts, EXTRACTOR_CONTRACT)?;
-        self.insert_revision_facts_tx(&mut transaction, &memory, &citation, &canonical)
+        self.insert_revision_facts_tx(transaction, &memory, &citation, &canonical)
             .await?;
         let projection = self
-            .refresh_scope_projection_tx(
-                &mut transaction,
-                &memory.scope,
-                &memory,
-                &citation,
-                &canonical,
-            )
+            .refresh_scope_projection_tx(transaction, &memory.scope, &memory, &citation, &canonical)
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
         Ok(CognitiveWriteReceipt {
             memory,
             source: citation,

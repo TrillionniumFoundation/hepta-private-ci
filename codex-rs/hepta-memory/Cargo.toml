@@ -22,6 +22,7 @@ codex-hepta-types = { path = "../hepta-types" }
 codex-state = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 ed25519-dalek = { workspace = true }
+libc = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }

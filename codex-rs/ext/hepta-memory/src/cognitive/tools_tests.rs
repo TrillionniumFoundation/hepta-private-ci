@@ -53,6 +53,8 @@ fn tool(
         thread_id: THREAD_ID.to_string(),
         witness,
         operation,
+        qualification_write_enabled: true,
+        production_mutation: None,
     }
 }
 
@@ -563,6 +565,7 @@ async fn deferred_tools_are_visible_before_turn_input_and_fail_closed_without_ex
         TURN_ID.to_string(),
         witnesses.clone(),
         true,
+        None,
     );
     assert_eq!(tools.len(), 5);
 
@@ -635,6 +638,38 @@ async fn conflicting_same_turn_witness_replay_is_permanently_poisoned() {
 }
 
 #[tokio::test]
+async fn available_product_runtime_without_mutation_capability_exposes_no_write_tools() {
+    let (_temp, store, witness) = test_runtime("directive").await;
+    let witnesses = Arc::new(CognitiveTurnWitnesses::default());
+    witnesses.insert(witness);
+    let before = store.recovery_anchor().await.expect("owner cut");
+    let tools = deferred_cognitive_tools(
+        CognitiveRuntime::Available(store.clone()),
+        THREAD_ID.to_string(),
+        TURN_ID.to_string(),
+        witnesses,
+        /*qualification_write_enabled*/ false,
+        /*production_mutation*/ None,
+    );
+    assert_eq!(
+        tools
+            .iter()
+            .map(|tool| {
+                let name = tool.tool_name();
+                (name.namespace, name.name)
+            })
+            .collect::<Vec<_>>(),
+        vec![
+            (Some("hepta_cognitive".to_string()), "recall".to_string()),
+            (Some("hepta_cognitive".to_string()), "explain".to_string()),
+        ],
+        "an available raw store must not make product write tools visible without the opaque production mutation capability"
+    );
+    let after = store.recovery_anchor().await.expect("unchanged owner cut");
+    assert_eq!(after, before);
+}
+
+#[tokio::test]
 async fn unavailable_deferred_runtime_keeps_only_read_tools_visible_without_a_witness() {
     let (_temp, _store, _witness) = test_runtime("directive").await;
     let tools = deferred_cognitive_tools(
@@ -643,6 +678,7 @@ async fn unavailable_deferred_runtime_keeps_only_read_tools_visible_without_a_wi
         TURN_ID.to_string(),
         Arc::new(CognitiveTurnWitnesses::default()),
         false,
+        None,
     );
     assert_eq!(tools.len(), 2);
     assert_eq!(

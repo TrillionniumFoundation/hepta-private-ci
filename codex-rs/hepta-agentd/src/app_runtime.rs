@@ -30,11 +30,19 @@ pub(crate) async fn run_app_server(
     arg0_paths: Arg0DispatchPaths,
     cognitive_runtime: CognitiveRuntime,
     state: Arc<AgentdState>,
+    production_writer_host: Option<Arc<crate::AgentdProductionWriterHost>>,
 ) -> std::io::Result<()> {
     let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
-    let config_overrides = app_server_config_overrides();
-    let runtime_options =
-        app_server_runtime_options_for_agent(&identity, state, cognitive_runtime)?;
+    let production_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>> =
+        production_writer_host.and_then(|host| host.production_mutation());
+    let cognitive_write_enabled = COGNITIVE_WRITE_ENABLED || production_mutation.is_some();
+    let config_overrides = app_server_config_overrides(cognitive_write_enabled);
+    let runtime_options = app_server_runtime_options_for_agent(
+        &identity,
+        state,
+        cognitive_runtime,
+        production_mutation,
+    )?;
     codex_app_server::run_main_with_transport_options(
         arg0_paths,
         config_overrides,
@@ -56,7 +64,7 @@ pub(crate) async fn run_app_server(
     })
 }
 
-fn app_server_config_overrides() -> CliConfigOverrides {
+fn app_server_config_overrides(cognitive_write_enabled: bool) -> CliConfigOverrides {
     CliConfigOverrides {
         raw_overrides: vec![
             "features.hepta_governance=true".to_string(),
@@ -67,7 +75,7 @@ fn app_server_config_overrides() -> CliConfigOverrides {
             // profile is an explicit build-time qualification binary; it is
             // still local/host-owned and does not grant production effects,
             // fleet authority, or promotion.
-            format!("features.hepta_cognitive_write={COGNITIVE_WRITE_ENABLED}"),
+            format!("features.hepta_cognitive_write={cognitive_write_enabled}"),
         ],
     }
 }
@@ -80,6 +88,7 @@ pub(crate) fn app_server_runtime_options(
     app_server_runtime_options_with_writer(
         identity,
         cognitive_runtime,
+        /*production_cognitive_mutation*/ None,
         /*qualification_turn_writer*/ None,
     )
 }
@@ -88,16 +97,25 @@ pub(crate) fn app_server_runtime_options_for_agent(
     identity: &AgentdIdentity,
     state: Arc<AgentdState>,
     cognitive_runtime: CognitiveRuntime,
+    production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);
-    app_server_runtime_options_with_writer(identity, cognitive_runtime, writer)
+    app_server_runtime_options_with_writer(
+        identity,
+        cognitive_runtime,
+        production_cognitive_mutation,
+        writer,
+    )
 }
 
 fn app_server_runtime_options_with_writer(
     identity: &AgentdIdentity,
     cognitive_runtime: CognitiveRuntime,
+    production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
     qualification_turn_writer: Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
+    let cognitive_write_enabled =
+        COGNITIVE_WRITE_ENABLED || production_cognitive_mutation.is_some();
     let turn_queue_capacity = usize::try_from(identity.resources.turn_queue_capacity)
         .map_err(|_| std::io::Error::other("turn queue capacity does not fit this platform"))?;
     let turn_queue_capacity = NonZeroUsize::new(turn_queue_capacity).ok_or_else(|| {
@@ -110,6 +128,7 @@ fn app_server_runtime_options_with_writer(
         required_sqlite_home: Some(AbsolutePathBuf::from_absolute_path(&identity.home_root)?),
         required_thread_store_mode: Some(ThreadStoreConfig::Local),
         hepta_cognitive_runtime: cognitive_runtime,
+        hepta_cognitive_production_mutation: production_cognitive_mutation,
         // The owning agent supplies the qualification-only policy to the
         // explicit host owner.  The legacy turn callback remains disabled:
         // policy-gated local witness writes must be host-invoked and must not
@@ -129,7 +148,7 @@ fn app_server_runtime_options_with_writer(
         // exists only in the explicit qualification build.
         required_feature_states: BTreeMap::from([(
             Feature::HeptaCognitiveWrite,
-            COGNITIVE_WRITE_ENABLED,
+            cognitive_write_enabled,
         )]),
         ..Default::default()
     })
@@ -151,7 +170,7 @@ mod tests {
 
     #[test]
     fn agentd_forces_hepta_turn_recovery_on() {
-        let overrides = app_server_config_overrides();
+        let overrides = app_server_config_overrides(COGNITIVE_WRITE_ENABLED);
         assert!(
             overrides
                 .raw_overrides
@@ -162,7 +181,7 @@ mod tests {
 
     #[test]
     fn agentd_forces_explicit_cognitive_write_profile_state() {
-        let overrides = app_server_config_overrides();
+        let overrides = app_server_config_overrides(COGNITIVE_WRITE_ENABLED);
         assert!(overrides.raw_overrides.iter().any(|value| {
             value == &format!("features.hepta_cognitive_write={COGNITIVE_WRITE_ENABLED}")
         }));

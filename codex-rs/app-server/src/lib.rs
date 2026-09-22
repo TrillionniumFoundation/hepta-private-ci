@@ -474,6 +474,9 @@ pub struct AppServerRuntimeOptions {
     /// hands in `Available` or a sanitized `Unavailable`; extensions must
     /// never infer store ownership from environment variables.
     pub hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
+    /// Opaque production cognitive mutation capability supplied by the owning runtime.
+    pub hepta_cognitive_production_mutation:
+        Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
     /// Explicit local-development-only turn lifecycle journal capability.
     /// This is false by default and is never inferred from environment or
     /// feature flags.
@@ -518,6 +521,10 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
                 &self.required_thread_store_mode,
             )
             .field("hepta_cognitive_runtime", &self.hepta_cognitive_runtime)
+            .field(
+                "hepta_cognitive_production_mutation",
+                &self.hepta_cognitive_production_mutation.is_some(),
+            )
             .field(
                 "hepta_local_turn_lifecycle_enabled",
                 &self.hepta_local_turn_lifecycle_enabled,
@@ -579,6 +586,14 @@ impl PartialEq for AppServerRuntimeOptions {
                 ) => true,
                 _ => false,
             }
+            && match (
+                &self.hepta_cognitive_production_mutation,
+                &other.hepta_cognitive_production_mutation,
+            ) {
+                (Some(left), Some(right)) => Arc::ptr_eq(left, right),
+                (None, None) => true,
+                _ => false,
+            }
             && self.hepta_local_turn_lifecycle_enabled == other.hepta_local_turn_lifecycle_enabled
             && self.hepta_local_development_policy == other.hepta_local_development_policy
             && self.hepta_qualification_turn_writer_enabled
@@ -601,6 +616,7 @@ impl Default for AppServerRuntimeOptions {
             required_sqlite_home: None,
             required_thread_store_mode: None,
             hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Absent,
+            hepta_cognitive_production_mutation: None,
             hepta_local_turn_lifecycle_enabled: false,
             hepta_local_development_policy: None,
             hepta_qualification_turn_writer_enabled: false,
@@ -1097,6 +1113,9 @@ pub async fn run_main_with_transport_options(
             plugin_startup_tasks: runtime_options.plugin_startup_tasks,
             turn_queue_capacity: runtime_options.turn_queue_capacity,
             hepta_cognitive_runtime: runtime_options.hepta_cognitive_runtime.clone(),
+            hepta_cognitive_production_mutation: runtime_options
+                .hepta_cognitive_production_mutation
+                .clone(),
             hepta_local_turn_lifecycle_enabled: runtime_options.hepta_local_turn_lifecycle_enabled,
             hepta_local_development_policy: runtime_options.hepta_local_development_policy,
             hepta_qualification_turn_writer_enabled: runtime_options

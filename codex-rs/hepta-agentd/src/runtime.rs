@@ -10,8 +10,8 @@ use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_arg0::Arg0DispatchPaths;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_memory::CognitiveRuntime;
-use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FederatedRecallSet;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::task::JoinHandle;
@@ -44,6 +44,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let production_writer_host = config.production_writer_host();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -73,11 +74,21 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .set(Arc::new(host))
             .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
     }
-    let cognitive_layout = identity.layout.clone();
-    let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
-        CognitiveStore::open(&cognitive_layout).await
-    })
-    .await?;
+    let cognitive_runtime = match production_writer_host.as_ref() {
+        Some(host) => {
+            state.refresh_generation()?;
+            let runtime = host.cognitive_runtime();
+            state.refresh_generation()?;
+            runtime
+        }
+        None => {
+            let cognitive_layout = identity.layout.clone();
+            open_cognitive_runtime_after_generation_fence(&state, || async move {
+                CognitiveStore::open(&cognitive_layout).await
+            })
+            .await?
+        }
+    };
     // The writer-enabled qualification binary must never start in a
     // degraded CognitiveRuntime state.  The default/production binary keeps
     // the existing availability-tolerant behavior; only the explicit
@@ -113,6 +124,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         arg0_paths,
         cognitive_runtime,
         Arc::clone(&state),
+        production_writer_host,
     ));
     let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
     let automation_cancellation = cancellation.clone();

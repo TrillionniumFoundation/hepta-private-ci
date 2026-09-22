@@ -1,5 +1,21 @@
 use super::*;
 
+use std::collections::BTreeSet;
+
+use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
+use codex_hepta_cognitive_types::hnmf::MemoryScopeV1;
+use codex_hepta_cognitive_types::hnmf::MemoryVerificationStateV1;
+use codex_hepta_cognitive_types::hnmf::ModalityKindV1;
+use codex_hepta_cognitive_types::hnmf::ModalitySpanRefV1;
+use codex_hepta_cognitive_types::hnmf::ObservedIntervalV1;
+use codex_hepta_cognitive_types::hnmf::PrivacyClassV1;
+use codex_hepta_cognitive_types::hnmf::ProvenanceRefV1;
+use codex_hepta_cognitive_types::hnmf::RetentionPolicyV1;
+use codex_hepta_cognitive_types::hnmf::SpanRangeV1;
+
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_cognitive_types::lane_c::MemoryAdmissionEvidenceV1;
 
@@ -62,6 +78,59 @@ fn candidate(
             redaction_manifest_digest: digest("redaction"),
             observed_at_unix_ms: 1,
         }],
+    }
+}
+
+fn contract_id(value: &str) -> ContractIdV1 {
+    ContractIdV1::new(value).unwrap_or_else(|error| panic!("valid contract id: {error}"))
+}
+
+fn contract_digest(value: &str) -> ContractDigestV1 {
+    ContractDigestV1::from_digest(digest(value))
+        .unwrap_or_else(|error| panic!("valid contract digest: {error}"))
+}
+
+fn canonical_event(record_id: &str) -> MemoryEventV1 {
+    MemoryEventV1 {
+        event_id: contract_id(&format!("event:{record_id}")),
+        episode_id: contract_id("episode:1"),
+        scope: MemoryScopeV1::AgentPrivate {
+            agent_id: contract_id("agent:a"),
+        },
+        observed_interval: ObservedIntervalV1 {
+            start_unix_ms: 1,
+            end_unix_ms: None,
+        },
+        modality_spans: vec![ModalitySpanRefV1 {
+            span_id: contract_id("span:1"),
+            modality: ModalityKindV1::Text,
+            asset_sha256: contract_digest("asset"),
+            range: SpanRangeV1::ByteRange { start: 0, end: 4 },
+            preprocessor_manifest_sha256: contract_digest("preprocessor"),
+            feature_blob_sha256: None,
+            symbolic_projection_sha256: None,
+            uncertainty_ppm: 0,
+            privacy_class: PrivacyClassV1::AgentPrivate,
+            redaction_mask_sha256: None,
+        }],
+        cross_modal_bindings: Vec::new(),
+        semantic_keys: BTreeSet::from(["door".to_string()]),
+        provenance: vec![ProvenanceRefV1 {
+            source_id: contract_id(&format!("source:{record_id}")),
+            source_revision: 1,
+            source_sha256: contract_digest(&format!("source-digest:{record_id}")),
+            observed_at_unix_ms: 1,
+        }],
+        verification: MemoryVerificationStateV1::Verified,
+        retention_policy: RetentionPolicyV1::Persistent {
+            retain_until_unix_ms: None,
+        },
+        objective_digest: contract_digest("objective"),
+        ndu_state_digest: contract_digest("ndu"),
+        causal_parents: BTreeSet::new(),
+        temporal_neighbors: BTreeSet::new(),
+        behavior_propensity_ppm: None,
+        lifecycle: MemoryLifecycleV1::Active,
     }
 }
 
@@ -265,4 +334,494 @@ fn export_reopen_and_snapshot_preserve_history_and_tombstones() {
     snapshot
         .validate(10)
         .unwrap_or_else(|error| panic!("validate snapshot: {error}"));
+}
+
+#[test]
+fn admission_rejects_unverified_and_contradicted_candidates_before_materialization() {
+    for (index, (verification, expected)) in [
+        (
+            MemoryVerificationState::Unverified,
+            CognitiveStoreV2Error::UnverifiedCandidate,
+        ),
+        (
+            MemoryVerificationState::Contradicted,
+            CognitiveStoreV2Error::ContradictedCandidate,
+        ),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let mut store = store();
+        let mut value = candidate(
+            &format!("memory:verification:{index}"),
+            "content:v1",
+            MemoryAdmissionKind::Inference,
+        );
+        value.verification = verification;
+        let write_intent = intent(&store, &format!("intent:verification:{index}"), &value);
+        let record_id = value.candidate_id.clone();
+        assert_eq!(
+            store.append_admitted(&Verifier, value, write_intent),
+            Err(expected)
+        );
+        assert!(store.current_head(&record_id).is_none());
+    }
+}
+
+#[test]
+fn tombstone_uses_reserved_capacity_after_ordinary_capacity_is_full() {
+    let mut store = AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
+        .unwrap_or_else(|error| panic!("valid one-record store: {error}"));
+    let first = candidate(
+        "memory:capacity:1",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let first_intent = intent(&store, "intent:capacity:1", &first);
+    store
+        .append_admitted(&Verifier, first, first_intent)
+        .unwrap_or_else(|error| panic!("append within ordinary capacity: {error}"));
+
+    let second = candidate(
+        "memory:capacity:2",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let second_intent = intent(&store, "intent:capacity:2", &second);
+    assert_eq!(
+        store.append_admitted(&Verifier, second, second_intent),
+        Err(CognitiveStoreV2Error::CapacityExceeded)
+    );
+
+    let forget = ForgetIntentV2 {
+        intent_id: id("forget:capacity:1"),
+        record_id: id("memory:capacity:1"),
+        expected_snapshot: store.snapshot_key().clone(),
+        writer_fence_digest: digest("writer-fence"),
+        authorization_digest: digest("authorization"),
+        reason_digest: digest("capacity-delete"),
+    };
+    store
+        .forget(&Verifier, forget)
+        .unwrap_or_else(|error| panic!("tombstone must use reserved capacity: {error}"));
+    assert_eq!(
+        store
+            .current_head(&id("memory:capacity:1"))
+            .expect("head exists")
+            .state,
+        RecordState::Tombstone
+    );
+}
+
+#[test]
+fn saturated_retry_journal_blocks_new_admission_but_not_forget() {
+    let mut store = AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
+        .unwrap_or_else(|error| panic!("valid one-record store: {error}"));
+    let value = candidate(
+        "memory:journal:1",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let first_intent = intent(&store, "intent:journal:1", &value);
+    let original = store
+        .append_admitted(&Verifier, value.clone(), first_intent.clone())
+        .unwrap_or_else(|error| panic!("append first: {error}"));
+
+    for index in 2..=3 {
+        let retry = intent(&store, &format!("intent:journal:{index}"), &value);
+        store
+            .append_admitted(&Verifier, value.clone(), retry)
+            .unwrap_or_else(|error| panic!("retain bounded unchanged receipt: {error}"));
+    }
+    let overflow = intent(&store, "intent:journal:4", &value);
+    assert_eq!(
+        store.append_admitted(&Verifier, value.clone(), overflow),
+        Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded)
+    );
+
+    let forget = ForgetIntentV2 {
+        intent_id: id("forget:journal:1"),
+        record_id: id("memory:journal:1"),
+        expected_snapshot: store.snapshot_key().clone(),
+        writer_fence_digest: digest("writer-fence"),
+        authorization_digest: digest("authorization"),
+        reason_digest: digest("journal-delete"),
+    };
+    store
+        .forget(&Verifier, forget)
+        .unwrap_or_else(|error| panic!("forget must use reserved journal capacity: {error}"));
+
+    let retry = store
+        .append_admitted(&Verifier, value, first_intent)
+        .unwrap_or_else(|error| panic!("original retry receipt must remain retained: {error}"));
+    assert_eq!(retry, original);
+
+    let image = store
+        .export_image()
+        .unwrap_or_else(|error| panic!("bounded image: {error}"));
+    assert_eq!(image.journal.len(), 4);
+}
+
+#[test]
+fn image_rejects_cross_object_receipt_tampering_even_with_recomputed_digest() {
+    let mut store = store();
+    let value = candidate(
+        "memory:image:1",
+        "content:v1",
+        MemoryAdmissionKind::Inference,
+    );
+    let write_intent = intent(&store, "intent:image:1", &value);
+    store
+        .append_admitted(&Verifier, value, write_intent)
+        .unwrap_or_else(|error| panic!("append: {error}"));
+    let image = store
+        .export_image()
+        .unwrap_or_else(|error| panic!("export: {error}"));
+
+    let mut wrong_intent = image.clone();
+    wrong_intent.journal[0].receipt.intent_id = id("intent:image:forged");
+    wrong_intent.image_digest = wrong_intent.compute_image_digest();
+    assert!(matches!(
+        wrong_intent.validate(),
+        Err(CognitiveStoreV2Error::JournalReceiptMismatch(_))
+    ));
+
+    let mut wrong_record = image;
+    wrong_record.journal[0].receipt.record_digest = digest("forged-record");
+    wrong_record.image_digest = wrong_record.compute_image_digest();
+    assert!(matches!(
+        wrong_record.validate(),
+        Err(CognitiveStoreV2Error::JournalRecordMismatch(_))
+    ));
+}
+
+#[test]
+fn image_rejects_sequence_and_frontier_claims_not_derived_from_history() {
+    let mut store = store();
+    let value = candidate(
+        "memory:image:2",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let write_intent = intent(&store, "intent:image:2", &value);
+    store
+        .append_admitted(&Verifier, value, write_intent)
+        .unwrap_or_else(|error| panic!("append: {error}"));
+    let image = store
+        .export_image()
+        .unwrap_or_else(|error| panic!("export: {error}"));
+
+    let mut wrong_sequence = image.clone();
+    wrong_sequence.sequence =
+        LogicalSequence::new(99).unwrap_or_else(|error| panic!("sequence: {error}"));
+    wrong_sequence.image_digest = wrong_sequence.compute_image_digest();
+    assert_eq!(
+        wrong_sequence.validate(),
+        Err(CognitiveStoreV2Error::ImageSequenceMismatch)
+    );
+
+    let mut inflated_frontier = image.clone();
+    let mut vector = inflated_frontier.snapshot_key.vector.clone();
+    vector.memory_ledger_frontier = vector.memory_ledger_frontier.saturating_add(5);
+    inflated_frontier.snapshot_key =
+        CognitiveSnapshotKeyV1::new(vector).unwrap_or_else(|error| panic!("snapshot key: {error}"));
+    inflated_frontier.image_digest = inflated_frontier.compute_image_digest();
+    assert_eq!(
+        inflated_frontier.validate(),
+        Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)
+    );
+
+    let mut missing_receipt = image.clone();
+    missing_receipt.journal.clear();
+    missing_receipt.image_digest = missing_receipt.compute_image_digest();
+    assert_eq!(
+        missing_receipt.validate(),
+        Err(CognitiveStoreV2Error::ImageReceiptCoverageMismatch)
+    );
+
+    let mut wrong_frontier = image;
+    wrong_frontier.journal.clear();
+    let mut vector = wrong_frontier.snapshot_key.vector.clone();
+    vector.memory_ledger_frontier = 1;
+    wrong_frontier.snapshot_key =
+        CognitiveSnapshotKeyV1::new(vector).unwrap_or_else(|error| panic!("snapshot key: {error}"));
+    wrong_frontier.image_digest = wrong_frontier.compute_image_digest();
+    assert_eq!(
+        wrong_frontier.validate(),
+        Err(CognitiveStoreV2Error::ImageFrontierMismatch("memory"))
+    );
+}
+
+fn page_request(
+    store: &AdmittedCognitiveStoreV2,
+    request_id: &str,
+    after: Option<SnapshotCursorV2>,
+    maximum_records: u32,
+) -> SnapshotPageOpenRequestV2 {
+    SnapshotPageOpenRequestV2 {
+        request_id: id(request_id),
+        scope_id: id("scope:store"),
+        purpose_id: id("purpose:memory"),
+        minimum_memory_frontier: store.snapshot_key().vector.memory_ledger_frontier,
+        minimum_tombstone_frontier: store.snapshot_key().vector.tombstone_frontier,
+        authority_epoch: store.snapshot_key().vector.authority_epoch,
+        deadline_unix_ms: 100,
+        lease_duration_ms: 10,
+        maximum_records,
+        after,
+    }
+}
+
+#[test]
+fn paged_snapshot_preserves_exact_ancestry_across_page_boundaries() {
+    let mut store = store();
+    let first = candidate(
+        "memory:page:a",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let first_intent = intent(&store, "intent:page:1", &first);
+    store
+        .append_admitted(&Verifier, first, first_intent)
+        .unwrap_or_else(|error| panic!("append first: {error}"));
+    let correction = candidate(
+        "memory:page:a",
+        "content:v2",
+        MemoryAdmissionKind::Observation,
+    );
+    let correction_intent = intent(&store, "intent:page:2", &correction);
+    store
+        .append_admitted(&Verifier, correction, correction_intent)
+        .unwrap_or_else(|error| panic!("append correction: {error}"));
+    let second = candidate(
+        "memory:page:b",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let second_intent = intent(&store, "intent:page:3", &second);
+    store
+        .append_admitted(&Verifier, second, second_intent)
+        .unwrap_or_else(|error| panic!("append second record: {error}"));
+
+    let first_page = store
+        .open_snapshot_page(10, page_request(&store, "page:1", None, 1))
+        .unwrap_or_else(|error| panic!("first page: {error}"));
+    assert_eq!(first_page.records.len(), 1);
+    assert!(!first_page.complete);
+    assert_eq!(first_page.records[0].revision, revision(1));
+    let first_cursor = first_page.next.clone().expect("next cursor");
+
+    let second_page = store
+        .open_snapshot_page(
+            10,
+            page_request(&store, "page:2", Some(first_cursor.clone()), 1),
+        )
+        .unwrap_or_else(|error| panic!("second page: {error}"));
+    assert_eq!(second_page.records.len(), 1);
+    assert_eq!(second_page.records[0].record_id, first_cursor.record_id);
+    assert_eq!(second_page.records[0].revision, revision(2));
+    assert_eq!(
+        second_page.records[0].predecessor_digest,
+        Some(first_cursor.record_digest)
+    );
+    assert!(!second_page.complete);
+
+    let third_page = store
+        .open_snapshot_page(
+            10,
+            page_request(&store, "page:3", second_page.next.clone(), 1),
+        )
+        .unwrap_or_else(|error| panic!("third page: {error}"));
+    assert_eq!(third_page.records.len(), 1);
+    assert_eq!(third_page.records[0].record_id, id("memory:page:b"));
+    assert!(third_page.complete);
+    assert!(third_page.next.is_none());
+}
+
+#[test]
+fn paged_snapshot_rejects_continuation_after_store_cut_changes() {
+    let mut store = store();
+    let first = candidate(
+        "memory:page:stable:a",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let first_intent = intent(&store, "intent:page:stable:1", &first);
+    store
+        .append_admitted(&Verifier, first, first_intent)
+        .unwrap_or_else(|error| panic!("append first: {error}"));
+    let second = candidate(
+        "memory:page:stable:b",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let second_intent = intent(&store, "intent:page:stable:2", &second);
+    store
+        .append_admitted(&Verifier, second, second_intent)
+        .unwrap_or_else(|error| panic!("append second: {error}"));
+
+    let first_page = store
+        .open_snapshot_page(10, page_request(&store, "page:stable:1", None, 1))
+        .unwrap_or_else(|error| panic!("first page: {error}"));
+    let cursor = first_page.next.clone().expect("continuation cursor");
+
+    let third = candidate(
+        "memory:page:stable:c",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let third_intent = intent(&store, "intent:page:stable:3", &third);
+    store
+        .append_admitted(&Verifier, third, third_intent)
+        .unwrap_or_else(|error| panic!("append intervening mutation: {error}"));
+
+    assert_eq!(
+        store.open_snapshot_page(10, page_request(&store, "page:stable:2", Some(cursor), 1),),
+        Err(CognitiveStoreV2Error::SnapshotCursorMismatch)
+    );
+}
+
+#[test]
+fn paged_snapshot_rejects_forged_cursor_and_broken_page_ancestry() {
+    let mut store = store();
+    let first = candidate(
+        "memory:page:forged",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let first_intent = intent(&store, "intent:page:forged:1", &first);
+    store
+        .append_admitted(&Verifier, first, first_intent)
+        .unwrap_or_else(|error| panic!("append first: {error}"));
+    let correction = candidate(
+        "memory:page:forged",
+        "content:v2",
+        MemoryAdmissionKind::Observation,
+    );
+    let correction_intent = intent(&store, "intent:page:forged:2", &correction);
+    store
+        .append_admitted(&Verifier, correction, correction_intent)
+        .unwrap_or_else(|error| panic!("append correction: {error}"));
+
+    let first_page = store
+        .open_snapshot_page(10, page_request(&store, "page:forged:1", None, 1))
+        .unwrap_or_else(|error| panic!("first page: {error}"));
+    let mut forged = first_page.next.clone().expect("cursor");
+    forged.record_digest = digest("forged-cursor");
+    assert_eq!(
+        store.open_snapshot_page(10, page_request(&store, "page:forged:2", Some(forged), 1),),
+        Err(CognitiveStoreV2Error::SnapshotCursorMismatch)
+    );
+
+    let mut second_page = store
+        .open_snapshot_page(
+            10,
+            page_request(&store, "page:forged:3", first_page.next.clone(), 1),
+        )
+        .unwrap_or_else(|error| panic!("second page: {error}"));
+    second_page.records[0].predecessor_digest = Some(digest("wrong-predecessor"));
+    second_page.page_digest = second_page.compute_page_digest();
+    assert_eq!(
+        second_page.validate(10),
+        Err(CognitiveStoreV2Error::SnapshotPageAncestryMismatch)
+    );
+}
+
+#[test]
+fn canonical_event_shadow_binds_exact_admission_and_write_receipt() {
+    let mut store = store();
+    let candidate = candidate(
+        "memory:canonical:1",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let event = canonical_event("memory:canonical:1");
+    let write_intent = intent(&store, "intent:canonical:1", &candidate);
+    let result = store
+        .append_admitted_with_canonical_shadow(
+            &Verifier,
+            candidate.clone(),
+            write_intent,
+            event.clone(),
+        )
+        .unwrap_or_else(|error| panic!("canonical shadow append: {error}"));
+
+    result
+        .validate()
+        .unwrap_or_else(|error| panic!("canonical shadow receipt: {error}"));
+    assert_eq!(result.shadow_receipt.event_id, event.event_id);
+    assert_eq!(result.shadow_receipt.candidate_digest, candidate.digest());
+    assert_eq!(
+        result.shadow_receipt.record_digest,
+        result.write_receipt.record_digest
+    );
+    assert_eq!(
+        result.shadow_receipt.snapshot_vector_digest,
+        result.write_receipt.snapshot_key.vector_digest
+    );
+    assert!(!result.shadow_receipt.authority.grants_any());
+}
+
+#[test]
+fn canonical_event_shadow_rejects_provenance_or_verification_drift_before_write() {
+    let mut store = store();
+    let candidate = candidate(
+        "memory:canonical:2",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+
+    let mut wrong_source = canonical_event("memory:canonical:2");
+    wrong_source.provenance[0].source_sha256 = contract_digest("different-source");
+    let write_intent = intent(&store, "intent:canonical:source", &candidate);
+    assert_eq!(
+        store.append_admitted_with_canonical_shadow(
+            &Verifier,
+            candidate.clone(),
+            write_intent,
+            wrong_source,
+        ),
+        Err(CognitiveStoreV2Error::CanonicalSourceProvenanceMismatch)
+    );
+    assert!(store.current_head(&id("memory:canonical:2")).is_none());
+
+    let mut wrong_verification = canonical_event("memory:canonical:2");
+    wrong_verification.verification = MemoryVerificationStateV1::Contradicted;
+    let write_intent = intent(&store, "intent:canonical:verification", &candidate);
+    assert_eq!(
+        store.append_admitted_with_canonical_shadow(
+            &Verifier,
+            candidate.clone(),
+            write_intent,
+            wrong_verification,
+        ),
+        Err(CognitiveStoreV2Error::CanonicalVerificationMismatch)
+    );
+    assert!(store.current_head(&id("memory:canonical:2")).is_none());
+}
+
+#[test]
+fn canonical_event_shadow_receipt_tamper_fails_closed() {
+    let mut store = store();
+    let candidate = candidate(
+        "memory:canonical:3",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let write_intent = intent(&store, "intent:canonical:3", &candidate);
+    let result = store
+        .append_admitted_with_canonical_shadow(
+            &Verifier,
+            candidate,
+            write_intent,
+            canonical_event("memory:canonical:3"),
+        )
+        .unwrap_or_else(|error| panic!("canonical shadow append: {error}"));
+
+    let mut tampered = result.clone();
+    tampered.shadow_receipt.record_digest = digest("tampered-record");
+    assert_eq!(
+        tampered.validate(),
+        Err(CognitiveStoreV2Error::CanonicalShadowReceiptMismatch)
+    );
 }

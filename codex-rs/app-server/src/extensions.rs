@@ -53,6 +53,8 @@ pub(crate) struct ThreadExtensionDependencies {
     /// Exact per-agent capability supplied by the owning process. Plain Codex
     /// uses `Absent`; an owning agent may degrade to sanitized `Unavailable`.
     pub(crate) hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
+    pub(crate) hepta_cognitive_production_mutation:
+        Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
     /// Explicit local-development-only lifecycle journal capability. Plain
     /// Codex and production-facing embeddings keep this false.
     pub(crate) hepta_local_turn_lifecycle_enabled: bool,
@@ -110,6 +112,7 @@ where
         http_client_factory,
         queue_service,
         hepta_cognitive_runtime,
+        hepta_cognitive_production_mutation,
         hepta_local_turn_lifecycle_enabled,
         hepta_local_development_policy,
         hepta_qualification_turn_writer_enabled,
@@ -149,6 +152,7 @@ where
         &mut builder,
         state_db,
         hepta_cognitive_runtime,
+        hepta_cognitive_production_mutation,
         hepta_local_turn_lifecycle_enabled,
         hepta_local_development_policy,
         hepta_qualification_turn_writer_enabled,

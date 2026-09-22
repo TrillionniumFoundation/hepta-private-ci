@@ -479,12 +479,13 @@
         "codex-rs/hepta-cognitive-store"
       ],
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-cognitive-store"
+        "codex-rs/hepta-cognitive-store",
+        "codex-rs/hepta-memory"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-1-STORE",
       "technicalDocument": "docs/modules/cognitive.store/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "normal_agentd_runtime_accepts_only_the_sealed_exact_cut_recovered_cognitive_mutation_capability;_production_implementation_remains_false_until_exact_candidate_execution_and_external_bootstrap_evidence_are_current"
     },
     {
       "module": "cognitive.read",

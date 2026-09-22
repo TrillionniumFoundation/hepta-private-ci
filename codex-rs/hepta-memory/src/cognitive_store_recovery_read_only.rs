@@ -59,7 +59,9 @@ impl CognitiveStore {
         requirement: CognitiveRecoveryRequirement<'_>,
     ) -> Result<RecoveredCognitiveReadOnly, CognitiveRecoveryError> {
         let expected = validate_requirement(layout, requirement)?;
-        let path = layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
+        let path = layout
+            .cognitive_root()
+            .join(super::super::COGNITIVE_DB_FILENAME);
         let home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let config = SqliteConfig::from_sqlite_home(home);

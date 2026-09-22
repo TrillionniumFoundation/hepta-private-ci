@@ -20,6 +20,11 @@ name = "codex-hepta-agentd"
 path = "src/main.rs"
 test = false
 
+[[example]]
+name = "h4_persistent_writer"
+path = "examples/h4_persistent_writer.rs"
+required-features = ["qualification-cognitive-write"]
+
 [lints]
 workspace = true
 
@@ -39,6 +44,7 @@ codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-evidence = { workspace = true }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
+codex-hepta-cognitive-store = { path = "../hepta-cognitive-store" }
 codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
@@ -67,6 +73,7 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 app_test_support = { workspace = true }
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }

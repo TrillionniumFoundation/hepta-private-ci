@@ -190,7 +190,7 @@ impl SourceRevisionId {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SourceDraft {
     pub scope: CognitiveScope,
     pub kind: LedgerSourceKind,
@@ -295,13 +295,13 @@ impl MemoryLifecycleState {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct MemoryDraft {
     pub stable_key: String,
     pub revision: MemoryRevisionDraft,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct MemoryRevisionDraft {
     pub scope: CognitiveScope,
     pub content: String,
