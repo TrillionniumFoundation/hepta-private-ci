@@ -24,12 +24,22 @@ from .path_policy import (
     path_is_within as path_is_within,
 )
 
-STORE_SCHEMA_VERSION = 5
+STORE_SCHEMA_VERSION = 9
 STORE_TABLES = frozenset(
     {
         "work_envelopes",
         "path_leases",
         "assignment_generations",
+        "orchestration_generations",
+        "worker_registrations",
+        "worker_claims",
+        "worker_heartbeat_observations",
+        "worker_result_observations",
+        "worker_completion_observations",
+        "integration_queue_generations",
+        "integration_queue_items",
+        "distributed_cluster_frontiers",
+        "distributed_fence_frontiers",
         "integration_decisions",
         "audit_events",
         "engineering_schema_meta",
@@ -915,6 +925,26 @@ class EngineeringStore:
                 },
                 now,
             )
+
+    def audit_anchor(self) -> dict[str, object]:
+        """Return the current append-only audit head for external immutable anchoring."""
+        row = self.connection.execute(
+            "SELECT sequence,event_id,event_digest,created_unix_ns "
+            "FROM audit_events ORDER BY sequence DESC LIMIT 1"
+        ).fetchone()
+        if row is None:
+            return {
+                "sequence": 0,
+                "eventId": "",
+                "eventDigest": ZERO_DIGEST,
+                "createdUnixNs": 0,
+            }
+        return {
+            "sequence": int(row["sequence"]),
+            "eventId": str(row["event_id"]),
+            "eventDigest": str(row["event_digest"]),
+            "createdUnixNs": int(row["created_unix_ns"]),
+        }
 
     def audit_projection(
         self,

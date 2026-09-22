@@ -10,10 +10,11 @@ from .candidate import (
     Candidate,
     CandidateEnvelope,
     Mutation,
+    MutationSet,
     SandboxReceipt,
     generate_candidates,
-    sandbox_candidate,
 )
+from .sandbox_control import SandboxCoordinator
 from .control_plane import (
     EngineeringStore,
     ScheduleReceipt,
@@ -50,8 +51,14 @@ def issue_work_envelope(
     store: EngineeringStore,
     envelope: WorkEnvelope,
     *,
+    compatibility_only: bool = False,
     now_ns: int | None = None,
 ) -> WorkEnvelope:
+    """Historical local-fixture wrapper; new callers use orchestration admission."""
+    if compatibility_only is not True:
+        from .control_plane import EngineeringError
+
+        raise EngineeringError("authenticated_orchestration_required")
     return store.issue_work_envelope(envelope, now_ns=now_ns)
 
 
@@ -62,8 +69,14 @@ def schedule_ready_packages(
     completed: Iterable[str],
     *,
     generation_id: str,
+    compatibility_only: bool = False,
     now_ns: int | None = None,
 ) -> ScheduleReceipt:
+    """Historical local-fixture scheduler; product callers use plan_engineering_work."""
+    if compatibility_only is not True:
+        from .control_plane import EngineeringError
+
+        raise EngineeringError("authenticated_orchestration_required")
     return store.schedule_ready_packages(
         envelope_id,
         packages,
@@ -75,7 +88,7 @@ def schedule_ready_packages(
 
 def generate_candidate(
     envelope: CandidateEnvelope,
-    mutations: Iterable[Mutation],
+    mutations: Iterable[Mutation | MutationSet],
 ) -> tuple[Candidate, ...]:
     return generate_candidates(envelope, mutations)
 
@@ -86,7 +99,14 @@ def execute_candidate_sandbox(
     candidate: Candidate,
     checks: Iterable[Sequence[str]],
 ) -> tuple[Candidate, SandboxReceipt]:
-    return sandbox_candidate(repository, envelope, candidate, checks)
+    """Execute through the bounded host admission/retry owner."""
+    result = SandboxCoordinator().execute(
+        str(repository),
+        envelope,
+        candidate,
+        checks,
+    )
+    return result.candidate, result.receipt
 
 
 def verify_integration_evidence(

@@ -59,8 +59,8 @@ jobs:
           test -n "$BASE_REF"
           CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
           [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
           printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
-
       - name: Determine whether the shared-core regression gate applies
         id: scope
         shell: bash
@@ -128,17 +128,49 @@ jobs:
           if-no-files-found: error
           retention-days: 30
   engineering-sandbox:
-    name: Engineering strong sandbox
+    name: Engineering strong sandbox (${{ matrix.lane }})
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     env:
       HEPTA_REQUIRE_STRONG_SANDBOX: "1"
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
           persist-credentials: false
+      - name: Resolve current pull-request base
+        id: sandbox-current-base
+        if: github.event_name == 'pull_request'
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+      - name: Construct deterministic sandbox merge candidate
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.sandbox-current-base.outputs.sha || env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
       - name: Prepare dedicated sandbox runner
         run: |
           sudo apt-get update
@@ -148,12 +180,12 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
       - name: Exercise real namespace isolation and candidate evaluation
-        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/engineering-test.json" -- python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/engineering-${{ matrix.lane }}.json" -- python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
       - name: Retain real command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-engineering
+          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-engineering-${{ matrix.lane }}
           path: ${{ runner.temp }}/hepta-command-records/*.json
           if-no-files-found: error
           retention-days: 30
@@ -243,7 +275,6 @@ jobs:
           printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
           printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
           printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
-
       - name: Bind exact source identity
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
@@ -405,5 +436,200 @@ jobs:
         with:
           name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
           path: ${{ runner.temp }}/hepta-command-records/*.json
+          if-no-files-found: error
+          retention-days: 30
+
+  engineering-product-gate:
+    name: control.engineering product caller (${{ matrix.lane }})
+    needs: [engineering-sandbox]
+    if: ${{ always() && needs.engineering-sandbox.result == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve current pull-request base
+        id: product-current-base
+        if: github.event_name == 'pull_request'
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+      - name: Reconstruct qualified synthetic merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.product-current-base.outputs.sha || env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Verify exact engineering product lane
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-gap-closure.py verify
+          python3 -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
+      - name: Invoke v2 engineering product caller
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control python3 -m control_engineering_v2.product_gate \
+            --repository "$GITHUB_WORKSPACE" \
+            --repository-full-name "${{ github.repository }}" \
+            --repository-id "${{ github.repository_id }}" \
+            --workflow-ref "${{ github.workflow_ref }}" \
+            --job-name "${{ github.job }}" \
+            --run-id "${{ github.run_id }}" \
+            --run-attempt "${{ github.run_attempt }}" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --event-name "${{ github.event_name }}" \
+            --lane "${{ matrix.lane }}" \
+            --pull-request-number "${{ github.event.pull_request.number || 0 }}" \
+            --output "$RUNNER_TEMP/control-engineering-product.json"
+      - name: Retain product execution receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-product-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/control-engineering-product.json
+          if-no-files-found: error
+          retention-days: 30
+
+  engineering-product-evidence:
+    name: control.engineering dual-lane product evidence
+    needs: [engineering-product-gate]
+    if: ${{ github.event_name == 'pull_request' && needs.engineering-product-gate.result == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve current pull-request base
+        id: evidence-current-base
+        if: github.event_name == 'pull_request'
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+      - name: Download source-head product receipt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: control-engineering-product-${{ github.run_id }}-${{ github.run_attempt }}-source-head
+          path: ${{ runner.temp }}/control-engineering-source-head
+      - name: Download base-merge product receipt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: control-engineering-product-${{ github.run_id }}-${{ github.run_attempt }}-base-merge
+          path: ${{ runner.temp }}/control-engineering-base-merge
+      - name: Observe current GitHub reviewer identities
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --paginate \
+            "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews" \
+            > "$RUNNER_TEMP/control-engineering-reviews.json"
+      - name: Verify and bind dual-lane product evidence
+        env:
+          SOURCE_RECEIPT: ${{ runner.temp }}/control-engineering-source-head/control-engineering-product.json
+          MERGE_RECEIPT: ${{ runner.temp }}/control-engineering-base-merge/control-engineering-product.json
+          PAIR_RECEIPT: ${{ runner.temp }}/control-engineering-product-pair.json
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          EXPECTED_REPOSITORY_ID: ${{ github.repository_id }}
+          EXPECTED_RUN_ID: ${{ github.run_id }}
+          EXPECTED_RUN_ATTEMPT: ${{ github.run_attempt }}
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          EXPECTED_BASE_SHA: ${{ steps.evidence-current-base.outputs.sha }}
+          EXPECTED_PR_NUMBER: ${{ github.event.pull_request.number }}
+          REVIEW_OBSERVATIONS: ${{ runner.temp }}/control-engineering-reviews.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from control_engineering_v2.product_gate import (
+              bind_github_review_observations,
+              verify_product_receipt_pair,
+          )
+
+          source = json.loads(Path(os.environ["SOURCE_RECEIPT"]).read_text(encoding="utf-8"))
+          merge = json.loads(Path(os.environ["MERGE_RECEIPT"]).read_text(encoding="utf-8"))
+          reviews = json.loads(
+              Path(os.environ["REVIEW_OBSERVATIONS"]).read_text(encoding="utf-8")
+          )
+          review_observation = bind_github_review_observations(
+              reviews,
+              expected_head_sha=os.environ["EXPECTED_SOURCE_SHA"],
+          )
+          pair = verify_product_receipt_pair(
+              source,
+              merge,
+              expected_repository=os.environ["EXPECTED_REPOSITORY"],
+              expected_repository_id=int(os.environ["EXPECTED_REPOSITORY_ID"]),
+              expected_run_id=int(os.environ["EXPECTED_RUN_ID"]),
+              expected_run_attempt=int(os.environ["EXPECTED_RUN_ATTEMPT"]),
+              expected_source_sha=os.environ["EXPECTED_SOURCE_SHA"],
+              expected_base_sha=os.environ["EXPECTED_BASE_SHA"],
+              expected_pull_request_number=int(os.environ["EXPECTED_PR_NUMBER"]),
+              github_review_observation=review_observation,
+          )
+          Path(os.environ["PAIR_RECEIPT"]).write_text(
+              json.dumps(pair, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(pair, sort_keys=True))
+          PY
+      - name: Retain dual-lane product evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-product-pair-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-product-pair.json
+            ${{ runner.temp }}/control-engineering-reviews.json
           if-no-files-found: error
           retention-days: 30
