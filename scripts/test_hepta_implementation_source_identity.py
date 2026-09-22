@@ -58,6 +58,7 @@ class SourceIdentityTests(unittest.TestCase):
                                 "sourcePath": f"{root}/lib.rs"}],
                 "claimBoundary": {"productExecutionProved": False},
             }
+        self.observed()
         root_patch = patch.object(MAPS, "ROOT", self.root)
         root_patch.start()
         self.addCleanup(root_patch.stop)
@@ -79,8 +80,16 @@ class SourceIdentityTests(unittest.TestCase):
         self.git("commit", "-qm", message)
 
     def save_maps(self):
+        paths = []
         for mid, row in self.rows.items():
-            self.write_json(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json", row)
+            path = f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
+            self.write_json(path, row)
+            paths.append(path)
+        # The selected map is itself a committed input. Do not accidentally
+        # commit staged/unstaged native changes in the dirty-source tests.
+        self.git("add", "--", *paths)
+        if self.git("diff", "--cached", "--name-only", "--", *paths):
+            self.git("commit", "--only", "-qm", "map inputs", "--", *paths)
 
     def observed(self):
         for mid, row in self.rows.items():
@@ -103,7 +112,7 @@ class SourceIdentityTests(unittest.TestCase):
 
     def test_all_modern_maps_do_not_require_a_legacy_row(self):
         result = self.verify()
-        self.assertEqual(result["candidateBoundMaps"], 2)
+        self.assertEqual(result["exactObservedFallbackMaps"], 2)
         self.assertEqual(result["legacyProvenanceOnlyMaps"], [])
 
     def test_current_candidate_is_generated_not_written_into_maps(self):
@@ -116,8 +125,9 @@ class SourceIdentityTests(unittest.TestCase):
     def test_mixed_migration_preserves_navigation(self):
         del self.rows["beta"]["sourceIdentityPolicy"]
         result = self.verify()
-        self.assertEqual(result["candidateBoundMaps"], 1)
-        self.assertEqual(result["legacyProvenanceOnlyMaps"], ["beta"])
+        self.assertEqual(result["exactObservedFallbackMaps"], 2)
+        self.assertEqual(result["legacyProvenanceOnlyMaps"], [])
+        self.assertTrue(result["currentSourceIdentityRequired"])
         self.assertFalse(result["productionImplementationProved"])
 
     def test_equally_stale_legacy_maps_are_not_current_evidence(self):
@@ -126,32 +136,39 @@ class SourceIdentityTests(unittest.TestCase):
         self.write("notes.md", "another commit\n")
         self.commit("documentation")
         result = self.verify()
-        self.assertEqual(result["legacyProvenanceOnlyMaps"], ["alpha", "beta"])
+        self.assertEqual(result["legacyProvenanceOnlyMaps"], [])
         self.assertEqual(result["candidateSource"]["commit"], self.git("rev-parse", "HEAD"))
-        self.rejects("legacy provenance is not current source evidence", strict=True)
+        self.write("src/alpha/lib.rs", "pub fn unobserved() {}\n")
+        self.commit("uniform old anchors must not hide changed source")
+        self.rejects("changed after source observation")
+        self.rejects("changed after source observation", strict=True)
 
-    def test_disagreeing_legacy_batches_still_fail(self):
+    def test_invalid_legacy_anchor_still_fails(self):
         for row in self.rows.values():
             row.pop("sourceIdentityPolicy")
         self.rows["beta"]["sourceBase"]["commit"] = "b" * 40
-        self.rejects("source base drift")
+        self.rejects("FAIL_HEPTA_IMPLEMENTATION_MAPS")
 
     def test_empty_module_registry_fails(self):
         self.write_json("docs/modules/MODULES.json", {"modules": []})
-        self.rejects("empty module registry")
+        self.git("commit", "--only", "-qm", "empty registry", "--", "docs/modules/MODULES.json")
+        self.rejects("module registry must be nonempty")
 
     def test_malformed_identity_fails_without_type_error(self):
         self.rows["alpha"]["sourceBase"]["commit"] = ["not", "a", "sha"]
-        self.rejects("source base")
+        self.rejects("literal commit/tree")
 
     def test_unknown_policy_fails(self):
         self.rows["alpha"]["sourceIdentityPolicy"] = "permissive"
         self.rejects("unknown source identity policy")
 
     def test_old_candidate_without_observation_fails(self):
+        for row in self.rows.values():
+            row.pop("observedAtHead")
+            row.pop("observedSourcePaths")
         self.write("notes.md", "another commit\n")
         self.commit("documentation")
-        self.rejects("neither current candidate nor exact observed source")
+        self.rejects("neither candidate nor exact observed source")
 
     def test_documentation_only_commits_preserve_observed_source(self):
         self.observed()
@@ -165,18 +182,18 @@ class SourceIdentityTests(unittest.TestCase):
         self.observed()
         self.write("src/alpha/lib.rs", "pub fn changed() {}\n")
         self.commit("changed source")
-        self.rejects("observed source drift")
+        self.rejects("changed after source observation")
 
     def test_declared_dependency_drift_fails(self):
         self.observed()
         self.write("Cargo.lock", "# Changed dependency\n")
         self.commit("changed dependency")
-        self.rejects("observed source drift")
+        self.rejects("changed after source observation")
 
     def test_wrong_observed_tree_fails(self):
         self.observed()
         self.rows["alpha"]["observedAtHead"]["tree"] = "f" * 40
-        self.rejects("observed source tree")
+        self.rejects("source tree mismatch")
 
     def test_omitted_source_root_fails(self):
         self.observed()
@@ -185,33 +202,33 @@ class SourceIdentityTests(unittest.TestCase):
 
     def test_dirty_source_cannot_pass_strict_current_candidate(self):
         self.write("src/alpha/lib.rs", "pub fn dirty() {}\n")
-        self.rejects("source worktree differs from candidate", strict=True)
+        self.rejects("dirty|uncommitted evidence", strict=True)
 
     def test_staged_source_cannot_pass_strict_current_candidate(self):
         self.write("src/alpha/lib.rs", "pub fn staged() {}\n")
         self.git("add", "src/alpha/lib.rs")
-        self.rejects("source worktree differs from candidate", strict=True)
+        self.rejects("dirty|uncommitted evidence", strict=True)
 
     def test_untracked_source_cannot_pass_strict_current_candidate(self):
         self.write("src/alpha/new.rs", "pub fn new() {}\n")
-        self.rejects("source worktree differs from candidate", strict=True)
+        self.rejects("dirty|uncommitted evidence", strict=True)
 
     def test_ignored_source_cannot_pass_strict_current_candidate(self):
         self.write(".git/info/exclude", "new.rs\n")
         self.write("src/alpha/new.rs", "pub fn ignored() {}\n")
-        self.rejects("source worktree differs from candidate", strict=True)
+        self.rejects("dirty|uncommitted evidence", strict=True)
 
     def test_symlink_observation_cannot_hide_target_changes(self):
         self.observed()
         (self.root / "dependency-link").symlink_to("Cargo.lock")
         self.commit("link")
         self.rows["alpha"]["observedSourcePaths"].append("dependency-link")
-        self.rejects("symlink observed source path")
+        self.rejects("symlink source path")
 
     def test_non_canonical_observed_path_fails(self):
         self.observed()
         self.rows["alpha"]["observedSourcePaths"].append("src/alpha/../beta")
-        self.rejects("non-canonical observed source path")
+        self.rejects("non-canonical source path")
 
     def test_non_ancestor_observation_fails(self):
         self.observed()
@@ -222,7 +239,7 @@ class SourceIdentityTests(unittest.TestCase):
         self.git("checkout", "--detach", "-q", self.base["commit"])
         self.rows["alpha"]["sourceBase"] = dict(other)
         self.rows["alpha"]["observedAtHead"] = dict(other)
-        self.rejects("observed source is not current history")
+        self.rejects("FAIL_HEPTA_IMPLEMENTATION_MAPS")
 
     def test_git_pathspec_metacharacters_are_literal(self):
         self.write("dependency[1]", "original\n")
@@ -235,7 +252,7 @@ class SourceIdentityTests(unittest.TestCase):
         self.rows["alpha"]["observedSourcePaths"].append("dependency[1]")
         self.write("dependency[1]", "changed\n")
         self.commit("changed literal dependency")
-        self.rejects("observed source drift")
+        self.rejects("changed after source observation")
 
     def test_strict_flag_is_not_a_mutation_command(self):
         result = subprocess.run(
