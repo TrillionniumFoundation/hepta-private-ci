@@ -4,9 +4,11 @@ use crate::VerifiedUseAuthorityRefV1;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
+use std::future::Future;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::task::{Context, Poll, Waker};
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -701,4 +703,65 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
             .unwrap_err(),
         FinalUseError::Revoked
     );
+}
+
+#[test]
+fn synchronous_final_use_rejects_a_concurrent_revocation_commit() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    let updater = authority.clone();
+    let grant_id = signed.grant.grant_id.clone();
+
+    let result = authority
+        .with_verified_effect(token, &binding, || {
+            updater.update_revocations(FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from([grant_id]),
+            })
+        })
+        .unwrap();
+
+    assert_eq!(result, Err(FinalUseError::DispatchInProgress));
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
+        })
+        .unwrap();
+}
+
+#[test]
+fn async_final_use_fence_survives_pending_and_releases_on_cancellation() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    let mut future = Box::pin(
+        authority.with_verified_use_async(token, &binding, || async {
+            std::future::pending::<()>().await
+        }),
+    );
+    let waker = Waker::noop();
+    let mut context = Context::from_waker(waker);
+
+    assert!(matches!(future.as_mut().poll(&mut context), Poll::Pending));
+    assert_eq!(
+        authority.update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        }),
+        Err(FinalUseError::DispatchInProgress)
+    );
+
+    drop(future);
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
+        })
+        .unwrap();
 }

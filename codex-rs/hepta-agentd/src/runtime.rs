@@ -40,7 +40,10 @@ enum CompletedRuntimeTask {
     Operations,
 }
 
-pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
+pub async fn run(
+    mut config: AgentdConfig,
+    arg0_paths: Arg0DispatchPaths,
+) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
     let trust_file = config
         .authbus_trust_file()
@@ -50,12 +53,10 @@ pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Res
         .map(std::path::Path::to_path_buf);
     let evidence_recovery_frontier = config
         .evidence_recovery_frontier_files()
-        .map(|(frontier, trust)| {
-            (
-                frontier.to_path_buf(),
-                trust.to_path_buf(),
-            )
-        });
+        .map(|(frontier, trust)| (frontier.to_path_buf(), trust.to_path_buf()));
+    let automation_effect_host_file = config
+        .automation_effect_host_file()
+        .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -88,17 +89,13 @@ pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Res
     }
     if let Some(path) = evidence_trust_file {
         state.refresh_generation()?;
-        let host = crate::evidence_host::EvidenceHost::open(
-            &identity,
-            path,
-            evidence_recovery_frontier,
-        )
-        .await?;
+        let host =
+            crate::evidence_host::EvidenceHost::open(&identity, path, evidence_recovery_frontier)
+                .await?;
         state.refresh_generation()?;
-        state
-            .evidence
-            .set(Arc::new(host))
-            .map_err(|_| AgentdError::Protocol("kernel evidence host already attached".to_string()))?;
+        state.evidence.set(Arc::new(host)).map_err(|_| {
+            AgentdError::Protocol("kernel evidence host already attached".to_string())
+        })?;
     } else if evidence_recovery_frontier.is_some() {
         return Err(AgentdError::Invalid(
             "kernel evidence recovery frontier requires --evidence-trust-file".to_string(),
@@ -147,6 +144,13 @@ pub async fn run(mut config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Res
     .await?;
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
+    }
+    if let Some(path) = automation_effect_host_file {
+        state.refresh_generation()?;
+        let host =
+            crate::automation_effect_host::AgentdAutomationEffectHost::open(&identity, &path)?;
+        state.refresh_generation()?;
+        state.attach_automation_effect_host(Arc::new(host))?;
     }
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(

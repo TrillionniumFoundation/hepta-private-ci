@@ -10,6 +10,8 @@ use serde::Deserialize;
 use serde::Serialize;
 
 pub const AGENTD_CAPABILITY_SCHEMA_VERSION: u32 = 1;
+pub const AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2: &str = "automation.calendar_v2";
+pub const AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT: &str = "automation.external_effect";
 pub const MAX_AGENTD_CAPABILITIES: usize = 64;
 pub const MAX_AGENTD_CAPABILITY_ID_BYTES: usize = 128;
 

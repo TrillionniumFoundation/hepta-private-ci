@@ -153,7 +153,7 @@ Agentd observes the existing App Server persisted-turn terminal state for Codex 
 External evidence gates:
 
 - selected-host Agentd/App Server execution receipt for the composed durable causal path
-- concrete registered downstream effect owner and trusted terminal/reconciliation evidence for every activated external effect
+- independently provisioned FinalUseAuthority signer/verifying-key/revocation-head configuration plus a concrete attested downstream effect provider and trusted terminal/reconciliation evidence for every activated external effect
 - real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification
 - independent acceptance, activation, promotion and release evidence
 

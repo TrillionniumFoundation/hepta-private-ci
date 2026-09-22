@@ -28,10 +28,12 @@ mod taskflow_kernel;
 mod taskflow_recovery;
 mod taskflow_step;
 
+pub use authorized_effect::AsyncAuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDependency;
 pub use authorized_effect::AuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDriverError;
 pub use authorized_effect::AuthorizedEffectError;
+pub use authorized_effect::AuthorizedEffectFuture;
 pub use authorized_effect::AuthorizedEffectIntent;
 pub use authorized_effect::AuthorizedEffectOutcome;
 pub use authorized_effect::AuthorizedEffectPending;
@@ -39,6 +41,9 @@ pub use authorized_effect::AuthorizedEffectProviderReceipt;
 pub use authorized_effect::AuthorizedEffectRecovery;
 pub use authorized_effect::AuthorizedEffectRecoveryResult;
 pub use authorized_effect::AuthorizedEffectRequest;
+pub use authorized_effect::AuthorizedProviderEffectLookup;
+pub use authorized_effect::AuthorizedProviderEffectRequest;
+pub use authorized_effect::ProviderEffectTaskFlowDriver;
 pub use automation_taskflow::AutomationTaskFlowDispatch;
 pub use automation_taskflow::admission_receipt_digest;
 pub use lifecycle::AutomationMissedRunPolicy;
@@ -129,4 +134,4 @@ pub use taskflow_step::TaskFlowStepObservation;
 pub use taskflow_step::TaskFlowStepReceipt;
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 15;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 16;

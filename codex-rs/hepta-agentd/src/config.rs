@@ -38,6 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
+    automation_effect_host_file: Option<PathBuf>,
     evidence_recovery_frontier_file: Option<PathBuf>,
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
@@ -147,6 +148,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             evidence_trust_file: None,
+            automation_effect_host_file: None,
             evidence_recovery_frontier_file: None,
             evidence_recovery_frontier_trust_file: None,
             cognitive_ranker: None,
@@ -197,6 +199,16 @@ impl AgentdConfig {
             (Some(frontier), Some(trust)) => Some((frontier, trust)),
             _ => None,
         }
+    }
+
+    /// Attach one protected provider/final-use configuration, fixed at startup.
+    pub fn with_automation_effect_host_file(mut self, path: PathBuf) -> Self {
+        self.automation_effect_host_file = Some(path);
+        self
+    }
+
+    pub(crate) fn automation_effect_host_file(&self) -> Option<&Path> {
+        self.automation_effect_host_file.as_deref()
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must

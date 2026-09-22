@@ -24,6 +24,9 @@ use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use sha2::Digest;
+use sha2::Sha256;
+use sqlx::Row;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
@@ -386,6 +389,122 @@ async fn structural_replay_rejects_hash_valid_taskflow_event_fence_tamper() {
             .await,
         Err(TaskFlowError::Corrupt(message))
             if message.contains("TaskFlow event tail fence does not match run projection")
+    ));
+    store.close().await;
+}
+
+#[tokio::test]
+async fn structural_replay_binds_generation_scoped_claim_identity_to_event_fence() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("open store");
+    let owner = fence(/*generation*/ 1);
+    let definition = definition();
+    store
+        .register_taskflow_definition(&definition, &owner, /*registered_at_ms*/ 10)
+        .await
+        .expect("register definition");
+    store
+        .create_taskflow_run(
+            "structural-claim-identity",
+            &definition.workflow_id,
+            definition.version,
+            definition.definition_digest(),
+            "thread-structural",
+            /*created_at_ms*/ 10,
+        )
+        .await
+        .expect("create run");
+    store
+        .claim_taskflow_run(
+            "structural-claim-identity",
+            &owner,
+            /*now_ms*/ 20,
+            /*lease_duration_ms*/ 1_000,
+        )
+        .await
+        .expect("claim run");
+
+    store
+        .replay_taskflow_structural("structural-claim-identity")
+        .await
+        .expect("generation-scoped claim replays");
+
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root())
+        .expect("absolute sqlite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(store.path())
+        .await
+        .expect("open inspection pool");
+    sqlx::query("DROP TRIGGER taskflow_events_no_update")
+        .execute(&pool)
+        .await
+        .expect("drop event immutability trigger");
+    // Forge a hash-consistent command envelope, so the structural claim
+    // check is exercised after the ordinary event-chain integrity check.
+    let event = sqlx::query(
+        "SELECT previous_event_digest, transition, payload_json, revision, state_digest
+         FROM taskflow_events WHERE owner_agent_id = ? AND run_id = ? AND event_seq = 2",
+    )
+    .bind(AGENT_ID)
+    .bind("structural-claim-identity")
+    .fetch_one(&pool)
+    .await
+    .expect("read original event");
+    let command_id = "taskflow:claim:1:2";
+    let command_digest = Sha256Digest::for_bytes(command_id.as_bytes());
+    let previous: String = event.get("previous_event_digest");
+    let transition: String = event.get("transition");
+    let payload: String = event.get("payload_json");
+    let revision = u64::try_from(event.get::<i64, _>("revision")).expect("revision");
+    let state_digest: String = event.get("state_digest");
+    let mut hasher = Sha256::new();
+    for part in [
+        previous.as_bytes(),
+        b"structural-claim-identity",
+        &2_u64.to_be_bytes(),
+        command_id.as_bytes(),
+        command_digest.as_str().as_bytes(),
+        transition.as_bytes(),
+        payload.as_bytes(),
+        &revision.to_be_bytes(),
+        state_digest.as_bytes(),
+    ] {
+        hasher.update(
+            u64::try_from(part.len())
+                .expect("part length")
+                .to_be_bytes(),
+        );
+        hasher.update(part);
+    }
+    let event_digest = Sha256Digest::from_sha256_output(hasher.finalize());
+    sqlx::query(
+        "UPDATE taskflow_events
+         SET command_id = ?, command_digest = ?, event_digest = ?
+         WHERE owner_agent_id = ? AND run_id = ? AND event_seq = 2",
+    )
+    .bind(command_id)
+    .bind(command_digest.as_str())
+    .bind(event_digest.as_str())
+    .bind(AGENT_ID)
+    .bind("structural-claim-identity")
+    .execute(&pool)
+    .await
+    .expect("tamper claim generation identity");
+    pool.close().await;
+    store
+        .taskflow_run("structural-claim-identity")
+        .await
+        .expect("forged event still passes hash integrity checks")
+        .expect("run exists");
+
+    assert!(matches!(
+        store
+            .replay_taskflow_structural("structural-claim-identity")
+            .await,
+        Err(TaskFlowError::Corrupt(message))
+            if message.contains("lease replay identity does not match its fence")
     ));
     store.close().await;
 }

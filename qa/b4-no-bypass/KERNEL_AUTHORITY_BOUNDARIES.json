@@ -33,7 +33,9 @@
         "claim": "final_use_claim_raw",
         "with_verified_use": "final_use_delivery_raw",
         "with_dispatch_boundary": "final_use_dispatch_raw",
-        "open_state_dir_with_issuer_keys": "final_use_open_state"
+        "open_state_dir_with_issuer_keys": "final_use_open_state",
+        "with_verified_effect": "final_use_guarded_effect",
+        "with_verified_use_async": "final_use_async_dispatch_fence"
       },
       "nonPrivilegedMethods": [
         "issuer_key_ids",

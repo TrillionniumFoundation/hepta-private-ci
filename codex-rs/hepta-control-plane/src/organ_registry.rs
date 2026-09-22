@@ -196,10 +196,11 @@ impl OrganHandlerRegistryV1 {
             let binding = by_organ
                 .remove(&organ.id)
                 .ok_or_else(|| OrganHandlerRegistryError::MissingBinding(organ.id.clone()))?;
-            let registered = self
-                .factories
-                .get(&binding.driver)
-                .expect("driver was validated above");
+            let Some(registered) = self.factories.get(&binding.driver) else {
+                return Err(OrganHandlerRegistryError::UnknownDriver(
+                    binding.driver.clone(),
+                ));
+            };
             let handler = (registered.factory)(&organ.id).map_err(|fault| {
                 OrganHandlerRegistryError::Factory {
                     driver: binding.driver.clone(),

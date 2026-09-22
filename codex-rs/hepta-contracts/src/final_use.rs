@@ -3,8 +3,11 @@
 
 use std::collections::BTreeSet;
 use std::fmt;
+use std::future::Future;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 use crate::AuthorityClock;
 use crate::AuthorityFrontierStore;
@@ -225,6 +228,7 @@ struct Inner {
     signer_id: String,
     issuer_keys: Vec<PinnedIssuerKey>,
     state: Mutex<State>,
+    active_dispatches: AtomicUsize,
     store: store::Store,
     clock: Arc<dyn AuthorityClock>,
     frontier_store: Option<Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>>,
@@ -300,6 +304,7 @@ impl FinalUseAuthority {
                 not_after_authority_epoch: u64::MAX,
             }],
             state: Mutex::new(state),
+            active_dispatches: AtomicUsize::new(0),
             store,
             clock,
             frontier_store: None,
@@ -340,6 +345,7 @@ impl FinalUseAuthority {
                 not_after_authority_epoch: u64::MAX,
             }],
             state: Mutex::new(state),
+            active_dispatches: AtomicUsize::new(0),
             store,
             clock,
             frontier_store: Some(frontier_store),
@@ -375,6 +381,7 @@ impl FinalUseAuthority {
             signer_id,
             issuer_keys,
             state: Mutex::new(state),
+            active_dispatches: AtomicUsize::new(0),
             store,
             clock,
             frontier_store: Some(frontier_store),
@@ -444,6 +451,11 @@ impl FinalUseAuthority {
                     .is_superset(&state.head.revoked_grant_ids))
         {
             return Err(FinalUseError::StaleRevocationHead);
+        }
+        // Guarded provider effects and trusted revocation updates share this
+        // state lock at entry. Retry the update after effect completion/cancel.
+        if self.0.active_dispatches.load(Ordering::Acquire) != 0 {
+            return Err(FinalUseError::DispatchInProgress);
         }
         let mut next = state.clone();
         if head.authority_epoch > next.head.authority_epoch {
@@ -520,6 +532,63 @@ impl FinalUseAuthority {
             VerifiedUseBoundaryV1::ConsumerEntry,
         )?;
         Ok(consumer())
+    }
+
+    /// Hold an active-effect fence across a bounded synchronous provider call.
+    /// Unlike delivery-only `with_verified_use`, trusted revocation commits
+    /// return `DispatchInProgress` until this effect completes or unwinds.
+    pub fn with_verified_effect<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<T, FinalUseError> {
+        let guard = self.enter_verified_effect(token, expected)?;
+        let result = consumer();
+        drop(guard);
+        Ok(result)
+    }
+
+    /// Guard an async provider effect without holding the owner mutex over
+    /// await. Revocation commits return `DispatchInProgress` while active;
+    /// completion, panic or future cancellation releases the fence.
+    pub async fn with_verified_use_async<T, F>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce() -> F,
+    ) -> Result<T, FinalUseError>
+    where
+        F: Future<Output = T>,
+    {
+        let guard = self.enter_verified_effect(token, expected)?;
+        let result = consumer().await;
+        drop(guard);
+        Ok(result)
+    }
+
+    fn enter_verified_effect(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+    ) -> Result<ActiveDispatchGuard, FinalUseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&token.grant, &state.head, self.now_unix_ms()?)?;
+        self.0.active_dispatches.fetch_add(1, Ordering::AcqRel);
+        drop(state);
+        Ok(ActiveDispatchGuard {
+            owner: Arc::clone(&self.0),
+        })
     }
 
     /// Revalidate live authority and hold the revocation linearization fence
@@ -629,6 +698,17 @@ impl FinalUseAuthority {
         }
         **state = next;
         Ok(())
+    }
+}
+
+struct ActiveDispatchGuard {
+    owner: Arc<Inner>,
+}
+
+impl Drop for ActiveDispatchGuard {
+    fn drop(&mut self) {
+        let previous = self.owner.active_dispatches.fetch_sub(1, Ordering::AcqRel);
+        debug_assert!(previous != 0, "final-use dispatch fence underflow");
     }
 }
 
@@ -781,6 +861,7 @@ pub enum FinalUseError {
     Expired,
     AlreadyClaimed,
     CapacityExceeded,
+    DispatchInProgress,
     Unavailable,
     UnsafeStateDirectory,
     StateLocked,

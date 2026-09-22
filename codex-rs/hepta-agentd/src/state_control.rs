@@ -4,6 +4,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
@@ -31,6 +32,9 @@ use super::poisoned_state;
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private automation storage is unavailable";
+const AUTOMATION_EFFECT_UNAVAILABLE_CODE: &str = "automation_effect_unavailable";
+const AUTOMATION_EFFECT_UNAVAILABLE_MESSAGE: &str =
+    "this Agent generation has no verified automation effect host";
 const COGNITIVE_CONTROL_UNAVAILABLE_CODE: &str = "cognitive_control_unavailable";
 const COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private cognitive control storage is unavailable";
@@ -62,20 +66,32 @@ impl AgentdState {
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
-                let mut capabilities = Vec::new();
-                if self.evidence.get().is_some() {
+                let mut capabilities = vec![
+                    crate::AgentdCapability::new(
+                        crate::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2,
+                        1,
+                        0,
+                    )
+                    .map_err(AgentdError::Protocol)?,
+                ];
+                if self.automation_effect_host().is_some() {
                     capabilities.push(
-                        codex_hepta_agent_protocol::AgentdCapability::new(
-                            "kernel.evidence",
+                        crate::AgentdCapability::new(
+                            crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT,
                             1,
                             0,
                         )
-                        .map_err(AgentdError::Invalid)?,
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                if self.evidence.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new("kernel.evidence", 1, 0)
+                            .map_err(AgentdError::Protocol)?,
                     );
                 }
                 AgentdPayload::Capabilities(
-                    crate::AgentdCapabilitySet::new(capabilities)
-                        .map_err(AgentdError::Invalid)?,
+                    crate::AgentdCapabilitySet::new(capabilities).map_err(AgentdError::Protocol)?,
                 )
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
@@ -206,6 +222,104 @@ impl AgentdState {
                     )?,
                     None => automation_unavailable(),
                 }
+            }
+            crate::AgentdMethod::AutomationCreateCalendarV2 {
+                draft,
+                schedule,
+                missed_run,
+                overlap,
+            } => {
+                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                match automation {
+                    Some(store) => self.automation_result(
+                        store
+                            .create_calendar_task_v2(&draft, &schedule, missed_run, overlap)
+                            .await,
+                        AgentdPayload::AutomationTask,
+                    )?,
+                    None => automation_unavailable(),
+                }
+            }
+            crate::AgentdMethod::AutomationExecuteEffect {
+                intent,
+                wire_payload_hex,
+                signed_grant,
+                command_id,
+            } => {
+                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = automation.as_ref() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_unavailable(),
+                    );
+                };
+                let Some(host) = self.automation_effect_host() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_effect_unavailable(),
+                    );
+                };
+                let wire_payload = decode_effect_wire_hex(&wire_payload_hex)?;
+                let receipt = host
+                    .execute(
+                        store,
+                        &intent,
+                        &wire_payload,
+                        &signed_grant,
+                        &command_id,
+                        now_ms()?,
+                    )
+                    .await?;
+                self.fence_after_durable_change()?;
+                AgentdPayload::AutomationEffect(effect_snapshot(receipt)?)
+            }
+            crate::AgentdMethod::AutomationReconcileEffect {
+                run_id,
+                step_id,
+                attempt,
+            } => {
+                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = automation.as_ref() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_unavailable(),
+                    );
+                };
+                let Some(host) = self.automation_effect_host() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        automation_effect_unavailable(),
+                    );
+                };
+                let result = host
+                    .reconcile(store, &run_id, &step_id, attempt, now_ms()?)
+                    .await?;
+                self.fence_after_durable_change()?;
+                let snapshot = match result {
+                    crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Observed(
+                        receipt,
+                    ) => crate::AutomationEffectReconcileSnapshot {
+                        state: crate::AutomationEffectReconcileState::Terminal,
+                        effect: Some(effect_snapshot(receipt)?),
+                    },
+                    crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
+                        crate::AutomationEffectReconcileSnapshot {
+                            state: crate::AutomationEffectReconcileState::Indeterminate,
+                            effect: None,
+                        }
+                    }
+                    crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::ProvenAbsent => {
+                        crate::AutomationEffectReconcileSnapshot {
+                            state: crate::AutomationEffectReconcileState::ProvenAbsent,
+                            effect: None,
+                        }
+                    }
+                };
+                AgentdPayload::AutomationEffectReconcile(snapshot)
             }
             crate::AgentdMethod::AutomationList { limit } => {
                 require_automation_ready(lifecycle, app_server_ready, fenced)?;
@@ -530,6 +644,69 @@ impl AgentdState {
             return Err(error);
         }
         Ok(())
+    }
+}
+
+fn automation_effect_unavailable() -> AgentdPayload {
+    AgentdPayload::Error {
+        code: AUTOMATION_EFFECT_UNAVAILABLE_CODE.to_string(),
+        message: AUTOMATION_EFFECT_UNAVAILABLE_MESSAGE.to_string(),
+    }
+}
+
+fn effect_snapshot(
+    receipt: codex_hepta_automation::TaskFlowStepReceipt,
+) -> Result<crate::AutomationEffectSnapshot, AgentdError> {
+    let observation = match receipt.observation {
+        Some(TaskFlowStepObservation::Succeeded) => crate::AutomationEffectObservation::Succeeded,
+        Some(TaskFlowStepObservation::Failed) => crate::AutomationEffectObservation::Failed,
+        Some(TaskFlowStepObservation::Indeterminate) => {
+            crate::AutomationEffectObservation::Indeterminate
+        }
+        None => {
+            return Err(AgentdError::Protocol(
+                "automation effect receipt has no provider observation".to_string(),
+            ));
+        }
+    };
+    Ok(crate::AutomationEffectSnapshot {
+        run_id: receipt.run_id,
+        step_id: receipt.step_id,
+        attempt: receipt.attempt,
+        event_seq: receipt.event_seq,
+        receipt_digest: receipt.receipt_digest,
+        observation,
+    })
+}
+
+fn decode_effect_wire_hex(value: &str) -> Result<Vec<u8>, AgentdError> {
+    if value.is_empty()
+        || value.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES.saturating_mul(2)
+        || value.len() % 2 != 0
+    {
+        return Err(AgentdError::Invalid(
+            "automation effect wire payload hex is empty, odd, or too large".to_string(),
+        ));
+    }
+    let mut output = Vec::with_capacity(value.len() / 2);
+    for pair in value.as_bytes().chunks_exact(2) {
+        let high = control_hex_nibble(pair[0]).ok_or_else(|| {
+            AgentdError::Invalid("automation effect wire payload contains non-hex data".to_string())
+        })?;
+        let low = control_hex_nibble(pair[1]).ok_or_else(|| {
+            AgentdError::Invalid("automation effect wire payload contains non-hex data".to_string())
+        })?;
+        output.push((high << 4) | low);
+    }
+    Ok(output)
+}
+
+fn control_hex_nibble(value: u8) -> Option<u8> {
+    match value {
+        b'0'..=b'9' => Some(value - b'0'),
+        b'a'..=b'f' => Some(value - b'a' + 10),
+        b'A'..=b'F' => Some(value - b'A' + 10),
+        _ => None,
     }
 }
 

@@ -77,7 +77,6 @@ pub enum Error {
     OperationConflict,
     DependencyNotTerminal,
     StepCapacity,
-    Driver(String),
     TerminalOutcomeMissing,
 }
 
@@ -256,14 +255,6 @@ impl<D: EffectDriver> TaskFlowExecutor<D> {
             },
         );
         Ok(receipt)
-    }
-
-    pub fn step(&self, occurrence_id: &str, operation_id: &str) -> Option<&StepReceipt> {
-        self.occurrences
-            .get(occurrence_id)?
-            .steps
-            .get(operation_id)
-            .map(|record| &record.receipt)
     }
 }
 

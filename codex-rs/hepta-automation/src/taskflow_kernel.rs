@@ -172,7 +172,7 @@ impl AutomationStore {
         .ok_or_else(|| corrupt("TaskFlow definition is missing during replay"))?;
         let rows = sqlx::query(
             "SELECT event_seq, command_id, transition, payload_json, revision,
-                    state_digest, recorded_at_ms
+                    state_digest, recorded_at_ms, owner_epoch, generation
              FROM taskflow_events
              WHERE owner_agent_id = ? AND run_id = ?
              ORDER BY event_seq",
@@ -273,9 +273,17 @@ fn replay_rows(
                 return Err(corrupt("TaskFlow replay does not start with run_created"));
             }
         } else if transition == "lease_claimed" {
-            if command_id != "taskflow:claim" || payload != "{}" {
-                return Err(corrupt("TaskFlow lease replay envelope is malformed"));
-            }
+            let owner_epoch = row
+                .try_get::<Option<i64>, _>("owner_epoch")
+                .map_err(|_| corrupt("event owner epoch column"))?
+                .ok_or_else(|| corrupt("TaskFlow lease replay owner epoch is missing"))
+                .and_then(to_u64)?;
+            let generation = row
+                .try_get::<Option<i64>, _>("generation")
+                .map_err(|_| corrupt("event generation column"))?
+                .ok_or_else(|| corrupt("TaskFlow lease replay generation is missing"))
+                .and_then(to_u64)?;
+            validate_lease_claim_envelope(&command_id, &payload, owner_epoch, generation)?;
         } else {
             let parsed: TaskFlowTransition = serde_json::from_str(&payload)
                 .map_err(|_| corrupt("TaskFlow transition payload is invalid"))?;
@@ -549,6 +557,41 @@ fn is_terminal_state(state: TaskFlowRunState) -> bool {
         state,
         TaskFlowRunState::Succeeded | TaskFlowRunState::Failed | TaskFlowRunState::Cancelled
     )
+}
+
+fn validate_lease_claim_envelope(
+    command_id: &str,
+    payload: &str,
+    owner_epoch: u64,
+    generation: u64,
+) -> Result<(), TaskFlowError> {
+    if payload != "{}" {
+        return Err(corrupt("TaskFlow lease replay envelope is malformed"));
+    }
+    // Pre-generation-scoped histories used one fixed command id. Keep those
+    // immutable rows replayable, while every new claim binds its durable
+    // identity to the exact owner epoch and generation recorded on the event.
+    if command_id == "taskflow:claim" {
+        return Ok(());
+    }
+    let Some(encoded) = command_id.strip_prefix("taskflow:claim:") else {
+        return Err(corrupt("TaskFlow lease replay envelope is malformed"));
+    };
+    let mut parts = encoded.split(':');
+    let encoded_epoch = parts
+        .next()
+        .and_then(|value| value.parse::<u64>().ok())
+        .ok_or_else(|| corrupt("TaskFlow lease replay owner epoch is malformed"))?;
+    let encoded_generation = parts
+        .next()
+        .and_then(|value| value.parse::<u64>().ok())
+        .ok_or_else(|| corrupt("TaskFlow lease replay generation is malformed"))?;
+    if parts.next().is_some() || encoded_epoch != owner_epoch || encoded_generation != generation {
+        return Err(corrupt(
+            "TaskFlow lease replay identity does not match its fence",
+        ));
+    }
+    Ok(())
 }
 
 fn validate_text(value: &str, label: &str) -> Result<(), TaskFlowError> {

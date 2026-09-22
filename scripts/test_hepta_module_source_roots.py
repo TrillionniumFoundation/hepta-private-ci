@@ -3,6 +3,7 @@
 import copy
 import importlib.util
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -104,6 +105,55 @@ class SourceRootTests(unittest.TestCase):
         )
         self.assertEqual(result["sourceBase"], source_base)
         self.assertFalse(result["claimBoundary"]["activation"])
+
+    def test_exact_rust_observation_requires_workspace_manifest_and_lock(self):
+        spec = importlib.util.spec_from_file_location(
+            "implementation_maps",
+            Path(__file__).with_name("hepta-implementation-maps.py"),
+        )
+        maps = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(maps)
+        rust_root = self.root / "codex-rs"
+        (rust_root / "hepta-automation").mkdir(parents=True)
+        (rust_root / "Cargo.toml").write_text("[workspace]\n", encoding="utf-8")
+        (rust_root / "Cargo.lock").write_text("version = 4\n", encoding="utf-8")
+
+        def git(*args):
+            return subprocess.check_output(
+                ["git", *args], cwd=self.root, text=True
+            ).strip()
+
+        git("init", "-q")
+        git("config", "user.name", "Source identity test")
+        git("config", "user.email", "source@example.invalid")
+        git("config", "commit.gpgsign", "false")
+        (rust_root / "hepta-automation/lib.rs").write_text("pub fn run() {}\n")
+        git("add", ".")
+        git("commit", "-qm", "source fixture")
+        identity = {
+            "commit": git("rev-parse", "HEAD"),
+            "tree": git("rev-parse", "HEAD^{tree}"),
+        }
+        row = {
+            "sourceBase": identity,
+            "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+            "observedAtHead": identity,
+            "observedSourcePaths": ["codex-rs/hepta-automation"],
+            "operations": [],
+        }
+        roots = ["codex-rs/hepta-automation"]
+        with mock.patch.object(maps, "ROOT", self.root):
+            with self.assertRaisesRegex(ValueError, "omit Rust workspace build inputs"):
+                maps.verify_source_identity(row, roots, identity)
+            row["observedSourcePaths"] = [
+                *roots,
+                "codex-rs/Cargo.toml",
+                "codex-rs/Cargo.lock",
+            ]
+            self.assertEqual(
+                maps.verify_source_identity(row, roots, identity),
+                sorted(row["observedSourcePaths"]),
+            )
 
     def test_identity_version_and_authority_mismatches_reject(self):
         original = copy.deepcopy(self.binding)

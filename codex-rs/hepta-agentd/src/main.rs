@@ -10,6 +10,7 @@ fn main() -> anyhow::Result<()> {
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
         let mut evidence_trust = None;
+        let mut automation_effect_host = None;
         let mut evidence_recovery_frontier = None;
         let mut evidence_recovery_frontier_trust = None;
         while let Some(flag) = args.next() {
@@ -19,6 +20,12 @@ fn main() -> anyhow::Result<()> {
             if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
+            } else if flag == "--automation-effect-host-file" {
+                anyhow::ensure!(
+                    automation_effect_host.is_none(),
+                    "duplicate --automation-effect-host-file"
+                );
+                automation_effect_host = Some(path);
             } else if flag == "--evidence-trust-file" {
                 anyhow::ensure!(evidence_trust.is_none(), "duplicate --evidence-trust-file");
                 evidence_trust = Some(path);
@@ -41,18 +48,16 @@ fn main() -> anyhow::Result<()> {
         if let Some(path) = authbus_trust {
             config = config.with_authbus_trust_file(path.into());
         }
+        if let Some(path) = automation_effect_host {
+            config = config.with_automation_effect_host_file(path.into());
+        }
         if let Some(path) = evidence_trust {
             config = config.with_evidence_trust_file(path.into());
         }
-        match (
-            evidence_recovery_frontier,
-            evidence_recovery_frontier_trust,
-        ) {
+        match (evidence_recovery_frontier, evidence_recovery_frontier_trust) {
             (Some(frontier), Some(trust)) => {
-                config = config.with_evidence_recovery_frontier_files(
-                    frontier.into(),
-                    trust.into(),
-                );
+                config =
+                    config.with_evidence_recovery_frontier_files(frontier.into(), trust.into());
             }
             (None, None) => {}
             _ => anyhow::bail!(
