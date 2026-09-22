@@ -12,13 +12,13 @@ contract. The broader target architecture remains in
 | HPTA V2 metadata-bound digest | implemented | `WIRE_V2.md`, V2 mutation tests and frozen vector |
 | HPTN version/capability negotiation | implemented | `NEGOTIATION_V1.md` and downgrade tests |
 | Multi-version frame dispatch | implemented | `codex-rs/hepta-wire/src/frame.rs` |
-| Schema admission | implemented framework | `SchemaRegistry` admits stable IDs, version range and payload bounds |
+| Schema admission | implemented framework | `SchemaRegistry` admits stable IDs/version/payload bounds; registered product adapters also pin producer identity |
 | Typed payload serialization | implemented interface | `PayloadCodec`; each product schema supplies its canonical codec |
 | Bounded streaming decode | implemented | validates 54-byte header before advertised body, max two frames buffered |
 | Property testing | implemented | deterministic randomized round-trip and arbitrary-byte decoder tests |
 | Fuzz target | implemented | `codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs` |
 | Live cross-runtime loading | implemented qualification path | Rust↔Python raw binary HPTN + HPTA V2 session test |
-| Named product source callers | source-composed | read-only native gateway plus strict `context.compiler` receipt and `runtime.codex` intent adapters |
+| Named product source callers | source-composed | read-only native gateway plus strict schema/producer admission for `context.compiler` receipts and `runtime.codex` intents |
 | Production activation / external acceptance | not granted | requires separate exact-candidate, target-host and operator gates |
 
 V1 continues to use its frozen payload-only digest. V2 binds schema, producer,
@@ -69,7 +69,8 @@ issuer.
 V1 payload integrity does not bind metadata. V2's frame digest binds metadata
 but is still unkeyed and therefore does not authenticate a peer. Schema
 admission is a framework; each product schema must supply a strict
-`PayloadCodec`. Successful negotiation/decode/re-encode is not dispatch
+`PayloadCodec`, and each registered product port must pin its admitted
+producer identities. Successful negotiation/decode/re-encode is not dispatch
 acknowledgement, terminal external success or authorization.
 
 The streaming decoder bounds its own connection-local buffer. The owning
@@ -87,7 +88,7 @@ Current source evidence includes:
 - deterministic property tests and a cargo-fuzz target;
 - a raw-binary Rust↔Python HPTN + HPTA V2 session test;
 - native gateway content-negotiation tests;
-- `context.compiler` and `runtime.codex` strict schema-admission adapter tests.
+- `context.compiler` and `runtime.codex` strict schema/producer-admission adapter tests, including wrong-producer rejection.
 
 The vectors are machine-checked by the Lane A foundation verifier. Source tests
 are not independent acceptance receipts until the exact candidate and required
