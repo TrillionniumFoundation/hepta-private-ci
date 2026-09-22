@@ -7,7 +7,7 @@ use codex_hepta_kg::{
 use codex_hepta_learning_ledger::{
     AuthenticatedPrincipalV1, LearningEvidenceTrustV1, TrustedLearningSignerV1,
 };
-use codex_hepta_prompt_registry::{PromptRealizationBindingV2, PromptRoleV2};
+use codex_hepta_prompt_registry::{PromptRealizationBindingV2, PromptRoleV2, FactorSource, Lifecycle, PromptFactor};
 use codex_hepta_types::{Generation, ProbabilityQ32, Revision};
 use ed25519_dalek::SigningKey;
 
@@ -306,4 +306,113 @@ fn incomplete_candidate_completeness_cannot_be_authenticated_for_pricing() {
         complete_for_generator: false,
     };
     assert!(candidate_completeness_signing_payload_v1(&receipt).is_err());
+}
+
+
+fn register_factor(registry: &mut PromptRegistry, factor_id: &str) {
+    registry
+        .register_factor(PromptFactor {
+            factor_id: id(factor_id),
+            proposer_id: id(&format!("proposer:{factor_id}")),
+            semantic_version: id("v1"),
+            content_digest: digest(&format!("factor:{factor_id}")),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        })
+        .unwrap_or_else(|error| panic!("register factor: {error}"));
+    registry
+        .admit_factor(
+            &id(factor_id),
+            &id(&format!("reviewer:{factor_id}")),
+            digest("admission"),
+        )
+        .unwrap_or_else(|error| panic!("admit factor: {error}"));
+}
+
+#[test]
+fn enumeration_selects_lowest_cost_compatible_realization_per_factor() {
+    let mut registry = PromptRegistry::new(64).expect("registry");
+    register_factor(&mut registry, "factor:a");
+    registry
+        .register_realization_v2(binding("factor:a", "realization:expensive", 50))
+        .expect("expensive");
+    registry
+        .register_realization_v2(binding("factor:a", "realization:cheap", 5))
+        .expect("cheap");
+
+    let enumerated = enumerate_factors_v1(
+        &registry,
+        PromptEnumerationRequestV1 {
+            set_id: id("set:enum"),
+            objective_digest: digest("objective"),
+            state_digest: digest("state"),
+            generation_vector_digest: digest("generation-vector"),
+            model_tuple: model_tuple(),
+            now_unix_ms: 100,
+            required_factor_ids: vec![id("factor:a")],
+            maximum_candidates: 8,
+            selection_grammar_digest: digest("grammar"),
+        },
+    )
+    .expect("enumerate");
+    assert_eq!(enumerated.candidates.len(), 1);
+    assert_eq!(
+        enumerated.candidates[0].realization.realization_id,
+        id("realization:cheap")
+    );
+    assert!(!enumerated.receipt.authority.grants_any());
+}
+
+#[test]
+fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
+    let mut registry = PromptRegistry::new(64).expect("registry");
+    register_factor(&mut registry, "factor:a");
+    let realization = binding("factor:a", "realization:a", 1);
+    registry
+        .register_realization_v2(realization.clone())
+        .expect("realization");
+    let selected = SelectedPromptPortfolioV1 {
+        receipt: PromptPortfolioReceiptV1 {
+            portfolio_id: id("portfolio:1"),
+            candidate_set_digest: digest("candidate-set"),
+            factor_ids: vec![id("factor:a")],
+            interaction_digest: digest("interaction"),
+            expected_utility_q32: FixedQ32::from_raw(10),
+            total_token_upper_bound: 1,
+            valid_until_unix_ms: 5_000,
+            receipt_digest: digest("portfolio-receipt"),
+            authority: AuthorityPosture::DENY_ALL,
+        },
+        selected: vec![PromptCandidateBindingV1 {
+            factor_id: id("factor:a"),
+            binding_digest: realization.digest(),
+            realization,
+        }],
+        objective_digest: digest("objective"),
+        state_digest: digest("state"),
+        model_tuple: model_tuple(),
+        model_tuple_digest: model_tuple().digest(),
+        generation_vector_digest: digest("generation-vector"),
+        pricing_set_digest: digest("pricing-set"),
+        graph_generation_digest: digest("graph"),
+        selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
+        optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
+    };
+    registry.revoke_factor(&id("factor:a")).expect("revoke");
+    let exercise = exercise_v1(
+        &registry,
+        &selected,
+        PromptExerciseRequestV1 {
+            decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
+            current_state_digest: digest("state"),
+            generation_vector_digest: digest("generation-vector"),
+            model_tuple: model_tuple(),
+            now_unix_ms: 200,
+            wait_value_q32: FixedQ32::ZERO,
+            policy_digest: digest("exercise-policy"),
+        },
+    )
+    .expect("exercise receipt");
+    assert_eq!(exercise.decision, PromptExerciseActionV1::RejectStale);
+    assert!(!exercise.authority.grants_any());
 }
