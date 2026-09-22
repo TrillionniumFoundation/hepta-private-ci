@@ -2,85 +2,145 @@
 
 ## Current executable contract
 
-`codex-rs/hepta-authbus` verifies issuer-bound Ed25519 messages. The host supplies
-trusted issuer registration, current revocation and expected scope/payload.
-`SignedMessage::authenticate` checks the signature, issuer/key epoch, expiry,
-scope and payload and returns a privately constructed `AuthenticatedMessage`.
-Authentication alone does not consume a durable replay sequence.
+The current candidate contains two deliberately separate AuthBus surfaces.
 
-`HeptaEvidenceStore::admit_authbus_message` authenticates and consumes the sequence
-inside one immediate SQLite transaction. The replay key is `(issuer, key epoch,
-subject, scope digest)`; sequences must increase, and new keys are bounded at
-16,384. Time is checked after acquiring the write lock. A receipt returns only
-after commit succeeds; failed authentication or capacity admission consumes
-nothing. Receipts carry `AuthorityPosture::DENY_ALL`.
+Signed message ingress verifies issuer-bound Ed25519 claims and consumes replay
+state in the existing evidence SQLite owner. `SignedMessage::authenticate`
+binds issuer/key epoch, message, subject, scope, payload, sequence and expiry.
+`HeptaEvidenceStore::enqueue_authbus_message` atomically advances replay and
+inserts the immutable delivery. Agentd's signed-text ingress is a named product
+caller: it binds the Agent subject/thread scope, uses the durable outbox, and
+delivers through the existing App Server queue.
 
-For durable delivery, `enqueue_authbus_message` replaces direct admission and
-atomically commits the replay advance plus an immutable message. The same
-`HeptaEvidenceStore` provides bounded recovery scanning, claim, renew, retry, ack,
-status and explicit revoked-issuer quarantine. Every worker transition rechecks
-issuer registration and expiry; a new fence invalidates the old lease. Active
-messages cannot be pruned. Terminal history is bounded independently of replay.
-A send followed by a crash before ack can deliver the same ID twice; consumers
-must deduplicate and retain their separate final-use/effect reconciliation rules.
+Production-configured signed ingress also requires an independently retained
+replay checkpoint outside the Agent home. Agentd opens and reconciles that
+witness before attaching the ingress. Every successful replay mutation is
+published as local-pending -> external fsync/rename/directory-sync -> local
+promotion before admission success is reported. An older restored evidence
+database therefore fails closed against the newer external witness.
 
-The legacy `PreverifiedAuthEnvelope` / `ReplayWindow` API still accepts already
-verified facts and records sequences only in process memory. It does not verify
-signatures or become durable through the addition of the signed API.
+The policy/quota owner is `AuthBusAuthorityHost`, backed by
+`AuthBusAuthorityStore`. It owns durable policy revisions, issuer lifecycle,
+trusted-time floor, quota registry, reservation state and settlement. The host
+requires its own independently retained authority checkpoint outside the
+authority database directory. Every authoritative table mutation marks the
+semantic frontier dirty in the same SQLite commit; the host publishes the exact
+successor frontier before returning from mutating owner operations.
+
+Trusted time can no longer be fabricated by external callers:
+`TrustedTimeSample` is opaque outside the crate and is produced by verification
+of a signed `SignedTrustedTimeAttestation` from an active registered
+`TrustedTime` issuer. Policy decisions remain `AuthorityPosture::DENY_ALL`;
+they permit reservation decisions but do not mint final-use authority.
+
+Quota accounting uses checked integer
+`available + reserved + consumed == limit` semantics. A reservation binds the
+stable operation ID, quota, amount, effect digest, policy identity/revision and
+decision digest. The lifecycle is
+`Held -> DispatchAttempted -> {Indeterminate, Settled, Released}` with
+`Held -> {Cancelled, Expired}` for proven pre-dispatch terminal outcomes.
+Restart detects pre-crash `DispatchAttempted` rows, blocks new reservation
+issuance, and converts them to `Indeterminate`; their quota remains held until
+authenticated terminal evidence arrives. Terminal rows may be moved to an
+immutable archive without freeing their operation identity for reuse.
+
+`BaoClient::consume_kv_v2_with_authbus` is the current source-composed external
+effect path. It combines the caller-supplied durable operation identity,
+AuthBus policy/quota reservation, the exact `FinalUseBinding`, a durable
+dispatch fence immediately before the existing final-use protected HTTPS call,
+and independently signed settlement evidence. Timeout, transport loss,
+consumer-indeterminate or ambiguous final-use failure preserves the reservation
+as indeterminate instead of refunding it.
+
+The legacy `PreverifiedAuthEnvelope` / `ReplayWindow` API remains an
+in-process compatibility surface. It does not authenticate signatures, survive
+restart, reserve quota or grant effect authority.
 
 ## Public symbols and source bindings
 
-- `IssuerRegistration`, `SignedMessageClaims::signing_bytes`,
-  `SignedMessage::authenticate`, `AuthenticatedMessage`: authbus `src/signed.rs`;
-- `PreverifiedAuthEnvelope`, `TrustedReplayContext`, `ReplayWindow`,
-  `VerificationReceipt`, `Error`: authbus `src/lib.rs`;
-- `HeptaEvidenceStore::admit_authbus_message`, `AuthBusAdmissionError`:
-  evidence `src/authbus_store.rs`;
-- outbox APIs and records: evidence `src/authbus_outbox.rs`,
-  `src/authbus_outbox_worker.rs`, `src/authbus_outbox_record.rs`;
-- replay and outbox tables: evidence migrations `0009` and `0010`.
+- signed authentication: `IssuerRegistration`, `SignedMessageClaims`,
+  `SignedMessage::authenticate`, `AuthenticatedMessage` in
+  `codex-rs/hepta-authbus/src/signed.rs`;
+- durable authority owner: `AuthBusAuthorityHost`,
+  `AuthBusAuthorityStore`, `PolicyDecision`, `QuotaReservation`,
+  `Settlement` in `codex-rs/hepta-authbus/src/{host,authority_store,quota_store,settlement_store}.rs`;
+- issuer/trusted-time lifecycle in
+  `codex-rs/hepta-authbus/src/{trust,trust_store}.rs`;
+- authority rollback/restart reconciliation in
+  `codex-rs/hepta-authbus/src/recovery.rs` and migration
+  `0004_recovery_retention.sql`;
+- durable signed ingress/replay/outbox in
+  `codex-rs/hepta-evidence/src/authbus_{store,outbox,outbox_worker,recovery}.rs`;
+- Agentd source composition in
+  `codex-rs/hepta-agentd/src/{authbus_ingress,authbus_checkpoint,runtime}.rs`;
+- final-use/quota provider composition in
+  `codex-rs/hepta-bao-adapter/src/https_consumer.rs`.
 
 ## Durability and activation
 
-The evidence-store admission path preserves replay state across independent
-handles and database reopen. Legacy replay state is lost on restart. The host
-must compose trusted issuer registration and the evidence-store API; production
-enrollment is not established by library tests. Neither path grants effect
-authority.
+Policy, quota, reservation, issuer and trusted-time state use WAL SQLite with
+FULL synchronous writes and `BEGIN IMMEDIATE` serialization. Policy revisions
+are retained in an append-only history; revoked policy heads can be retired only
+after live reservation references are gone. Retired issuer epochs remain
+tombstones while no longer consuming active-lifecycle capacity.
+
+Both replay state and the policy/quota/trust state have separate external
+anti-rollback witnesses. These are source-implemented host protocols, not proof
+that a production operator has provisioned independent checkpoint storage or
+trust roots. Product source composition exists for Agentd signed text and the
+Bao read boundary; activation, target-host qualification and operator acceptance
+remain separate gates.
 
 ## Target-only design
 
-Host trust provisioning and key lifecycle management, external replay-store
-rollback protection, authorization policy, quota registry, reservation,
-cancellation, expiry settlement and observed-cost settlement remain outside this
-implemented admission slice.
+The following are not established by this candidate:
+
+- a production deployment of independently governed trusted-time/checkpoint and
+  issuer-key services;
+- a production-durable `kernel.operations` transaction owner. AuthBus binds the
+  supplied stable operation ID but does not replace that owner;
+- generic provider/effect coverage beyond the registered Agentd signed-text and
+  Bao KV-v2 read paths;
+- distributed multi-host AuthBus ownership or consensus;
+- independent security acceptance, canary/promotion or release.
 
 ## Known limits and non-claims
 
-Issuer registration must come from the host trust store, never the incoming
-message. Current time uses the host clock; SQLite persistence is not protection
-against restoration of an older database. No managed key host or distributed
-replay coordinator is provided. In the legacy API, a nonzero `signature_digest`
-is only a reference, and constructing `TrustedReplayContext` does not authenticate
-its contents.
+`AuthBusAuthorityStore` remains a lower-level source API for focused tests and
+owner construction; production mutation is expected to pass through
+`AuthBusAuthorityHost` so external checkpoint publication cannot be skipped.
+The external checkpoint file hardening currently relies on Unix ownership,
+single-link, private-directory and fsync semantics.
+
+The Bao path consumes a caller-provided stable operation identity because the
+repository's current `kernel.operations` implementation is still a bounded
+in-memory reference model. This candidate therefore proves AuthBus binding to
+that identity, not durable cross-owner operation-ledger closure.
+
+Queue acceptance is not provider/model terminality. AuthBus receipts and policy
+decisions do not grant final-use authority. An indeterminate reservation is not
+automatically retried or refunded.
 
 ## Verification
 
-`signed_tests.rs` covers signed-field substitution, key epoch, revocation,
-expiry and scope. Evidence `authbus_store_tests.rs` covers real SQLite reopen,
-the full unsigned sequence range, two-handle contention and failed-admission
-retry. `authbus_outbox_tests.rs` covers atomic insertion rollback, retained
-duplicate admission, competing leases, stale fences, bounded terminal retention
-and actual process exit after send before ack. Legacy `lib_tests.rs` covers replay partitioning, capacity, trusted-context
-validation and deny-all authority. Run `just test -p codex-hepta-authbus
--p codex-hepta-evidence` for native execution; source anchors only establish test
-presence.
+Focused native tests cover signed-field substitution, replay contention and
+reopen, outbox crash-after-send-before-ack, last-unit reservation races,
+idempotent settlement, explicit cancellation, database-level illegal
+state/deletion rejection, terminal compaction, real old-database rollback
+detection and restart reconciliation. Bao product tests exercise real local TLS
+through policy -> reserve -> dispatch fence -> final-use -> signed settlement,
+plus timeout/indeterminate quota holding. Agentd product tests exercise the real
+daemon/App Server signed-text queue with the external replay witness.
+
+These are source test identities until the exact source-head and deterministic
+synthetic-merge workflows for this unchanged candidate reach terminal success.
 
 ## Integration prerequisites
 
-The host must supply trusted registration and current revocation, use the durable
-admission API where replay must survive restart, and govern clock/backup recovery.
-Effect-specific policy, quota and the final-use token remain separate checks.
-No effect adapter may consume `VerificationReceipt` as a grant. See
-[`SIGNED_ADMISSION.md`](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md) and the
-separate legacy [`PREVERIFIED_REPLAY_V1.md`](PREVERIFIED_REPLAY_V1.md) contract.
+Production enrollment must provide independently governed issuer keys,
+revocation feeds, trusted-time attestations and both external checkpoint stores.
+A provider host must supply the canonical operation identity and current
+`FinalUseAuthority`; the same final payload/effect binding must be used for the
+reservation and final-use grant. Operators must complete target-host
+crash/power-loss, capacity, backup/restore and independent security
+qualification before activation.

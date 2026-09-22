@@ -1,19 +1,55 @@
-//! Replay fencing for envelopes that were authenticated by a trusted upstream
-//! boundary.
+//! Signed admission, replay fencing and durable authorization policy state.
 //!
-//! The signed admission API verifies issuer-bound Ed25519 messages. The legacy
-//! replay model accepts preverified input. Neither evaluates effect
-//! authorization policy, reserves quota or dispatches an effect. Neither mints a
-//! grant, widen scope, select, promote, merge or release. Successful receipts
-//! always carry `AuthorityPosture::DENY_ALL`.
+//! The signed admission API verifies issuer-bound Ed25519 messages. The durable
+//! authority store evaluates revision-bound policy against a persisted trusted-
+//! time floor. Policy decisions and replay receipts do not reserve quota,
+//! dispatch an effect or mint final-use authority. Successful receipts retain
+//! `AuthorityPosture::DENY_ALL`.
 
 #![forbid(unsafe_code)]
 
+mod authority;
+mod authority_schema;
+mod authority_store;
+mod host;
+mod quota;
+mod quota_store;
+mod recovery;
+mod settlement;
+mod settlement_store;
 mod signed;
+mod trust;
+mod trust_store;
+pub use authority::AuthBusAuthorityError;
+pub use authority::AuthPolicy;
+pub use authority::PolicyDecision;
+pub use authority::PolicyEffect;
+pub use authority::PolicySpec;
+pub use authority::TrustedTimeSample;
+pub use authority_store::AuthBusAuthorityStore;
+pub use host::AuthBusAuthorityHost;
+pub use quota::QuotaReservation;
+pub use quota::QuotaSnapshot;
+pub use quota::QuotaSpec;
+pub use quota::ReservationRequest;
+pub use quota::ReservationState;
+pub use recovery::AuthorityCheckpoint;
+pub use settlement::Settlement;
+pub use settlement::SettlementEvidenceClaims;
+pub use settlement::SettlementIssuerRegistration;
+pub use settlement::SettlementStatus;
+pub use settlement::SignedSettlementEvidence;
 pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;
 pub use signed::SignedMessageClaims;
+pub use trust::IssuerLifecycleState;
+pub use trust::IssuerPurpose;
+pub use trust::IssuerRecord;
+pub use trust::IssuerRetirement;
+pub use trust::IssuerSpec;
+pub use trust::SignedTrustedTimeAttestation;
+pub use trust::TrustedTimeAttestationClaims;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -72,6 +108,8 @@ pub enum Error {
     Revoked,
     Expired,
     ScopeMismatch,
+    SubjectMismatch,
+    ExternalCheckpointRequired,
     PayloadMismatch,
     Replay,
     CapacityExceeded,

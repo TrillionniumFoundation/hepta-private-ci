@@ -1,3 +1,6 @@
+#[path = "authbus_recovery_schema.rs"]
+mod authbus_recovery_schema;
+
 use sqlx::Row;
 use sqlx::SqlitePool;
 
@@ -760,7 +763,10 @@ pub(crate) async fn verify_provider_ephemeral_input_projection(
 }
 
 pub(crate) async fn verify_schema_manifest(pool: &SqlitePool) -> Result<(), EvidenceError> {
-    for spec in REQUIRED_SCHEMA_OBJECTS {
+    for spec in REQUIRED_SCHEMA_OBJECTS
+        .iter()
+        .chain(authbus_recovery_schema::REQUIRED_SCHEMA_OBJECTS)
+    {
         let row = sqlx::query(
             "SELECT type AS object_type, tbl_name, sql
              FROM sqlite_schema WHERE name = ?",

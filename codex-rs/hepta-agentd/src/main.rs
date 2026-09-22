@@ -10,6 +10,7 @@ fn main() -> anyhow::Result<()> {
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
         let mut objective_profile = None;
+        let mut authbus_checkpoint = None;
         let mut evidence_trust = None;
         let mut automation_effect_host = None;
         let mut evidence_recovery_frontier = None;
@@ -33,6 +34,12 @@ fn main() -> anyhow::Result<()> {
                     "duplicate --automation-effect-host-file"
                 );
                 automation_effect_host = Some(path);
+            } else if flag == "--authbus-checkpoint-file" {
+                anyhow::ensure!(
+                    authbus_checkpoint.is_none(),
+                    "duplicate --authbus-checkpoint-file"
+                );
+                authbus_checkpoint = Some(path);
             } else if flag == "--evidence-trust-file" {
                 anyhow::ensure!(evidence_trust.is_none(), "duplicate --evidence-trust-file");
                 evidence_trust = Some(path);
@@ -52,8 +59,14 @@ fn main() -> anyhow::Result<()> {
                 anyhow::bail!("unknown Agentd argument {flag:?}");
             }
         }
-        if let Some(path) = authbus_trust {
-            config = config.with_authbus_trust_file(path.into());
+        anyhow::ensure!(
+            authbus_trust.is_some() == authbus_checkpoint.is_some(),
+            "--authbus-trust-file and --authbus-checkpoint-file must be configured together"
+        );
+        if let (Some(trust), Some(checkpoint)) = (authbus_trust, authbus_checkpoint) {
+            config = config
+                .with_authbus_trust_file(trust.into())
+                .with_authbus_checkpoint_file(checkpoint.into());
         }
         if let Some(path) = automation_effect_host {
             config = config.with_automation_effect_host_file(path.into());

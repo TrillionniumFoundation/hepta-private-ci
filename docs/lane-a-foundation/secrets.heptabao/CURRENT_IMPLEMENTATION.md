@@ -35,28 +35,35 @@ after it is ordered after entry.
   `codex-rs/hepta-contracts/src/final_use*.rs`;
 - independent approval and revocation-feed verification:
   `codex-rs/hepta-contracts/src/final_use_control.rs`;
+- durable metadata-only lease lifecycle registry and reconciliation state machine:
+  `codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs`;
 - host integration and real-service procedure:
   `codex-rs/hepta-bao-adapter/README.md`.
 
 ## Durability and activation
 
-Secret values remain owned by the external Bao service. Local durability is
-limited to kernel authority nonce/revocation state. Source composition now
-binds consumer identity to a registered callback and separates issuer,
-approver and revocation-distributor trust, but there is still no selected
-production process caller in the current candidate.
+Secret values remain owned by the external Bao service. Local durability covers
+kernel authority nonce/revocation state and the metadata-only lease registry.
+The registry persists operation identity, semantic digest, provider lease identity,
+scope, expiry, generation and explicit Unknown states; it never stores raw secrets.
+Source composition binds consumer identity to a registered callback and separates
+issuer, approver and revocation-distributor trust. No production process caller is
+selected in the current candidate.
 
-Activation requires protected host configuration, provider token, pinned issuer
-/ approver / revocation trust, an independently provisioned consumer registry,
-current signed revocation data, target-host qualification and operator
-acceptance. Source composition alone does not satisfy those gates.
+Activation requires protected host configuration, provider token, pinned issuer,
+approver and revocation trust, an independently provisioned consumer registry,
+current signed revocation data, target-host qualification and operator acceptance.
+Source composition alone does not satisfy those gates.
 
 ## Target-only design
 
-Secret mutation, durable operations/evidence composition, quota settlement and
-automatic product enrollment remain outside this slice. Fleet revocation
-transport/freshness, external anti-rollback, trusted time and HSM/KMS/operator
-ceremony are deployment or separately owned authority concerns.
+Provider-native secret mutation and network dispatch for generic lease issue,
+renew and revoke, durable operations/evidence composition, quota settlement and
+automatic product enrollment remain target-only. The local lifecycle/registry
+semantics do not invent unqualified provider endpoints. Fleet revocation transport,
+external anti-rollback, trusted time and HSM/KMS/operator ceremony are deployment
+or separately owned authority concerns.
+
 
 ## Known limits and non-claims
 

@@ -68,6 +68,9 @@ pub async fn run(
             "objective profile requires explicit AuthBus trust configuration".to_string(),
         ));
     }
+    let checkpoint_file = config
+        .authbus_checkpoint_file()
+        .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
     if production_operations.is_some() && production_writer_host.is_none() {
@@ -113,14 +116,24 @@ pub async fn run(
             AgentdError::Invalid("cognitive retrieval learning sink already attached".to_string())
         })?;
     }
-    if let Some(path) = trust_file {
-        state.refresh_generation()?;
-        let host = crate::authbus_ingress::TextIngress::open(&identity, path).await?;
-        state.refresh_generation()?;
-        state
-            .authbus
-            .set(Arc::new(host))
-            .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+    match (trust_file, checkpoint_file) {
+        (Some(trust), Some(checkpoint)) => {
+            state.refresh_generation()?;
+            let host =
+                crate::authbus_ingress::TextIngress::open(&identity, trust, checkpoint).await?;
+            state.refresh_generation()?;
+            state
+                .authbus
+                .set(Arc::new(host))
+                .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+        }
+        (None, None) => {}
+        _ => {
+            return Err(AgentdError::Invalid(
+                "AuthBus trust and external replay checkpoint must be configured together"
+                    .to_string(),
+            ));
+        }
     }
     if let Some(path) = evidence_trust_file {
         state.refresh_generation()?;

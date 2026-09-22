@@ -413,12 +413,14 @@ fn external_final_use_frontier_detects_restored_claim_snapshot() {
     )
     .unwrap();
     let initial = std::fs::read(directory.path().join("authority.json")).unwrap();
+    let initial_claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
     let token = authority.claim(&signed, &signed.grant.binding).unwrap();
     drop(token);
     let advanced = frontier_store.load("frontier-owner").unwrap();
     assert_ne!(advanced, FinalUseFrontier::for_initial_head(&head).unwrap());
     drop(authority);
     std::fs::write(directory.path().join("authority.json"), initial).unwrap();
+    std::fs::write(directory.path().join("authority.claims"), initial_claims).unwrap();
     assert_eq!(
         FinalUseAuthority::open_state_dir_with_trust(
             directory.path(),
@@ -603,7 +605,12 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
     )
     .unwrap();
 
-    std::fs::create_dir(directory.path().join("authority.next")).unwrap();
+    std::fs::rename(
+        directory.path().join("authority.claims"),
+        directory.path().join("saved.claims"),
+    )
+    .unwrap();
+    std::fs::create_dir(directory.path().join("authority.claims")).unwrap();
     assert_eq!(
         authority.claim(&signed, &signed.grant.binding).unwrap_err(),
         FinalUseError::Unavailable
@@ -617,7 +624,12 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
         FinalUseFrontier::for_initial_head(&head).unwrap()
     );
 
-    std::fs::remove_dir(directory.path().join("authority.next")).unwrap();
+    std::fs::remove_dir(directory.path().join("authority.claims")).unwrap();
+    std::fs::rename(
+        directory.path().join("saved.claims"),
+        directory.path().join("authority.claims"),
+    )
+    .unwrap();
     drop(authority);
     assert_eq!(
         FinalUseAuthority::open_state_dir_with_trust(
@@ -825,4 +837,54 @@ fn async_final_use_fence_survives_pending_and_releases_on_cancellation() {
             revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
+}
+
+#[test]
+fn replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small() {
+    let (authority, signed, directory) = fixture().unwrap();
+    let _token = authority.claim(&signed, &signed.grant.binding).unwrap();
+
+    let claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
+    assert_eq!(claims.len(), 40);
+
+    let mut second = signed.clone();
+    second.grant.grant_id = "read-two".into();
+    second.grant.nonce = [6; 32];
+    second.signature = SigningKey::from_bytes(&[47; 32])
+        .sign(&second.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+    let _token = authority.claim(&second, &second.grant.binding).unwrap();
+
+    let claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
+    assert_eq!(claims.len(), 80);
+    let snapshot = std::fs::read(directory.path().join("authority.json")).unwrap();
+    assert!(snapshot.len() < 16 * 1024);
+    let snapshot_text = String::from_utf8(snapshot).unwrap();
+    assert!(!snapshot_text.contains("used_nonces"));
+}
+
+#[test]
+fn missing_or_truncated_claim_journal_fails_closed_on_restart() {
+    for corruption in ["missing", "truncated"] {
+        let (authority, signed, directory) = fixture().unwrap();
+        let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+        drop(token);
+        drop(authority);
+        let path = directory.path().join("authority.claims");
+        if corruption == "missing" {
+            std::fs::remove_file(path).unwrap();
+        } else {
+            std::fs::OpenOptions::new()
+                .write(true)
+                .open(path)
+                .unwrap()
+                .set_len(39)
+                .unwrap();
+        }
+        assert_eq!(
+            reopen(directory.path()).unwrap_err(),
+            FinalUseError::InvalidTrust
+        );
+    }
 }

@@ -25,7 +25,8 @@ use sha2::Sha256;
 #[path = "final_use_store.rs"]
 mod store;
 
-const MAX_CLAIMS: usize = 16_384;
+const MAX_CLAIMS: usize = 1_048_576;
+const MAX_REVOKED_GRANTS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
 const MAX_ISSUER_TRUST_KEYS: usize = 8;
 
@@ -594,9 +595,34 @@ impl FinalUseAuthority {
         if state.used_nonces.len() >= MAX_CLAIMS {
             return Err(FinalUseError::CapacityExceeded);
         }
-        let mut next = state.clone();
-        next.used_nonces.insert(signed.grant.nonce);
-        self.persist_or_fence(&mut state, next)?;
+        // Advance the external owner before the local append. Any uncertain
+        // append fences this owner and leaves a frontier mismatch on restart.
+        let expected_frontier = self
+            .0
+            .frontier_store
+            .as_ref()
+            .map(|_| frontier_for_state(&state));
+        state.used_nonces.insert(signed.grant.nonce);
+        if let (Some(frontier_store), Some(expected_frontier)) =
+            (&self.0.frontier_store, expected_frontier)
+            && let Err(error) = frontier_store.compare_and_set(
+                &self.0.signer_id,
+                &expected_frontier,
+                &frontier_for_state(&state),
+            )
+        {
+            state.failed = true;
+            return Err(map_trust_error(error));
+        }
+        if self
+            .0
+            .store
+            .append_claim(state.head.authority_epoch, signed.grant.nonce)
+            .is_err()
+        {
+            state.failed = true;
+            return Err(FinalUseError::Unavailable);
+        }
         // Persistence can outlast a short grant. Never admit a dispatch using
         // the time sampled before that I/O; its nonce stays consumed on expiry.
         validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
@@ -908,7 +934,7 @@ fn final_use_binding_witness_sha256(binding: &FinalUseBinding) -> Result<[u8; 32
 fn valid_head(head: &FinalUseRevocations) -> bool {
     head.authority_epoch > 0
         && head.revision > 0
-        && head.revoked_grant_ids.len() <= MAX_CLAIMS
+        && head.revoked_grant_ids.len() <= MAX_REVOKED_GRANTS
         && head.revoked_grant_ids.iter().all(|id| identifier(id))
 }
 

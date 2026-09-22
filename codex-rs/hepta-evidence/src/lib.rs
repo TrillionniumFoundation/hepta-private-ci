@@ -3,6 +3,7 @@
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
+mod authbus_recovery;
 mod authbus_store;
 mod canonical;
 mod governance_store;
@@ -19,6 +20,7 @@ mod schema_validation;
 mod store;
 mod summary;
 
+pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
@@ -29,6 +31,8 @@ pub use authbus_outbox_record::AuthBusDeliveryState;
 pub use authbus_outbox_record::AuthBusDeliveryStatus;
 pub use authbus_outbox_record::AuthBusLease;
 pub use authbus_outbox_record::AuthBusOutboxError;
+pub use authbus_recovery::AuthBusRecoveryError;
+pub use authbus_recovery::ReplayCheckpoint;
 pub use authbus_store::AuthBusAdmissionError;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;

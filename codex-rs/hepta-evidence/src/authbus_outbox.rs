@@ -9,6 +9,7 @@ use crate::AuthBusAdmissionError;
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
 use crate::authbus_outbox_record::*;
+use crate::authbus_recovery::replay_checkpoint_pending;
 use crate::authbus_store::advance_replay;
 use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
@@ -73,6 +74,17 @@ impl HeptaEvidenceStore {
         }
         advance_replay(&mut tx, &authenticated).await?;
         maintain(&mut tx, now).await?;
+        let active_for_issuer: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_outbox
+             WHERE issuer_id = ? AND state IN ('queued', 'leased')",
+        )
+        .bind(c.issuer_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if active_for_issuer >= AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER {
+            return Err(AuthBusOutboxError::Capacity);
+        }
         let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox")
             .fetch_one(&mut *tx)
             .await
@@ -205,6 +217,9 @@ async fn pending(
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(classify_sqlx_error)?;
+    if replay_checkpoint_pending(&mut tx).await? {
+        return Err(AuthBusOutboxError::Unavailable);
+    }
     let now = now_millis()?;
     maintain(&mut tx, now).await?;
     let issuer_id = issuer.map(|issuer| issuer.issuer_id.as_str());

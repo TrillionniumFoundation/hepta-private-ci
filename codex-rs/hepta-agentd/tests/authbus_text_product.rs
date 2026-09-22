@@ -28,6 +28,9 @@ use codex_hepta_agentd::AuthBusTextState;
 use codex_hepta_agentd::AuthBusTextStatus;
 use codex_hepta_agentd::authbus_text_claims;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_evidence::HeptaEvidenceStore;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
@@ -73,7 +76,20 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &[],
         /*revoked*/ false,
     )?;
-    fleet.start_with_authbus_trust_file(&agent, &trust_file)?;
+    let checkpoint_root = tempfile::tempdir()?;
+    std::fs::set_permissions(
+        checkpoint_root.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
+    let checkpoint_file = checkpoint_root
+        .path()
+        .join("authbus-replay-checkpoint.json");
+    let home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?;
+    let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
+    let frontier = evidence.authbus_replay_frontier_digest().await?;
+    drop(evidence);
+    write_checkpoint(&checkpoint_file, &agent.agent_id, 1, frontier)?;
+    fleet.start_with_authbus_trust_file(&agent, &trust_file, &checkpoint_file)?;
     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     let ingress = control.session_ingress().await?;
     let client = connect_app_server_with_experimental(
@@ -220,6 +236,31 @@ fn write_trust(
     serde_json::to_writer(temporary.as_file_mut(), &registration)?;
     temporary.as_file().sync_all()?;
     temporary.persist(path)?;
+    Ok(())
+}
+
+fn write_checkpoint(
+    path: &Path,
+    agent_id: &AgentId,
+    generation: u64,
+    digest: codex_hepta_types::Digest32,
+) -> Result<()> {
+    use std::io::Write;
+
+    let document = serde_json::json!({
+        "schema_version": 1,
+        "agent_id": agent_id.to_string(),
+        "generation": generation,
+        "digest": digest.to_string(),
+    });
+    let mut file = std::fs::OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(path)?;
+    serde_json::to_writer(&mut file, &document)?;
+    file.flush()?;
+    file.sync_all()?;
     Ok(())
 }
 

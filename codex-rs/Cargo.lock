@@ -3522,6 +3522,13 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
  "ed25519-dalek",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
 ]
 
 [[package]]
@@ -3559,6 +3566,7 @@ dependencies = [
 name = "codex-hepta-bao-adapter"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-authbus",
  "codex-hepta-contracts",
  "codex-hepta-types",
  "codex-http-client",
@@ -3570,6 +3578,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+ "thiserror 2.0.18",
  "tokio",
  "tokio-rustls",
  "url",
