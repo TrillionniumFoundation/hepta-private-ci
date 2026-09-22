@@ -15,6 +15,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  workspace-preflight:
+    name: Cargo workspace preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      # This job has no dependency on document/qualification gates. An unrelated
+      # documentation failure must not suppress manifest diagnostics. The
+      # workflow deliberately has no path filter, so the check always reports.
+      - name: Check structural graph before downloads or compilation
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_workspace.py'
+          python3 scripts/hepta_workspace.py
+
+      - name: Ask Cargo to parse the real workspace without building code
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata --locked --offline --no-deps --format-version 1 > "$RUNNER_TEMP/hepta-cargo-metadata.json"
+          git diff --exit-code
+          git diff --cached --exit-code
+
   source-integrity:
     name: Verify ordinary read-only candidate source
     runs-on: ubuntu-24.04

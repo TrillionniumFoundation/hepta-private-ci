@@ -16,7 +16,7 @@ import tomllib
 def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
     workspace = workspace.resolve()
     errors: list[str] = []
-    manifests: dict[Path, dict] = {}
+    manifests: dict[Path, dict | None] = {}
 
     def load(path: Path) -> dict | None:
         path = path.resolve()
@@ -26,6 +26,7 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
             value = tomllib.loads(path.read_text(encoding="utf-8"))
         except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
             errors.append(f"{path}: {error}")
+            manifests[path] = None
             return None
         manifests[path] = value
         return value
@@ -36,7 +37,41 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
     settings = document.get("workspace")
     if not isinstance(settings, dict):
         return 0, [f"{workspace}: missing [workspace]"]
-    inherited = settings.get("dependencies", {})
+
+    def owner_settings(path: Path, manifest: dict) -> tuple[Path, dict]:
+        # A reachable path dependency may own a different workspace. Never
+        # validate its inherited fields against this repository's root by
+        # accident. This only reads its explicit root or ancestor manifests.
+        explicit = manifest.get("package", {}).get("workspace")
+        if explicit is not None:
+            if not isinstance(explicit, str):
+                errors.append(f"{path}: package.workspace must be a path")
+                return path.parent, {}
+            owner = (path.parent / explicit).resolve()
+            parent = load(owner / "Cargo.toml")
+            if parent is None or not isinstance(parent.get("workspace"), dict):
+                errors.append(f"{path}: package.workspace has no [workspace]")
+                return owner, {}
+            return owner, parent["workspace"]
+        for directory in (path.parent, *path.parent.parents):
+            candidate = directory / "Cargo.toml"
+            if not candidate.is_file():
+                continue
+            parent = load(candidate)
+            if parent is None:
+                return directory, {}
+            if isinstance(parent.get("workspace"), dict):
+                options = parent["workspace"]
+                excluded = {
+                    item.resolve()
+                    for pattern in options.get("exclude", [])
+                    for item in directory.glob(pattern)
+                }
+                if path.parent != directory and path.parent in excluded:
+                    return path.parent, {}
+                return directory, options
+        return path.parent, {}
+
     queue: deque[Path] = deque()
     excluded = {
         path.resolve()
@@ -51,7 +86,7 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
     if "package" in document:
         queue.append(workspace / "Cargo.toml")
     seen: set[Path] = set()
-    package_paths: dict[str, Path] = {}
+    package_paths: dict[tuple[Path, str], Path] = {}
     while queue:
         path = queue.popleft().resolve()
         if path in seen:
@@ -60,18 +95,23 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
         manifest = load(path)
         if manifest is None:
             continue
+        owner, package_settings = owner_settings(path, manifest)
+        inherited = package_settings.get("dependencies", {})
         package = manifest.get("package", {})
         name = package.get("name")
         if not isinstance(name, str) or not name:
             errors.append(f"{path}: package name missing")
-        elif name in package_paths and package_paths[name] != path:
-            errors.append(f"duplicate local package {name}: {package_paths[name]} and {path}")
+        elif (owner, name) in package_paths and package_paths[owner, name] != path:
+            errors.append(f"duplicate local package {name}: {package_paths[owner, name]} and {path}")
         else:
-            package_paths[name] = path
+            package_paths[owner, name] = path
         for key, value in package.items():
             if isinstance(value, dict) and value.get("workspace") is True:
-                if key not in settings.get("package", {}):
+                if key not in package_settings.get("package", {}):
                     errors.append(f"{path}: workspace.package.{key} is missing")
+        if manifest.get("lints", {}).get("workspace") is True:
+            if not isinstance(package_settings.get("lints"), dict):
+                errors.append(f"{path}: workspace.lints is missing")
         groups = [manifest, *manifest.get("target", {}).values()]
         for group in groups:
             for kind in ("dependencies", "dev-dependencies", "build-dependencies"):
@@ -84,7 +124,7 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
                             errors.append(f"{path}: workspace.dependencies.{dependency} is missing")
                             continue
                         declaration = inherited[dependency]
-                        origin = workspace
+                        origin = owner
                     if not isinstance(declaration, dict) or "path" not in declaration:
                         continue
                     target = (origin / declaration["path"] / "Cargo.toml").resolve()
