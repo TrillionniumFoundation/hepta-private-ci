@@ -1165,10 +1165,10 @@
       "design": "qualification/module-execution-dossiers/detail/memory.federation.md",
       "implementationState": "specified_not_product_evidence",
       "apiContract": "query_peer(enrollment,scopedQuery,snapshotPolicy,lease); revalidate_remote(result,epoch); cancel_query(id). No peer enrollment,remote mutation or inherited credentials.",
-      "stateAndEncoding": "Remote evidence remains owned remotely; local cache stores peer/principal/query/frontier/expiry/deletion cutoff and bounded references. Consent comes from authority/fleet owners.",
-      "linearizationAndRecovery": "Validate enrolled peer and current read grant before send; verify returned producer/scope/frontier. Timeout returns partial coverage/unavailable, not valid empty evidence. Restore discards revoked cache.",
-      "algorithmAndBounds": "Peers<=16/request,total IDs<=512,explicit per-peer deadline and bounded read retry. Never widen query scope to compensate for missing coverage.",
-      "acceptanceOracle": "One unavailable peer produces a partial result with missing coverage. Wrong principal denies. A discovered peer receives no query/credential until enrolled. Remote deletion invalidates cached and restored results.",
+      "stateAndEncoding": "Remote evidence remains owned by the source owner. The canonical V2 engine is stateless across attempts and the current Agentd product composition adds no federation cache or retry queue; request-local captured candidates are released only after canonical V2 admission. Any future cache remains a non-authoritative projection bound to peer/principal/query/frontier/effective-expiry/deletion-revocation cutoff.",
+      "linearizationAndRecovery": "For one peer: validate query/lease; observe live Current authority; run exactly one interruptible read attempt; recompute and verify the query-bound ordered response digest; observe authority again after I/O; suppress revoked/stale evidence; clamp effective expiry; seal the result digest. The product orchestrator owns bounded multi-peer aggregation. At physical model-request assembly, bindings from the same owner/capability are batch-revalidated in one owner SQLite read snapshot under one total bounded deadline; different owners remain independent federation snapshots. No engine-owned retry or durable replay state exists.",
+      "algorithmAndBounds": "Canonical engine: exactly one requested peer per attempt, <=512 remote evidence items. Product orchestrator: <=16 admitted peers and the existing final retrieval bound under one 2-second total in-process recall horizon. The current source does not claim cross-host concurrency or latency qualification and never widens scope to compensate for missing coverage.",
+      "acceptanceOracle": "One unavailable peer contributes failed/partial aggregate coverage rather than valid-empty. Partial plus an empty item set remains partial. Reordering prefix-sensitive response items changes the response digest. Wrong principal/scope denies. Preflight revoke prevents dispatch; post-I/O revoke suppresses evidence. Legacy compatibility composition cannot downgrade an already-composed V2 product runtime. Remote deletion/revocation must invalidate any future cached/restored result.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -1179,19 +1179,26 @@
             "symbol": "execute_once"
           },
           {
-            "path": "codex-rs/hepta-memory-federation/src/v2.rs",
-            "symbol": "observe_cancellation"
+            "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+            "symbol": "retrieve_product_federated"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/runtime.rs",
+            "symbol": "build_cognitive_runtime"
           }
         ],
-        "stateAndRecovery": "FederatedQueryV2/LeaseV2 bind peer, principal, scope, purpose, generation, epoch, nonce and deadline; results distinguish completeness, validity and indeterminate transport. The module owns no peer registry, remote writer or retry queue.",
+        "stateAndRecovery": "Canonical V2 verifies exact query-bound remote response digests, observes live capability authority before and after one interruptible transport attempt, clamps evidence lifetime to response/lease/query/live-authority horizons, and preserves explicit product coverage. Agentd composes AvailableFederatedV2 over existing read-only CognitiveStore capability/reader surfaces; Memory-extension product registration requires the V2-only product APIs, which reject the legacy AvailableFederated variant. The module owns no peer registry, remote writer, retry queue or alternate memory store.",
         "testFiles": [
-          "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+          "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs"
         ],
         "runtimeDocuments": [
-          "docs/modules/memory.federation/TECHNICAL.md"
+          "docs/modules/memory.federation/TECHNICAL.md",
+          "docs/modules/memory.federation/V2_HARDENING.md"
         ],
         "remainingWork": [
-          "A product host must supply an enrolled authenticated FederationTransportV2, current peer/revocation observations and cancellation evidence; native test transports do not establish a deployed federation."
+          "Exact-current-head and deterministic merge-candidate execution must pass before productExecutionProved changes.",
+          "A cross-process or multi-host federation still requires an authenticated transport and coherent remote data-frontier qualification; the current product composition is the existing in-process/read-only owner-store path."
         ]
       }
     },

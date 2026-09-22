@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "395244ed716934c0e63a4a01dbe708a8c989276e",
+    "tree": "64951a030a3642179408aa1b821fe60a07002ebe"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -18,28 +18,37 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "composed_candidate_pending_execution",
+  "productionWriterState": "not_applicable_read_only",
   "operations": [
     {
       "operation": "execute_once",
       "nativeSymbol": "execute_once",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_hardened_candidate_pending_execution",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "execute_once",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      ]
     },
     {
       "operation": "observe_cancellation",
       "nativeSymbol": "observe_cancellation",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_hardened_candidate_pending_execution",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
@@ -47,11 +56,12 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved.",
+    "Product turn cancellation is currently enforced by host future-drop propagation; add explicit product cancellation attribution/receipt wiring if canonical cancellation observability is required."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "independent semantic and security review",
+    "multi-host authenticated transport qualification when federation crosses a process or host boundary",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
@@ -65,6 +75,84 @@
     "release": false
   },
   "sourceRoot": [
+    "codex-rs/hepta-memory-federation"
+  ],
+  "headAttestation": {
+    "candidateBranch": "fix/memory-federation-v2-closure-20260920",
+    "baseCommit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
+    "candidateHead": "395244ed716934c0e63a4a01dbe708a8c989276e",
+    "candidateTree": "64951a030a3642179408aa1b821fe60a07002ebe",
+    "headMeaning": "current_main_merged canonical_v2 integrity ordered_prefix partial_empty live_authority interruptible_transport concurrent_product_fanout typed_failure_coverage peer_omission_visibility batch_final_use post_batch_expiry_recheck physical_http_final_use_guard current_verifier_and_generated_indexes",
+    "status": "pending_exact_current_head_and_merge_candidate_execution",
+    "scope": [
+      "remote_response_field_binding",
+      "cross_query_response_replay_protection",
+      "authority_lifetime_ceiling",
+      "preflight_live_authority_fence",
+      "post_io_authority_revalidation",
+      "interruptible_single_attempt_transport",
+      "explicit_product_coverage",
+      "agentd_product_runtime_composition",
+      "legacy_product_path_retirement_boundary",
+      "bounded_final_model_input_revalidation",
+      "adversarial_race_integrity_tests",
+      "exact_scope_same_snapshot_owner_data_frontier",
+      "prefix_sensitive_item_order_binding",
+      "partial_empty_preservation",
+      "product_v2_only_attachment_api_guard",
+      "legacy_v2_runtime_downgrade_prohibited",
+      "one_peer_engine_multi_peer_product_orchestrator_ownership",
+      "in_process_v2_contract_not_claimed_as_cross_host_wire",
+      "module_doc_and_dossier_projection_sync",
+      "same_owner_capability_batch_final_revalidation",
+      "local_frontier_count_not_remote_cut_witness",
+      "exact_head_and_full_synthetic_merge_same_suite",
+      "current_main_head_resolved_at_merge_qualification",
+      "current_main_generated_index_preservation",
+      "candidate_or_exact_observation_source_identity",
+      "physical_http_final_use_guard_before_dispatch",
+      "post_batch_final_use_expiry_recheck",
+      "bounded_concurrent_peer_fanout_one_global_horizon",
+      "peer_truncation_and_owner_candidate_omission_visibility",
+      "typed_failure_coverage_bound_to_result_and_attachment",
+      "dispatch_contract_aligned_final_use_revocation_semantics"
+    ],
+    "productCallsites": [
+      "codex-rs/hepta-agentd/src/runtime.rs",
+      "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "codex-rs/app-server/src/lib.rs"
+    ],
+    "evidencePaths": [
+      ".github/workflows/memory-federation-v2-final-verify.yml",
+      "codex-rs/hepta-memory-federation/src/v2.rs",
+      "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+      "docs/modules/memory.federation/TECHNICAL.md",
+      "docs/modules/memory.federation/V2_HARDENING.md",
+      "qualification/memory-federation/FINAL_V2_VERIFICATION.md",
+      "qualification/module-execution-dossiers/detail/memory.federation.md",
+      "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+      "docs/modules/MODULE_DOCS.json",
+      "qualification/module-execution-dossiers/DETAILS.json",
+      "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+      "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs"
+    ],
+    "note": "sourceBase uses candidate_or_exact_observation_v1 and is bound to the frozen current-main merge candidate. The candidate includes current main, exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, concurrent bounded product peer fan-out under one global horizon, deterministic aggregation, explicit peer truncation and owner-candidate omission, typed discovery/deadline-authority/integrity/transport failure coverage bound into result/attachment evidence, V2-only product attachment, batch final-use revalidation, a fresh post-batch wall-clock check that rejects capability expiry crossing or clock regression before provider transport entry, and dispatch-contract-aligned revocation semantics. Product cancellation safety currently relies on the host dropping the contributor future through its turn cancellation token; explicit canonical cancellation receipt attribution remains a repository-controlled observability gap. productExecutionProved, independent acceptance, activation and release remain false until executable and external gates pass.",
+    "metadataOnlyPaths": [
+      "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+      "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
+    ]
+  },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "395244ed716934c0e63a4a01dbe708a8c989276e",
+    "tree": "64951a030a3642179408aa1b821fe60a07002ebe"
+  },
+  "observedSourcePaths": [
     "codex-rs/hepta-memory-federation"
   ]
 }

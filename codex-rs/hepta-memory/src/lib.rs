@@ -1,5 +1,8 @@
 #![forbid(unsafe_code)]
 
+pub use codex_hepta_memory_federation::FederatedCoverageV2;
+pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;
+
 mod cognitive_compact;
 mod cognitive_federation;
 mod cognitive_intelligence_writer;

@@ -140,10 +140,11 @@ async fn explicit_grant_is_owner_written_consumer_read_only_and_scope_exact() {
         .expect("discover");
     assert_eq!(readers.len(), 1);
     let access = FederationConsumerAccess::new(consumer_id.clone(), consumer_workspace);
-    let batch = readers[0]
-        .retrieve(&access, &RetrievalRequest::new("orbital", 150))
+    let (batch, observed_frontier) = readers[0]
+        .retrieve_with_frontier(&access, &RetrievalRequest::new("orbital", 150))
         .await
         .expect("federated retrieval");
+    assert_eq!(observed_frontier, 1);
     assert_eq!(batch.candidates.len(), 1);
     assert_eq!(batch.candidates[0].source_agent_id, owner_id);
     assert_eq!(

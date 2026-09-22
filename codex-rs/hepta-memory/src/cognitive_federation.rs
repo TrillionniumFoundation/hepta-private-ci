@@ -626,18 +626,28 @@ impl FederatedMemoryReader {
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
     ) -> Result<FederatedRetrievalBatch, CognitiveStoreError> {
+        let (batch, _observed_frontier) = self.retrieve_with_frontier(access, request).await?;
+        Ok(batch)
+    }
+
+    pub(crate) async fn retrieve_with_frontier(
+        &self,
+        access: &FederationConsumerAccess,
+        request: &RetrievalRequest,
+    ) -> Result<(FederatedRetrievalBatch, u64), CognitiveStoreError> {
         require_authorized(
             self.validate_capability(access, request.now_unix_seconds())
                 .await?,
         )?;
         let owner_access = owner_access(&self.capability);
-        let mut batch = self
+        let (batch, observed_frontier) = self
             .owner
-            .retrieve_memory_candidates(&owner_access, request)
+            .retrieve_memory_candidates_for_scope(
+                &owner_access,
+                self.capability.scope.owner_scope(),
+                request,
+            )
             .await?;
-        batch
-            .candidates
-            .retain(|candidate| candidate.memory.scope == *self.capability.scope.owner_scope());
         require_authorized(
             self.validate_capability(access, request.now_unix_seconds())
                 .await?,
@@ -655,10 +665,13 @@ impl FederatedMemoryReader {
                 candidate,
             })
             .collect();
-        Ok(FederatedRetrievalBatch {
-            query_sha256: batch.query_sha256,
-            candidates,
-        })
+        Ok((
+            FederatedRetrievalBatch {
+                query_sha256: batch.query_sha256,
+                candidates,
+            },
+            observed_frontier,
+        ))
     }
 
     pub async fn revalidate(
@@ -667,44 +680,79 @@ impl FederatedMemoryReader {
         binding: &FederatedMemoryRevalidationBinding,
         now_unix_seconds: i64,
     ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
-        if binding.source_agent_id != self.capability.owner_agent_id
-            || binding.capability != self.capability
-        {
-            return Ok(FederatedRevalidationStatus::Stale(
-                FederationRevalidationDrift::CapabilityRevision,
-            ));
+        self.revalidate_many(access, std::slice::from_ref(binding), now_unix_seconds)
+            .await?
+            .pop()
+            .ok_or_else(|| {
+                CognitiveStoreError::Corrupt(
+                    "single federated-memory revalidation returned no status".to_string(),
+                )
+            })
+    }
+
+    /// Revalidates one capability's attachment set against one owner-memory
+    /// SQLite snapshot. Physical-send callers use this batch path so a writer
+    /// cannot advance memory/KG state between independently validated items.
+    pub(crate) async fn revalidate_many(
+        &self,
+        access: &FederationConsumerAccess,
+        bindings: &[FederatedMemoryRevalidationBinding],
+        now_unix_seconds: i64,
+    ) -> Result<Vec<FederatedRevalidationStatus>, CognitiveStoreError> {
+        if bindings.is_empty() {
+            return Ok(Vec::new());
+        }
+        let stale_all = |drift| vec![FederatedRevalidationStatus::Stale(drift); bindings.len()];
+        if bindings.iter().any(|binding| {
+            binding.source_agent_id != self.capability.owner_agent_id
+                || binding.capability != self.capability
+        }) {
+            return Ok(stale_all(FederationRevalidationDrift::CapabilityRevision));
         }
         if let Some(drift) = self.validate_capability(access, now_unix_seconds).await? {
-            return Ok(FederatedRevalidationStatus::Stale(drift));
+            return Ok(stale_all(drift));
         }
-        if binding.memory.scope != *self.capability.scope.owner_scope() {
-            return Ok(FederatedRevalidationStatus::Stale(
-                FederationRevalidationDrift::Scope,
-            ));
+        if bindings
+            .iter()
+            .any(|binding| binding.memory.scope != *self.capability.scope.owner_scope())
+        {
+            return Ok(stale_all(FederationRevalidationDrift::Scope));
         }
-        let status = self
+        let memory_bindings = bindings
+            .iter()
+            .map(|binding| binding.memory.clone())
+            .collect::<Vec<_>>();
+        let statuses = self
             .owner
-            .revalidate_memory_candidate(
+            .revalidate_memory_candidates(
                 &owner_access(&self.capability),
-                &binding.memory,
+                &memory_bindings,
                 now_unix_seconds,
             )
             .await?;
-        let RevalidationStatus::Current(explanation) = status else {
-            return Ok(FederatedRevalidationStatus::Stale(
-                FederationRevalidationDrift::Memory,
+        if statuses.len() != bindings.len() {
+            return Err(CognitiveStoreError::Corrupt(
+                "federated batch revalidation changed result cardinality".to_string(),
             ));
-        };
-        if let Some(drift) = self.validate_capability(access, now_unix_seconds).await? {
-            return Ok(FederatedRevalidationStatus::Stale(drift));
         }
-        Ok(FederatedRevalidationStatus::Current(Box::new(
-            FederatedMemoryExplanation {
-                source_agent_id: self.capability.owner_agent_id.clone(),
-                capability: self.capability.clone(),
-                explanation: *explanation,
-            },
-        )))
+        if let Some(drift) = self.validate_capability(access, now_unix_seconds).await? {
+            return Ok(stale_all(drift));
+        }
+        Ok(statuses
+            .into_iter()
+            .map(|status| match status {
+                RevalidationStatus::Current(explanation) => {
+                    FederatedRevalidationStatus::Current(Box::new(FederatedMemoryExplanation {
+                        source_agent_id: self.capability.owner_agent_id.clone(),
+                        capability: self.capability.clone(),
+                        explanation: *explanation,
+                    }))
+                }
+                RevalidationStatus::Stale(_) => {
+                    FederatedRevalidationStatus::Stale(FederationRevalidationDrift::Memory)
+                }
+            })
+            .collect())
     }
 
     async fn validate_capability(

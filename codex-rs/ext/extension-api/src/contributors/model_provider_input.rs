@@ -75,6 +75,16 @@ pub struct EphemeralModelInputContext<'a> {
     pub max_content_tokens: u32,
 }
 
+/// One-shot source-currentness fence consumed immediately before provider transport.
+///
+/// The guard is host-trusted code registered through an extension. It may only
+/// revalidate the already-bound source; it cannot change the request, mint
+/// provider authority, or supply replacement content. Core consumes it after
+/// the finalized provider-policy lease is acquired and before transport entry.
+pub trait EphemeralModelInputFinalUseGuard: Send {
+    fn revalidate(self: Box<Self>) -> ModelProviderPolicyFuture<'static, ()>;
+}
+
 /// Bounded raw domain content proposed for exactly one physical send.
 ///
 /// This type deliberately implements neither `Clone`, `Debug`, nor serde
@@ -91,6 +101,7 @@ pub struct EphemeralModelInputProposal {
     content_sha256: ModelProviderSha256Digest,
     content: String,
     claimed_token_count: u32,
+    final_use_guard: Option<Box<dyn EphemeralModelInputFinalUseGuard>>,
 }
 
 impl EphemeralModelInputProposal {
@@ -131,6 +142,7 @@ impl EphemeralModelInputProposal {
             content_sha256,
             content,
             claimed_token_count,
+            final_use_guard: None,
         })
     }
 
@@ -170,7 +182,30 @@ impl EphemeralModelInputProposal {
         self.claimed_token_count
     }
 
+    /// Binds a host-trusted one-shot final-use guard to this exact proposal.
+    pub fn with_final_use_guard(
+        mut self,
+        guard: Box<dyn EphemeralModelInputFinalUseGuard>,
+    ) -> Self {
+        self.final_use_guard = Some(guard);
+        self
+    }
+
+    /// Consumes the one-shot proposal and releases raw content plus its final-use fence to Core.
+    pub fn into_content_and_final_use_guard(
+        self,
+    ) -> (
+        String,
+        Option<Box<dyn EphemeralModelInputFinalUseGuard>>,
+    ) {
+        (self.content, self.final_use_guard)
+    }
+
     /// Consumes the one-shot proposal and releases its raw content to Core.
+    ///
+    /// Callers using this compatibility helper deliberately discard any
+    /// attached final-use guard; product Core uses
+    /// `into_content_and_final_use_guard`.
     pub fn into_content(self) -> String {
         self.content
     }
