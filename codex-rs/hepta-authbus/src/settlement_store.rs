@@ -69,8 +69,8 @@ impl AuthBusAuthorityStore {
              dispatch_digest = ?, revision = ?, updated_at_ms = ? WHERE reservation_id = ?",
         )
         .bind(dispatch_digest.as_array().as_slice())
-        .bind(u64_bytes(reservation.revision))
-        .bind(u64_bytes(reservation.updated_at_ms))
+        .bind(u64_bytes(reservation.revision).as_slice())
+        .bind(u64_bytes(reservation.updated_at_ms).as_slice())
         .bind(reservation_id.as_str())
         .execute(&mut *tx)
         .await
@@ -198,8 +198,7 @@ impl AuthBusAuthorityStore {
             ReservationState::Settled | ReservationState::Released
         ) {
             if reservation.settlement_digest != Some(raw_digest)
-                || reservation.terminal_evidence
-                    != Some(evidence.claims.terminal_evidence_digest)
+                || reservation.terminal_evidence != Some(evidence.claims.terminal_evidence_digest)
                 || reservation.observed_cost != Some(evidence.claims.observed_cost)
             {
                 return Err(AuthBusAuthorityError::IdempotencyConflict);
@@ -252,8 +251,8 @@ impl AuthBusAuthorityStore {
              WHERE reservation_id = ?",
         )
         .bind(state_text)
-        .bind(u64_bytes(reservation.revision))
-        .bind(u64_bytes(reservation.updated_at_ms))
+        .bind(u64_bytes(reservation.revision).as_slice())
+        .bind(u64_bytes(reservation.updated_at_ms).as_slice())
         .bind(
             authenticated
                 .claims()
@@ -261,7 +260,7 @@ impl AuthBusAuthorityStore {
                 .as_array()
                 .as_slice(),
         )
-        .bind(u64_bytes(authenticated.claims().observed_cost))
+        .bind(u64_bytes(authenticated.claims().observed_cost).as_slice())
         .bind(authenticated.evidence_digest().as_array().as_slice())
         .bind(reservation.reservation_id.as_str())
         .execute(&mut *tx)
@@ -298,12 +297,13 @@ fn settle_completed(
     amount: u64,
     observed_cost: u64,
 ) -> Result<(), AuthBusAuthorityError> {
-    quota.reserved = quota
-        .reserved
-        .checked_sub(amount)
-        .ok_or(AuthBusAuthorityError::CorruptState(
-            "reserved quota underflow",
-        ))?;
+    quota.reserved =
+        quota
+            .reserved
+            .checked_sub(amount)
+            .ok_or(AuthBusAuthorityError::CorruptState(
+                "reserved quota underflow",
+            ))?;
     quota.consumed = quota
         .consumed
         .checked_add(observed_cost)
@@ -316,16 +316,14 @@ fn settle_completed(
     Ok(())
 }
 
-fn release_reserved(
-    quota: &mut QuotaSnapshot,
-    amount: u64,
-) -> Result<(), AuthBusAuthorityError> {
-    quota.reserved = quota
-        .reserved
-        .checked_sub(amount)
-        .ok_or(AuthBusAuthorityError::CorruptState(
-            "reserved quota underflow",
-        ))?;
+fn release_reserved(quota: &mut QuotaSnapshot, amount: u64) -> Result<(), AuthBusAuthorityError> {
+    quota.reserved =
+        quota
+            .reserved
+            .checked_sub(amount)
+            .ok_or(AuthBusAuthorityError::CorruptState(
+                "reserved quota underflow",
+            ))?;
     quota.available = quota
         .available
         .checked_add(amount)
@@ -342,10 +340,10 @@ async fn persist_quota(
         "UPDATE authbus_quota_registry SET available = ?, reserved = ?, consumed = ?, revision = ?
          WHERE quota_key = ?",
     )
-    .bind(u64_bytes(quota.available))
-    .bind(u64_bytes(quota.reserved))
-    .bind(u64_bytes(quota.consumed))
-    .bind(u64_bytes(quota.revision))
+    .bind(u64_bytes(quota.available).as_slice())
+    .bind(u64_bytes(quota.reserved).as_slice())
+    .bind(u64_bytes(quota.consumed).as_slice())
+    .bind(u64_bytes(quota.revision).as_slice())
     .bind(quota.quota_key.as_str())
     .execute(&mut **tx)
     .await
@@ -363,8 +361,8 @@ async fn update_reservation_state(
          WHERE reservation_id = ?",
     )
     .bind(state)
-    .bind(u64_bytes(reservation.revision))
-    .bind(u64_bytes(reservation.updated_at_ms))
+    .bind(u64_bytes(reservation.revision).as_slice())
+    .bind(u64_bytes(reservation.updated_at_ms).as_slice())
     .bind(reservation.reservation_id.as_str())
     .execute(&mut **tx)
     .await
@@ -380,17 +378,13 @@ fn settlement_from(reservation: &QuotaReservation) -> Result<Settlement, AuthBus
         reserved_amount: reservation.amount,
         observed_cost: reservation
             .observed_cost
-            .ok_or(AuthBusAuthorityError::CorruptState(
-                "missing observed cost",
-            ))?,
+            .ok_or(AuthBusAuthorityError::CorruptState("missing observed cost"))?,
         terminal_evidence_digest: reservation.terminal_evidence.ok_or(
             AuthBusAuthorityError::CorruptState("missing terminal evidence"),
         )?,
-        settlement_digest: reservation
-            .settlement_digest
-            .ok_or(AuthBusAuthorityError::CorruptState(
-                "missing settlement digest",
-            ))?,
+        settlement_digest: reservation.settlement_digest.ok_or(
+            AuthBusAuthorityError::CorruptState("missing settlement digest"),
+        )?,
         reservation_revision: reservation.revision,
         authority: AuthorityPosture::DENY_ALL,
     })

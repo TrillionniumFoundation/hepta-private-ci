@@ -35,10 +35,12 @@ impl AuthBusAuthorityStore {
         spec: IssuerSpec,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
-        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_issuer_registry WHERE state != 'retired'")
-            .fetch_one(&mut *tx)
-            .await
-            .map_err(storage)?;
+        let count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_issuer_registry WHERE state != 'retired'",
+        )
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
         if count >= MAX_ISSUER_EPOCHS {
             return Err(AuthBusAuthorityError::CapacityExceeded);
         }
@@ -68,10 +70,12 @@ impl AuthBusAuthorityStore {
         expected_revision: u64,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
-        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_issuer_registry WHERE state != 'retired'")
-            .fetch_one(&mut *tx)
-            .await
-            .map_err(storage)?;
+        let count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_issuer_registry WHERE state != 'retired'",
+        )
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
         if count >= MAX_ISSUER_EPOCHS {
             return Err(AuthBusAuthorityError::CapacityExceeded);
         }
@@ -87,7 +91,7 @@ impl AuthBusAuthorityStore {
             "UPDATE authbus_issuer_registry SET state = 'revoked', revision = ?
              WHERE issuer_id = ? AND purpose = ? AND key_epoch = ?",
         )
-        .bind(u64_bytes(next_old_revision))
+        .bind(u64_bytes(next_old_revision).as_slice())
         .bind(current.issuer_id.as_str())
         .bind(purpose_text(purpose))
         .bind(current.key_epoch.get().to_be_bytes().as_slice())
@@ -228,7 +232,7 @@ async fn insert_issuer(
     .bind(purpose_text(purpose))
     .bind(spec.key_epoch.get().to_be_bytes().as_slice())
     .bind(spec.verifying_key.to_bytes().as_slice())
-    .bind(u64_bytes(1))
+    .bind(u64_bytes(1).as_slice())
     .execute(&mut **tx)
     .await
     .map_err(|error| {
@@ -291,7 +295,7 @@ async fn persist_issuer_state(
          WHERE issuer_id = ? AND purpose = ? AND key_epoch = ?",
     )
     .bind(state_text(record.state))
-    .bind(u64_bytes(record.revision))
+    .bind(u64_bytes(record.revision).as_slice())
     .bind(record.issuer_id.as_str())
     .bind(purpose_text(record.purpose))
     .bind(record.key_epoch.get().to_be_bytes().as_slice())
@@ -349,9 +353,7 @@ fn parse_state(value: &str) -> Result<IssuerLifecycleState, AuthBusAuthorityErro
         "active" => Ok(IssuerLifecycleState::Active),
         "revoked" => Ok(IssuerLifecycleState::Revoked),
         "retired" => Ok(IssuerLifecycleState::Retired),
-        _ => Err(AuthBusAuthorityError::CorruptState(
-            "invalid issuer state",
-        )),
+        _ => Err(AuthBusAuthorityError::CorruptState("invalid issuer state")),
     }
 }
 

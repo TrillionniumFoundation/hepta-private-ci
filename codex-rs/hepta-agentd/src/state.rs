@@ -17,8 +17,7 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
-    pub(crate) production_operations:
-        std::sync::OnceLock<Arc<crate::AgentdProductionWriterHost>>,
+    pub(crate) production_operations: std::sync::OnceLock<Arc<crate::AgentdProductionWriterHost>>,
     pub(crate) evidence: std::sync::OnceLock<Arc<crate::evidence_host::EvidenceHost>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,

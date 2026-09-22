@@ -30,10 +30,7 @@ use crate::AgentdError;
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
 /// FinalUseBinding; it never receives or constructs the issuer signing key.
 pub trait AgentdFinalUseGrantProvider: Send + Sync {
-    fn signed_grant(
-        &self,
-        binding: &FinalUseBinding,
-    ) -> Result<SignedFinalUseGrant, AgentdError>;
+    fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError>;
 }
 
 /// Explicit runtime composition input for the production operation service.
@@ -320,7 +317,8 @@ impl AgentdProductionWriterHost {
                 )
             })?
             .clone();
-        self.dispatch_to_with_grant_provider(&destination, receipt).await
+        self.dispatch_to_with_grant_provider(&destination, receipt)
+            .await
     }
 
     pub async fn dispatch_to_with_grant_provider(

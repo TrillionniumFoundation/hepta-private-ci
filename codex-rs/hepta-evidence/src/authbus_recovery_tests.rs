@@ -223,3 +223,46 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
         Err(AuthBusAdmissionError::Authentication(Error::Revoked))
     ));
 }
+
+#[tokio::test]
+async fn altered_replay_checkpoint_schema_is_rejected_before_recovery() {
+    for (table, drop_statement, recreate_statement) in [
+        (
+            "authbus_restore_checkpoint",
+            "DROP TABLE authbus_restore_checkpoint",
+            "CREATE TABLE authbus_restore_checkpoint (singleton INTEGER, generation BLOB)",
+        ),
+        (
+            "authbus_restore_checkpoint_pending",
+            "DROP TABLE authbus_restore_checkpoint_pending",
+            "CREATE TABLE authbus_restore_checkpoint_pending (singleton INTEGER, generation BLOB)",
+        ),
+        (
+            "authbus_retired_epochs",
+            "DROP TABLE authbus_retired_epochs",
+            "CREATE TABLE authbus_retired_epochs (singleton INTEGER, generation BLOB)",
+        ),
+    ] {
+        let root = TempDir::new().unwrap();
+        let settings = config(&root);
+        let store = HeptaEvidenceStore::open(&settings).await.unwrap();
+        sqlx::query(drop_statement)
+            .execute(&store.pool)
+            .await
+            .unwrap();
+        // Keep the name while removing all constraints. The migration ledger
+        // remains valid, but this schema can no longer fence replay rollback.
+        sqlx::query(recreate_statement)
+            .execute(&store.pool)
+            .await
+            .unwrap();
+        store.pool.close().await;
+        assert!(
+            matches!(
+                HeptaEvidenceStore::open(&settings).await,
+                Err(EvidenceError::Corrupt(_))
+            ),
+            "{table}"
+        );
+    }
+}

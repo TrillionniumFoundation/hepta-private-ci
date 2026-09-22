@@ -494,18 +494,29 @@ impl FinalUseAuthority {
         }
         // Advance the external owner before the local append. Any uncertain
         // append fences this owner and leaves a frontier mismatch on restart.
-        let expected_frontier = self.0.frontier_store.as_ref().map(|_| frontier_for_state(&state));
+        let expected_frontier = self
+            .0
+            .frontier_store
+            .as_ref()
+            .map(|_| frontier_for_state(&state));
         state.used_nonces.insert(signed.grant.nonce);
         if let (Some(frontier_store), Some(expected_frontier)) =
             (&self.0.frontier_store, expected_frontier)
             && let Err(error) = frontier_store.compare_and_set(
-                &self.0.signer_id, &expected_frontier, &frontier_for_state(&state),
+                &self.0.signer_id,
+                &expected_frontier,
+                &frontier_for_state(&state),
             )
         {
             state.failed = true;
             return Err(map_trust_error(error));
         }
-        if self.0.store.append_claim(state.head.authority_epoch, signed.grant.nonce).is_err() {
+        if self
+            .0
+            .store
+            .append_claim(state.head.authority_epoch, signed.grant.nonce)
+            .is_err()
+        {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }

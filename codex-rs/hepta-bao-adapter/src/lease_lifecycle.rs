@@ -143,7 +143,7 @@ impl DurableLeaseRegistryV1 {
         let state = if path.exists() {
             let mut bytes = Vec::new();
             File::open(&path)
-                .and_then(|mut file| file.take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes))
+                .and_then(|file| file.take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes))
                 .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
             if bytes.len() > 8 * 1024 * 1024 {
                 return Err(LeaseRegistryErrorV1::CorruptState);
@@ -175,7 +175,12 @@ impl DurableLeaseRegistryV1 {
         operation_id: String,
         semantic_sha256: [u8; 32],
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
-        self.prepare(operation_id, LeaseOperationKindV1::Issue, semantic_sha256, None)
+        self.prepare(
+            operation_id,
+            LeaseOperationKindV1::Issue,
+            semantic_sha256,
+            None,
+        )
     }
 
     pub fn prepare_renew(
@@ -204,7 +209,10 @@ impl DurableLeaseRegistryV1 {
             .leases
             .get(&lease_id)
             .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
-        if matches!(lease.state, SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired) {
+        if matches!(
+            lease.state,
+            SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+        ) {
             return Err(LeaseRegistryErrorV1::InvalidTransition);
         }
         self.prepare(
@@ -483,8 +491,7 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
     {
         return Err(LeaseRegistryErrorV1::InvalidInput);
     }
-    let encoded =
-        serde_json::to_vec(lease).map_err(|_| LeaseRegistryErrorV1::InvalidInput)?;
+    let encoded = serde_json::to_vec(lease).map_err(|_| LeaseRegistryErrorV1::InvalidInput)?;
     if encoded.len() > MAX_METADATA_BYTES {
         return Err(LeaseRegistryErrorV1::InvalidInput);
     }

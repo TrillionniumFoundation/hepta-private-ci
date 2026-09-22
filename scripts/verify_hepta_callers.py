@@ -137,7 +137,9 @@ def _verify_privileged_inventory(
         raise VerificationFailure("CALLERS.toml requires [privileged_inventory]")
     required = _string_tuple(inventory, "required_boundary_ids")
     if len(required) != len(set(required)):
-        raise VerificationFailure("privileged inventory contains duplicate boundary ids")
+        raise VerificationFailure(
+            "privileged inventory contains duplicate boundary ids"
+        )
     declared = {boundary.identifier for boundary in boundaries}
     required_set = set(required)
     if declared != required_set:
@@ -272,9 +274,10 @@ def _strip_cfg_test_items(code: str) -> str:
         if attr_end is None:
             break
         attribute = code[start : attr_end + 1]
-        if re.search(r"\bcfg\b", attribute) is None or re.search(
-            r"\btest\b", attribute
-        ) is None:
+        if (
+            re.search(r"\bcfg\b", attribute) is None
+            or re.search(r"\btest\b", attribute) is None
+        ):
             index = attr_end + 1
             continue
 
@@ -471,7 +474,9 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
     for source_path in files:
         raw = source_path.read_text(encoding="utf-8")
         code = _strip_rust_non_code(raw)
-        source_index[source_path.relative_to(root).as_posix()] = _strip_cfg_test_items(code)
+        source_index[source_path.relative_to(root).as_posix()] = _strip_cfg_test_items(
+            code
+        )
     results = [
         _verify_boundary(root, boundary, source_index, ignored)
         for boundary in boundaries
@@ -507,7 +512,10 @@ def main() -> int:
         cfg_code = _strip_cfg_test_items(
             "#[cfg(all(test, unix))]\nmod tests { fn x() { authority.claim(x); } }\nauthority.claim(y);\n"
         )
-        if cfg_code.count("authority.claim") != 1 or "authority.claim(y)" not in cfg_code:
+        if (
+            cfg_code.count("authority.claim") != 1
+            or "authority.claim(y)" not in cfg_code
+        ):
             raise VerificationFailure("cfg-test stripping self-test failed")
         print(
             json.dumps({"status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"}, sort_keys=True)

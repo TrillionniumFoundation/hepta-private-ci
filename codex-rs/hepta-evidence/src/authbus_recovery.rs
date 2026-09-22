@@ -77,9 +77,7 @@ impl HeptaEvidenceStore {
         Ok(())
     }
 
-    pub async fn authbus_replay_frontier_digest(
-        &self,
-    ) -> Result<Digest32, AuthBusRecoveryError> {
+    pub async fn authbus_replay_frontier_digest(&self) -> Result<Digest32, AuthBusRecoveryError> {
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
@@ -139,9 +137,13 @@ impl HeptaEvidenceStore {
             return Ok(pending);
         }
         if pending == Some(external)
-            && external.generation == current.generation.checked_add(1).ok_or(
-                AuthBusRecoveryError::Invalid("checkpoint generation overflow"),
-            )?
+            && external.generation
+                == current
+                    .generation
+                    .checked_add(1)
+                    .ok_or(AuthBusRecoveryError::Invalid(
+                        "checkpoint generation overflow",
+                    ))?
         {
             let frontier = replay_frontier_digest_tx(&mut tx).await?;
             if frontier != external.digest {
@@ -266,14 +268,12 @@ impl HeptaEvidenceStore {
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
-        sqlx::query(
-            "DELETE FROM authbus_replay_sequences WHERE issuer_id = ? AND key_epoch = ?",
-        )
-        .bind(retirement.issuer_id().as_str())
-        .bind(retirement.key_epoch().get().to_be_bytes().as_slice())
-        .execute(&mut *tx)
-        .await
-        .map_err(classify_sqlx_error)?;
+        sqlx::query("DELETE FROM authbus_replay_sequences WHERE issuer_id = ? AND key_epoch = ?")
+            .bind(retirement.issuer_id().as_str())
+            .bind(retirement.key_epoch().get().to_be_bytes().as_slice())
+            .execute(&mut *tx)
+            .await
+            .map_err(classify_sqlx_error)?;
         stage_replay_checkpoint_after_mutation(&mut tx).await?;
         let pending = load_pending_checkpoint(&mut tx)
             .await?

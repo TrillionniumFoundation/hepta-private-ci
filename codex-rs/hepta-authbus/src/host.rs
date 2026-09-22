@@ -146,7 +146,10 @@ impl AuthBusAuthorityHost {
         &self,
         attestation: &SignedTrustedTimeAttestation,
     ) -> Result<TrustedTimeSample, AuthBusAuthorityError> {
-        let result = self.store.observe_trusted_time_attestation(attestation).await;
+        let result = self
+            .store
+            .observe_trusted_time_attestation(attestation)
+            .await;
         self.finish(result).await
     }
 
@@ -244,7 +247,10 @@ impl AuthBusAuthorityHost {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
-        let result = self.store.replace_quota(spec, expected_revision, time).await;
+        let result = self
+            .store
+            .replace_quota(spec, expected_revision, time)
+            .await;
         self.finish(result).await
     }
 
@@ -267,12 +273,7 @@ impl AuthBusAuthorityHost {
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         let result = self
             .store
-            .mark_dispatch_attempted(
-                reservation_id,
-                expected_revision,
-                dispatch_digest,
-                time,
-            )
+            .mark_dispatch_attempted(reservation_id, expected_revision, dispatch_digest, time)
             .await;
         self.finish(result).await
     }
@@ -442,7 +443,9 @@ fn validate_path(path: &Path, database_path: &Path) -> Result<(), AuthBusAuthori
     if !path.is_absolute() || !database_path.is_absolute() {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
     }
-    let parent = path.parent().ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    let parent = path
+        .parent()
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
     let db_parent = database_path
         .parent()
         .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
@@ -508,7 +511,7 @@ fn read_private_file(path: &Path) -> Result<Vec<u8>, AuthBusAuthorityError> {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
     }
     let mut bytes = Vec::new();
-    file.by_ref()
+    std::io::Read::by_ref(&mut file)
         .take(MAX_CHECKPOINT_BYTES + 1)
         .read_to_end(&mut bytes)
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
@@ -540,7 +543,9 @@ fn write_private_atomic(
 ) -> Result<(), AuthBusAuthorityError> {
     use std::os::unix::fs::OpenOptionsExt;
 
-    let parent = path.parent().ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    let parent = path
+        .parent()
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
     let name = path
         .file_name()
         .and_then(|value| value.to_str())

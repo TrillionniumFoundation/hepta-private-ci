@@ -47,7 +47,7 @@ impl OutboxIntent {
             return false;
         };
         self.operation_id == record.key.id
-            && self.destination == operation.destination
+            && &self.destination == operation.destination_id()
             && self.payload_digest == record.key.payload_digest
             && self.operation_digest == operation.semantic_digest()
     }
@@ -191,7 +191,8 @@ impl Outbox {
                         }
                         attempt
                     } else {
-                        if now_unix_ms < existing_expiry || owner_generation <= existing_generation {
+                        if now_unix_ms < existing_expiry || owner_generation <= existing_generation
+                        {
                             return Err(OperationError::StaleGeneration);
                         }
                         attempt

@@ -9,6 +9,7 @@
 #![forbid(unsafe_code)]
 
 mod authority;
+mod authority_schema;
 mod authority_store;
 mod host;
 mod quota;
@@ -39,6 +40,9 @@ pub use settlement::SettlementIssuerRegistration;
 pub use settlement::SettlementStatus;
 pub use settlement::SignedSettlementEvidence;
 pub use signed::AuthenticatedMessage;
+pub use signed::IssuerRegistration;
+pub use signed::SignedMessage;
+pub use signed::SignedMessageClaims;
 pub use trust::IssuerLifecycleState;
 pub use trust::IssuerPurpose;
 pub use trust::IssuerRecord;
@@ -46,9 +50,6 @@ pub use trust::IssuerRetirement;
 pub use trust::IssuerSpec;
 pub use trust::SignedTrustedTimeAttestation;
 pub use trust::TrustedTimeAttestationClaims;
-pub use signed::IssuerRegistration;
-pub use signed::SignedMessage;
-pub use signed::SignedMessageClaims;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;

@@ -55,7 +55,10 @@ async fn advanced_external_checkpoint_rejects_real_old_database_restore() {
 
     let store = AuthBusAuthorityStore::open(&path).await.unwrap();
     store
-        .create_policy(policy(Digest32::of_bytes(b"restore-scope")), sample(1, 2_000))
+        .create_policy(
+            policy(Digest32::of_bytes(b"restore-scope")),
+            sample(1, 2_000),
+        )
         .await
         .unwrap();
     let next = store
@@ -167,7 +170,10 @@ async fn restart_fences_new_reservations_until_dispatch_attempts_become_indeterm
     ));
     assert!(reopened.reconcile_after_restart(256).await.unwrap());
     assert!(!reopened.recovery_required().await.unwrap());
-    let recovered = reopened.reservation(&dispatched.reservation_id).await.unwrap();
+    let recovered = reopened
+        .reservation(&dispatched.reservation_id)
+        .await
+        .unwrap();
     assert_eq!(recovered.state, ReservationState::Indeterminate);
     let held = reopened.quota_snapshot(&quota.quota_key).await.unwrap();
     assert_eq!((held.available, held.reserved, held.consumed), (1, 1, 0));

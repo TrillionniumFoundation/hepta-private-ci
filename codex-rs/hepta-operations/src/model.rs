@@ -64,7 +64,9 @@ impl OperationIntentV1 {
             return Err(OperationError::InvalidDigest("operation intent scope"));
         }
         if self.expected_predecessor.is_some_and(Digest32::is_zero) {
-            return Err(OperationError::InvalidDigest("operation intent expected predecessor"));
+            return Err(OperationError::InvalidDigest(
+                "operation intent expected predecessor",
+            ));
         }
         Ok(())
     }
@@ -126,11 +128,7 @@ impl OperationIntentV1 {
 
 fn push_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
-    bytes.extend_from_slice(
-        &u32::try_from(raw.len())
-            .unwrap_or(u32::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
 

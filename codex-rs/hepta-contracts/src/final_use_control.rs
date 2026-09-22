@@ -993,7 +993,7 @@ mod tests {
 
     #[test]
     fn convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs() {
-        let (_authority, grant, _directory, _approver, distributor) = fixture();
+        let (authority, grant, _directory, _approver, distributor) = fixture();
         let node = SigningKey::from_bytes(&[73; 32]);
         let update = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),

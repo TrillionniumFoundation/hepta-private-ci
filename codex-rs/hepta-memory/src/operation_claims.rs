@@ -74,7 +74,13 @@ pub(crate) async fn claim(
     now_unix_ms: u64,
     lease_duration_ms: u64,
 ) -> Result<DurableDispatchClaim, LocalLeaseOutboxError> {
-    validate_claim_input(operation_id, owner_generation, fencing_token, now_unix_ms, lease_duration_ms)?;
+    validate_claim_input(
+        operation_id,
+        owner_generation,
+        fencing_token,
+        now_unix_ms,
+        lease_duration_ms,
+    )?;
     let mut transaction = store
         .pool
         .begin_with("BEGIN IMMEDIATE")
@@ -146,12 +152,14 @@ pub(crate) async fn claim(
             })?,
         None => 1,
     };
-    let lease_expires_at_unix_ms = now_unix_ms
-        .checked_add(lease_duration_ms)
-        .ok_or_else(|| LocalLeaseOutboxError::Invalid("dispatch claim lease overflow".to_string()))?;
+    let lease_expires_at_unix_ms = now_unix_ms.checked_add(lease_duration_ms).ok_or_else(|| {
+        LocalLeaseOutboxError::Invalid("dispatch claim lease overflow".to_string())
+    })?;
     let next_eligible_at_unix_ms = lease_expires_at_unix_ms
         .checked_add(retry_backoff_ms(attempt))
-        .ok_or_else(|| LocalLeaseOutboxError::Invalid("dispatch retry deadline overflow".to_string()))?;
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::Invalid("dispatch retry deadline overflow".to_string())
+        })?;
     let row = append_claim(
         &mut transaction,
         operation_id,
@@ -200,7 +208,9 @@ pub(crate) async fn renew(
     .await?;
     let previous = latest_claim(&mut transaction, &claim.operation_id)
         .await?
-        .ok_or_else(|| LocalLeaseOutboxError::StaleFence("dispatch claim is missing".to_string()))?;
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::StaleFence("dispatch claim is missing".to_string())
+        })?;
     if !matches!(previous.state, ClaimState::Claimed | ClaimState::Renewed)
         || previous.attempt != claim.attempt
         || previous.owner_generation != claim.owner_generation
@@ -216,9 +226,9 @@ pub(crate) async fn renew(
             "dispatch claim lease already expired".to_string(),
         ));
     }
-    let lease_expires_at_unix_ms = now_unix_ms
-        .checked_add(lease_duration_ms)
-        .ok_or_else(|| LocalLeaseOutboxError::Invalid("dispatch claim lease overflow".to_string()))?;
+    let lease_expires_at_unix_ms = now_unix_ms.checked_add(lease_duration_ms).ok_or_else(|| {
+        LocalLeaseOutboxError::Invalid("dispatch claim lease overflow".to_string())
+    })?;
     if lease_expires_at_unix_ms <= previous.lease_expires_at_unix_ms {
         return Err(LocalLeaseOutboxError::Invalid(
             "dispatch claim renewal must extend the lease".to_string(),
@@ -226,7 +236,9 @@ pub(crate) async fn renew(
     }
     let next_eligible_at_unix_ms = lease_expires_at_unix_ms
         .checked_add(retry_backoff_ms(previous.attempt))
-        .ok_or_else(|| LocalLeaseOutboxError::Invalid("dispatch retry deadline overflow".to_string()))?;
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::Invalid("dispatch retry deadline overflow".to_string())
+        })?;
     let row = append_claim(
         &mut transaction,
         &claim.operation_id,
@@ -289,7 +301,9 @@ async fn transition_claim(
     .await?;
     let previous = latest_claim(&mut transaction, &claim.operation_id)
         .await?
-        .ok_or_else(|| LocalLeaseOutboxError::StaleFence("dispatch claim is missing".to_string()))?;
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::StaleFence("dispatch claim is missing".to_string())
+        })?;
 
     if target == ClaimState::Settled
         && previous.state == ClaimState::Settled
@@ -469,7 +483,9 @@ async fn append_claim(
         .map(|row| row.claim_sequence)
         .unwrap_or(0)
         .checked_add(1)
-        .ok_or_else(|| LocalLeaseOutboxError::Invalid("dispatch claim sequence overflow".to_string()))?;
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::Invalid("dispatch claim sequence overflow".to_string())
+        })?;
     let previous_sha256 = previous
         .map(|row| row.claim_sha256.clone())
         .unwrap_or_else(|| Sha256Digest::for_bytes(CLAIM_GENESIS));
@@ -498,7 +514,10 @@ async fn append_claim(
     .bind(fencing_token)
     .bind(state.as_str())
     .bind(to_i64(lease_expires_at_unix_ms, "dispatch claim expiry")?)
-    .bind(to_i64(next_eligible_at_unix_ms, "dispatch retry eligibility")?)
+    .bind(to_i64(
+        next_eligible_at_unix_ms,
+        "dispatch retry eligibility",
+    )?)
     .bind(previous_sha256.as_str())
     .bind(claim_sha256.as_str())
     .bind(to_i64(recorded_at_unix_ms, "dispatch claim timestamp")?)
@@ -568,7 +587,10 @@ fn validate_claim_input(
     now_unix_ms: u64,
     lease_duration_ms: u64,
 ) -> Result<(), LocalLeaseOutboxError> {
-    if operation_id.trim().is_empty() || operation_id.len() > 128 || operation_id.as_bytes().contains(&0) {
+    if operation_id.trim().is_empty()
+        || operation_id.len() > 128
+        || operation_id.as_bytes().contains(&0)
+    {
         return Err(LocalLeaseOutboxError::Invalid(
             "dispatch claim operation id must contain 1..=128 non-NUL bytes".to_string(),
         ));
@@ -578,7 +600,8 @@ fn validate_claim_input(
             "dispatch claim owner fence is invalid".to_string(),
         ));
     }
-    if now_unix_ms == 0 || lease_duration_ms == 0 || lease_duration_ms > MAX_DURABLE_CLAIM_LEASE_MS {
+    if now_unix_ms == 0 || lease_duration_ms == 0 || lease_duration_ms > MAX_DURABLE_CLAIM_LEASE_MS
+    {
         return Err(LocalLeaseOutboxError::Invalid(format!(
             "dispatch claim lease must be 1..={MAX_DURABLE_CLAIM_LEASE_MS} ms with non-zero current time"
         )));

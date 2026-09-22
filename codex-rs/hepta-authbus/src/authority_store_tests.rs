@@ -160,4 +160,3 @@ async fn trusted_time_floor_survives_reopen_and_failed_authorization() {
         Err(AuthBusAuthorityError::ClockRollback)
     ));
 }
-

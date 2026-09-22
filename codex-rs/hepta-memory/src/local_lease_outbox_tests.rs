@@ -2646,7 +2646,6 @@ fn qualification_durable_writer_crash_reopen_probe() {
     );
 }
 
-
 #[test]
 fn durable_sequence_capacity_rejects_before_mutation_boundary() {
     assert_eq!(
@@ -2844,7 +2843,10 @@ async fn sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cl
         "expected SQLITE_FULL-class error, got {error}"
     );
 
-    assert_eq!(handle.snapshot_counts().await.expect("after counts"), before);
+    assert_eq!(
+        handle.snapshot_counts().await.expect("after counts"),
+        before
+    );
     assert_eq!(operation_rows(&store, lease_id).await, before_operations);
 
     drop(handle);

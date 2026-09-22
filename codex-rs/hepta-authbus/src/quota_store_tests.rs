@@ -1,3 +1,4 @@
+use crate::PolicySpec;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
@@ -41,7 +42,12 @@ fn quota(limit: u64) -> QuotaSpec {
 
 async fn configured(
     limit: u64,
-) -> (TempDir, AuthBusAuthorityStore, PolicyDecision, QuotaSnapshot) {
+) -> (
+    TempDir,
+    AuthBusAuthorityStore,
+    PolicyDecision,
+    QuotaSnapshot,
+) {
     let root = TempDir::new().expect("temp dir");
     let store = AuthBusAuthorityStore::open(&root.path().join("authbus.sqlite"))
         .await

@@ -347,10 +347,7 @@ pub struct EvidenceIssuerTrustBindingV1 {
 }
 
 impl EvidenceIssuerTrustBindingV1 {
-    pub fn from_registration(
-        issuer: &IssuerRegistration,
-        role: EvidenceIssuerRoleV1,
-    ) -> Self {
+    pub fn from_registration(issuer: &IssuerRegistration, role: EvidenceIssuerRoleV1) -> Self {
         Self {
             issuer_principal_id: issuer.issuer_id.to_string(),
             issuer_key_epoch: issuer.key_epoch.get(),
@@ -388,9 +385,13 @@ pub struct EvidenceReferenceV1 {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
 pub enum EvidenceDispositionV1 {
-    Supported { evidence: Vec<EvidenceReferenceV1> },
+    Supported {
+        evidence: Vec<EvidenceReferenceV1>,
+    },
     Missing,
-    Expired { evidence: Vec<EvidenceReferenceV1> },
+    Expired {
+        evidence: Vec<EvidenceReferenceV1>,
+    },
     Conflicting {
         evidence: Vec<EvidenceReferenceV1>,
         reason: String,
@@ -490,7 +491,10 @@ impl QualificationEvidenceStore<'_> {
                 "qualification evidence observation is in the future".to_string(),
             ));
         }
-        if envelope.expires_unix_ms.is_some_and(|expires| expires <= now) {
+        if envelope
+            .expires_unix_ms
+            .is_some_and(|expires| expires <= now)
+        {
             return Err(EvidenceError::InvalidRecord(
                 "qualification evidence is already expired".to_string(),
             ));
@@ -570,12 +574,7 @@ impl QualificationEvidenceStore<'_> {
                 .as_ref()
                 .map(EvidenceId::as_str),
         )
-        .bind(
-            envelope
-                .target_evidence_id
-                .as_ref()
-                .map(EvidenceId::as_str),
-        )
+        .bind(envelope.target_evidence_id.as_ref().map(EvidenceId::as_str))
         .bind(envelope.observed_unix_ms.to_be_bytes().to_vec())
         .bind(
             envelope
@@ -625,14 +624,19 @@ impl QualificationEvidenceStore<'_> {
                 "qualification verification trust snapshot exceeds 512 bindings".to_string(),
             ));
         }
-        let unique_roles = request.required_roles.iter().copied().collect::<BTreeSet<_>>();
+        let unique_roles = request
+            .required_roles
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>();
         if unique_roles.len() != request.required_roles.len() {
             return Err(EvidenceError::InvalidRecord(
                 "qualification verification contains duplicate required roles".to_string(),
             ));
         }
 
-        let rows = load_claim_rows(&self.store.pool, &request.candidate, request.claim_class).await?;
+        let rows =
+            load_claim_rows(&self.store.pool, &request.candidate, request.claim_class).await?;
         if rows.is_empty() {
             return Ok(EvidenceDispositionV1::Missing);
         }
@@ -678,8 +682,9 @@ impl QualificationEvidenceStore<'_> {
             if !current_trust.iter().any(|binding| binding.matches(&row)) {
                 return Ok(EvidenceDispositionV1::Conflicting {
                     evidence: vec![row.reference()],
-                    reason: "evidence issuer trust is stale, revoked, role-mismatched, or key-rotated"
-                        .to_string(),
+                    reason:
+                        "evidence issuer trust is stale, revoked, role-mismatched, or key-rotated"
+                            .to_string(),
                 });
             }
             if row.envelope.claim_class == EvidenceClaimClassV1::IndependentDecision {
@@ -777,9 +782,11 @@ pub fn evidence_set_digest(
 ) -> Result<Sha256Digest, EvidenceError> {
     let mut ordered = evidence.to_vec();
     ordered.sort_by(|left, right| {
-        left.evidence_id
-            .cmp(&right.evidence_id)
-            .then(left.envelope_sha256.as_str().cmp(right.envelope_sha256.as_str()))
+        left.evidence_id.cmp(&right.evidence_id).then(
+            left.envelope_sha256
+                .as_str()
+                .cmp(right.envelope_sha256.as_str()),
+        )
     });
     Ok(Sha256Digest::for_bytes(&canonical_json(&ordered)?))
 }
@@ -870,8 +877,8 @@ fn validate_independent_decision(
     if envelope.receipt_kind == EvidenceReceiptKindV1::Revocation {
         return Ok(());
     }
-    let receipt: IndependentDecisionReceiptV1 =
-        serde_json::from_value(envelope.payload.clone()).map_err(|error| {
+    let receipt: IndependentDecisionReceiptV1 = serde_json::from_value(envelope.payload.clone())
+        .map_err(|error| {
             EvidenceError::InvalidRecord(format!(
                 "independent decision payload does not match IndependentDecisionReceiptV1: {error}"
             ))
@@ -912,8 +919,7 @@ fn validate_independent_decision(
     Ok(())
 }
 
-const MAX_DECISION_EVIDENCE_REFERENCES: usize =
-    QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS * 16;
+const MAX_DECISION_EVIDENCE_REFERENCES: usize = QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS * 16;
 
 async fn candidate_evidence_set_digest(
     pool: &SqlitePool,
@@ -934,9 +940,11 @@ async fn candidate_evidence_set_digest(
     .bind(&candidate.candidate_id)
     .bind(&candidate.source_commit)
     .bind(&candidate.source_tree)
-    .bind(i64::try_from(MAX_DECISION_EVIDENCE_REFERENCES + 1).map_err(|_| {
-        EvidenceError::InvalidRecord("independent evidence-set bound overflow".into())
-    })?)
+    .bind(
+        i64::try_from(MAX_DECISION_EVIDENCE_REFERENCES + 1).map_err(|_| {
+            EvidenceError::InvalidRecord("independent evidence-set bound overflow".into())
+        })?,
+    )
     .fetch_all(pool)
     .await
     .map_err(classify_sqlx_error)?;
@@ -962,9 +970,11 @@ async fn candidate_evidence_set_digest_in_transaction(
     .bind(&candidate.candidate_id)
     .bind(&candidate.source_commit)
     .bind(&candidate.source_tree)
-    .bind(i64::try_from(MAX_DECISION_EVIDENCE_REFERENCES + 1).map_err(|_| {
-        EvidenceError::InvalidRecord("independent evidence-set bound overflow".into())
-    })?)
+    .bind(
+        i64::try_from(MAX_DECISION_EVIDENCE_REFERENCES + 1).map_err(|_| {
+            EvidenceError::InvalidRecord("independent evidence-set bound overflow".into())
+        })?,
+    )
     .fetch_all(&mut **transaction)
     .await
     .map_err(classify_sqlx_error)?;
@@ -1050,9 +1060,9 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
                 "qualification evidence envelope cannot be decoded: {error}"
             ))
         })?;
-    envelope
-        .validate()
-        .map_err(|error| EvidenceError::Corrupt(format!("qualification envelope invalid: {error}")))?;
+    envelope.validate().map_err(|error| {
+        EvidenceError::Corrupt(format!("qualification envelope invalid: {error}"))
+    })?;
     let canonical = canonical_json(&envelope)?;
     if String::from_utf8(canonical.clone())
         .map_err(|error| EvidenceError::Serialization(error.to_string()))?
@@ -1070,7 +1080,9 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
         ));
     }
     let envelope_sha256 = Sha256Digest::for_bytes(&canonical);
-    let stored_envelope: String = row.try_get("envelope_sha256").map_err(classify_sqlx_error)?;
+    let stored_envelope: String = row
+        .try_get("envelope_sha256")
+        .map_err(classify_sqlx_error)?;
     if envelope_sha256.as_str() != stored_envelope {
         return Err(EvidenceError::Corrupt(
             "qualification evidence envelope digest differs from canonical envelope".to_string(),
@@ -1089,10 +1101,12 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
     let row_claim: String = row.try_get("claim_class").map_err(classify_sqlx_error)?;
     let row_kind: String = row.try_get("receipt_kind").map_err(classify_sqlx_error)?;
     let row_role: String = row.try_get("issuer_role").map_err(classify_sqlx_error)?;
-    let row_predecessor: Option<String> =
-        row.try_get("predecessor_evidence_id").map_err(classify_sqlx_error)?;
-    let row_target: Option<String> =
-        row.try_get("target_evidence_id").map_err(classify_sqlx_error)?;
+    let row_predecessor: Option<String> = row
+        .try_get("predecessor_evidence_id")
+        .map_err(classify_sqlx_error)?;
+    let row_target: Option<String> = row
+        .try_get("target_evidence_id")
+        .map_err(classify_sqlx_error)?;
     let row_observed = read_u64_blob(row, "observed_at_ms")?;
     let row_expires = read_optional_u64_blob(row, "expires_at_ms")?;
     let row_asset_count: i64 = row.try_get("asset_count").map_err(classify_sqlx_error)?;
@@ -1104,9 +1118,11 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
         || row_kind != envelope.receipt_kind.as_str()
         || row_role != envelope.issuer_role.as_str()
         || row_predecessor.as_deref()
-            != envelope.predecessor_evidence_id.as_ref().map(EvidenceId::as_str)
-        || row_target.as_deref()
-            != envelope.target_evidence_id.as_ref().map(EvidenceId::as_str)
+            != envelope
+                .predecessor_evidence_id
+                .as_ref()
+                .map(EvidenceId::as_str)
+        || row_target.as_deref() != envelope.target_evidence_id.as_ref().map(EvidenceId::as_str)
         || row_observed != envelope.observed_unix_ms
         || row_expires != envelope.expires_unix_ms
         || row_asset_count != i64::try_from(envelope.asset_digests.len()).unwrap_or(-1)
@@ -1127,7 +1143,9 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
                 .map_err(classify_sqlx_error)?,
         )
         .map_err(EvidenceError::Corrupt)?,
-        auth_message_id: row.try_get("auth_message_id").map_err(classify_sqlx_error)?,
+        auth_message_id: row
+            .try_get("auth_message_id")
+            .map_err(classify_sqlx_error)?,
         auth_sequence: read_u64_blob(row, "auth_sequence")?,
         auth_expires_at_ms: read_u64_blob(row, "auth_expires_at_ms")?,
         payload_sha256,
@@ -1238,8 +1256,7 @@ fn roles_have_distinct_authenticated_identities(
         false
     }
 
-    let mut identities =
-        BTreeMap::<EvidenceIssuerRoleV1, BTreeSet<(String, String)>>::new();
+    let mut identities = BTreeMap::<EvidenceIssuerRoleV1, BTreeSet<(String, String)>>::new();
     for row in rows {
         identities
             .entry(row.envelope.issuer_role)
@@ -1266,10 +1283,7 @@ fn read_u64_blob(row: &SqliteRow, column: &str) -> Result<u64, EvidenceError> {
     Ok(u64::from_be_bytes(bytes))
 }
 
-fn read_optional_u64_blob(
-    row: &SqliteRow,
-    column: &str,
-) -> Result<Option<u64>, EvidenceError> {
+fn read_optional_u64_blob(row: &SqliteRow, column: &str) -> Result<Option<u64>, EvidenceError> {
     let bytes: Option<Vec<u8>> = row.try_get(column).map_err(classify_sqlx_error)?;
     bytes
         .map(|bytes| {

@@ -411,10 +411,7 @@ async fn current_trust_rotation_or_revocation_invalidates_positive_verification(
             .qualification()
             .verify_chain(
                 &request,
-                &[trust_binding(
-                    &rotated,
-                    EvidenceIssuerRoleV1::Architecture,
-                )],
+                &[trust_binding(&rotated, EvidenceIssuerRoleV1::Architecture,)],
             )
             .await
             .expect("verify rotated trust"),
@@ -497,7 +494,9 @@ async fn evid_02_wrong_tree_and_expired_candidate_are_unavailable() {
 async fn evid_03_corrupted_canonical_payload_fails_reopen() {
     let temp = TempDir::new().expect("temp");
     let sqlite = config(&temp);
-    let store = HeptaEvidenceStore::open(&sqlite).await.expect("open evidence");
+    let store = HeptaEvidenceStore::open(&sqlite)
+        .await
+        .expect("open evidence");
     let observed = now_ms();
     let (source_issuer, key) = issuer("principal:integrity", 15);
     let receipt = evidence(
@@ -549,7 +548,9 @@ async fn evid_03_corrupted_canonical_payload_fails_reopen() {
 async fn evid_03_broken_predecessor_fails_reopen() {
     let temp = TempDir::new().expect("temp");
     let sqlite = config(&temp);
-    let store = HeptaEvidenceStore::open(&sqlite).await.expect("open evidence");
+    let store = HeptaEvidenceStore::open(&sqlite)
+        .await
+        .expect("open evidence");
     let observed = now_ms();
     let (issuer, key) = issuer("principal:lineage", 16);
     let base = evidence(
@@ -726,10 +727,7 @@ async fn independent_decision_binds_candidate_principal_key_role_and_evidence_se
                     required_roles: vec![EvidenceIssuerRoleV1::Architecture],
                     now_unix_ms: observed,
                 },
-                &[trust_binding(
-                    &reviewer,
-                    EvidenceIssuerRoleV1::Architecture,
-                )],
+                &[trust_binding(&reviewer, EvidenceIssuerRoleV1::Architecture,)],
             )
             .await
             .expect("verify decision"),
@@ -813,10 +811,7 @@ async fn independent_decision_validity_outlives_short_ingress_auth_ttl() {
                     required_roles: vec![EvidenceIssuerRoleV1::Architecture],
                     now_unix_ms: observed.saturating_add(60_000),
                 },
-                &[trust_binding(
-                    &reviewer,
-                    EvidenceIssuerRoleV1::Architecture,
-                )],
+                &[trust_binding(&reviewer, EvidenceIssuerRoleV1::Architecture,)],
             )
             .await
             .expect("verify durable decision after ingress ttl"),
@@ -888,10 +883,7 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
                     required_roles: vec![EvidenceIssuerRoleV1::Architecture],
                     now_unix_ms: observed,
                 },
-                &[trust_binding(
-                    &reviewer,
-                    EvidenceIssuerRoleV1::Architecture,
-                )],
+                &[trust_binding(&reviewer, EvidenceIssuerRoleV1::Architecture,)],
             )
             .await
             .expect("initial decision"),
@@ -921,10 +913,7 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
                     required_roles: vec![EvidenceIssuerRoleV1::Architecture],
                     now_unix_ms: observed,
                 },
-                &[trust_binding(
-                    &reviewer,
-                    EvidenceIssuerRoleV1::Architecture,
-                )],
+                &[trust_binding(&reviewer, EvidenceIssuerRoleV1::Architecture,)],
             )
             .await
             .expect("stale decision"),
@@ -949,13 +938,7 @@ async fn exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts() {
         None,
         json!({"revision": 1}),
     );
-    let message = signed(
-        &receipt,
-        &issuer,
-        &key,
-        1,
-        observed.saturating_add(60_000),
-    );
+    let message = signed(&receipt, &issuer, &key, 1, observed.saturating_add(60_000));
     let first = store
         .qualification()
         .append_receipt(&issuer, &message, &receipt)
@@ -970,13 +953,7 @@ async fn exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts() {
 
     let mut changed = receipt.clone();
     changed.payload = json!({"revision": 2});
-    let changed_message = signed(
-        &changed,
-        &issuer,
-        &key,
-        2,
-        observed.saturating_add(60_000),
-    );
+    let changed_message = signed(&changed, &issuer, &key, 2, observed.saturating_add(60_000));
     assert!(matches!(
         store
             .qualification()
@@ -1002,9 +979,7 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
         None,
         json!({"version": 1}),
     );
-    append(&store, &issuer, &key, &base, 1)
-        .await
-        .expect("base");
+    append(&store, &issuer, &key, &base, 1).await.expect("base");
     let correction = lineage(
         "evidence:corrected",
         base.evidence_id.as_str(),
@@ -1175,13 +1150,7 @@ async fn replay_sequence_is_consumed_atomically_with_insert() {
         None,
         json!({"case": 2}),
     );
-    let replay = signed(
-        &second,
-        &issuer,
-        &key,
-        7,
-        observed.saturating_add(60_000),
-    );
+    let replay = signed(&second, &issuer, &key, 7, observed.saturating_add(60_000));
     assert!(matches!(
         store
             .qualification()
@@ -1199,7 +1168,6 @@ async fn replay_sequence_is_consumed_atomically_with_insert() {
             .all(|reference| reference.evidence_id != second.evidence_id)
     );
 }
-
 
 #[tokio::test]
 async fn claim_query_rejects_more_than_512_references() {
@@ -1295,12 +1263,8 @@ async fn predecessor_traversal_fails_closed_beyond_256_edges() {
 async fn concurrent_store_handles_serialize_conflicting_evidence_identity() {
     let temp = TempDir::new().expect("temp");
     let sqlite = config(&temp);
-    let left_store = HeptaEvidenceStore::open(&sqlite)
-        .await
-        .expect("open left");
-    let right_store = HeptaEvidenceStore::open(&sqlite)
-        .await
-        .expect("open right");
+    let left_store = HeptaEvidenceStore::open(&sqlite).await.expect("open left");
+    let right_store = HeptaEvidenceStore::open(&sqlite).await.expect("open right");
     let observed = now_ms();
     let (issuer, key) = issuer("principal:concurrent-writer", 53);
     let left = evidence(
@@ -1321,28 +1285,14 @@ async fn concurrent_store_handles_serialize_conflicting_evidence_identity() {
         None,
         json!({"writer": "right"}),
     );
-    let left_message = signed(
-        &left,
-        &issuer,
-        &key,
-        1,
-        observed.saturating_add(60_000),
-    );
-    let right_message = signed(
-        &right,
-        &issuer,
-        &key,
-        2,
-        observed.saturating_add(60_000),
-    );
+    let left_message = signed(&left, &issuer, &key, 1, observed.saturating_add(60_000));
+    let right_message = signed(&right, &issuer, &key, 2, observed.saturating_add(60_000));
 
+    let left_adapter = left_store.qualification();
+    let right_adapter = right_store.qualification();
     let (left_result, right_result) = tokio::join!(
-        left_store
-            .qualification()
-            .append_receipt(&issuer, &left_message, &left),
-        right_store
-            .qualification()
-            .append_receipt(&issuer, &right_message, &right),
+        left_adapter.append_receipt(&issuer, &left_message, &left),
+        right_adapter.append_receipt(&issuer, &right_message, &right),
     );
     let inserted = usize::from(left_result.is_ok()) + usize::from(right_result.is_ok());
     let conflicts = usize::from(matches!(
@@ -1386,13 +1336,7 @@ async fn failed_evidence_insert_rolls_back_authbus_replay_advance() {
         None,
         json!({"fault": true}),
     );
-    let failed_message = signed(
-        &failed,
-        &issuer,
-        &key,
-        7,
-        observed.saturating_add(60_000),
-    );
+    let failed_message = signed(&failed, &issuer, &key, 7, observed.saturating_add(60_000));
     assert!(
         store
             .qualification()
@@ -1415,13 +1359,7 @@ async fn failed_evidence_insert_rolls_back_authbus_replay_advance() {
         None,
         json!({"fault": false}),
     );
-    let retry_message = signed(
-        &retry,
-        &issuer,
-        &key,
-        7,
-        observed.saturating_add(60_000),
-    );
+    let retry_message = signed(&retry, &issuer, &key, 7, observed.saturating_add(60_000));
     store
         .qualification()
         .append_receipt(&issuer, &retry_message, &retry)

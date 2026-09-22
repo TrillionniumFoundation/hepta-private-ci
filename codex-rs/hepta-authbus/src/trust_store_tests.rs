@@ -39,11 +39,13 @@ async fn issuer_rotation_revocation_and_retirement_are_monotonic() {
         .await
         .expect("enroll issuer");
     assert_eq!(first.state, IssuerLifecycleState::Active);
-    assert!(!store
-        .message_issuer(&issuer_id, Generation::new(1).expect("generation"))
-        .await
-        .expect("registration")
-        .revoked);
+    assert!(
+        !store
+            .message_issuer(&issuer_id, Generation::new(1).expect("generation"))
+            .await
+            .expect("registration")
+            .revoked
+    );
 
     let second = store
         .rotate_issuer(
@@ -55,11 +57,13 @@ async fn issuer_rotation_revocation_and_retirement_are_monotonic() {
         .await
         .expect("rotate issuer");
     assert_eq!(second.key_epoch.get(), 2);
-    assert!(store
-        .message_issuer(&issuer_id, Generation::new(1).expect("generation"))
-        .await
-        .expect("old registration")
-        .revoked);
+    assert!(
+        store
+            .message_issuer(&issuer_id, Generation::new(1).expect("generation"))
+            .await
+            .expect("old registration")
+            .revoked
+    );
 
     let revoked = store
         .revoke_issuer(
@@ -93,8 +97,7 @@ async fn issuer_rotation_revocation_and_retirement_are_monotonic() {
                 /*expected_revision*/ 2,
             )
             .await,
-        Err(AuthBusAuthorityError::IssuerMissing)
-            | Err(AuthBusAuthorityError::KeyEpochRegression)
+        Err(AuthBusAuthorityError::IssuerMissing) | Err(AuthBusAuthorityError::KeyEpochRegression)
     ));
 }
 

@@ -383,10 +383,14 @@ pub enum AuthorityPostureError {
 impl fmt::Display for AuthorityPostureError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::GrantRequested => formatter
-                .write_str("platform.types cannot construct a granting authority posture"),
+            Self::GrantRequested => {
+                formatter.write_str("platform.types cannot construct a granting authority posture")
+            }
             Self::InvalidWireLength(length) => {
-                write!(formatter, "authority wire V1 must be exactly one byte, found {length}")
+                write!(
+                    formatter,
+                    "authority wire V1 must be exactly one byte, found {length}"
+                )
             }
         }
     }

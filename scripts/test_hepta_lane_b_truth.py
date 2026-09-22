@@ -68,7 +68,9 @@ class LaneBTruthTests(unittest.TestCase):
                     MODULE, "verify_source_base", return_value=("a" * 40, "b" * 40)
                 ),
                 mock.patch.object(
-                    MODULE, "git", return_value="codex-rs/hepta-agentd/src/automation.rs"
+                    MODULE,
+                    "git",
+                    return_value="codex-rs/hepta-agentd/src/automation.rs",
                 ),
             ):
                 with self.assertRaisesRegex(MODULE.Invalid, "observed source drift"):
@@ -115,9 +117,7 @@ class LaneBTruthTests(unittest.TestCase):
                     ],
                 },
                 "operations": [
-                    {
-                        "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs"
-                    }
+                    {"sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs"}
                 ],
             }
             with (
@@ -144,9 +144,7 @@ class LaneBTruthTests(unittest.TestCase):
                     ],
                 },
                 "operations": [
-                    {
-                        "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs"
-                    }
+                    {"sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs"}
                 ],
             }
             with (

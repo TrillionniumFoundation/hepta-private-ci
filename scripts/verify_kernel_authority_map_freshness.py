@@ -38,7 +38,9 @@ def verify(expected_sha: str | None = None) -> dict[str, object]:
     head = rev("HEAD")
     tree = rev("HEAD^{tree}")
     if expected_sha is not None and head != expected_sha:
-        raise RuntimeError(f"exact candidate mismatch: expected {expected_sha}, got {head}")
+        raise RuntimeError(
+            f"exact candidate mismatch: expected {expected_sha}, got {head}"
+        )
     payload = MAP.read_bytes()
     row = json.loads(payload)
     if row.get("module") != "kernel.authority":
@@ -59,7 +61,9 @@ def verify(expected_sha: str | None = None) -> dict[str, object]:
         )
     ancestry = git("merge-base", "--is-ancestor", anchor_commit, head, check=False)
     if ancestry.returncode != 0:
-        raise RuntimeError("implementation map sourceBase is not an ancestor of candidate HEAD")
+        raise RuntimeError(
+            "implementation map sourceBase is not an ancestor of candidate HEAD"
+        )
     claim = row.get("claimBoundary")
     if not isinstance(claim, dict):
         raise RuntimeError("implementation map lacks claimBoundary")
@@ -73,7 +77,9 @@ def verify(expected_sha: str | None = None) -> dict[str, object]:
             "sourceAnchor": {"commit": anchor_commit, "tree": anchor_tree},
         },
         "claims": {
-            "productionImplementation": bool(row.get("productionImplementation", False)),
+            "productionImplementation": bool(
+                row.get("productionImplementation", False)
+            ),
             "productCallerState": row.get("productCallerState"),
             "productExecutionProved": bool(claim.get("productExecutionProved", False)),
             "independentAcceptance": bool(claim.get("independentAcceptance", False)),

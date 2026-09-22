@@ -194,7 +194,9 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     );
     let changed = evidence(&key, &dispatched, SettlementStatus::Completed, 4, 1_600);
     assert!(matches!(
-        store.settle(&issuer(&key), &changed, sample(8, 1_800)).await,
+        store
+            .settle(&issuer(&key), &changed, sample(8, 1_800))
+            .await,
         Err(AuthBusAuthorityError::IdempotencyConflict)
     ));
 }
@@ -236,7 +238,10 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
         .quota_snapshot(&reservation.quota_key)
         .await
         .expect("quota snapshot");
-    assert_eq!((closed.available, closed.reserved, closed.consumed), (5, 0, 5));
+    assert_eq!(
+        (closed.available, closed.reserved, closed.consumed),
+        (5, 0, 5)
+    );
 }
 
 #[tokio::test]
@@ -274,9 +279,11 @@ async fn revoked_policy_blocks_dispatch_and_held_expiry_refunds() {
         .quota_snapshot(&reservation.quota_key)
         .await
         .expect("quota snapshot");
-    assert_eq!((quota.available, quota.reserved, quota.consumed), (10, 0, 0));
+    assert_eq!(
+        (quota.available, quota.reserved, quota.consumed),
+        (10, 0, 0)
+    );
 }
-
 
 #[tokio::test]
 async fn explicit_cancel_refunds_only_undispatched_reservation() {
@@ -294,7 +301,10 @@ async fn explicit_cancel_refunds_only_undispatched_reservation() {
         .quota_snapshot(&reservation.quota_key)
         .await
         .expect("quota snapshot");
-    assert_eq!((quota.available, quota.reserved, quota.consumed), (10, 0, 0));
+    assert_eq!(
+        (quota.available, quota.reserved, quota.consumed),
+        (10, 0, 0)
+    );
     assert_eq!(
         store
             .cancel_reservation(
@@ -320,12 +330,10 @@ async fn sqlite_rejects_illegal_state_jump_and_live_row_deletion() {
     .await;
     assert!(illegal.is_err(), "direct illegal state jump was accepted");
 
-    let deleted = sqlx::query(
-        "DELETE FROM authbus_quota_reservation WHERE reservation_id = ?",
-    )
-    .bind(reservation.reservation_id.as_str())
-    .execute(&store.pool)
-    .await;
+    let deleted = sqlx::query("DELETE FROM authbus_quota_reservation WHERE reservation_id = ?")
+        .bind(reservation.reservation_id.as_str())
+        .execute(&store.pool)
+        .await;
     assert!(deleted.is_err(), "live reservation deletion was accepted");
 }
 

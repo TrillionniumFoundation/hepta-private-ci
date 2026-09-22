@@ -21,7 +21,10 @@ fn main() -> anyhow::Result<()> {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
             } else if flag == "--authbus-checkpoint-file" {
-                anyhow::ensure!(authbus_checkpoint.is_none(), "duplicate --authbus-checkpoint-file");
+                anyhow::ensure!(
+                    authbus_checkpoint.is_none(),
+                    "duplicate --authbus-checkpoint-file"
+                );
                 authbus_checkpoint = Some(path);
             } else if flag == "--evidence-trust-file" {
                 anyhow::ensure!(evidence_trust.is_none(), "duplicate --evidence-trust-file");
@@ -47,20 +50,17 @@ fn main() -> anyhow::Result<()> {
             "--authbus-trust-file and --authbus-checkpoint-file must be configured together"
         );
         if let (Some(trust), Some(checkpoint)) = (authbus_trust, authbus_checkpoint) {
-            config = config.with_authbus_trust_file(trust.into()).with_authbus_checkpoint_file(checkpoint.into());
+            config = config
+                .with_authbus_trust_file(trust.into())
+                .with_authbus_checkpoint_file(checkpoint.into());
         }
         if let Some(path) = evidence_trust {
             config = config.with_evidence_trust_file(path.into());
         }
-        match (
-            evidence_recovery_frontier,
-            evidence_recovery_frontier_trust,
-        ) {
+        match (evidence_recovery_frontier, evidence_recovery_frontier_trust) {
             (Some(frontier), Some(trust)) => {
-                config = config.with_evidence_recovery_frontier_files(
-                    frontier.into(),
-                    trust.into(),
-                );
+                config =
+                    config.with_evidence_recovery_frontier_files(frontier.into(), trust.into());
             }
             (None, None) => {}
             _ => anyhow::bail!(

@@ -111,9 +111,8 @@ pub(crate) async fn append(
     if request.envelope_json.len() > MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES {
         return Err(invalid("evidence envelope exceeds product-wire ceiling"));
     }
-    let envelope: QualificationEvidenceEnvelopeV1 =
-        serde_json::from_str(&request.envelope_json)
-            .map_err(|error| invalid(&format!("invalid evidence envelope: {error}")))?;
+    let envelope: QualificationEvidenceEnvelopeV1 = serde_json::from_str(&request.envelope_json)
+        .map_err(|error| invalid(&format!("invalid evidence envelope: {error}")))?;
     let canonical = qualification_envelope_bytes(&envelope).map_err(evidence_error)?;
     if canonical.as_slice() != request.envelope_json.as_bytes() {
         return Err(invalid("evidence envelope must use canonical JSON"));
@@ -127,11 +126,7 @@ pub(crate) async fn append(
         &envelope,
     )?;
     let trust = host.trust(state)?;
-    let issuer = trust.issuer_for(
-        &request.issuer_id,
-        request.key_epoch,
-        envelope.issuer_role,
-    )?;
+    let issuer = trust.issuer_for(&request.issuer_id, request.key_epoch, envelope.issuer_role)?;
     let message = SignedMessage {
         claims,
         signature: hex_bytes(&request.signature_hex)?,
@@ -174,8 +169,7 @@ pub(crate) async fn verify(
     let candidate = candidate(request.candidate)?;
     let claim_class =
         EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
-    if request.required_roles.len()
-        > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES
+    if request.required_roles.len() > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES
     {
         return Err(invalid("too many required evidence roles"));
     }
@@ -209,9 +203,7 @@ fn candidate(candidate: KernelEvidenceCandidateV1) -> Result<EvidenceCandidateV1
         source_commit: candidate.source_commit,
         source_tree: candidate.source_tree,
     };
-    candidate
-        .validate()
-        .map_err(|error| invalid(&error))?;
+    candidate.validate().map_err(|error| invalid(&error))?;
     Ok(candidate)
 }
 

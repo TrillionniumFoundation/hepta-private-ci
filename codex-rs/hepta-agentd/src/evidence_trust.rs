@@ -1,10 +1,10 @@
 //! Owner-controlled trust registry for kernel.evidence production ingress.
 
+use std::collections::BTreeSet;
 #[cfg(unix)]
 use std::fs::File;
 #[cfg(unix)]
 use std::io::Read;
-use std::collections::BTreeSet;
 use std::path::Path;
 
 use codex_hepta_authbus::IssuerRegistration;
@@ -69,8 +69,7 @@ impl EvidenceTrust {
             let _: [u8; 32] = hex_bytes(&issuer.public_key_hex)?;
             let mut roles = BTreeSet::new();
             for role in &issuer.roles {
-                let parsed =
-                    EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error))?;
+                let parsed = EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error))?;
                 if !roles.insert(parsed) {
                     return Err(invalid("evidence trust registry contains duplicate roles"));
                 }
@@ -89,11 +88,7 @@ impl EvidenceTrust {
             }
             for role in &configured.roles {
                 let role = EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error))?;
-                let issuer = self.issuer_for(
-                    &configured.issuer_id,
-                    configured.key_epoch,
-                    role,
-                )?;
+                let issuer = self.issuer_for(&configured.issuer_id, configured.key_epoch, role)?;
                 bindings.push(EvidenceIssuerTrustBindingV1::from_registration(
                     &issuer, role,
                 ));

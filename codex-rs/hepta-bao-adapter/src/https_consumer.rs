@@ -9,7 +9,6 @@ use codex_hepta_authbus::AuthBusAuthorityError;
 use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::QuotaReservation;
 use codex_hepta_authbus::ReservationRequest;
-use codex_hepta_authbus::SettlementEvidenceClaims;
 use codex_hepta_authbus::SettlementStatus;
 use codex_hepta_authbus::SignedSettlementEvidence;
 use codex_hepta_authbus::SignedTrustedTimeAttestation;
@@ -20,6 +19,7 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::claim_final_use;
 use codex_hepta_contracts::deliver_final_use;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use codex_http_client::HttpClient;
 use codex_http_client::HttpClientBuilder;
 use codex_http_client::HttpError;
@@ -91,9 +91,7 @@ pub struct BaoAuthBusAdmission {
 /// every returned signature; the Bao adapter never owns trusted-time or
 /// settlement signing keys.
 pub trait BaoAuthBusEvidenceProvider {
-    fn trusted_time(
-        &mut self,
-    ) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError>;
+    fn trusted_time(&mut self) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError>;
 
     fn settlement_evidence(
         &mut self,
@@ -250,8 +248,8 @@ impl BaoClient {
             return Err(BaoClientError::InvalidRequest.into());
         }
         let binding = self.binding(request)?;
-        let principal =
-            StableId::new(binding.subject_id.clone()).map_err(|_| BaoClientError::InvalidRequest)?;
+        let principal = StableId::new(binding.subject_id.clone())
+            .map_err(|_| BaoClientError::InvalidRequest)?;
         let action =
             StableId::new("action:bao-read").map_err(|_| BaoClientError::InvalidRequest)?;
         let scope = Digest32::from_array(binding.scope_sha256);
@@ -317,7 +315,9 @@ impl BaoClient {
                     Some(receipt),
                 )
                 .await?
-                .ok_or(BaoAuthBusError::Evidence("successful settlement lost its receipt"))
+                .ok_or(BaoAuthBusError::Evidence(
+                    "successful settlement lost its receipt",
+                ))
             }
             Err(error) if ambiguous_after_dispatch(&error) => {
                 let time = authbus
@@ -344,9 +344,8 @@ impl BaoClient {
                 })
             }
             Err(error) => {
-                let terminal = Digest32::of_bytes(
-                    format!("hepta.bao.terminal.v3:{error:?}").as_bytes(),
-                );
+                let terminal =
+                    Digest32::of_bytes(format!("hepta.bao.terminal.v3:{error:?}").as_bytes());
                 match settle_observed(
                     authbus,
                     evidence,

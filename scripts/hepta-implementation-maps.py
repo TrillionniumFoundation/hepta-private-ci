@@ -56,7 +56,9 @@ def load(rel: str):
 def git(*args: str, input_text: str | None = None) -> str:
     # Read the checked-out repository, not ambient GIT_DIR, replacement objects,
     # user aliases, network-backed promisor objects or external diff drivers.
-    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env = {
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+    }
     env.update(
         GIT_CONFIG_NOSYSTEM="1",
         GIT_CONFIG_GLOBAL=os.devnull,
@@ -141,7 +143,8 @@ def require_tracked_paths(commit: str, paths: list[str], *, historical=False) ->
     if ordinary:
         queries = [f"{commit}:{path}" for path in ordinary]
         types = git(
-            "cat-file", "--batch-check=%(objecttype)",
+            "cat-file",
+            "--batch-check=%(objecttype)",
             input_text="\n".join(queries) + "\n",
         ).splitlines()
         if len(types) != len(queries):
@@ -150,14 +153,18 @@ def require_tracked_paths(commit: str, paths: list[str], *, historical=False) ->
             if kind in {"blob", "tree"}:
                 continue
             if historical and kind == query + " missing":
-                raise SourceDrift(f"source/evidence absent at historical anchor: {path}")
+                raise SourceDrift(
+                    f"source/evidence absent at historical anchor: {path}"
+                )
             raise ValueError(f"untracked or invalid source/evidence: {path}")
     for path in unusual:
         try:
             kind = git("cat-file", "-t", f"{commit}:{path}")
         except subprocess.CalledProcessError as exc:
             if historical:
-                raise SourceDrift(f"source/evidence absent at historical anchor: {path!r}") from exc
+                raise SourceDrift(
+                    f"source/evidence absent at historical anchor: {path!r}"
+                ) from exc
             raise ValueError(f"untracked source/evidence: {path!r}") from exc
         if kind not in {"blob", "tree"}:
             raise ValueError(f"invalid source/evidence: {path!r}")
@@ -175,8 +182,10 @@ def verify_source_identity(
     if "observedAtHead" in row:
         observed = checked_identity(row["observedAtHead"], candidate)
         observed_paths = row.get("observedSourcePaths", roots)
-        if not isinstance(observed_paths, list) or not observed_paths or any(
-            not isinstance(path, str) for path in observed_paths
+        if (
+            not isinstance(observed_paths, list)
+            or not observed_paths
+            or any(not isinstance(path, str) for path in observed_paths)
         ):
             raise ValueError("invalid observed source paths")
         if not set(roots).issubset(observed_paths):
@@ -185,7 +194,8 @@ def verify_source_identity(
     else:
         observed = None
     if policy == "candidate_or_exact_observation_v1" and source not in (
-        candidate, observed
+        candidate,
+        observed,
     ):
         raise ValueError("source base is neither candidate nor exact observed source")
     checked_paths = sorted({path for _, items in observations for path in items})
@@ -202,12 +212,19 @@ def verify_source_identity(
         require_tracked_paths(identity["commit"], observed_paths, historical=True)
         if observed_paths:
             changed = git(
-                "diff", "--no-ext-diff", "--no-textconv", "--name-only",
-                identity["commit"], candidate["commit"], "--", *observed_paths,
+                "diff",
+                "--no-ext-diff",
+                "--no-textconv",
+                "--name-only",
+                identity["commit"],
+                candidate["commit"],
+                "--",
+                *observed_paths,
             )
             if changed:
                 raise SourceDrift(
-                    "mapped source/evidence changed after source observation: " + changed
+                    "mapped source/evidence changed after source observation: "
+                    + changed
                 )
     if check_checkout:
         require_clean_candidate(candidate, checked_paths)
@@ -255,7 +272,10 @@ def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> Non
     files to Git blob identities and verifies the candidate checkout directly.
     """
     evidence = row.get("exactSourceEvidence")
-    if not isinstance(evidence, dict) or evidence.get("kind") != "path_blob_manifest_v1":
+    if (
+        not isinstance(evidence, dict)
+        or evidence.get("kind") != "path_blob_manifest_v1"
+    ):
         failures.append(f"{mid}: exact source manifest")
         return
     entries = evidence.get("entries")
@@ -342,7 +362,6 @@ def require_clean_candidate(
         raise ValueError("mapped source checkout contains uncommitted evidence")
 
 
-
 def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> None:
     """Validate a self-reference-safe exact source manifest against HEAD.
 
@@ -351,7 +370,10 @@ def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> Non
     files to Git blob identities and verifies the candidate checkout directly.
     """
     evidence = row.get("exactSourceEvidence")
-    if not isinstance(evidence, dict) or evidence.get("kind") != "path_blob_manifest_v1":
+    if (
+        not isinstance(evidence, dict)
+        or evidence.get("kind") != "path_blob_manifest_v1"
+    ):
         failures.append(f"{mid}: exact source manifest")
         return
     entries = evidence.get("entries")
@@ -513,7 +535,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     operations = []
     for original in row.get("operations", []):
         op = dict(original)
-        name = op.get("operation") or op.get("designOperation") or "native_mapping_pending"
+        name = (
+            op.get("operation") or op.get("designOperation") or "native_mapping_pending"
+        )
         op.setdefault("operation", name)
         op.setdefault("designOperation", name)
         anchor = op.get("ownerEntrypoint") or {}
@@ -557,9 +581,13 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "declaredRoots": declared,
             "resolvedRoots": resolve_source_roots(ROOT, module),
             "sourceRootPresent": all((ROOT / x).exists() for x in declared),
-            "productionImplementation": bool(row.get("productionImplementation", False)),
+            "productionImplementation": bool(
+                row.get("productionImplementation", False)
+            ),
             "productCallerState": row.get("productCallerState", "not_composed"),
-            "productionWriterState": row.get("productionWriterState", "not_established"),
+            "productionWriterState": row.get(
+                "productionWriterState", "not_established"
+            ),
             "operations": operations,
         }
     )
@@ -567,8 +595,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     if not isinstance(boundary, dict):
         boundary = {}
     implemented_mapping_complete = all(
-        bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
-        for op in operations
+        bool(op.get("sourcePathExists") and op.get("nativeSymbol")) for op in operations
     )
     migrated["claimBoundary"] = {
         **boundary,
@@ -576,7 +603,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "implementedOperationMappingComplete", implemented_mapping_complete
         ),
         # Preserve a reviewed claim; migration must not manufacture one.
-        "nativeSourceMappingComplete": boundary.get("nativeSourceMappingComplete", False),
+        "nativeSourceMappingComplete": boundary.get(
+            "nativeSourceMappingComplete", False
+        ),
         "sourceRootPresent": migrated["sourceRootPresent"],
         "productionImplementation": migrated["productionImplementation"],
         "productExecutionProved": bool(boundary.get("productExecutionProved", False)),
@@ -661,7 +690,9 @@ def migrate(selected_modules: list[str] | None = None):
         # Preserve original formatting and anchors when nothing changed. Even a
         # later prose commit must not trigger a global metadata refresh.
         if migrated != row:
-            pending.append((path, json.dumps(migrated, indent=2, ensure_ascii=False) + "\n"))
+            pending.append(
+                (path, json.dumps(migrated, indent=2, ensure_ascii=False) + "\n")
+            )
     require_clean_candidate(source_base, sorted(checked_paths))
     for path, rendered in pending:
         path.write_text(rendered, encoding="utf-8")
@@ -750,11 +781,14 @@ def verify(*, require_current_source: bool = True):
                 if "nativeSymbol" not in op or "sourcePath" not in op:
                     raise ValueError("canonical operation fields")
                 source = op.get("sourcePath")
-                if source is not None and not checked_source_path(ROOT, source).is_file():
+                if (
+                    source is not None
+                    and not checked_source_path(ROOT, source).is_file()
+                ):
                     raise ValueError(f"missing source: {source}")
-            checked_paths.update(verify_source_identity(
-                row, resolved, candidate, check_checkout=False
-            ))
+            checked_paths.update(
+                verify_source_identity(row, resolved, candidate, check_checkout=False)
+            )
             source_bases.add((row["sourceBase"]["commit"], row["sourceBase"]["tree"]))
             if row["sourceBase"] == candidate:
                 candidate_bound_maps += 1
@@ -781,7 +815,10 @@ def verify(*, require_current_source: bool = True):
                     isinstance(item, dict) and item.get("state") == "source_implemented"
                     for item in owned_protocols
                 )
-                if boundary.get("ownedTargetProtocolSourceComplete") is not owned_source_complete:
+                if (
+                    boundary.get("ownedTargetProtocolSourceComplete")
+                    is not owned_source_complete
+                ):
                     raise ValueError("owned target protocol source claim drift")
                 if boundary.get("nativeSourceMappingComplete") is not (
                     implemented_mapping_complete and owned_source_complete
@@ -794,9 +831,14 @@ def verify(*, require_current_source: bool = True):
                     for field in ("implemented", "composed", "qualified")
                 ):
                     raise ValueError("invalid implemented/composed/qualified status")
-                if status["composed"] != (row.get("productCallerState") != "not_composed"):
+                if status["composed"] != (
+                    row.get("productCallerState") != "not_composed"
+                ):
                     raise ValueError("composition status disagreement")
-            if row.get("exactSourceEvidence", {}).get("kind") == "path_blob_manifest_v1":
+            if (
+                row.get("exactSourceEvidence", {}).get("kind")
+                == "path_blob_manifest_v1"
+            ):
                 manifest_failures = []
                 validate_path_blob_manifest(row, mid, manifest_failures)
                 if manifest_failures:
@@ -822,15 +864,26 @@ def verify(*, require_current_source: bool = True):
                     if not local.is_file():
                         raise ValueError(f"missing product caller source {source}")
                     if isinstance(symbol, str) and symbol:
-                        if symbol.rsplit("::", 1)[-1] not in local.read_text(encoding="utf-8"):
+                        if symbol.rsplit("::", 1)[-1] not in local.read_text(
+                            encoding="utf-8"
+                        ):
                             raise ValueError(f"missing product caller symbol {symbol}")
                 if source_objects is None:
-                    if row.get("exactSourceEvidenceMode") != "lane_a_runtime_head_tree_and_registered_callers":
+                    if (
+                        row.get("exactSourceEvidenceMode")
+                        != "lane_a_runtime_head_tree_and_registered_callers"
+                    ):
                         raise ValueError("composed map requires exact source objects")
                     if row.get("laneId") != "LANE-A-FOUNDATION":
-                        raise ValueError("Lane A runtime source evidence mode used outside Lane A")
+                        raise ValueError(
+                            "Lane A runtime source evidence mode used outside Lane A"
+                        )
         except (
-            ValueError, TypeError, KeyError, OSError, subprocess.CalledProcessError
+            ValueError,
+            TypeError,
+            KeyError,
+            OSError,
+            subprocess.CalledProcessError,
         ) as exc:
             failures.append(f"{mid}: {exc}")
     try:

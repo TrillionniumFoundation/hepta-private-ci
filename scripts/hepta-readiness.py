@@ -470,7 +470,10 @@ def validate_module_guide(path: Path, module_id: str) -> None:
     Protocol and lane coverage are validated from the registries in verify().
     """
     need(path.is_file(), module_id + " module guide missing")
-    need(bool(path.read_text(encoding="utf-8").strip()), module_id + " empty module guide")
+    need(
+        bool(path.read_text(encoding="utf-8").strip()),
+        module_id + " empty module guide",
+    )
 
 
 def validate_markdown_document(
@@ -737,9 +740,7 @@ def verify() -> int:
             row["boundModules"] and set(row["boundModules"]) <= module_id_set,
             row["id"] + " bound modules",
         )
-        need(
-            set(row["protocols"]) <= protocol_id_set, row["id"] + " protocol bindings"
-        )
+        need(set(row["protocols"]) <= protocol_id_set, row["id"] + " protocol bindings")
         need(
             row["gapIds"] and set(row["gapIds"]) <= set(gap_ids),
             row["id"] + " gap bindings",

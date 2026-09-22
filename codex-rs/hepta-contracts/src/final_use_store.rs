@@ -177,11 +177,14 @@ impl Store {
                     {
                         return Err(FinalUseError::InvalidTrust);
                     }
-                    (State {
-                        used_nonces: store.read_claims(stored.head.authority_epoch)?,
-                        head: stored.head,
-                        failed: false,
-                    }, false)
+                    (
+                        State {
+                            used_nonces: store.read_claims(stored.head.authority_epoch)?,
+                            head: stored.head,
+                            failed: false,
+                        },
+                        false,
+                    )
                 }
                 (_, STATE_SCHEMA_V3) => {
                     let stored: StoredV3 =
@@ -189,11 +192,14 @@ impl Store {
                     if stored.signer_id != signer_id || stored.trust != trust {
                         return Err(FinalUseError::InvalidTrust);
                     }
-                    (State {
-                        used_nonces: store.read_claims(stored.head.authority_epoch)?,
-                        head: stored.head,
-                        failed: false,
-                    }, false)
+                    (
+                        State {
+                            used_nonces: store.read_claims(stored.head.authority_epoch)?,
+                            head: stored.head,
+                            failed: false,
+                        },
+                        false,
+                    )
                 }
                 _ => return Err(FinalUseError::InvalidTrust),
             };
@@ -231,7 +237,9 @@ impl Store {
             if initial.authority_epoch >= state.head.authority_epoch
                 && initial.revision > state.head.revision
                 && (initial.authority_epoch > state.head.authority_epoch
-                    || initial.revoked_grant_ids.is_superset(&state.head.revoked_grant_ids))
+                    || initial
+                        .revoked_grant_ids
+                        .is_superset(&state.head.revoked_grant_ids))
             {
                 if initial.authority_epoch > state.head.authority_epoch {
                     state.used_nonces.clear();
@@ -241,7 +249,10 @@ impl Store {
             } else if state.head.authority_epoch < initial.authority_epoch
                 || state.head.revision < initial.revision
                 || (state.head.authority_epoch == initial.authority_epoch
-                    && !state.head.revoked_grant_ids.is_superset(&initial.revoked_grant_ids))
+                    && !state
+                        .head
+                        .revoked_grant_ids
+                        .is_superset(&initial.revoked_grant_ids))
             {
                 return Err(FinalUseError::InvalidTrust);
             }
@@ -269,7 +280,7 @@ impl Store {
         if authority_epoch == 0 || nonce == [0; 32] {
             return Err(FinalUseError::InvalidTrust);
         }
-        let mut file = open_private(&self.root, "authority.claims", Access::Create)?;
+        let mut file = open_private(&self.root, "authority.claims", Access::Write)?;
         file.seek(SeekFrom::End(0))
             .map_err(|_| FinalUseError::Unavailable)?;
         file.write_all(&authority_epoch.to_be_bytes())
@@ -367,6 +378,7 @@ fn read_bounded(directory: &File, name: &str, maximum: usize) -> Result<Vec<u8>,
 
 enum Access {
     Read,
+    Write,
     Create,
 }
 
@@ -408,6 +420,7 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     use std::os::unix::fs::MetadataExt;
     let flags = match access {
         Access::Read => OFlags::RDONLY,
+        Access::Write => OFlags::RDWR,
         Access::Create => OFlags::RDWR | OFlags::CREATE,
     } | OFlags::NOFOLLOW
         | OFlags::CLOEXEC;

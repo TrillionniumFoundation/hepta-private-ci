@@ -152,11 +152,21 @@ impl NumericProfileDefinitionV1 {
         })
     }
 
-    pub const fn profile(&self) -> NumericProfileV1 { self.profile }
-    pub const fn version(&self) -> u32 { self.version }
-    pub const fn scale(&self) -> u64 { self.scale }
-    pub const fn rounding(&self) -> NumericRoundingV1 { self.rounding }
-    pub const fn digest(&self) -> Digest32 { self.digest }
+    pub const fn profile(&self) -> NumericProfileV1 {
+        self.profile
+    }
+    pub const fn version(&self) -> u32 {
+        self.version
+    }
+    pub const fn scale(&self) -> u64 {
+        self.scale
+    }
+    pub const fn rounding(&self) -> NumericRoundingV1 {
+        self.rounding
+    }
+    pub const fn digest(&self) -> Digest32 {
+        self.digest
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -174,7 +184,10 @@ impl fmt::Display for NumericProfileDefinitionError {
             Self::Identity(error) => error.fmt(formatter),
             Self::Canonical(error) => error.fmt(formatter),
             Self::UnsupportedVersion(version) => {
-                write!(formatter, "unsupported numeric profile definition version: {version}")
+                write!(
+                    formatter,
+                    "unsupported numeric profile definition version: {version}"
+                )
             }
             Self::ZeroScale => formatter.write_str("numeric profile scale must be non-zero"),
             Self::SemanticMismatch => formatter.write_str(

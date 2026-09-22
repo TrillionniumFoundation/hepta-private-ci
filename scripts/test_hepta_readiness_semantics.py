@@ -50,7 +50,9 @@ class ReadinessSemanticsTests(unittest.TestCase):
         self.verify()
 
     def test_explicit_follow_up_marker_is_not_a_fabricated_closure(self):
-        self.path.write_text(self.text + "\nTODO: independent operational acceptance.\n")
+        self.path.write_text(
+            self.text + "\nTODO: independent operational acceptance.\n"
+        )
         self.verify()
 
     def test_missing_required_contract_section_still_rejects(self):
@@ -76,7 +78,9 @@ class ReadinessSemanticsTests(unittest.TestCase):
                     self.verify()
 
     def test_module_guide_edit_needs_no_prose_digest_or_section_inventory(self):
-        self.path.write_text("# Owner guide\n\nAn explanation with a revised heading.\n")
+        self.path.write_text(
+            "# Owner guide\n\nAn explanation with a revised heading.\n"
+        )
         VERIFIER.validate_module_guide(self.path, "fixture.module")
 
     def test_empty_or_missing_module_guide_still_rejects(self):

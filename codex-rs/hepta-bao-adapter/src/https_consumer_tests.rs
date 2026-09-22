@@ -19,10 +19,10 @@ use codex_hepta_authbus::SignedTrustedTimeAttestation;
 use codex_hepta_authbus::TrustedTimeAttestationClaims;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
-use ed25519_dalek::Signer;
-use ed25519_dalek::SigningKey;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -474,7 +474,6 @@ async fn root_namespace_omits_namespace_header() {
     assert!(!observed.contains("x-vault-namespace:"));
 }
 
-
 struct AuthBusEvidence {
     time_key: SigningKey,
     settlement_key: SigningKey,
@@ -552,10 +551,7 @@ impl BaoAuthBusEvidenceProvider for AuthBusEvidence {
             expires_at_ms: observed_at_ms + 30_000,
         };
         Ok(SignedSettlementEvidence {
-            signature: self
-                .settlement_key
-                .sign(&claims.signing_bytes())
-                .to_bytes(),
+            signature: self.settlement_key.sign(&claims.signing_bytes()).to_bytes(),
             claims,
         })
     }
@@ -581,9 +577,14 @@ async fn authbus_host(
     let database_root = tempfile::tempdir()?;
     let checkpoint_root = tempfile::tempdir()?;
     std::fs::set_permissions(database_root.path(), std::fs::Permissions::from_mode(0o700))?;
-    std::fs::set_permissions(checkpoint_root.path(), std::fs::Permissions::from_mode(0o700))?;
+    std::fs::set_permissions(
+        checkpoint_root.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )?;
     let database = database_root.path().join("authbus-authority.sqlite");
-    let checkpoint = checkpoint_root.path().join("authbus-authority-checkpoint.json");
+    let checkpoint = checkpoint_root
+        .path()
+        .join("authbus-authority-checkpoint.json");
 
     let raw = AuthBusAuthorityStore::open(&database).await?;
     let frontier = raw.authority_frontier_digest().await?;
@@ -653,13 +654,7 @@ async fn authbus_host(
         amount: 1,
         expires_at_ms: now + 30_000,
     };
-    Ok((
-        database_root,
-        checkpoint_root,
-        host,
-        evidence,
-        admission,
-    ))
+    Ok((database_root, checkpoint_root, host, evidence, admission))
 }
 
 #[tokio::test]

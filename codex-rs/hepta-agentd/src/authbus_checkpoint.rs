@@ -56,7 +56,9 @@ impl ReplayCheckpointFile {
             || document.agent_id != self.agent_id
             || document.generation == 0
         {
-            return Err(invalid("external replay checkpoint identity/schema is invalid"));
+            return Err(invalid(
+                "external replay checkpoint identity/schema is invalid",
+            ));
         }
         let digest = document
             .digest
@@ -122,10 +124,7 @@ fn validate_path(path: &Path, identity: &AgentdIdentity) -> Result<(), AgentdErr
     }
     let home = std::fs::metadata(&identity.home_root)?;
     let directory = std::fs::metadata(parent)?;
-    if !directory.is_dir()
-        || directory.uid() != home.uid()
-        || directory.mode() & 0o077 != 0
-    {
+    if !directory.is_dir() || directory.uid() != home.uid() || directory.mode() & 0o077 != 0 {
         return Err(invalid(
             "external replay checkpoint parent must be a private owner-controlled directory",
         ));

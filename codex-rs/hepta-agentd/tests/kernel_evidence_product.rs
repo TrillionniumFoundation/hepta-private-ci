@@ -11,28 +11,28 @@ use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::EvidenceRecoveryFrontierV1;
-use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
 use codex_hepta_agentd::KernelEvidenceAppendIngress;
 use codex_hepta_agentd::KernelEvidenceCandidateV1;
 use codex_hepta_agentd::KernelEvidenceQueryV1;
 use codex_hepta_agentd::KernelEvidenceVerifyV1;
+use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
 use codex_hepta_agentd::kernel_evidence_claims;
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_evidence::EvidenceCandidateV1;
 use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceDispositionV1;
 use codex_hepta_evidence::EvidenceId;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
-use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_evidence::EvidenceReceiptKindV1;
+use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_evidence::IndependentDecisionReceiptV1;
 use codex_hepta_evidence::IndependentDecisionRoleV1;
 use codex_hepta_evidence::IndependentDecisionV1;
 use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;
 use codex_hepta_evidence::evidence_set_digest;
 use codex_hepta_evidence::qualification_envelope_bytes;
-use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
@@ -137,7 +137,10 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
             claim_class: EvidenceClaimClassV1::ExactSource.as_str().to_string(),
         })
         .await?;
-    ensure!(exact_refs.len() == 1, "exact-source evidence was not queryable");
+    ensure!(
+        exact_refs.len() == 1,
+        "exact-source evidence was not queryable"
+    );
     ensure!(
         matches!(
             control
@@ -548,14 +551,7 @@ async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> 
         None,
         json!({"frontier": "current"}),
     );
-    append_direct_evidence(
-        &store,
-        ARCHITECTURE_ISSUER,
-        &architecture_key,
-        1,
-        &envelope,
-    )
-    .await?;
+    append_direct_evidence(&store, ARCHITECTURE_ISSUER, &architecture_key, 1, &envelope).await?;
     let snapshot = store.recovery_snapshot().await?;
     store.close().await;
 
@@ -755,14 +751,8 @@ fn signed_request_with_expiry(
     envelope: &QualificationEvidenceEnvelopeV1,
 ) -> Result<KernelEvidenceAppendIngress> {
     let message_id = format!("message:kernel-evidence:{issuer_id}:{sequence}");
-    let claims = kernel_evidence_claims(
-        issuer_id,
-        1,
-        &message_id,
-        sequence,
-        expires_at_ms,
-        envelope,
-    )?;
+    let claims =
+        kernel_evidence_claims(issuer_id, 1, &message_id, sequence, expires_at_ms, envelope)?;
     Ok(KernelEvidenceAppendIngress {
         issuer_id: issuer_id.to_string(),
         key_epoch: 1,
@@ -824,11 +814,9 @@ fn write_recovery_frontier(
         signer_key_epoch: 1,
         signature_hex: "00".repeat(64),
     };
-    frontier.signature_hex = hex(
-        &signer_key
-            .sign(&evidence_recovery_frontier_signing_bytes(&frontier)?)
-            .to_bytes(),
-    );
+    frontier.signature_hex = hex(&signer_key
+        .sign(&evidence_recovery_frontier_signing_bytes(&frontier)?)
+        .to_bytes());
 
     let frontier_file = directory.join("evidence-recovery-frontier.json");
     write_private_json(&frontier_file, &frontier)?;
@@ -873,11 +861,7 @@ struct TrustEntry<'a> {
     roles: &'a [&'a str],
 }
 
-fn write_trust(
-    path: &Path,
-    agent_id: &str,
-    entries: &[TrustEntry<'_>],
-) -> Result<()> {
+fn write_trust(path: &Path, agent_id: &str, entries: &[TrustEntry<'_>]) -> Result<()> {
     let issuers = entries
         .iter()
         .map(|entry| {

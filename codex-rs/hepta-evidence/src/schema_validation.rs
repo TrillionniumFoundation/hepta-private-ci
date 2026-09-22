@@ -1,3 +1,6 @@
+#[path = "authbus_recovery_schema.rs"]
+mod authbus_recovery_schema;
+
 use sqlx::Row;
 use sqlx::SqlitePool;
 
@@ -487,19 +490,13 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         name: "qualification_evidence_issuer_seq",
         object_type: "index",
         table_name: "qualification_evidence",
-        required_sql_fragments: &[
-            "create index",
-            "issuer_principal_id, issuer_role, seq",
-        ],
+        required_sql_fragments: &["create index", "issuer_principal_id, issuer_role, seq"],
     },
     SchemaObjectSpec {
         name: "qualification_evidence_target_seq",
         object_type: "index",
         table_name: "qualification_evidence",
-        required_sql_fragments: &[
-            "create index",
-            "target_evidence_id, seq",
-        ],
+        required_sql_fragments: &["create index", "target_evidence_id, seq"],
     },
     SchemaObjectSpec {
         name: "qualification_evidence_no_update",
@@ -766,7 +763,10 @@ pub(crate) async fn verify_provider_ephemeral_input_projection(
 }
 
 pub(crate) async fn verify_schema_manifest(pool: &SqlitePool) -> Result<(), EvidenceError> {
-    for spec in REQUIRED_SCHEMA_OBJECTS {
+    for spec in REQUIRED_SCHEMA_OBJECTS
+        .iter()
+        .chain(authbus_recovery_schema::REQUIRED_SCHEMA_OBJECTS)
+    {
         let row = sqlx::query(
             "SELECT type AS object_type, tbl_name, sql
              FROM sqlite_schema WHERE name = ?",

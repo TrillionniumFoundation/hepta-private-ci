@@ -170,10 +170,7 @@ fn provider_not_applied_restores_active_lease_after_unknown() {
         .unwrap();
     registry.mark_unknown("op:renew:1").unwrap();
     registry
-        .reconcile(
-            "op:renew:1",
-            ProviderLeaseObservationV1::NotApplied,
-        )
+        .reconcile("op:renew:1", ProviderLeaseObservationV1::NotApplied)
         .unwrap();
     assert_eq!(
         registry.lease("lease:db:1").unwrap().state,

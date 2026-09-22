@@ -81,7 +81,9 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         checkpoint_root.path(),
         std::fs::Permissions::from_mode(0o700),
     )?;
-    let checkpoint_file = checkpoint_root.path().join("authbus-replay-checkpoint.json");
+    let checkpoint_file = checkpoint_root
+        .path()
+        .join("authbus-replay-checkpoint.json");
     let home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?;
     let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
     let frontier = evidence.authbus_replay_frontier_digest().await?;

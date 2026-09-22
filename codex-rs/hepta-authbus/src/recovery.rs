@@ -18,9 +18,7 @@ pub struct AuthorityCheckpoint {
 }
 
 impl AuthBusAuthorityStore {
-    pub async fn authority_frontier_digest(
-        &self,
-    ) -> Result<Digest32, AuthBusAuthorityError> {
+    pub async fn authority_frontier_digest(&self) -> Result<Digest32, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         let digest = authority_frontier_digest_tx(&mut tx).await?;
         tx.commit().await.map_err(storage)?;
@@ -152,10 +150,7 @@ impl AuthBusAuthorityStore {
     /// Classify pre-crash dispatch attempts as indeterminate before new quota
     /// issuance. Held reservations remain safe and indeterminate reservations
     /// retain their quota until authenticated terminal evidence arrives.
-    pub async fn reconcile_after_restart(
-        &self,
-        limit: u32,
-    ) -> Result<bool, AuthBusAuthorityError> {
+    pub async fn reconcile_after_restart(&self, limit: u32) -> Result<bool, AuthBusAuthorityError> {
         if limit == 0 || limit > 1024 {
             return Err(AuthBusAuthorityError::InvalidInput(
                 "recovery batch must be in 1..=1024",
@@ -256,9 +251,7 @@ async fn persist_checkpoint(
     Ok(())
 }
 
-async fn is_dirty(
-    tx: &mut Transaction<'_, Sqlite>,
-) -> Result<bool, AuthBusAuthorityError> {
+async fn is_dirty(tx: &mut Transaction<'_, Sqlite>) -> Result<bool, AuthBusAuthorityError> {
     let value: i64 = sqlx::query_scalar(
         "SELECT dirty FROM authbus_authority_checkpoint_dirty WHERE singleton = 1",
     )
@@ -272,13 +265,11 @@ async fn set_dirty(
     tx: &mut Transaction<'_, Sqlite>,
     dirty: bool,
 ) -> Result<(), AuthBusAuthorityError> {
-    sqlx::query(
-        "UPDATE authbus_authority_checkpoint_dirty SET dirty = ? WHERE singleton = 1",
-    )
-    .bind(if dirty { 1_i64 } else { 0_i64 })
-    .execute(&mut **tx)
-    .await
-    .map_err(storage)?;
+    sqlx::query("UPDATE authbus_authority_checkpoint_dirty SET dirty = ? WHERE singleton = 1")
+        .bind(if dirty { 1_i64 } else { 0_i64 })
+        .execute(&mut **tx)
+        .await
+        .map_err(storage)?;
     Ok(())
 }
 
@@ -334,20 +325,8 @@ async fn authority_frontier_digest_tx(
          FROM authbus_quota_registry ORDER BY quota_key",
     )
     .await?;
-    append_rows(
-        tx,
-        &mut bytes,
-        "reservation",
-        RESERVATION_FRONTIER_SQL,
-    )
-    .await?;
-    append_rows(
-        tx,
-        &mut bytes,
-        "reservation_archive",
-        ARCHIVE_FRONTIER_SQL,
-    )
-    .await?;
+    append_rows(tx, &mut bytes, "reservation", RESERVATION_FRONTIER_SQL).await?;
+    append_rows(tx, &mut bytes, "reservation_archive", ARCHIVE_FRONTIER_SQL).await?;
     append_rows(
         tx,
         &mut bytes,
@@ -384,7 +363,7 @@ async fn append_rows(
     tx: &mut Transaction<'_, Sqlite>,
     bytes: &mut Vec<u8>,
     tag: &str,
-    query: &str,
+    query: &'static str,
 ) -> Result<(), AuthBusAuthorityError> {
     push(bytes, tag.as_bytes());
     let rows: Vec<String> = sqlx::query_scalar(query)

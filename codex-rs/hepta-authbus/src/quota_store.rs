@@ -57,11 +57,11 @@ impl AuthBusAuthorityStore {
         .bind(spec.scope_digest.as_array().as_slice())
         .bind(spec.unit.as_str())
         .bind(spec.period_id.as_str())
-        .bind(u64_bytes(spec.limit))
-        .bind(u64_bytes(spec.limit))
-        .bind(u64_bytes(0))
-        .bind(u64_bytes(0))
-        .bind(u64_bytes(1))
+        .bind(u64_bytes(spec.limit).as_slice())
+        .bind(u64_bytes(spec.limit).as_slice())
+        .bind(u64_bytes(0).as_slice())
+        .bind(u64_bytes(0).as_slice())
+        .bind(u64_bytes(1).as_slice())
         .execute(&mut *tx)
         .await;
         if let Err(error) = result {
@@ -132,11 +132,11 @@ impl AuthBusAuthorityStore {
              available = ?, reserved = ?, consumed = ?, revision = ? WHERE quota_key = ?",
         )
         .bind(quota.period_id.as_str())
-        .bind(u64_bytes(quota.limit))
-        .bind(u64_bytes(quota.available))
-        .bind(u64_bytes(quota.reserved))
-        .bind(u64_bytes(quota.consumed))
-        .bind(u64_bytes(quota.revision))
+        .bind(u64_bytes(quota.limit).as_slice())
+        .bind(u64_bytes(quota.available).as_slice())
+        .bind(u64_bytes(quota.reserved).as_slice())
+        .bind(u64_bytes(quota.consumed).as_slice())
+        .bind(u64_bytes(quota.revision).as_slice())
         .bind(quota.quota_key.as_str())
         .execute(&mut *tx)
         .await
@@ -195,8 +195,7 @@ impl AuthBusAuthorityStore {
         if quota.revision != request.expected_quota_revision {
             return Err(AuthBusAuthorityError::RevisionConflict);
         }
-        if quota.principal != *decision.principal()
-            || quota.scope_digest != decision.scope_digest()
+        if quota.principal != *decision.principal() || quota.scope_digest != decision.scope_digest()
         {
             return Err(AuthBusAuthorityError::InvalidTransition);
         }
@@ -235,9 +234,9 @@ impl AuthBusAuthorityStore {
             "UPDATE authbus_quota_registry SET available = ?, reserved = ?, revision = ?
              WHERE quota_key = ?",
         )
-        .bind(u64_bytes(quota.available))
-        .bind(u64_bytes(quota.reserved))
-        .bind(u64_bytes(quota.revision))
+        .bind(u64_bytes(quota.available).as_slice())
+        .bind(u64_bytes(quota.reserved).as_slice())
+        .bind(u64_bytes(quota.revision).as_slice())
         .bind(quota.quota_key.as_str())
         .execute(&mut *tx)
         .await
@@ -254,15 +253,15 @@ impl AuthBusAuthorityStore {
         .bind(quota.quota_key.as_str())
         .bind(quota.period_id.as_str())
         .bind(quota.principal.as_str())
-        .bind(u64_bytes(request.amount))
+        .bind(u64_bytes(request.amount).as_slice())
         .bind(request.effect_digest.as_array().as_slice())
         .bind(decision.policy_id().as_str())
-        .bind(u64_bytes(decision.policy_revision()))
+        .bind(u64_bytes(decision.policy_revision()).as_slice())
         .bind(decision.decision_digest().as_array().as_slice())
-        .bind(u64_bytes(1))
-        .bind(u64_bytes(request.expires_at_ms))
-        .bind(u64_bytes(time.wall_time_ms))
-        .bind(u64_bytes(time.wall_time_ms))
+        .bind(u64_bytes(1).as_slice())
+        .bind(u64_bytes(request.expires_at_ms).as_slice())
+        .bind(u64_bytes(time.wall_time_ms).as_slice())
+        .bind(u64_bytes(time.wall_time_ms).as_slice())
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
@@ -366,24 +365,22 @@ pub(crate) async fn load_reservation(
     tx: &mut Transaction<'_, Sqlite>,
     reservation_id: &StableId,
 ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-    if let Some(row) = sqlx::query(
-        "SELECT * FROM authbus_quota_reservation WHERE reservation_id = ?",
-    )
-    .bind(reservation_id.as_str())
-    .fetch_optional(&mut **tx)
-    .await
-    .map_err(storage)?
+    if let Some(row) =
+        sqlx::query("SELECT * FROM authbus_quota_reservation WHERE reservation_id = ?")
+            .bind(reservation_id.as_str())
+            .fetch_optional(&mut **tx)
+            .await
+            .map_err(storage)?
     {
         return reservation_from_row(&row);
     }
-    let row = sqlx::query(
-        "SELECT * FROM authbus_quota_reservation_archive WHERE reservation_id = ?",
-    )
-    .bind(reservation_id.as_str())
-    .fetch_optional(&mut **tx)
-    .await
-    .map_err(storage)?
-    .ok_or(AuthBusAuthorityError::ReservationMissing)?;
+    let row =
+        sqlx::query("SELECT * FROM authbus_quota_reservation_archive WHERE reservation_id = ?")
+            .bind(reservation_id.as_str())
+            .fetch_optional(&mut **tx)
+            .await
+            .map_err(storage)?
+            .ok_or(AuthBusAuthorityError::ReservationMissing)?;
     reservation_from_row(&row)
 }
 
@@ -391,25 +388,21 @@ async fn load_reservation_by_operation(
     tx: &mut Transaction<'_, Sqlite>,
     operation_id: &StableId,
 ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
-    if let Some(row) = sqlx::query(
-        "SELECT * FROM authbus_quota_reservation WHERE operation_id = ?",
-    )
-    .bind(operation_id.as_str())
-    .fetch_optional(&mut **tx)
-    .await
-    .map_err(storage)?
+    if let Some(row) = sqlx::query("SELECT * FROM authbus_quota_reservation WHERE operation_id = ?")
+        .bind(operation_id.as_str())
+        .fetch_optional(&mut **tx)
+        .await
+        .map_err(storage)?
     {
         return reservation_from_row(&row).map(Some);
     }
-    sqlx::query(
-        "SELECT * FROM authbus_quota_reservation_archive WHERE operation_id = ?",
-    )
-    .bind(operation_id.as_str())
-    .fetch_optional(&mut **tx)
-    .await
-    .map_err(storage)?
-    .map(|row| reservation_from_row(&row))
-    .transpose()
+    sqlx::query("SELECT * FROM authbus_quota_reservation_archive WHERE operation_id = ?")
+        .bind(operation_id.as_str())
+        .fetch_optional(&mut **tx)
+        .await
+        .map_err(storage)?
+        .map(|row| reservation_from_row(&row))
+        .transpose()
 }
 
 fn quota_from_row(row: &SqliteRow) -> Result<QuotaSnapshot, AuthBusAuthorityError> {

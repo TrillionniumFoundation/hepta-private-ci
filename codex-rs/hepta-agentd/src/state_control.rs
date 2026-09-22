@@ -65,17 +65,12 @@ impl AgentdState {
                 let mut capabilities = Vec::new();
                 if self.evidence.get().is_some() {
                     capabilities.push(
-                        codex_hepta_agent_protocol::AgentdCapability::new(
-                            "kernel.evidence",
-                            1,
-                            0,
-                        )
-                        .map_err(AgentdError::Invalid)?,
+                        codex_hepta_agent_protocol::AgentdCapability::new("kernel.evidence", 1, 0)
+                            .map_err(AgentdError::Invalid)?,
                     );
                 }
                 AgentdPayload::Capabilities(
-                    crate::AgentdCapabilitySet::new(capabilities)
-                        .map_err(AgentdError::Invalid)?,
+                    crate::AgentdCapabilitySet::new(capabilities).map_err(AgentdError::Invalid)?,
                 )
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {

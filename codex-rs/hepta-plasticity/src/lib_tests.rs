@@ -630,7 +630,6 @@ fn read_validation_rejects_tampered_metrics_digest_and_profile() {
         verify_parameter_proposal_v2(&tampered),
         Err(Error::NormProfileMismatch)
     );
-
 }
 
 #[test]

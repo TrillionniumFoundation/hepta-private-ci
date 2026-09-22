@@ -542,7 +542,11 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
     )
     .unwrap();
 
-    std::fs::rename(directory.path().join("authority.claims"), directory.path().join("saved.claims")).unwrap();
+    std::fs::rename(
+        directory.path().join("authority.claims"),
+        directory.path().join("saved.claims"),
+    )
+    .unwrap();
     std::fs::create_dir(directory.path().join("authority.claims")).unwrap();
     assert_eq!(
         authority.claim(&signed, &signed.grant.binding).unwrap_err(),
@@ -558,7 +562,11 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
     );
 
     std::fs::remove_dir(directory.path().join("authority.claims")).unwrap();
-    std::fs::rename(directory.path().join("saved.claims"), directory.path().join("authority.claims")).unwrap();
+    std::fs::rename(
+        directory.path().join("saved.claims"),
+        directory.path().join("authority.claims"),
+    )
+    .unwrap();
     drop(authority);
     assert_eq!(
         FinalUseAuthority::open_state_dir_with_trust(
@@ -707,7 +715,6 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
     );
 }
 
-
 #[test]
 fn replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small() {
     let (authority, signed, directory) = fixture().unwrap();
@@ -744,8 +751,16 @@ fn missing_or_truncated_claim_journal_fails_closed_on_restart() {
         if corruption == "missing" {
             std::fs::remove_file(path).unwrap();
         } else {
-            std::fs::OpenOptions::new().write(true).open(path).unwrap().set_len(39).unwrap();
+            std::fs::OpenOptions::new()
+                .write(true)
+                .open(path)
+                .unwrap()
+                .set_len(39)
+                .unwrap();
         }
-        assert_eq!(reopen(directory.path()).unwrap_err(), FinalUseError::InvalidTrust);
+        assert_eq!(
+            reopen(directory.path()).unwrap_err(),
+            FinalUseError::InvalidTrust
+        );
     }
 }

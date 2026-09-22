@@ -55,6 +55,10 @@ impl AuthBusAuthorityStore {
             pool.close().await;
             return Err(storage(error));
         }
+        if let Err(error) = crate::authority_schema::verify_schema(&pool, &MIGRATOR).await {
+            pool.close().await;
+            return Err(error);
+        }
         sqlx::query(
             "UPDATE authbus_recovery_state
              SET recovery_required = (
@@ -71,10 +75,7 @@ impl AuthBusAuthorityStore {
         Ok(Self { pool })
     }
 
-    pub async fn observe_time(
-        &self,
-        time: TrustedTimeSample,
-    ) -> Result<(), AuthBusAuthorityError> {
+    pub async fn observe_time(&self, time: TrustedTimeSample) -> Result<(), AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         tx.commit().await.map_err(storage)
@@ -130,9 +131,9 @@ impl AuthBusAuthorityStore {
         .bind(spec.action.as_str())
         .bind(spec.scope_digest.as_array().as_slice())
         .bind(effect_text(spec.effect))
-        .bind(u64_bytes(1))
-        .bind(u64_bytes(spec.not_before_ms))
-        .bind(u64_bytes(spec.expires_at_ms))
+        .bind(u64_bytes(1).as_slice())
+        .bind(u64_bytes(spec.not_before_ms).as_slice())
+        .bind(u64_bytes(spec.expires_at_ms).as_slice())
         .execute(&mut *tx)
         .await;
         if let Err(error) = result {
@@ -187,9 +188,9 @@ impl AuthBusAuthorityStore {
              not_before_ms = ?, expires_at_ms = ? WHERE policy_id = ?",
         )
         .bind(effect_text(current.effect))
-        .bind(u64_bytes(current.revision))
-        .bind(u64_bytes(current.not_before_ms))
-        .bind(u64_bytes(current.expires_at_ms))
+        .bind(u64_bytes(current.revision).as_slice())
+        .bind(u64_bytes(current.not_before_ms).as_slice())
+        .bind(u64_bytes(current.expires_at_ms).as_slice())
         .bind(current.policy_id.as_str())
         .execute(&mut *tx)
         .await
@@ -215,14 +216,12 @@ impl AuthBusAuthorityStore {
         if !current.revoked {
             current.revoked = true;
             current.revision = next_revision(current.revision)?;
-            sqlx::query(
-                "UPDATE authbus_policy SET revoked = 1, revision = ? WHERE policy_id = ?",
-            )
-            .bind(u64_bytes(current.revision))
-            .bind(policy_id.as_str())
-            .execute(&mut *tx)
-            .await
-            .map_err(storage)?;
+            sqlx::query("UPDATE authbus_policy SET revoked = 1, revision = ? WHERE policy_id = ?")
+                .bind(u64_bytes(current.revision).as_slice())
+                .bind(policy_id.as_str())
+                .execute(&mut *tx)
+                .await
+                .map_err(storage)?;
             record_policy_history(&mut tx, &current).await?;
         }
         tx.commit().await.map_err(storage)?;
@@ -267,10 +266,10 @@ impl AuthBusAuthorityStore {
         .bind(current.action.as_str())
         .bind(current.scope_digest.as_array().as_slice())
         .bind(effect_text(current.effect))
-        .bind(u64_bytes(current.revision))
-        .bind(u64_bytes(current.not_before_ms))
-        .bind(u64_bytes(current.expires_at_ms))
-        .bind(u64_bytes(retired_at_ms))
+        .bind(u64_bytes(current.revision).as_slice())
+        .bind(u64_bytes(current.not_before_ms).as_slice())
+        .bind(u64_bytes(current.expires_at_ms).as_slice())
+        .bind(u64_bytes(retired_at_ms).as_slice())
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
@@ -326,7 +325,9 @@ impl AuthBusAuthorityStore {
     }
 }
 
-pub(crate) async fn begin(pool: &SqlitePool) -> Result<Transaction<'static, Sqlite>, AuthBusAuthorityError> {
+pub(crate) async fn begin(
+    pool: &SqlitePool,
+) -> Result<Transaction<'static, Sqlite>, AuthBusAuthorityError> {
     pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)
 }
 
@@ -365,8 +366,8 @@ pub(crate) async fn advance_time(
          source_revision = excluded.source_revision,
          source_digest = excluded.source_digest",
     )
-    .bind(u64_bytes(sample.wall_time_ms))
-    .bind(u64_bytes(sample.source_revision))
+    .bind(u64_bytes(sample.wall_time_ms).as_slice())
+    .bind(u64_bytes(sample.source_revision).as_slice())
     .bind(sample.source_digest.as_array().as_slice())
     .execute(&mut **tx)
     .await
@@ -389,9 +390,9 @@ async fn record_policy_history(
     .bind(policy.action.as_str())
     .bind(policy.scope_digest.as_array().as_slice())
     .bind(effect_text(policy.effect))
-    .bind(u64_bytes(policy.revision))
-    .bind(u64_bytes(policy.not_before_ms))
-    .bind(u64_bytes(policy.expires_at_ms))
+    .bind(u64_bytes(policy.revision).as_slice())
+    .bind(u64_bytes(policy.not_before_ms).as_slice())
+    .bind(u64_bytes(policy.expires_at_ms).as_slice())
     .bind(if policy.revoked { 1_i64 } else { 0_i64 })
     .execute(&mut **tx)
     .await
@@ -439,9 +440,7 @@ fn policy_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<AuthPolicy, AuthBusA
         },
     };
     if policy.scope_digest.is_zero() || policy.expires_at_ms <= policy.not_before_ms {
-        return Err(AuthBusAuthorityError::CorruptState(
-            "invalid policy record",
-        ));
+        return Err(AuthBusAuthorityError::CorruptState("invalid policy record"));
     }
     Ok(policy)
 }
@@ -479,9 +478,7 @@ fn policy_effect(value: &str) -> Result<PolicyEffect, AuthBusAuthorityError> {
     match value {
         "allow" => Ok(PolicyEffect::Allow),
         "deny" => Ok(PolicyEffect::Deny),
-        _ => Err(AuthBusAuthorityError::CorruptState(
-            "invalid policy effect",
-        )),
+        _ => Err(AuthBusAuthorityError::CorruptState("invalid policy effect")),
     }
 }
 
@@ -497,9 +494,7 @@ pub(crate) fn nonzero_u64(
 ) -> Result<u64, AuthBusAuthorityError> {
     let value = u64::from_be_bytes(blob_array::<8>(row, column)?);
     if value == 0 {
-        return Err(AuthBusAuthorityError::CorruptState(
-            "zero monotonic value",
-        ));
+        return Err(AuthBusAuthorityError::CorruptState("zero monotonic value"));
     }
     Ok(value)
 }
