@@ -285,7 +285,10 @@ def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> Non
     files to Git blob identities and verifies the candidate checkout directly.
     """
     evidence = row.get("exactSourceEvidence")
-    if not isinstance(evidence, dict) or evidence.get("kind") != "path_blob_manifest_v1":
+    if (
+        not isinstance(evidence, dict)
+        or evidence.get("kind") != "path_blob_manifest_v1"
+    ):
         failures.append(f"{mid}: exact source manifest")
         return
     entries = evidence.get("entries")
@@ -372,7 +375,6 @@ def require_clean_candidate(
         raise ValueError("mapped source checkout contains uncommitted evidence")
 
 
-
 def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> None:
     """Validate a self-reference-safe exact source manifest against HEAD.
 
@@ -381,7 +383,10 @@ def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> Non
     files to Git blob identities and verifies the candidate checkout directly.
     """
     evidence = row.get("exactSourceEvidence")
-    if not isinstance(evidence, dict) or evidence.get("kind") != "path_blob_manifest_v1":
+    if (
+        not isinstance(evidence, dict)
+        or evidence.get("kind") != "path_blob_manifest_v1"
+    ):
         failures.append(f"{mid}: exact source manifest")
         return
     entries = evidence.get("entries")
@@ -603,8 +608,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     if not isinstance(boundary, dict):
         boundary = {}
     implemented_mapping_complete = all(
-        bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
-        for op in operations
+        bool(op.get("sourcePathExists") and op.get("nativeSymbol")) for op in operations
     )
     migrated["claimBoundary"] = {
         **boundary,
@@ -824,7 +828,10 @@ def verify(*, require_current_source: bool = True):
                     isinstance(item, dict) and item.get("state") == "source_implemented"
                     for item in owned_protocols
                 )
-                if boundary.get("ownedTargetProtocolSourceComplete") is not owned_source_complete:
+                if (
+                    boundary.get("ownedTargetProtocolSourceComplete")
+                    is not owned_source_complete
+                ):
                     raise ValueError("owned target protocol source claim drift")
                 if boundary.get("nativeSourceMappingComplete") is not (
                     implemented_mapping_complete and owned_source_complete
@@ -837,9 +844,14 @@ def verify(*, require_current_source: bool = True):
                     for field in ("implemented", "composed", "qualified")
                 ):
                     raise ValueError("invalid implemented/composed/qualified status")
-                if status["composed"] != (row.get("productCallerState") != "not_composed"):
+                if status["composed"] != (
+                    row.get("productCallerState") != "not_composed"
+                ):
                     raise ValueError("composition status disagreement")
-            if row.get("exactSourceEvidence", {}).get("kind") == "path_blob_manifest_v1":
+            if (
+                row.get("exactSourceEvidence", {}).get("kind")
+                == "path_blob_manifest_v1"
+            ):
                 manifest_failures = []
                 validate_path_blob_manifest(row, mid, manifest_failures)
                 if manifest_failures:
@@ -865,13 +877,20 @@ def verify(*, require_current_source: bool = True):
                     if not local.is_file():
                         raise ValueError(f"missing product caller source {source}")
                     if isinstance(symbol, str) and symbol:
-                        if symbol.rsplit("::", 1)[-1] not in local.read_text(encoding="utf-8"):
+                        if symbol.rsplit("::", 1)[-1] not in local.read_text(
+                            encoding="utf-8"
+                        ):
                             raise ValueError(f"missing product caller symbol {symbol}")
                 if source_objects is None:
-                    if row.get("exactSourceEvidenceMode") != "lane_a_runtime_head_tree_and_registered_callers":
+                    if (
+                        row.get("exactSourceEvidenceMode")
+                        != "lane_a_runtime_head_tree_and_registered_callers"
+                    ):
                         raise ValueError("composed map requires exact source objects")
                     if row.get("laneId") != "LANE-A-FOUNDATION":
-                        raise ValueError("Lane A runtime source evidence mode used outside Lane A")
+                        raise ValueError(
+                            "Lane A runtime source evidence mode used outside Lane A"
+                        )
         except (
             ValueError,
             TypeError,

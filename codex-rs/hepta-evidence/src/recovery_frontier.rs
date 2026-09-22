@@ -61,12 +61,10 @@ impl HeptaEvidenceStore {
     }
 
     pub async fn recovery_store_id(&self) -> Result<Option<String>, EvidenceError> {
-        sqlx::query_scalar(
-            "SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1",
-        )
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(classify_sqlx_error)
+        sqlx::query_scalar("SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1")
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(classify_sqlx_error)
     }
 
     pub async fn recovery_snapshot(&self) -> Result<EvidenceRecoverySnapshotV1, EvidenceError> {
@@ -82,8 +80,7 @@ impl HeptaEvidenceStore {
         let mut migration_frontier = empty_frontier(b"hepta.evidence.migrations.v1");
         for row in migration_rows {
             let version: i64 = row.try_get("version").map_err(classify_sqlx_error)?;
-            let description: String =
-                row.try_get("description").map_err(classify_sqlx_error)?;
+            let description: String = row.try_get("description").map_err(classify_sqlx_error)?;
             let checksum: Vec<u8> = row.try_get("checksum").map_err(classify_sqlx_error)?;
             migration_frontier = extend_frontier(
                 b"hepta.evidence.migrations.v1",
@@ -102,9 +99,11 @@ impl HeptaEvidenceStore {
              ORDER BY seq ASC
              LIMIT ?",
         )
-        .bind(i64::try_from(MAX_QUALIFICATION_FRONTIER_ROWS + 1).map_err(|_| {
-            EvidenceError::InvalidRecord("qualification recovery bound overflow".into())
-        })?)
+        .bind(
+            i64::try_from(MAX_QUALIFICATION_FRONTIER_ROWS + 1).map_err(|_| {
+                EvidenceError::InvalidRecord("qualification recovery bound overflow".into())
+            })?,
+        )
         .fetch_all(&self.pool)
         .await
         .map_err(classify_sqlx_error)?;
@@ -120,10 +119,10 @@ impl HeptaEvidenceStore {
             let seq: i64 = row.try_get("seq").map_err(classify_sqlx_error)?;
             let seq = u64::try_from(seq)
                 .map_err(|_| EvidenceError::Corrupt("negative qualification sequence".into()))?;
-            let evidence_id: String =
-                row.try_get("evidence_id").map_err(classify_sqlx_error)?;
-            let envelope_sha256: String =
-                row.try_get("envelope_sha256").map_err(classify_sqlx_error)?;
+            let evidence_id: String = row.try_get("evidence_id").map_err(classify_sqlx_error)?;
+            let envelope_sha256: String = row
+                .try_get("envelope_sha256")
+                .map_err(classify_sqlx_error)?;
             qualification_frontier = extend_frontier(
                 b"hepta.evidence.qualification-frontier.v1",
                 &qualification_frontier,
@@ -142,9 +141,11 @@ impl HeptaEvidenceStore {
              ORDER BY issuer_id, key_epoch, subject_id, scope_digest
              LIMIT ?",
         )
-        .bind(i64::try_from(MAX_AUTHBUS_REPLAY_FRONTIER_ROWS + 1).map_err(|_| {
-            EvidenceError::InvalidRecord("AuthBus recovery bound overflow".into())
-        })?)
+        .bind(
+            i64::try_from(MAX_AUTHBUS_REPLAY_FRONTIER_ROWS + 1).map_err(|_| {
+                EvidenceError::InvalidRecord("AuthBus recovery bound overflow".into())
+            })?,
+        )
         .fetch_all(&self.pool)
         .await
         .map_err(classify_sqlx_error)?;
@@ -155,18 +156,14 @@ impl HeptaEvidenceStore {
         }
         let mut replay_frontier = empty_frontier(b"hepta.evidence.authbus-replay-frontier.v1");
         for row in replay_rows {
-            let issuer_id: String =
-                row.try_get("issuer_id").map_err(classify_sqlx_error)?;
-            let key_epoch: Vec<u8> =
-                row.try_get("key_epoch").map_err(classify_sqlx_error)?;
-            let subject_id: String =
-                row.try_get("subject_id").map_err(classify_sqlx_error)?;
-            let scope_digest: Vec<u8> =
-                row.try_get("scope_digest").map_err(classify_sqlx_error)?;
-            let sequence: Vec<u8> =
-                row.try_get("sequence").map_err(classify_sqlx_error)?;
-            let envelope_digest: Vec<u8> =
-                row.try_get("envelope_digest").map_err(classify_sqlx_error)?;
+            let issuer_id: String = row.try_get("issuer_id").map_err(classify_sqlx_error)?;
+            let key_epoch: Vec<u8> = row.try_get("key_epoch").map_err(classify_sqlx_error)?;
+            let subject_id: String = row.try_get("subject_id").map_err(classify_sqlx_error)?;
+            let scope_digest: Vec<u8> = row.try_get("scope_digest").map_err(classify_sqlx_error)?;
+            let sequence: Vec<u8> = row.try_get("sequence").map_err(classify_sqlx_error)?;
+            let envelope_digest: Vec<u8> = row
+                .try_get("envelope_digest")
+                .map_err(classify_sqlx_error)?;
             if key_epoch.len() != 8
                 || scope_digest.len() != 32
                 || sequence.len() != 8
@@ -208,11 +205,7 @@ fn empty_frontier(domain: &[u8]) -> Sha256Digest {
     Sha256Digest::for_bytes(&bytes)
 }
 
-fn extend_frontier(
-    domain: &[u8],
-    previous: &Sha256Digest,
-    parts: &[&[u8]],
-) -> Sha256Digest {
+fn extend_frontier(domain: &[u8], previous: &Sha256Digest, parts: &[&[u8]]) -> Sha256Digest {
     let mut bytes = Vec::with_capacity(
         domain.len()
             + previous.as_str().len()
@@ -223,11 +216,7 @@ fn extend_frontier(
     bytes.push(0);
     bytes.extend_from_slice(previous.as_str().as_bytes());
     for part in parts {
-        bytes.extend_from_slice(
-            &u64::try_from(part.len())
-                .unwrap_or(u64::MAX)
-                .to_be_bytes(),
-        );
+        bytes.extend_from_slice(&u64::try_from(part.len()).unwrap_or(u64::MAX).to_be_bytes());
         bytes.extend_from_slice(part);
     }
     Sha256Digest::for_bytes(&bytes)

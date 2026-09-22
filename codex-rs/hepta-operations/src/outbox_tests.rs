@@ -22,6 +22,7 @@ fn intent() -> OutboxIntent {
         operation_id: stable_id("operation:1"),
         destination: stable_id("cognitive.store"),
         payload_digest: Digest32::of_bytes(b"payload"),
+        operation_digest: Digest32::of_bytes(b"operation:1"),
     }
 }
 
@@ -69,6 +70,7 @@ fn acknowledged_replay_retains_generation_fence() {
         Some(OutboxState::Acknowledged {
             owner_generation,
             acknowledgement_digest,
+            attempt: 1,
         }) if *owner_generation == generation(4) && *acknowledgement_digest == ack
     ));
 }
@@ -124,6 +126,7 @@ fn reference_outbox_capacity_is_bounded() {
         operation_id: stable_id("operation:2"),
         destination: stable_id("cognitive.store"),
         payload_digest: Digest32::of_bytes(b"payload-2"),
+        operation_digest: Digest32::of_bytes(b"operation:2"),
     };
     assert_eq!(
         outbox.enqueue(second),

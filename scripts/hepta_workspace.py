@@ -4,6 +4,7 @@
 This is a read-only structural preflight, not compilation or dependency resolution.
 Walk workspace members and their local dependencies, not unrelated fixture trees.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -82,7 +83,9 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
         matches = sorted(workspace.glob(pattern))
         if not matches:
             errors.append(f"workspace member not found: {pattern}")
-        queue.extend(path / "Cargo.toml" for path in matches if path.resolve() not in excluded)
+        queue.extend(
+            path / "Cargo.toml" for path in matches if path.resolve() not in excluded
+        )
     if "package" in document:
         queue.append(workspace / "Cargo.toml")
     seen: set[Path] = set()
@@ -102,7 +105,9 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
         if not isinstance(name, str) or not name:
             errors.append(f"{path}: package name missing")
         elif (owner, name) in package_paths and package_paths[owner, name] != path:
-            errors.append(f"duplicate local package {name}: {package_paths[owner, name]} and {path}")
+            errors.append(
+                f"duplicate local package {name}: {package_paths[owner, name]} and {path}"
+            )
         else:
             package_paths[owner, name] = path
         for key, value in package.items():
@@ -121,7 +126,9 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
                     origin = path.parent
                     if declaration.get("workspace") is True:
                         if dependency not in inherited:
-                            errors.append(f"{path}: workspace.dependencies.{dependency} is missing")
+                            errors.append(
+                                f"{path}: workspace.dependencies.{dependency} is missing"
+                            )
                             continue
                         declaration = inherited[dependency]
                         origin = owner
@@ -134,14 +141,20 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
                     actual = other.get("package", {}).get("name")
                     expected = declaration.get("package", dependency)
                     if actual != expected:
-                        errors.append(f"{path}: {dependency} expects {expected}, but {target} names {actual}")
+                        errors.append(
+                            f"{path}: {dependency} expects {expected}, but {target} names {actual}"
+                        )
                     queue.append(target)
     return len(seen), sorted(set(errors))
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace", type=Path, default=Path(__file__).resolve().parents[1] / "codex-rs")
+    parser.add_argument(
+        "--workspace",
+        type=Path,
+        default=Path(__file__).resolve().parents[1] / "codex-rs",
+    )
     arguments = parser.parse_args()
     try:
         count, errors = verify_workspace(arguments.workspace)
@@ -150,7 +163,9 @@ def main() -> int:
         return 1
     for error in errors:
         print(error, file=sys.stderr)
-    print(f"Cargo structural preflight: {count} local manifests; {len(errors)} errors; no code executed")
+    print(
+        f"Cargo structural preflight: {count} local manifests; {len(errors)} errors; no code executed"
+    )
     return int(bool(errors))
 
 

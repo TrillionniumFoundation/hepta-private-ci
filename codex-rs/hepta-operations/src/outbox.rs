@@ -47,7 +47,7 @@ impl OutboxIntent {
             return false;
         };
         self.operation_id == record.key.id
-            && self.destination == operation.destination
+            && &self.destination == operation.destination_id()
             && self.payload_digest == record.key.payload_digest
             && self.operation_digest == operation.semantic_digest()
     }
@@ -133,9 +133,7 @@ impl Outbox {
     ) -> Result<(), OperationError> {
         intent.validate()?;
         if !intent.matches_operation(operation) {
-            return Err(OperationError::OperationBindingMismatch(
-                intent.intent_id.clone(),
-            ));
+            return Err(OperationError::OperationBindingMismatch(intent.intent_id));
         }
         self.enqueue(intent)
     }
@@ -191,7 +189,8 @@ impl Outbox {
                         }
                         attempt
                     } else {
-                        if now_unix_ms < existing_expiry || owner_generation <= existing_generation {
+                        if now_unix_ms < existing_expiry || owner_generation <= existing_generation
+                        {
                             return Err(OperationError::StaleGeneration);
                         }
                         attempt
@@ -310,7 +309,7 @@ impl Outbox {
             OutboxState::Pending => return Err(OperationError::NotClaimed),
             OutboxState::Acknowledged {
                 owner_generation: existing_generation,
-                attempt,
+                attempt: _,
                 acknowledgement_digest: existing_digest,
             } if existing_generation == owner_generation
                 && existing_digest == acknowledgement_digest =>

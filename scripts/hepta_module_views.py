@@ -101,9 +101,14 @@ def main() -> int:
     print(
         json.dumps(
             {
-                "status": "PASS_HEPTA_MODULE_VIEWS" if not changed else "UPDATED_HEPTA_MODULE_VIEWS",
+                "status": "PASS_HEPTA_MODULE_VIEWS"
+                if not changed
+                else "UPDATED_HEPTA_MODULE_VIEWS",
                 "source": "docs/modules/MODULES.json",
-                "views": ["docs/modules/SOURCE_BINDINGS.json", "docs/modules/MODULE_DOCS.json"],
+                "views": [
+                    "docs/modules/SOURCE_BINDINGS.json",
+                    "docs/modules/MODULE_DOCS.json",
+                ],
                 "changed": changed,
             },
             sort_keys=True,

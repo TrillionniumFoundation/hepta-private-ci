@@ -1,8 +1,8 @@
-use crate::NonAuthorizingPosture;
 use crate::CanonicalFieldV1;
 use crate::CanonicalValueV1;
 use crate::ContractRegistryV1;
 use crate::Digest32;
+use crate::NonAuthorizingPosture;
 use crate::NumericConversionError;
 use crate::NumericProfileV1;
 use crate::NumericRoundingV1;

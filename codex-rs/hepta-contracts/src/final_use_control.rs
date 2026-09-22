@@ -760,7 +760,7 @@ mod tests {
         .unwrap();
         assert_eq!(verifier.verify(&grant, &signed), Ok(()));
 
-        let mut drifted = grant.clone();
+        let mut drifted = grant;
         drifted.grant.binding.payload_sha256 = [99; 32];
         assert_eq!(
             verifier.verify(&drifted, &signed),
@@ -815,7 +815,7 @@ mod tests {
             FinalUseRevocations {
                 authority_epoch: 11,
                 revision: 2,
-                revoked_grant_ids: BTreeSet::from([grant.grant.grant_id.clone()]),
+                revoked_grant_ids: BTreeSet::from([grant.grant.grant_id]),
             },
             1_000,
             2_000,
@@ -897,7 +897,7 @@ mod tests {
             FinalUseRevocations {
                 authority_epoch: 11,
                 revision: 2,
-                revoked_grant_ids: BTreeSet::from([grant.grant.grant_id.clone()]),
+                revoked_grant_ids: BTreeSet::from([grant.grant.grant_id]),
             },
             1_000,
             31_000,
@@ -907,7 +907,7 @@ mod tests {
                 .sign(&update.signing_bytes().unwrap())
                 .to_bytes()
                 .to_vec(),
-            update: update.clone(),
+            update: update,
         };
         let feed_verifier = FinalUseRevocationFeedVerifier::new(
             "revocation-distributor".into(),
@@ -993,14 +993,14 @@ mod tests {
 
     #[test]
     fn convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs() {
-        let (_authority, grant, _directory, _approver, distributor) = fixture();
+        let (authority, grant, _directory, _approver, distributor) = fixture();
         let node = SigningKey::from_bytes(&[73; 32]);
         let update = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
             FinalUseRevocations {
                 authority_epoch: 11,
                 revision: 2,
-                revoked_grant_ids: BTreeSet::from([grant.grant.grant_id.clone()]),
+                revoked_grant_ids: BTreeSet::from([grant.grant.grant_id]),
             },
             1_000,
             2_000,
@@ -1121,10 +1121,7 @@ mod tests {
             FinalUseRevocations {
                 authority_epoch: 11,
                 revision: 2,
-                revoked_grant_ids: BTreeSet::from([
-                    grant.grant.grant_id.clone(),
-                    "other-grant".into(),
-                ]),
+                revoked_grant_ids: BTreeSet::from([grant.grant.grant_id, "other-grant".into()]),
             },
             1_000,
             31_000,

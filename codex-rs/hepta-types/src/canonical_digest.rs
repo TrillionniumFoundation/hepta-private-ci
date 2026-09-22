@@ -91,7 +91,6 @@ pub fn canonical_digest_v1(
     canonical_encode_v1(type_id, schema_version, fields).map(|encoded| Digest32::of_bytes(&encoded))
 }
 
-
 /// Validates exact canonical V1 bytes without constructing domain objects or
 /// granting authority. Successful validation returns the SHA-256 digest of the
 /// validated byte sequence.
@@ -116,15 +115,16 @@ pub fn canonical_validate_v1(encoded: &[u8]) -> Result<Digest32, CanonicalDigest
     if reader.read_u32()? == 0 {
         return Err(CanonicalDigestError::InvalidSchemaVersion);
     }
-    let field_count = usize::try_from(reader.read_u32()?)
-        .map_err(|_| CanonicalDigestError::TooManyItems)?;
+    let field_count =
+        usize::try_from(reader.read_u32()?).map_err(|_| CanonicalDigestError::TooManyItems)?;
     if field_count > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
         return Err(CanonicalDigestError::TooManyItems);
     }
     let mut previous: Option<&[u8]> = None;
     for _ in 0..field_count {
         let name_bytes = reader.read_len_u16()?;
-        let name = std::str::from_utf8(name_bytes).map_err(|_| CanonicalDigestError::InvalidLabel)?;
+        let name =
+            std::str::from_utf8(name_bytes).map_err(|_| CanonicalDigestError::InvalidLabel)?;
         validate_label(name)?;
         if let Some(previous) = previous {
             if name_bytes == previous {
@@ -158,8 +158,7 @@ fn validate_encoded_value(
         0x05 => reader.read_len_u32().map(|_| ()),
         0x06 => {
             let bytes = reader.read_len_u32()?;
-            let text =
-                std::str::from_utf8(bytes).map_err(|_| CanonicalDigestError::InvalidText)?;
+            let text = std::str::from_utf8(bytes).map_err(|_| CanonicalDigestError::InvalidText)?;
             if text.contains('\0') {
                 return Err(CanonicalDigestError::InvalidText);
             }
@@ -199,8 +198,8 @@ fn validate_encoded_value(
             let mut previous: Option<&[u8]> = None;
             for _ in 0..count {
                 let key_bytes = reader.read_len_u16()?;
-                let key =
-                    std::str::from_utf8(key_bytes).map_err(|_| CanonicalDigestError::InvalidLabel)?;
+                let key = std::str::from_utf8(key_bytes)
+                    .map_err(|_| CanonicalDigestError::InvalidLabel)?;
                 validate_label(key)?;
                 if let Some(previous) = previous {
                     if key_bytes == previous {

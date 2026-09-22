@@ -341,6 +341,7 @@ impl std::error::Error for FleetRevocationError {}
 mod tests {
     use super::*;
     use codex_hepta_contracts::AuthorityTrustError;
+    use codex_hepta_contracts::FinalUseRevocationAck;
     use codex_hepta_contracts::FinalUseRevocationNodeTrust;
     use codex_hepta_contracts::FinalUseRevocationUpdate;
     use codex_hepta_contracts::FinalUseRevocations;
@@ -473,8 +474,9 @@ mod tests {
 
     #[test]
     fn exact_ack_makes_node_ready_and_duplicate_is_idempotent() {
-        let (mut coordinator, _clock, _distributor, node, update) = setup();
+        let (mut coordinator, clock, _distributor, node, update) = setup();
         coordinator.install_update(update.clone()).unwrap();
+        clock.set(1_200);
         let ack = signed_ack(&node, &update, 1_200);
         let first = coordinator.record_ack(ack.clone()).unwrap();
         let retry = coordinator.record_ack(ack).unwrap();
@@ -490,6 +492,7 @@ mod tests {
     fn new_head_forces_catchup_and_same_revision_drift_conflicts() {
         let (mut coordinator, clock, distributor, node, update) = setup();
         coordinator.install_update(update.clone()).unwrap();
+        clock.set(1_200);
         coordinator
             .record_ack(signed_ack(&node, &update, 1_200))
             .unwrap();

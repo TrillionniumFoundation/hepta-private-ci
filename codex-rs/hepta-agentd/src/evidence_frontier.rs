@@ -62,7 +62,9 @@ impl EvidenceRecoveryFrontierV1 {
             || self.snapshot.schema_version != 1
             || self.snapshot.database_lineage != EVIDENCE_DATABASE_LINEAGE
         {
-            return Err(invalid("frontier schema, generation or database lineage is invalid"));
+            return Err(invalid(
+                "frontier schema, generation or database lineage is invalid",
+            ));
         }
         StableId::new(self.store_id.clone())
             .map_err(|error| invalid(&format!("invalid recovery store id: {error}")))?;
@@ -88,10 +90,7 @@ pub fn evidence_recovery_frontier_signing_bytes(
     let mut bytes = b"hepta.kernel.evidence.recovery-frontier.v1\0".to_vec();
     push_part(&mut bytes, frontier.store_id.as_bytes());
     bytes.extend_from_slice(&frontier.frontier_generation.to_be_bytes());
-    push_part(
-        &mut bytes,
-        frontier.snapshot.database_lineage.as_bytes(),
-    );
+    push_part(&mut bytes, frontier.snapshot.database_lineage.as_bytes());
     push_part(
         &mut bytes,
         frontier.snapshot.migration_set_sha256.as_str().as_bytes(),
@@ -127,8 +126,7 @@ pub(crate) async fn verify_evidence_recovery_frontier(
     frontier_file: &Path,
     signer_trust_file: &Path,
 ) -> Result<(), AgentdError> {
-    let frontier_bytes =
-        read_external_file(frontier_file, identity, MAX_FRONTIER_FILE_BYTES)?;
+    let frontier_bytes = read_external_file(frontier_file, identity, MAX_FRONTIER_FILE_BYTES)?;
     let frontier: EvidenceRecoveryFrontierV1 = serde_json::from_slice(&frontier_bytes)?;
     frontier.validate()?;
 
@@ -158,10 +156,7 @@ pub(crate) async fn verify_evidence_recovery_frontier(
         )
         .map_err(|_| recovery_required("frontier signature verification failed"))?;
 
-    if let Some(existing_store_id) = store
-        .recovery_store_id()
-        .await
-        .map_err(evidence_error)?
+    if let Some(existing_store_id) = store.recovery_store_id().await.map_err(evidence_error)?
         && existing_store_id != frontier.store_id
     {
         return Err(recovery_required(
@@ -270,16 +265,11 @@ fn current_time_millis() -> Result<u64, AgentdError> {
         .duration_since(UNIX_EPOCH)
         .map_err(|error| invalid(&format!("system clock is before Unix epoch: {error}")))?
         .as_millis();
-    u64::try_from(millis)
-        .map_err(|error| invalid(&format!("system clock overflow: {error}")))
+    u64::try_from(millis).map_err(|error| invalid(&format!("system clock overflow: {error}")))
 }
 
 fn push_part(bytes: &mut Vec<u8>, part: &[u8]) {
-    bytes.extend_from_slice(
-        &u64::try_from(part.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u64::try_from(part.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(part);
 }
 
@@ -288,9 +278,7 @@ fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {
 }
 
 fn recovery_required(message: &str) -> AgentdError {
-    AgentdError::Invalid(format!(
-        "kernel.evidence recovery_required: {message}"
-    ))
+    AgentdError::Invalid(format!("kernel.evidence recovery_required: {message}"))
 }
 
 fn invalid(message: &str) -> AgentdError {

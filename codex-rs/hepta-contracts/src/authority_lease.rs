@@ -1290,6 +1290,7 @@ mod tests {
             AuthorityLeaseError::Revoked
         );
         let frontier = registry.frontier().unwrap();
+        drop(verifier);
         drop(registry);
         let reopened = AuthorityLeaseRegistry::open_state_dir(
             directory.path(),
@@ -1387,7 +1388,7 @@ mod tests {
         let mut replacement = lease();
         replacement.revision = 2;
         assert_eq!(
-            registry.put_lease(replacement.clone(), 99).unwrap_err(),
+            registry.put_lease(replacement, 99).unwrap_err(),
             AuthorityLeaseError::RevisionMismatch
         );
         let mut wrong = binding();
@@ -1666,6 +1667,7 @@ mod tests {
         let old = AuthorityLeaseFrontier {
             authority_epoch: frontier.authority_epoch,
             store_revision: frontier.store_revision + 1,
+            state_sha256: frontier.state_sha256,
         };
         assert_eq!(
             AuthorityLeaseRegistry::open_state_dir(

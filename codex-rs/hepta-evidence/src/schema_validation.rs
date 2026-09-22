@@ -487,19 +487,13 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         name: "qualification_evidence_issuer_seq",
         object_type: "index",
         table_name: "qualification_evidence",
-        required_sql_fragments: &[
-            "create index",
-            "issuer_principal_id, issuer_role, seq",
-        ],
+        required_sql_fragments: &["create index", "issuer_principal_id, issuer_role, seq"],
     },
     SchemaObjectSpec {
         name: "qualification_evidence_target_seq",
         object_type: "index",
         table_name: "qualification_evidence",
-        required_sql_fragments: &[
-            "create index",
-            "target_evidence_id, seq",
-        ],
+        required_sql_fragments: &["create index", "target_evidence_id, seq"],
     },
     SchemaObjectSpec {
         name: "qualification_evidence_no_update",

@@ -267,10 +267,8 @@ fn registered_conversion_requires_normalization_and_both_profile_definitions() {
     let registry = crate::ContractRegistryV1::new_with_numeric_profiles(
         vec![normalization],
         vec![
-            crate::NumericProfileDefinitionV1::canonical(
-                NumericProfileV1::HnmfPpmTowardZero,
-            )
-            .unwrap_or_else(|error| panic!("source profile fixture failed: {error}")),
+            crate::NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
+                .unwrap_or_else(|error| panic!("source profile fixture failed: {error}")),
             crate::NumericProfileDefinitionV1::canonical(
                 NumericProfileV1::SignedQ24NearestTiesEven,
             )
@@ -289,10 +287,8 @@ fn registered_conversion_requires_normalization_and_both_profile_definitions() {
     let missing_target_profile = crate::ContractRegistryV1::new_with_numeric_profiles(
         registry.entries().to_vec(),
         vec![
-            crate::NumericProfileDefinitionV1::canonical(
-                NumericProfileV1::HnmfPpmTowardZero,
-            )
-            .unwrap_or_else(|error| panic!("source profile fixture failed: {error}")),
+            crate::NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
+                .unwrap_or_else(|error| panic!("source profile fixture failed: {error}")),
         ],
     )
     .unwrap_or_else(|error| panic!("missing-target registry fixture failed: {error}"));

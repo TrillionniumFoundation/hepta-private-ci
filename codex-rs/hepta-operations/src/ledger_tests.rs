@@ -344,6 +344,7 @@ fn exhausted_revision_preserves_every_transition_and_terminal_outcome() {
         ledger.records.insert(
             key.id.clone(),
             OperationRecord {
+                intent: None,
                 key: key.clone(),
                 owner_generation: generation(3),
                 revision,

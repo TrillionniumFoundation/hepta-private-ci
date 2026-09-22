@@ -64,7 +64,9 @@ impl OperationIntentV1 {
             return Err(OperationError::InvalidDigest("operation intent scope"));
         }
         if self.expected_predecessor.is_some_and(Digest32::is_zero) {
-            return Err(OperationError::InvalidDigest("operation intent expected predecessor"));
+            return Err(OperationError::InvalidDigest(
+                "operation intent expected predecessor",
+            ));
         }
         Ok(())
     }

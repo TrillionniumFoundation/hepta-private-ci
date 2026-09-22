@@ -285,7 +285,7 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
                     continue;
                 }
                 let identity = if reverse { names.len() - index } else { index };
-                let id = AgentId::parse(&format!("019153a4-3088-7e03-a56a-{identity:012x}"))
+                let id = AgentId::parse(format!("019153a4-3088-7e03-a56a-{identity:012x}"))
                     .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;
                 let mut record = template.clone();
                 record.manifest.agent_id = id.clone();

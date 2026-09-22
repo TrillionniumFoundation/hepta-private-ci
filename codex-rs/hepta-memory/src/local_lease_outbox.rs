@@ -1720,9 +1720,7 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| {
-            LocalLeaseOutboxError::StaleFence(
-                "production dispatch outbox is missing".to_string(),
-            )
+            LocalLeaseOutboxError::StaleFence("production dispatch outbox is missing".to_string())
         })?;
         let operation = find_operation(&mut transaction, occurrence_key)
             .await?
@@ -1743,8 +1741,9 @@ impl LocalLeaseOutbox {
                 "durable operation destination does not match attached target".to_string(),
             ));
         }
-        let operation_semantic_sha256 = Sha256Digest::parse(intent.semantic_digest().to_string())
-            .map_err(|_| corrupt("durable operation semantic digest is invalid"))?;
+        let operation_semantic_sha256 =
+            Sha256Digest::parse(intent.semantic_digest().to_string())
+                .map_err(|_| corrupt("durable operation semantic digest is invalid"))?;
         let expected_predecessor_sha256 = intent
             .expected_predecessor()
             .map(|digest| Sha256Digest::parse(digest.to_string()))
@@ -1952,9 +1951,7 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| {
-            LocalLeaseOutboxError::StaleFence(
-                "inherited dispatch admission is missing".to_string(),
-            )
+            LocalLeaseOutboxError::StaleFence("inherited dispatch admission is missing".to_string())
         })?;
         let outbox = find_outbox(
             &mut transaction,
@@ -1964,9 +1961,7 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| {
-            LocalLeaseOutboxError::StaleFence(
-                "inherited dispatch outbox is missing".to_string(),
-            )
+            LocalLeaseOutboxError::StaleFence("inherited dispatch outbox is missing".to_string())
         })?;
         verify_occurrence_pair_incremental(
             &self.lease_id,
@@ -2023,8 +2018,9 @@ impl LocalLeaseOutbox {
             &admission,
             &outbox,
         )?;
-        let operation_semantic_sha256 = Sha256Digest::parse(intent.semantic_digest().to_string())
-            .map_err(|_| corrupt("dispatch claim operation semantic digest is invalid"))?;
+        let operation_semantic_sha256 =
+            Sha256Digest::parse(intent.semantic_digest().to_string())
+                .map_err(|_| corrupt("dispatch claim operation semantic digest is invalid"))?;
         let expected_predecessor_sha256 = intent
             .expected_predecessor
             .map(|digest| Sha256Digest::parse(digest.to_string()))
@@ -2810,12 +2806,7 @@ impl LocalLeaseOutbox {
         .ok_or_else(|| {
             LocalLeaseOutboxError::StaleFence("queued receipt outbox is missing".to_string())
         })?;
-        verify_occurrence_pair_incremental(
-            &self.lease_id,
-            &self.owner_agent_id,
-            &event,
-            &outbox,
-        )?;
+        verify_occurrence_pair_incremental(&self.lease_id, &self.owner_agent_id, &event, &outbox)?;
         ensure_current_occurrence_fence(self, &event, &outbox)?;
         if event.event_id != event_id
             || outbox.outbox_id != outbox_id
@@ -3671,13 +3662,12 @@ async fn insert_operation(
     payload_sha256: &Sha256Digest,
     binding: &LocalLeaseBinding,
 ) -> Result<(), LocalLeaseOutboxError> {
-    let operation_rows: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM cognitive_operation_ledger WHERE lease_id = ?",
-    )
-    .bind(&handle.lease_id)
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(crate::cognitive_store::unavailable)?;
+    let operation_rows: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_operation_ledger WHERE lease_id = ?")
+            .bind(&handle.lease_id)
+            .fetch_one(&mut **transaction)
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
     if usize::try_from(operation_rows).unwrap_or(usize::MAX) >= MAX_OPERATION_ROWS {
         return Err(LocalLeaseOutboxError::CapacityExceeded {
             resource: "durable operation ledger",
@@ -3700,8 +3690,15 @@ async fn insert_operation(
     .bind(operation.destination_id().as_str())
     .bind(payload_sha256.as_str())
     .bind(operation.scope_digest().to_string())
-    .bind(to_i64(operation.policy_generation().get(), "operation policy generation")?)
-    .bind(operation.expected_predecessor().map(|digest| digest.to_string()))
+    .bind(to_i64(
+        operation.policy_generation().get(),
+        "operation policy generation",
+    )?)
+    .bind(
+        operation
+            .expected_predecessor()
+            .map(|digest| digest.to_string()),
+    )
     .bind(&handle.lease_id)
     .bind(event_id)
     .bind(outbox_id)
@@ -3782,7 +3779,8 @@ async fn verify_operation_ledger(
             authority_epoch: read_u64(&row, "authority_epoch")?,
             owner_epoch: read_u64(&row, "owner_epoch")?,
         };
-        if stored.owner_agent_id != *expected_owner || stored.subject_id != expected_owner.as_str() {
+        if stored.owner_agent_id != *expected_owner || stored.subject_id != expected_owner.as_str()
+        {
             return Err(corrupt("operation ledger contains a foreign owner"));
         }
         let operation = checked_operation_intent(&stored)?;
@@ -3896,12 +3894,19 @@ async fn find_operation(
 fn checked_operation_intent(
     stored: &DurableOperationRow,
 ) -> Result<OperationIntentV1, LocalLeaseOutboxError> {
-    let payload_digest = stored.payload_sha256.parse::<Digest32>()
+    let payload_digest = stored
+        .payload_sha256
+        .parse::<Digest32>()
         .map_err(|_| corrupt("durable operation payload digest is invalid"))?;
-    let scope_digest = stored.scope_sha256.parse::<Digest32>()
+    let scope_digest = stored
+        .scope_sha256
+        .parse::<Digest32>()
         .map_err(|_| corrupt("durable operation scope digest is invalid"))?;
-    let expected_predecessor = stored.expected_predecessor_sha256.as_deref()
-        .map(str::parse::<Digest32>).transpose()
+    let expected_predecessor = stored
+        .expected_predecessor_sha256
+        .as_deref()
+        .map(str::parse::<Digest32>)
+        .transpose()
         .map_err(|_| corrupt("durable operation predecessor digest is invalid"))?;
     let intent = OperationIntentV1::new(
         StableId::new(stored.operation_id.clone())
@@ -3915,7 +3920,8 @@ fn checked_operation_intent(
         Generation::new(stored.policy_generation)
             .map_err(|_| corrupt("durable operation policy generation is invalid"))?,
         expected_predecessor,
-    ).map_err(|_| corrupt("durable operation semantic fields are invalid"))?;
+    )
+    .map_err(|_| corrupt("durable operation semantic fields are invalid"))?;
     if intent.semantic_digest().to_string() != stored.semantic_sha256 {
         return Err(corrupt("durable operation semantic digest mismatch"));
     }
@@ -4701,12 +4707,7 @@ async fn current_outcome(
         if event.owner_agent_id != *owner {
             return Err(corrupt("occurrence event belongs to a foreign owner"));
         }
-        advance_outcome_state(
-            &mut states,
-            &mut seen_kinds,
-            occurrence_key,
-            &event.kind,
-        )?;
+        advance_outcome_state(&mut states, &mut seen_kinds, occurrence_key, &event.kind)?;
     }
     Ok(states
         .get(occurrence_key)
@@ -4819,7 +4820,9 @@ fn verify_occurrence_pair_incremental(
         || Sha256Digest::for_bytes(event.payload_json.as_bytes()) != event.payload_sha256
         || Sha256Digest::for_bytes(outbox.payload_json.as_bytes()) != outbox.payload_sha256
     {
-        return Err(corrupt("incremental event/outbox semantic binding mismatch"));
+        return Err(corrupt(
+            "incremental event/outbox semantic binding mismatch",
+        ));
     }
     let event_expected = event_digest(
         lease_id,

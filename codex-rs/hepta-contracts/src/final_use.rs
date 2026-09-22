@@ -661,7 +661,7 @@ impl FinalUseAuthority {
         validate_live(&token.grant, &state.head, now_unix_ms)?;
         let witness = VerifiedUseTokenWitnessV1::final_use(
             self.0.signer_id.clone(),
-            token.grant.grant_id.clone(),
+            token.grant.grant_id,
             state.head.authority_epoch,
             state.head.revision,
             now_unix_ms,

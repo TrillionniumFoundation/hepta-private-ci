@@ -639,13 +639,7 @@ impl ProductionDurableWriter {
         {
             return Err(ProductionWriterError::StaleReceipt);
         }
-        Ok(operation_claims::renew(
-            &self.store,
-            claim,
-            now_unix_ms()?,
-            lease_duration_ms,
-        )
-        .await?)
+        Ok(operation_claims::renew(&self.store, claim, now_unix_ms()?, lease_duration_ms).await?)
     }
 
     pub async fn recover(
@@ -789,25 +783,24 @@ impl ProductionDurableWriter {
                 | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
                 other => ProductionWriterError::Local(other),
             })?;
-        let (topic, payload_json, payload_sha256): (String, String, String) =
-            sqlx::query_as(
-                "SELECT topic, payload_json, payload_sha256
+        let (topic, payload_json, payload_sha256): (String, String, String) = sqlx::query_as(
+            "SELECT topic, payload_json, payload_sha256
                  FROM cognitive_local_outbox
                  WHERE lease_id = ? AND occurrence_key = ?
                  LIMIT 1",
+        )
+        .bind(self.lease_id())
+        .bind(occurrence_key)
+        .fetch_optional(&self.store.pool)
+        .await
+        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
+        .ok_or_else(|| {
+            ProductionWriterError::Durability(
+                "indeterminate operation is missing its durable outbox row".to_string(),
             )
-            .bind(self.lease_id())
-            .bind(occurrence_key)
-            .fetch_optional(&self.store.pool)
-            .await
-            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
-            .ok_or_else(|| {
-                ProductionWriterError::Durability(
-                    "indeterminate operation is missing its durable outbox row".to_string(),
-                )
-            })?;
-        let payload_sha256 = Sha256Digest::parse(&payload_sha256)
-            .map_err(ProductionWriterError::Invalid)?;
+        })?;
+        let payload_sha256 =
+            Sha256Digest::parse(&payload_sha256).map_err(ProductionWriterError::Invalid)?;
         let operation_digest = dispatch_operation_digest(
             &self.authority.grant_digest,
             self.lease_id(),
@@ -1111,12 +1104,8 @@ impl ProductionDurableWriter {
             other => ProductionWriterError::Local(other),
         })?
         .event_id;
-        let entered_claim = operation_claims::mark_entered(
-            &self.store,
-            &owner_claim,
-            now_unix_ms()?,
-        )
-        .await?;
+        let entered_claim =
+            operation_claims::mark_entered(&self.store, &owner_claim, now_unix_ms()?).await?;
 
         // Then consume the single-use grant and revalidate it immediately at
         // target entry. If either check fails before the adapter is entered we
@@ -1845,8 +1834,9 @@ fn now_unix_ms() -> Result<u64, ProductionWriterError> {
         .duration_since(UNIX_EPOCH)
         .map_err(|error| ProductionWriterError::Invalid(format!("system clock failed: {error}")))?
         .as_millis();
-    u64::try_from(millis)
-        .map_err(|_| ProductionWriterError::Invalid("system clock millisecond overflow".to_string()))
+    u64::try_from(millis).map_err(|_| {
+        ProductionWriterError::Invalid("system clock millisecond overflow".to_string())
+    })
 }
 
 fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
@@ -2781,16 +2771,16 @@ mod final_use_dispatch_tests {
     }
 
     fn test_nonce(label: &str) -> [u8; 32] {
-    let now_nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock")
-        .as_nanos();
-    let material = format!("{label}:{now_nanos}:{}", std::process::id());
-    let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
-    digest.into()
-}
+        let now_nanos = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        let material = format!("{label}:{now_nanos}:{}", std::process::id());
+        let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
+        digest.into()
+    }
 
-fn signed_final_use(
+    fn signed_final_use(
         issuer: &SigningKey,
         binding: FinalUseBinding,
         grant_id: &str,
@@ -2870,7 +2860,12 @@ fn signed_final_use(
             .final_use_binding(&queued, target.destination_id())
             .await
             .expect("canonical final-use binding");
-        let signed = signed_final_use(&issuer, binding.clone(), "final-use-good", test_nonce("final-use-good"));
+        let signed = signed_final_use(
+            &issuer,
+            binding.clone(),
+            "final-use-good",
+            test_nonce("final-use-good"),
+        );
         let dispatched = dispatcher
             .dispatch(&writer, &signed, &binding, queued)
             .await

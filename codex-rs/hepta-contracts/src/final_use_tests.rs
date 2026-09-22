@@ -8,7 +8,9 @@ use std::future::Future;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::task::{Context, Poll, Waker};
+use std::task::Context;
+use std::task::Poll;
+use std::task::Waker;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -215,7 +217,7 @@ fn capacity_snapshot_tracks_claims_revocations_and_epoch_rollover() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     let revoked = authority.capacity().unwrap();
@@ -480,7 +482,7 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
         retired_frontier,
     )
     .unwrap();
-    let mut retired_old = old_grant.clone();
+    let mut retired_old = old_grant;
     retired_old.grant.authority_epoch = 10;
     retired_old.grant.grant_id = "retired-old-key".into();
     retired_old.grant.nonce = [26; 32];

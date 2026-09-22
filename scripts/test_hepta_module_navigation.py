@@ -58,7 +58,11 @@ class ModuleNavigationTests(unittest.TestCase):
         )
 
     def test_empty_guide_and_broken_or_escaping_links_still_fail(self):
-        for prose in (" ", "[missing](not-present.md)", "[escape](../../../../outside.md)"):
+        for prose in (
+            " ",
+            "[missing](not-present.md)",
+            "[escape](../../../../outside.md)",
+        ):
             with self.subTest(prose=prose), self.assertRaises(SystemExit):
                 self.verify(prose=prose)
 
@@ -87,7 +91,10 @@ class ModuleNavigationTests(unittest.TestCase):
                 if path == f"docs/modules/{index}.json":
                     document[key].append(copy.deepcopy(document[key][0]))
 
-            with self.subTest(index=index), self.assertRaisesRegex(SystemExit, "duplicate"):
+            with (
+                self.subTest(index=index),
+                self.assertRaisesRegex(SystemExit, "duplicate"),
+            ):
                 self.verify(transform=change)
 
     def test_machine_contract_inventory_remains_enforced(self):

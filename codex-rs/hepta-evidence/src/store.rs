@@ -102,7 +102,7 @@ impl HeptaEvidenceStore {
     /// deliberately does not run the migrator; an absent, partial, or drifted
     /// migration ledger fails closed instead.
     pub async fn open_existing_read_only(sqlite: &SqliteConfig) -> Result<Self, EvidenceError> {
-        let path = sqlite.home().join(EVIDENCE_DB_FILENAME);
+        let path = sqlite.home().join(EVIDENCE_DATABASE_LINEAGE);
         let pool = sqlite
             .open_read_only_pool(&path)
             .await

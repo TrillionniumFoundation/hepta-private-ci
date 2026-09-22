@@ -59,8 +59,8 @@ mod unix {
         .unwrap();
         let token = authority.claim(&signed, &binding).unwrap();
 
-        let callback_authority = authority.clone();
-        let grant_id = signed.grant.grant_id.clone();
+        let callback_authority = authority;
+        let grant_id = signed.grant.grant_id;
         let (tx, rx) = mpsc::channel();
         std::thread::spawn(move || {
             let result = callback_authority.with_verified_use(token, &binding, || {

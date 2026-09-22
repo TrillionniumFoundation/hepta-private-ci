@@ -262,9 +262,9 @@ fn candidate(
         id(&format!("admission:{item_id}")),
         ContextAdmissionBindingV2 {
             item_id: id(item_id),
-            role: role,
+            role,
             content_digest: tokenization.content_digest(),
-            source_digest: source_digest,
+            source_digest,
             generation_vector_digest: digest("generation-vector"),
             scope_digest: digest("scope"),
             authority_domain_digest: digest("authority-domain"),

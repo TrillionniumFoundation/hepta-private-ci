@@ -149,9 +149,9 @@ fn direct_request(intent: &OperationIntentV1, payload: String) -> ProductionDisp
         operation_semantic_sha256: Sha256Digest::parse(intent.semantic_digest().to_string())
             .expect("semantic digest"),
         operation_policy_generation: intent.policy_generation().get(),
-        expected_predecessor_sha256: intent.expected_predecessor().map(|digest| {
-            Sha256Digest::parse(digest.to_string()).expect("predecessor digest")
-        }),
+        expected_predecessor_sha256: intent
+            .expected_predecessor()
+            .map(|digest| Sha256Digest::parse(digest.to_string()).expect("predecessor digest")),
         operation_digest: Sha256Digest::for_bytes(b"qualification-operation-digest"),
     }
 }
@@ -218,9 +218,12 @@ impl ProductionOutboxTarget for LostAckTarget {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
         Box::pin(async move {
             match self.inner.dispatch(request).await {
-                ProductionTargetOutcome::Committed { .. } => ProductionTargetOutcome::Indeterminate {
-                    reason: "transport acknowledgement lost after destination commit".to_string(),
-                },
+                ProductionTargetOutcome::Committed { .. } => {
+                    ProductionTargetOutcome::Indeterminate {
+                        reason: "transport acknowledgement lost after destination commit"
+                            .to_string(),
+                    }
+                }
                 other => other,
             }
         })
@@ -262,11 +265,9 @@ async fn destination_recomputes_full_semantics_and_deduplicates_exact_replay() {
     let temp = TempDir::new().expect("temp");
     let store = store(&temp).await;
     let owner = store.owner_agent_id().clone();
-    let target = CognitiveSourceOutboxTarget::new(
-        store,
-        CognitiveAccess::agent_private(owner.clone()),
-    )
-    .expect("target");
+    let target =
+        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
+            .expect("target");
 
     let operation_id = "operation:cognitive-dedupe";
     let (draft, payload) = source_payload(operation_id, b"stable-source-content");
@@ -298,11 +299,9 @@ async fn predecessor_mismatch_is_deterministic_not_applied_inside_destination_tr
     let temp = TempDir::new().expect("temp");
     let store = store(&temp).await;
     let owner = store.owner_agent_id().clone();
-    let target = CognitiveSourceOutboxTarget::new(
-        store,
-        CognitiveAccess::agent_private(owner.clone()),
-    )
-    .expect("target");
+    let target =
+        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
+            .expect("target");
 
     let operation_id = "operation:cognitive-predecessor-mismatch";
     let (draft, payload) = source_payload(operation_id, b"predecessor-mismatch");
@@ -334,11 +333,9 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
     )
     .await
     .expect("production writer");
-    let real_target = CognitiveSourceOutboxTarget::new(
-        store,
-        CognitiveAccess::agent_private(owner.clone()),
-    )
-    .expect("real target");
+    let real_target =
+        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
+            .expect("real target");
     let target = Arc::new(LostAckTarget {
         inner: real_target.clone(),
     });

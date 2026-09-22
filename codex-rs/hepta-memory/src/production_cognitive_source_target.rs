@@ -131,10 +131,14 @@ impl CognitiveSourceOutboxTarget {
             ));
         }
         if request.operation_destination_id != COGNITIVE_SOURCE_DESTINATION_V1 {
-            return Err("durable operation destination does not match cognitive source target".to_string());
+            return Err(
+                "durable operation destination does not match cognitive source target".to_string(),
+            );
         }
         if request.operation_subject_id != self.store.owner_agent_id().as_str() {
-            return Err("durable operation owner does not match cognitive source store".to_string());
+            return Err(
+                "durable operation owner does not match cognitive source store".to_string(),
+            );
         }
         if request.idempotency_key != request.occurrence_key {
             return Err("dispatch idempotency key must equal operation id".to_string());
@@ -194,7 +198,9 @@ impl CognitiveSourceOutboxTarget {
         }
         let expected_scope = Sha256Digest::for_bytes(&scope_bytes);
         if expected_scope != request.operation_scope_sha256 {
-            return Err("operation scope digest does not match destination payload scope".to_string());
+            return Err(
+                "operation scope digest does not match destination payload scope".to_string(),
+            );
         }
         if draft.event_key != request.idempotency_key {
             return Err(
@@ -376,8 +382,9 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
             // that will publish the destination row.
             if expected_predecessor.is_some() {
                 return ProductionTargetOutcome::NotApplied {
-                    reason: "destination predecessor/CAS mismatch: source identity has no predecessor"
-                        .to_string(),
+                    reason:
+                        "destination predecessor/CAS mismatch: source identity has no predecessor"
+                            .to_string(),
                 };
             }
 

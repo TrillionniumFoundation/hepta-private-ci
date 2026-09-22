@@ -48,7 +48,12 @@ fn immutable_registry_resolves_exact_definition_and_numeric_profile() {
         registry.require_numeric_profile(NumericProfileV1::HnmfPpmTowardZero),
         Ok(&profile)
     );
-    assert!(!registry.registry_digest().unwrap_or(Digest32::ZERO).is_zero());
+    assert!(
+        !registry
+            .registry_digest()
+            .unwrap_or(Digest32::ZERO)
+            .is_zero()
+    );
 }
 
 #[test]
@@ -119,9 +124,7 @@ fn registry_rejects_duplicate_identity_profile_version_capacity_and_aggregate_by
 
     let chunk = "x".repeat(MAX_REGISTRY_DEFINITION_BYTES_V1);
     let mut definitions = Vec::new();
-    for index in 0..=MAX_REGISTRY_AGGREGATE_DEFINITION_BYTES_V1
-        / MAX_REGISTRY_DEFINITION_BYTES_V1
-    {
+    for index in 0..=MAX_REGISTRY_AGGREGATE_DEFINITION_BYTES_V1 / MAX_REGISTRY_DEFINITION_BYTES_V1 {
         definitions.push(definition(
             RegistryKindV1::Schema,
             &format!("schema:item-{index}"),

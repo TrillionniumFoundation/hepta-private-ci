@@ -35,7 +35,10 @@ impl fmt::Display for OperationError {
             Self::Missing(id) => write!(formatter, "operation is missing: {id}"),
             Self::Conflict(id) => write!(formatter, "operation binding conflict: {id}"),
             Self::OperationBindingMismatch(id) => {
-                write!(formatter, "outbox intent is not bound to prepared operation: {id}")
+                write!(
+                    formatter,
+                    "outbox intent is not bound to prepared operation: {id}"
+                )
             }
             Self::InvalidDigest(field) => write!(formatter, "{field} digest must be nonzero"),
             Self::AuthorityWitnessDigestMismatch => {
