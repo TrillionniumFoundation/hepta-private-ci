@@ -82,6 +82,12 @@ jobs:
           printf 'base=%s\n' "$BASE_SHA" >> "$GITHUB_OUTPUT"
           printf 'head=%s\n' "$HEAD_SHA" >> "$GITHUB_OUTPUT"
 
+      # These tests use disposable Git repositories. Keep their diagnostics
+      # independent of global document verification and Cargo materialization.
+      - name: Exercise source identity migration and freshness regressions
+        shell: bash
+        run: python3 -m unittest discover -v -s scripts -p 'test_hepta_implementation_source_identity.py'
+
       - name: Verify repository integrity policy
         shell: bash
         run: |
