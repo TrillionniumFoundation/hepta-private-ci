@@ -327,5 +327,139 @@ class WorkspacePreflightTests(unittest.TestCase):
         self.assertTrue(verify_workspace(self.root)[1])
 
 
+    def duplicate_boundary_workspaces(self, name="codex-core", kind="dependencies"):
+        # Different package versions and explicit workspaces are legitimate
+        # distinct Cargo identities; a name-only index must not drop either.
+        self.write("Cargo.toml", '[workspace]\nmembers = ["app", "host"]\n')
+        self.write("app/Cargo.toml", f'[package]\nname = "{name}"\nversion = "1.0.0"\n')
+        self.write(
+            "host/Cargo.toml",
+            '[package]\nname = "codex-hepta-agentd"\nversion = "1.0.0"\n'
+            '[dependencies]\nolder = { package = "' + name + '", path = "../app" }\n'
+            'newer = { package = "' + name + '", path = "../foreign" }\n',
+        )
+        self.write(
+            "foreign/Cargo.toml",
+            '[workspace]\n[package]\nname = "' + name + '"\nversion = "2.0.0"\n'
+            f'[{kind}]\nrenamed = {{ package = "codex-hepta-memory", version = "1.0", optional = true }}\n',
+        )
+
+    def test_each_same_named_boundary_in_independent_workspaces_is_checked(self):
+        for name in ("codex-core", "codex-extension-api"):
+            for kind in ("dependencies", "build-dependencies", "target.'cfg(unix)'.dependencies"):
+                with self.subTest(name=name, kind=kind):
+                    self.duplicate_boundary_workspaces(name, kind)
+                    count, errors = verify_workspace(self.root)
+                    self.assertEqual(count, 3)
+                    self.assertEqual(len(errors), 1)
+                    self.assertIn(str(self.root / "foreign/Cargo.toml"), errors[0])
+                    self.assertIn("execution boundary", errors[0])
+                    self.assertIn("codex-hepta-memory", errors[0])
+
+    def test_two_offending_same_named_boundaries_both_report(self):
+        self.duplicate_boundary_workspaces()
+        with (self.root / "app/Cargo.toml").open("a") as stream:
+            stream.write('[dependencies]\ncodex-hepta-memory = "1.0"\n')
+        errors = verify_workspace(self.root)[1]
+        self.assertEqual(len(errors), 2)
+        for path in ("app/Cargo.toml", "foreign/Cargo.toml"):
+            self.assertTrue(any(error.startswith(str(self.root / path) + ":") for error in errors))
+
+    def test_same_named_foreign_boundary_transitive_dependencies_are_checked(self):
+        self.duplicate_boundary_workspaces()
+        self.write(
+            "foreign/Cargo.toml",
+            '[workspace]\n[package]\nname = "codex-core"\nversion = "2.0.0"\n'
+            '[dependencies]\nhelper = { path = "helper" }\n',
+        )
+        self.write(
+            "foreign/helper/Cargo.toml",
+            '[package]\nname = "helper"\nversion = "1.0.0"\n'
+            '[build-dependencies]\ncodex-hepta-memory = "1.0"\n',
+        )
+        count, errors = verify_workspace(self.root)
+        self.assertEqual(count, 4)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("codex-core --dependencies--> helper --build-dependencies--> codex-hepta-memory", errors[0])
+
+    def test_same_named_foreign_boundary_inherits_its_own_alias(self):
+        self.duplicate_boundary_workspaces()
+        self.write(
+            "foreign/Cargo.toml",
+            '[workspace]\n[workspace.dependencies]\n'
+            'alias = { package = "codex-hepta-memory", version = "1.0" }\n'
+            '[package]\nname = "codex-core"\nversion = "2.0.0"\n'
+            '[dependencies]\nalias.workspace = true\n',
+        )
+        errors = verify_workspace(self.root)[1]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("execution boundary", errors[0])
+        self.assertNotIn("workspace.dependencies.alias is missing", errors[0])
+
+    def test_dependency_enumeration_order_cannot_hide_a_boundary(self):
+        self.duplicate_boundary_workspaces()
+        first = verify_workspace(self.root)
+        self.write("Cargo.toml", '[workspace]\nmembers = ["host", "app"]\n')
+        self.assertEqual(first, verify_workspace(self.root))
+        self.assertEqual(len(first[1]), 1)
+
+    def test_same_named_safe_independent_workspaces_are_not_duplicate_errors(self):
+        self.duplicate_boundary_workspaces(kind="dev-dependencies")
+        self.assertEqual(verify_workspace(self.root), (3, []))
+
+    def test_duplicate_names_inside_one_workspace_still_fail(self):
+        self.write("Cargo.toml", '[workspace]\nmembers = ["app", "other"]\n')
+        self.write("app/Cargo.toml", '[package]\nname = "codex-core"\nversion = "1.0.0"\n')
+        self.write("other/Cargo.toml", '[package]\nname = "codex-core"\nversion = "2.0.0"\n')
+        count, errors = verify_workspace(self.root)
+        self.assertEqual(count, 2)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("duplicate local package codex-core", errors[0])
+
+    def test_multiple_aliases_to_one_boundary_are_one_vertex(self):
+        self.duplicate_boundary_workspaces()
+        with (self.root / "host/Cargo.toml").open("a") as stream:
+            stream.write('again = { package = "codex-core", path = "../foreign/../foreign" }\n')
+        count, errors = verify_workspace(self.root)
+        self.assertEqual(count, 3)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("execution boundary", errors[0])
+
+    def test_unreferenced_same_named_fixture_is_not_an_execution_boundary(self):
+        self.write(
+            "app/tests/fixtures/core/Cargo.toml",
+            '[workspace]\n[package]\nname = "codex-core"\nversion = "2.0.0"\n'
+            '[dependencies]\ncodex-hepta-memory = "1.0"\n',
+        )
+        self.assertEqual(verify_workspace(self.root), (1, []))
+
+    def test_shared_contract_exemption_still_traverses_each_boundary(self):
+        self.duplicate_boundary_workspaces()
+        self.write(
+            "foreign/Cargo.toml",
+            '[workspace]\n[package]\nname = "codex-core"\nversion = "2.0.0"\n'
+            '[dependencies]\ncodex-hepta-contracts = { path = "contracts" }\n',
+        )
+        self.write(
+            "foreign/contracts/Cargo.toml",
+            '[package]\nname = "codex-hepta-contracts"\nversion = "1.0.0"\n'
+            '[dependencies]\ncodex-hepta-memory = "1.0"\n',
+        )
+        errors = verify_workspace(self.root)[1]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("codex-core --dependencies--> codex-hepta-contracts --dependencies--> codex-hepta-memory", errors[0])
+
+    def test_same_named_boundary_cycle_remains_finite_and_deterministic(self):
+        self.duplicate_boundary_workspaces()
+        with (self.root / "foreign/Cargo.toml").open("a") as stream:
+            stream.write('previous = { package = "codex-core", path = "../app" }\n')
+        with (self.root / "app/Cargo.toml").open("a") as stream:
+            stream.write('[dependencies]\nnext = { package = "codex-core", path = "../foreign" }\n')
+        result = verify_workspace(self.root)
+        self.assertEqual(result, verify_workspace(self.root))
+        self.assertEqual(result[0], 3)
+        self.assertEqual(len(result[1]), 2)
+
+
 if __name__ == "__main__":
     unittest.main()

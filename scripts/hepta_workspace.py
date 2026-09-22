@@ -30,7 +30,7 @@ PRODUCT_PREFIXES = ("codex-hepta-", "hepta-", "codex-heptabao")
 
 
 def execution_boundary_errors(
-    package_paths: dict[str, Path],
+    package_paths: dict[Path, str],
     edges: dict[Path, list[tuple[str, Path | None, str]]],
 ) -> list[str]:
     """Report shortest local product paths, without following test-only edges.
@@ -39,8 +39,15 @@ def execution_boundary_errors(
     once, so cycles and shared helpers cannot cause unbounded recursion.
     """
     errors = []
-    for name in sorted(EXECUTION_BOUNDARIES & package_paths.keys()):
-        root = package_paths[name]
+    # A reachable package can belong to another workspace and legitimately
+    # reuse a name/version family. Check every manifest instance, not just the
+    # first package with that name. Duplicate names within one owner workspace
+    # are still rejected separately by verify_workspace.
+    boundaries = sorted(
+        ((path, name) for path, name in package_paths.items() if name in EXECUTION_BOUNDARIES),
+        key=lambda item: (item[1], str(item[0])),
+    )
+    for root, name in boundaries:
         queue = deque([(root, name)])
         visited = {root}
         reported: set[str] = set()
@@ -165,7 +172,7 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
     if "package" in document:
         queue.append(workspace / "Cargo.toml")
     seen: set[Path] = set()
-    package_paths: dict[str, Path] = {}
+    package_paths: dict[Path, str] = {}
     owned_names: dict[tuple[Path, str], Path] = {}
     while queue:
         path = queue.popleft().resolve()
@@ -187,7 +194,7 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
             )
         else:
             owned_names[owner, name] = path
-            package_paths.setdefault(name, path)
+            package_paths[path] = name
         for key, value in package.items():
             if isinstance(value, dict) and value.get("workspace") is True:
                 if key not in package_settings.get("package", {}):
