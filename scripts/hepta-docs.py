@@ -2018,9 +2018,7 @@ def self_test():
 
     need(shape_sha({"a": 1}) != shape_sha({"a": "1"}), "shape fixture")
     cases.append("shape")
-    need(
-        list(authority_fixture()) == AUTHORITY_KEYS, "authority fixture"
-    )
+    need(list(authority_fixture()) == AUTHORITY_KEYS, "authority fixture")
     cases.append("authority")
     fixture_name = "hepta-cleanup-fixture-7c3d.json"
     basename_pattern = deleted_json_basename_pattern("legacy/" + fixture_name)

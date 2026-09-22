@@ -4,54 +4,54 @@ use std::fmt;
 use crate::Digest32;
 use crate::StableId;
 
-/// Maximum number of observed token positions carried by the canonical
-/// PromptDeliveryObservationV1 contract. 8,192 u32 positions fit the
-/// protocol registry's 32 KiB bounded-array ceiling exactly.
+/// The registered protocol permits up to 32 KiB for token positions.
+/// 8,192 canonical u32 positions consume that bound exactly.
 pub const MAX_PROMPT_TOKEN_POSITIONS_V1: usize = 8_192;
+pub const MAX_PROMPT_REJECTION_REASON_BYTES_V1: usize = 64;
 
 const PROMPT_DELIVERY_DIGEST_DOMAIN: &[u8] = b"hepta.prompt-delivery-observation.v1";
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum PromptDeliveryRejectionV1 {
-    RuntimeRejected,
-    ProviderRejected,
-    PayloadRejected,
-    StaleAttachment,
-}
-
-impl PromptDeliveryRejectionV1 {
-    pub const fn as_str(self) -> &'static str {
-        match self {
-            Self::RuntimeRejected => "runtime_rejected",
-            Self::ProviderRejected => "provider_rejected",
-            Self::PayloadRejected => "payload_rejected",
-            Self::StaleAttachment => "stale_attachment",
-        }
-    }
-
-    const fn tag(self) -> u8 {
-        match self {
-            Self::RuntimeRejected => 0,
-            Self::ProviderRejected => 1,
-            Self::PayloadRejected => 2,
-            Self::StaleAttachment => 3,
-        }
-    }
-}
-
-/// Canonical cross-module delivery observation produced by `runtime.codex`
-/// and consumed by learning/evaluation modules.
+/// Open, bounded rejection reason for PromptDeliveryObservationV1.
 ///
-/// This type intentionally contains no runtime handle or authority. A value is
-/// evidence only after the producer has bound `provider_request_digest` to the
-/// exact request bytes that crossed the runtime boundary.
+/// The canonical schema registers an enum-shaped field but intentionally does
+/// not freeze provider/runtime-specific members. The stable identifier is
+/// therefore validated and digest-bound without inventing a closed value set.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptDeliveryRejectReasonV1(StableId);
+
+impl PromptDeliveryRejectReasonV1 {
+    pub fn new(value: StableId) -> Result<Self, PromptDeliveryErrorV1> {
+        if value.as_str().is_empty() || value.as_str().len() > MAX_PROMPT_REJECTION_REASON_BYTES_V1
+        {
+            return Err(PromptDeliveryErrorV1::InvalidRejectionReason);
+        }
+        Ok(Self(value))
+    }
+
+    #[must_use]
+    pub fn as_id(&self) -> &StableId {
+        &self.0
+    }
+
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}
+
+/// Canonical cross-module delivery observation produced by runtime.codex and
+/// consumed by the learning/evaluation plane.
+///
+/// This is evidence, not authority. A producer must bind
+/// provider_request_digest to the exact provider request at its physical
+/// boundary before constructing this value.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptDeliveryObservationV1 {
     pub compilation_id: StableId,
     pub provider_request_digest: Digest32,
     pub delivered: bool,
-    pub rejected_reason: Option<PromptDeliveryRejectionV1>,
-    pub observed_token_positions: Vec<u32>,
+    pub rejected_reason: Option<PromptDeliveryRejectReasonV1>,
+    pub observed_token_positions: Option<Vec<u32>>,
     pub truncation_observed: bool,
 }
 
@@ -65,20 +65,21 @@ impl PromptDeliveryObservationV1 {
         {
             return Err(PromptDeliveryErrorV1::InvalidDisposition);
         }
-        if self.observed_token_positions.len() > MAX_PROMPT_TOKEN_POSITIONS_V1 {
-            return Err(PromptDeliveryErrorV1::TokenPositionLimitExceeded);
-        }
-        if self
-            .observed_token_positions
-            .windows(2)
-            .any(|pair| pair[0] >= pair[1])
-        {
-            return Err(PromptDeliveryErrorV1::NonCanonicalTokenPositions);
+        if let Some(positions) = &self.observed_token_positions {
+            if positions.is_empty() {
+                return Err(PromptDeliveryErrorV1::EmptyTokenPositions);
+            }
+            if positions.len() > MAX_PROMPT_TOKEN_POSITIONS_V1 {
+                return Err(PromptDeliveryErrorV1::TokenPositionLimitExceeded);
+            }
+            if positions.windows(2).any(|pair| pair[0] >= pair[1]) {
+                return Err(PromptDeliveryErrorV1::NonCanonicalTokenPositions);
+            }
         }
         Ok(())
     }
 
-    /// Digest of every semantic field in the registered V1 observation.
+    /// Digest over every semantic field in the registered V1 observation.
     pub fn semantic_digest(&self) -> Result<Digest32, PromptDeliveryErrorV1> {
         self.validate()?;
         let mut bytes = Vec::new();
@@ -86,20 +87,26 @@ impl PromptDeliveryObservationV1 {
         push_id(&mut bytes, &self.compilation_id);
         bytes.extend_from_slice(self.provider_request_digest.as_array());
         bytes.push(u8::from(self.delivered));
-        match self.rejected_reason {
+        match &self.rejected_reason {
             Some(reason) => {
                 bytes.push(1);
-                bytes.push(reason.tag());
+                push_id(&mut bytes, reason.as_id());
             }
             None => bytes.push(0),
         }
-        bytes.extend_from_slice(
-            &u32::try_from(self.observed_token_positions.len())
-                .unwrap_or(u32::MAX)
-                .to_be_bytes(),
-        );
-        for position in &self.observed_token_positions {
-            bytes.extend_from_slice(&position.to_be_bytes());
+        match &self.observed_token_positions {
+            Some(positions) => {
+                bytes.push(1);
+                bytes.extend_from_slice(
+                    &u32::try_from(positions.len())
+                        .unwrap_or(u32::MAX)
+                        .to_be_bytes(),
+                );
+                for position in positions {
+                    bytes.extend_from_slice(&position.to_be_bytes());
+                }
+            }
+            None => bytes.push(0),
         }
         bytes.push(u8::from(self.truncation_observed));
         Ok(Digest32::of_bytes(&bytes))
@@ -109,7 +116,9 @@ impl PromptDeliveryObservationV1 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PromptDeliveryErrorV1 {
     EmptyProviderRequestDigest,
+    InvalidRejectionReason,
     InvalidDisposition,
+    EmptyTokenPositions,
     TokenPositionLimitExceeded,
     NonCanonicalTokenPositions,
 }

@@ -1,5 +1,7 @@
-use codex_hepta_types::{PromptDeliveryObservationV1, PromptDeliveryRejectionV1};
-use crate::{PromptDeliveryLineageV1, PromptDeliveryObservation};
+use crate::PromptDeliveryLineageV1;
+use crate::PromptDeliveryObservation;
+use codex_hepta_types::PromptDeliveryObservationV1;
+use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
@@ -616,7 +618,7 @@ fn runtime_prompt_delivery() -> PromptDeliveryObservationV1 {
         provider_request_digest: Digest32::of_bytes(b"runtime-provider-request"),
         delivered: true,
         rejected_reason: None,
-        observed_token_positions: vec![2, 4, 8],
+        observed_token_positions: Some(vec![2, 4, 8]),
         truncation_observed: false,
     }
 }
@@ -678,8 +680,10 @@ fn rejected_runtime_delivery_preserves_rejection_lineage() {
         compilation_id: id("compilation:runtime-rejected"),
         provider_request_digest: Digest32::of_bytes(b"runtime-provider-rejected"),
         delivered: false,
-        rejected_reason: Some(PromptDeliveryRejectionV1::ProviderRejected),
-        observed_token_positions: Vec::new(),
+        rejected_reason: Some(must(PromptDeliveryRejectReasonV1::new(id(
+            "provider_rejected",
+        )))),
+        observed_token_positions: None,
         truncation_observed: false,
     };
     must(ledger.append_runtime_prompt_delivery_v1(runtime_prompt_lineage(), runtime));

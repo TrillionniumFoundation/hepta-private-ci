@@ -5,7 +5,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::PromptDeliveryObservationV1 as RuntimePromptDeliveryObservationV1;
-use codex_hepta_types::PromptDeliveryRejectionV1;
+use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
 
 use crate::AppendDisposition;
@@ -118,8 +118,10 @@ impl LearningLedger {
             .semantic_digest()
             .map_err(|_| LedgerError::InvalidDeliveryObservation)?;
         let rejected_reason_digest = observation.rejected_reason.map(rejection_digest);
-        let observed_token_positions_digest =
-            token_positions_digest(&observation.observed_token_positions);
+        let observed_token_positions_digest = observation
+            .observed_token_positions
+            .as_deref()
+            .and_then(token_positions_digest);
         let observer_id =
             StableId::new("runtime.codex").map_err(|_| LedgerError::InternalInvariant)?;
 
@@ -786,7 +788,10 @@ impl LearningLedger {
                 });
                 decision_active && outcome_active
             }
-            LedgerEvent::PromptDelivery(delivery) => self.decisions.get(&delivery.episode_id).is_some_and(|decision| !self.revoked.contains(&decision.record_id)),
+            LedgerEvent::PromptDelivery(delivery) => self
+                .decisions
+                .get(&delivery.episode_id)
+                .is_some_and(|decision| !self.revoked.contains(&decision.record_id)),
             LedgerEvent::Revocation(_) | LedgerEvent::UnlearningLineageV1(_) => true,
         }
     }
@@ -838,7 +843,7 @@ fn validate_authenticated_outcome_state(
     Ok(())
 }
 
-fn rejection_digest(reason: PromptDeliveryRejectionV1) -> Digest32 {
+fn rejection_digest(reason: PromptDeliveryRejectReasonV1) -> Digest32 {
     let mut bytes = b"hepta.learning-ledger.prompt-delivery-rejection.v1".to_vec();
     bytes.extend_from_slice(reason.as_str().as_bytes());
     Digest32::of_bytes(&bytes)

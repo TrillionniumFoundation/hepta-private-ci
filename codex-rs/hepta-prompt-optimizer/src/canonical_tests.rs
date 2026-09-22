@@ -1,14 +1,35 @@
 use super::*;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_prompt_registry::DurablePromptRegistry;
+use codex_hepta_prompt_registry::final_use_admission_binding;
+use codex_hepta_prompt_registry::final_use_realization_binding;
+use codex_hepta_prompt_registry::final_use_revoke_binding;
+use ed25519_dalek::Signer;
+use std::collections::BTreeSet;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
-use codex_hepta_kg::{
-    build_complete_generation, KnowledgeEdgeIdentityV2, KnowledgeEdgeV2, KnowledgeNodeV2,
-    KnowledgeProjectionInputV2, KnowledgeRelationKindV2, KnowledgeSupportV2,
-};
-use codex_hepta_learning_ledger::{
-    AuthenticatedPrincipalV1, LearningEvidenceTrustV1, TrustedLearningSignerV1,
-};
-use codex_hepta_prompt_registry::{PromptRealizationBindingV2, PromptRoleV2, FactorSource, Lifecycle, PromptFactor};
-use codex_hepta_types::{Generation, ProbabilityQ32, Revision};
+use codex_hepta_kg::KnowledgeEdgeIdentityV2;
+use codex_hepta_kg::KnowledgeEdgeV2;
+use codex_hepta_kg::KnowledgeNodeV2;
+use codex_hepta_kg::KnowledgeProjectionInputV2;
+use codex_hepta_kg::KnowledgeRelationKindV2;
+use codex_hepta_kg::KnowledgeSupportV2;
+use codex_hepta_kg::build_complete_generation;
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_prompt_registry::FactorSource;
+use codex_hepta_prompt_registry::Lifecycle;
+use codex_hepta_prompt_registry::PromptFactor;
+use codex_hepta_prompt_registry::PromptRealizationBindingV2;
+use codex_hepta_prompt_registry::PromptRoleV2;
+use codex_hepta_types::Generation;
+use codex_hepta_types::ProbabilityQ32;
+use codex_hepta_types::Revision;
 use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
@@ -61,7 +82,10 @@ fn candidate(factor: &str, realization: &str, tokens: u32) -> PromptCandidateBin
     }
 }
 
-fn dummy_snapshot(tuple: &PromptModelTupleV2, generation_vector: Digest32) -> PromptRegistrySnapshotV2 {
+fn dummy_snapshot(
+    tuple: &PromptModelTupleV2,
+    generation_vector: Digest32,
+) -> PromptRegistrySnapshotV2 {
     PromptRegistrySnapshotV2 {
         revision: Revision::new(1).unwrap_or_else(|error| panic!("revision: {error}")),
         registry_digest: digest("registry"),
@@ -108,27 +132,29 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
     let priced_rows = rows
         .into_iter()
         .zip(candidates)
-        .map(|((factor, _, tokens, utility), binding)| PricedPromptCandidateV1 {
-            binding,
-            pricing: PromptPricingReceiptV1 {
-                factor_id: id(factor),
-                state_digest: state,
-                expected_utility_q32: FixedQ32::from_raw(utility),
-                downside_q32: FixedQ32::ZERO,
-                token_cost: tokens,
-                latency_cost_micros: 0,
-                interference_ppm: 0,
-                confidence_interval: PromptConfidenceIntervalV1 {
-                    lower_q32: FixedQ32::from_raw(utility),
-                    upper_q32: FixedQ32::from_raw(utility),
-                    support_count: 10,
-                    support_audit_digest: digest("support-audit"),
+        .map(
+            |((factor, _, tokens, utility), binding)| PricedPromptCandidateV1 {
+                binding,
+                pricing: PromptPricingReceiptV1 {
+                    factor_id: id(factor),
+                    state_digest: state,
+                    expected_utility_q32: FixedQ32::from_raw(utility),
+                    downside_q32: FixedQ32::ZERO,
+                    token_cost: tokens,
+                    latency_cost_micros: 0,
+                    interference_ppm: 0,
+                    confidence_interval: PromptConfidenceIntervalV1 {
+                        lower_q32: FixedQ32::from_raw(utility),
+                        upper_q32: FixedQ32::from_raw(utility),
+                        support_count: 10,
+                        support_audit_digest: digest("support-audit"),
+                    },
+                    receipt_digest: digest(&format!("pricing:{factor}")),
+                    authority: AuthorityPosture::DENY_ALL,
                 },
-                receipt_digest: digest(&format!("pricing:{factor}")),
-                authority: AuthorityPosture::DENY_ALL,
+                net_utility_q32: FixedQ32::from_raw(utility),
             },
-            net_utility_q32: FixedQ32::from_raw(utility),
-        })
+        )
         .collect();
     PricedPromptCandidatesV1 {
         candidates: enumerated,
@@ -250,7 +276,10 @@ fn prerequisite_bundle_can_select_negative_prerequisite_for_positive_bundle() {
         selected.receipt.factor_ids,
         vec![id("factor:a"), id("factor:b")]
     );
-    assert_eq!(selected.receipt.expected_utility_q32, FixedQ32::from_raw(99));
+    assert_eq!(
+        selected.receipt.expected_utility_q32,
+        FixedQ32::from_raw(99)
+    );
     assert_eq!(
         selected.optimality,
         PromptOptimalityDisclosureV1::HeuristicNoCertificate
@@ -308,40 +337,14 @@ fn incomplete_candidate_completeness_cannot_be_authenticated_for_pricing() {
     assert!(candidate_completeness_signing_payload_v1(&receipt).is_err());
 }
 
-
-fn register_factor(registry: &mut PromptRegistry, factor_id: &str) {
-    registry
-        .register_factor(PromptFactor {
-            factor_id: id(factor_id),
-            proposer_id: id(&format!("proposer:{factor_id}")),
-            semantic_version: id("v1"),
-            content_digest: digest(&format!("factor:{factor_id}")),
-            source: FactorSource::GovernedInternal,
-            lifecycle: Lifecycle::Draft,
-        })
-        .unwrap_or_else(|error| panic!("register factor: {error}"));
-    registry
-        .admit_factor(
-            &id(factor_id),
-            &id(&format!("reviewer:{factor_id}")),
-            digest("admission"),
-        )
-        .unwrap_or_else(|error| panic!("admit factor: {error}"));
-}
-
 #[test]
 fn enumeration_selects_lowest_cost_compatible_realization_per_factor() {
-    let mut registry = PromptRegistry::new(64).expect("registry");
-    register_factor(&mut registry, "factor:a");
-    registry
-        .register_realization_v2(binding("factor:a", "realization:expensive", 50))
-        .expect("expensive");
-    registry
-        .register_realization_v2(binding("factor:a", "realization:cheap", 5))
-        .expect("cheap");
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (registry, _tuple, _authority, _signing_key, _now) =
+        registry_fixture(&temp.path().join("registry"), &[50, 5]);
 
     let enumerated = enumerate_factors_v1(
-        &registry,
+        registry.registry().expect("registry"),
         PromptEnumerationRequestV1 {
             set_id: id("set:enum"),
             objective_digest: digest("objective"),
@@ -358,19 +361,31 @@ fn enumeration_selects_lowest_cost_compatible_realization_per_factor() {
     assert_eq!(enumerated.candidates.len(), 1);
     assert_eq!(
         enumerated.candidates[0].realization.realization_id,
-        id("realization:cheap")
+        id("realization:1")
     );
     assert!(!enumerated.receipt.authority.grants_any());
 }
 
 #[test]
 fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
-    let mut registry = PromptRegistry::new(64).expect("registry");
-    register_factor(&mut registry, "factor:a");
-    let realization = binding("factor:a", "realization:a", 1);
-    registry
-        .register_realization_v2(realization.clone())
-        .expect("realization");
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, _tuple, authority, signing_key, now) =
+        registry_fixture(&temp.path().join("registry"), &[1, 2]);
+    let snapshot = registry
+        .snapshot_v2(digest("generation-vector"), &model_tuple())
+        .expect("snapshot");
+    let realization = registry
+        .read_compatible_v2(
+            &snapshot,
+            digest("generation-vector"),
+            &model_tuple(),
+            100,
+            vec![id("factor:a")],
+            8,
+        )
+        .expect("bindings")
+        .bindings[0]
+        .clone();
     let selected = SelectedPromptPortfolioV1 {
         receipt: PromptPortfolioReceiptV1 {
             portfolio_id: id("portfolio:1"),
@@ -398,9 +413,24 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
         selection_method: PromptSelectionMethodV1::GreedyPrerequisiteBundleV1,
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
     };
-    registry.revoke_factor(&id("factor:a")).expect("revoke");
+    let live = exercise_v1(
+        registry.registry().expect("registry"),
+        &selected,
+        PromptExerciseRequestV1 {
+            decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
+            current_state_digest: digest("state"),
+            generation_vector_digest: digest("generation-vector"),
+            model_tuple: model_tuple(),
+            now_unix_ms: 200,
+            wait_value_q32: FixedQ32::ZERO,
+            policy_digest: digest("exercise-policy"),
+        },
+    )
+    .expect("selected realization remains live among alternatives");
+    assert_eq!(live.decision, PromptExerciseActionV1::Exercise);
+    revoke_registry(&mut registry, &authority, &signing_key, now);
     let exercise = exercise_v1(
-        &registry,
+        registry.registry().expect("registry"),
         &selected,
         PromptExerciseRequestV1 {
             decision_boundary: PromptDecisionBoundaryV1::BeforeModelOrToolDispatch,
@@ -415,4 +445,203 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     .expect("exercise receipt");
     assert_eq!(exercise.decision, PromptExerciseActionV1::RejectStale);
     assert!(!exercise.authority.grants_any());
+}
+
+fn registry_fixture(
+    root: &std::path::Path,
+    costs: &[u32],
+) -> (
+    DurablePromptRegistry,
+    PromptModelTupleV2,
+    FinalUseAuthority,
+    SigningKey,
+    u64,
+) {
+    let payload = b"payload";
+    let mut registry =
+        DurablePromptRegistry::open_state_dir(root, 64).expect("open durable registry");
+    let factor = PromptFactor {
+        factor_id: id("factor:a"),
+        proposer_id: id("proposer:1"),
+        semantic_version: id("v1"),
+        semantic_purpose: "inspect evidence before mutation".to_owned(),
+        authority_class: "registered_prompt_factor".to_owned(),
+        eligible_objective_dimensions: vec![id("dimension:truth")],
+        content_digest: digest("factor:a"),
+        source: FactorSource::GovernedInternal,
+        lifecycle: Lifecycle::Draft,
+    };
+    registry
+        .register_factor(factor.clone())
+        .expect("register factor");
+
+    let signing_key = SigningKey::from_bytes(&[23; 32]);
+    let authority_root = root
+        .parent()
+        .expect("registry root parent")
+        .join("prompt-admission-authority");
+    let authority = FinalUseAuthority::open_state_dir(
+        &authority_root,
+        "review-authority:prompt".to_owned(),
+        signing_key.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )
+    .expect("final-use authority");
+    let reviewer = id("reviewer:1");
+    let scope = digest("scope:prompt");
+    let evidence = digest("evidence:prompt");
+    let binding = final_use_admission_binding(&factor, &reviewer, scope, evidence)
+        .expect("final-use admission binding");
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_millis() as u64;
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "admission:prompt:1".to_owned(),
+        nonce: [23; 32],
+        binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    registry
+        .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
+        .expect("admit factor through final-use authority");
+    let admitted_factor = registry
+        .registry()
+        .expect("registry remains readable after admission")
+        .factor(&factor.factor_id)
+        .cloned()
+        .expect("admitted factor remains present");
+
+    let tuple = model_tuple();
+    // A registry profile admits only one active realization. Distinct roles
+    // provide legal alternatives for the optimizer without weakening that rule.
+    let roles = [
+        PromptRoleV2::DeveloperInstruction,
+        PromptRoleV2::SystemInstruction,
+    ];
+    assert!(costs.len() <= roles.len());
+    for (index, cost) in costs.iter().enumerate() {
+        let realization = PromptRealizationBindingV2 {
+            realization_id: id(&format!("realization:{index}")),
+            factor_id: factor.factor_id.clone(),
+            model_id: tuple.model_id.clone(),
+            model_version: tuple.model_version.clone(),
+            model_digest: tuple.model_digest,
+            tokenizer_digest: tuple.tokenizer_digest,
+            template_digest: tuple.template_digest,
+            tool_schema_digest: tuple.tool_schema_digest,
+            context_profile_digest: tuple.context_profile_digest,
+            locale_id: tuple.locale_id.clone(),
+            role: roles[index],
+            payload_digest: Digest32::of_bytes(payload),
+            token_cost: *cost,
+            expires_unix_ms: None,
+        };
+        let realization_actor = id("publisher:prompt");
+        let realization_scope = digest("scope:realization:prompt");
+        let authority_binding = final_use_realization_binding(
+            &admitted_factor,
+            &realization_actor,
+            realization_scope,
+            &realization,
+            None,
+        )
+        .expect("realization authority binding");
+        let realization_grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "review-authority:prompt".to_owned(),
+            authority_epoch: 1,
+            grant_id: format!("realization:prompt:{index}"),
+            nonce: [u8::try_from(index + 24).expect("small fixture"); 32],
+            binding: authority_binding,
+            not_before_unix_ms: now.saturating_sub(1_000),
+            expires_at_unix_ms: now + 30_000,
+        };
+        let realization_signed = SignedFinalUseGrant {
+            signature: signing_key
+                .sign(
+                    &realization_grant
+                        .signing_bytes()
+                        .expect("realization signing bytes"),
+                )
+                .to_bytes()
+                .to_vec(),
+            grant: realization_grant,
+        };
+        registry
+            .register_realization_payload_final_use_v2(
+                &authority,
+                &realization_signed,
+                &realization_actor,
+                realization_scope,
+                realization,
+                payload.to_vec(),
+                None,
+            )
+            .expect("register actual payload through final-use authority");
+    }
+    (registry, tuple, authority, signing_key, now)
+}
+
+fn revoke_registry(
+    registry: &mut DurablePromptRegistry,
+    authority: &FinalUseAuthority,
+    signing_key: &SigningKey,
+    grant_now: u64,
+) {
+    let factor = registry
+        .registry()
+        .expect("registry")
+        .factor(&id("factor:a"))
+        .cloned()
+        .expect("admitted factor");
+    let actor = id("revoker:test");
+    let revoke_scope = digest("scope:revoke:test");
+    let reason = digest("reason:revoke");
+    let cutoff = grant_now + 5_000;
+    let revoke_binding = final_use_revoke_binding(&factor, &actor, revoke_scope, reason, cutoff)
+        .expect("revoke binding");
+    let revoke_grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "revoke:prompt:1".to_owned(),
+        nonce: [250; 32],
+        binding: revoke_binding,
+        not_before_unix_ms: grant_now.saturating_sub(1_000),
+        expires_at_unix_ms: grant_now + 30_000,
+    };
+    let revoke_signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&revoke_grant.signing_bytes().expect("revoke signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant: revoke_grant,
+    };
+    registry
+        .revoke_factor_final_use(
+            authority,
+            &revoke_signed,
+            &factor.factor_id,
+            &actor,
+            revoke_scope,
+            reason,
+            cutoff,
+        )
+        .expect("final-use revocation");
 }

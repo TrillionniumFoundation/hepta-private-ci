@@ -2104,9 +2104,7 @@ impl ModelClientSession {
                     }
                 }
             }
-            if self.encoded_request_body_observer.is_some()
-                && admitted_provider_attempt.is_none()
-            {
+            if self.encoded_request_body_observer.is_some() && admitted_provider_attempt.is_none() {
                 return Err(CodexErr::Fatal(
                     "exact encoded request observation requires an admitted provider-policy attempt"
                         .to_string(),
@@ -3254,10 +3252,9 @@ where
                     }
                 }
                 Err(err) => {
-                    let provider_rejected = api_error_http_status(&err)
-                        == Some(StatusCode::UNAUTHORIZED.as_u16());
-                    let provider_terminal_result = if provider_rejected
-                    {
+                    let provider_rejected =
+                        api_error_http_status(&err) == Some(StatusCode::UNAUTHORIZED.as_u16());
+                    let provider_terminal_result = if provider_rejected {
                         provider_terminal
                             .finish_rejected("provider_response_unauthorized")
                             .await
@@ -3381,14 +3378,11 @@ async fn observe_encoded_request_terminal(
     let Some(observer) = observer else {
         return Ok(());
     };
-    observer
-        .observe_terminal(terminal)
-        .await
-        .map_err(|error| {
-            CodexErr::Fatal(format!(
-                "exact provider request terminal observation failed: {error}"
-            ))
-        })
+    observer.observe_terminal(terminal).await.map_err(|error| {
+        CodexErr::Fatal(format!(
+            "exact provider request terminal observation failed: {error}"
+        ))
+    })
 }
 
 async fn finish_abandoned_provider_response(

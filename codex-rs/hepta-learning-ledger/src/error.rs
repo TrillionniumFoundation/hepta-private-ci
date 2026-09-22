@@ -88,7 +88,9 @@ impl LedgerError {
             | Self::OutcomePredecessorNotHead(_)
             | Self::OutcomeLineageRootExists(_)
             | Self::OutcomeStateMismatch => "LRN-E005",
-            Self::PolicySelfLabelsOutcome | Self::PolicySelfObservesDelivery | Self::CreditAllocatorNotIndependent => "LRN-E006",
+            Self::PolicySelfLabelsOutcome
+            | Self::PolicySelfObservesDelivery
+            | Self::CreditAllocatorNotIndependent => "LRN-E006",
             Self::DeliveryAlreadyExists(_) | Self::InvalidDeliveryObservation => "LRN-E005",
             Self::CreditAlreadyAssigned
             | Self::CreditBatchAlreadyAssigned(_)

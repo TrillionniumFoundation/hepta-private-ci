@@ -5,19 +5,32 @@
 
 #![forbid(unsafe_code)]
 
+mod runtime_prompt;
+mod wire;
+
 use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::PromptDeliveryErrorV1;
+pub use codex_hepta_types::PromptDeliveryObservationV1;
+pub use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
 
-pub use codex_hepta_types::PromptDeliveryObservationV1;
-pub use codex_hepta_types::PromptDeliveryRejectionV1;
-
-mod wire;
-
+pub use runtime_prompt::PromptRuntimeAttachmentV1;
+pub use runtime_prompt::PromptRuntimeDeveloperFragmentV1;
+pub use runtime_prompt::PromptRuntimeDispatchFuture;
+pub use runtime_prompt::PromptRuntimeDispatchRecordV1;
+pub use runtime_prompt::PromptRuntimeError;
+pub use runtime_prompt::PromptRuntimeHost;
+pub use runtime_prompt::PromptRuntimeHostError;
+pub use runtime_prompt::PromptRuntimePrepareFuture;
+pub use runtime_prompt::PromptRuntimePrepareRequest;
+pub use runtime_prompt::PromptRuntimeRecordFuture;
+pub use runtime_prompt::PromptRuntimeTerminalOutcomeV1;
+pub use runtime_prompt::PromptRuntimeTerminalRecordV1;
+pub use runtime_prompt::install_prompt_runtime;
 pub use wire::CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2;
 pub use wire::CodexOperationIntentWireV2;
 pub use wire::WireAdapterError;
@@ -40,6 +53,16 @@ pub struct CodexOperationIntent {
 pub struct AppServerObservation {
     pub terminal_observed: bool,
     pub response_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptProviderTerminalObservationV1 {
+    pub terminal_observed: bool,
+    pub observed_provider_request_digest: Digest32,
+    pub delivered: bool,
+    pub rejected_reason: Option<PromptDeliveryRejectReasonV1>,
+    pub observed_token_positions: Option<Vec<u32>>,
+    pub truncation_observed: bool,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -65,8 +88,8 @@ pub struct PromptDeliveryBoundaryInputV1 {
     pub expected_payload_digest: Digest32,
     pub terminal_observed: bool,
     pub delivered: bool,
-    pub rejected_reason: Option<PromptDeliveryRejectionV1>,
-    pub observed_token_positions: Vec<u32>,
+    pub rejected_reason: Option<PromptDeliveryRejectReasonV1>,
+    pub observed_token_positions: Option<Vec<u32>>,
     pub truncation_observed: bool,
 }
 
@@ -76,6 +99,7 @@ pub enum Error {
     PayloadBindingMismatch,
     DeadlineExpired,
     MissingTerminalResponse,
+    InvalidPromptDeliveryObservation,
     PromptDeliveryNotTerminal,
     InvalidPromptDeliveryDisposition,
     TokenPositionLimitExceeded,
@@ -91,11 +115,36 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-pub fn adapt(
+pub fn observe_prompt_delivery_v1(
     now_ms: u64,
-    intent: CodexOperationIntent,
-    observation: Option<AppServerObservation>,
-) -> Result<CodexAdapterReceipt, Error> {
+    intent: &CodexOperationIntent,
+    compilation_id: StableId,
+    observation: PromptProviderTerminalObservationV1,
+) -> Result<PromptDeliveryObservationV1, Error> {
+    validate_intent(now_ms, intent)?;
+    if !observation.terminal_observed {
+        return Err(Error::MissingTerminalResponse);
+    }
+    if observation.observed_provider_request_digest.is_zero()
+        || observation.observed_provider_request_digest != intent.payload_digest
+    {
+        return Err(Error::PayloadBindingMismatch);
+    }
+    let result = PromptDeliveryObservationV1 {
+        compilation_id,
+        provider_request_digest: observation.observed_provider_request_digest,
+        delivered: observation.delivered,
+        rejected_reason: observation.rejected_reason,
+        observed_token_positions: observation.observed_token_positions,
+        truncation_observed: observation.truncation_observed,
+    };
+    result
+        .validate()
+        .map_err(|_| Error::InvalidPromptDeliveryObservation)?;
+    Ok(result)
+}
+
+fn validate_intent(now_ms: u64, intent: &CodexOperationIntent) -> Result<(), Error> {
     if intent.payload_digest.is_zero() || intent.lease_payload_digest.is_zero() {
         return Err(Error::EmptyDigest("payload"));
     }
@@ -105,6 +154,15 @@ pub fn adapt(
     if now_ms >= intent.deadline_ms {
         return Err(Error::DeadlineExpired);
     }
+    Ok(())
+}
+
+pub fn adapt(
+    now_ms: u64,
+    intent: CodexOperationIntent,
+    observation: Option<AppServerObservation>,
+) -> Result<CodexAdapterReceipt, Error> {
+    validate_intent(now_ms, &intent)?;
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.codex.adapter.request.v1");
     push_id(&mut bytes, &intent.operation_id);
@@ -134,14 +192,13 @@ pub fn adapt(
     })
 }
 
-
 /// Emits the runtime-owned prompt delivery observation only after the caller
 /// supplies the exact bytes that crossed the Codex request boundary.
 ///
 /// This adapter does not submit the request itself. It fails closed unless the
 /// supplied bytes match the expected compilation attachment digest and the
 /// caller reports a terminal delivered/rejected disposition.
-pub fn observe_prompt_delivery_v1(
+pub fn observe_prompt_delivery_bytes_v1(
     input: PromptDeliveryBoundaryInputV1,
     submitted_payload: &[u8],
 ) -> Result<PromptDeliveryObservationV1, Error> {

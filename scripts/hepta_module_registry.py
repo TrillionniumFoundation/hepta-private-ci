@@ -55,13 +55,17 @@ def load_module_registry(path: Path) -> list[dict[str, Any]]:
         if not isinstance(bindings, list):
             raise ValueError(f"{path}: {module_id}.rootBindings must be a list")
         for binding in bindings:
-            if not isinstance(binding, dict) or not isinstance(binding.get("path"), str):
+            if not isinstance(binding, dict) or not isinstance(
+                binding.get("path"), str
+            ):
                 raise ValueError(f"{path}: {module_id} has an invalid root binding")
         rows.append(row)
     return rows
 
 
-def discover_cargo_hepta_crates(root: Path, cargo_root: Path = DEFAULT_CARGO_ROOT) -> list[CargoCrate]:
+def discover_cargo_hepta_crates(
+    root: Path, cargo_root: Path = DEFAULT_CARGO_ROOT
+) -> list[CargoCrate]:
     """Discover ``codex-hepta-*`` packages under the Rust workspace.
 
     Qualification fixtures and non-workspace Cargo projects are intentionally
@@ -79,7 +83,9 @@ def discover_cargo_hepta_crates(root: Path, cargo_root: Path = DEFAULT_CARGO_ROO
             raise ValueError(f"cannot parse {manifest}: {error}") from error
         package = document.get("package", {}).get("name")
         if isinstance(package, str) and package.startswith("codex-hepta-"):
-            crates.append(CargoCrate(package=package, path=_relative(manifest.parent, root)))
+            crates.append(
+                CargoCrate(package=package, path=_relative(manifest.parent, root))
+            )
     return crates
 
 
@@ -105,7 +111,11 @@ def load_cargo_bindings(root: Path) -> dict[str, list[str]]:
         raise ValueError(f"{path}: bindings must be a list")
     owners: dict[str, list[str]] = {}
     for row in bindings:
-        if not isinstance(row, dict) or not isinstance(row.get("packagePath"), str) or not isinstance(row.get("module"), str):
+        if (
+            not isinstance(row, dict)
+            or not isinstance(row.get("packagePath"), str)
+            or not isinstance(row.get("module"), str)
+        ):
             raise ValueError(f"{path}: invalid package binding")
         owners.setdefault(row["packagePath"].rstrip("/"), []).append(row["module"])
     return owners
@@ -132,7 +142,13 @@ def compare_registry(
     for crate in crates:
         binding_modules = owners.get(crate.path, [])
         if len(binding_modules) == 1:
-            bound.append({"package": crate.package, "path": crate.path, "module": binding_modules[0]})
+            bound.append(
+                {
+                    "package": crate.package,
+                    "path": crate.path,
+                    "module": binding_modules[0],
+                }
+            )
         elif not binding_modules:
             unclaimed.append(asdict(crate))
 
@@ -147,7 +163,9 @@ def compare_registry(
     )
     modules_without_package: list[dict[str, Any]] = []
     for module in modules:
-        paths = [binding["path"].rstrip("/") for binding in module.get("rootBindings", [])]
+        paths = [
+            binding["path"].rstrip("/") for binding in module.get("rootBindings", [])
+        ]
         package_paths = [
             path
             for path, binding_modules in owners.items()
@@ -186,14 +204,22 @@ def compare_registry(
 
 def _main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument(
+        "--root", type=Path, default=Path(__file__).resolve().parents[1]
+    )
     parser.add_argument("--modules", type=Path, default=DEFAULT_MODULES)
     parser.add_argument("--cargo-root", type=Path, default=DEFAULT_CARGO_ROOT)
-    parser.add_argument("--strict", action="store_true", help="fail when compiled packages are unclaimed")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="fail when compiled packages are unclaimed",
+    )
     parser.add_argument("--pretty", action="store_true", help="indent JSON output")
     args = parser.parse_args(argv)
     try:
-        report = compare_registry(args.root, modules_path=args.modules, cargo_root=args.cargo_root)
+        report = compare_registry(
+            args.root, modules_path=args.modules, cargo_root=args.cargo_root
+        )
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"FAIL_HEPTA_MODULE_REGISTRY: {error}", file=sys.stderr)
         return 2

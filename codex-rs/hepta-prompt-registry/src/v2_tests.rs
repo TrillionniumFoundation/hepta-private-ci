@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 
 use crate::FactorSource;
 use crate::PromptFactor;
+use crate::TestMust;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
@@ -81,7 +82,7 @@ fn every_state_change_allocates_one_revision_and_identical_retry_does_not() {
     let inserted = registry
         .register_factor(factor())
         .unwrap_or_else(|error| panic!("register factor: {error}"));
-    assert_eq!(inserted.revision, initial.next().expect("next revision"));
+    assert_eq!(inserted.revision, initial.next().must("next revision"));
 
     let unchanged = registry
         .register_factor(factor())
@@ -93,7 +94,7 @@ fn every_state_change_allocates_one_revision_and_identical_retry_does_not() {
         .unwrap_or_else(|error| panic!("admit factor: {error}"));
     assert_eq!(
         admitted.revision,
-        inserted.revision.next().expect("next revision")
+        inserted.revision.next().must("next revision")
     );
 
     let realized = registry
@@ -101,7 +102,7 @@ fn every_state_change_allocates_one_revision_and_identical_retry_does_not() {
         .unwrap_or_else(|error| panic!("register realization: {error}"));
     assert_eq!(
         realized.revision,
-        admitted.revision.next().expect("next revision")
+        admitted.revision.next().must("next revision")
     );
     let unchanged = registry
         .register_realization_v2(binding())
@@ -158,7 +159,7 @@ fn revocation_invalidates_old_snapshot_and_disables_realization() {
     assert!(
         !registry
             .realization(&id("realization:1"))
-            .expect("realization remains interpretable")
+            .must("realization remains interpretable")
             .active
     );
 }
@@ -353,7 +354,7 @@ fn payload_registration_supersedes_and_dereferences_exact_bytes() {
     assert!(
         !registry
             .realization(&first.realization_id)
-            .expect("predecessor")
+            .must("predecessor")
             .active
     );
     assert_eq!(

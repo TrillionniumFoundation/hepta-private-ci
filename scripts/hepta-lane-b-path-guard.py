@@ -100,16 +100,26 @@ def verify_anchor(
             isinstance(delegated_owner, str) and delegated_owner in roots,
             f"{module}: delegated owner",
         )
-        need(inside(path, roots[delegated_owner]), f"{module}: delegate-root escape {path}")
+        need(
+            inside(path, roots[delegated_owner]),
+            f"{module}: delegate-root escape {path}",
+        )
     symbol = anchor["symbol"]
     target = anchor["buildTarget"]
     need(isinstance(symbol, str) and bool(symbol.strip()), f"{module}: invalid symbol")
     need(isinstance(target, str) and bool(target.strip()), f"{module}: build target")
-    need(symbol in source.read_text(encoding="utf-8"), f"{module}: missing symbol {symbol!r}")
+    need(
+        symbol in source.read_text(encoding="utf-8"),
+        f"{module}: missing symbol {symbol!r}",
+    )
 
 
 def verify(root: Path = ROOT) -> int:
-    truth = load(TRUTH if root == ROOT else root / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json")
+    truth = load(
+        TRUTH
+        if root == ROOT
+        else root / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
+    )
     entries = truth.get("modules")
     need(isinstance(entries, list) and entries, "module index")
 
@@ -157,17 +167,27 @@ def verify(root: Path = ROOT) -> int:
             for test in bound_tests:
                 tests += 1
                 need(isinstance(test, dict), f"{module}: test binding")
-                canonical_path(root, test.get("path"), f"{module}: test", require_file=True)
+                canonical_path(
+                    root, test.get("path"), f"{module}: test", require_file=True
+                )
                 command = test.get("command")
-                need(isinstance(command, str) and bool(command.strip()), f"{module}: test command")
+                need(
+                    isinstance(command, str) and bool(command.strip()),
+                    f"{module}: test command",
+                )
 
-    print(json.dumps({
-        "status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD",
-        "modules": len(maps),
-        "operations": operations,
-        "delegates": delegates,
-        "testBindings": tests,
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD",
+                "modules": len(maps),
+                "operations": operations,
+                "delegates": delegates,
+                "testBindings": tests,
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 
@@ -182,7 +202,11 @@ def self_test() -> int:
         source.write_text("pub fn run() {}\n", encoding="utf-8")
         foreign_source = foreign / "source.rs"
         foreign_source.write_text("pub fn run() {}\n", encoding="utf-8")
-        need(canonical_path(root, "owned/source.rs", "fixture", require_file=True) == source, "canonical fixture")
+        need(
+            canonical_path(root, "owned/source.rs", "fixture", require_file=True)
+            == source,
+            "canonical fixture",
+        )
         for bad in (
             "owned/../foreign/source.rs",
             "owned/./source.rs",
@@ -211,7 +235,12 @@ def self_test() -> int:
                 pass
             else:
                 raise Invalid("accepted symlink binding")
-    print(json.dumps({"status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD_SELF_TEST"}, sort_keys=True))
+    print(
+        json.dumps(
+            {"status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD_SELF_TEST"},
+            sort_keys=True,
+        )
+    )
     return 0
 
 

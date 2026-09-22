@@ -16,10 +16,7 @@ pub enum EncodedRequestTerminal {
 /// model request semantics to a terminal delivery disposition without granting
 /// the API layer any domain authority.
 pub trait EncodedRequestBodyObserver: Send + Sync + std::fmt::Debug {
-    fn observe_encoded_body<'a>(
-        &'a self,
-        body: &'a [u8],
-    ) -> BoxFuture<'a, Result<(), String>>;
+    fn observe_encoded_body<'a>(&'a self, body: &'a [u8]) -> BoxFuture<'a, Result<(), String>>;
 
     fn observe_terminal<'a>(
         &'a self,

@@ -49,6 +49,25 @@ pub use v2::PromptRoleV2;
 
 const MAX_RECORDS: usize = 16_384;
 
+#[cfg(test)]
+pub(crate) trait TestMust<T> {
+    fn must(self, context: &str) -> T;
+}
+
+#[cfg(test)]
+impl<T, E: std::fmt::Debug> TestMust<T> for Result<T, E> {
+    fn must(self, context: &str) -> T {
+        self.unwrap_or_else(|error| panic!("{context}: {error:?}"))
+    }
+}
+
+#[cfg(test)]
+impl<T> TestMust<T> for Option<T> {
+    fn must(self, context: &str) -> T {
+        self.unwrap_or_else(|| panic!("{context}"))
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FactorSource {
     GovernedInternal,

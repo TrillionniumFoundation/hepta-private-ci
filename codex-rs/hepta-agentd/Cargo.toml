@@ -38,6 +38,10 @@ codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
 codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-evidence = { workspace = true }
 codex-hepta-contracts = { workspace = true }
+codex-hepta-codex-adapter = { workspace = true }
+codex-hepta-intelligence = { path = "../hepta-intelligence" }
+codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
+codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
 codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-types = { path = "../hepta-types" }
@@ -68,6 +72,7 @@ tokio-util = { workspace = true }
 
 [dev-dependencies]
 app_test_support = { workspace = true }
+codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }

@@ -9,18 +9,33 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_context_compiler::{
-    CompiledContextV2, ContextAttachmentV2, ContextCandidateV2, ContextCompilationRequestV2,
-    ContextDeliveryDispositionV2, ContextDeliveryObservationV2, ContextModelProfileV2,
-    ContextRoleV2, ContextSerializationReceiptV2, MandatoryContextGroupV2, TokenizationReceiptV2,
-    build_attachment, compile_v2, observe_delivery, record_serialization,
-};
-use codex_hepta_prompt_optimizer::canonical::{
-    PromptExerciseActionV1, PromptExerciseDecisionV1, PromptExerciseRequestV1,
-    SelectedPromptPortfolioV1, exercise_v1,
-};
-use codex_hepta_prompt_registry::{DurablePromptRegistry, PromptRoleV2, RealizationDeliveryV2};
-use codex_hepta_types::{AuthorityPosture, Digest32, FixedQ32, StableId};
+use codex_hepta_context_compiler::CompiledContextV2;
+use codex_hepta_context_compiler::ContextAttachmentV2;
+use codex_hepta_context_compiler::ContextCandidateV2;
+use codex_hepta_context_compiler::ContextCompilationRequestV2;
+use codex_hepta_context_compiler::ContextDeliveryDispositionV2;
+use codex_hepta_context_compiler::ContextDeliveryObservationV2;
+use codex_hepta_context_compiler::ContextModelProfileV2;
+use codex_hepta_context_compiler::ContextRoleV2;
+use codex_hepta_context_compiler::ContextSerializationReceiptV2;
+use codex_hepta_context_compiler::MandatoryContextGroupV2;
+use codex_hepta_context_compiler::TokenizationReceiptV2;
+use codex_hepta_context_compiler::build_attachment;
+use codex_hepta_context_compiler::compile_v2;
+use codex_hepta_context_compiler::observe_delivery;
+use codex_hepta_context_compiler::record_serialization;
+use codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1;
+use codex_hepta_prompt_optimizer::canonical::PromptExerciseDecisionV1;
+use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
+use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
+use codex_hepta_prompt_optimizer::canonical::exercise_v1;
+use codex_hepta_prompt_registry::DurablePromptRegistry;
+use codex_hepta_prompt_registry::PromptRoleV2;
+use codex_hepta_prompt_registry::RealizationDeliveryV2;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::StableId;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptContextCompileRequestV1 {
@@ -199,7 +214,7 @@ pub fn compile_exercised_prompt_context_v1(
         candidates.push(ContextCandidateV2 {
             item_id: realization.realization_id.clone(),
             role,
-            content_digest: payload.payload_digest,
+            content_digest: payload.binding.payload_digest,
             source_digest: selected.binding_digest,
             generation_vector_digest: portfolio.generation_vector_digest,
             tokenization,
@@ -328,11 +343,11 @@ fn materialize_prompt_payloads(
     for selected in &portfolio.selected {
         let payload = registry
             .dereference_realization_v2(
+                &selected.realization.realization_id,
                 &snapshot,
                 portfolio.generation_vector_digest,
                 &portfolio.model_tuple,
                 now_unix_ms,
-                &selected.realization.realization_id,
             )
             .map_err(|error| PromptPipelineErrorV1::Registry(format!("{error:?}")))?;
         if payload.binding != selected.realization

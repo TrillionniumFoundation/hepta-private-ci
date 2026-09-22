@@ -57,6 +57,87 @@ fn payload_drift_is_rejected() {
 }
 
 #[test]
+fn prompt_delivery_v1_requires_exact_terminal_provider_request() {
+    let intent = intent();
+    let observation = PromptProviderTerminalObservationV1 {
+        terminal_observed: true,
+        observed_provider_request_digest: intent.payload_digest,
+        delivered: true,
+        rejected_reason: None,
+        observed_token_positions: Some(vec![0, 3, 7]),
+        truncation_observed: false,
+    };
+    let value = observe_prompt_delivery_v1(1_000, &intent, id("compilation:1"), observation)
+        .expect("exact terminal delivery");
+    assert!(value.delivered);
+    assert_eq!(value.provider_request_digest, intent.payload_digest);
+    assert_eq!(value.observed_token_positions, Some(vec![0, 3, 7]));
+}
+
+#[test]
+fn prompt_delivery_v1_rejects_digest_drift_and_nonterminal_claims() {
+    let intent = intent();
+    let drifted = PromptProviderTerminalObservationV1 {
+        terminal_observed: true,
+        observed_provider_request_digest: digest(b"other-request"),
+        delivered: true,
+        rejected_reason: None,
+        observed_token_positions: None,
+        truncation_observed: false,
+    };
+    assert_eq!(
+        observe_prompt_delivery_v1(1_000, &intent, id("compilation:2"), drifted),
+        Err(Error::PayloadBindingMismatch)
+    );
+
+    let nonterminal = PromptProviderTerminalObservationV1 {
+        terminal_observed: false,
+        observed_provider_request_digest: intent.payload_digest,
+        delivered: false,
+        rejected_reason: None,
+        observed_token_positions: None,
+        truncation_observed: false,
+    };
+    assert_eq!(
+        observe_prompt_delivery_v1(1_000, &intent, id("compilation:3"), nonterminal),
+        Err(Error::MissingTerminalResponse)
+    );
+}
+
+#[test]
+fn prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions() {
+    let intent = intent();
+    let Ok(reason) = PromptDeliveryRejectReasonV1::new(id("provider_rejected")) else {
+        panic!("bounded reason");
+    };
+    let rejected = PromptProviderTerminalObservationV1 {
+        terminal_observed: true,
+        observed_provider_request_digest: intent.payload_digest,
+        delivered: false,
+        rejected_reason: Some(reason),
+        observed_token_positions: Some(vec![1, 4]),
+        truncation_observed: true,
+    };
+    let value = observe_prompt_delivery_v1(1_000, &intent, id("compilation:4"), rejected)
+        .expect("terminal rejection");
+    assert!(!value.delivered);
+    assert!(value.rejected_reason.is_some());
+
+    let duplicate_positions = PromptProviderTerminalObservationV1 {
+        terminal_observed: true,
+        observed_provider_request_digest: intent.payload_digest,
+        delivered: true,
+        rejected_reason: None,
+        observed_token_positions: Some(vec![2, 2]),
+        truncation_observed: false,
+    };
+    assert_eq!(
+        observe_prompt_delivery_v1(1_000, &intent, id("compilation:5"), duplicate_positions,),
+        Err(Error::InvalidPromptDeliveryObservation)
+    );
+}
+
+#[test]
 fn exact_prompt_delivery_observation_binds_submitted_bytes() {
     let payload = b"compiled-provider-request";
     let input = PromptDeliveryBoundaryInputV1 {
@@ -65,11 +146,11 @@ fn exact_prompt_delivery_observation_binds_submitted_bytes() {
         terminal_observed: true,
         delivered: true,
         rejected_reason: None,
-        observed_token_positions: vec![4, 5, 6],
+        observed_token_positions: Some(vec![4, 5, 6]),
         truncation_observed: false,
     };
-    let observation =
-        observe_prompt_delivery_v1(input, payload).expect("exact submitted payload is observed");
+    let observation = observe_prompt_delivery_bytes_v1(input, payload)
+        .expect("exact submitted payload is observed");
     assert_eq!(observation.provider_request_digest, digest(payload));
     assert!(observation.delivered);
     observation.validate().expect("valid observation");
@@ -90,18 +171,18 @@ fn prompt_delivery_rejects_payload_drift_and_nonterminal_claims() {
         terminal_observed: true,
         delivered: true,
         rejected_reason: None,
-        observed_token_positions: Vec::new(),
+        observed_token_positions: None,
         truncation_observed: false,
     };
     assert_eq!(
-        observe_prompt_delivery_v1(base.clone(), b"different"),
+        observe_prompt_delivery_bytes_v1(base.clone(), b"different"),
         Err(Error::PayloadBindingMismatch)
     );
 
     let mut nonterminal = base;
     nonterminal.terminal_observed = false;
     assert_eq!(
-        observe_prompt_delivery_v1(nonterminal, payload),
+        observe_prompt_delivery_bytes_v1(nonterminal, payload),
         Err(Error::PromptDeliveryNotTerminal)
     );
 }
@@ -115,11 +196,11 @@ fn prompt_delivery_rejection_and_positions_fail_closed() {
         terminal_observed: true,
         delivered: false,
         rejected_reason: None,
-        observed_token_positions: Vec::new(),
+        observed_token_positions: None,
         truncation_observed: false,
     };
     assert_eq!(
-        observe_prompt_delivery_v1(invalid_rejection, payload),
+        observe_prompt_delivery_bytes_v1(invalid_rejection, payload),
         Err(Error::InvalidPromptDeliveryDisposition)
     );
 
@@ -128,12 +209,14 @@ fn prompt_delivery_rejection_and_positions_fail_closed() {
         expected_payload_digest: digest(payload),
         terminal_observed: true,
         delivered: false,
-        rejected_reason: Some(PromptDeliveryRejectionV1::ProviderRejected),
-        observed_token_positions: vec![8, 8],
+        rejected_reason: Some(
+            PromptDeliveryRejectReasonV1::new(id("provider_rejected")).expect("reason"),
+        ),
+        observed_token_positions: Some(vec![8, 8]),
         truncation_observed: true,
     };
     assert_eq!(
-        observe_prompt_delivery_v1(noncanonical_positions, payload),
+        observe_prompt_delivery_bytes_v1(noncanonical_positions, payload),
         Err(Error::NonCanonicalTokenPositions)
     );
 }

@@ -6,21 +6,28 @@
 //! before an intervention boundary. It never invokes a model/provider or mutates
 //! prompt, knowledge or learning stores.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_kg::{
-    query_relations, KnowledgeGenerationV2, KnowledgeRelationKindV2, KnowledgeRelationQueryV2,
-};
-use codex_hepta_learning_ledger::{
-    validate_candidate_set_completeness, CandidateSetCompletenessReceiptV1,
-    LearningEvidenceRoleV1, LearningEvidenceVerifierV1, SignedLearningEvidenceV1,
-};
-use codex_hepta_prompt_registry::{
-    PromptModelTupleV2, PromptRealizationBindingV2, PromptRegistry, PromptRegistrySnapshotV2,
-};
-use codex_hepta_types::{AuthorityPosture, Digest32, FixedQ32, StableId};
+use codex_hepta_kg::KnowledgeGenerationV2;
+use codex_hepta_kg::KnowledgeRelationKindV2;
+use codex_hepta_kg::KnowledgeRelationQueryV2;
+use codex_hepta_kg::query_relations;
+use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::validate_candidate_set_completeness;
+use codex_hepta_prompt_registry::PromptModelTupleV2;
+use codex_hepta_prompt_registry::PromptRealizationBindingV2;
+use codex_hepta_prompt_registry::PromptRegistry;
+use codex_hepta_prompt_registry::PromptRegistrySnapshotV2;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::StableId;
 
 pub const MAX_CANONICAL_PROMPT_FACTORS: usize = 128;
 pub const MAX_CANONICAL_SELECTED_FACTORS: usize = 16;
@@ -86,8 +93,8 @@ pub fn enumerate_factors_v1(
     if request.now_unix_ms == 0 {
         return Err(CanonicalPromptError::InvalidTime);
     }
-    let maximum_candidates =
-        usize::try_from(request.maximum_candidates).map_err(|_| CanonicalPromptError::CandidateLimit)?;
+    let maximum_candidates = usize::try_from(request.maximum_candidates)
+        .map_err(|_| CanonicalPromptError::CandidateLimit)?;
     if maximum_candidates == 0 || maximum_candidates > MAX_CANONICAL_PROMPT_FACTORS {
         return Err(CanonicalPromptError::CandidateLimit);
     }
@@ -367,9 +374,9 @@ pub fn price_factors_v1(
 
     let mut rows = Vec::with_capacity(candidates.candidates.len());
     for candidate in &candidates.candidates {
-        let evidence = evidence_rows
-            .remove(&candidate.factor_id)
-            .ok_or_else(|| CanonicalPromptError::MissingPricingEvidence(candidate.factor_id.to_string()))?;
+        let evidence = evidence_rows.remove(&candidate.factor_id).ok_or_else(|| {
+            CanonicalPromptError::MissingPricingEvidence(candidate.factor_id.to_string())
+        })?;
         validate_pricing_evidence(&candidates, &evidence, policy)?;
         let payload = pricing_evidence_signing_payload_v1(&evidence);
         verifier
@@ -474,9 +481,7 @@ pub struct PromptPairUtilityEvidenceV1 {
     pub evidence: SignedLearningEvidenceV1,
 }
 
-pub fn pair_utility_evidence_signing_payload_v1(
-    evidence: &PromptPairUtilityEvidenceV1,
-) -> Vec<u8> {
+pub fn pair_utility_evidence_signing_payload_v1(evidence: &PromptPairUtilityEvidenceV1) -> Vec<u8> {
     let mut bytes = b"hepta.prompt-optimizer.pair-utility-evidence.v1".to_vec();
     push_id(&mut bytes, &evidence.left_factor_id);
     push_id(&mut bytes, &evidence.right_factor_id);
@@ -604,7 +609,8 @@ pub fn select_portfolio_v1(
     let known = factor_ids.iter().cloned().collect::<BTreeSet<_>>();
     let mut requires = BTreeMap::<StableId, BTreeSet<StableId>>::new();
     let mut conflicts = BTreeSet::<(StableId, StableId)>::new();
-    let mut numeric_edges = BTreeMap::<(StableId, StableId), (Digest32, KnowledgeRelationKindV2)>::new();
+    let mut numeric_edges =
+        BTreeMap::<(StableId, StableId), (Digest32, KnowledgeRelationKindV2)>::new();
     for edge in &relation_result.edges {
         let left = &edge.identity.source_node_id;
         let right = &edge.identity.target_node_id;
@@ -620,7 +626,10 @@ pub fn select_portfolio_v1(
         }
         match edge.identity.relation {
             KnowledgeRelationKindV2::PromptRequires => {
-                requires.entry(left.clone()).or_default().insert(right.clone());
+                requires
+                    .entry(left.clone())
+                    .or_default()
+                    .insert(right.clone());
             }
             KnowledgeRelationKindV2::PromptConflicts
             | KnowledgeRelationKindV2::PromptDominates
@@ -729,12 +738,14 @@ pub fn select_portfolio_v1(
                 continue;
             }
             let added_tokens = portfolio_token_cost(&added, &by_factor)?;
-            let better = best.as_ref().is_none_or(|(best_id, _, best_gain, best_tokens)| {
-                marginal > *best_gain
-                    || (marginal == *best_gain
-                        && (added_tokens < *best_tokens
-                            || (added_tokens == *best_tokens && factor_id < best_id)))
-            });
+            let better = best
+                .as_ref()
+                .is_none_or(|(best_id, _, best_gain, best_tokens)| {
+                    marginal > *best_gain
+                        || (marginal == *best_gain
+                            && (added_tokens < *best_tokens
+                                || (added_tokens == *best_tokens && factor_id < best_id)))
+                });
             if better {
                 best = Some((factor_id.clone(), proposed, marginal, added_tokens));
             }
@@ -901,14 +912,14 @@ pub fn exercise_v1(
         match current {
             Err(_) => PromptExerciseActionV1::RejectStale,
             Ok(set) => {
-                let current_by_factor = set
+                let current_by_realization = set
                     .bindings
                     .into_iter()
-                    .map(|binding| (binding.factor_id.clone(), binding))
+                    .map(|binding| (binding.realization_id.clone(), binding))
                     .collect::<BTreeMap<_, _>>();
                 let exact = portfolio.selected.iter().all(|selected| {
-                    current_by_factor
-                        .get(&selected.factor_id)
+                    current_by_realization
+                        .get(&selected.realization.realization_id)
                         .is_some_and(|current| {
                             current.realization_id == selected.realization.realization_id
                                 && current.digest() == selected.binding_digest
@@ -952,8 +963,8 @@ fn validate_candidate_binding(
     candidates: &EnumeratedPromptCandidatesV1,
     completeness: &CandidateSetCompletenessReceiptV1,
 ) -> Result<(), CanonicalPromptError> {
-    let factor_count =
-        u32::try_from(candidates.candidates.len()).map_err(|_| CanonicalPromptError::CandidateLimit)?;
+    let factor_count = u32::try_from(candidates.candidates.len())
+        .map_err(|_| CanonicalPromptError::CandidateLimit)?;
     if completeness.set_id != candidates.receipt.set_id
         || completeness.state_digest != candidates.receipt.state_digest
         || completeness.generator_id.as_str() != "prompt.optimizer"

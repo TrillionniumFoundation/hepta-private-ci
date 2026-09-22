@@ -164,6 +164,7 @@ def verify_observed_source(row: dict[str, Any], module: str) -> None:
     changed = git("diff", "--name-only", commit, "HEAD", "--", *paths)
     need(not changed, f"{module}: observed source drift since {commit}")
 
+
 def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
     index = truth.get("modules")
     need(isinstance(index, list) and len(index) == len(MODULES), "module index")
