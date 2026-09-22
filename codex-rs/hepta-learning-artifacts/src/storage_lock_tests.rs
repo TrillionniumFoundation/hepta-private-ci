@@ -152,7 +152,7 @@ fn created_target_held_by_another_writer_fails_busy_without_writing() {
         write_registry_snapshot(created, &ArtifactRegistry::new(), binding()),
         Err(ArtifactStorageError::Busy)
     );
-    assert!(!fixture.path("registry").exists());
+    assert!(must(fs::read(fixture.path("registry"))).is_empty());
     must(held.unlock());
 }
 
@@ -161,7 +161,7 @@ fn created_target_held_by_another_writer_fails_busy_without_writing() {
 fn write_guard_releases_lock_with_transient_duplicate_retained() {
     let fixture = Fixture::new();
     let file = fixture.create("registry");
-    let transient = must(file.file.try_clone());
+    let transient = must(file.0.try_clone());
     let registry = ArtifactRegistry::new();
     let witness = must(write_registry_snapshot(file, &registry, binding()));
     assert_eq!(

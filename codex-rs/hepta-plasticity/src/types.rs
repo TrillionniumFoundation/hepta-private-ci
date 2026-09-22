@@ -19,7 +19,6 @@ pub(crate) const GLOBAL_MAX_RELATIVE_PPM: u32 = 2_500;
 pub(crate) const PPM_DENOMINATOR: u128 = 1_000_000;
 pub(crate) const LEGACY_V1: u16 = 1;
 pub(crate) const PARAMETER_V2: u16 = 2;
-pub(crate) const TOPOLOGY_V3: u16 = 3;
 
 /// A parameter delta from the legacy internal V1 record.
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -89,7 +88,6 @@ pub struct PlasticityProposal {
 pub enum ProposalVersion {
     LegacyV1,
     ParameterV2,
-    TopologyV3,
 }
 
 impl ProposalVersion {
@@ -97,7 +95,6 @@ impl ProposalVersion {
         match self {
             Self::LegacyV1 => LEGACY_V1,
             Self::ParameterV2 => PARAMETER_V2,
-            Self::TopologyV3 => TOPOLOGY_V3,
         }
     }
 }
@@ -213,81 +210,10 @@ pub struct ParameterProposalV2 {
     pub authority: AuthorityPosture,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
-pub enum TopologyOperationV3 {
-    Add,
-    Replace,
-    Retire,
-    Rewire,
-    Split,
-    Merge,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum TopologyCandidateKindV3 {
-    NoChange,
-    Change,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
-pub struct TopologyDeltaV3 {
-    pub module_id: StableId,
-    pub operation: TopologyOperationV3,
-    pub related_module_ids: Vec<StableId>,
-    pub predecessor_digest: Digest32,
-    pub candidate_digest: Digest32,
-    pub evidence_digest: Digest32,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct TopologyCandidateRequestV3 {
-    pub candidate_id: StableId,
-    pub kind: TopologyCandidateKindV3,
-    pub topology_deltas: Vec<TopologyDeltaV3>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct TopologyCandidateV3 {
-    pub candidate_id: StableId,
-    pub kind: TopologyCandidateKindV3,
-    pub topology_deltas: Vec<TopologyDeltaV3>,
-    pub candidate_digest: Digest32,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct TopologyProposalRequestV3 {
-    pub proposal_id: StableId,
-    pub proposer_id: StableId,
-    pub evaluator_id: StableId,
-    pub selected_topology_digest: Digest32,
-    pub baseline_generation: Generation,
-    pub candidate_generation: Generation,
-    pub evaluation_digest: Digest32,
-    pub rollback_predecessor_digest: Digest32,
-    pub candidates: Vec<TopologyCandidateRequestV3>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct TopologyProposalV3 {
-    pub proposal_id: StableId,
-    pub proposer_id: StableId,
-    pub evaluator_id: StableId,
-    pub selected_topology_digest: Digest32,
-    pub baseline_generation: Generation,
-    pub candidate_generation: Generation,
-    pub evaluation_digest: Digest32,
-    pub rollback_predecessor_digest: Digest32,
-    pub candidates: Vec<TopologyCandidateV3>,
-    pub proposal_digest: Digest32,
-    pub status: ProposalStatus,
-    pub authority: AuthorityPosture,
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProposalRecord {
     LegacyV1(Box<PlasticityProposal>),
     ParameterV2(Box<ParameterProposalV2>),
-    TopologyV3(Box<TopologyProposalV3>),
 }
 
 impl ProposalRecord {
@@ -295,7 +221,6 @@ impl ProposalRecord {
         match self {
             Self::LegacyV1(_) => ProposalVersion::LegacyV1,
             Self::ParameterV2(_) => ProposalVersion::ParameterV2,
-            Self::TopologyV3(_) => ProposalVersion::TopologyV3,
         }
     }
 }
@@ -304,7 +229,6 @@ impl ProposalRecord {
 pub enum ProposalDigestVerification {
     UnavailableLegacyMissingMaximumAbsoluteDelta,
     VerifiedV2,
-    VerifiedV3,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -317,7 +241,6 @@ pub struct ProposalReadResult {
 pub enum ProposalWriteRequest {
     LegacyV1(Box<ProposalRequest>),
     ParameterV2(Box<ParameterProposalRequestV2>),
-    TopologyV3(Box<TopologyProposalRequestV3>),
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -350,8 +273,6 @@ pub enum Error {
     MultipleNoChangeCandidates,
     NoChangeHasDeltas(String),
     UpdateHasNoDeltas(String),
-    NoChangeHasTopologyDeltas(String),
-    TopologyChangeHasNoDeltas(String),
     ZeroParameterDelta(String),
     InvertedBounds(String),
     DeltaOutsideBounds(String),
@@ -370,8 +291,6 @@ pub enum Error {
     RegistryCapacityExceeded,
     ProposalConflict(String),
     RegistrySlotConflict(String),
-    UnknownTopologyCandidate(String),
-    RuntimeTopologyContract,
 }
 
 impl fmt::Display for Error {
