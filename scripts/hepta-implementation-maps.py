@@ -12,7 +12,7 @@ import argparse
 import json
 import re
 import subprocess
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from hepta_module_source_roots import resolve_source_roots
 
@@ -82,7 +82,20 @@ def validate_observed_source(
         return
     root = ROOT.resolve()
     for path in paths:
-        candidate = (ROOT / path).resolve()
+        if (
+            PurePosixPath(path).is_absolute()
+            or any(part in {"", ".", ".."} for part in path.split("/"))
+            or any(char in path for char in ("\\", ":", "\0"))
+        ):
+            failures.append(f"{mid}: non-canonical observed source path {path!r}")
+            return
+        candidate = root
+        for part in path.split("/"):
+            candidate = candidate / part
+            if candidate.is_symlink():
+                failures.append(f"{mid}: symlink observed source path {path}")
+                return
+        candidate = candidate.resolve()
         try:
             candidate.relative_to(root)
         except ValueError:
@@ -92,7 +105,9 @@ def validate_observed_source(
             failures.append(f"{mid}: missing observed source path {path}")
             return
     try:
-        changed = git("diff", "--name-only", commit, "HEAD", "--", *paths)
+        changed = git(
+            "--literal-pathspecs", "diff", "--name-only", commit, "HEAD", "--", *paths
+        )
     except subprocess.CalledProcessError:
         failures.append(f"{mid}: observed source diff failed")
         return
@@ -347,12 +362,21 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
-def verify():
+def verify(*, require_current_source: bool = False):
+    """Verify navigation, optionally requiring current source identity.
+
+    Legacy shared-batch records are provenance only. They must never satisfy
+    an exact-source evidence gate merely because every map is equally old.
+    The candidate identity is derived here, not handwritten back into maps.
+    """
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     candidate_source_base = current_source_base()
     failures = []
     source_bases = set()
+    legacy_provenance_maps = []
+    if not modules:
+        failures.append("maps: empty module registry")
     candidate_bound_maps = 0
     exact_observed_fallback_maps = 0
     for module in modules:
@@ -378,8 +402,11 @@ def verify():
         source_base = row.get("sourceBase")
         if (
             not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
+            or any(
+                not isinstance(source_base.get(key), str)
+                or re.fullmatch(r"[0-9a-f]{40}", source_base[key]) is None
+                for key in ("commit", "tree")
+            )
         ):
             failures.append(f"{mid}: source base")
         else:
@@ -388,6 +415,11 @@ def verify():
                 failures.append(f"{mid}: unknown source identity policy")
             elif policy == "legacy_shared_batch":
                 source_bases.add((source_base["commit"], source_base["tree"]))
+                legacy_provenance_maps.append(mid)
+                if require_current_source:
+                    failures.append(
+                        f"{mid}: legacy provenance is not current source evidence"
+                    )
             elif source_base == candidate_source_base:
                 candidate_bound_maps += 1
             else:
@@ -420,7 +452,23 @@ def verify():
             if row.get("resolvedRoots") != resolved_roots:
                 failures.append(f"{mid}: resolved source roots")
             validate_observed_source(row, mid, resolved_roots, failures)
-        except (ValueError, OSError) as exc:
+            if require_current_source:
+                # Use the existing observation validator for a candidate-bound
+                # row as well. Its path coverage and history checks are shared.
+                current = dict(row)
+                current["observedAtHead"] = candidate_source_base
+                validate_observed_source(current, mid, resolved_roots, failures)
+                paths = row.get("observedSourcePaths", resolved_roots)
+                if not failures:
+                    changed = git(
+                        "--literal-pathspecs", "diff", "--name-only", "HEAD", "--", *paths
+                    )
+                    untracked = git(
+                        "--literal-pathspecs", "ls-files", "--others", "--", *paths
+                    )
+                    if changed or untracked:
+                        failures.append(f"{mid}: source worktree differs from candidate")
+        except (ValueError, OSError, subprocess.CalledProcessError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")
         if not isinstance(ops, list) or not ops:
@@ -439,7 +487,9 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
+    # An empty legacy set is expected after the last map migrates. Keep the
+    # existing disagreement check without requiring any legacy row to survive.
+    if len(source_bases) > 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
@@ -450,6 +500,9 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "candidateSource": candidate_source_base,
+                "legacyProvenanceOnlyMaps": sorted(legacy_provenance_maps),
+                "currentSourceIdentityRequired": require_current_source,
                 "candidateBoundMaps": candidate_bound_maps,
                 "exactObservedFallbackMaps": exact_observed_fallback_maps,
             },
@@ -461,8 +514,21 @@ def verify():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["generate", "migrate", "verify"])
+    parser.add_argument(
+        "--require-current-source",
+        action="store_true",
+        help=(
+            "Reject legacy provenance and require clean, current declared source paths; "
+            "not product qualification. Run before generating build outputs in source roots."
+        ),
+    )
     args = parser.parse_args()
-    {"generate": generate, "migrate": migrate, "verify": verify}[args.command]()
+    if args.command == "verify":
+        verify(require_current_source=args.require_current_source)
+    elif args.require_current_source:
+        parser.error("--require-current-source applies only to verify")
+    else:
+        {"generate": generate, "migrate": migrate}[args.command]()
 
 
 if __name__ == "__main__":
