@@ -18,9 +18,9 @@ use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
 use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
-use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCContractError;
+use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -485,11 +485,7 @@ fn push_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 fn push_raw_id(bytes: &mut Vec<u8>, value: &str) {
-    bytes.extend_from_slice(
-        &u32::try_from(value.len())
-            .unwrap_or(u32::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(value.as_bytes());
 }
 

@@ -43,6 +43,8 @@ pub use durable::MemoryDraft;
 pub use durable::MemoryLifecycleState;
 pub use durable::MemoryRevisionDraft;
 pub use durable::MemoryVerification;
+pub use durable::PRODUCTION_COGNITIVE_MUTATION_NAMESPACE;
+pub use durable::PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION;
 pub use durable::ProductionAuthorityLease;
 pub use durable::ProductionAuthorityToken;
 pub use durable::ProductionAuthorityVerifier;

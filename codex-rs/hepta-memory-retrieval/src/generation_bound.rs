@@ -462,16 +462,17 @@ pub fn adapt_generation_bound_recall_to_canonical_shadow_v1(
             let mut used = vec![false; context.selection_bindings.len()];
             let mut selected = Vec::with_capacity(legacy.selections.len());
             for selection in &legacy.selections {
-                let Some((index, binding)) = context
-                    .selection_bindings
-                    .iter()
-                    .enumerate()
-                    .find(|(index, binding)| {
-                        !used[*index]
-                            && binding.legacy_record_id == selection.record_id
-                            && binding.legacy_record_revision == selection.record_revision
-                            && binding.legacy_record_digest == selection.record_digest
-                    })
+                let Some((index, binding)) =
+                    context
+                        .selection_bindings
+                        .iter()
+                        .enumerate()
+                        .find(|(index, binding)| {
+                            !used[*index]
+                                && binding.legacy_record_id == selection.record_id
+                                && binding.legacy_record_revision == selection.record_revision
+                                && binding.legacy_record_digest == selection.record_digest
+                        })
                 else {
                     return Err(RecallErrorV1::CanonicalAdapter(
                         "missing exact canonical binding for legacy selection",

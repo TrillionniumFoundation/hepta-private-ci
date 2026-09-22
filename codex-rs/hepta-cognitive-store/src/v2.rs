@@ -491,7 +491,7 @@ impl AdmittedCognitiveStoreV2 {
         let candidate_digest = candidate.digest();
         let event_digest = canonical_contract_digest_v1(&event)
             .map_err(|error| CognitiveStoreV2Error::CanonicalContract(error.to_string()))?;
-        let event_id = event.event_id.clone();
+        let event_id = event.event_id;
 
         let write_receipt = self.append_admitted(verifier, candidate, intent)?;
         let mut shadow_receipt = CanonicalMemoryEventShadowReceiptV1 {
@@ -664,13 +664,12 @@ impl AdmittedCognitiveStoreV2 {
         let mut has_more = false;
         'records: for history in self.histories.values() {
             for record in history {
-                if let Some(after) = &request.after {
-                    if record.record_id < after.record_id
+                if let Some(after) = &request.after
+                    && (record.record_id < after.record_id
                         || (record.record_id == after.record_id
-                            && record.revision <= after.revision)
-                    {
-                        continue;
-                    }
+                            && record.revision <= after.revision))
+                {
+                    continue;
                 }
                 if records.len() >= maximum_records {
                     has_more = true;
@@ -1659,8 +1658,7 @@ fn hard_revision_capacity(maximum_record_revisions: usize) -> usize {
 fn journal_capacity_for(maximum_record_revisions: usize) -> usize {
     maximum_record_revisions
         .saturating_mul(4)
-        .min(MAX_V2_INTENT_JOURNAL_ENTRIES)
-        .max(1)
+        .clamp(1, MAX_V2_INTENT_JOURNAL_ENTRIES)
 }
 
 /// Reserve one journal slot for every ordinary revision slot so a live head can

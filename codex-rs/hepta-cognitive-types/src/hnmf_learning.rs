@@ -1,13 +1,20 @@
 //! Canonical HNMF V1 engram, recall, replay, plasticity, topology and forget contracts.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::hnmf::{
-    ContractDigestV1, ContractGenerationV1, ContractIdV1, HnmfContractError, ModalityKindV1, PPM,
-    ppm, validate_keys, validate_text,
-};
+use crate::hnmf::ContractDigestV1;
+use crate::hnmf::ContractGenerationV1;
+use crate::hnmf::ContractIdV1;
+use crate::hnmf::HnmfContractError;
+use crate::hnmf::ModalityKindV1;
+use crate::hnmf::PPM;
+use crate::hnmf::ppm;
+use crate::hnmf::validate_keys;
+use crate::hnmf::validate_text;
 
 pub const MAX_CUE_SEEDS: usize = 64;
 pub const MAX_CANDIDATE_EVENTS: usize = 512;

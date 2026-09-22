@@ -609,7 +609,7 @@ fn paged_snapshot_preserves_exact_ancestry_across_page_boundaries() {
     assert_eq!(first_page.records.len(), 1);
     assert!(!first_page.complete);
     assert_eq!(first_page.records[0].revision, revision(1));
-    let first_cursor = first_page.next.clone().expect("next cursor");
+    let first_cursor = first_page.next.expect("next cursor");
 
     let second_page = store
         .open_snapshot_page(
@@ -627,10 +627,7 @@ fn paged_snapshot_preserves_exact_ancestry_across_page_boundaries() {
     assert!(!second_page.complete);
 
     let third_page = store
-        .open_snapshot_page(
-            10,
-            page_request(&store, "page:3", second_page.next.clone(), 1),
-        )
+        .open_snapshot_page(10, page_request(&store, "page:3", second_page.next, 1))
         .unwrap_or_else(|error| panic!("third page: {error}"));
     assert_eq!(third_page.records.len(), 1);
     assert_eq!(third_page.records[0].record_id, id("memory:page:b"));
@@ -663,7 +660,7 @@ fn paged_snapshot_rejects_continuation_after_store_cut_changes() {
     let first_page = store
         .open_snapshot_page(10, page_request(&store, "page:stable:1", None, 1))
         .unwrap_or_else(|error| panic!("first page: {error}"));
-    let cursor = first_page.next.clone().expect("continuation cursor");
+    let cursor = first_page.next.expect("continuation cursor");
 
     let third = candidate(
         "memory:page:stable:c",
@@ -716,7 +713,7 @@ fn paged_snapshot_rejects_forged_cursor_and_broken_page_ancestry() {
     let mut second_page = store
         .open_snapshot_page(
             10,
-            page_request(&store, "page:forged:3", first_page.next.clone(), 1),
+            page_request(&store, "page:forged:3", first_page.next, 1),
         )
         .unwrap_or_else(|error| panic!("second page: {error}"));
     second_page.records[0].predecessor_digest = Some(digest("wrong-predecessor"));
@@ -791,7 +788,7 @@ fn canonical_event_shadow_rejects_provenance_or_verification_drift_before_write(
     assert_eq!(
         store.append_admitted_with_canonical_shadow(
             &Verifier,
-            candidate.clone(),
+            candidate,
             write_intent,
             wrong_verification,
         ),
@@ -818,7 +815,7 @@ fn canonical_event_shadow_receipt_tamper_fails_closed() {
         )
         .unwrap_or_else(|error| panic!("canonical shadow append: {error}"));
 
-    let mut tampered = result.clone();
+    let mut tampered = result;
     tampered.shadow_receipt.record_digest = digest("tampered-record");
     assert_eq!(
         tampered.validate(),

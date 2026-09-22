@@ -194,7 +194,7 @@ pub struct CognitiveStore {
 
 #[derive(Debug)]
 pub(crate) struct CognitiveStoreOpenGuard {
-    file: File,
+    _file: File,
     _path: PathBuf,
 }
 
@@ -243,7 +243,10 @@ impl CognitiveStoreOpenGuard {
                 "cognitive store is fenced by recovery: {error}"
             ))
         })?;
-        Ok(Arc::new(Self { file, _path: path }))
+        Ok(Arc::new(Self {
+            _file: file,
+            _path: path,
+        }))
     }
 
     pub(crate) fn acquire_exclusive(root: &Path) -> Result<Self, CognitiveStoreError> {
@@ -253,7 +256,10 @@ impl CognitiveStoreOpenGuard {
                 "cognitive recovery cannot fence active store handles: {error}"
             ))
         })?;
-        Ok(Self { file, _path: path })
+        Ok(Self {
+            _file: file,
+            _path: path,
+        })
     }
 }
 

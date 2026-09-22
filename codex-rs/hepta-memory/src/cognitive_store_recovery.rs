@@ -203,19 +203,6 @@ impl CognitiveStore {
                     .await
                     .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
-                sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
-                    .execute(&pool)
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-                let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode=DELETE")
-                    .fetch_one(&pool)
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-                if !journal_mode.eq_ignore_ascii_case("delete") {
-                    return Err(CognitiveRecoveryError::Unavailable(
-                        "recovery candidate could not checkpoint to a single-file cut".to_string(),
-                    ));
-                }
                 Ok(())
             }
             .await;
@@ -224,6 +211,11 @@ impl CognitiveStore {
                 return Err(error);
             }
             pool.close().await;
+
+            config
+                .checkpoint_private_recovery_database(&candidate)
+                .await
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
             cleanup_candidate_sidecars(&candidate)?;
             protect_database_file(&candidate)

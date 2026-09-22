@@ -21,14 +21,14 @@ use codex_hepta_types::StableId;
 
 pub use authoritative::AuthoritativeCognitiveSnapshotProvider;
 pub use authoritative::AuthoritativeReadResultV1;
+pub use authoritative::AuthoritativeSnapshotV1;
 pub use authoritative::CanonicalAuthoritativeReadShadowV1;
 pub use authoritative::CanonicalReadRecordBindingV1;
 pub use authoritative::CanonicalReadShadowError;
 pub use authoritative::CanonicalReadShadowRowV1;
-pub use authoritative::adapt_authoritative_read_to_canonical_shadow_v1;
-pub use authoritative::AuthoritativeSnapshotV1;
 pub use authoritative::SnapshotAcquisitionRequestV1;
 pub use authoritative::SnapshotProviderError;
+pub use authoritative::adapt_authoritative_read_to_canonical_shadow_v1;
 pub use authoritative::read_authoritative;
 pub use ids::MAX_READ_IDS_V1;
 pub use ids::ReadFieldV1;
@@ -77,10 +77,10 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-pub(crate) fn current_records<'a>(
-    snapshot: &'a CognitiveSnapshot,
+pub(crate) fn current_records(
+    snapshot: &CognitiveSnapshot,
     expected_digest: Digest32,
-) -> Result<BTreeMap<StableId, &'a MemoryRecord>, Error> {
+) -> Result<BTreeMap<StableId, &MemoryRecord>, Error> {
     if expected_digest != snapshot.snapshot_digest {
         return Err(Error::SnapshotMismatch);
     }

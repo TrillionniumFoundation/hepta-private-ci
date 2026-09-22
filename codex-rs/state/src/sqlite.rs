@@ -13,6 +13,7 @@ use crate::telemetry::DbKind;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use log::LevelFilter;
 use sqlx::ConnectOptions;
+use sqlx::Connection;
 use sqlx::Error;
 use sqlx::SqlitePool;
 use sqlx::migrate::Migrator;
@@ -308,6 +309,45 @@ impl SqliteConfig {
             .max_connections(5)
             .connect_with(options)
             .await
+    }
+
+    /// Checkpoint a private recovery candidate after all validation handles close.
+    ///
+    /// The owner must hold its recovery fence and pass a newly materialized copy,
+    /// never the suspect source. A single connection permits the journal-mode
+    /// switch that a pool's other live handles would otherwise block.
+    pub async fn checkpoint_private_recovery_database(&self, path: &Path) -> Result<(), Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(false)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .busy_timeout(Duration::from_secs(5))
+            .log_statements(LevelFilter::Off);
+        let mut connection = options.connect().await?;
+        let checkpoint = async {
+            let (busy, _, _): (i32, i32, i32) = sqlx::query_as("PRAGMA wal_checkpoint(TRUNCATE)")
+                .fetch_one(&mut connection)
+                .await?;
+            if busy != 0 {
+                return Err(Error::Protocol(
+                    "recovery candidate checkpoint is busy".to_string(),
+                ));
+            }
+            let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode=DELETE")
+                .fetch_one(&mut connection)
+                .await?;
+            if !journal_mode.eq_ignore_ascii_case("delete") {
+                return Err(Error::Protocol(
+                    "recovery candidate could not checkpoint to a single-file cut".to_string(),
+                ));
+            }
+            Ok(())
+        }
+        .await;
+        let close = connection.close().await;
+        checkpoint?;
+        close
     }
 
     /// Retained only so callers fail closed instead of reopening a suspect

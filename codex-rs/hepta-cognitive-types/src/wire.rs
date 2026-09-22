@@ -10,15 +10,24 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_types::Digest32;
+use serde::Deserialize;
+use serde::Serialize;
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::hnmf::{CrossModalBindingV1, HnmfContractError, MemoryEventV1, ModalitySpanRefV1};
-use crate::hnmf_learning::{
-    EngramNodeV1, ForgetPropagationReceiptV1, MemoryCueV1, OutcomeSignalV1, PlasticityBatchV1,
-    RecallPacketV1, ReplaySelectionReceiptV1, SynapseV1, TopologyProposalV1,
-};
+use crate::hnmf::CrossModalBindingV1;
+use crate::hnmf::HnmfContractError;
+use crate::hnmf::MemoryEventV1;
+use crate::hnmf::ModalitySpanRefV1;
+use crate::hnmf_learning::EngramNodeV1;
+use crate::hnmf_learning::ForgetPropagationReceiptV1;
+use crate::hnmf_learning::MemoryCueV1;
+use crate::hnmf_learning::OutcomeSignalV1;
+use crate::hnmf_learning::PlasticityBatchV1;
+use crate::hnmf_learning::RecallPacketV1;
+use crate::hnmf_learning::ReplaySelectionReceiptV1;
+use crate::hnmf_learning::SynapseV1;
+use crate::hnmf_learning::TopologyProposalV1;
 
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
 const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;

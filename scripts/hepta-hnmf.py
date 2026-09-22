@@ -182,7 +182,6 @@ FORBIDDEN_REFERENCE_CONTRACT_TOKENS = [
     "pub struct PlasticityBatch",
     "pub enum TopologyOperation",
     "pub struct ForgetBatch",
-
 ]
 
 EXPECTED_PORT_TARGETS = {
@@ -281,7 +280,9 @@ def verify() -> int:
     gaps = load_json("docs/hnmf/GAPS.json")
     contracts = load_json("docs/contracts/CONTRACTS.json")
     protocol_schemas = load_json("docs/contracts/PROTOCOL_SCHEMAS.json")
-    implementation_map = load_json("docs/modules/cognitive.types/IMPLEMENTATION_MAP.json")
+    implementation_map = load_json(
+        "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
+    )
 
     need(spec.get("schema") == "hepta.hnmf.qualification.v1", "spec schema")
     need(has_schema_version(spec, 1), "spec schema version")
@@ -309,7 +310,8 @@ def verify() -> int:
         "cognitive.types implementation-map identity",
     )
     need(
-        implementation_map.get("canonicalTypeSource") == "codex-rs/hepta-cognitive-types",
+        implementation_map.get("canonicalTypeSource")
+        == "codex-rs/hepta-cognitive-types",
         "canonical cognitive type source",
     )
     need(
@@ -373,7 +375,9 @@ def verify() -> int:
         canonical = canonical_protocols.get(protocol_id)
         need(canonical is not None, protocol_id + " global protocol registration")
         required_fields = [
-            field["name"] for field in canonical.get("fields", []) if field.get("required")
+            field["name"]
+            for field in canonical.get("fields", [])
+            if field.get("required")
         ]
         need(
             item.get("maximumEncodedBytes") == canonical.get("maximumEncodedBytes"),

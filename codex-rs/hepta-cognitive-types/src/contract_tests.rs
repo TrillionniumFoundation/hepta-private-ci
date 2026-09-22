@@ -282,7 +282,7 @@ fn ctype_02_asset_extent_and_identity_fail_closed() {
         Err(HnmfContractError::Invalid("span exceeds asset extent"))
     );
 
-    let mut wrong_asset = image.clone();
+    let mut wrong_asset = image;
     wrong_asset.range = SpanRangeV1::PixelRect {
         x: 0,
         y: 0,

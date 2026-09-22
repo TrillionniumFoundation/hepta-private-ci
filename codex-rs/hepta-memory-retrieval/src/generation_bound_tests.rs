@@ -5,8 +5,8 @@ use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf_learning::RecallAbstainReasonV1 as CanonicalRecallAbstainReasonV1;
-use codex_hepta_cognitive_types::hnmf_learning::SelectedEventRefV1 as CanonicalSelectedEventRefV1;
 use codex_hepta_cognitive_types::hnmf_learning::RecallResourceReceiptV1 as CanonicalRecallResourceReceiptV1;
+use codex_hepta_cognitive_types::hnmf_learning::SelectedEventRefV1 as CanonicalSelectedEventRefV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Generation;
 
@@ -308,10 +308,12 @@ fn legacy_recall_projects_to_canonical_shadow_without_fabricating_authority() {
     assert_ne!(canonical.cue_digest.digest(), legacy.cue_digest);
     assert_eq!(canonical.selected_events.len(), legacy.selections.len());
     assert!(canonical.abstain.is_none());
-    assert!(canonical
-        .selected_events
-        .windows(2)
-        .all(|rows| rows[0] < rows[1]));
+    assert!(
+        canonical
+            .selected_events
+            .windows(2)
+            .all(|rows| rows[0] < rows[1])
+    );
 }
 
 #[test]

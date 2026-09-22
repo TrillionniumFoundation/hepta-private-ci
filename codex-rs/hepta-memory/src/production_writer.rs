@@ -1232,7 +1232,7 @@ fn production_cognitive_operation_digest(
     expected_predecessor_revision: Option<u64>,
 ) -> Sha256Digest {
     let predecessor = expected_predecessor_revision
-        .map(|value| value.to_be_bytes())
+        .map(u64::to_be_bytes)
         .unwrap_or([0; 8]);
     digest_framed(
         b"hepta:production-cognitive-mutation-operation:v1",
@@ -1265,7 +1265,7 @@ fn production_cognitive_receipt_digest(
 ) -> Sha256Digest {
     let predecessor = receipt
         .expected_predecessor_revision
-        .map(|value| value.to_be_bytes())
+        .map(u64::to_be_bytes)
         .unwrap_or([0; 8]);
     digest_framed(
         b"hepta:production-cognitive-mutation-receipt:v1",
@@ -1594,6 +1594,7 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::CognitiveScope;
     use codex_hepta_paths::HeptaFleetRoot;
     use codex_utils_absolute_path::AbsolutePathBuf;
     use std::sync::atomic::AtomicBool;
@@ -1870,10 +1871,7 @@ mod tests {
             .await
             .expect("initial semantic mutation");
         committed.validate().expect("committed receipt");
-        let occurrence_key = format!(
-            "cognitive-mutation:{}",
-            committed.operation_digest.as_str()
-        );
+        let occurrence_key = format!("cognitive-mutation:{}", committed.operation_digest.as_str());
         assert_eq!(
             writer.status(&occurrence_key).await.unwrap(),
             LocalOutcomeState::Committed

@@ -5,13 +5,19 @@
 //! writer, model, provider, external-effect, selection, promotion or release
 //! capability.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
 
-use codex_hepta_types::{Digest32, Generation, StableId};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
+use serde::Serializer;
 
 pub const PPM: u32 = 1_000_000;
 pub const MAX_MODALITY_SPANS: usize = 32;

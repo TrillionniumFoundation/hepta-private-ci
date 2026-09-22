@@ -4,6 +4,9 @@ use std::collections::BTreeSet;
 
 use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::build_snapshot;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
@@ -17,9 +20,6 @@ use codex_hepta_cognitive_types::hnmf::PrivacyClassV1;
 use codex_hepta_cognitive_types::hnmf::ProvenanceRefV1;
 use codex_hepta_cognitive_types::hnmf::RetentionPolicyV1;
 use codex_hepta_cognitive_types::hnmf::SpanRangeV1;
-use codex_hepta_cognitive_types::MemoryRecord;
-use codex_hepta_cognitive_types::RecordState;
-use codex_hepta_cognitive_types::build_snapshot;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
@@ -276,8 +276,14 @@ fn canonical_shadow_read_binds_exact_authoritative_cut_and_record() {
         .validate()
         .unwrap_or_else(|error| panic!("canonical shadow validation: {error}"));
     assert_eq!(shadow.snapshot_receipt_digest, read.snapshot_receipt_digest);
-    assert_eq!(shadow.generation_vector_digest, read.generation_vector_digest);
-    assert_eq!(shadow.read_receipt_digest, read.read_result.receipt_digest());
+    assert_eq!(
+        shadow.generation_vector_digest,
+        read.generation_vector_digest
+    );
+    assert_eq!(
+        shadow.read_receipt_digest,
+        read.read_result.receipt_digest()
+    );
     assert_eq!(shadow.rows.len(), 1);
     assert_eq!(shadow.rows[0].event_id, event.event_id);
     assert_ne!(shadow.rows[0].event_digest, record.record_digest());
