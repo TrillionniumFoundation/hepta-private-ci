@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "lane": "LANE-A-FOUNDATION",
   "closureScope": "current executable capabilities only",
-  "entryCount": 38,
+  "entryCount": 42,
   "entries": [
     {
       "capabilityId": "platform.types.bounded-identity.v1",
@@ -669,7 +669,7 @@
           ]
         }
       ],
-      "durability": "sqlite_migrations_0001_0011",
+      "durability": "sqlite_migrations_0001_0012",
       "activation": "agentd_product_composed_config_gated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
@@ -709,7 +709,7 @@
           ]
         }
       ],
-      "durability": "sqlite_migrations_0001_0011",
+      "durability": "sqlite_migrations_0001_0012",
       "activation": "agentd_product_composed_config_gated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
@@ -748,210 +748,8 @@
           ]
         }
       ],
-      "durability": "sqlite_migrations_0001_0011",
+      "durability": "sqlite_migrations_0001_0012",
       "activation": "agentd_product_composed_config_gated",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "auth.authbus.sqlite-replay-admission.v1",
-      "module": "auth.authbus",
-      "summary": "bounded SQLite replay admission keyed by issuer epoch subject and scope",
-      "publicSymbols": [
-        "HeptaEvidenceStore::admit_authbus_message"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-evidence/src/authbus_store.rs",
-          "mustContain": [
-            "pub async fn admit_authbus_message(",
-            "BEGIN IMMEDIATE",
-            "MAX_AUTHBUS_REPLAY_KEYS",
-            "transaction.commit().await",
-            "message.authenticate("
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-evidence/migrations/0009_authbus_replay.sql",
-          "mustContain": [
-            "CREATE TABLE authbus_replay_sequences",
-            "PRIMARY KEY(issuer_id, key_epoch, subject_id, scope_digest)"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/authbus_store_tests.rs",
-          "mustContain": [
-            "replay_fence_survives_reopen_and_preserves_full_unsigned_sequence",
-            "independent_database_handles_cannot_both_admit_one_sequence"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/authbus_store_tests.rs",
-          "mustContain": [
-            "rejected_authentication_does_not_consume_sequence",
-            "capacity_failure_does_not_burn_a_new_replay_key"
-          ]
-        }
-      ],
-      "durability": "sqlite_admission_outbox_and_process_local_legacy",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "auth.authbus.signed-message.v1",
-      "module": "auth.authbus",
-      "summary": "strict Ed25519 authentication with trusted issuer expiry revocation scope and payload checks",
-      "publicSymbols": [
-        "IssuerRegistration",
-        "SignedMessageClaims::signing_bytes",
-        "SignedMessage::authenticate",
-        "AuthenticatedMessage"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-authbus/src/signed.rs",
-          "mustContain": [
-            "pub struct IssuerRegistration",
-            "pub struct SignedMessageClaims",
-            "pub struct AuthenticatedMessage",
-            "pub fn authenticate(",
-            ".verify_strict("
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-authbus/src/signed_tests.rs",
-          "mustContain": [
-            "signed_admission_rejects_payload_and_replay_identity_substitution"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-authbus/src/signed_tests.rs",
-          "mustContain": [
-            "signed_admission_rejects_payload_and_replay_identity_substitution",
-            "trusted_registration_and_current_expiry_are_required"
-          ]
-        }
-      ],
-      "durability": "sqlite_admission_outbox_and_process_local_legacy",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "auth.authbus.deny-all-receipt.v1",
-      "module": "auth.authbus",
-      "summary": "deny-all admission receipts and legacy preverified in-process replay",
-      "publicSymbols": [
-        "VerificationReceipt",
-        "AuthorityPosture::DENY_ALL",
-        "PreverifiedAuthEnvelope",
-        "TrustedReplayContext",
-        "ReplayWindow::verify"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-authbus/src/lib.rs",
-          "mustContain": [
-            "pub use signed::SignedMessage;",
-            "pub struct PreverifiedAuthEnvelope",
-            "pub struct TrustedReplayContext",
-            "BTreeMap<ReplayKey, u64>",
-            "AuthorityPosture::DENY_ALL"
-          ],
-          "mustNotContain": [
-            "pub fn reserve(",
-            "pub fn settle("
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-authbus/src/lib_tests.rs",
-          "mustContain": [
-            "exact_envelope_is_replay_checked_without_authority_grant",
-            "scope_issuer_and_key_epoch_have_independent_replay_sequences"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-authbus/src/lib_tests.rs",
-          "mustContain": [
-            "a_nonzero_signature_reference_is_not_cryptographic_authority",
-            "replay_is_rejected_within_one_issuer_epoch_subject_and_scope",
-            "trusted_revocation_context_is_fail_closed",
-            "zero_digest_and_zero_sequence_are_rejected"
-          ]
-        }
-      ],
-      "durability": "sqlite_admission_outbox_and_process_local_legacy",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "auth.authbus.durable-message-outbox.v1",
-      "module": "auth.authbus",
-      "summary": "transactional bounded AuthBus message outbox with recoverable fenced delivery",
-      "publicSymbols": [
-        "HeptaEvidenceStore::enqueue_authbus_message",
-        "HeptaEvidenceStore::pending_authbus_deliveries",
-        "HeptaEvidenceStore::claim_authbus_delivery",
-        "HeptaEvidenceStore::renew_authbus_delivery",
-        "HeptaEvidenceStore::retry_authbus_delivery",
-        "HeptaEvidenceStore::ack_authbus_delivery",
-        "HeptaEvidenceStore::authbus_delivery_status",
-        "HeptaEvidenceStore::quarantine_authbus_issuer"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
-          "mustContain": [
-            "pub async fn enqueue_authbus_message(",
-            "advance_replay(&mut tx, &authenticated)",
-            "pub async fn pending_authbus_deliveries("
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
-          "mustContain": [
-            "pub async fn claim_authbus_delivery(",
-            "pub async fn renew_authbus_delivery(",
-            "pub async fn retry_authbus_delivery(",
-            "pub async fn ack_authbus_delivery("
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
-          "mustContain": [
-            "enqueue_commit_response_loss_is_idempotent_across_reopen",
-            "actual_process_crash_after_send_before_ack_redelivers_same_id"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
-          "mustContain": [
-            "failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded",
-            "two_handles_serialize_claim_and_every_new_fence_rejects_old_worker",
-            "bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed"
-          ]
-        }
-      ],
-      "durability": "sqlite_admission_outbox_and_process_local_legacy",
-      "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     },
@@ -1853,10 +1651,19 @@
           ]
         }
       ],
-      "durability": "sqlite_migrations_0001_0011",
+      "durability": "sqlite_migrations_0001_0012",
       "activation": "agentd_product_composed_config_gated",
       "productionCaller": "runtime.agentd",
-      "receiptStatus": "native_workflow_required"
+      "receiptStatus": "native_workflow_required",
+      "callerEvidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+          "mustContain": [
+            "EvidenceHost",
+            "kernel_evidence_claims"
+          ]
+        }
+      ]
     },
     {
       "capabilityId": "kernel.evidence.recovery-frontier.v1",
@@ -1910,9 +1717,480 @@
           ]
         }
       ],
-      "durability": "sqlite_migrations_0001_0011",
+      "durability": "sqlite_migrations_0001_0012",
       "activation": "agentd_product_composed_config_gated",
       "productionCaller": "runtime.agentd",
+      "receiptStatus": "native_workflow_required",
+      "callerEvidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+          "mustContain": [
+            "EvidenceRecoveryFrontierV1",
+            "verify_evidence_recovery_frontier",
+            "recovery_required"
+          ]
+        }
+      ]
+    },
+    {
+      "capabilityId": "auth.authbus.sqlite-replay-admission.v1",
+      "module": "auth.authbus",
+      "summary": "bounded SQLite replay admission keyed by issuer epoch subject and scope",
+      "publicSymbols": [
+        "HeptaEvidenceStore::admit_authbus_message"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_store.rs",
+          "mustContain": [
+            "pub async fn admit_authbus_message(",
+            "BEGIN IMMEDIATE",
+            "MAX_AUTHBUS_REPLAY_KEYS",
+            "transaction.commit().await",
+            "message.authenticate("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0009_authbus_replay.sql",
+          "mustContain": [
+            "CREATE TABLE authbus_replay_sequences",
+            "PRIMARY KEY(issuer_id, key_epoch, subject_id, scope_digest)"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_store_tests.rs",
+          "mustContain": [
+            "replay_fence_survives_reopen_and_preserves_full_unsigned_sequence",
+            "independent_database_handles_cannot_both_admit_one_sequence"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_store_tests.rs",
+          "mustContain": [
+            "rejected_authentication_does_not_consume_sequence",
+            "capacity_failure_does_not_burn_a_new_replay_key"
+          ]
+        }
+      ],
+      "durability": "sqlite_dual_checkpointed_authbus_owners",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "auth.authbus.signed-message.v1",
+      "module": "auth.authbus",
+      "summary": "strict Ed25519 authentication with trusted issuer expiry revocation scope and payload checks",
+      "publicSymbols": [
+        "IssuerRegistration",
+        "SignedMessageClaims::signing_bytes",
+        "SignedMessage::authenticate",
+        "AuthenticatedMessage"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-authbus/src/signed.rs",
+          "mustContain": [
+            "pub struct IssuerRegistration",
+            "pub struct SignedMessageClaims",
+            "pub struct AuthenticatedMessage",
+            "pub fn authenticate(",
+            ".verify_strict("
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/signed_tests.rs",
+          "mustContain": [
+            "signed_admission_rejects_payload_and_replay_identity_substitution"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/signed_tests.rs",
+          "mustContain": [
+            "signed_admission_rejects_payload_and_replay_identity_substitution",
+            "trusted_registration_and_current_expiry_are_required"
+          ]
+        }
+      ],
+      "durability": "sqlite_dual_checkpointed_authbus_owners",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "auth.authbus.deny-all-receipt.v1",
+      "module": "auth.authbus",
+      "summary": "deny-all admission receipts and legacy preverified in-process replay",
+      "publicSymbols": [
+        "VerificationReceipt",
+        "AuthorityPosture::DENY_ALL",
+        "PreverifiedAuthEnvelope",
+        "TrustedReplayContext",
+        "ReplayWindow::verify"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-authbus/src/lib.rs",
+          "mustContain": [
+            "pub use signed::SignedMessage;",
+            "pub struct PreverifiedAuthEnvelope",
+            "pub struct TrustedReplayContext",
+            "BTreeMap<ReplayKey, u64>",
+            "AuthorityPosture::DENY_ALL"
+          ],
+          "mustNotContain": [
+            "pub fn reserve(",
+            "pub fn settle("
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/lib_tests.rs",
+          "mustContain": [
+            "exact_envelope_is_replay_checked_without_authority_grant",
+            "scope_issuer_and_key_epoch_have_independent_replay_sequences"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/lib_tests.rs",
+          "mustContain": [
+            "a_nonzero_signature_reference_is_not_cryptographic_authority",
+            "replay_is_rejected_within_one_issuer_epoch_subject_and_scope",
+            "trusted_revocation_context_is_fail_closed",
+            "zero_digest_and_zero_sequence_are_rejected"
+          ]
+        }
+      ],
+      "durability": "sqlite_dual_checkpointed_authbus_owners",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "auth.authbus.durable-message-outbox.v1",
+      "module": "auth.authbus",
+      "summary": "transactional bounded AuthBus message outbox with recoverable fenced delivery",
+      "publicSymbols": [
+        "HeptaEvidenceStore::enqueue_authbus_message",
+        "HeptaEvidenceStore::pending_authbus_deliveries",
+        "HeptaEvidenceStore::claim_authbus_delivery",
+        "HeptaEvidenceStore::renew_authbus_delivery",
+        "HeptaEvidenceStore::retry_authbus_delivery",
+        "HeptaEvidenceStore::ack_authbus_delivery",
+        "HeptaEvidenceStore::authbus_delivery_status",
+        "HeptaEvidenceStore::quarantine_authbus_issuer"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
+          "mustContain": [
+            "pub async fn enqueue_authbus_message(",
+            "advance_replay(&mut tx, &authenticated)",
+            "pub async fn pending_authbus_deliveries("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
+          "mustContain": [
+            "pub async fn claim_authbus_delivery(",
+            "pub async fn renew_authbus_delivery(",
+            "pub async fn retry_authbus_delivery(",
+            "pub async fn ack_authbus_delivery("
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+          "mustContain": [
+            "enqueue_commit_response_loss_is_idempotent_across_reopen",
+            "actual_process_crash_after_send_before_ack_redelivers_same_id"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+          "mustContain": [
+            "failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded",
+            "two_handles_serialize_claim_and_every_new_fence_rejects_old_worker",
+            "bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed"
+          ]
+        }
+      ],
+      "durability": "sqlite_dual_checkpointed_authbus_owners",
+      "activation": "host_composition_required",
+      "productionCaller": "codex-hepta-agentd signed-text ingress",
+      "receiptStatus": "native_workflow_required",
+      "callerEvidence": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+          "mustContain": [
+            "enqueue_authbus_message",
+            "sync_replay_checkpoint"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+          "mustContain": [
+            "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+          ]
+        }
+      ]
+    },
+    {
+      "capabilityId": "auth.authbus.durable-authority-owner.v1",
+      "module": "auth.authbus",
+      "summary": "durable revision-bound policy issuer and signed trusted-time ownership",
+      "publicSymbols": [
+        "AuthBusAuthorityHost",
+        "AuthBusAuthorityStore",
+        "PolicyDecision",
+        "SignedTrustedTimeAttestation"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-authbus/src/host.rs",
+          "mustContain": [
+            "pub struct AuthBusAuthorityHost",
+            "observe_trusted_time_attestation",
+            "pub async fn authorize("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/authority_store.rs",
+          "mustContain": [
+            "pub async fn create_policy(",
+            "record_policy_history",
+            "pub async fn retire_policy("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/trust_store.rs",
+          "mustContain": [
+            "pub async fn rotate_issuer(",
+            "observe_trusted_time_attestation"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/authority_store_tests.rs",
+          "mustContain": [
+            "authorization_is_revision_bound_and_explicit_deny_grants_no_authority"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/trust_store_tests.rs",
+          "mustContain": [
+            "trusted_time_requires_an_active_registered_signer"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/authority_store_tests.rs",
+          "mustContain": [
+            "trusted_time_floor_survives_reopen_and_failed_authorization"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/trust_store_tests.rs",
+          "mustContain": [
+            "issuer_rotation_revocation_and_retirement_are_monotonic"
+          ]
+        }
+      ],
+      "durability": "sqlite_dual_checkpointed_authbus_owners",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "auth.authbus.quota-reservation-settlement.v1",
+      "module": "auth.authbus",
+      "summary": "conservation-safe quota reservation cancellation settlement and restart reconciliation",
+      "publicSymbols": [
+        "AuthBusAuthorityHost::reserve",
+        "AuthBusAuthorityHost::cancel_reservation",
+        "AuthBusAuthorityHost::mark_dispatch_attempted",
+        "AuthBusAuthorityHost::settle"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-authbus/src/quota_store.rs",
+          "mustContain": [
+            "MAX_ACTIVE_RESERVATIONS",
+            "pub async fn reserve(",
+            "compact_terminal_reservations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/settlement_store.rs",
+          "mustContain": [
+            "pub async fn cancel_reservation(",
+            "pub async fn mark_dispatch_attempted(",
+            "pub async fn settle("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/migrations/0004_recovery_retention.sql",
+          "mustContain": [
+            "authbus_reservation_transition",
+            "authbus_reservation_live_delete",
+            "authbus_quota_reservation_archive"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/quota_store_tests.rs",
+          "mustContain": [
+            "simultaneous_last_unit_reservations_cannot_both_succeed",
+            "exact_reservation_retry_is_idempotent_and_changed_amount_conflicts"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs",
+          "mustContain": [
+            "completed_settlement_is_conservative_and_idempotent",
+            "explicit_cancel_refunds_only_undispatched_reservation",
+            "terminal_compaction_preserves_operation_idempotency_without_lifetime_capacity_use"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs",
+          "mustContain": [
+            "dispatch_rejects_effect_digest_drift_before_crossing_the_boundary",
+            "revoked_policy_blocks_dispatch_and_held_expiry_refunds",
+            "sqlite_rejects_illegal_state_jump_and_live_row_deletion"
+          ]
+        }
+      ],
+      "durability": "sqlite_dual_checkpointed_authbus_owners",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "auth.authbus.external-rollback-frontiers.v1",
+      "module": "auth.authbus",
+      "summary": "external rollback checkpoints for replay and authority semantic frontiers",
+      "publicSymbols": [
+        "AuthorityCheckpoint",
+        "AuthBusAuthorityHost::sync_checkpoint",
+        "ReplayCheckpoint"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-authbus/src/recovery.rs",
+          "mustContain": [
+            "reconcile_authority_checkpoint",
+            "advance_authority_checkpoint",
+            "RollbackDetected"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_recovery.rs",
+          "mustContain": [
+            "reconcile_authbus_restore_checkpoint",
+            "advance_authbus_restore_checkpoint",
+            "RollbackDetected"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authbus_checkpoint.rs",
+          "mustContain": [
+            "pub(crate) struct ReplayCheckpointFile",
+            "fn replace("
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/recovery_tests.rs",
+          "mustContain": [
+            "advanced_external_checkpoint_rejects_real_old_database_restore"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs",
+          "mustContain": [
+            "external_checkpoint_detects_real_old_database_restore"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-authbus/src/recovery_tests.rs",
+          "mustContain": [
+            "restart_fences_new_reservations_until_dispatch_attempts_become_indeterminate"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs",
+          "mustContain": [
+            "every_replay_mutation_requires_exact_external_checkpoint_ack"
+          ]
+        }
+      ],
+      "durability": "sqlite_dual_checkpointed_authbus_owners",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "auth.authbus.bao-final-use-composition.v1",
+      "module": "auth.authbus",
+      "summary": "Bao KV-v2 operation quota final-use and signed settlement composition",
+      "publicSymbols": [
+        "BaoClient::consume_kv_v2_with_authbus",
+        "BaoAuthBusAdmission",
+        "BaoAuthBusEvidenceProvider"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "consume_kv_v2_with_authbus",
+            "authbus_effect_digest",
+            "mark_dispatch_attempted",
+            "settle_observed"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "authbus_product_path_reserves_fences_final_use_and_settles_observed_cost"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "authbus_timeout_keeps_quota_held_as_indeterminate"
+          ]
+        }
+      ],
+      "durability": "sqlite_dual_checkpointed_authbus_owners",
+      "activation": "host_composition_required",
+      "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     }
   ]

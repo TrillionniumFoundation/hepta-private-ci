@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-authbus/src/lib.rs](../../../codex-rs/hepta-authbus/src/lib.rs); observed identifiers include `PreverifiedAuthEnvelope`, `TrustedReplayContext`, `VerificationReceipt`, `ReplayWindow`, `verify`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/auth.authbus.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-authbus/src/lib.rs](../../../codex-rs/hepta-authbus/src/lib.rs). The current candidate exports the signed-ingress compatibility surface plus `AuthBusAuthorityHost`, durable policy/quota/reservation types, issuer/trusted-time verification and rollback/recovery checkpoints. Cross-owner source composition is anchored in Agentd signed-text ingress and `BaoClient::consume_kv_v2_with_authbus`; those callsites do not transfer ownership of AuthBus facts. Read the [current native implementation](../../lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md) and [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) together. Exact-candidate execution, activation and acceptance remain separate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -77,11 +77,14 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `typed ingress`
-- `policy core`
-- `transactional writer`
+- `signed typed ingress and replay fence`
+- `checkpointed authority owner host`
+- `revisioned policy and issuer core`
+- `conservation-safe quota/reservation writer`
+- `restart/rollback reconciler and terminal archive`
 - `bounded read projection`
-- `outbox adapter`
+- `Agentd outbox adapter`
+- `Bao final-use/quota integration adapter`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -138,15 +141,15 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/auth.authbus.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md).
+`AuthBusAuthorityHost` is the production-shaped mutation façade for policy/quota/trust state. Its SQLite store uses WAL, FULL synchronous writes and `BEGIN IMMEDIATE`; mutating owner calls must not bypass the host because successful or failed mutations can advance trusted time and every dirty frontier must be published to the independently retained checkpoint before returning. Replay/delivery remains owned by `HeptaEvidenceStore`, with Agentd separately publishing the replay frontier checkpoint. `DispatchAttempted` is committed before the registered effect boundary; restart converts unresolved attempts to `Indeterminate` before new reservation issuance.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/auth.authbus.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Both durable owners use an external anti-rollback witness. A local mutation first commits a dirty semantic frontier; publication then CAS-replaces the external checkpoint with fsync/rename/directory-sync and finally promotes the local checkpoint. A newer external witness with an older restored database is `RollbackDetected`. A crash after dispatch but before terminal settlement retains quota as `Indeterminate`; a timeout never proves `NotApplied`. Terminal reservation compaction is allowed only after the state is settled/released/expired/cancelled and preserves immutable operation identity in the archive.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory. Independently operated checkpoint/trusted-time services and target-host power-loss evidence are activation gates, not facts created by repository source.
 
 ## 9. Security, privacy and threat controls
 
@@ -166,7 +169,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native signed-admission verifier is embedded into the host; deliver issuer/replay trust through protected host configuration. Its signed text boundary is distinct from the broader policy/quota/settlement target below. Real economic quota ownership and provider settlement must be connected explicitly before those capabilities are claimed.
+Agentd is a named source-composed caller of durable signed-text admission and requires protected trust plus an external replay checkpoint. `AuthBusAuthorityHost` is the named durable owner façade for policy/quota/trust mutations. The bounded Bao KV-v2 path source-composes that owner with an exact operation identity, reservation/effect digest, kernel `FinalUseBinding`, provider observation and independently signed settlement evidence. These source callsites do not establish production enrollment, operator activation or target-host qualification.
 
 Current operating and state-format references:
 
@@ -179,10 +182,14 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-authbus/src/lib_tests.rs](../../../codex-rs/hepta-authbus/src/lib_tests.rs); named case: `exact_envelope_is_replay_checked_without_authority_grant`.
-- [codex-rs/hepta-authbus/src/signed_tests.rs](../../../codex-rs/hepta-authbus/src/signed_tests.rs); named case: `signed_admission_rejects_payload_and_replay_identity_substitution`.
+- [codex-rs/hepta-authbus/src/quota_store_tests.rs](../../../codex-rs/hepta-authbus/src/quota_store_tests.rs): concurrent last-unit reservation and idempotency/conflict cases;
+- [codex-rs/hepta-authbus/src/settlement_store_tests.rs](../../../codex-rs/hepta-authbus/src/settlement_store_tests.rs): dispatch fence, signed settlement, cancellation, DB invariant bypass and compaction;
+- [codex-rs/hepta-authbus/src/recovery_tests.rs](../../../codex-rs/hepta-authbus/src/recovery_tests.rs): old-database rollback and restart reconciliation;
+- [codex-rs/hepta-evidence/src/authbus_recovery_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_recovery_tests.rs): replay checkpoint/retirement recovery;
+- [codex-rs/hepta-agentd/tests/authbus_text_product.rs](../../../codex-rs/hepta-agentd/tests/authbus_text_product.rs): daemon/App Server signed-text product path;
+- [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs): TLS AuthBus/final-use/settlement product path and timeout hold.
 
-In `codex-rs`, run `just test -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) separately labels target acceptance designs.
+In `codex-rs`, run the focused AuthBus, evidence, Agentd and Bao packages, followed by strict Clippy and the repository exact-head/synthetic-merge workflows. Test names are source anchors only until the unchanged candidate has terminal-success execution receipts.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

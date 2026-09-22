@@ -40,6 +40,7 @@ pub struct AgentdConfig {
     evidence_trust_file: Option<PathBuf>,
     evidence_recovery_frontier_file: Option<PathBuf>,
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
+    authbus_checkpoint_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
 }
@@ -149,6 +150,7 @@ impl AgentdConfig {
             evidence_trust_file: None,
             evidence_recovery_frontier_file: None,
             evidence_recovery_frontier_trust_file: None,
+            authbus_checkpoint_file: None,
             cognitive_ranker: None,
             production_operations: None,
         })
@@ -197,6 +199,17 @@ impl AgentdConfig {
             (Some(frontier), Some(trust)) => Some((frontier, trust)),
             _ => None,
         }
+    }
+
+    /// Independently retained replay witness. Production signed ingress requires
+    /// this alongside the trust file; it must live outside the Agent home.
+    pub fn with_authbus_checkpoint_file(mut self, path: PathBuf) -> Self {
+        self.authbus_checkpoint_file = Some(path);
+        self
+    }
+
+    pub(crate) fn authbus_checkpoint_file(&self) -> Option<&Path> {
+        self.authbus_checkpoint_file.as_deref()
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must

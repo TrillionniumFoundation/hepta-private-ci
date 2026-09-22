@@ -94,17 +94,17 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
     exact = {
         ("kernel.operations", "implementation"): "durable_owner_source_implemented",
         ("kernel.operations", "durability"): "sqlite_wal_full_integrated_owner",
-        ("auth.authbus", "implementation"): "signed_admission_with_legacy_replay",
+        ("auth.authbus", "implementation"): "durable_policy_quota_reservation_owner",
         (
             "auth.authbus",
             "durability",
-        ): "sqlite_admission_outbox_and_process_local_legacy",
+        ): "sqlite_dual_checkpointed_authbus_owners",
         ("platform.wire", "implementation"): "versioned_v1_v2_codec",
         (
             "kernel.authority",
             "implementation",
         ): "final_use_and_authority_lease_owner",
-        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0011",
+        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0012",
         (
             "secrets.heptabao",
             "implementation",

@@ -3,9 +3,13 @@ use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::VerificationReceipt;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
+use crate::authbus_recovery::replay_checkpoint_pending;
+use crate::authbus_recovery::replay_epoch_retired;
+use crate::authbus_recovery::stage_replay_checkpoint_after_mutation;
 use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
 
@@ -26,12 +30,13 @@ impl HeptaEvidenceStore {
     /// admission. No receipt escapes before COMMIT succeeds.
     ///
     /// The host must supply current issuer registration and expected routing
-    /// scope/payload. This authenticates a message, not an external effect:
+    /// subject/scope/payload. This authenticates a message, not an external effect:
     /// adapters still require their separate final-use authority check.
     pub async fn admit_authbus_message(
         &self,
         issuer: &IssuerRegistration,
         message: &SignedMessage,
+        expected_subject: &StableId,
         expected_scope: Digest32,
         expected_payload: Digest32,
     ) -> Result<VerificationReceipt, AuthBusAdmissionError> {
@@ -44,6 +49,9 @@ impl HeptaEvidenceStore {
         // expiry merely because signature verification happened before a lock.
         let now = u64::try_from(now_millis()?)
             .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
+        if &message.claims.subject_id != expected_subject {
+            return Err(codex_hepta_authbus::Error::SubjectMismatch.into());
+        }
         let authenticated = message.authenticate(issuer, expected_scope, expected_payload, now)?;
         advance_replay(&mut transaction, &authenticated).await?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
@@ -58,8 +66,14 @@ pub(crate) async fn advance_replay(
     transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
     authenticated: &AuthenticatedMessage,
 ) -> Result<(), AuthBusAdmissionError> {
+    if replay_checkpoint_pending(transaction).await? {
+        return Err(codex_hepta_authbus::Error::ExternalCheckpointRequired.into());
+    }
     let claims = authenticated.claims();
     let epoch = claims.key_epoch.get().to_be_bytes();
+    if replay_epoch_retired(transaction, claims.issuer_id.as_str(), epoch.as_slice()).await? {
+        return Err(codex_hepta_authbus::Error::Revoked.into());
+    }
     let previous: Option<Vec<u8>> = sqlx::query_scalar(
         "SELECT sequence FROM authbus_replay_sequences
              WHERE issuer_id = ? AND key_epoch = ? AND subject_id = ? AND scope_digest = ?",
@@ -109,6 +123,7 @@ pub(crate) async fn advance_replay(
     .execute(&mut **transaction)
     .await
     .map_err(classify_sqlx_error)?;
+    stage_replay_checkpoint_after_mutation(transaction).await?;
     Ok(())
 }
 
