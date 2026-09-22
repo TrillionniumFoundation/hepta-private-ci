@@ -1,97 +1,111 @@
 name: single-main-consolidation
-
 on:
   push:
     branches: [integration/single-main-20260922]
     paths: [.github/workflows/single-main-consolidation.yml]
-
 permissions:
   contents: read
-
 concurrency:
   group: single-main-consolidation
   cancel-in-progress: false
-
 jobs:
-  inventory:
+  stage-foundation:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Snapshot all branch heads and inspect ancestry without changing any remote ref
+      - name: Import exact reviewed candidate without modifying main
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --prune --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
-          mkdir -p "$RUNNER_TEMP/single-main"
           python3 - <<'PY'
-          import json, os, pathlib, subprocess, datetime
-          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'single-main'
-          def git(*args, check=True):
-              return subprocess.run(['git', *args], text=True, capture_output=True, check=check)
-          raw = git('for-each-ref', '--format=%(refname)\t%(objectname)\t%(committerdate:unix)', 'refs/remotes/origin/').stdout
-          main = git('rev-parse', 'refs/remotes/origin/main').stdout.strip()
-          rows = []
-          unique = []
-          seen = set()
-          for line in raw.splitlines():
-              ref, sha, timestamp = line.split('\t')
-              name = ref.removeprefix('refs/remotes/origin/')
-              if name == 'HEAD':
-                  continue
-              p = git('merge-base', '--is-ancestor', sha, main, check=False)
-              if p.returncode not in (0, 1):
-                  raise RuntimeError(p.stderr)
-              row = {'branch': name, 'sha': sha, 'committerTimestamp': int(timestamp), 'containedInInitialMain': p.returncode == 0}
-              rows.append(row)
-              if p.returncode == 1 and name != 'integration/single-main-20260922' and sha not in seen:
-                  unique.append(sha)
-                  seen.add(sha)
-          independent = git('merge-base', '--independent', *unique).stdout.splitlines() if unique else []
-          tipset = set(independent)
-          for row in rows:
-              row['independentTip'] = row['sha'] in tipset
-          report = {
-              'schemaVersion': 1,
-              'observedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-              'repository': os.environ['GITHUB_REPOSITORY'],
-              'initialMain': main,
-              'branchCount': len(rows),
-              'containedBranchCount': sum(r['containedInInitialMain'] for r in rows),
-              'uniqueUnmergedTipCount': len(unique),
-              'independentUnmergedTipCount': len(independent),
-              'branches': rows,
-              'independentUnmergedTips': independent,
-              'remoteMutationsPerformed': False,
-              'qualificationClaim': 'inventory only; no build or product qualification'
-          }
-          (out / 'inventory.json').write_text(json.dumps(report, indent=2) + '\n')
-          (out / 'heads.tsv').write_text(''.join(f"{r['sha']}\trefs/heads/{r['branch']}\n" for r in rows))
-          print(json.dumps({k:v for k,v in report.items() if k not in ('branches', 'independentUnmergedTips')}, indent=2))
-          for row in rows:
-              if row['independentTip']:
-                  print('INDEPENDENT', row['sha'], row['branch'])
-          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
-              f.write('# Single-main branch inventory\n\n')
-              f.write(f"Initial main: `{main}`\n\nBranches: {len(rows)}; already contained: {report['containedBranchCount']}; independent unmerged tips: {len(independent)}.\n\n")
-              f.write('Read-only inventory. No branch has been deleted and main has not been moved.\n')
+          import base64, hashlib, json, os, pathlib, subprocess, urllib.request
+          def git(*args):
+              p = subprocess.run(['git', *args], text=True, capture_output=True)
+              if p.returncode:
+                  print(p.stdout, p.stderr)
+                  raise RuntimeError('Git operation failed: ' + repr(args))
+              return p.stdout.strip()
+          git('fetch', '--no-tags', 'origin', '+refs/heads/*:refs/remotes/origin/*')
+          req = urllib.request.Request('https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/blobs/bebbd180d9bcdd722d9b45e86006add0488adccf', headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+          with urllib.request.urlopen(req, timeout=60) as response:
+              data = base64.b64decode(json.load(response)['content'])
+          assert hashlib.sha256(data).hexdigest() == '77f94454e0225efc64685cb0296d2c4f77bda3d530d57cfb27ae9991e195510b'
+          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'foundation.bundle'
+          path.write_bytes(data)
+          git('bundle', 'verify', str(path))
+          git('fetch', str(path), 'refs/heads/consolidation-work:refs/heads/verified-foundation')
+          sha = 'a8f71be5d5eccd39090e054dc441e3e5f2a842a6'
+          assert git('rev-parse', 'verified-foundation') == sha
+          assert git('rev-parse', sha + '^{tree}') == '121cb9e5050c8d36e6130d178a38828b6d59bf57'
+          for parent in ['a74246c4d7657d4c6b09fc50c41f1d715ace5e0e', 'c9a335297271563a623cc9763df87e327abb7e79', 'c0c81f8f3cddac3c433ccf7ccd65cf4cf3210894', '809de22a3ad9abef7ea34c0534dda992838d23b4', '716b44b6531c6f07f3534bbd07200080c2d7a67b']:
+              git('merge-base', '--is-ancestor', parent, sha)
+          env = os.environ.copy()
+          env['GIT_CONFIG_COUNT'] = '1'
+          env['GIT_CONFIG_KEY_0'] = 'http.https://github.com/.extraheader'
+          env['GIT_CONFIG_VALUE_0'] = 'AUTHORIZATION: basic ' + base64.b64encode(('x-access-token:' + os.environ['GH_TOKEN']).encode()).decode()
+          subprocess.run(['git', 'push', '--porcelain', 'origin', sha + ':refs/heads/integration/single-main-foundation-20260922'], env=env, check=True)
+          print('Staged', sha, 'without changing main or deleting branches.')
           PY
-      - name: Preserve complete branch history for local integration and recovery
+  validate:
+    needs: stage-foundation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Check exact source, regressions and Rust formatting
         shell: bash
         run: |
           set -euo pipefail
-          git bundle create "$RUNNER_TEMP/single-main/heads.bundle" --branches --remotes
-          git bundle verify "$RUNNER_TEMP/single-main/heads.bundle"
-          sha256sum "$RUNNER_TEMP/single-main/heads.bundle" > "$RUNNER_TEMP/single-main/heads.bundle.sha256"
-      - name: Upload branch inventory and recoverable Git history
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'foundation-evidence'
+          out.mkdir()
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          assert git('rev-parse', 'HEAD') == 'a8f71be5d5eccd39090e054dc441e3e5f2a842a6'
+          results = []
+          commands = [
+              ('workspace', ['python3', 'scripts/hepta_workspace.py']),
+              ('workspace-tests', ['python3', '-m', 'unittest', 'discover', '-v', '-s', 'scripts', '-p', 'test_hepta_workspace.py']),
+              ('source-tests', ['python3', '-m', 'unittest', 'discover', '-v', '-s', 'scripts', '-p', 'test_hepta_implementation*.py']),
+              ('source-proof', ['python3', 'scripts/hepta-implementation-maps.py', 'verify', '--require-current-source']),
+              ('rustfmt', ['cargo', 'fmt', '--manifest-path', 'codex-rs/Cargo.toml', '--', '--config', 'imports_granularity=Item', '--check']),
+              ('metadata', ['cargo', 'metadata', '--manifest-path', 'codex-rs/Cargo.toml', '--no-deps', '--format-version', '1'])
+          ]
+          for name, command in commands:
+              with (out / (name + '.log')).open('w') as log:
+                  p = subprocess.run(command, text=True, stdout=log, stderr=subprocess.STDOUT)
+              results.append({'name': name, 'command': command, 'exitCode': p.returncode})
+              print(name, p.returncode)
+          assert not git('status', '--porcelain')
+          if next(r for r in results if r['name'] == 'rustfmt')['exitCode']:
+              subprocess.run(['cargo', 'fmt', '--manifest-path', 'codex-rs/Cargo.toml', '--', '--config', 'imports_granularity=Item'], check=True)
+              with (out / 'proposed-rustfmt.patch').open('w') as patch:
+                  subprocess.run(['git', 'diff', '--binary'], stdout=patch, text=True, check=True)
+          receipt = {'candidateSha': git('rev-parse', 'HEAD'), 'candidateTree': git('rev-parse', 'HEAD^{tree}'), 'results': results, 'allPassed': all(r['exitCode'] == 0 for r in results), 'productQualified': False, 'mainChanged': False}
+          (out / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          print(json.dumps(receipt, indent=2))
+          raise SystemExit(0 if receipt['allPassed'] else 1)
+          PY
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
-          name: single-main-inventory-${{ github.run_id }}
-          path: ${{ runner.temp }}/single-main/
-          compression-level: 0
-          retention-days: 7
-          if-no-files-found: error
+          name: single-main-foundation-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/foundation-evidence/
+          retention-days: 30
