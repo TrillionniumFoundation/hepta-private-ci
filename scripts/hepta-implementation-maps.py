@@ -12,7 +12,7 @@ import argparse
 import json
 import re
 import subprocess
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from hepta_module_source_roots import resolve_source_roots
 
@@ -38,16 +38,14 @@ def git(*args: str) -> str:
 def validate_observed_source(
     row: dict, mid: str, resolved_roots: list[str], failures: list[str]
 ) -> None:
-    """Validate an optional exact product-source observation against HEAD.
+    """Bind observed navigation paths to both Git history and checked-out bytes.
 
-    sourceBase remains historical batch provenance. observedAtHead is stronger:
-    when present, every declared observed source path must be byte-unchanged
-    from that exact commit through the current candidate. This permits later
-    documentation-only projection commits without making the observation float.
+    Documentation-only successors may reuse an unchanged source observation.
+    This is not a build/test receipt: CI separately binds the full candidate,
+    toolchain and dependency closure. Even a sourceBase equal to HEAD must not
+    attest a dirty worktree, an untracked input or a Git pathspec expression.
     """
-    observed = row.get("observedAtHead")
-    if observed is None:
-        return
+    observed = row.get("observedAtHead", row.get("sourceBase"))
     if not isinstance(observed, dict):
         failures.append(f"{mid}: observed source identity")
         return
@@ -82,22 +80,45 @@ def validate_observed_source(
         return
     root = ROOT.resolve()
     for path in paths:
-        candidate = (ROOT / path).resolve()
-        try:
-            candidate.relative_to(root)
-        except ValueError:
-            failures.append(f"{mid}: observed source path escape {path}")
+        parts = path.split("/")
+        if (
+            PurePosixPath(path).is_absolute()
+            or any(part in {"", ".", ".."} for part in parts)
+            or any(character in path for character in ("\\", ":", "\0"))
+        ):
+            failures.append(f"{mid}: non-canonical observed source path {path!r}")
             return
+        candidate = root
+        for part in parts:
+            candidate = candidate / part
+            if candidate.is_symlink():
+                failures.append(f"{mid}: symlink observed source path {path}")
+                return
         if not candidate.exists():
             failures.append(f"{mid}: missing observed source path {path}")
             return
+        try:
+            # Existence on disk is not evidence that the observed tree owns it.
+            git("cat-file", "-e", f"{commit}:{path}")
+        except subprocess.CalledProcessError:
+            failures.append(f"{mid}: source path absent from observed tree {path}")
+            return
     try:
-        changed = git("diff", "--name-only", commit, "HEAD", "--", *paths)
+        changed = git(
+            "--literal-pathspecs", "diff", "--no-ext-diff", "--no-textconv",
+            "--name-only", commit, "HEAD", "--", *paths,
+        )
+        dirty = git(
+            "--literal-pathspecs", "status", "--porcelain=v1",
+            "--untracked-files=all", "--", *paths,
+        )
     except subprocess.CalledProcessError:
         failures.append(f"{mid}: observed source diff failed")
         return
     if changed:
         failures.append(f"{mid}: observed source drift since {commit}")
+    if dirty:
+        failures.append(f"{mid}: observed source worktree/index is not clean")
 
 def lane_by_module():
     return {
