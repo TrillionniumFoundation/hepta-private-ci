@@ -176,7 +176,7 @@
       "dossier": "qualification/module-execution-dossiers/detail/learning.artifacts.md",
       "nativeMapping": "codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md",
       "implementationState": "source_implemented_ci_pending",
-      "compatibility": "stable_v1_registry_retained_v2_manifest_withdrawal_head_and_lifecycle_additive",
+      "compatibility": "stable_v1_registry_retained_v2_manifest_scoped_v3_admission_fenced_owner_service_publication_lifecycle_iteration_and_sensor_core_additive",
       "operations": [
         {
           "operation": "validate_artifact_manifest_v2",
@@ -197,9 +197,63 @@
           "status": "implemented"
         },
         {
-          "operation": "validate_artifact_lifecycle_transition",
-          "nativeSymbol": "codex_hepta_learning_artifacts::validate_artifact_lifecycle_transition",
-          "source": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+          "operation": "admit_manifest_at_withdrawal_head_v3",
+          "nativeSymbol": "codex_hepta_learning_artifacts::admit_manifest_at_withdrawal_head_v3",
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ArtifactPublicationTransactionV1::begin",
+          "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::begin",
+          "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ArtifactPublicationTransactionV1::record_registry_durable",
+          "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::record_registry_durable",
+          "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ArtifactPublicationTransactionV1::record_witness_durable",
+          "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::record_witness_durable",
+          "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ArtifactPublicationTransactionV1::acknowledge",
+          "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::acknowledge",
+          "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ArtifactLifecycleJournalV2::append",
+          "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::append",
+          "source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "write_dataset_withdrawal_snapshot",
+          "nativeSymbol": "codex_hepta_learning_artifacts::write_dataset_withdrawal_snapshot",
+          "source": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "write_artifact_lifecycle_snapshot",
+          "nativeSymbol": "codex_hepta_learning_artifacts::write_artifact_lifecycle_snapshot",
+          "source": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "project_operator_sensor_core_registry_v1",
+          "nativeSymbol": "codex_hepta_learning_artifacts::project_operator_sensor_core_registry_v1",
+          "source": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "IterationLedgerV1::transition",
+          "nativeSymbol": "codex_hepta_learning_artifacts::IterationLedgerV1::transition",
+          "source": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
           "status": "implemented"
         },
         {
@@ -207,6 +261,84 @@
           "nativeSymbol": "codex_hepta_learning_artifacts::load_pinned_candidate",
           "source": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
           "status": "implemented_existing"
+        },
+        {
+          "operation": "LearningArtifactOwnerHost::open",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerHost::open",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerHost::open_with_required_current_head",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerHost::open_with_required_current_head",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerHost::recover_registry_by_head",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerHost::recover_registry_by_head",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerHost::recover_current_registry",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerHost::recover_current_registry",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerHost::recovery_required_operations",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerHost::recovery_required_operations",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerService::open",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerService::open",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerService::publish",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerService::publish",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ArtifactOwnerVerifierV1::verify_current_registry_view",
+          "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1::verify_current_registry_view",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerHost::current_registry_view",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerHost::current_registry_view",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "LearningArtifactOwnerService::current_registry_view",
+          "nativeSymbol": "codex_hepta_learning_artifacts::LearningArtifactOwnerService::current_registry_view",
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "ArtifactSelectionVerifierV1::verify",
+          "nativeSymbol": "codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1::verify",
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "record_verified_selection",
+          "nativeSymbol": "codex_hepta_learning_artifacts::record_verified_selection",
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "load_selected_candidate",
+          "nativeSymbol": "codex_hepta_learning_artifacts::load_selected_candidate",
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "status": "implemented"
         }
       ],
       "tests": [
@@ -214,14 +346,34 @@
         "art_02_persistent_withdrawal_blocks_future_admission_and_replays",
         "art_03_registry_head_witness_rejects_rollback",
         "art_04_lifecycle_forbids_self_selection_and_state_skips",
-        "artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent"
+        "art_05_admission_is_domain_registry_and_scope_bound",
+        "art_05_withdrawal_race_invalidates_admission",
+        "art_06_lifecycle_journal_enforces_head_state_and_role",
+        "art_06_lifecycle_snapshot_replay_survives_actor_expiry",
+        "art_07_publication_requires_ordered_durable_phases_before_ack",
+        "art_07_crash_snapshots_never_promote_partial_publication",
+        "art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt",
+        "art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry",
+        "sensor_core_kind_survives_durable_registry_roundtrip",
+        "operator_sensor_core_projection_has_one_physical_owner",
+        "operator_sensor_core_projection_tracks_revocation_without_second_write",
+        "records_bounded_external_transitions",
+        "snapshot_replay_is_exact_and_duplicate_receipts_fail",
+        "named_owner_service_publishes_retries_and_reopens_from_current_head",
+        "owner_host_process_kill_reopen_matrix",
+        "independent_current_head_anchor_rejects_restored_old_backup",
+        "current_head_rotation_preserves_history_and_requires_current_key_epoch",
+        "art_12_independent_selector_binds_exact_current_and_manifest",
+        "art_12_selection_rejects_self_selection_and_revoked_selector",
+        "art_12_verified_selection_records_only_selected_transition",
+        "existing_artifact_owner_new_process_predictions_and_revoked_rollback"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
-        "externally_authenticated_latest_registry_head",
-        "trusted_path_and_parent_directory_durability",
-        "new_process_load_rollback_backup_and_physical_erasure_evidence",
-        "independent_selection_canary_promotion_and_release"
+        "target-host trusted-ancestor and containing-directory durability plus real power-loss qualification",
+        "production artifact-owner and selector trust/signing-key provisioning plus independently retained CURRENT anchor operations",
+        "live product selector/operator enrollment, target-host load/revocation/rollback measurements and operational orphan reconciliation",
+        "independent canary, operator acceptance, promotion and release"
       ]
     },
     {

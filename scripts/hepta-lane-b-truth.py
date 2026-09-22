@@ -69,6 +69,7 @@ OPS = {
 }
 OPERATION_COUNT = sum(len(operations) for operations in OPS.values())
 HEX40 = re.compile(r"[0-9a-f]{40}")
+RUNTIME_CURRENT_SOURCE_BASE = {"commit": "$CURRENT_HEAD", "tree": "$CURRENT_TREE"}
 
 
 class Invalid(ValueError):
@@ -136,6 +137,18 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
     need(git("rev-parse", f"{commit}^{{tree}}") == tree, f"{label}: source tree")
     git("merge-base", "--is-ancestor", commit, "HEAD")
     return commit, tree
+
+
+def verify_module_source_base(row: dict[str, Any], label: str) -> tuple[str, str]:
+    policy = row.get("sourceIdentityPolicy", "legacy_shared_literal")
+    if policy == "runtime_current_candidate":
+        need(
+            row.get("sourceBase") == RUNTIME_CURRENT_SOURCE_BASE,
+            f"{label}: runtime-current source base",
+        )
+        return git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
+    need(policy == "legacy_shared_literal", f"{label}: source identity policy")
+    return verify_source_base(row.get("sourceBase"), label)
 
 
 def verify_observed_source(row: dict[str, Any], module: str) -> None:
@@ -238,16 +251,8 @@ def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
         )
         row = load(ROOT / path)
         need(row.get("module") == module, f"{module}: map identity")
-        base = row.get("sourceBase")
-        # Cache only fully validated identities; malformed/unhashable values
-        # still go through the rejecting validator instead of the fast path.
-        if (
-            not isinstance(base, dict)
-            or set(base) != {"commit", "tree"}
-            or not all(isinstance(value, str) for value in base.values())
-            or (base["commit"], base["tree"]) not in verified
-        ):
-            verified.add(verify_source_base(base, module))
+        resolved_base = verify_module_source_base(row, module)
+        verified.add(resolved_base)
         verify_observed_source(row, module)
         ids = [
             item.get("designOperation") or item.get("operation")

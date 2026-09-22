@@ -15,18 +15,31 @@ use codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
 use codex_hepta_learning_artifacts::ArtifactEvent;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactManifest;
+use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
+use codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_artifacts::ArtifactSelectionError;
+use codex_hepta_learning_artifacts::ArtifactSelectionTrustV1;
+use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
 use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
-use codex_hepta_learning_artifacts::PinnedCandidateSpec;
+use codex_hepta_learning_artifacts::RegistryHeadRequirementV1;
+use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
+use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
+use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
 use codex_hepta_learning_artifacts::StateChange;
-use codex_hepta_learning_artifacts::load_pinned_candidate;
+use codex_hepta_learning_artifacts::TrustedArtifactSelectorV1;
+use codex_hepta_learning_artifacts::TrustedArtifactSignerV1;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
+use codex_hepta_learning_artifacts::load_selected_candidate;
 use codex_hepta_learning_artifacts::write_candidate_payload;
 use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use serde::Deserialize;
 use serde::Serialize;
@@ -91,6 +104,13 @@ struct Request {
     payload_bytes: u64,
     generation: u64,
     artifact_digest: String,
+    current_generation: u64,
+    current_predecessor_head: String,
+    head_verifying_key: [u8; 32],
+    current_signature: Vec<u8>,
+    selection_id: String,
+    selector_verifying_key: [u8; 32],
+    selection_signature: Vec<u8>,
     expected: Expected,
 }
 #[derive(Clone, Serialize, Deserialize)]
@@ -123,6 +143,183 @@ impl Request {
     }
 }
 
+fn signature(value: &[u8], label: &str) -> [u8; 64] {
+    value
+        .try_into()
+        .unwrap_or_else(|_| panic!("{label}: expected 64-byte signature"))
+}
+
+fn owner_trust(request: &Request) -> ArtifactOwnerTrustV1 {
+    let signer = TrustedArtifactSignerV1 {
+        signer_id: id("fixture-head-signer"),
+        verifying_key: request.head_verifying_key,
+        minimum_authority_epoch: 1,
+        maximum_authority_epoch: 9,
+        valid_from: 1,
+        expires_at: 1_000,
+        revoked_at: None,
+    };
+    ArtifactOwnerTrustV1 {
+        registry_id: id("fixture-artifact-registry"),
+        withdrawal_scope_digest: digest("fixture-withdrawal-scope"),
+        minimum_registry_generation: Generation::new(1)
+            .unwrap_or_else(|error| panic!("minimum generation: {error:?}")),
+        genesis_predecessor_head_digest: Digest32::ZERO,
+        minimum_authority_epoch: 1,
+        writer_signers: vec![signer.clone()],
+        head_signers: vec![signer],
+    }
+}
+
+fn current_head(request: &Request) -> SignedCurrentArtifactHeadV1 {
+    SignedCurrentArtifactHeadV1 {
+        withdrawal_scope_digest: digest("fixture-withdrawal-scope"),
+        binding: request
+            .binding
+            .parse()
+            .unwrap_or_else(|error| panic!("binding: {error:?}")),
+        witness: RegistryHeadWitnessV1 {
+            registry_id: id("fixture-artifact-registry"),
+            generation: Generation::new(request.current_generation)
+                .unwrap_or_else(|error| panic!("current generation: {error:?}")),
+            head_digest: request
+                .head
+                .parse()
+                .unwrap_or_else(|error| panic!("head: {error:?}")),
+            predecessor_head_digest: request
+                .current_predecessor_head
+                .parse()
+                .unwrap_or_else(|error| panic!("predecessor head: {error:?}")),
+            authority_epoch: 1,
+            signer_id: id("fixture-head-signer"),
+            signing_key_digest: Digest32::of_bytes(&request.head_verifying_key),
+            issued_at: 20,
+            expires_at: 1_000,
+        },
+        signature: signature(&request.current_signature, "current head"),
+    }
+}
+
+fn current_requirement(request: &Request) -> RegistryHeadRequirementV1 {
+    RegistryHeadRequirementV1 {
+        registry_id: id("fixture-artifact-registry"),
+        minimum_generation: Generation::new(request.current_generation)
+            .unwrap_or_else(|error| panic!("required generation: {error:?}")),
+        expected_predecessor_head_digest: request
+            .current_predecessor_head
+            .parse()
+            .unwrap_or_else(|error| panic!("required predecessor: {error:?}")),
+        minimum_authority_epoch: 1,
+        now: 30,
+    }
+}
+
+fn selection_trust(request: &Request) -> ArtifactSelectionTrustV1 {
+    ArtifactSelectionTrustV1 {
+        registry_id: id("fixture-artifact-registry"),
+        withdrawal_scope_digest: digest("fixture-withdrawal-scope"),
+        minimum_authority_epoch: 4,
+        selectors: vec![TrustedArtifactSelectorV1 {
+            selector_id: id("fixture-selector"),
+            verifying_key: request.selector_verifying_key,
+            minimum_authority_epoch: 4,
+            maximum_authority_epoch: 9,
+            valid_from: 10,
+            expires_at: 1_000,
+            revoked_at: None,
+        }],
+    }
+}
+
+fn signed_selection(
+    request: &Request,
+    current: &VerifiedCurrentRegistryViewV1,
+) -> SignedArtifactSelectionV1 {
+    let manifest = request.manifest();
+    SignedArtifactSelectionV1 {
+        selection_id: id(&request.selection_id),
+        artifact_id: manifest.artifact_id.clone(),
+        registry_id: id("fixture-artifact-registry"),
+        withdrawal_scope_digest: digest("fixture-withdrawal-scope"),
+        registry_head_digest: current.receipt().head_digest,
+        current_witness_digest: current.witness_digest(),
+        current_trust_digest: current.trust_digest(),
+        artifact_kind: manifest.kind,
+        artifact_generation: manifest.generation,
+        predecessor_id: manifest.predecessor_id.clone(),
+        content_digest: manifest.content_digest,
+        objective_digest: manifest.objective_digest,
+        support_digest: manifest.support_digest,
+        compatibility_digest: manifest.compatibility_digest,
+        encoded_size_bytes: manifest.encoded_size_bytes,
+        selector_id: id("fixture-selector"),
+        selector_credential_digest: digest("fixture-selector-credential"),
+        signing_key_digest: Digest32::of_bytes(&request.selector_verifying_key),
+        authority_epoch: 4,
+        issued_at: 25,
+        expires_at: 1_000,
+        signature: signature(&request.selection_signature, "selection"),
+    }
+}
+
+fn verify_current(request: &Request) -> VerifiedCurrentRegistryViewV1 {
+    let trust = owner_trust(request);
+    let verifier = ArtifactOwnerVerifierV1::new(trust)
+        .unwrap_or_else(|error| panic!("owner trust: {error:?}"));
+    verifier
+        .verify_current_registry_view(
+            File::open(&request.snapshot)
+                .unwrap_or_else(|error| panic!("read-only current registry: {error:?}")),
+            RegistrySnapshotReceipt {
+                binding: request
+                    .binding
+                    .parse()
+                    .unwrap_or_else(|error| panic!("binding: {error:?}")),
+                head_digest: request
+                    .head
+                    .parse()
+                    .unwrap_or_else(|error| panic!("head: {error:?}")),
+                file_digest: request
+                    .snapshot_digest
+                    .parse()
+                    .unwrap_or_else(|error| panic!("snapshot digest: {error:?}")),
+                records: request.records,
+                encoded_bytes: request.snapshot_bytes,
+            },
+            &current_head(request),
+            &current_requirement(request),
+        )
+        .unwrap_or_else(|error| panic!("authenticated CURRENT: {error:?}"))
+}
+
+fn prepare_authentication(
+    request: &mut Request,
+    receipt: RegistrySnapshotReceipt,
+    predecessor_head: Digest32,
+    head_key: &SigningKey,
+    selector_key: &SigningKey,
+    phase: &str,
+) {
+    request.set_snapshot(receipt);
+    request.current_generation =
+        u64::try_from(receipt.records).unwrap_or_else(|error| panic!("record count: {error:?}"));
+    request.current_predecessor_head = predecessor_head.to_string();
+    request.head_verifying_key = head_key.verifying_key().to_bytes();
+    request.selector_verifying_key = selector_key.verifying_key().to_bytes();
+    request.current_signature = vec![0; 64];
+
+    let mut head = current_head(request);
+    head.signature = head_key.sign(&head.signing_bytes()).to_bytes();
+    request.current_signature = head.signature.to_vec();
+
+    let current = verify_current(request);
+    request.selection_id = format!("selection-{}-{phase}", request.generation);
+    request.selection_signature = vec![0; 64];
+    let mut selected = signed_selection(request, &current);
+    selected.signature = selector_key.sign(&selected.signing_bytes()).to_bytes();
+    request.selection_signature = selected.signature.to_vec();
+}
+
 #[test]
 fn worker() {
     let Ok(raw) = std::env::var("HEPTA_TEST_OWNER_TABULAR_REQUEST") else {
@@ -131,30 +328,35 @@ fn worker() {
         return;
     };
     assert!(raw.len() <= 16384);
-    let request: Request = serde_json::from_str(&raw).fixture_value();
-    let loaded = load_pinned_candidate(
-        File::open(&request.snapshot).fixture_value(),
-        File::open(&request.payload).fixture_value(),
-        PinnedCandidateSpec {
-            registry_receipt: RegistrySnapshotReceipt {
-                binding: request.binding.parse().fixture_value(),
-                head_digest: request.head.parse().fixture_value(),
-                file_digest: request.snapshot_digest.parse().fixture_value(),
-                records: request.records,
-                encoded_bytes: request.snapshot_bytes,
-            },
-            manifest: request.manifest(),
-        },
-    );
+    let request: Request = serde_json::from_str(&raw)
+        .unwrap_or_else(|error| panic!("host fixture request: {error:?}"));
+    let current = verify_current(&request);
+    let owner = owner_trust(&request);
+    let selection_verifier = ArtifactSelectionVerifierV1::new(selection_trust(&request), &owner)
+        .unwrap_or_else(|error| panic!("selection trust: {error:?}"));
+    let selected = selection_verifier.verify(&signed_selection(&request, &current), &current, 30);
     match request.expected {
         Expected::Rejected => assert!(
-            loaded.is_err(),
-            "revoked candidate must not reach predictor"
+            matches!(selected, Err(ArtifactSelectionError::ArtifactUnavailable)),
+            "revoked candidate must fail independent selection at current head: {selected:?}"
         ),
         Expected::Value(expected) => {
-            let bytes = loaded.fixture_value();
+            let selection =
+                selected.unwrap_or_else(|error| panic!("independent selection: {error:?}"));
+            let mut candidate = load_selected_candidate(
+                File::open(&request.snapshot)
+                    .unwrap_or_else(|error| panic!("selected registry reopen: {error:?}")),
+                File::open(&request.payload)
+                    .unwrap_or_else(|error| panic!("selected payload reopen: {error:?}")),
+                selection,
+            )
+            .unwrap_or_else(|error| panic!("selected immutable load: {error:?}"));
+            let current_for_use = verify_current(&request);
+            let bytes = candidate
+                .with_current(current_for_use, |bytes| bytes.to_vec())
+                .unwrap_or_else(|error| panic!("final-use CURRENT: {error:?}"));
             let model = LoadedTabularOperatorV1::from_pinned_payload(
-                bytes.bytes(),
+                &bytes,
                 &TabularPayloadPinV1 {
                     payload_digest: request.payload_digest.parse().fixture_value(),
                     artifact_digest: request.artifact_digest.parse().fixture_value(),
@@ -215,6 +417,7 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
     let snapshot = directory.path().join("registry");
     let mut registry = ArtifactRegistry::new();
     let mut requests = Vec::new();
+    let mut final_predecessor_head = Digest32::ZERO;
     for (generation, target) in [(1, 1), (2, 7)] {
         let model = fit(generation, target);
         let bytes = encode_tabular_payload_v1(&model).fixture_value();
@@ -230,9 +433,20 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
             payload_bytes: bytes.len() as u64,
             generation,
             artifact_digest: model.artifact_digest.to_string(),
+            current_generation: 0,
+            current_predecessor_head: String::new(),
+            head_verifying_key: [0; 32],
+            current_signature: Vec::new(),
+            selection_id: String::new(),
+            selector_verifying_key: [0; 32],
+            selection_signature: Vec::new(),
             expected: Expected::Value(target),
         };
         let manifest = request.manifest();
+        let predecessor_head = registry.snapshot().head_digest;
+        if generation == 2 {
+            final_predecessor_head = predecessor_head;
+        }
         registry
             .append(ArtifactEvent::Register {
                 event_id: id(&format!("register-{generation}")),
@@ -245,18 +459,30 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
             &manifest.artifact_id,
             &bytes,
         )
-        .fixture_value();
+        .unwrap_or_else(|error| panic!("owner payload sync: {error:?}"));
         requests.push(request);
     }
     let receipt = write_registry_snapshot(
-        CreateOnlyArtifactFile::create(&snapshot).fixture_value(),
+        CreateOnlyArtifactFile::create(&snapshot)
+            .unwrap_or_else(|error| panic!("create-only registry: {error:?}")),
         &registry,
         digest("fixture-current-host-binding"),
     )
-    .fixture_value();
+    .unwrap_or_else(|error| panic!("owner snapshot sync: {error:?}"));
+    let head_key = SigningKey::from_bytes(&[71; 32]);
+    let selector_key = SigningKey::from_bytes(&[91; 32]);
     for request in &mut requests {
-        request.set_snapshot(receipt);
+        prepare_authentication(
+            request,
+            receipt,
+            final_predecessor_head,
+            &head_key,
+            &selector_key,
+            "initial",
+        );
     }
+    // Generation 2 is selected in one process, then the exact compatible
+    // predecessor generation 1 is independently selected and loaded again.
     let pids = [run(&requests[0]), run(&requests[1]), run(&requests[0])];
     assert_eq!(
         pids.into_iter()
@@ -264,6 +490,7 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
             .len(),
         3
     );
+    let revoked_predecessor_head = registry.snapshot().head_digest;
     registry
         .append(ArtifactEvent::Revoke(StateChange {
             event_id: id("revoke-predecessor"),
@@ -281,8 +508,15 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
     .fixture_value();
     for request in &mut requests {
         request.snapshot = revoked_snapshot.clone();
-        request.set_snapshot(current);
         request.expected = Expected::Rejected;
-        run(request); // Both the predecessor and its descendant must remain revoked.
+        prepare_authentication(
+            request,
+            current,
+            revoked_predecessor_head,
+            &head_key,
+            &selector_key,
+            "revoked",
+        );
+        run(request); // Fresh signed selection attempts fail on current revocation.
     }
 }

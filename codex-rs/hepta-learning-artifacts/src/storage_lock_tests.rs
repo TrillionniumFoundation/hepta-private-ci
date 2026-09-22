@@ -1,4 +1,5 @@
 use super::*;
+use crate::test_support::FixtureError;
 use std::fs;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
@@ -126,7 +127,8 @@ fn shared_readers_coexist_and_existing_path_cannot_be_recreated() {
         registry.snapshot()
     );
     assert_eq!(
-        CreateOnlyArtifactFile::create(fixture.path("registry")).unwrap_err(),
+        CreateOnlyArtifactFile::create(fixture.path("registry"))
+            .fixture_error("expected lock rejection"),
         ArtifactStorageError::AlreadyExists
     );
     must(shared.unlock());

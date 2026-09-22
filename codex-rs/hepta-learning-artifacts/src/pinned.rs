@@ -9,7 +9,10 @@ use std::error::Error;
 use std::fmt;
 use std::fs::File;
 
+use codex_hepta_types::Digest32;
+
 use crate::ArtifactManifest;
+use crate::ArtifactRegistry;
 use crate::ArtifactStorageError;
 use crate::RegistrySnapshotReceipt;
 use crate::read_candidate_payload;
@@ -126,9 +129,67 @@ pub fn load_pinned_candidate(
     })
 }
 
-/// Cached candidate guarded by monotonically extending, independently supplied
-/// registry views. This is not selection authority, nor does it discover the
-/// newest view. A trusted host must fetch that view before *each* use.
+/// Authenticated exact registry view for final-use revalidation.
+///
+/// External callers cannot construct this value directly. It is issued only
+/// after the artifact authority verifies a signed CURRENT head and the exact
+/// registry snapshot backing that head.
+pub struct VerifiedCurrentRegistryViewV1 {
+    receipt: RegistrySnapshotReceipt,
+    registry: ArtifactRegistry,
+    witness_digest: Digest32,
+    trust_digest: Digest32,
+}
+
+impl VerifiedCurrentRegistryViewV1 {
+    pub(crate) fn new(
+        receipt: RegistrySnapshotReceipt,
+        registry: ArtifactRegistry,
+        witness_digest: Digest32,
+        trust_digest: Digest32,
+    ) -> Self {
+        Self {
+            receipt,
+            registry,
+            witness_digest,
+            trust_digest,
+        }
+    }
+
+    #[must_use]
+    pub const fn receipt(&self) -> RegistrySnapshotReceipt {
+        self.receipt
+    }
+
+    #[must_use]
+    pub const fn witness_digest(&self) -> Digest32 {
+        self.witness_digest
+    }
+
+    #[must_use]
+    pub const fn trust_digest(&self) -> Digest32 {
+        self.trust_digest
+    }
+
+    pub(crate) fn registry(&self) -> &ArtifactRegistry {
+        &self.registry
+    }
+}
+
+impl fmt::Debug for VerifiedCurrentRegistryViewV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("VerifiedCurrentRegistryViewV1")
+            .field("receipt", &self.receipt)
+            .field("witness_digest", &self.witness_digest)
+            .field("trust_digest", &self.trust_digest)
+            .finish_non_exhaustive()
+    }
+}
+
+/// Cached candidate guarded by monotonically extending, authority-verified
+/// registry views. This is not selection authority. A trusted artifact CURRENT
+/// service must issue a verified view before *each* use.
 ///
 /// Any refresh failure permanently closes this consumer, including I/O errors.
 /// The host must explicitly reload; an old backup cannot revive the cache.
@@ -154,8 +215,16 @@ impl RevalidatingCandidate {
     /// at their own effect boundary; this function supplies no global lock.
     pub fn with_current<T>(
         &mut self,
-        snapshot: File,
+        current: VerifiedCurrentRegistryViewV1,
+        consume: impl FnOnce(&[u8]) -> T,
+    ) -> Result<T, PinnedCandidateLoadError> {
+        self.with_verified_registry(current.receipt, current.registry, consume)
+    }
+
+    fn with_verified_registry<T>(
+        &mut self,
         current: RegistrySnapshotReceipt,
+        registry: ArtifactRegistry,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
         if self.unavailable {
@@ -166,7 +235,6 @@ impl RevalidatingCandidate {
         if current.binding != previous.binding || current.records < previous.records {
             return Err(PinnedCandidateLoadError::FrontierMismatch);
         }
-        let registry = read_registry_snapshot(snapshot, current)?;
         // The selected manifest guarantees that the previous view was nonempty.
         // Comparing its actual chain prefix rejects both equal-size and longer
         // forks, not just old record counts or inconsistent file checksums.
@@ -191,6 +259,17 @@ impl RevalidatingCandidate {
         // A panicking consumer remains closed rather than reopening on unwind.
         self.unavailable = false;
         Ok(result)
+    }
+
+    #[cfg(test)]
+    fn with_unverified_current<T>(
+        &mut self,
+        snapshot: File,
+        current: RegistrySnapshotReceipt,
+        consume: impl FnOnce(&[u8]) -> T,
+    ) -> Result<T, PinnedCandidateLoadError> {
+        let registry = read_registry_snapshot(snapshot, current)?;
+        self.with_verified_registry(current, registry, consume)
     }
 }
 

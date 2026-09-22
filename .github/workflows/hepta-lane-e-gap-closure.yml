@@ -222,6 +222,7 @@ jobs:
           subject-path: .hepta-evidence/learning-eval/exact-source.json
 
   synthetic-merge:
+    if: github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     outputs:

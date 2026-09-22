@@ -38,15 +38,17 @@ fn item(name: &str) -> CognitiveContextItem {
     }
 }
 
-struct View(Mutex<Option<(PathBuf, RegistrySnapshotReceipt)>>);
+struct View(Mutex<Option<(PathBuf, RegistrySnapshotReceipt, Digest32)>>);
 impl CurrentCognitiveRegistry for View {
-    fn current(&self) -> Result<(File, RegistrySnapshotReceipt), String> {
+    fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String> {
         let view = self.0.lock().unwrap();
-        let (path, receipt) = view.as_ref().ok_or("independent witness unavailable")?;
-        Ok((
+        let (path, receipt, predecessor_head) =
+            view.as_ref().ok_or("independent witness unavailable")?;
+        verified_fixture_current_view(
             File::open(path).map_err(|error| error.to_string())?,
             *receipt,
-        ))
+            *predecessor_head,
+        )
     }
 }
 
@@ -138,7 +140,11 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         hash("fixture-host-binding"),
     )
     .unwrap();
-    let view = Arc::new(View(Mutex::new(Some((snapshot.clone(), registry_receipt)))));
+    let view = Arc::new(View(Mutex::new(Some((
+        snapshot.clone(),
+        registry_receipt,
+        Digest32::ZERO,
+    )))));
     let ranker = Arc::new(
         PinnedCognitiveRanker::load(
             owner(),
@@ -206,6 +212,7 @@ fn missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback() 
         let mut fixture = fixture(&items, &[0, 10]);
         let original_view = fixture.view.0.lock().unwrap().clone();
         if revoked {
+            let predecessor_head = fixture.registry.snapshot().head_digest;
             fixture
                 .registry
                 .append(ArtifactEvent::Revoke(StateChange {
@@ -222,7 +229,7 @@ fn missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback() 
                 hash("fixture-host-binding"),
             )
             .unwrap();
-            *fixture.view.0.lock().unwrap() = Some((path, receipt));
+            *fixture.view.0.lock().unwrap() = Some((path, receipt, predecessor_head));
         } else {
             *fixture.view.0.lock().unwrap() = None;
         }
@@ -517,6 +524,7 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         .await
         .unwrap();
     assert_eq!(after_tombstone.items, vec![baseline.items[0].clone()]);
+    let predecessor_head = fixture.registry.snapshot().head_digest;
     fixture
         .registry
         .append(ArtifactEvent::Revoke(StateChange {
@@ -533,7 +541,7 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         hash("fixture-host-binding"),
     )
     .unwrap();
-    *fixture.view.0.lock().unwrap() = Some((revoked, receipt));
+    *fixture.view.0.lock().unwrap() = Some((revoked, receipt, predecessor_head));
     assert!(
         client
             .revalidate_cognitive_context(&after_tombstone)

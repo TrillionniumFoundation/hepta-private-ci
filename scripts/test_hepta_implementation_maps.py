@@ -142,6 +142,56 @@ class SourceIdentityTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.verify()
 
+    def test_closed_world_writer_binding_preserves_exact_source_identity(self):
+        row = self.rows["alpha"]
+        row["productionWriterState"] = "owner_service_composed"
+        row["productionWriterBindingPolicy"] = "closed_world"
+        row["productionWriterBindings"] = [
+            {"sourcePath": "src/alpha/lib.rs", "mustContain": "calculate"}
+        ]
+        self.change_maps()
+        self.verify()
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let changed = true; }\n")
+        self.commit("marker unchanged but source changed")
+        self.reject()
+
+    def test_composed_writer_rejects_missing_closed_world_bindings(self):
+        row = self.rows["alpha"]
+        row["productionWriterState"] = "owner_service_composed"
+        row["productionWriterBindingPolicy"] = "closed_world"
+        self.change_maps()
+        self.reject()
+
+    def test_closed_world_markers_cannot_escape_source_namespace(self):
+        for source, marker in [
+            ("src/alpha/lib.rs", "nonexistent_symbol"),
+            ("../outside.rs", "calculate"),
+            ("src/alpha/lib.rs", ""),
+        ]:
+            with self.subTest(source=source, marker=marker):
+                with self.assertRaises(ValueError):
+                    maps.validate_closed_world_bindings(
+                        {
+                            "productionWriterState": "owner_service_composed",
+                            "productionWriterBindingPolicy": "closed_world",
+                            "productionWriterBindings": [
+                                {"sourcePath": source, "mustContain": marker}
+                            ],
+                        }
+                    )
+
+    def test_composed_caller_requires_nonempty_source_binding_list(self):
+        for bindings in [[], None, {"callerPath": "src/alpha/lib.rs"}]:
+            with self.subTest(bindings=bindings):
+                with self.assertRaises(ValueError):
+                    maps.validate_closed_world_bindings(
+                        {
+                            "productCallerState": "source_composed",
+                            "productCallerBindingPolicy": "closed_world",
+                            "productCallerBindings": bindings,
+                        }
+                    )
+
     def test_unchanged_ancestral_source_passes(self):
         self.assertEqual(
             self.verify()["candidateSource"]["commit"], self.git("rev-parse", "HEAD")

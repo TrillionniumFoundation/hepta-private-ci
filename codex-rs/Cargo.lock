@@ -3825,6 +3825,7 @@ name = "codex-hepta-learning-artifacts"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "ed25519-dalek",
  "pretty_assertions",
 ]
 
@@ -4130,8 +4131,8 @@ dependencies = [
  "libc",
  "pretty_assertions",
  "rand 0.9.3",
- "serde",
  "serde_json",
+ "serde",
  "sha2 0.10.9",
  "sqlx",
  "tempfile",

@@ -740,6 +740,51 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
+def state_claims_binding(value: object) -> bool:
+    return isinstance(value, str) and bool(value) and not value.startswith("not_")
+
+
+def validate_closed_world_bindings(row: dict) -> None:
+    """Check additional source markers without replacing exact blob identity."""
+    for state_key, policy_key, bindings_key, path_key in (
+        (
+            "productCallerState",
+            "productCallerBindingPolicy",
+            "productCallerBindings",
+            "callerPath",
+        ),
+        (
+            "productionWriterState",
+            "productionWriterBindingPolicy",
+            "productionWriterBindings",
+            "sourcePath",
+        ),
+    ):
+        policy = row.get(policy_key)
+        bindings = row.get(bindings_key, [])
+        if policy not in (None, "closed_world"):
+            raise ValueError(f"invalid {policy_key}")
+        if not isinstance(bindings, list):
+            raise ValueError(f"invalid {bindings_key}")
+        if (
+            policy == "closed_world"
+            and state_claims_binding(row.get(state_key))
+            and not bindings
+        ):
+            raise ValueError(f"{state_key} requires verified source bindings")
+        for index, binding in enumerate(bindings):
+            if not isinstance(binding, dict):
+                raise ValueError(f"invalid {bindings_key}[{index}]")
+            source, marker = binding.get(path_key), binding.get("mustContain")
+            if not isinstance(source, str) or not isinstance(marker, str) or not marker:
+                raise ValueError(f"invalid {bindings_key}[{index}] source/marker")
+            path = checked_source_path(ROOT, source)
+            if not path.is_file() or marker not in path.read_text(encoding="utf-8"):
+                raise ValueError(
+                    f"unresolved {bindings_key}[{index}] source binding: {source}"
+                )
+
+
 def verify(*, require_current_source: bool = True):
     """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
 
@@ -767,6 +812,7 @@ def verify(*, require_current_source: bool = True):
         mid = module["id"]
         try:
             row = load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
+            validate_closed_world_bindings(row)
             if (
                 row.get("schema") != "hepta.module-implementation-map.v3"
                 or row.get("schemaVersion") != 3
@@ -809,8 +855,13 @@ def verify(*, require_current_source: bool = True):
                         or not isinstance(source_blob, str)
                         or re.fullmatch(r"[0-9a-f]{40}", source_blob) is None
                     ):
-                        raise ValueError(f"invalid exact source blob: {op['operation']}")
-                    if git("rev-parse", f"{candidate['commit']}:{source}") != source_blob:
+                        raise ValueError(
+                            f"invalid exact source blob: {op['operation']}"
+                        )
+                    if (
+                        git("rev-parse", f"{candidate['commit']}:{source}")
+                        != source_blob
+                    ):
                         raise ValueError(f"source blob drift: {op['operation']}")
             checked_paths.update(
                 verify_source_identity(row, resolved, candidate, check_checkout=False)

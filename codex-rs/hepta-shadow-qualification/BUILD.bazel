@@ -65,6 +65,7 @@ rust_test(
         "//codex-rs/hepta-learning-artifacts",
         "//codex-rs/hepta-learning-ledger",
         "//codex-rs/hepta-types",
+        "@crates//:ed25519-dalek",
         "@crates//:pretty_assertions",
         "@crates//:serde",
         "@crates//:serde_json",

@@ -15,8 +15,8 @@ use crate::ArtifactRegistryError;
 use crate::ArtifactState;
 use crate::RegistryAppendDisposition;
 use crate::StateChange;
+use crate::limits::MAX_DURABLE_ARTIFACT_RECORDS;
 
-const MAX_PREPARED_RECORDS: usize = 4096;
 const MAX_DIRECT_TARGETS: usize = 256;
 
 /// A host-authenticated notice delivered to the artifact owner. The host must
@@ -95,7 +95,7 @@ pub fn prepare_dataset_revocation(
     if request.dataset_digest.is_zero() || request.source_revocation_digest.is_zero() {
         return Err(DatasetRevocationError::EmptyDigest);
     }
-    if registry.records().len() > MAX_PREPARED_RECORDS {
+    if registry.records().len() > MAX_DURABLE_ARTIFACT_RECORDS {
         return Err(DatasetRevocationError::Capacity);
     }
     let before_head = registry
@@ -163,7 +163,7 @@ pub fn prepare_dataset_revocation(
                 already_revoked += 1;
                 continue;
             }
-            if staged.records().len() >= MAX_PREPARED_RECORDS {
+            if staged.records().len() >= MAX_DURABLE_ARTIFACT_RECORDS {
                 return Err(DatasetRevocationError::Capacity);
             }
         }

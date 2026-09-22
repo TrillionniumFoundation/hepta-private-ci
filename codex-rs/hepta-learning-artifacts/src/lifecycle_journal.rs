@@ -16,9 +16,8 @@ use codex_hepta_types::StableId;
 use crate::ArtifactClosureError;
 use crate::ArtifactLifecycleEventV1;
 use crate::ArtifactLifecycleStateV1;
+use crate::limits::MAX_DURABLE_ARTIFACT_RECORDS;
 use crate::validate_artifact_lifecycle_transition;
-
-const MAX_LIFECYCLE_RECORDS: usize = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LifecycleActorRoleV2 {
@@ -150,7 +149,7 @@ impl ArtifactLifecycleJournalV2 {
                 authority: AuthorityPosture::DENY_ALL,
             });
         }
-        if self.records.len() >= MAX_LIFECYCLE_RECORDS {
+        if self.records.len() >= MAX_DURABLE_ARTIFACT_RECORDS {
             return Err(ArtifactLifecycleJournalError::RecordLimit);
         }
         let current = self
@@ -206,7 +205,7 @@ impl ArtifactLifecycleJournalV2 {
 
     pub fn from_snapshot(
         snapshot: ArtifactLifecycleJournalSnapshotV2,
-        now: u64,
+        _now: u64,
     ) -> Result<Self, ArtifactLifecycleJournalError> {
         let expected_head = snapshot.head_digest;
         let mut journal = Self::new();
@@ -219,7 +218,10 @@ impl ArtifactLifecycleJournalV2 {
                 &expected.producer_id,
                 expected.actor.clone(),
                 expected.event.clone(),
-                now,
+                // Historical recovery validates the credential at the event's
+                // occurrence time. Recovery time must not invalidate evidence
+                // that was valid when the immutable event was accepted.
+                expected.event.occurred_at,
             )?;
             let actual = journal
                 .records
@@ -355,9 +357,10 @@ impl From<ArtifactClosureError> for ArtifactLifecycleJournalError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::FixtureValue;
 
     fn id(value: &str) -> StableId {
-        StableId::new(value.to_owned()).expect("valid test id")
+        StableId::new(value.to_owned()).fixture("valid test id")
     }
 
     fn digest(value: &str) -> Digest32 {
@@ -418,7 +421,7 @@ mod tests {
                 ),
                 20,
             )
-            .expect("producer may publish trained state");
+            .fixture("producer may publish trained state");
         assert_eq!(
             journal.append(
                 Digest32::ZERO,
@@ -451,7 +454,7 @@ mod tests {
                 ),
                 21,
             )
-            .expect("independent evaluator may advance state");
+            .fixture("independent evaluator may advance state");
         let denied = actor("intruder", LifecycleActorRoleV2::Selector);
         assert_eq!(
             journal.append(
@@ -471,6 +474,54 @@ mod tests {
             Err(ArtifactLifecycleJournalError::Transition(
                 ArtifactClosureError::InvalidLifecycleTransition
             ))
+        );
+    }
+
+    #[test]
+    fn art_06_lifecycle_snapshot_replay_survives_actor_expiry() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        journal
+            .append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    20,
+                ),
+                20,
+            )
+            .fixture("historical append succeeds while credential is current");
+
+        let snapshot = journal.snapshot();
+        let mut reopened = ArtifactLifecycleJournalV2::from_snapshot(snapshot, 101)
+            .fixture("expired-at-recovery credential must not invalidate history");
+        assert_eq!(reopened.head_digest(), journal.head_digest());
+
+        let second_artifact = id("artifact-after-expiry");
+        assert_eq!(
+            reopened.append(
+                reopened.head_digest(),
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained-after-expiry",
+                    &second_artifact,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    99,
+                ),
+                101,
+            ),
+            Err(ArtifactLifecycleJournalError::InvalidActorEvidence)
         );
     }
 
@@ -495,9 +546,9 @@ mod tests {
                 ),
                 20,
             )
-            .expect("append succeeds");
+            .fixture("append succeeds");
         let reopened = ArtifactLifecycleJournalV2::from_snapshot(journal.snapshot(), 20)
-            .expect("snapshot replays");
+            .fixture("snapshot replays");
         assert_eq!(reopened.head_digest(), journal.head_digest());
         assert_eq!(reopened.records(), journal.records());
     }

@@ -14,10 +14,14 @@ event.
 
 ## Trust and freshness
 
-The host must authenticate the expected receipt independently of the snapshot
-file. Deriving an expected receipt from the file under inspection only proves
-self-consistency and is forbidden. The host also owns trusted parent traversal,
-file ownership, scope binding, and generation fencing.
+The initial pinned load still requires an independently retained receipt; deriving
+that receipt from the file under inspection only proves self-consistency and is
+forbidden. Final-use revalidation is stronger: `LearningArtifactOwnerHost` /
+`LearningArtifactOwnerService` discovers and verifies signed CURRENT, while a
+read-only proxy may use `ArtifactOwnerVerifierV1::verify_current_registry_view`.
+Both routes issue the same opaque `VerifiedCurrentRegistryViewV1`. The host also
+owns trusted parent traversal, file ownership, scope binding, and generation
+fencing.
 
 A successfully verified snapshot is not necessarily the newest snapshot. The
 loader proves lineage eligibility only relative to the supplied snapshot. It
@@ -47,11 +51,14 @@ fall back to a prior snapshot or alternate eligible candidate.
 ## Revalidating a cached consumer
 
 `RevalidatingCandidate::new` consumes a verified loaded candidate. Before each
-use, `with_current` accepts a host-opened file and an independently authenticated
-current receipt. It checks the scope binding, nondecreasing record count and
-actual previous chain prefix (including longer-fork rejection), then checks the
-exact manifest and all ancestor eligibility before invoking the read-only
-consumer. It does not reread or retrain the immutable payload.
+use, public `with_current` accepts only `VerifiedCurrentRegistryViewV1`. External
+callers cannot construct that type from a bare file/receipt: the artifact owner
+or `ArtifactOwnerVerifierV1` must first verify the signed CURRENT head, signer
+context/authority epoch, exact registry binding and immutable snapshot. The
+candidate then checks nondecreasing record count and the actual previous chain
+prefix (including longer-fork rejection), exact manifest and ancestor
+eligibility before invoking the read-only consumer. It does not reread or
+retrain the immutable payload.
 
 Every failed refresh closes that consumer permanently. Restoring an old snapshot
 cannot revive it: explicit admission of a new consumer is required. The host

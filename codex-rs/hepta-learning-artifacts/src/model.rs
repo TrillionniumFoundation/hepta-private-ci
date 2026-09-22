@@ -14,6 +14,7 @@ pub enum ArtifactKind {
     Topology,
     Code,
     ExternalAdapter,
+    SensorCore,
 }
 
 impl ArtifactKind {
@@ -28,6 +29,7 @@ impl ArtifactKind {
             Self::Topology => 6,
             Self::Code => 7,
             Self::ExternalAdapter => 8,
+            Self::SensorCore => 9,
         }
     }
 }

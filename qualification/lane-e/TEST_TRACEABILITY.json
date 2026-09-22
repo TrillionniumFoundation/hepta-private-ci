@@ -529,6 +529,162 @@
         }
       ],
       "status": "native_test_mapped"
+    },
+    {
+      "id": "ART-11",
+      "module": "learning.artifacts",
+      "requirement": "The named LearningArtifactOwnerService is the unique product caller of the fenced owner host, performs the complete durable publication saga, returns stable terminal retries, reopens from authenticated CURRENT, issues opaque VerifiedCurrentRegistryViewV1 values for final-use readers, rejects old-head/key-epoch rollback, and process-kill recovery never promotes an uncheckpointed phase.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+          "function": "named_owner_service_publishes_retries_and_reopens_from_current_head"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "function": "owner_host_process_kill_reopen_matrix"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "function": "independent_current_head_anchor_rejects_restored_old_backup"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+          "function": "current_head_rotation_preserves_history_and_requires_current_key_epoch"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "ART-12",
+      "module": "learning.artifacts",
+      "requirement": "Independent selector trust is cryptographically separate from artifact writer/head authority, binds the exact authenticated CURRENT head and complete artifact manifest/payload identity, records only an OperatorAccepted -> Selected lifecycle transition with DENY_ALL authority, and the selected immutable candidate loads in a new process, supports exact predecessor rollback loading, and fails closed on fresh signed selection attempts after revocation.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "function": "art_12_independent_selector_binds_exact_current_and_manifest"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "function": "art_12_selection_rejects_self_selection_and_revoked_selector"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "function": "art_12_verified_selection_records_only_selected_transition"
+        },
+        {
+          "source": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
+          "function": "existing_artifact_owner_new_process_predictions_and_revoked_rollback"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "ART-05",
+      "module": "learning.artifacts",
+      "requirement": "V3 admission is bound to the exact scoped withdrawal authority/registry/scope head and a concurrent withdrawal invalidates the older admission.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
+          "function": "art_05_admission_is_domain_registry_and_scope_bound"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
+          "function": "art_05_withdrawal_race_invalidates_admission"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "ART-06",
+      "module": "learning.artifacts",
+      "requirement": "Lifecycle state is append-only, role-separated and replayable after historical actor credentials expire; expired credentials cannot authorize a new mutation.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
+          "function": "art_06_lifecycle_journal_enforces_head_state_and_role"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
+          "function": "art_06_lifecycle_snapshot_replay_survives_actor_expiry"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "ART-07",
+      "module": "learning.artifacts",
+      "requirement": "Publication advances only through Prepared, PayloadDurable, RegistryDurable, WitnessDurable and Acknowledged; crash recovery and withdrawal races cannot skip or resurrect phases.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+          "function": "art_07_publication_requires_ordered_durable_phases_before_ack"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+          "function": "art_07_crash_snapshots_never_promote_partial_publication"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+          "function": "art_07_withdrawal_advance_blocks_recovered_publication"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "ART-08",
+      "module": "learning.artifacts",
+      "requirement": "Scoped withdrawal and lifecycle auxiliary histories have create-only durable snapshots whose receipts reopen the exact scope/history and reject cross-scope or invalid recovery.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
+          "function": "art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
+          "function": "art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "ART-09",
+      "module": "learning.artifacts",
+      "requirement": "The operator sensor-core domain has one physical immutable writer: SensorCore records live in ArtifactRegistry, survive durable reopen and the typed read domain reflects revocation without a second write journal.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
+          "function": "sensor_core_kind_survives_durable_registry_roundtrip"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
+          "function": "operator_sensor_core_projection_has_one_physical_owner"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
+          "function": "operator_sensor_core_projection_tracks_revocation_without_second_write"
+        }
+      ],
+      "status": "native_test_mapped"
+    },
+    {
+      "id": "ART-10",
+      "module": "learning.artifacts",
+      "requirement": "Governed iteration bookkeeping is bounded, replayable and monotonic and cannot turn proposal evidence into selection, merge, promotion or release authority.",
+      "tests": [
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/iteration.rs",
+          "function": "transitions_are_monotonic_and_terminal"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
+          "function": "records_bounded_external_transitions"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
+          "function": "snapshot_replay_is_exact_and_duplicate_receipts_fail"
+        }
+      ],
+      "status": "native_test_mapped"
     }
   ],
   "crossCrateCases": [

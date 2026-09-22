@@ -13,7 +13,9 @@ use std::io::SeekFrom;
 use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
+use std::path::Component;
 use std::path::Path;
+use std::path::PathBuf;
 use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
@@ -28,10 +30,10 @@ use crate::RegistryAppendDisposition;
 use crate::RegistryHeadRequirementV1;
 use crate::RegistryHeadWitnessV1;
 use crate::StateChange;
+use crate::limits::MAX_DURABLE_ARTIFACT_RECORDS;
 
 const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
 const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 4096;
 const MAX_HEAD: usize = 4096;
 const MAGIC: &str = "HEPTAR01";
 const HEAD_MAGIC: &str = "HEPTAH01";
@@ -42,7 +44,7 @@ const HEAD_MAGIC: &str = "HEPTAH01";
 /// extract/clone its handle. Creation fails when the final path component already
 /// exists, including when it is empty, truncated, or a symbolic link. Trusted
 /// parent traversal and containing-directory durability remain host obligations.
-pub struct CreateOnlyArtifactFile(File);
+pub struct CreateOnlyArtifactFile(pub(crate) File);
 
 impl fmt::Debug for CreateOnlyArtifactFile {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -64,6 +66,58 @@ impl CreateOnlyArtifactFile {
             Err(error) => Err(error.into()),
         }
     }
+
+    /// Create a new final component beneath a host-designated trusted root.
+    ///
+    /// The relative path must contain only normal components. Every existing
+    /// ancestor below the canonical root must be a real directory rather than a
+    /// symlink. This closes lexical escape and ordinary symlink traversal. The
+    /// host must still prevent concurrent hostile replacement of trusted
+    /// ancestors; the Rust standard library does not expose an openat2-style
+    /// directory capability under this crate's unsafe-code prohibition.
+    pub fn create_beneath_trusted_root(
+        root: impl AsRef<Path>,
+        relative: impl AsRef<Path>,
+    ) -> Result<Self, ArtifactStorageError> {
+        Self::create(resolve_beneath_trusted_root(root, relative)?)
+    }
+}
+
+pub(crate) fn resolve_beneath_trusted_root(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+) -> Result<PathBuf, ArtifactStorageError> {
+    let relative = relative.as_ref();
+    if relative.as_os_str().is_empty()
+        || relative.is_absolute()
+        || relative
+            .components()
+            .any(|component| !matches!(component, Component::Normal(_)))
+    {
+        return Err(ArtifactStorageError::InvalidPath);
+    }
+
+    let canonical_root = std::fs::canonicalize(root).map_err(ArtifactStorageError::from)?;
+    if !canonical_root.metadata()?.is_dir() {
+        return Err(ArtifactStorageError::NotRegular);
+    }
+    let parent = relative.parent().unwrap_or_else(|| Path::new(""));
+    let mut cursor = PathBuf::from(&canonical_root);
+    for component in parent.components() {
+        let Component::Normal(component) = component else {
+            return Err(ArtifactStorageError::InvalidPath);
+        };
+        cursor.push(component);
+        let metadata = std::fs::symlink_metadata(&cursor)?;
+        if metadata.file_type().is_symlink() {
+            return Err(ArtifactStorageError::PathEscape);
+        }
+        if !metadata.is_dir() {
+            return Err(ArtifactStorageError::NotRegular);
+        }
+    }
+
+    Ok(canonical_root.join(relative))
 }
 
 /// Exact bytes and history witness. This is not a signature or acceptance.
@@ -93,6 +147,10 @@ pub struct RegistryHeadWitnessReceipt {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactStorageError {
     InvalidBinding,
+    InvalidPath,
+    PathEscape,
+    Unscoped,
+    ScopeMismatch,
     InvalidReceipt,
     InvalidHeadWitness,
     HeadWitnessMismatch,
@@ -118,6 +176,78 @@ impl From<io::Error> for ArtifactStorageError {
     fn from(value: io::Error) -> Self {
         Self::Io(value.kind())
     }
+}
+
+/// Validate and encode a registry snapshot before creating its final path.
+/// This avoids a zero-length orphan when semantic validation fails.
+pub fn write_registry_snapshot_beneath(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+    registry: &ArtifactRegistry,
+    binding: Digest32,
+) -> Result<RegistrySnapshotReceipt, ArtifactStorageError> {
+    if binding.is_zero() {
+        return Err(ArtifactStorageError::InvalidBinding);
+    }
+    let bytes = encode_snapshot(registry, binding)?;
+    let receipt = RegistrySnapshotReceipt {
+        binding,
+        head_digest: registry.snapshot().head_digest,
+        file_digest: Digest32::of_bytes(&bytes),
+        records: registry.records().len(),
+        encoded_bytes: bytes.len(),
+    };
+    write_new(
+        CreateOnlyArtifactFile::create_beneath_trusted_root(root, relative)?,
+        &bytes,
+    )?;
+    Ok(receipt)
+}
+
+/// Validate a current-head witness before creating its final path.
+pub fn write_registry_head_witness_beneath(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+    witness: &RegistryHeadWitnessV1,
+    requirement: &RegistryHeadRequirementV1,
+    binding: Digest32,
+) -> Result<RegistryHeadWitnessReceipt, ArtifactStorageError> {
+    if binding.is_zero() {
+        return Err(ArtifactStorageError::InvalidBinding);
+    }
+    let validated = crate::validate_registry_head_witness(witness, requirement)
+        .map_err(|_| ArtifactStorageError::InvalidHeadWitness)?;
+    let bytes = encode_head_witness(witness, binding)?;
+    let receipt = RegistryHeadWitnessReceipt {
+        binding,
+        witness_digest: validated.witness_digest,
+        file_digest: Digest32::of_bytes(&bytes),
+        encoded_bytes: bytes.len(),
+    };
+    write_new(
+        CreateOnlyArtifactFile::create_beneath_trusted_root(root, relative)?,
+        &bytes,
+    )?;
+    Ok(receipt)
+}
+
+/// Validate candidate eligibility, exact length and content digest before the
+/// final path exists. Write/sync failures remain indeterminate and require host
+/// reconciliation, but rejected bytes do not leave validation orphans.
+pub fn write_candidate_payload_beneath(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+    registry: &ArtifactRegistry,
+    artifact: &StableId,
+    bytes: &[u8],
+) -> Result<Digest32, ArtifactStorageError> {
+    let manifest = eligible_manifest(registry, artifact)?;
+    validate_payload(manifest, bytes)?;
+    write_new(
+        CreateOnlyArtifactFile::create_beneath_trusted_root(root, relative)?,
+        bytes,
+    )?;
+    Ok(manifest.content_digest)
 }
 
 /// Write a new immutable snapshot; an existing file is never overwritten.
@@ -212,7 +342,7 @@ pub fn read_registry_snapshot(
 ) -> Result<ArtifactRegistry, ArtifactStorageError> {
     if expected.binding.is_zero()
         || expected.file_digest.is_zero()
-        || expected.records > MAX_RECORDS
+        || expected.records > MAX_DURABLE_ARTIFACT_RECORDS
         || expected.encoded_bytes > MAX_SNAPSHOT
         || expected.encoded_bytes == 0
         || (expected.records == 0) != expected.head_digest.is_zero()
@@ -344,7 +474,10 @@ fn lock(file: File, kind: LockKind) -> Result<LockedFile, ArtifactStorageError> 
     }
 }
 
-fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
+pub(crate) fn write_new(
+    file: CreateOnlyArtifactFile,
+    bytes: &[u8],
+) -> Result<(), ArtifactStorageError> {
     let mut guard = lock(file.0, LockKind::Exclusive)?;
     if guard.0.metadata()?.len() != 0 {
         // Atomic creation already proved the target did not exist. Bytes appearing
@@ -359,7 +492,7 @@ fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactS
         .map_err(|_| ArtifactStorageError::Indeterminate)
 }
 
-fn read_bounded(
+pub(crate) fn read_bounded(
     file: File,
     limit: usize,
     expected_bytes: u64,
@@ -407,7 +540,7 @@ fn validate_read_length(
     Ok(())
 }
 
-fn encode_head_witness(
+pub(crate) fn encode_head_witness(
     witness: &RegistryHeadWitnessV1,
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
@@ -465,12 +598,12 @@ fn decode_head_witness(
     })
 }
 
-fn encode_snapshot(
+pub(crate) fn encode_snapshot(
     registry: &ArtifactRegistry,
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     let count = registry.records().len();
-    if count > MAX_RECORDS {
+    if count > MAX_DURABLE_ARTIFACT_RECORDS {
         return Err(ArtifactStorageError::Capacity);
     }
     let mut text = format!("{MAGIC}\n{binding}\n{count}\n");
@@ -546,6 +679,7 @@ fn decode_event(line: &str) -> Result<ArtifactEvent, ArtifactStorageError> {
                 "6" => ArtifactKind::Topology,
                 "7" => ArtifactKind::Code,
                 "8" => ArtifactKind::ExternalAdapter,
+                "9" => ArtifactKind::SensorCore,
                 _ => return Err(ArtifactStorageError::Corrupt),
             };
             Ok(ArtifactEvent::Register {

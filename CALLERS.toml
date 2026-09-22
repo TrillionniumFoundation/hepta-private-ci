@@ -91,11 +91,35 @@ caller_markers = []
 
 [[boundary]]
 id = "agentd_production_operation_runtime"
-symbol = "AgentdProductionOperationRuntimeConfig::open"
+symbol = "AgentdProductionOperationRuntimeConfig::attach"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-definition_markers = ["pub struct AgentdProductionOperationRuntimeConfig", "pub(crate) async fn open", "AgentdProductionWriterHost::open_with_store"]
+definition_markers = ["pub struct AgentdProductionOperationRuntimeConfig", "pub(crate) async fn attach", "recovered_host.writer.verify_current_authority"]
 product_callers = ["codex-rs/hepta-agentd/src/runtime.rs"]
-caller_markers = ["AgentdProductionOperationRuntimeConfig::open", "attach_production_operations", "run_production_operation_reconciler"]
+caller_markers = ["operations.attach", "attach_production_operations", "run_production_operation_reconciler"]
+
+[[boundary]]
+id = "learning_artifact_owner_bootstrap"
+symbol = "LearningArtifactOwnerHost::open"
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+definition_markers = ["pub struct LearningArtifactOwnerHost", "pub fn open", "SignedArtifactWriterLeaseV1"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_service.rs"]
+caller_markers = ["LearningArtifactOwnerHost::open", "LearningArtifactOwnerService"]
+
+[[boundary]]
+id = "learning_artifact_owner_restart"
+symbol = "LearningArtifactOwnerHost::open_with_required_current_head"
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+definition_markers = ["pub fn open_with_required_current_head", "CurrentHeadRollback", "required_current_head"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_service.rs"]
+caller_markers = ["LearningArtifactOwnerHost::open_with_required_current_head", "LearningArtifactOwnerService"]
+
+[[boundary]]
+id = "learning_artifact_verified_current_view"
+symbol = "VerifiedCurrentRegistryViewV1"
+definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
+definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs"]
+caller_markers = ["VerifiedCurrentRegistryViewV1", "CurrentCognitiveRegistry"]
 
 [[boundary]]
 id = "provider_effect_coordinator"
@@ -400,6 +424,26 @@ forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["AgentdProductionOperationRuntimeConfig::open", "attach_production_operations", "run_production_operation_reconciler"]
 forbidden = ["ProductionAuthorityToken::from_verified_bytes", "SigningKey::from_bytes"]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+required = ["LearningArtifactOwnerHost::open", "LearningArtifactOwnerHost::open_with_required_current_head", "recover_current_registry", "current_registry_view", "recovery_required_operations"]
+forbidden = ["permit_all", "AllowVerifier", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+required = ["writer_fence.try_lock", "verify_signature", "verify_current_registry_view", "recover_registry_by_head", "discover_current_head", "current_registry_view", "persist_checkpoint"]
+forbidden = ["permit_all", "AllowVerifier"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cognitive_ranker.rs"
+required = ["VerifiedCurrentRegistryViewV1", "CurrentCognitiveRegistry", ".with_current(current"]
+forbidden = ["Result<(File, RegistrySnapshotReceipt)", "candidate.with_current(file, receipt"]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/selection.rs"
+required = ["ArtifactSelectionVerifierV1", "OwnerTrustMismatch", "AuthorityKeyCollision", "AuthorityPosture::DENY_ALL", "load_selected_candidate"]
+forbidden = ["AuthorityPosture::ALLOW_ALL", "force_select", "self_select"]
 
 [[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"

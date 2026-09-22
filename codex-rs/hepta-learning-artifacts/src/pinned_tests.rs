@@ -294,7 +294,7 @@ fn cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup(
     let mut cached = RevalidatingCandidate::new(must(load(&directory, original, selected)));
     let (file, current) = write_view(&directory, &registry, "current");
     assert_eq!(
-        must(cached.with_current(file, current, <[u8]>::to_vec)),
+        must(cached.with_unverified_current(file, current, <[u8]>::to_vec)),
         bytes
     );
     must(registry.append(ArtifactEvent::Revoke(StateChange {
@@ -305,11 +305,11 @@ fn cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup(
     })));
     let (file, current) = write_view(&directory, &registry, "revoked");
     assert_eq!(
-        cached.with_current(file, current, |_| panic!("revoked bytes reached consumer")),
+        cached.with_unverified_current(file, current, |_| panic!("revoked bytes reached consumer")),
         Err::<(), _>(PinnedCandidateLoadError::Ineligible)
     );
     assert_eq!(
-        cached.with_current(
+        cached.with_unverified_current(
             must(File::open(directory.path("snapshot"))),
             original,
             |_| panic!("backup revived consumer")
@@ -330,7 +330,7 @@ fn cached_consumer_rejects_longer_fork_and_backwards_frontier() {
         let mut cached = RevalidatingCandidate::new(must(load(&directory, old, selected.clone())));
         register(&mut registry, "other", manifest("other", 1, None, b"other"));
         let (file, current) = write_view(&directory, &registry, "extended");
-        must(cached.with_current(file, current, |_| ()));
+        must(cached.with_unverified_current(file, current, |_| ()));
         let (file, receipt) = if fork {
             let mut forked = ArtifactRegistry::new();
             register(&mut forked, "different-event", selected);
@@ -341,7 +341,7 @@ fn cached_consumer_rejects_longer_fork_and_backwards_frontier() {
             (must(File::open(directory.path("snapshot"))), old)
         };
         assert_eq!(
-            cached.with_current(file, receipt, |_| panic!("bad history consumed")),
+            cached.with_unverified_current(file, receipt, |_| panic!("bad history consumed")),
             Err::<(), _>(PinnedCandidateLoadError::FrontierMismatch)
         );
     }
@@ -365,11 +365,15 @@ fn cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_co
         }
         assert!(
             cached
-                .with_current(file, current, |_| panic!("invalid view consumed"))
+                .with_unverified_current(file, current, |_| panic!("invalid view consumed"))
                 .is_err()
         );
         assert_eq!(
-            cached.with_current(must(File::open(directory.path("snapshot"))), old, |_| ()),
+            cached.with_unverified_current(
+                must(File::open(directory.path("snapshot"))),
+                old,
+                |_| ()
+            ),
             Err(PinnedCandidateLoadError::Unavailable)
         );
     }
