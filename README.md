@@ -19,6 +19,12 @@ utility and organ credit guide actions and future parameter updates. See the
 [organ composition](docs/cns/TECHNICAL.md). These are implementation requirements,
 not evidence that local fine-tuning or multiscale efficacy has already run.
 
+TaskFlow evolves as the [Neural Circuit execution foundation](docs/modules/automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary)
+inside the existing CNS/Nervous System, not as a replacement for every owner.
+Automation supplies wake-up; reusable event-driven circuits connect DecisionCells
+and organ ports. The legacy DAG and persisted execution semantics remain intact
+until explicitly versioned adapters and product qualification exist.
+
 The distributed CNS, organ graph and embodied-control extension starts at [`docs/cns/README.md`](docs/cns/README.md). HNMF multimodal memory starts at [`docs/hnmf/README.md`](docs/hnmf/README.md). Both are qualification/reference layers and grant no production, physical-effect, acceptance, promotion or release authority.
 
 Implementation state machines, typed readiness protocols, all-module lane bindings, embodied-control semantics and authorized external-system assimilation start at [`docs/readiness/README.md`](docs/readiness/README.md). There is one current document set, with module-specific detail retained rather than flattened or duplicated into competing plans.

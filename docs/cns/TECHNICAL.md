@@ -28,6 +28,24 @@ Runtime serving and training are shared services of the existing inference and
 learning modules. Replacing Laya with a qualified compatible backend must not
 require rewriting the organ graph, authority kernel or all consumer contracts.
 
+### Circuits, runs and system-level composition
+
+Nervous System names this existing distributed CNS architecture. Neural Circuit
+names a reusable typed control program; Circuit Run names an actual admitted
+trace. TaskFlow's durable execution foundation evolves toward circuit semantics,
+while Automation remains timer/calendar wake-up. A collection of hand-written
+TaskFlow variants is not by itself an adaptive nervous system. Reusable circuits,
+context-dependent policies, signals, feedback, coordination and learning produce
+the concrete task traces. Detailed execution and compatibility are owned by the
+[TaskFlow/circuit guide](../modules/automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
+Functional organ boundaries and information/control circuits are distinct views.
+An organ may contain local circuits; a cross-organ circuit uses stable organ ports,
+not a flattened graph of every private cell. Its upper-level action can invoke a
+bounded subcircuit with explicit initiation, termination, cost, duration and outcome.
+No graph edge grants authority, and neither a cell nor a circuit becomes a new NDU
+subject or top-level module merely through naming.
+
 ## 2. Constitutional kernel and immune boundary
 
 The constitutional layer includes `kernel.authority`, `kernel.operations`, `kernel.evidence`, `auth.authbus` and the secret adapter boundary. Its hard fields never enter an optimizer as compensable weights. A feasible plan must first satisfy authority, scope, deletion, truth, single-writer, resource and rollback constraints. Only then may utility compare feasible alternatives.
@@ -118,6 +136,32 @@ owns membership, and neuron.runtime owns checkpoints. Proposed serialized cell
 records remain design requirements until registered with actual consumers; the
 current BodyGraphSnapshotV1 is not redefined as a complete cell-runtime wire graph.
 
+### Separate graphs and one implementation per responsibility
+
+Keep three interpretations explicit: initialization/fallback dependency DAGs;
+admitted runtime signal/control graphs with bounded feedback; and finite causal
+traces of actual runs. A feedback edge can revisit a cell at a later activation,
+but cannot create a backward causal dependency within one recorded activation.
+Feedback is not retry of an uncertain effect. TaskFlow V1 DAG validation remains
+unchanged; richer circuit semantics require a negotiated version/profile.
+
+| Concern | Existing owner or composition boundary |
+| --- | --- |
+| organ membership, ports and lifecycle | existing organ registry/OrganHost and Supervisor; no second circuit-owned body registry |
+| circuit definition, activation cursor and durable choices | existing TaskFlow owner, evolved behind explicit compatibility admission |
+| timers/calendar occurrences | AutomationScheduler and AutomationStore; exactly one wake-up owner for each registration |
+| cell temporal state and parameter bytes | neuron.runtime and learning.artifacts respectively; circuit records references |
+| policy decisions and admitted model execution | intuition.policy/Neuron and existing inference/Codex path |
+| task intent and terminal external effect | kernel.operations plus the registered downstream owner and observer |
+| learning trajectory, value and evaluation | learning.ledger, utility.ndu and learning.eval; operational history is not a new learning writer |
+
+Deployment may shard circuit runs with one fenced writer per run/partition and
+bounded fair queues. Do not funnel local circuit activations through a mandatory
+central RPC, globally serialized scheduler or shared mutable model. One semantic
+protocol does not require one process or store. No per-cell database or independent
+trainer/executor is introduced. A source extraction is justified by a real caller
+boundary, not by renaming the current crate to `nervous.system`.
+
 ## 6. Organ lifecycle, addition, removal and modification
 
 The lifecycle is:
@@ -188,6 +232,21 @@ slow organ/base adoption cannot stall local stop/reconcile/safety paths. Shared
 weights never imply permission to share private observations or optimizer state.
 Credit estimators, actual behavior propensities, delayed outcomes and intervention
 support are defined in `../learning/CAUSAL_LONGITUDINAL_SPEC.md`.
+
+### Learning the control program, not only its cells
+
+Node parameters, routing/activation/termination policy, and allowable circuit
+structure are separately versioned adaptation targets. Routing can itself be a
+DecisionCell, but deterministic runtime mechanisms enforce event eligibility,
+ports, queue limits, grants, recovery and terminality. A learned policy chooses only
+from the admitted action set; it cannot suppress an inconvenient error or mint a
+new edge/effect. Cell, routing-policy and structure ablations distinguish benefits.
+
+NDU evaluates resource-aware behavior and supported next-generation candidates;
+it is not called synchronously for every signal. Time recursion, nested circuit
+composition and counterfactual credit require separately declared estimands.
+Recorded operational decisions feed the canonical learning ledger via idempotent
+owner messages; speculative/shadow activations are never observed external success.
 
 ## 8. Sensory timing, calibration and body schema
 

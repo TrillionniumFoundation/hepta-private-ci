@@ -2,6 +2,16 @@
 
 This directory contains exactly one stable implementation guide for every module registered in `MODULES.json`. Machine-readable coverage is in `MODULE_DOCS.json`; source reality is in `SOURCE_BINDINGS.json`. Retained guide hashes and word/byte counts are optional generated presentation metadata, not acceptance evidence. Ordinary prose edits need no metadata-only commit. Machine ownership, source reality, authority constraints and local links are still verified. A guide explains implementation and operations but grants no runtime, acceptance, promotion or release authority.
 
+## DecisionCell, Neural Circuit and Nervous System placement
+
+These are architectural responsibilities, not extra top-level module identities.
+The existing CNS describes the Nervous System. Neuron/Intuition supply cells;
+[automation.taskflow](automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary)
+evolves the reusable circuit and durable run foundation; existing organ, inference,
+learning and effect owners retain their responsibilities. Automation wake-up and
+circuit control semantics are separate. Legacy APIs, V1 DAG histories and current
+implementation states are preserved until explicitly versioned migration.
+
 ## Cargo registry closure
 
 `MODULES.json` is the canonical module identity registry. Compiled Rust package

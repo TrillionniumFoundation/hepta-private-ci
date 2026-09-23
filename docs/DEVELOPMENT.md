@@ -3,7 +3,7 @@
 **Plan ID:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN`
 **Version:** `8.0.0`
 **Date:** 2026-09-23
-**Design amendment:** multiscale DecisionCell/organ architecture; runtime and capability claims unchanged.
+**Design amendment:** multiscale DecisionCell, Neural Circuit and Nervous System architecture; runtime and capability claims unchanged.
 **Status:** canonical policy and static registries are defined by this document set; live branch, pull-request, CI, selection and default-branch facts are resolved only from current exact-candidate receipts and are never cached here.
 
 This is the only global human-readable development authority in the working tree. Machine registries own bounded facts and `docs/STATUS.md` is generated. This document grants no runtime, model, provider, tool, network, filesystem, secret, Matrix, fleet, operator, promotion, or release authority.
@@ -285,6 +285,45 @@ product claims do not advance from this design amendment. Detailed cell mechanic
 live in `docs/learning/NEURAL_BIOMIMICRY_SPEC.md`; organ mechanics live in
 `docs/cns/TECHNICAL.md`; rollout and experiments live in the existing learning
 specifications and registries. Do not create another global plan or per-cell gate.
+
+### Neural Circuits and the Nervous System
+
+The existing CNS is the Nervous System architecture; no competing nervous-system
+module, scheduler, authority or universal state store is introduced. A
+DecisionCell computes a bounded decision. A Neural Circuit is a reusable typed
+control program connecting cells, deterministic operators and organ ports. A
+Circuit Run is its concrete event/decision/execution trace. An organ hides local
+circuits behind a stable capability interface; cross-organ circuits use those
+ports rather than reaching into private cells or stores.
+
+TaskFlow's generic orchestration abstraction evolves into Neural Circuit, and its
+existing durable run/step/outbox/reconciliation machinery supplies the persistent
+execution foundation. `automation.taskflow` remains the implementation/ownership
+identity during migration. Automation timers and calendars decide when to wake a
+run; they do not define all circuit behavior. Existing Agentd/Codex/inference,
+OrganHost and downstream effect owners retain their execution responsibilities.
+Do not create another executor or make the circuit owner also own cell memory,
+model parameters, authority, organ membership and learning evidence.
+
+One reusable circuit can produce different task traces through event-driven
+routing, parallel coordination, subcircuit calls, bounded feedback and termination.
+Do not enumerate a separate hand-authored workflow for every task condition.
+Already admitted path selection is runtime behavior; changing public ports,
+allowed topology, state semantics or effects creates a next-generation candidate.
+Legacy TaskFlow V1 remains an acyclic compatibility profile. Its decoder, digests,
+namespaces and persisted histories are not reinterpreted; bounded feedback needs
+explicit versioned admission, not deletion of the old cycle check.
+
+System 1 includes current cells and circuit routing/termination policies. NDU-guided
+System 2 improves cell parameters, circuit policies and slower structural
+candidates against fixed external outcomes and total cost. Durable recovery reuses
+recorded choices under their recorded versions; a new model may not rewrite past
+branch selection. Persist effect-relevant choices before downstream dispatch;
+rebuildable local activations use bounded owner checkpoints, not a global database
+transaction per signal. Unknown effects reconcile before dependent progress.
+The circuit specification and staged implementation truth are in
+`docs/modules/automation.taskflow/TECHNICAL.md`; `docs/cns/TECHNICAL.md` owns system
+composition. These targets do not establish trained circuits or runtime activation.
 
 ## 9. Prompt Intervention Market
 

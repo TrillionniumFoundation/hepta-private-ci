@@ -2,6 +2,11 @@
 
 This directory defines the closed reference architecture that maps the existing forty Hepta modules into a distributed central nervous system, brainstem, peripheral nervous system and independently bounded organs. It extends, but does not replace, `docs/DEVELOPMENT.md`.
 
+Neural Circuits are the reusable control programs within this Nervous System;
+TaskFlow supplies their evolving durable execution foundation, while Automation
+retains timer/calendar wake-up. See the [circuit design and compatibility boundary](../modules/automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+The circuit extension is a target, not an added reference-closure or runtime claim.
+
 Read in this order:
 
 1. [`CNS_ARCHITECTURE.json`](CNS_ARCHITECTURE.json) — closed-world anatomy, dependencies, lifecycle and authority posture.
