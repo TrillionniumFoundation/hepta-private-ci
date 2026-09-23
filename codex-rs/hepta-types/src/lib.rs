@@ -15,6 +15,7 @@ mod numeric_conversion;
 mod numeric_profile;
 mod prompt_delivery;
 mod registry;
+mod topology;
 
 pub use bounded::BoundedBytes;
 pub use bounded::BoundedText;
@@ -72,3 +73,8 @@ pub use registry::MAX_REGISTRY_ENTRIES_V1;
 pub use registry::RegistryDefinitionV1;
 pub use registry::RegistryError;
 pub use registry::RegistryKindV1;
+
+pub use topology::RuntimeTopologyCandidateV1;
+pub use topology::RuntimeTopologyContractErrorV1;
+pub use topology::RuntimeTopologyDeltaV1;
+pub use topology::RuntimeTopologyOperationV1;
