@@ -635,56 +635,7 @@ impl PartialEq for AppServerRuntimeOptions {
             && self.turn_queue_capacity == other.turn_queue_capacity
             && self.required_sqlite_home == other.required_sqlite_home
             && self.required_thread_store_mode == other.required_thread_store_mode
-            && match (
-                &self.hepta_cognitive_runtime,
-                &other.hepta_cognitive_runtime,
-            ) {
-                (
-                    codex_hepta_memory::CognitiveRuntime::Available(left),
-                    codex_hepta_memory::CognitiveRuntime::Available(right),
-                ) => Arc::ptr_eq(left, right),
-                (
-                    codex_hepta_memory::CognitiveRuntime::AvailableFederated {
-                        store: left_store,
-                        federation: left_federation,
-                    },
-                    codex_hepta_memory::CognitiveRuntime::AvailableFederated {
-                        store: right_store,
-                        federation: right_federation,
-                    },
-                ) => {
-                    Arc::ptr_eq(left_store, right_store)
-                        && Arc::ptr_eq(left_federation, right_federation)
-                }
-                (
-                    codex_hepta_memory::CognitiveRuntime::AvailableFederatedV2 {
-                        store: left_store,
-                        consumer_agent_id: left_consumer_agent_id,
-                        owner_layouts: left_owner_layouts,
-                        omitted_owner_candidates: left_omitted_owner_candidates,
-                    },
-                    codex_hepta_memory::CognitiveRuntime::AvailableFederatedV2 {
-                        store: right_store,
-                        consumer_agent_id: right_consumer_agent_id,
-                        owner_layouts: right_owner_layouts,
-                        omitted_owner_candidates: right_omitted_owner_candidates,
-                    },
-                ) => {
-                    Arc::ptr_eq(left_store, right_store)
-                        && left_consumer_agent_id == right_consumer_agent_id
-                        && left_owner_layouts.as_slice() == right_owner_layouts.as_slice()
-                        && left_omitted_owner_candidates == right_omitted_owner_candidates
-                }
-                (
-                    codex_hepta_memory::CognitiveRuntime::Unavailable(left),
-                    codex_hepta_memory::CognitiveRuntime::Unavailable(right),
-                ) => left == right,
-                (
-                    codex_hepta_memory::CognitiveRuntime::Absent,
-                    codex_hepta_memory::CognitiveRuntime::Absent,
-                ) => true,
-                _ => false,
-            }
+            && self.hepta_cognitive_runtime == other.hepta_cognitive_runtime
             && match (
                 &self.hepta_cognitive_production_mutation,
                 &other.hepta_cognitive_production_mutation,

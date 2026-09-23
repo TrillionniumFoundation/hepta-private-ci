@@ -60,6 +60,9 @@ use crate::MAX_RETRIEVAL_RESULTS;
 use crate::RehydrationPlan;
 use crate::RetrievalRequest;
 
+#[path = "cognitive_runtime_identity.rs"]
+mod identity;
+
 const PRODUCT_FEDERATION_TOTAL_BUDGET: Duration = Duration::from_secs(2);
 const MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS: usize = 128;
 const PRODUCT_FEDERATION_PURPOSE: &[u8] = b"hepta.cognitive.federated-recall.product.v2";
