@@ -326,7 +326,10 @@ impl AutomationStore {
         let encoded = serde_json::to_string(schedule).map_err(|_| AutomationError::Corrupt)?;
         let digest = schedule.digest()?;
         let (missed_kind, maximum) = missed_parts(missed_run);
-        let mut tx = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut tx, phase) = self.begin_timer_write().await?;
+        if phase != crate::TimerPhase::Active {
+            return Err(AutomationError::Conflict);
+        }
         sqlx::query(
             "INSERT INTO automation_tasks (
                 task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
@@ -416,7 +419,10 @@ impl AutomationStore {
             .ok_or(AutomationError::Invalid)?;
         let encoded = serde_json::to_string(schedule).map_err(|_| AutomationError::Corrupt)?;
         let digest = schedule.digest()?;
-        let mut tx = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut tx, phase) = self.begin_timer_write().await?;
+        if phase != crate::TimerPhase::Active {
+            return Err(AutomationError::Conflict);
+        }
         let active: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM automation_occurrence_lifecycle
              WHERE task_id = ? AND owner_agent_id = ?

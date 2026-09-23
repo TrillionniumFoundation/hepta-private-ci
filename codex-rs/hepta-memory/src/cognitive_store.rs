@@ -182,7 +182,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_ledger_lease_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "9a5bcdb83b4ce7302cafee907d257a8cb2f485043b2888c5c0c387957cda278c";
+    "2500d2026b3ae42055d97dd14281ed030347a4db062a412d79adeb6619f96f91";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -1565,3 +1565,7 @@ fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "cognitive_schema_tests.rs"]
+mod schema_tests;

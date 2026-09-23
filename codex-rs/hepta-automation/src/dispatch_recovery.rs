@@ -209,7 +209,7 @@ impl AutomationStore {
             return Err(AutomationError::Invalid);
         }
 
-        let mut tx = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut tx, _) = self.begin_timer_write().await?;
         let existing = sqlx::query(
             "SELECT client_user_message_id, proof_digest
              FROM automation_legacy_dispatch_reconciliations

@@ -56,6 +56,10 @@ impl AutomationStore {
             .open_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
+        if let Err(error) = reconcile_legacy_migration_ids(&pool).await {
+            pool.close().await;
+            return Err(error);
+        }
         if MIGRATOR.run(&pool).await.is_err() {
             pool.close().await;
             return Err(AutomationError::Unavailable);
@@ -119,6 +123,10 @@ impl AutomationStore {
     ) -> Result<AutomationTask, AutomationError> {
         draft.validate()?;
         let (schedule_kind, interval_ms) = schedule_columns(draft.schedule)?;
+        let (mut transaction, phase) = self.begin_timer_write().await?;
+        if phase != crate::TimerPhase::Active {
+            return Err(AutomationError::Conflict);
+        }
         let result = sqlx::query(
             "INSERT INTO automation_tasks (
                 task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
@@ -134,13 +142,13 @@ impl AutomationStore {
         .bind(to_i64(draft.first_run_at_ms)?)
         .bind(to_i64(draft.created_at_ms)?)
         .bind(to_i64(draft.created_at_ms)?)
-        .execute(&self.pool)
+        .execute(&mut *transaction)
         .await;
         match result {
-            Ok(_) => self
-                .task(draft.task_id)
-                .await?
-                .ok_or(AutomationError::Corrupt),
+            Ok(_) => {
+                transaction.commit().await.map_err(unavailable)?;
+                self.task(draft.task_id).await?.ok_or(AutomationError::Corrupt)
+            }
             Err(error) if is_constraint(&error) => Err(AutomationError::Conflict),
             Err(error) => Err(unavailable(error)),
         }
@@ -269,7 +277,7 @@ impl AutomationStore {
         task_id: AutomationTaskId,
         now_ms: u64,
     ) -> Result<AutomationTask, AutomationError> {
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let changed = sqlx::query(
             "UPDATE automation_tasks
              SET state = 'cancelled', next_run_at_ms = NULL, updated_at_ms = ?
@@ -305,7 +313,10 @@ impl AutomationStore {
         resume_at_ms: Option<u64>,
         now_ms: u64,
     ) -> Result<AutomationTask, AutomationError> {
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, phase) = self.begin_timer_write().await?;
+        if enabled && phase != crate::TimerPhase::Active {
+            return Err(AutomationError::Conflict);
+        }
         let changed = if enabled {
             let resume_at_ms = resume_at_ms.ok_or(AutomationError::Invalid)?;
             sqlx::query(
@@ -510,7 +521,10 @@ impl AutomationStore {
         let lease_expires_at_ms = now_ms
             .checked_add(lease_duration_ms)
             .ok_or(AutomationError::Invalid)?;
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, phase) = self.begin_timer_write().await?;
+        if phase != crate::TimerPhase::Active {
+            return Ok(None);
+        }
 
         let reclaim = sqlx::query(
             "SELECT r.task_id, r.occurrence, r.schedule_revision,
@@ -670,7 +684,7 @@ impl AutomationStore {
         if lease.task.owner_agent_id != self.owner_agent_id {
             return Err(AutomationError::AccessDenied);
         }
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let updated = sqlx::query(
             "UPDATE automation_runs
              SET state = 'leased'
@@ -851,7 +865,7 @@ impl AutomationStore {
         occurrence: u64,
         client_user_message_id: &str,
     ) -> Result<(), AutomationError> {
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let row = sqlx::query(
             "SELECT r.state, r.client_user_message_id, t.state AS task_state,
                     d.outcome AS dispatch_outcome
@@ -948,6 +962,7 @@ impl AutomationStore {
         if lease.task.owner_agent_id != self.owner_agent_id {
             return Err(AutomationError::AccessDenied);
         }
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let updated = sqlx::query(
             "UPDATE automation_runs
              SET state = CASE WHEN EXISTS (
@@ -989,13 +1004,13 @@ impl AutomationStore {
         .bind(to_i64(lease.lease_generation)?)
         .bind(&lease.lease_token)
         .bind(&lease.client_user_message_id)
-        .execute(&self.pool)
+        .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
         if updated.rows_affected() != 1 {
             return Err(AutomationError::Conflict);
         }
-        Ok(())
+        transaction.commit().await.map_err(unavailable)
     }
 }
 
@@ -1275,3 +1290,82 @@ fn protect_database_file(_path: &Path) -> Result<(), AutomationError> {
     }
     Ok(())
 }
+
+/// Preserve the two independently applied v4/v5 histories after their source
+/// imports collided. Only exact original checksums can move to versions 17/18.
+/// This transaction changes migration identities, never their SQL, checksums,
+/// timestamps or product data. Unknown/dirty/duplicate histories fail closed.
+async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), AutomationError> {
+    let mut transaction = pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .map_err(unavailable)?;
+    let exists: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = '_sqlx_migrations'",
+    )
+    .fetch_one(&mut *transaction)
+    .await
+    .map_err(unavailable)?;
+    if exists == 0 {
+        transaction.commit().await.map_err(unavailable)?;
+        return Ok(());
+    }
+    let maximum = MIGRATOR.iter().count() + 2;
+    let rows = sqlx::query(
+        "SELECT version, checksum, success FROM _sqlx_migrations ORDER BY version LIMIT ?",
+    )
+    .bind(i64::try_from(maximum + 1).map_err(|_| AutomationError::Corrupt)?)
+    .fetch_all(&mut *transaction)
+    .await
+    .map_err(unavailable)?;
+    if rows.len() > maximum {
+        return Err(AutomationError::Corrupt);
+    }
+    let mut remaps = Vec::new();
+    for row in &rows {
+        let version: i64 = row.try_get("version").map_err(unavailable)?;
+        let checksum: Vec<u8> = row.try_get("checksum").map_err(unavailable)?;
+        let success: bool = row.try_get("success").map_err(unavailable)?;
+        if !success {
+            return Err(AutomationError::Corrupt);
+        }
+        if MIGRATOR.iter().any(|migration| {
+            migration.version == version && migration.checksum.as_ref() == checksum.as_slice()
+        }) {
+            continue;
+        }
+        let relocated = match version {
+            4 => 17,
+            5 => 18,
+            _ => return Err(AutomationError::Corrupt),
+        };
+        if !MIGRATOR.iter().any(|migration| {
+            migration.version == relocated && migration.checksum.as_ref() == checksum.as_slice()
+        }) || rows
+            .iter()
+            .any(|row| row.get::<i64, _>("version") == relocated)
+        {
+            return Err(AutomationError::Corrupt);
+        }
+        remaps.push((version, relocated, checksum));
+    }
+    for (version, relocated, checksum) in remaps {
+        let updated = sqlx::query(
+            "UPDATE _sqlx_migrations SET version = ? WHERE version = ? AND checksum = ? AND success = 1",
+        )
+        .bind(relocated)
+        .bind(version)
+        .bind(checksum)
+        .execute(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if updated.rows_affected() != 1 {
+            return Err(AutomationError::Corrupt);
+        }
+    }
+    transaction.commit().await.map_err(unavailable)
+}
+
+#[cfg(test)]
+#[path = "migration_convergence_tests.rs"]
+mod migration_convergence_tests;

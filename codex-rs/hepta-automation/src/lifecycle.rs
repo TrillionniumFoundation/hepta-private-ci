@@ -241,7 +241,10 @@ impl AutomationStore {
         let next_revision = expected_revision
             .checked_add(1)
             .ok_or(AutomationError::Invalid)?;
-        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut transaction, phase) = self.begin_timer_write().await?;
+        if phase != crate::TimerPhase::Active {
+            return Err(AutomationError::Conflict);
+        }
         ensure_schedule_metadata(&mut transaction, self, task_id).await?;
         let active: i64 = sqlx::query_scalar(
             "SELECT (
@@ -314,7 +317,7 @@ impl AutomationStore {
         if lease.task.owner_agent_id != *self.taskflow_owner_agent_id() {
             return Err(AutomationError::AccessDenied);
         }
-        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         ensure_schedule_metadata(&mut transaction, self, lease.task.task_id).await?;
         if let Some(current) =
             load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
@@ -477,7 +480,7 @@ impl AutomationStore {
         {
             return Err(AutomationError::AccessDenied);
         }
-        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let current =
             load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
                 .await?
@@ -610,7 +613,7 @@ impl AutomationStore {
         if turn_id.is_empty() || turn_id.len() > 256 {
             return Err(AutomationError::Invalid);
         }
-        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let current = load_occurrence_row(&mut transaction, self, task_id, occurrence)
             .await?
             .ok_or(AutomationError::Conflict)?;
@@ -691,7 +694,7 @@ impl AutomationStore {
         {
             return Err(AutomationError::Invalid);
         }
-        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let current = load_occurrence_row(&mut transaction, self, task_id, occurrence)
             .await?
             .ok_or(AutomationError::Conflict)?;
@@ -737,7 +740,7 @@ impl AutomationStore {
         observed_at_ms: u64,
     ) -> Result<AutomationOccurrence, AutomationError> {
         validate_digest_text(receipt_digest.as_str())?;
-        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let current = load_occurrence_row(&mut transaction, self, task_id, occurrence)
             .await?
             .ok_or(AutomationError::Conflict)?;
@@ -805,7 +808,7 @@ impl AutomationStore {
     ) -> Result<AutomationOccurrence, AutomationError> {
         validate_digest_text(receipt_digest.as_str())?;
         let terminal_state = terminal.state();
-        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let current = load_occurrence_row(&mut transaction, self, task_id, occurrence)
             .await?
             .ok_or(AutomationError::Conflict)?;
