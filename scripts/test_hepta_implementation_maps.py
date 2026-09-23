@@ -164,6 +164,32 @@ class SourceIdentityTests(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "public function inventory differs"):
             self.verify()
 
+    def test_public_inventory_excludes_methods_tests_and_literal_decoys(self):
+        self.closed_public_inventory("""
+pub fn calculate() { let ignored = \"} pub fn fake() {\"; }
+pub struct Value;
+impl Value { pub fn associated() {} }
+mod tests { pub fn helper() {} }
+/* nested /* } pub fn comment() {} */ still comment */
+const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
+""")
+        self.verify()
+
+    def test_public_inventory_includes_const_reexports_not_types(self):
+        self.closed_public_inventory("mod api;\npub use api::calculate;\npub use api::Value;\n")
+        self.write("src/alpha/src/api.rs", "pub const fn calculate() -> u8 { 1 }\npub struct Value;\nimpl Value { pub fn method() {} }\n")
+        self.rows["alpha"]["sourceBase"] = self.commit("const free function")
+        self.change_maps()
+        self.verify()
+
+    def test_rebind_refreshes_exact_operation_blob(self):
+        row = copy.deepcopy(self.rows["alpha"])
+        row["mappingSourceIdentityMode"] = "exact_blob"
+        row["operations"][0]["sourceBlob"] = "0" * 40
+        result = maps.migrate_map(row, self.modules[0], {"alpha": "test-lane"}, self.anchor)
+        self.assertEqual(result["operations"][0]["sourceBlob"], self.git("rev-parse", "HEAD:src/alpha/lib.rs"))
+        self.assertFalse(result["claimBoundary"]["productExecutionProved"])
+
     def test_closed_world_writer_binding_preserves_exact_source_identity(self):
         row = self.rows["alpha"]
         row["productionWriterState"] = "owner_service_composed"

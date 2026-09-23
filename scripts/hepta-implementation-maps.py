@@ -537,6 +537,8 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         op.setdefault("tests", [])
         source = op.get("sourcePath")
         op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
+        if row.get("mappingSourceIdentityMode") == "exact_blob" and source:
+            op["sourceBlob"] = git("rev-parse", f"HEAD:{source}")
         operations.append(op)
     if not operations:
         operations = [
@@ -616,6 +618,14 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     )
     if "observedAtHead" in migrated:
         migrated["observedAtHead"] = {**migrated["observedAtHead"], **source_base}
+        observed_paths = set(migrated.get("observedSourcePaths", []))
+        observed_paths.update(migrated["resolvedRoots"])
+        if migrated.get("sourceIdentityPolicy") == "candidate_or_exact_observation_v1" and any(
+            root == "codex-rs" or root.startswith("codex-rs/")
+            for root in migrated["resolvedRoots"]
+        ):
+            observed_paths.update({"codex-rs/Cargo.toml", "codex-rs/Cargo.lock"})
+        migrated["observedSourcePaths"] = sorted(observed_paths)
     # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
@@ -954,28 +964,93 @@ def verify_plasticity_test_references(row: dict, failures: list[str]) -> None:
                 )
 
 
-def public_rust_functions(root: str) -> set[str]:
-    """Return root-exported public free functions for one Rust crate.
+def top_level_rust_source(text: str) -> str:
+    """Mask comments/literals and nested items for the bounded source inventory.
 
-    Direct functions in lib.rs and single-name pub-use re-exports are included.
-    Types, associated methods and private helpers are deliberately excluded.
+    This is navigation, not compiler qualification. Unlike a raw pub-fn search,
+    impl methods, test modules, doc strings and braces in literals cannot claim
+    to be crate-root free-function exports.
+    """
+    output = list(text)
+    i = depth = 0
+    while i < len(text):
+        end = None
+        if text.startswith("//", i):
+            end = text.find("\n", i)
+            if end < 0:
+                end = len(text)
+        elif text.startswith("/*", i):
+            end, nesting = i + 2, 1
+            while end < len(text) and nesting:
+                if text.startswith("/*", end):
+                    nesting += 1
+                    end += 2
+                elif text.startswith("*/", end):
+                    nesting -= 1
+                    end += 2
+                else:
+                    end += 1
+            if nesting:
+                raise ValueError("unterminated Rust block comment")
+        else:
+            raw = re.match(r'(?:br|cr|r)(#{0,255})"', text[i:])
+            if raw:
+                closing = '"' + raw.group(1)
+                close = text.find(closing, i + raw.end())
+                if close < 0:
+                    raise ValueError("unterminated Rust raw string")
+                end = close + len(closing)
+            elif text[i] == '"':
+                end = i + 1
+                while end < len(text):
+                    if text[end] == "\\":
+                        end += 2
+                    elif text[end] == '"':
+                        end += 1
+                        break
+                    else:
+                        end += 1
+            elif text[i] == "'":
+                char = re.match(r"'(?:\\(?:u\{[0-9A-Fa-f_]+\}|x[0-9A-Fa-f]{2}|.)|[^'\\\n])'", text[i:])
+                if char:
+                    end = i + char.end()
+        if end is not None:
+            output[i:end] = ["\n" if ch == "\n" else " " for ch in text[i:end]]
+            i = end
+            continue
+        if text[i] == "{":
+            depth += 1
+        if depth:
+            output[i] = "\n" if text[i] == "\n" else " "
+        if text[i] == "}":
+            depth -= 1
+            if depth < 0:
+                raise ValueError("unbalanced Rust item braces")
+        i += 1
+    if depth:
+        raise ValueError("unbalanced Rust item braces")
+    return "".join(output)
+
+
+def public_rust_functions(root: str) -> set[str]:
+    """Root public free functions and explicit single-name re-exports.
+
+    The inventoried surface is source-level, including cfg-qualified exports;
+    associated methods and private helpers are not independent operations.
     """
     src = checked_source_path(ROOT, root) / "src"
     lib = src / "lib.rs"
     if not lib.is_file():
         return set()
-    text = lib.read_text(encoding="utf-8")
-    functions = set(
-        re.findall(r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\b", text)
-    )
+    text = top_level_rust_source(lib.read_text(encoding="utf-8"))
+    declaration = r"\bpub\s+(?:(?:async|const|unsafe)\s+)*(?:extern\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\b"
+    functions = set(re.findall(declaration, text))
     for module, name in re.findall(
-        r"\bpub\s+use\s+([A-Za-z_][A-Za-z0-9_]*)::([A-Za-z_][A-Za-z0-9_]*)\s*;",
-        text,
+        r"\bpub\s+use\s+([A-Za-z_][A-Za-z0-9_]*)::([A-Za-z_][A-Za-z0-9_]*)\s*;", text
     ):
         source = src / f"{module}.rs"
-        if source.is_file() and re.search(
-            rf"\bpub\s+(?:async\s+)?fn\s+{re.escape(name)}\b",
-            source.read_text(encoding="utf-8"),
+        if source.is_file() and name in re.findall(
+            declaration, top_level_rust_source(source.read_text(encoding="utf-8"))
         ):
             functions.add(name)
     return functions
