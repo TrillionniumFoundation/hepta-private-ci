@@ -232,7 +232,8 @@ impl AppServerDrainHandle {
     }
 
     pub fn request_drain(&self) {
-        self.drained.store(false, Ordering::Release);
+        // This handle is one-shot for one App Server lifetime. Repeated owner
+        // polls must not erase a completed drain that no worker can re-acknowledge.
         self.request.cancel();
     }
 
@@ -1874,3 +1875,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "drain_handle_tests.rs"]
+mod drain_handle_tests;

@@ -234,6 +234,22 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
         v2_health.process_id != restarted_health.process_id,
         "successful upgrade did not replace Agent A"
     );
+    let upgraded = fleet
+        .supervisor
+        .snapshot(&agents[0].agent_id)
+        .context("upgraded snapshot")?;
+    let last_exit = upgraded
+        .events
+        .iter()
+        .rev()
+        .find_map(|event| match &event.kind {
+            codex_hepta_supervisor::SupervisorEventKind::Exited(exit) => Some(exit),
+            _ => None,
+        });
+    ensure!(
+        last_exit.is_some_and(|exit| exit.success && exit.code == Some(0)),
+        "normal drain must keep control alive and exit successfully, not force recovery: {last_exit:?}"
+    );
     assert_peers_healthy_and_unchanged(&fleet, &agents[1..], &peer_baseline).await?;
 
     fleet.supervisor.upgrade(

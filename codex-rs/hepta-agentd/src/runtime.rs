@@ -252,6 +252,8 @@ pub async fn run(
         tasks.spawn_required("control-server", control.run())?;
         let app_identity = identity.clone();
         let app_state = Arc::clone(&state);
+        let app_drain = state.app_server_drain_handle();
+        let app_lifetime = cancellation.clone();
         tasks.spawn_required("codex-app-server", async move {
             run_app_server(
                 app_identity,
@@ -261,7 +263,14 @@ pub async fn run(
                 production_writer_host,
             )
             .await
-            .map_err(AgentdError::from)
+            .map_err(AgentdError::from)?;
+            if app_drain.drained() && app_drain.running_turns() == 0 {
+                // A completed drain is not an unexpected required-service exit.
+                // Keep control and durable reconcilers alive so Supervisor can
+                // observe the acknowledgement before its explicit stop signal.
+                app_lifetime.cancelled().await;
+            }
+            Ok(())
         })?;
         tasks.spawn_required("generation-monitor", monitor_runtime(Arc::clone(&state)))?;
         tasks.spawn_required(
