@@ -417,13 +417,9 @@ impl RuntimeModuleSupervisorV1 {
                 retirements.insert(delta.module_id.clone(), generation);
             } else {
                 let key = (candidate_digest, delta.module_id.clone());
-                let witness = self
-                    .pending_promotions
-                    .get(&key)
-                    .cloned()
-                    .ok_or_else(|| {
-                        RuntimeModuleSupervisorErrorV1::TopologyNotReady(delta.module_id.clone())
-                    })?;
+                let witness = self.pending_promotions.get(&key).cloned().ok_or_else(|| {
+                    RuntimeModuleSupervisorErrorV1::TopologyNotReady(delta.module_id.clone())
+                })?;
                 promotion_witnesses.insert(delta.module_id.clone(), witness);
             }
         }
@@ -647,7 +643,8 @@ impl RuntimeModuleSupervisorV1 {
         }
         let mut by_domain = BTreeMap::new();
         for handoff in handoffs {
-            if handoff.plan.target_writer != *module_id || handoff.plan.source_writer != *module_id {
+            if handoff.plan.target_writer != *module_id || handoff.plan.source_writer != *module_id
+            {
                 return Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch);
             }
             if handoff.plan.new_generation != generation
@@ -830,14 +827,16 @@ impl RuntimeModuleSupervisorV1 {
         let registry = &self.registry;
         self.selections.retain(|(module_id, generation), _| {
             registry.active_generation(module_id) == Some(*generation)
-                || registry.record(module_id, *generation).is_some_and(|record| {
-                    matches!(
-                        record.lifecycle,
-                        RuntimeModuleLifecycleV1::Registered
-                            | RuntimeModuleLifecycleV1::Shadow
-                            | RuntimeModuleLifecycleV1::Canary
-                    )
-                })
+                || registry
+                    .record(module_id, *generation)
+                    .is_some_and(|record| {
+                        matches!(
+                            record.lifecycle,
+                            RuntimeModuleLifecycleV1::Registered
+                                | RuntimeModuleLifecycleV1::Shadow
+                                | RuntimeModuleLifecycleV1::Canary
+                        )
+                    })
         });
         self.retirement_ready.retain(|(module_id, generation), _| {
             registry.active_generation(module_id) == Some(*generation)

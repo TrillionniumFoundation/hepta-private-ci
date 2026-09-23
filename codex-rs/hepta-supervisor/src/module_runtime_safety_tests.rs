@@ -38,7 +38,9 @@ fn prepared() -> RuntimeModuleSupervisorV1 {
         authoritative_domains: [id("data"), id("index")].into_iter().collect(),
         effect_scope: Default::default(),
     };
-    supervisor.register_bootstrap(abi.clone()).expect("bootstrap");
+    supervisor
+        .register_bootstrap(abi.clone())
+        .expect("bootstrap");
     abi.generation = generation(2);
     abi.implementation_digest = digest("new");
     abi.candidate_artifact_digest = digest("new");
@@ -324,14 +326,7 @@ fn projected_topology_rejects_new_dependency_cycles() {
         Some((1, "alpha-v1")),
         &["beta"],
     );
-    let beta = stateless_abi(
-        "beta",
-        2,
-        "beta-v1",
-        candidate_digest,
-        None,
-        &["alpha"],
-    );
+    let beta = stateless_abi("beta", 2, "beta-v1", candidate_digest, None, &["alpha"]);
     let candidate = topology_candidate(
         candidate_digest,
         baseline.digest,
@@ -489,7 +484,11 @@ fn finalization_rechecks_the_exact_selected_baseline_without_consuming_evidence(
     assert_eq!(supervisor.topology(), before);
     assert_eq!(supervisor.selections, selections);
     assert_eq!(supervisor.pending_promotions, promotions);
-    assert!(supervisor.pending_topologies.contains_key(&candidate_digest));
+    assert!(
+        supervisor
+            .pending_topologies
+            .contains_key(&candidate_digest)
+    );
 }
 
 #[test]
@@ -523,7 +522,9 @@ fn single_module_publication_cannot_bypass_dependency_validation() {
             digest("selection"),
         )
         .unwrap();
-    supervisor.enter_canary(&id("consumer"), generation(1)).unwrap();
+    supervisor
+        .enter_canary(&id("consumer"), generation(1))
+        .unwrap();
     let before = supervisor.topology();
     assert_eq!(
         supervisor.promote_stateless(&id("consumer"), generation(1), digest("canary")),
@@ -534,7 +535,11 @@ fn single_module_publication_cannot_bypass_dependency_validation() {
     );
     assert_eq!(supervisor.topology(), before);
     assert_eq!(
-        supervisor.registry.record(&id("consumer"), generation(1)).unwrap().lifecycle,
+        supervisor
+            .registry
+            .record(&id("consumer"), generation(1))
+            .unwrap()
+            .lifecycle,
         RuntimeModuleLifecycleV1::Canary
     );
 }
@@ -545,26 +550,41 @@ fn single_module_replacement_cannot_publish_a_dependency_cycle() {
     for (module, dependencies) in [("alpha", Vec::new()), ("beta", vec!["alpha"])] {
         supervisor
             .register_bootstrap(stateless_abi(
-                module, 1, module, digest(module), None, &dependencies,
+                module,
+                1,
+                module,
+                digest(module),
+                None,
+                &dependencies,
             ))
             .unwrap();
     }
     supervisor
         .register_shadow_for_test(
             stateless_abi(
-                "alpha", 2, "alpha-v2", digest("alpha-v2"), Some((1, "alpha")), &["beta"],
+                "alpha",
+                2,
+                "alpha-v2",
+                digest("alpha-v2"),
+                Some((1, "alpha")),
+                &["beta"],
             ),
             digest("selection"),
         )
         .unwrap();
-    supervisor.enter_canary(&id("alpha"), generation(2)).unwrap();
+    supervisor
+        .enter_canary(&id("alpha"), generation(2))
+        .unwrap();
     let before = supervisor.topology();
     assert!(matches!(
         supervisor.promote_stateless(&id("alpha"), generation(2), digest("canary")),
         Err(RuntimeModuleSupervisorErrorV1::TopologyDependencyCycle(_))
     ));
     assert_eq!(supervisor.topology(), before);
-    assert_eq!(supervisor.registry.active_generation(&id("alpha")), Some(generation(1)));
+    assert_eq!(
+        supervisor.registry.active_generation(&id("alpha")),
+        Some(generation(1))
+    );
 }
 
 #[test]
@@ -576,7 +596,9 @@ fn discarded_candidate_releases_work_but_cannot_be_promoted_or_replayed() {
         .promote_stateless(&id("extension"), generation(2), digest("canary"))
         .unwrap();
     let before = supervisor.topology();
-    supervisor.discard_topology_candidate(candidate_digest).unwrap();
+    supervisor
+        .discard_topology_candidate(candidate_digest)
+        .unwrap();
     assert_eq!(supervisor.topology(), before);
     assert!(supervisor.selections.is_empty());
     assert!(supervisor.pending_promotions.is_empty());
@@ -589,7 +611,12 @@ fn discarded_candidate_releases_work_but_cannot_be_promoted_or_replayed() {
         supervisor
             .registry
             .register_candidate(stateless_abi(
-                "extension", 2, "extension-v1", candidate_digest, None, &[],
+                "extension",
+                2,
+                "extension-v1",
+                candidate_digest,
+                None,
+                &[],
             ))
             .is_err()
     );
@@ -620,7 +647,9 @@ fn thousand_upgrades_keep_supervisor_selection_and_retirement_metadata_bounded()
                 digest("selection"),
             )
             .unwrap();
-        supervisor.enter_canary(&id("module"), generation(epoch)).unwrap();
+        supervisor
+            .enter_canary(&id("module"), generation(epoch))
+            .unwrap();
         let snapshot = supervisor
             .promote_stateless(&id("module"), generation(epoch), digest("canary"))
             .unwrap();
@@ -658,9 +687,14 @@ fn retire_only_proposals_have_a_reusable_pending_budget() {
         supervisor.ensure_topology_capacity(),
         Err(RuntimeModuleSupervisorErrorV1::PendingTopologyCapacity)
     );
-    supervisor.discard_topology_candidate(digest("proposal-0")).unwrap();
+    supervisor
+        .discard_topology_candidate(digest("proposal-0"))
+        .unwrap();
     supervisor.ensure_topology_capacity().unwrap();
-    assert_eq!(supervisor.pending_topologies.len(), MAX_PENDING_TOPOLOGIES - 1);
+    assert_eq!(
+        supervisor.pending_topologies.len(),
+        MAX_PENDING_TOPOLOGIES - 1
+    );
     assert!(supervisor.selections.is_empty());
 }
 
@@ -670,13 +704,22 @@ fn blocked_retirement_does_not_leave_a_ready_marker() {
     for (module, dependencies) in [("foundation", Vec::new()), ("consumer", vec!["foundation"])] {
         supervisor
             .register_bootstrap(stateless_abi(
-                module, 1, module, digest(module), None, &dependencies,
+                module,
+                1,
+                module,
+                digest(module),
+                None,
+                &dependencies,
             ))
             .unwrap();
     }
     let before = supervisor.topology();
     assert!(matches!(
-        supervisor.retire_after_reconciliation(&id("foundation"), generation(1), retirement_witness()),
+        supervisor.retire_after_reconciliation(
+            &id("foundation"),
+            generation(1),
+            retirement_witness()
+        ),
         Err(RuntimeModuleSupervisorErrorV1::Registry(
             RuntimeModuleRegistryError::SelectedDependent(_)
         ))
@@ -692,7 +735,12 @@ fn topology_retires_dependents_before_providers_regardless_of_delta_order() {
     for (module, dependencies) in [("alpha", Vec::new()), ("zeta", vec!["alpha"])] {
         supervisor
             .register_bootstrap(stateless_abi(
-                module, 1, module, digest(module), None, &dependencies,
+                module,
+                1,
+                module,
+                digest(module),
+                None,
+                &dependencies,
             ))
             .unwrap();
         supervisor
@@ -712,7 +760,9 @@ fn topology_retires_dependents_before_providers_regardless_of_delta_order() {
         candidate_digest,
         topology_candidate(candidate_digest, supervisor.topology().digest, deltas),
     );
-    let result = supervisor.finalize_topology_candidate(candidate_digest).unwrap();
+    let result = supervisor
+        .finalize_topology_candidate(candidate_digest)
+        .unwrap();
     assert!(result.active.is_empty());
     assert!(supervisor.pending_topologies.is_empty());
     assert!(supervisor.retirement_ready.is_empty());
@@ -724,7 +774,12 @@ fn topology_can_rewire_a_consumer_and_retire_its_old_provider_atomically() {
     for (module, dependencies) in [("foundation", Vec::new()), ("consumer", vec!["foundation"])] {
         supervisor
             .register_bootstrap(stateless_abi(
-                module, 1, module, digest(module), None, &dependencies,
+                module,
+                1,
+                module,
+                digest(module),
+                None,
+                &dependencies,
             ))
             .unwrap();
     }
@@ -733,12 +788,19 @@ fn topology_can_rewire_a_consumer_and_retire_its_old_provider_atomically() {
     supervisor
         .register_shadow_for_test(
             stateless_abi(
-                "consumer", 2, "consumer-v2", candidate_digest, Some((1, "consumer")), &[],
+                "consumer",
+                2,
+                "consumer-v2",
+                candidate_digest,
+                Some((1, "consumer")),
+                &[],
             ),
             digest("selection"),
         )
         .unwrap();
-    supervisor.enter_canary(&id("consumer"), generation(2)).unwrap();
+    supervisor
+        .enter_canary(&id("consumer"), generation(2))
+        .unwrap();
     supervisor.pending_topologies.insert(
         candidate_digest,
         topology_candidate(
@@ -771,7 +833,9 @@ fn topology_can_rewire_a_consumer_and_retire_its_old_provider_atomically() {
         .promote_stateless(&id("consumer"), generation(2), digest("canary"))
         .unwrap();
     assert_eq!(staged, before);
-    let result = supervisor.finalize_topology_candidate(candidate_digest).unwrap();
+    let result = supervisor
+        .finalize_topology_candidate(candidate_digest)
+        .unwrap();
     assert_eq!(result.active.len(), 1);
     assert_eq!(result.active[0].module_id, id("consumer"));
     assert_eq!(result.active[0].generation, generation(2));

@@ -334,7 +334,10 @@ impl DurableRunStartJournal {
         record: RunStartConflictRecordV1,
     ) -> Result<RunStartAppendReceipt, RunStartStoreError> {
         validate_conflict_record(&record)?;
-        self.append_outcome(expected_predecessor, StoredRunStartRecord::Conflict(Box::new(record)))
+        self.append_outcome(
+            expected_predecessor,
+            StoredRunStartRecord::Conflict(Box::new(record)),
+        )
     }
 
     fn append_outcome(
