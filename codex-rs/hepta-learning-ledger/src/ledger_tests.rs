@@ -720,6 +720,9 @@ fn indexed_historical_retry_survives_growth_and_snapshot_recovery() {
     assert_eq!(replay.chain_digest, original.chain_digest);
     let mut conflicting = first;
     conflicting.policy_id = id("changed-policy");
-    assert!(matches!(recovered.append(LedgerEvent::Decision(conflicting)), Err(LedgerError::IdentityConflict(_))));
+    assert!(matches!(
+        recovered.append(LedgerEvent::Decision(conflicting)),
+        Err(LedgerError::IdentityConflict(_))
+    ));
     assert_eq!(recovered.snapshot(), before);
 }

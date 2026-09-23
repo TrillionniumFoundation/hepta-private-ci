@@ -147,7 +147,9 @@ impl AutomationStore {
         match result {
             Ok(_) => {
                 transaction.commit().await.map_err(unavailable)?;
-                self.task(draft.task_id).await?.ok_or(AutomationError::Corrupt)
+                self.task(draft.task_id)
+                    .await?
+                    .ok_or(AutomationError::Corrupt)
             }
             Err(error) if is_constraint(&error) => Err(AutomationError::Conflict),
             Err(error) => Err(unavailable(error)),
