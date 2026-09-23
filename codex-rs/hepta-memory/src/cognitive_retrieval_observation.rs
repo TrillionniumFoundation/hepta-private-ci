@@ -190,13 +190,15 @@ impl CognitiveStore {
             .iter()
             .map(|seed| seed.memory.clone())
             .collect::<Vec<_>>();
+        let mut generations = RetrievalGenerations::new();
         let graph = self
-            .graph_channel_tx(transaction, &seeds.values, now)
+            .graph_channel_tx(transaction, &seeds.values, &mut generations, now)
             .await?;
         let causal = self
             .typed_relation_channel_tx(
                 transaction,
                 &seeds.values,
+                &mut generations,
                 now,
                 KgRelationSemanticV1::Causes,
             )
@@ -205,6 +207,7 @@ impl CognitiveStore {
             .typed_relation_channel_tx(
                 transaction,
                 &seeds.values,
+                &mut generations,
                 now,
                 KgRelationSemanticV1::ProcedureStep,
             )
@@ -213,6 +216,7 @@ impl CognitiveStore {
             .typed_relation_channel_tx(
                 transaction,
                 &seeds.values,
+                &mut generations,
                 now,
                 KgRelationSemanticV1::Contradicts,
             )

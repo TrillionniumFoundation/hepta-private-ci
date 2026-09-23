@@ -3,6 +3,7 @@ use std::collections::BTreeSet;
 use std::future::Future;
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::KnowledgeGenerationV2;
 use codex_hepta_kg::KnowledgeRelationQueryV2;
 use codex_hepta_kg::query_relations;
 use codex_hepta_types::StableId;
@@ -41,6 +42,10 @@ pub const MAX_RETRIEVAL_QUERY_BYTES: usize = 2 * 1024;
 pub const MAX_RETRIEVAL_CHANNEL_CANDIDATES: usize = 32;
 pub const MAX_RETRIEVAL_RESULTS: usize = 4;
 pub(crate) const MAX_RETRIEVAL_OWNER_CHANNELS: usize = 7;
+
+// Scratch space for one SQLite read transaction, never shared across requests.
+// Each selected scope/generation is materialized once across relation channels.
+type RetrievalGenerations = BTreeMap<(String, i64), KnowledgeGenerationV2>;
 
 const RRF_K: u64 = 60;
 const RRF_SCALE: u64 = 1_000_000;
@@ -723,9 +728,10 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         seeds: &[EntitySeed],
+        generations: &mut RetrievalGenerations,
         now: i64,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
-        self.relation_channel_tx(transaction, seeds, now, None)
+        self.relation_channel_tx(transaction, seeds, generations, now, None)
             .await
     }
 
@@ -733,10 +739,11 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         seeds: &[EntitySeed],
+        generations: &mut RetrievalGenerations,
         now: i64,
         semantic: KgRelationSemanticV1,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
-        self.relation_channel_tx(transaction, seeds, now, Some(semantic))
+        self.relation_channel_tx(transaction, seeds, generations, now, Some(semantic))
             .await
     }
 
@@ -744,6 +751,7 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         seeds: &[EntitySeed],
+        generations: &mut RetrievalGenerations,
         now: i64,
         semantic: Option<KgRelationSemanticV1>,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
@@ -788,8 +796,17 @@ impl CognitiveStore {
             };
 
             let generation =
-                load_canonical_generation_tx(transaction, &seed.projection_scope, seed.generation)
-                    .await?;
+                match generations.entry((seed.projection_scope.clone(), seed.generation)) {
+                    std::collections::btree_map::Entry::Vacant(entry) => entry.insert(
+                        load_canonical_generation_tx(
+                            transaction,
+                            &seed.projection_scope,
+                            seed.generation,
+                        )
+                        .await?,
+                    ),
+                    std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
+                };
             if generation.generation_digest.to_string() != generation_sha256.as_str() {
                 return Err(CognitiveStoreError::Corrupt(
                     "KG product query generation digest diverged from persisted semantics"
@@ -830,7 +847,7 @@ impl CognitiveStore {
                 continue;
             }
             let query_result = query_relations(
-                &generation,
+                generation,
                 KnowledgeRelationQueryV2 {
                     query_id: StableId::new("query:cognitive-retrieval-graph-v2").map_err(
                         |error| {
@@ -931,7 +948,14 @@ impl CognitiveStore {
             )
             .collect::<Result<Vec<_>, _>>()?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-        let keys = self.graph_channel_tx(&mut transaction, &seeds, now).await?;
+        let keys = self
+            .graph_channel_tx(
+                &mut transaction,
+                &seeds,
+                &mut RetrievalGenerations::new(),
+                now,
+            )
+            .await?;
         transaction.commit().await.map_err(unavailable)?;
         keys.values
             .into_iter()

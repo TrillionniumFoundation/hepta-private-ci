@@ -206,6 +206,49 @@ async fn typed_kg_relations_feed_only_their_declared_retrieval_channels() {
         .await
         .expect("typed KG memory");
 
+    let request = RetrievalRequest::new("Beacon", 200);
+    let fts = store
+        .validate_retrieval_request(&access, &request)
+        .expect("query");
+    let mut transaction = store.pool.begin().await.expect("read transaction");
+    let mut seeds = store
+        .entity_fts_channel_tx(&mut transaction, &access, &fts, 200)
+        .await
+        .expect("seeds")
+        .values;
+    assert!(!seeds.is_empty());
+    let mut generations = RetrievalGenerations::new();
+    for kind in [
+        KgRelationSemanticV1::Causes,
+        KgRelationSemanticV1::ProcedureStep,
+        KgRelationSemanticV1::Contradicts,
+    ] {
+        let channel = store
+            .typed_relation_channel_tx(&mut transaction, &seeds, &mut generations, 200, kind)
+            .await
+            .expect("canonical relation channel");
+        assert!(!channel.values.is_empty());
+        assert_eq!(
+            generations.len(),
+            1,
+            "all channels reuse one exact generation"
+        );
+    }
+    seeds[0].generation_sha256 = Some(Sha256Digest::for_bytes(b"wrong-seed-generation"));
+    assert!(
+        matches!(
+            store
+                .graph_channel_tx(&mut transaction, &seeds, &mut generations, 200,)
+                .await,
+            Err(CognitiveStoreError::Corrupt(_))
+        ),
+        "a materialized generation must not waive the next seed's digest check"
+    );
+    transaction
+        .rollback()
+        .await
+        .expect("close read transaction");
+
     let observation = store
         .observe_memory_retrieval(
             &access,
