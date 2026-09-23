@@ -49,7 +49,7 @@ def unique_keys(items):
 
 def load(rel: str):
     return json.loads(
-        (ROOT / rel).read_text(encoding="utf-8"), object_pairs_hook=unique_keys
+        checked_source_path(ROOT, rel).read_text(encoding="utf-8"), object_pairs_hook=unique_keys
     )
 
 
@@ -130,7 +130,12 @@ def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
             if not isinstance(entries, list):
                 raise ValueError(f"{key} must be a list")
             for entry in entries:
-                path = entry.get("path") if isinstance(entry, dict) else entry
+                if isinstance(entry, dict):
+                    path = entry.get("path", entry.get("sourcePath"))
+                    if "path" in entry and "sourcePath" in entry and entry["path"] != entry["sourcePath"]:
+                        raise ValueError(f"{key} has conflicting evidence paths")
+                else:
+                    path = entry
                 if not isinstance(path, str) or not path:
                     raise ValueError(f"{key} evidence requires an explicit source path")
                 if key == "tests" and ".rs::" in path:
@@ -503,6 +508,34 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     }
 
 
+EXECUTION_CLAIMS = frozenset({
+    "productionImplementation", "productExecutionProved",
+    "independentAcceptance", "activation", "release",
+})
+BOOLEAN_CLAIMS = EXECUTION_CLAIMS | {
+    "nativeSourceMappingComplete", "implementedOperationMappingComplete",
+    "ownedTargetProtocolSourceComplete", "sourceRootPresent",
+}
+
+
+def validate_claim_types(row: dict) -> bool:
+    """Validate declared facts without coercing or issuing execution evidence."""
+    if not isinstance(row, dict):
+        raise ValueError("implementation map must be an object")
+    claims = [row]
+    for name in ("claimBoundary", "completion"):
+        if name in row:
+            value = row[name]
+            if not isinstance(value, dict):
+                raise ValueError(f"{name} must be an object")
+            claims.append(value)
+    for claim in claims:
+        for name in BOOLEAN_CLAIMS.intersection(claim):
+            if type(claim[name]) is not bool:
+                raise ValueError(f"{name} must be boolean")
+    return any(claim.get(name) is True for claim in claims for name in EXECUTION_CLAIMS)
+
+
 def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
     """Upgrade legacy v1/v2 maps without discarding implementation evidence.
 
@@ -511,6 +544,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     v3 keeps every legacy field for compatibility while adding one stable
     operation vocabulary and top-level status/claim fields.
     """
+    if validate_claim_types(row):
+        # Rebinding navigation cannot transfer old executable evidence to new code.
+        verify_source_identity(row, resolve_source_roots(ROOT, module), current_source_base())
     roots = [x["path"] for x in module["rootBindings"]]
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
     if isinstance(declared, str):
@@ -520,6 +556,8 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     declared = roots
     operations = []
     for original in row.get("operations", []):
+        if not isinstance(original, dict):
+            raise ValueError("invalid operation record")
         op = dict(original)
         name = (
             op.get("operation") or op.get("designOperation") or "native_mapping_pending"
@@ -652,6 +690,8 @@ def migrate(selected_modules: list[str] | None = None):
     by_id = {m["id"]: m for m in modules}
     if len(by_id) != len(modules):
         raise ValueError("duplicate module identity")
+    if selected_modules == []:
+        raise ValueError("empty module selection")
     selected = set(by_id) if selected_modules is None else set(selected_modules)
     unknown = selected - set(by_id)
     if unknown:
@@ -1083,6 +1123,7 @@ def verify(*, require_current_source: bool = True):
         mid = module["id"]
         try:
             row = load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
+            validate_claim_types(row)
             validate_closed_world_bindings(row)
             if (
                 row.get("schema") != "hepta.module-implementation-map.v3"
@@ -1101,7 +1142,7 @@ def verify(*, require_current_source: bool = True):
             if row.get("resolvedRoots") != resolved:
                 raise ValueError("resolved source roots")
             ops = row.get("operations")
-            if not isinstance(ops, list) or not ops:
+            if not isinstance(ops, list) or not ops or any(not isinstance(op, dict) for op in ops):
                 raise ValueError("operations")
             if "sourceRootPresent" not in row or "productionImplementation" not in row:
                 raise ValueError("status model")

@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-import test_hepta_implementation_identity as fixtures
+import test_hepta_implementation_maps as fixtures
 
 
 class GitObservationIsolationTests(unittest.TestCase):
@@ -16,18 +16,17 @@ class GitObservationIsolationTests(unittest.TestCase):
         self.fixture = fixtures.SourceIdentityTests()
         self.addCleanup(self.fixture.doCleanups)
         self.fixture.setUp()
-        self.fixture.bind_objects()
         self.root = self.fixture.root
-        self.subject = fixtures.subject
+        self.subject = fixtures.maps
         self.identity = self.subject.current_source_base()
 
     def observe(self):
         self.assertEqual(self.subject.current_source_base(), self.identity)
-        self.assertTrue(self.subject.verify_source_identity(self.fixture.row))
+        self.assertTrue(self.subject.verify_source_identity(self.fixture.rows["alpha"], ["src/alpha"], self.subject.current_source_base()))
 
     def reject_changed_source(self):
         with self.assertRaises((ValueError, subprocess.CalledProcessError)):
-            self.subject.verify_source_identity(self.fixture.row)
+            self.subject.verify_source_identity(self.fixture.rows["alpha"], ["src/alpha"], self.subject.current_source_base())
 
     def test_ambient_repository_worktree_and_index_redirects_are_ignored(self):
         for key in ("GIT_DIR", "GIT_COMMON_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE",
@@ -40,11 +39,11 @@ class GitObservationIsolationTests(unittest.TestCase):
                     "GIT_NOGLOB_PATHSPECS", "GIT_ICASE_PATHSPECS"):
             with self.subTest(key=key), patch.dict(os.environ, {key: "1"}):
                 self.observe()
-                self.fixture.write("owner/src/lib.rs", "changed\n")
+                self.fixture.write("src/alpha/lib.rs", "changed\n")
                 try:
                     self.reject_changed_source()
                 finally:
-                    self.fixture.write("owner/src/lib.rs", "pub fn run() {}\n")
+                    self.fixture.write("src/alpha/lib.rs", "pub fn calculate() {}\n")
 
     def test_config_environment_cannot_install_a_monitor(self):
         marker = self.root / "unexpected-monitor"
@@ -73,14 +72,14 @@ class GitObservationIsolationTests(unittest.TestCase):
             hook.chmod(0o700)
             self.fixture.git("config", "core.fsmonitor", str(hook))
             self.observe()
-            self.fixture.write("owner/src/lib.rs", "changed\n")
+            self.fixture.write("src/alpha/lib.rs", "changed\n")
             self.reject_changed_source()
             self.assertFalse(marker.exists())
 
     def test_replacement_commit_does_not_hide_real_source_drift(self):
         old = self.identity["commit"]
-        self.fixture.write("owner/src/lib.rs", "pub fn changed() {}\n")
-        current = self.fixture.commit()
+        self.fixture.write("src/alpha/lib.rs", "pub fn changed() {}\n")
+        current = self.fixture.commit("source drift")["commit"]
         actual_tree = self.fixture.git("rev-parse", "HEAD^{tree}")
         self.fixture.git("replace", current, old)
         # Ordinary Git now sees the replacement; the verifier must not.
@@ -92,22 +91,24 @@ class GitObservationIsolationTests(unittest.TestCase):
         for flag, reset in (("--assume-unchanged", "--no-assume-unchanged"),
                             ("--skip-worktree", "--no-skip-worktree")):
             with self.subTest(flag=flag):
-                self.fixture.git("update-index", flag, "owner/src/lib.rs")
-                self.fixture.write("owner/src/lib.rs", "hidden mutation\n")
+                self.fixture.git("update-index", flag, "src/alpha/lib.rs")
+                self.fixture.write("src/alpha/lib.rs", "hidden mutation\n")
                 self.assertEqual(self.fixture.git("diff", "--name-only"), "")
                 try:
-                    with self.assertRaisesRegex(ValueError, "opaque Git index flag"):
-                        self.subject.verify_source_identity(self.fixture.row)
+                    with self.assertRaisesRegex(ValueError, "candidate index hides tracked paths"):
+                        self.subject.verify_source_identity(self.fixture.rows["alpha"], ["src/alpha"], self.subject.current_source_base())
                 finally:
-                    self.fixture.git("update-index", reset, "owner/src/lib.rs")
-                    self.fixture.write("owner/src/lib.rs", "pub fn run() {}\n")
+                    self.fixture.git("update-index", reset, "src/alpha/lib.rs")
+                    self.fixture.write("src/alpha/lib.rs", "pub fn calculate() {}\n")
                 self.observe()
 
-    def test_unrelated_index_shortcut_does_not_expand_validation_scope(self):
+    def test_global_hidden_index_entries_reject_without_clearing_them(self):
         self.fixture.write("other.txt", "not a mapped source\n")
-        self.fixture.commit()
+        self.fixture.commit("unrelated source")
         self.fixture.git("update-index", "--skip-worktree", "other.txt")
-        self.assertTrue(self.subject.verify_source_identity(self.fixture.row))
+        with self.assertRaisesRegex(ValueError, "candidate index hides tracked paths"):
+            self.subject.verify_source_identity(self.fixture.rows["alpha"], ["src/alpha"], self.subject.current_source_base())
+        self.assertTrue(self.fixture.git("ls-files", "-v", "other.txt").startswith("S "))
 
 
 if __name__ == "__main__":
