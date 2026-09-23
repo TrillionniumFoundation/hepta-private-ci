@@ -10,7 +10,7 @@
 
 This specification defines a testable functional-biomimicry level for Hepta. `neuron.runtime` produces bounded temporal signals and checkpoints. `intuition.policy` consumes those signals for calibrated fast decisions. `learning.operator` supports replay and prediction-error candidates. `learning.plasticity` proposes next-snapshot parameter or topology changes.
 
-The term “neuron” does not claim biological equivalence. NDU supplies preference and utility semantics, not cellular plasticity. A local language model, recurrent state or sparse activation alone is insufficient. Neuromorphic hardware, spiking dynamics, timing-dependent plasticity and energy claims remain a separate research level.
+The term “neuron” does not claim biological equivalence. NDU supplies preference, utility and adaptation objectives; actual cellular update mechanisms require their own algorithm and evidence. A local language model, recurrent state or sparse activation alone is insufficient. Neuromorphic hardware, spiking dynamics, timing-dependent plasticity and energy claims remain a separate research level.
 
 ### DecisionCell is the common trainable unit
 
@@ -82,9 +82,9 @@ q_t=B_m m_t,\qquad
 \Delta W_t^{(g)}=\Pi_{\mathcal T_g}[\eta_w\,q_{t,g}\,e_t^{(g)}],
 \qquad
 W_{candidate}=W_{selected}+\sum_t\Delta W_t.
+\]
 
 `B_m` is a manifest-bound map from the `d_m<=8` modulator vector to registered parameter groups `g`; every row has `L1` norm at most one. This removes ambiguous broadcasting between a low-dimensional modulator and a weight-shaped eligibility trace.
-\]
 
 `m_t` is derived from independently observed prediction error, utility residual and safety/resource modulators. It cannot contain credentials or authority. `Pi_T` is a trust region: per-layer relative norm, global norm, sign/monotonicity constraints and quantization limits are all enforced.
 
@@ -135,6 +135,101 @@ Pure local rebuildable activations may use bounded checkpoints, but persistent
 progress cannot depend on an output lost before an effect-relevant choice commits.
 Future updates improve both the cell and the circuit policy against named versions;
 a more accurate cell alone does not prove better routing or termination.
+
+### Capacity model and conditional approximation statement
+
+A DecisionCell is a parameterized vector map or stochastic kernel, including input
+combination and memory. Treat `(G, Theta, rho, S)` as the meta-network and distinguish
+inference `x -> F_(G,Theta,rho)(x)` from training evolution of `(Theta,rho,G)`.
+Every expressivity claim declares input domain, observable encoding, target class,
+output/action space, norm, history horizon and capacity/precision growth variables.
+Existence of approximants, an algorithm finding them and generalization are separate.
+
+**Conditional static sufficient condition.** Let K be a compact subset of R^d,
+and f:K->R^m continuous. Suppose the allowed family can realize affine maps with
+bias, a fixed continuous nonpolynomial activation sigma, arbitrary finite parallel
+width and affine readout, without intermediate information loss. Then it contains
+all finite sums `sum_i a_i sigma(w_i^T x+b_i)` componentwise and is uniformly dense
+in C(K;R^m). Proof: embed such a feedforward network as a finite acyclic subcircuit
+and apply the classical nonpolynomial-activation approximation result. If local
+kernels only approximate these operations, use the finite-composition error bound
+below and allocate local tolerances on compact reachable tubes. This is a
+conditional containment argument, not a new theorem about a fixed Laya backend.
+
+Trainable biases, input access, independent coefficient freedom and readout are
+substantive premises. A frozen tokenizer/encoder can identify distinct inputs;
+a fixed adapter rank and parameter mask can restrict the function family. Finite
+bit width introduces quantization floors. Arbitrary accuracy refers to a family
+whose relevant capacity/precision can grow; current finite resource limits are not
+silently lifted. For variable legal-action masks, declare each continuous mode or
+an appropriate distributional criterion; no uniform continuous approximation of
+arbitrary discontinuous authority logic is claimed. Existing exact guards remain.
+
+**Information bottleneck.** If all downstream access factors through a fixed
+encoding q and q(x1)=q(x2), deterministic output g(q(x)) has worst-case error at
+least `||f(x1)-f(x2)||/2` on that pair, by the triangle inequality. For identity on
+[0,1] and at most M possible reconstructed scalar values, uniform error is at least
+`1/(2M)`: M radius-epsilon intervals must cover an interval of length one. More
+downstream nodes cannot recover lost distinctions. This statement assumes no
+side channel, source reread or additional queries; those mechanisms change the
+information budget and must be counted. Finite-label circuits are not universally
+incapable; the fixed bottleneck is the restriction.
+
+**Dynamic target.** For a fixed finite horizon, analyze the policy as a function
+of an explicitly bounded encoded history or a justified sufficient state. Infinite
+history requires a restricted class such as fading-memory filters, a declared
+history norm and stability assumptions. Fixed finite state does not represent
+arbitrary history dependence to arbitrary accuracy. Memory-owner access may expand
+available information but does not make a fixed summary automatically Markov.
+
+### Representation transport and measurable depth
+
+Separate the non-authorizing representation output from the discrete action output.
+Representation contracts specify tensor dimensions, precision, normalization,
+source scope, missingness, approximation tolerance and the compatible parameter
+bundle. A reference permits reread only through its owning source/freshness checks.
+No latent or gradient field may encode authority, reinterpret a typed command or
+cross a principal boundary implicitly. Message-budget exhaustion is observable:
+use declared compression/reread/abstention, never a silent label substitution.
+
+Unroll feedback into the observed causal activation DAG. For activation v define
+`d_cell(v)=is_cell(v)+max_parent d_cell(parent)` with empty maximum zero; report
+maximum and workload quantiles over completed runs, with censored/cancelled runs
+separate. Count reactivation in later rounds, but report transport retries and
+waits separately rather than calling them extra learned depth. A parallel fork
+uses maximum path depth, not the sum of sibling depths. Graph nesting adds none.
+Causal activation depth, sequential Cell depth, model-internal operator depth,
+contiguous differentiable depth and training unroll/truncation length are distinct
+metrics; annotate a nondifferentiable boundary rather than summing a fictional
+end-to-end gradient chain. Shared weights count once as independent parameters
+and once per actual invocation as computation.
+
+### Compositional approximation and feedback stability
+
+Let `f=f_D o ... o f_1` and an approximate composition use `fhat_i`. On common
+compact reachable tubes that contain both trajectories, assume
+`sup ||fhat_i-f_i|| <= epsilon_i` and f_i is L_i-Lipschitz. Starting at the same
+input, `e_i <= epsilon_i + L_i*e_(i-1)`, hence
+
+\[
+ e_D\le\sum_{i=1}^{D}\epsilon_i\prod_{j=i+1}^{D}L_j.
+\]
+
+This follows by adding/subtracting f_i at the approximate preceding state and
+induction. It requires the tube/domain premises at every stage, not just training
+samples. For a DAG apply the same recurrence over the declared joint parent norm;
+aggregation and skip-path gains are included. If L_i<=1, errors add; for constant
+L<1 and epsilon_i<=epsilon, they are bounded by epsilon/(1-L). These are conditional
+bounds, not a measured Hepta global stability certificate. Estimated Jacobian
+norms are diagnostics unless an enclosing bound is established.
+
+Hard routing needs a margin or a probabilistic wrong-branch bound; the smooth
+composition bound alone does not cover branch changes. For feedback, choose an
+explicit finite unroll bound, suitable contraction, Lyapunov or input/output gain
+condition on the operating region. Forcing every memory channel to contract can
+lose long-horizon information; preserve registered memory paths and test retention.
+Stop on no-progress/budget/freshness failure without treating unknown effects as
+pure repeatable computation. No general efficacy follows from increased depth.
 
 ## 4. Deterministic reference algorithm
 
@@ -465,6 +560,31 @@ No new global work-package DAG, per-cell module registry or duplicate training
 framework is introduced. Ordinary documentation and owner-authorized source
 changes use affected checks; target-host, learning-efficacy and production gates
 apply when that boundary is actually exercised.
+
+### Approximation and depth references
+
+[Leshno et al. (1993)](https://doi.org/10.1016/S0893-6080%2805%2980131-5)
+supports the conditional continuous nonpolynomial/bias approximation argument;
+[Telgarsky (2016)](https://proceedings.mlr.press/v49/telgarsky16.html) proves a
+particular depth separation, not monotone improvement on all tasks.
+[Grigoryeva and Ortega (2018)](https://arxiv.org/abs/1806.00797) treats bounded-input
+fading-memory systems, not arbitrary infinite histories.
+[Wagstaff et al. (2019)](https://proceedings.mlr.press/v97/wagstaff19a.html) shows
+latent-dimension restrictions for a specific continuous sum-aggregation family;
+it is not a universal lower bound for every typed graph. These conditions must
+be matched to the declared backend/profile before any theorem attribution.
+
+### Capacity work sequencing
+
+Use the planned meta-network design extensions in existing work packages:
+BIO-0 defines the capacity/representation contract; NEU-1 measures the backend;
+NEU-2 and TASKFLOW-1 implement observable state/depth; HBO-2 and LRN-1/2 connect
+credit and evaluation; C1 exercises matched panels; NDU-2 tests field/compute
+control; ART-1/2 carry compatible profiles; PLS-1/2 compare adaptation/structure;
+LONG-1/2 retain future and memory tests. Source-complete parent package status
+never certifies these new requirements. The first acceptance is a declared narrow
+function/history class plus actual owner-path evidence, not universal/meta-RL/scaling
+branding. No new global plan, model server, database or per-cell gate is required.
 
 ## 13. Implementation sequence and completion rule
 

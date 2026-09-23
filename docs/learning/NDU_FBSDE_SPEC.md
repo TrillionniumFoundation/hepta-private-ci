@@ -191,6 +191,75 @@ composition. A compressed organ return is not automatically sufficient state.
 Fallback or uncertainty handles missing support. NDU valuation can be distributed
 and cached by compatible reference; it need not run centrally at every activation.
 
+### Adaptive computation depth under a fixed utility profile
+
+Continuing a circuit, invoking a deeper subcircuit, widening evidence or stopping
+are different admissible controls. NDU can compare their continuation values after
+actual remaining resources, deadline and uncertainty are bound. In a declared
+linear cost-profile special case, continue only if the supported expected task
+benefit exceeds the marginal compute/latency/risk cost. A general recursive utility
+uses its own aggregator and sensitivity; the linear rule is not a universal NDU
+optimal-stopping theorem. Count shared physical work once; report inference,
+training, evaluation and migration separately. Depth is an input-dependent random
+variable, not the number of hierarchy wrappers or installed cells. Choice of an
+allowed depth during a run is distinct from changing the admitted maximum/graph.
+
+### Observable parameter fields: separate training time from inference depth
+
+Use two indices: circuit/environment time t and learning time s. Inference is
+`x -> F_(G,Theta,rho)(x)`; a parameter field observes the evolution of `(Theta,rho)`
+on a fixed compatible graph epoch. It does not itself implement the forward pass
+or imply universal approximation. Candidate field channels may include effective
+operator spectra, frozen behavioral probes, calibration, routing exposure and
+bounded credit statistics, partitioned by cell/organ/base role with declared
+weights and units. They are derived learning observations, never new source truth.
+The exact role measure, normalization anchor, probe set and coordinate map are
+versioned; node addition cannot silently change the meaning of a global average.
+
+For a smooth field coordinate F and a justified optimizer diffusion
+`dTheta=b ds + Sigma dB`, Ito projection gives
+`dF=(DF*b + 1/2 tr(Sigma Sigma^T D2F)) ds + DF*Sigma dB`.
+This conditional calculation needs the optimizer/state/regularity hypotheses;
+ordinary finite-step Adam, asynchronous replay or a topology jump is not thereby
+proved to be that diffusion. Include momentum, replay state, task/route exposure,
+anchor and environment when needed for Markov closure. Start with multidriver
+noise; rank-one forward/backward common driving requires separate joint-bracket
+and residual evidence, not a high pooled covariance eigenvalue.
+
+A structural surgery ends the old coordinate epoch. Bind a state/field transport
+or explicit reset and account for jump terms before continuous-time analysis is
+reused. Variable parameter dimension or discarded optimizer state cannot be hidden
+in an unchanged SDE. Frozen shared-base coordinates do not describe every cell's
+training dynamics. No per-cell FBSDE service or new field-owner database is added.
+
+### Coordinate invariance and closure obligations
+
+For a low-rank adapter `DeltaW=B*A`, an invertible R gives
+`B'=B*R^-1, A'=R*A`, so `B'*A'=DeltaW` while factor norms can change. Compare the
+effective operator and fixed input/output probes, not factor norm alone. A
+function-preserving reparameterization does not preserve a naive optimizer's
+future trajectory unless optimizer state and update rule transform consistently.
+Declared role permutations, continuous gauge actions and full functional
+equivalence are different claims. A set of invariant probes need not separate
+all functions or retain all task-relevant information.
+
+A projected field Z=F(state) requires a closure audit: compare a held-out predictor
+of next observables/outcomes conditioned on `(Z,control)` with one using additional
+history/optimizer/fine state. Measure residual predictability, conditional moments,
+uncertainty and intervention response at matched information/parameter budgets.
+Small error on a few probes is evidence only for that test class, not exact Markov
+sufficiency. An orthogonal change of basis inside a retained subspace preserves
+those coefficients, not the discarded field or original network. Enrich roles or
+modes under a new freeze and compare withheld scales; do not tune the state on the
+outcomes used to claim closure. Poor support means no field-based control adoption.
+
+Field utility targets come from independently observed task outcomes under the
+fixed external objective, with cost coefficients fixed before outcomes. Predicting
+a manufactured reward that was constructed from the same field is a consistency
+check, not independent utility identification. Parameter norm cost can be a chosen
+training-coordinate regularizer; it is not an intrinsic functional distance or a
+physical resource measurement unless separately justified. Report sensitivity.
+
 ## 6. Data, protocol and lineage schema
 
 Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`. This correction adds no unregistered field to an existing wire version.
@@ -259,6 +328,26 @@ Apply all relevant thresholds by intersection: maximum lower bound and minimum u
 `PAPER-NDU-FOUNDATIONS-2024` supplies resource-constrained endogenous-preference motivation. `PAPER-NDU-UPA-2025` supplies the continuous-time FBSDE/residual-network framing. `PAPER-NDU-EU-2025` supplies the multidimensional square-integrable martingale and explicit well-posedness/control-condition boundary. Use the exact source scopes and locators in `PAPER_TRACEABILITY.json`; abstract-level locks are not full theorem verification.
 
 The four-level hierarchy, fixed-point event discretization, covariance estimation, numerical profile, source ownership, causal evaluation, deletion lineage and next-snapshot governance require Hepta-specific implementation and review. No cited paper is substituted for telemetry identifiability, hierarchy stability, policy efficacy, biological mechanism or safe code evolution.
+
+### Parameter-field source binding and limited transfer
+
+Engineering reference: **A Parameter Field Theory of LLMs**, repository
+`TrillionniumFoundation/ICLR-2027`, branch `paper-llm-theory`, source pin
+`6bece4950d678986ac30db2f2c1fee0387ba9902`.
+The [optimizer bridge](https://github.com/TrillionniumFoundation/ICLR-2027/blob/6bece4950d678986ac30db2f2c1fee0387ba9902/revision_2026-09-23-r26/appendix/p_optimizer_bridge.tex)
+separates projected multidriver dynamics from the additional scalar restrictions.
+The [gauge/closure analysis](https://github.com/TrillionniumFoundation/ICLR-2027/blob/6bece4950d678986ac30db2f2c1fee0387ba9902/revision_2026-09-23-r26/appendix/at_gauge_aware_field.tex)
+separates permutation invariance, declared gauge invariance and finite-mode
+sufficiency. These are assumptions to match, not permission to import an LLM
+role partition unchanged into Hepta or to claim a universal scaling law.
+
+At this pin the latest-pointer document names R25, an R26 manuscript is present,
+and the [R29 workspace](https://github.com/TrillionniumFoundation/ICLR-2027/blob/6bece4950d678986ac30db2f2c1fee0387ba9902/revision_2026-09-23-r29/README.md)
+describes further measurement/identification repairs. The R26 reported adverse
+scalar-driver/closure results are retained, not superseded by merely opening a
+new experiment. This amendment does not rerun those experiments, certify all
+proofs, update the paper repository, or add the paper as a verified Hepta theorem
+source. Existing PAPER_TRACEABILITY/evidence locks and NDU claim levels are unchanged.
 
 ## 13. Implementation sequence and completion rule
 

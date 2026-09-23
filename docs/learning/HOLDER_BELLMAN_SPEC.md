@@ -73,6 +73,20 @@ rank-R tensor product -> direct value/action-gap/operator output
 
 Reconstruction weights must be nonnegative and sum to one where monotonicity and positivity are required. The measured `L_infinity` reconstruction gain must be at most `1.02`. Low separation rank is an empirical gate, not an assumption.
 
+### Meta-network application boundary
+
+A compositional Cell/Circuit network is not automatically a Holder-regular Bellman
+operator. Preserve the registered smooth state subspace, domain, norm, sensor/core
+coverage, reconstruction gain and action assumptions of this specification.
+Topology changes, hard masks, event boundaries and discrete routing are hybrid
+modes, not silently differentiable axes. A finite-dimensional universal function
+approximator does not by itself approximate arbitrary operators over histories
+or functions; a discretization/encoding error and operator stability argument is
+also required. Use the conditional Cell composition bound in
+`NEURAL_BIOMIMICRY_SPEC.md` only on verified reachable tubes. Measured separation
+rank and regularity cannot be inferred from node count, Laya size or parameter-field
+rank. Source facts, grants, predecessor comparisons and terminality remain exact.
+
 ## 4. Deterministic reference algorithm
 
 Before any neural operator exists, Hepta implements a tabulated monotone reference on the fixed sensor core:

@@ -7,6 +7,13 @@ and slower structure changes. The [TaskFlow/Neural Circuit guide](../modules/aut
 owns execution/recovery; this directory owns utility, credit, candidate learning
 and evaluation. Replayed recorded choices are not new learning exposure.
 
+Meta-network analysis keeps family expressivity, compositional stability, trainability,
+held-out task adaptation and empirical scaling separate. [Cell mechanics](NEURAL_BIOMIMICRY_SPEC.md)
+owns representation/depth/error conditions; [NDU](NDU_FBSDE_SPEC.md) owns compute and
+parameter-field control; [causal evaluation](CAUSAL_LONGITUDINAL_SPEC.md) owns
+scaling/closure experiments; [conformance](REFERENCE_CONFORMANCE_SPEC.md) gives
+MN-01..MN-08 reference cases. None of these documents certifies fixed-Laya universality.
+
 ## Read order
 
 1. [`ALGORITHM_SPECS.json`](ALGORITHM_SPECS.json) — closed-world coverage, exact Git blob identities and mandatory closure gates.
