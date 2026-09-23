@@ -188,7 +188,7 @@ fn ledger_decision(objective_digest: Digest32) -> LedgerEvent {
         episode_id: id("episode:plasticity-owner"),
         objective_digest,
         policy_id: id("policy:learning"),
-        candidate_ids: vec![id("candidate:update"), id("candidate:abstain")],
+        candidate_ids: vec![id("candidate:update"), id("abstain")],
         selected_candidate_id: id("candidate:update"),
         selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31).expect("propensity"),
         completeness: CandidateSetCompleteness::Complete,

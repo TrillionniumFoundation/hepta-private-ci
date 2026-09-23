@@ -30,6 +30,7 @@ use crate::RunPhase;
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
+    fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
     let fleet_path = root.join("fleet");
     let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;
     let registry = FleetRegistry::initialize(fleet_root.clone())?;
@@ -104,6 +105,10 @@ async fn serving_agent_survives_unrelated_registry_corruption() {
 #[tokio::test]
 async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress() {
     let (temp, _registry, state) = fixture().expect("runtime fixture");
+    let before = state
+        .response(1, 1, crate::AgentdMethod::Capabilities)
+        .await
+        .expect("initial capabilities");
     let signer = ed25519_dalek::SigningKey::from_bytes(&[41; 32]);
     let runner = crate::AgentdIntelligenceProductRunnerV1::new(
         temp.path().join("intelligence-authority.json"),
@@ -128,9 +133,12 @@ async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress
     let AgentdPayload::Capabilities(capabilities) = response.payload else {
         panic!("capabilities payload");
     };
-    assert!(
-        capabilities.capabilities.is_empty(),
-        "runner presence must not advertise a product capability before a daemon ingress exists"
+    let AgentdPayload::Capabilities(before) = before.payload else {
+        panic!("initial capabilities payload");
+    };
+    assert_eq!(
+        capabilities, before,
+        "runner presence must not advertise an unconnected capability"
     );
 }
 
@@ -148,10 +156,10 @@ fn missing_local_record_immediately_fences_the_serving_agent() {
 #[test]
 fn targeted_read_preserves_lifecycle_and_resource_fences() {
     let (_temp, registry, state) = fixture().expect("runtime fixture");
-    let mut identity = state.identity.clone();
-    identity.resources.turn_queue_capacity += 1;
-    let changed = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)
-        .expect("changed launch identity");
+    // Separate owners: the original state holds a real prompt-registry lock.
+    // A second host of the same directory is not a valid resource-fence fixture.
+    let (_changed_temp, _changed_registry, mut changed) = fixture().expect("independent owner");
+    changed.identity.resources.turn_queue_capacity += 1;
     assert!(matches!(
         changed.refresh_generation(),
         Err(AgentdError::GenerationFenced(_))
@@ -407,10 +415,27 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
 
 #[tokio::test]
 async fn current_durable_run_start_requires_live_owner_trust() {
-    let (temp, _registry, state) = fixture().expect("runtime fixture");
+    let (temp, registry, previous) = fixture().expect("runtime fixture");
+    let identity = previous.identity.clone();
+    drop(previous);
+    let state = AgentdState::new(identity, registry, 16).expect("restarted owner");
+    state.refresh_generation().expect("current generation");
     fs::set_permissions(&state.identity.home_root, fs::Permissions::from_mode(0o700))
         .expect("private home");
 
+    let cognitive =
+        codex_hepta_cognitive_store::DurableCognitiveStore::open(&state.identity.layout)
+            .await
+            .expect("cognitive owner");
+    state
+        .attach_cognitive_store(Arc::new(cognitive))
+        .expect("attach cognitive owner");
+    state
+        .mark_runtime_prerequisites_ready()
+        .expect("owner prerequisites");
+    state
+        .mark_app_server_ready()
+        .expect("ready after owner initialization");
     let key = SigningKey::from_bytes(&[77; 32]);
     let trust_file = state.identity.home_root.join("run-start-trust.json");
     let write_trust = |revoked: bool| {
@@ -435,11 +460,28 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     };
     write_trust(false);
     let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
+    // The external fixture witness is captured from the canonical empty owner,
+    // never invented from a label or recaptured from a suspect backup.
+    let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
+        &codex_state::SqliteConfig::from_sqlite_home(
+            codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(
+                &state.identity.home_root,
+            )
+            .expect("owner home"),
+        ),
+    )
+    .await
+    .expect("evidence owner");
+    let frontier = evidence
+        .authbus_replay_frontier_digest()
+        .await
+        .expect("initial frontier");
+    drop(evidence);
     let checkpoint = serde_json::json!({
         "schema_version": 1,
         "agent_id": state.identity.agent_id.to_string(),
         "generation": 1,
-        "digest": Digest32::of_bytes(b"run-start-replay-checkpoint").to_string(),
+        "digest": frontier.to_string(),
     });
     fs::write(
         &checkpoint_file,

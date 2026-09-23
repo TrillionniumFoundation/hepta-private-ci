@@ -353,6 +353,12 @@ fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], front
         .to_vec();
     std::fs::write(path, serde_json::to_vec(&file).expect("authority json"))
         .expect("write authority");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
+            .expect("private authority file");
+    }
 }
 
 struct Fixture {
@@ -382,7 +388,7 @@ fn fixture() -> Fixture {
             organ_ids: vec![id("planner")],
         },
     };
-    let utility_contributions = ContributionSet {
+    let mut utility_contributions = ContributionSet {
         objective_digest,
         generation: generation(7),
         contributions: vec![UtilityContribution {
@@ -404,6 +410,10 @@ fn fixture() -> Fixture {
             support_digest: digest("utility-support"),
         }],
     };
+    let mut abstain = utility_contributions.contributions[0].clone();
+    abstain.candidate_id = id("abstain");
+    abstain.utility[0].value = FixedQ32::ZERO;
+    utility_contributions.contributions.push(abstain);
     let utility_policy = EvaluationPolicyV1 {
         policy_id: id("utility-policy.agentd.v1"),
         utility_rules: vec![AxisAggregationRule {
@@ -899,10 +909,20 @@ async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
     );
     let runner =
         AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
-    assert!(matches!(
-        runner
-            .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
-            .await,
-        Err(AgentdIntelligenceProductError::TimedOut)
-    ));
+    let result = runner
+        .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
+        .await;
+    assert!(
+        matches!(
+            result,
+            Err(AgentdIntelligenceProductError::TimedOut)
+                | Err(AgentdIntelligenceProductError::Canonical(
+                    CanonicalIntelligenceError::PortFailure {
+                        class: CanonicalPortFailureClassV1::TimedOut,
+                        ..
+                    }
+                ))
+        ),
+        "either total or owner-local deadline must reject before admission: {result:?}"
+    );
 }

@@ -39,6 +39,7 @@ impl Fixture {
     async fn new() -> Self {
         let temp = tempfile::tempdir().unwrap();
         let root = temp.path().canonicalize().unwrap();
+        std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700)).unwrap();
         let fleet = HeptaFleetRoot::parse(root.join("fleet")).unwrap();
         let registry = FleetRegistry::initialize(fleet.clone()).unwrap();
         let workspace = root.join("workspace");
@@ -81,17 +82,38 @@ impl Fixture {
             .unwrap();
         let trust_file = identity.home_root.join("text-trust.json");
         let checkpoint_file = root.join("authbus-replay-checkpoint.json");
+        // The external fixture witness is captured from the canonical empty owner,
+        // never invented from a label or recaptured from a suspect backup.
+        let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
+            &codex_state::SqliteConfig::from_sqlite_home(
+                codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(&identity.home_root)
+                    .expect("owner home"),
+            ),
+        )
+        .await
+        .expect("evidence owner");
+        let frontier = evidence
+            .authbus_replay_frontier_digest()
+            .await
+            .expect("initial frontier");
+        drop(evidence);
         let checkpoint = serde_json::json!({
             "schema_version": 1,
             "agent_id": identity.agent_id.to_string(),
             "generation": 1,
-            "digest": codex_hepta_types::Digest32::of_bytes(b"authbus-dispatch-checkpoint").to_string(),
+            "digest": frontier.to_string(),
         });
         std::fs::write(&checkpoint_file, serde_json::to_vec(&checkpoint).unwrap()).unwrap();
         std::fs::set_permissions(&checkpoint_file, std::fs::Permissions::from_mode(0o600)).unwrap();
         let state =
             Arc::new(AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16).unwrap());
         state.refresh_generation().unwrap();
+        let cognitive =
+            codex_hepta_cognitive_store::DurableCognitiveStore::open(&state.identity().layout)
+                .await
+                .unwrap();
+        state.attach_cognitive_store(Arc::new(cognitive)).unwrap();
+        state.mark_runtime_prerequisites_ready().unwrap();
         state.mark_app_server_ready().unwrap();
         let fixture = Self {
             _temp: temp,
@@ -349,16 +371,13 @@ async fn revocation_during_queue_request_prevents_success_ack() {
 #[tokio::test]
 async fn ready_generation_and_owner_private_trust_are_required_before_admission() {
     let fixture = Fixture::new().await;
-    let unconfigured = AgentdState::new(
-        fixture.state.identity().clone(),
-        fixture.registry.clone(),
-        /*event_capacity*/ 16,
-    )
-    .unwrap();
-    unconfigured.refresh_generation().unwrap();
-    unconfigured.mark_app_server_ready().unwrap();
+    let mut unconfigured = Fixture::new().await;
+    Arc::get_mut(&mut unconfigured.state)
+        .expect("exclusive test state")
+        .authbus
+        .take();
     assert!(
-        submit(&unconfigured, fixture.request(/*sequence*/ 1))
+        submit(&unconfigured.state, unconfigured.request(1))
             .await
             .is_err()
     );

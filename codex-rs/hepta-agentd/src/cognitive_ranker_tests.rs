@@ -505,6 +505,7 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     let socket = identity.control_socket.clone();
     let state = Arc::new(crate::AgentdState::new(identity, registry, 16).unwrap());
     state.attach_cognitive_store(Arc::clone(&store)).unwrap();
+    state.mark_runtime_prerequisites_ready().unwrap();
     assert!(state.cognitive_ranker.set(attached_ranker).is_ok());
     // Running is lifecycle generation 2, while this body's identity is still 1.
     lifecycle
