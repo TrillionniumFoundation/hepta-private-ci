@@ -202,7 +202,13 @@ fn fixture() -> Fixture {
     let candidate = RevalidatingCandidate::new(loaded);
 
     let dataset_digest = digest("training-dataset");
-    let withdrawal_registry = DatasetWithdrawalRegistry::new();
+    let withdrawal_registry = DatasetWithdrawalRegistry::new_scoped(
+        codex_hepta_learning_artifacts::DatasetWithdrawalScopeV1 {
+            authority_domain_id: id("dataset-authority"),
+            registry_id: id("ndu-withdrawals"),
+            scope_id: id("ndu-training"),
+        },
+    );
     let v2_manifest = LearningArtifactManifestV2 {
         artifact_id,
         kind: ArtifactKind::Parameters,
@@ -407,7 +413,10 @@ fn fixture() -> Fixture {
 fn verified_current_view(fixture: &Fixture, now: u64) -> VerifiedCurrentRegistryViewV1 {
     let key = SigningKey::from_bytes(&[41; 32]);
     let signer_id = id("artifact-current-head-signer");
-    let scope = digest("artifact-current-scope");
+    let scope = fixture
+        .withdrawal_registry
+        .scope_digest()
+        .expect("scoped registry");
     let signer = TrustedArtifactSignerV1 {
         signer_id: signer_id.clone(),
         verifying_key: key.verifying_key().to_bytes(),
