@@ -591,7 +591,9 @@ impl OrganHostV1 {
             let rollback_error = migration
                 .rollback(&snapshot, expected, candidate.generation())
                 .err();
-            if rollback_error.is_some() {
+            // Failed candidate cleanup leaves state ownership uncertain even when
+            // restoration succeeds. Neither activation nor recovery may keep serving.
+            if rollback_error.is_some() || !candidate_cleanup_faults.is_empty() {
                 for slot in &mut self.slots {
                     slot.state = HostedOrganStateV1::Quarantined;
                 }
@@ -651,7 +653,9 @@ impl OrganHostV1 {
             let rollback_error = migration
                 .rollback(&snapshot, expected, candidate.generation())
                 .err();
-            if rollback_error.is_some() {
+            // Failed candidate cleanup leaves state ownership uncertain even when
+            // restoration succeeds. Neither activation nor recovery may keep serving.
+            if rollback_error.is_some() || !candidate_cleanup_faults.is_empty() {
                 for slot in &mut self.slots {
                     slot.state = HostedOrganStateV1::Quarantined;
                 }

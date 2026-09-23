@@ -159,7 +159,6 @@ impl OrganHandlerRegistryV1 {
             .map(|organ| organ.id.clone())
             .collect::<BTreeSet<_>>();
         let mut by_organ = BTreeMap::new();
-        let mut drivers = BTreeSet::new();
         for binding in bindings {
             if !organ_ids.contains(&binding.organ) {
                 return Err(OrganHandlerRegistryError::UnknownOrgan(
@@ -174,11 +173,8 @@ impl OrganHandlerRegistryV1 {
                     binding.organ.clone(),
                 ));
             }
-            if !drivers.insert(binding.driver.clone()) {
-                return Err(OrganHandlerRegistryError::DuplicateDriverBinding(
-                    binding.driver.clone(),
-                ));
-            }
+            // Each organ has one binding; distinct instances may share a reviewed driver.
+            // The digest of every binding is still checked before any factory call.
             let Some(registered) = self.factories.get(&binding.driver) else {
                 return Err(OrganHandlerRegistryError::UnknownDriver(
                     binding.driver.clone(),
