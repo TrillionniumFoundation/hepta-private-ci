@@ -303,6 +303,65 @@
         "supported_intervention_benefit",
         "cross_scale_transfer"
       ]
+    },
+    {
+      "id": "shared_experience_transfer",
+      "unit": "held_out_receiving_agent_task_family",
+      "arms": [
+        "no_sharing",
+        "recall_only",
+        "trained_artifact_only",
+        "recall_and_artifact"
+      ],
+      "outcomes": [
+        "new_task_utility",
+        "time_and_errors_to_success",
+        "actual_context_and_model_delivery",
+        "negative_transfer",
+        "old_task_retention",
+        "matched_collection_training_serving_evaluation_cost"
+      ]
+    },
+    {
+      "id": "shared_experience_isolation",
+      "unit": "principal_workspace_purpose_and_model_bundle",
+      "arms": [
+        "allowed_scope",
+        "denied_scope",
+        "read_only_not_training",
+        "private_to_shared_candidate",
+        "poisoned_quote",
+        "holdout_derivative"
+      ],
+      "outcomes": [
+        "raw_and_metadata_leakage",
+        "session_kv_cell_state_contamination",
+        "unauthorized_training_or_artifact_use",
+        "instruction_escalation",
+        "evaluation_leakage",
+        "truthful_rejection_and_coverage"
+      ]
+    },
+    {
+      "id": "shared_experience_lifecycle",
+      "unit": "durable_shard_and_source_lineage_generation",
+      "arms": [
+        "duplicate_and_lost_ack",
+        "missing_causal_parent",
+        "stale_actor",
+        "source_correction",
+        "revoke_during_training",
+        "retire_or_offline_restore"
+      ],
+      "outcomes": [
+        "idempotent_admission",
+        "source_root_identity",
+        "snapshot_dependency_completeness",
+        "policy_support",
+        "descendant_withdrawal_or_retrain",
+        "non_resurrection",
+        "bounded_recovery_and_storage_growth"
+      ]
     }
   ],
   "requirements": {
@@ -458,6 +517,48 @@
       "MN-06",
       "MN-07",
       "MN-08"
+    ]
+  },
+  "sharedExperiencePanelDesign": {
+    "status": "planned_not_efficacy_evidence",
+    "roles": {
+      "A": "source_collector",
+      "B": "task_actor",
+      "C": "independent_terminal_observer",
+      "D": "clean_held_out_receiver"
+    },
+    "reset": [
+      "workspace",
+      "session",
+      "kv",
+      "cell_state",
+      "private_adapters",
+      "optimizer",
+      "hidden_retrieval_cache"
+    ],
+    "fourArms": [
+      "no_sharing",
+      "recall_only",
+      "trained_artifact_only",
+      "recall_and_artifact"
+    ],
+    "artifactOnlyMayReadContributedRecords": false,
+    "trainingMayReadHoldoutDerivatives": false,
+    "sourceRootClustersRequired": true,
+    "currentNumericFloorsUnchanged": true,
+    "budget": "matched_total_collection_search_training_evaluation_serving_with_base_pretraining_disclosed",
+    "pipeline": "local_two_owner_read_then_frozen_replay_and_scoped_training_then_cross_host",
+    "conformance": [
+      "SM-01",
+      "SM-02",
+      "SM-03",
+      "SM-04",
+      "SM-05",
+      "SM-06",
+      "SM-07",
+      "SM-08",
+      "SM-09",
+      "SM-10"
     ]
   }
 }
