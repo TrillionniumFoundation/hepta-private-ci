@@ -32,7 +32,8 @@ use codex_hepta_automation::AutomationTimeZoneProfileV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_supervisor::AgentCommand;
+use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::ReleaseId;
 use codex_hepta_supervisor::AgentRelease;
 use codex_hepta_supervisor::SupervisorEventKind;
 use codex_uds::UnixStream;
@@ -94,13 +95,13 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
     let _release_root_guard = ImmutableReleaseRoot(release_root.clone());
 
     for (index, agent) in agents.iter().enumerate() {
-        fleet.start_release(
-            agent,
-            release(
-                &format!("initial-{index}"),
-                if index == 0 { &v1 } else { &agentd_binary },
-            )?,
+        let initial = release(
+            &fleet.registry,
+            &agent.agent_id,
+            &format!("initial-{index}"),
+            if index == 0 { &v1 } else { &agentd_binary },
         )?;
+        fleet.start_release(agent, initial)?;
         let (control, health) = fleet.wait_ready(agent, 1).await?;
         ensure!(health.ready, "agent {index} did not become ready");
         ensure!(control.session_ingress().await?.socket_path == agent.layout.app_server_socket());
@@ -219,7 +220,7 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
 
     fleet.supervisor.upgrade(
         &agents[0].agent_id,
-        release("agent-a-v2", &v2)?,
+        release(&fleet.registry, &agents[0].agent_id, "agent-a-v2", &v2)?,
         Instant::now(),
     )?;
     let (_, v2_health) = wait_release(&mut fleet, &agents[0], "agent-a-v2").await?;
@@ -231,7 +232,12 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
 
     fleet.supervisor.upgrade(
         &agents[0].agent_id,
-        release("agent-a-failing", &failing)?,
+        release(
+            &fleet.registry,
+            &agents[0].agent_id,
+            "agent-a-failing",
+            &failing,
+        )?,
         Instant::now(),
     )?;
     let (_, auto_rollback_health) = wait_release(&mut fleet, &agents[0], "agent-a-v2").await?;
@@ -314,17 +320,17 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     let _release_root_guard = ImmutableReleaseRoot(release_root);
 
     for (index, agent) in agents.iter().enumerate() {
-        fleet.start_release(
-            agent,
-            release(
-                &format!("six-initial-{index}"),
-                if index == 0 || index == 5 {
-                    &v1
-                } else {
-                    &agentd_binary
-                },
-            )?,
+        let initial = release(
+            &fleet.registry,
+            &agent.agent_id,
+            &format!("six-initial-{index}"),
+            if index == 0 || index == 5 {
+                &v1
+            } else {
+                &agentd_binary
+            },
         )?;
+        fleet.start_release(agent, initial)?;
         let (control, health) = fleet
             .wait_ready(agent, 1)
             .await
@@ -411,7 +417,7 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     let target_peer_baseline = peer_snapshots(&fleet, &target_peer_ids)?;
     fleet.supervisor.upgrade(
         &agents[5].agent_id,
-        release("six-agent-5-v2", &v2)?,
+        release(&fleet.registry, &agents[5].agent_id, "six-agent-5-v2", &v2)?,
         Instant::now(),
     )?;
     let (_, upgraded) = wait_release(&mut fleet, &agents[5], "six-agent-5-v2")
@@ -521,11 +527,16 @@ fn assert_distinct_agent_roots_count(agents: &[AgentFixture], expected: usize) -
     Ok(())
 }
 
-fn release(identity: &str, program: &Path) -> Result<AgentRelease> {
-    Ok(AgentRelease::new(
-        identity,
-        AgentCommand::new(program, Vec::new())?,
-    )?)
+fn release(
+    registry: &FleetRegistry,
+    agent_id: &AgentId,
+    identity: &str,
+    program: &Path,
+) -> Result<AgentRelease> {
+    let release_id = ReleaseId::parse(identity)?;
+    let installed = registry.install_release(release_id.clone(), program, Vec::new())?;
+    registry.allow_release(agent_id, &release_id)?;
+    Ok(AgentRelease::try_from(installed)?)
 }
 
 fn actual_agentd_wrapper(root: &Path, name: &str, agentd: &Path) -> Result<PathBuf> {

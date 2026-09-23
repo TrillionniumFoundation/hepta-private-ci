@@ -119,7 +119,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             episode_id: id("episode:plasticity-process"),
             objective_digest,
             policy_id: id("policy:plasticity-process"),
-            candidate_ids: vec![id("candidate:update"), id("candidate:abstain")],
+            candidate_ids: vec![id("candidate:update"), id("abstain")],
             selected_candidate_id: id("candidate:update"),
             selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31)?,
             completeness: CandidateSetCompleteness::Complete,

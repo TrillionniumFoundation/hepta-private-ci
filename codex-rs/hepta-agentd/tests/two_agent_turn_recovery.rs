@@ -740,12 +740,9 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     fleet
         .supervisor
         .restart(&agent_a.agent_id, Instant::now())?;
-    let restarted_generation_a = generation(&fleet, &agent_a.agent_id)?;
-    ensure!(restarted_generation_a > 1);
-    let restarted_control_a = fleet.control_client(&agent_a, restarted_generation_a)?;
-    let restarted_health_a = fleet
-        .wait_until_ready(&agent_a.agent_id, &restarted_control_a)
-        .await?;
+    // Restart acknowledges queued lifecycle work, not the next leased spawn.
+    // Bind the client only after observing the actual successor process.
+    let (restarted_control_a, restarted_health_a) = fleet.wait_new_spawn(&agent_a, 1).await?;
     ensure!(restarted_health_a.process_id != initial_health_a.process_id);
 
     let b_after_restart = control_b.health().await?;
