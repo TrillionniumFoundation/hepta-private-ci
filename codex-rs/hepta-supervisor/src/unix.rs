@@ -615,6 +615,21 @@ fn query_agent_health_once(
     })
 }
 
+fn read_agent_drain_frame(
+    identity: &AgentHealthProbeIdentity,
+    request: &[u8],
+) -> std::io::Result<Vec<u8>> {
+    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.write_all(request)?;
+    stream.shutdown(Shutdown::Write)?;
+    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
+    let mut response = Vec::new();
+    reader.read_until(b'\n', &mut response)?;
+    Ok(response)
+}
+
 fn query_agent_drain_once(
     identity: &AgentHealthProbeIdentity,
     request_id: u64,
@@ -627,15 +642,33 @@ fn query_agent_drain_once(
             "Agentd drain request exceeded the bounded control frame",
         ));
     }
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
-    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
-    stream.write_all(&bytes)?;
-    stream.shutdown(Shutdown::Write)?;
-    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
-    let mut response_bytes = Vec::new();
-    let count = reader.read_until(b'\n', &mut response_bytes)?;
-    if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
+    let response_bytes = match read_agent_drain_frame(identity, &bytes) {
+        Ok(response) => response,
+        Err(error)
+            if matches!(
+                error.kind(),
+                std::io::ErrorKind::NotFound
+                    | std::io::ErrorKind::ConnectionRefused
+                    | std::io::ErrorKind::ConnectionReset
+                    | std::io::ErrorKind::ConnectionAborted
+                    | std::io::ErrorKind::BrokenPipe
+                    | std::io::ErrorKind::TimedOut
+                    | std::io::ErrorKind::WouldBlock
+                    | std::io::ErrorKind::UnexpectedEof
+                    | std::io::ErrorKind::Interrupted
+            ) =>
+        {
+            // Shutdown can remove the control socket before waitpid sees exit.
+            // No response is NOT a drain acknowledgement. Preserve the existing
+            // deadline/escalation path instead of aborting lifecycle observation.
+            return Ok(false);
+        }
+        Err(error) => return Err(error.into()),
+    };
+    if response_bytes.is_empty() {
+        return Ok(false);
+    }
+    if response_bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
         return Err(ProcessDriverError::new(
             "Agentd drain response was not a bounded complete frame",
         ));
@@ -830,3 +863,7 @@ fn poll_adopted_process(process_id: u32) -> Result<Option<ProcessExit>, ProcessD
 #[cfg(test)]
 #[path = "unix_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "unix_drain_tests.rs"]
+mod drain_tests;
