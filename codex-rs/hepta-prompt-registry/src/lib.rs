@@ -15,6 +15,7 @@ mod v2;
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Arc;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -352,7 +353,7 @@ pub struct PromptRegistry {
     realizations: BTreeMap<StableId, PromptRealization>,
     realization_bindings: BTreeMap<StableId, PromptRealizationBindingV2>,
     relations: BTreeMap<StableId, PromptFactorRelation>,
-    realization_payloads: BTreeMap<StableId, Vec<u8>>,
+    realization_payloads: BTreeMap<StableId, Arc<[u8]>>,
     realization_supersessions: BTreeMap<StableId, StableId>,
     lifecycle_events: Vec<LifecycleEvent>,
     revision: Revision,
@@ -961,6 +962,10 @@ impl PromptRegistry {
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "The single event constructor binds every existing lifecycle provenance field explicitly"
+)]
 fn lifecycle_event(
     revision: Revision,
     factor_id: StableId,

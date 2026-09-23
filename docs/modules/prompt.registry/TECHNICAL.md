@@ -128,6 +128,26 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
+### Native storage V3: immutable payload extents
+
+`DurablePromptRegistry` publishes storage V3 through the existing single writer.
+`registry.json` contains the V2 semantic metadata image plus bounded payload
+references; `registry.payloads` holds immutable, digest-checked byte extents.
+New extents and their directory entry are synchronized before atomic metadata
+publication. A failed publication leaves the predecessor selected; an uncertain
+post-rename outcome poisons the writer until reopen and reconciliation. Recovery
+validates the complete semantic image before trimming only an unselected trailing
+write. Missing, shortened or modified committed extents are rejected, not healed.
+V1/V2 storage migrates on open without changing domain digests, lifecycle or grants.
+A validated V3 reopen does not rewrite its metadata snapshot. Backup/restore must
+capture both files from a quiesced owner; copying metadata alone is not a backup.
+Old binaries reject the new storage version; downgrade requires an explicitly
+reviewed owner migration, not restoring revoked state. Metadata and raw extents
+have separate 32 MiB limits. Payload clones share immutable `Arc<[u8]>` storage,
+while delivery still returns owned bounded bytes. Metadata serialization, semantic
+hashing and the full in-memory registry remain size-dependent; this change reduces
+payload copy/write amplification, not unlimited-history recovery or retention cost.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md).

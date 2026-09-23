@@ -1,9 +1,10 @@
 //! Durable authoritative prompt registry owner.
 //!
 //! The pure PromptRegistry remains the deterministic domain core. This wrapper
-//! applies a mutation to a clone, fsyncs an atomic owner snapshot, and only then
-//! publishes the new in-process state. Store failure therefore cannot expose an
-//! uncommitted mutation.
+//! applies a mutation to a clone and publishes atomic metadata only after new
+//! immutable payload extents are durable. Existing payload bytes are not rewritten
+//! on metadata changes. V1/V2 storage migrates at open; validated V3 reopen does
+//! not rewrite metadata. Hot state and metadata remain size-dependent.
 
 #[cfg(test)]
 use std::cell::Cell;
@@ -50,6 +51,9 @@ use crate::protocol::LEGACY_UNRESOLVED_FACTOR_PURPOSE;
 use crate::protocol::LEGACY_UNRESOLVED_MODEL_ID;
 use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
+#[path = "durable_payloads.rs"]
+mod payloads;
+
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
 const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
@@ -76,13 +80,17 @@ impl DurablePromptRegistry {
         directory: &Path,
         maximum_records: usize,
     ) -> Result<Self, DurableRegistryError> {
-        let (store, stored) = Store::open(directory)?;
+        let (mut store, stored) = Store::open(directory)?;
         let registry = match stored {
             Some(StoredAny::V2(stored)) => restore_v2(stored, maximum_records)?,
             Some(StoredAny::V1(stored)) => migrate_v1(stored, maximum_records)?,
             None => PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?,
         };
-        store.persist(&registry)?;
+        if store.payloads.is_initialized() {
+            store.payloads.discard_unselected_tail(&store.root)?;
+        } else {
+            store.persist(&registry)?;
+        }
         Ok(Self {
             registry,
             store,
@@ -181,6 +189,10 @@ impl DurablePromptRegistry {
         })
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Keep the established final-use API and explicit operation-bound fields compatible"
+    )]
     pub fn register_realization_payload_final_use_v2(
         &mut self,
         authority: &FinalUseAuthority,
@@ -288,6 +300,10 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Keep the established final-use API and explicit operation-bound fields compatible"
+    )]
     pub fn revoke_factor_final_use(
         &mut self,
         authority: &FinalUseAuthority,
@@ -531,7 +547,21 @@ struct StoredLifecycleEvent {
     event_digest: [u8; 32],
 }
 
+#[cfg(test)]
 fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
+    let mut stored = stored_metadata(registry);
+    stored.payloads = registry
+        .realization_payloads
+        .iter()
+        .map(|(id, payload)| StoredPayload {
+            realization_id: id.to_string(),
+            payload: payload.to_vec(),
+        })
+        .collect();
+    stored
+}
+
+fn stored_metadata(registry: &PromptRegistry) -> StoredV2 {
     StoredV2 {
         schema: STORE_SCHEMA,
         registry_digest: registry.snapshot_digest().into_array(),
@@ -590,14 +620,7 @@ fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
                 expires_unix_ms: binding.expires_unix_ms,
             })
             .collect(),
-        payloads: registry
-            .realization_payloads
-            .iter()
-            .map(|(realization_id, payload)| StoredPayload {
-                realization_id: realization_id.to_string(),
-                payload: payload.clone(),
-            })
-            .collect(),
+        payloads: Vec::new(),
         supersessions: registry
             .realization_supersessions
             .iter()
@@ -680,7 +703,7 @@ fn restore_v2(
         if stored_payload.payload.is_empty()
             || stored_payload.payload.len() > crate::MAX_REALIZATION_PAYLOAD_BYTES
             || realization_payloads
-                .insert(realization_id, stored_payload.payload)
+                .insert(realization_id, stored_payload.payload.into())
                 .is_some()
         {
             return Err(DurableRegistryError::Corrupt);
@@ -922,7 +945,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
                 if prior != Some(Lifecycle::Admitted)
                     || event.from != Some(Lifecycle::Admitted)
                     || event.to != Lifecycle::Retired
-                    || event.reason_digest.is_some_and(|digest| digest.is_zero())
+                    || event.reason_digest.is_some_and(Digest32::is_zero)
                 {
                     return Err(DurableRegistryError::Corrupt);
                 }
@@ -984,8 +1007,8 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             None if realization.active => return Err(DurableRegistryError::Corrupt),
             None => {}
         }
-        if realization.active {
-            if factor.source != FactorSource::GovernedInternal
+        if realization.active
+            && (factor.source != FactorSource::GovernedInternal
                 || factor.lifecycle != Lifecycle::Admitted
                 || !active_profiles.insert((
                     binding.factor_id.clone(),
@@ -996,10 +1019,9 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
                     binding.context_profile_digest,
                     binding.locale_id.clone(),
                     binding.role,
-                ))
-            {
-                return Err(DurableRegistryError::Corrupt);
-            }
+                )))
+        {
+            return Err(DurableRegistryError::Corrupt);
         }
     }
     for realization_id in registry.realization_payloads.keys() {
@@ -1210,6 +1232,7 @@ enum StoredAny {
 struct Store {
     root: File,
     _lock: File,
+    payloads: payloads::PayloadState,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: Cell<bool>,
     #[cfg(test)]
@@ -1223,9 +1246,10 @@ impl Store {
         let lock = open_private(&root, "registry.lock", Access::Create)?;
         lock.try_lock()
             .map_err(|_| DurableRegistryError::StateLocked)?;
-        let store = Self {
+        let mut store = Self {
             root,
             _lock: lock,
+            payloads: payloads::PayloadState::default(),
             #[cfg(test)]
             fail_directory_sync_after_rename_once: Cell::new(false),
             #[cfg(test)]
@@ -1259,14 +1283,26 @@ impl Store {
             2 => StoredAny::V2(
                 serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?,
             ),
+            3 => {
+                let manifest =
+                    serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
+                let (payloads, state) = payloads::PayloadState::hydrate(&store.root, manifest)?;
+                store.payloads = payloads;
+                StoredAny::V2(state)
+            }
             _ => return Err(DurableRegistryError::Corrupt),
         };
         Ok((store, Some(stored)))
     }
 
-    fn persist(&self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
-        let bytes = serde_json::to_vec(&stored_v2(registry))
-            .map_err(|_| DurableRegistryError::Unavailable)?;
+    fn persist(&mut self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
+        let successor = self.payloads.successor(registry)?;
+        let bytes = serde_json::to_vec(&payloads::StoredV3 {
+            schema: 3,
+            state: stored_metadata(registry),
+            payload_references: successor.references(),
+        })
+        .map_err(|_| DurableRegistryError::Unavailable)?;
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
             return Err(DurableRegistryError::CapacityExceeded);
         }
@@ -1274,6 +1310,7 @@ impl Store {
         if self.fail_storage_full_before_rename_once.replace(false) {
             return Err(DurableRegistryError::StorageFull);
         }
+        self.payloads.stage(&successor, registry, &self.root)?;
         let mut file = open_private(&self.root, "registry.next", Access::Create)?;
         file.set_len(0).map_err(map_precommit_io)?;
         file.write_all(&bytes)
@@ -1290,7 +1327,9 @@ impl Store {
         }
         self.root
             .sync_all()
-            .map_err(|_| DurableRegistryError::IndeterminateDurability)
+            .map_err(|_| DurableRegistryError::IndeterminateDurability)?;
+        self.payloads = successor;
+        Ok(())
     }
 }
 
@@ -1908,8 +1947,9 @@ mod tests {
                 .registry()
                 .must("registry")
                 .realization_payloads
-                .get(&id("realization:durable")),
-            Some(&payload)
+                .get(&id("realization:durable"))
+                .map(AsRef::as_ref),
+            Some(payload.as_slice())
         );
         assert!(matches!(
             reopened.read_compatible_v2(
@@ -2422,7 +2462,7 @@ mod tests {
         let mut orphan_payload = registry.clone();
         orphan_payload
             .realization_payloads
-            .insert(id("realization:orphan"), b"orphan payload".to_vec());
+            .insert(id("realization:orphan"), b"orphan payload".to_vec().into());
         assert!(matches!(
             validate_restored(&orphan_payload),
             Err(DurableRegistryError::Corrupt)
@@ -2620,6 +2660,11 @@ mod tests {
             restore_root.join("registry.json"),
         )
         .must("copy backup");
+        std::fs::copy(
+            source_root.join(payloads::FILE_NAME),
+            restore_root.join(payloads::FILE_NAME),
+        )
+        .must("copy referenced payload extents");
 
         let restored =
             DurablePromptRegistry::open_state_dir(&restore_root, 64).must("restore owner");
@@ -2762,3 +2807,7 @@ mod tests {
         ));
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "durable_payloads_tests.rs"]
+mod payload_tests;

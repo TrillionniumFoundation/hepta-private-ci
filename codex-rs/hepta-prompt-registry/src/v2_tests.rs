@@ -337,7 +337,7 @@ fn payload_registration_supersedes_and_dereferences_exact_bytes() {
     first.payload_digest = Digest32::of_bytes(&payload);
     first.expires_unix_ms = None;
     registry
-        .register_realization_payload_v2(first.clone(), payload.clone(), None)
+        .register_realization_payload_v2(first.clone(), payload, None)
         .unwrap_or_else(|error| panic!("payload register: {error}"));
 
     let next_payload = b"developer instruction v2".to_vec();

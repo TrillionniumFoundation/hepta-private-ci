@@ -116,7 +116,7 @@ impl PromptRegistry {
                 .cloned();
             if existing_legacy == &legacy
                 && existing_binding == &binding
-                && existing_payload == &payload
+                && existing_payload.as_ref() == payload.as_slice()
                 && expected_predecessor == supersedes_realization_id
             {
                 return Ok(self.receipt(MutationDisposition::Unchanged));
@@ -152,22 +152,21 @@ impl PromptRegistry {
             .collect::<BTreeSet<_>>();
 
         match supersedes_realization_id.as_ref() {
-            Some(predecessor_id) => {
+            Some(predecessor_id)
                 if predecessor_id == &binding.realization_id
                     || active_same_profile.len() != 1
-                    || !active_same_profile.contains(predecessor_id)
-                {
-                    return Err(Error::RealizationProfileConflict(
-                        binding.factor_id.to_string(),
-                    ));
-                }
+                    || !active_same_profile.contains(predecessor_id) =>
+            {
+                return Err(Error::RealizationProfileConflict(
+                    binding.factor_id.to_string(),
+                ));
             }
             None if !active_same_profile.is_empty() => {
                 return Err(Error::RealizationProfileConflict(
                     binding.factor_id.to_string(),
                 ));
             }
-            None => {}
+            _ => {}
         }
 
         self.ensure_capacity(/*additional*/ 1)?;
@@ -183,7 +182,7 @@ impl PromptRegistry {
         self.realization_bindings
             .insert(binding.realization_id.clone(), binding.clone());
         self.realization_payloads
-            .insert(binding.realization_id.clone(), payload);
+            .insert(binding.realization_id.clone(), payload.into());
         if let Some(predecessor_id) = supersedes_realization_id {
             self.realization_supersessions
                 .insert(binding.realization_id.clone(), predecessor_id);
@@ -234,7 +233,7 @@ impl PromptRegistry {
         let payload = self
             .realization_payloads
             .get(realization_id)
-            .cloned()
+            .map(|payload| payload.to_vec())
             .ok_or(PromptRegistryV2Error::PayloadUnavailable)?;
         if Digest32::of_bytes(&payload) != binding.payload_digest {
             return Err(PromptRegistryV2Error::PayloadDigestMismatch);
