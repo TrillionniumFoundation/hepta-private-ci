@@ -243,8 +243,8 @@ Declared role permutations, continuous gauge actions and full functional
 equivalence are different claims. A set of invariant probes need not separate
 all functions or retain all task-relevant information.
 
-A projected field Z=F(state) requires a closure audit: compare a held-out predictor
-of next observables/outcomes conditioned on `(Z,control)` with one using additional
+A projected field zeta=F(state) requires a closure audit: compare a held-out predictor
+of next observables/outcomes conditioned on `(zeta,control)` with one using additional
 history/optimizer/fine state. Measure residual predictability, conditional moments,
 uncertainty and intervention response at matched information/parameter budgets.
 Small error on a few probes is evidence only for that test class, not exact Markov
