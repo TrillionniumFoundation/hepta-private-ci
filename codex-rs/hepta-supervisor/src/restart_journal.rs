@@ -18,6 +18,7 @@ use sha2::Digest;
 use sha2::Sha256;
 
 use crate::SupervisorError;
+use crate::restart_budget::RestartBudgetState;
 use crate::restart_policy::RESTART_ATTEMPT_BUDGET;
 use crate::restart_policy::RESTART_RECOVERY_WINDOW;
 
@@ -102,9 +103,98 @@ impl RestartBudgetJournal {
     }
 }
 
-pub(crate) fn read_restart_journal(
-    run_root: &Path,
-) -> Result<Option<RestartBudgetJournal>, SupervisorError> {
+// One physical writer/codec owns both independent restart domains. The main
+// Agent budget includes a pending intent; Matrix has a separate release-bound
+// fault window. They may not overwrite each other's record at this path.
+const RESTART_RECORD_SCHEMA: u32 = 2;
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct RestartRecord {
+    schema_version: u32,
+    main: Option<RestartBudgetState>,
+    companion: Option<RestartBudgetJournal>,
+    record_sha256: Sha256Digest,
+}
+
+impl RestartRecord {
+    fn empty() -> Self {
+        Self {
+            schema_version: RESTART_RECORD_SCHEMA,
+            main: None,
+            companion: None,
+            record_sha256: Sha256Digest::for_bytes(b"pending"),
+        }
+    }
+
+    fn digest(&self) -> Result<Sha256Digest, SupervisorError> {
+        let payload = serde_json::to_vec(&(self.schema_version, &self.main, &self.companion))
+            .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
+        Ok(Sha256Digest::from_sha256_output(Sha256::digest(
+            [
+                b"hepta-supervisor:restart-record:v2".as_slice(),
+                payload.as_slice(),
+            ]
+            .concat(),
+        )))
+    }
+
+    fn validate(&self) -> Result<(), SupervisorError> {
+        if self.schema_version != RESTART_RECORD_SCHEMA
+            || self.record_sha256 != self.digest()?
+            || (self.main.is_none() && self.companion.is_none())
+        {
+            return Err(SupervisorError::CorruptLease(
+                "invalid canonical restart record".to_string(),
+            ));
+        }
+        if let Some(main) = &self.main {
+            if main.schema_version != 1
+                || main.window_started_unix_ms == 0
+                || (main.pending
+                    && (main.attempts == 0
+                        || main.next_eligible_unix_ms < main.window_started_unix_ms))
+            {
+                return Err(SupervisorError::CorruptLease(
+                    "invalid pending restart state".to_string(),
+                ));
+            }
+        }
+        if let Some(companion) = &self.companion {
+            companion.validate()?;
+            if companion.main != DurableRestartWindow::empty() {
+                return Err(SupervisorError::CorruptLease(
+                    "duplicate main restart authority".to_string(),
+                ));
+            }
+        }
+        Ok(())
+    }
+}
+
+fn legacy_main(
+    window: &DurableRestartWindow,
+) -> Result<Option<RestartBudgetState>, SupervisorError> {
+    if window.attempts == 0 {
+        return Ok(None);
+    }
+    let started = window
+        .window_started_unix_millis
+        .filter(|value| *value > 0)
+        .ok_or_else(|| {
+            SupervisorError::CorruptLease("legacy restart window has no valid origin".to_string())
+        })?;
+    Ok(Some(RestartBudgetState {
+        schema_version: 1,
+        window_started_unix_ms: started,
+        attempts: window.attempts,
+        pending: false,
+        next_eligible_unix_ms: started,
+    }))
+}
+
+fn read_record(run_root: &Path) -> Result<Option<RestartRecord>, SupervisorError> {
+    use std::io::Read;
     let path = run_root.join(RESTART_JOURNAL_FILE);
     let metadata = match std::fs::symlink_metadata(&path) {
         Ok(metadata) => metadata,
@@ -116,20 +206,63 @@ pub(crate) fn read_restart_journal(
         || metadata.len() > MAX_RESTART_JOURNAL_BYTES
     {
         return Err(SupervisorError::CorruptLease(
-            "restart budget journal is not a bounded regular file".to_string(),
+            "restart record is not a bounded regular file".to_string(),
         ));
     }
-    let journal: RestartBudgetJournal = serde_json::from_slice(&std::fs::read(path)?)
+    let mut bytes = Vec::new();
+    std::fs::File::open(path)?
+        .take(MAX_RESTART_JOURNAL_BYTES + 1)
+        .read_to_end(&mut bytes)?;
+    if bytes.len() as u64 > MAX_RESTART_JOURNAL_BYTES {
+        return Err(SupervisorError::CorruptLease(
+            "restart record grew beyond its bound".to_string(),
+        ));
+    }
+    let value: serde_json::Value = serde_json::from_slice(&bytes)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
-    journal.validate()?;
-    Ok(Some(journal))
+    let mut record = if value
+        .get("schema_version")
+        .and_then(serde_json::Value::as_u64)
+        == Some(2)
+    {
+        let record: RestartRecord = serde_json::from_value(value)
+            .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
+        record.validate()?;
+        return Ok(Some(record));
+    } else if value.get("agent_id").is_some() {
+        // The historical companion writer also carried a main-window
+        // projection. Migrate its acknowledged attempts, never erase them.
+        let old: RestartBudgetJournal = serde_json::from_value(value)
+            .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
+        old.validate()?;
+        let main = legacy_main(&old.main)?;
+        let companion = RestartBudgetJournal::new(
+            old.agent_id,
+            old.release_id,
+            DurableRestartWindow::empty(),
+            old.matrix,
+        )?;
+        RestartRecord {
+            main,
+            companion: Some(companion),
+            ..RestartRecord::empty()
+        }
+    } else {
+        let main: RestartBudgetState = serde_json::from_value(value)
+            .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
+        RestartRecord {
+            main: Some(main),
+            ..RestartRecord::empty()
+        }
+    };
+    record.record_sha256 = record.digest()?;
+    record.validate()?;
+    Ok(Some(record))
 }
 
-pub(crate) fn write_restart_journal(
-    run_root: &Path,
-    journal: &RestartBudgetJournal,
-) -> Result<(), SupervisorError> {
-    journal.validate()?;
+fn write_record(run_root: &Path, mut record: RestartRecord) -> Result<(), SupervisorError> {
+    record.record_sha256 = record.digest()?;
+    record.validate()?;
     std::fs::create_dir_all(run_root)?;
     let sequence = RESTART_JOURNAL_SEQUENCE.fetch_add(1, Ordering::Relaxed);
     let temp_path = run_root.join(format!(
@@ -137,13 +270,22 @@ pub(crate) fn write_restart_journal(
         std::process::id()
     ));
     let final_path = run_root.join(RESTART_JOURNAL_FILE);
-    let mut bytes = serde_json::to_vec(journal)
+    let mut bytes = serde_json::to_vec(&record)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
     bytes.push(b'\n');
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temp_path)?;
+    if bytes.len() as u64 > MAX_RESTART_JOURNAL_BYTES {
+        return Err(SupervisorError::CorruptLease(
+            "restart record exceeds bound".to_string(),
+        ));
+    }
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options.open(&temp_path)?;
     file.write_all(&bytes)?;
     file.sync_all()?;
     drop(file);
@@ -152,6 +294,54 @@ pub(crate) fn write_restart_journal(
         return Err(error.into());
     }
     Ok(())
+}
+
+pub(crate) fn read_main_restart_budget(
+    run_root: &Path,
+) -> Result<Option<RestartBudgetState>, SupervisorError> {
+    Ok(read_record(run_root)?.and_then(|record| record.main))
+}
+
+pub(crate) fn write_main_restart_budget(
+    run_root: &Path,
+    state: &RestartBudgetState,
+) -> Result<(), SupervisorError> {
+    let mut record = read_record(run_root)?.unwrap_or_else(RestartRecord::empty);
+    record.main = Some(state.clone());
+    write_record(run_root, record)
+}
+
+pub(crate) fn read_restart_journal(
+    run_root: &Path,
+) -> Result<Option<RestartBudgetJournal>, SupervisorError> {
+    let Some(record) = read_record(run_root)? else {
+        return Ok(None);
+    };
+    Ok(record.companion)
+}
+
+pub(crate) fn write_restart_journal(
+    run_root: &Path,
+    journal: &RestartBudgetJournal,
+) -> Result<(), SupervisorError> {
+    journal.validate()?;
+    let mut record = read_record(run_root)?.unwrap_or_else(RestartRecord::empty);
+    if journal.main != DurableRestartWindow::empty() {
+        let legacy = legacy_main(&journal.main)?;
+        if record.main.is_some() && record.main != legacy {
+            return Err(SupervisorError::CorruptLease(
+                "stale main-window projection cannot overwrite current restart state".to_string(),
+            ));
+        }
+        record.main = legacy;
+    }
+    record.companion = Some(RestartBudgetJournal::new(
+        journal.agent_id.clone(),
+        journal.release_id.clone(),
+        DurableRestartWindow::empty(),
+        journal.matrix.clone(),
+    )?);
+    write_record(run_root, record)
 }
 
 pub(crate) fn unix_millis_now() -> Result<u64, SupervisorError> {
@@ -232,7 +422,22 @@ mod tests {
         write_restart_journal(dir.path(), &journal).expect("write");
         assert_eq!(
             read_restart_journal(dir.path()).expect("read"),
-            Some(journal)
+            Some(
+                RestartBudgetJournal::new(
+                    journal.agent_id,
+                    journal.release_id,
+                    DurableRestartWindow::empty(),
+                    journal.matrix
+                )
+                .expect("companion projection")
+            )
+        );
+        assert_eq!(
+            read_main_restart_budget(dir.path())
+                .expect("main projection")
+                .expect("main budget")
+                .attempts,
+            2
         );
 
         let now = Instant::now();

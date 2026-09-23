@@ -1,11 +1,6 @@
 //! Durable per-Agent restart budget and pending-restart witness.
 
-use std::fs::OpenOptions;
-use std::io::ErrorKind;
-use std::io::Write;
 use std::path::Path;
-use std::sync::atomic::AtomicU64;
-use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::SystemTime;
 
@@ -14,8 +9,6 @@ use serde::Serialize;
 use thiserror::Error;
 
 pub const RESTART_BUDGET_SCHEMA_VERSION: u32 = 1;
-pub const RESTART_BUDGET_FILE: &str = "supervisor-restart-budget.json";
-static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -37,6 +30,8 @@ pub enum RestartBudgetError {
     Io(#[from] std::io::Error),
     #[error(transparent)]
     Serialization(#[from] serde_json::Error),
+    #[error(transparent)]
+    Canonical(#[from] crate::SupervisorError),
 }
 
 pub struct RestartClaim {
@@ -66,6 +61,11 @@ pub fn claim_restart(
     {
         return Err(RestartBudgetError::Invalid(
             "restart budget state is outside configured bounds".to_string(),
+        ));
+    }
+    if now_ms < state.window_started_unix_ms {
+        return Err(RestartBudgetError::Invalid(
+            "clock rollback cannot replenish restart budget".to_string(),
         ));
     }
     if now_ms.saturating_sub(state.window_started_unix_ms) >= window_ms {
@@ -171,41 +171,16 @@ fn backoff_for(attempt: u32, base: Duration) -> Result<Duration, RestartBudgetEr
 }
 
 fn read_restart_budget(run_root: &Path) -> Result<Option<RestartBudgetState>, RestartBudgetError> {
-    let bytes = match std::fs::read(run_root.join(RESTART_BUDGET_FILE)) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
-    };
-    Ok(Some(serde_json::from_slice(&bytes)?))
+    Ok(crate::restart_journal::read_main_restart_budget(run_root)?)
 }
 
 fn write_restart_budget(
     run_root: &Path,
     state: &RestartBudgetState,
 ) -> Result<(), RestartBudgetError> {
-    std::fs::create_dir_all(run_root)?;
-    let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
-    let temp = run_root.join(format!(".{RESTART_BUDGET_FILE}.{sequence}.tmp"));
-    let final_path = run_root.join(RESTART_BUDGET_FILE);
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temp)?;
-    file.write_all(&serde_json::to_vec(state)?)?;
-    file.sync_all()?;
-    drop(file);
-    #[cfg(unix)]
-    std::fs::rename(&temp, &final_path)?;
-    #[cfg(not(unix))]
-    {
-        if final_path.exists() {
-            std::fs::remove_file(&final_path)?;
-        }
-        std::fs::rename(&temp, &final_path)?;
-    }
-    #[cfg(unix)]
-    std::fs::File::open(run_root)?.sync_all()?;
-    Ok(())
+    Ok(crate::restart_journal::write_main_restart_budget(
+        run_root, state,
+    )?)
 }
 
 fn unix_ms() -> Result<u64, RestartBudgetError> {

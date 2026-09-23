@@ -799,9 +799,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             )?;
         }
         if let Some(runtime) = slot.runtime.as_mut() {
-            let _ = runtime.process.kill();
+            // Process adoption may already have fenced and successfully requested
+            // termination. Hydrating the signed-intent fence is not a second kill.
+            let already_requested =
+                runtime.fenced && matches!(runtime.phase, RuntimePhase::Killing);
             runtime.fenced = true;
-            runtime.phase = RuntimePhase::Killing;
+            if !already_requested {
+                runtime
+                    .process
+                    .kill()
+                    .map_err(|error| crate::runtime::driver_error(agent_id, error))?;
+                runtime.phase = RuntimePhase::Killing;
+            }
         }
         Ok(())
     }

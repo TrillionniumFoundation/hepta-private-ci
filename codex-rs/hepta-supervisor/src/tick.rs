@@ -228,11 +228,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(runtime.generation, SupervisorEventKind::StopRequested);
             }
             RuntimePhase::Stopping { deadline: limit } if now >= limit => {
-                runtime.phase = RuntimePhase::Killing;
                 runtime
                     .process
                     .kill()
                     .map_err(|error| driver_error(agent_id, error))?;
+                runtime.phase = RuntimePhase::Killing;
                 slot.event(runtime.generation, SupervisorEventKind::KillRequested);
             }
             RuntimePhase::Running
