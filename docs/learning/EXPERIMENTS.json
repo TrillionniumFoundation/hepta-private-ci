@@ -195,6 +195,41 @@
         "rollback_under_current_revocation",
         "old_task_retention"
       ]
+    },
+    {
+      "id": "neural_circuit_execution",
+      "unit": "circuit_run_or_interference_cluster",
+      "arms": [
+        "legacy_dag_compatible",
+        "deterministic_event_circuit",
+        "frozen_decision_cell_circuit"
+      ],
+      "outcomes": [
+        "task_success_by_scenario",
+        "actual_trace_and_termination",
+        "duplicate_or_unresolved_effects",
+        "decision_recovery_fidelity",
+        "public_port_compatibility",
+        "latency_queue_age_resource_cost"
+      ]
+    },
+    {
+      "id": "neural_circuit_policy",
+      "unit": "organ_episode_or_interference_cluster",
+      "arms": [
+        "no_change",
+        "cell_only",
+        "routing_termination_only",
+        "joint_cell_routing"
+      ],
+      "outcomes": [
+        "fixed_external_utility",
+        "actual_joint_or_conditional_policy_support",
+        "future_window_gain",
+        "old_task_retention",
+        "total_training_inference_evaluation_cost",
+        "loop_and_starvation_rate"
+      ]
     }
   ],
   "requirements": {
@@ -253,5 +288,32 @@
       "candidateRule": "candidate_LCB_strictly_greater_than_baseline_UCB",
       "safetyPrivacyRetentionAndSupportFloorsAreNonCompensable": true
     }
-  ]
+  ],
+  "circuitScenarioDesign": {
+    "status": "planned_not_measured",
+    "specification": "docs/modules/automation.taskflow/TECHNICAL.md",
+    "contexts": [
+      "simple_sufficient_evidence",
+      "contradictory_evidence",
+      "organ_unavailable",
+      "budget_exhausted"
+    ],
+    "sameDefinitionAcrossContexts": true,
+    "faultCuts": [
+      "before_choice_commit",
+      "after_choice_before_effect",
+      "cell_commit_before_run_ack",
+      "effect_send_without_reply",
+      "join_cancel_with_late_child",
+      "restart_after_policy_replacement"
+    ],
+    "requirements": [
+      "legacy_V1_conformance",
+      "no_duplicate_effect",
+      "bounded_feedback_and_recovery",
+      "current_revocation",
+      "matched_total_cost"
+    ],
+    "numericFloors": "existing_quantitativeProfiles_unchanged"
+  }
 }

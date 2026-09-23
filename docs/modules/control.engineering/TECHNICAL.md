@@ -96,6 +96,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Sequence the existing work packages for cell contracts, real Laya profiling, retrieval-organ adaptation, credit and structural qualification. A new cell is an instance, not an extra global plan, crate or CI lane. Keep ordinary owner-authorized documentation/source edits separate from runtime adoption and candidate self-promotion.
 
+Sequence circuit contract, deterministic runtime adapter, real cell/organ composition, bounded feedback and policy learning through existing packages. Rename/extract only after callers and compatibility justify it. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: affected-owner impact selection, no-change candidate, immutable evaluator boundary and structural migration evidence.
 
 The shared contract and record design are in

@@ -87,6 +87,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Own NDU recursive-value and preference semantics plus scoped organ/cell learning boundaries. System 2 guides both actions and candidate parameter updates; it need not run a full FBSDE per cell. Provide a declared utility-to-gradient/advantage interface without becoming the tensor trainer or effect executor.
 
+Treat circuit routing/termination and nested duration/cost as explicit control inputs. Optimize policies as well as cells without a mandatory central solve per signal or a fixed reward per visited node. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: known-value gradient direction, nonlinear-utility profile rejection, resource attribution and parent/peer version drift.
 
 The shared contract and record design are in

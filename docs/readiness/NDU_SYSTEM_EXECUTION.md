@@ -210,6 +210,16 @@ update stage; insufficient data means no update. Publish compatible cell, organ
 and base candidates through the existing artifact-selection boundary. A change
 in utility estimator must still be tested against the same external objective.
 
+### Circuit-valued decisions
+
+Evaluate activation, branch selection, continuation and termination in addition to
+cell actions. Nested calls contribute declared duration, resources and supported
+successor/uncertainty summaries, not a fixed reward per visited node. The actual
+route policy after all admissibility filters belongs in the learning trace; an
+upstream probability alone is not its propensity. Fit cell-only and route-only
+candidates separately before joint updates; topology is a slower candidate class.
+Durable historical choices remain immutable when a utility/model revision changes.
+
 ## 7. Goodhart and wireheading controls
 
 Outcome definitions and observers are owned outside the evaluated policy. NDU cannot write terminal success, alter evidence requirements, change evaluation slices or count its own activation as user utility.

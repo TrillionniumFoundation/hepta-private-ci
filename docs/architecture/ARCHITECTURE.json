@@ -183,6 +183,47 @@
     "defaultServing": "shared_workers_sparse_event_activation",
     "learningControl": "organ_aligned_utility_with_staged_cell_organ_base_updates",
     "kernelLearnable": false,
+    "runtimeCapabilityClaimAdvanced": false,
+    "circuitExecution": "docs/modules/automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary"
+  },
+  "neuralCircuitArchitecture": {
+    "revision": 1,
+    "status": "specified_not_implemented_by_this_amendment",
+    "systemArchitecture": "existing_CNS_not_new_supermodule",
+    "specification": "docs/modules/automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary",
+    "composition": "docs/cns/TECHNICAL.md",
+    "vocabulary": {
+      "cell": "bounded_decision_computation",
+      "circuit": "reusable_typed_control_program",
+      "run": "concrete_causal_event_decision_execution_trace",
+      "organ": "stable_capability_hiding_local_circuits",
+      "nervousSystem": "distributed_CNS_signals_circuits_coordination_feedback_learning"
+    },
+    "implementationOwner": "automation.taskflow",
+    "timerOwner": "existing_AutomationScheduler",
+    "newTopLevelModuleRequired": false,
+    "newExecutorOrGlobalStoreRequired": false,
+    "legacyProfile": "TaskFlow_V1_acyclic_unchanged",
+    "currentSourceProvides": "durable_run_step_outbox_and_reconciliation_foundation",
+    "targetRoles": [
+      "observe",
+      "decide",
+      "transform_guard",
+      "organ_or_subcircuit_call",
+      "wait_join",
+      "effect",
+      "exit"
+    ],
+    "runtimeChoices": "declared_compatible_paths_under_frozen_policy",
+    "structuralChanges": "next_generation_typed_candidate",
+    "feedback": "explicit_bounds_state_delay_and_exit_not_uncertain_effect_retry",
+    "durableRecovery": "consume_recorded_choices_not_reinfer_historical_routes",
+    "persistence": "effect_relevant_boundary_plus_bounded_owner_checkpoints",
+    "learningTargets": [
+      "cell_parameters",
+      "routing_activation_termination_policy",
+      "admitted_circuit_structure"
+    ],
     "runtimeCapabilityClaimAdvanced": false
   }
 }

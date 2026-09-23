@@ -87,6 +87,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Turn cell outputs into the actual legal behavior policy, including masks, exploration, abstention and escalation. Keep prediction q, critic value and behavior mu separate. Bind the complete candidate set/order and report conditional/joint propensity where multiple cells cooperate; a raw Laya score is not final behavior evidence.
 
+Routing, activation and termination may be DecisionCell policies. Record actual behavior after candidate admission, guards and budget selection; runtime event eligibility, joins and authority stay deterministic. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: candidate-order mapping, omitted candidates, policy after masking, unsupported joint propensity and OOD fallback.
 
 The shared contract and record design are in

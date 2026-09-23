@@ -86,6 +86,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Execute bounded local tensor-training jobs for heads/adapters and justified NDU-sensitive policy updates through existing learning infrastructure. Freeze reference critics and peer bundles; proper prediction supervision does not disappear when utility is optimized. Do not interpret stochastic Z or a bounded eligibility summary as full Transformer gradients.
 
+Train routing/activation/termination policies separately from cell heads against fixed NDU-consistent targets. Shared trainers do not mutate the selected live circuit or become its executor. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: frozen-target replay, actual trainable-tensor masks, bounded optimizer memory, deterministic seeds and unsupported estimator rejection.
 
 The shared contract and record design are in

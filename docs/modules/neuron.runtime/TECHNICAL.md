@@ -87,6 +87,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Host scoped DecisionCell state, effective parameter identity and typed prediction signals using existing checkpoint CAS. Keep cells as organ-local instances, not new subjects or processes; delegate real model execution to inference.control. Support base/organ/cell bundle compatibility, state transformation and no-data/no-update.
 
+Circuit calls bind activation/round and causal input identity. Preserve cell-owned checkpoint CAS and return exact receipts for run-owner handoff; restoring a committed route must not re-infer its historical choice. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: zero-delta equivalence, wrong-base rejection, isolated cell state, expired work and restart/CAS.
 
 The shared contract and record design are in

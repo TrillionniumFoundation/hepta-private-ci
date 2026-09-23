@@ -118,6 +118,24 @@ Data-poor cells may use a shared head plus isolated state indefinitely; no updat
 is a normal outcome. A default head is not assumed small: count actual trainable
 tensors, optimizer memory and activations for the selected profile.
 
+### Cells participate in circuits; not every control node is a cell
+
+The [Neural Circuit contract](../modules/automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary)
+connects cells to deterministic guards/transforms, waits, joins and organ calls.
+A routing/termination decision may itself use a DecisionCell, but event eligibility,
+deduplication, budgeting, checkpoint CAS and effect authorization remain deterministic.
+Keep cell memory, circuit activation cursor and organ membership with their existing
+owners. Multiple circuits can reuse a cell implementation while isolating scoped
+state and run-specific activations; they cannot concurrently overwrite one shared
+mutable checkpoint or trained tensor without the owner's admitted policy.
+
+Record the actual effective model and policy for durable choices. Recovery consumes
+committed results instead of recomputing historical decisions with new parameters.
+Pure local rebuildable activations may use bounded checkpoints, but persistent
+progress cannot depend on an output lost before an effect-relevant choice commits.
+Future updates improve both the cell and the circuit policy against named versions;
+a more accurate cell alone does not prove better routing or termination.
+
 ## 4. Deterministic reference algorithm
 
 ```text

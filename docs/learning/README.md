@@ -2,6 +2,11 @@
 
 This directory contains the canonical machine registries and implementation-level specifications for Hepta adaptive and longitudinal intelligence. The global development authority remains [`../DEVELOPMENT.md`](../DEVELOPMENT.md). Documentation closure does not imply source implementation, activation, efficacy, acceptance, promotion or release.
 
+Circuit learning separates cell parameters, activation/routing/termination policies
+and slower structure changes. The [TaskFlow/Neural Circuit guide](../modules/automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary)
+owns execution/recovery; this directory owns utility, credit, candidate learning
+and evaluation. Replayed recorded choices are not new learning exposure.
+
 ## Read order
 
 1. [`ALGORITHM_SPECS.json`](ALGORITHM_SPECS.json) — closed-world coverage, exact Git blob identities and mandatory closure gates.

@@ -175,6 +175,22 @@ candidate copies concurrently against named references; they cannot silently
 select incompatible updates into the same running generation. Local inferred
 advantages and successful numerical residuals do not establish longitudinal gain.
 
+### Circuit-level controls and continuation semantics
+
+In the augmented control model, include activation/routing, resource allocation,
+join/continuation and termination choices alongside task actions. A structural edit
+is a separately evaluated future-generation candidate, not a runtime graph patch.
+The fixed objective and hard feasibility remain external to these parameters.
+One reusable circuit produces a context-dependent trace; maximizing a local node
+score is not equivalent to optimizing the trace's recursive utility.
+
+Nested circuit actions carry actual duration, consumed/remaining budget, termination
+reason, successor summary and unresolved effects. Do not apply one fixed discount
+per node when durations differ; the admitted recursive aggregator defines temporal
+composition. A compressed organ return is not automatically sufficient state.
+Fallback or uncertainty handles missing support. NDU valuation can be distributed
+and cached by compatible reference; it need not run centrally at every activation.
+
 ## 6. Data, protocol and lineage schema
 
 Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`. This correction adds no unregistered field to an existing wire version.

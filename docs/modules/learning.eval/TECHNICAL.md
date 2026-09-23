@@ -87,6 +87,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Evaluate node specialization and organ cooperation on fixed external objectives and interference-safe episode/cluster units. Compare the four registered cooperation arms at equal information and total lifecycle budget; evaluate retention and structural lifecycle separately from model accuracy.
 
+Compare no-change, cell-only, routing-only and joint updates on reusable circuits. Independently test legacy compatibility, effect-free crash recovery, unknown effects and future task benefit. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: cross-fit separation, selection/holdout leakage, sequential support, interaction ablations and future-window retention.
 
 The shared contract and record design are in

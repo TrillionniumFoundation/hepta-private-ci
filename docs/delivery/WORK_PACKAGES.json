@@ -3911,7 +3911,21 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "neural-circuit-trace",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "idempotent_operational_to_learning_handoff",
+            "definition_activation_policy_child_duration_and_cost_binding",
+            "replay_not_new_exposure_and_unknown_not_zero_reward"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "ART-1-LEARNING-ARTIFACT-REGISTRY",
@@ -4044,6 +4058,18 @@
             "immutable compatible base/organ/cell bundle and complete tensor lineage",
             "large-delta versioned artifact-reference transport while keeping scalar V2 limit",
             "reference-aware shared-base GC and optimizer/source revocation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-artifacts",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "route_policy_cell_bundle_state_compatibility",
+            "existing_TaskFlow_definition_owner_not_duplicate_registry",
+            "versioned_artifact_profile_admission_not_native_enum_claim"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -4860,6 +4886,18 @@
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-cell_handoff",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "scoped_activation_round_and_predecessor_state_identity",
+            "cross_owner_ack_loss_no_duplicate_cell_update",
+            "recorded_choice_recovery_not_new_model_reinference"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
         }
       ]
     },
@@ -4981,7 +5019,21 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "neural-circuit-policy",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "routing_activation_and_termination_DecisionCell_policy",
+            "actual_behavior_after_guards_and_budget_admission",
+            "deterministic_runtime_guards_unchanged"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
@@ -6023,7 +6075,21 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "neural-circuit-coordination",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "admitted_route_and_budget_boundaries_without_global_per_signal_RPC",
+            "separate_dependency_graph_runtime_feedback_and_causal_trace",
+            "stable_organ_ports_without_private_cell_flattening"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "P0.8D-VERTICAL-SLICE",
@@ -6286,6 +6352,18 @@
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-pilot",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "one_reusable_definition_four_task_contexts",
+            "legacy_deterministic_event_and_frozen_cell_comparison",
+            "actual_trace_cost_and_termination_observation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
         }
       ]
     },
@@ -6428,6 +6506,18 @@
           "requirements": [
             "joint/conditional behavior recording and sequential counterfactual support",
             "fixed external outcomes and organ-cluster evaluation rather than independent cell sample inflation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-credit",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "conditional_or_joint_route_propensities_and_stopping_censoring",
+            "organ_cluster_not_independent_signal_sampling",
+            "matched_cell_only_route_only_joint_arms"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -6579,6 +6669,18 @@
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-adoption",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "frozen_run_and_fresh_generation_circuit_transition",
+            "recorded_choice_child_operation_and_budget_migration",
+            "current_revocation_and_interpretable_history"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
         }
       ]
     },
@@ -6715,6 +6817,17 @@
           "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
           "requirements": [
             "future-time cell/organ trials with fixed objective and equal total cost"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-future_efficacy",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "future_circuit_behavior_and_routing_utility_with_fixed_external_objective",
+            "equal_total_training_serving_evaluation_and_migration_budget"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -7156,6 +7269,18 @@
             "temporal versus hierarchy aggregation with declared sufficient-state assumptions",
             "organ-level credit and single resource accounting under fixed objective",
             "staged cell/organ/base reference versions with no central per-cell RPC"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-utility",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "duration_aware_nested_circuit_utility",
+            "cell_route_and_structure_control_semantics_separated",
+            "single_physical_resource_accounting"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -7978,6 +8103,18 @@
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-structure",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "typed_circuit_structure_distinct_from_runtime_branch_choice",
+            "reuse_no_change_and_retire_alternatives",
+            "state_port_and_outstanding_effect_transform"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
         }
       ]
     },
@@ -8340,6 +8477,18 @@
           "requirements": [
             "independent behavior and lifecycle checks including unknown effects and writer fences",
             "retirement leaves interpretable receipts and reference-aware storage"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-fault_qualification",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "all_any_quorum_join_cancel_late_effect_cases",
+            "bounded_feedback_no_progress_sibling_fairness",
+            "crash_before_after_choice_and_policy_replacement"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -8857,7 +9006,23 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "neural-circuit-execution",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "legacy_V1_DAG_digest_and_history_conformance",
+            "versioned_typed_roles_ports_event_branches_joins_subcircuits_and_bounded_feedback",
+            "durable_choices_before_effects_with_cross_owner_receipt_handoff",
+            "direct_event_start_without_fake_schedule",
+            "fair_bounded_run_frontiers_cancel_and_unknown_effect_reconciliation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "MATRIX-1-CHANNEL-BOUNDARY",
@@ -9161,6 +9326,18 @@
           "requirements": [
             "one existing product path for organ decisions, model use and independent outcomes",
             "no per-cell database, executor, trainer, provider loop or top-level module"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "neural-circuit-product",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#neuralCircuitArchitecture",
+          "requirements": [
+            "single_existing_Agentd_Codex_inference_organ_product_path",
+            "no_second_executor_store_or_wakeup_owner",
+            "independent_downstream_terminal_results_back_to_circuit"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"

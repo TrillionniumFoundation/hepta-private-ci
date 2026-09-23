@@ -116,6 +116,26 @@ Sequential monitoring uses preregistered boundaries and alpha spending or confid
 
 Distribution shift is measured on state, candidate support, propensity, outcome delay, subgroup and resource features. Change points split evaluation windows rather than being averaged away. The simplest valid estimator is preferred; learned outcome models are rejected when calibration, support or cross-fit diagnostics are worse than the tabular/linear baseline.
 
+### Circuit trace and routing-policy credit
+
+A circuit definition, its selected policy and its actual run trace are different
+identities. Log definition/bundle versions, activation/round, admitted event order,
+legal branch choices, routing/termination distribution and actual choice, causal
+parents, nested duration/cost and independent outcome. Cell output probabilities
+are not automatically the final behavior law after guards, budget selection,
+join order and stopping. Sequential routing records its actual conditionals;
+shared randomness or coupled scheduling requires joint-policy support rather than
+a product of marginal probabilities. Unvisited branches are not zero-reward rows.
+
+Durable TaskFlow choices are operational facts handed to learning.ledger through
+the existing idempotent owner path. Replaying a run does not create fresh learning
+exposure or let a newer model relabel the original branch. Speculative/shadow
+branches and canceled or unresolved children remain explicitly distinguished from
+observed task effects. Evaluate at an interference-safe circuit/organ episode or
+cluster; correlated activations do not increase the independent sample count.
+A routing intervention changes downstream observations and stopping/censoring;
+report that estimand and its support before attributing an improvement to a cell.
+
 ## 6. Data, protocol and lineage schema
 
 The durable episode chain is:
@@ -288,6 +308,24 @@ Keep the existing future-window, support, multiple-comparison and noncompensable
 safety floors; do not lower them after observing results. Insufficient evidence
 means no adoption. Observed before/after improvement without controlled assignment
 is not by itself causal credit or proof of multiscale self-evolution.
+
+### Reusable-circuit acceptance experiment
+
+Run one fixed definition through sufficient-evidence, conflicting-evidence,
+unavailable-organ and exhausted-budget contexts; observe different declared
+traces rather than four separately hard-coded workflows. First compare legacy-DAG
+compatibility, deterministic event circuits and frozen-cell circuits. Then compare
+no-change, cell-only updates, routing/termination-only updates and joint updates
+with matched capacity, information and total lifecycle budgets. These families
+are registered in `EXPERIMENTS.json`; structural tests reuse organ_structural_evolution.
+
+Hold out future episodes, languages/objective subgroups and old-task returns.
+Report fixed external success, evidence quality, actual stopping, calibration,
+supported credit, cost, tail latency, starvation and loop exhaustion. Separately
+inject crash before/after choice commit, between cell/result-owner acknowledgments,
+after effect send, and during join cancellation with late child results. Historical
+choices and operation identities must survive policy/model replacement. Passing
+crash tests is not efficacy, and a higher utility estimate is not effect evidence.
 
 ## 11. Quantitative acceptance gates
 

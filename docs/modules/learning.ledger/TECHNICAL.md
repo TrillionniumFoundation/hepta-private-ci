@@ -87,6 +87,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Retain cell/organ graph and policy versions, delivered inputs, actual actions, conditional/joint behavior law, source scope, independent outcomes and delayed-outcome watermarks. Keep critic-derived credit distinguishable from observed results; correlated cell calls are not independent training or evaluation units.
 
+Accept circuit operational-choice records by the existing idempotent cross-owner path. Preserve definition, activation, route, conditional policy and child duration; replay does not create a new exposure. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: acknowledgement loss, delayed/censored outcomes, cross-scope replay, policy drift and deletion lineage.
 
 The shared contract and record design are in

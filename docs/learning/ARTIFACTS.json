@@ -188,5 +188,22 @@
     "largeDeltaTransport": "versioned_artifact_reference_requires_registered_producer_consumer_and_tensor_validation",
     "referenceAwareGc": true,
     "baseReplacementRequiresConsumerRequalification": true
+  },
+  "circuitArtifactDesign": {
+    "status": "design_only_not_registered_wire_or_native_artifact_type",
+    "references": [
+      "immutable_circuit_definition",
+      "routing_activation_termination_policy",
+      "cell_parameter_bundle",
+      "public_port_and_state_compatibility",
+      "training_source_and_critic",
+      "predecessor_and_current_revocation"
+    ],
+    "existingManifestFieldsUnchanged": true,
+    "existingTaskFlowDefinitionOwnerRetained": true,
+    "newLearningLedgerOrModelStoreAllowed": false,
+    "versionAdmission": "explicit_consumer_and_migration_before_incompatible_use",
+    "activeRunReplacementAllowed": false,
+    "retirement": "retain_interpretable_choice_operation_and_unresolved_child_history"
   }
 }

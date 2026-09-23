@@ -85,6 +85,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Propose bounded cell-parameter and organ-structure candidates, including no-change, reuse, distillation and retirement. Require data-supported specialization and include state/optimizer transformations, affected bundle, cost and rollback. Avoid unconstrained node multiplication and arbitrary weight averaging as knowledge transfer.
 
+Classify routing-policy changes separately from new circuit structure. Typed add/split/merge/rewire/retire candidates preserve outstanding operations, compatible states and stable organ ports. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: local norm limits, unsupported large-delta transport, split/merge state mapping, retirement and current-revocation rollback.
 
 The shared contract and record design are in

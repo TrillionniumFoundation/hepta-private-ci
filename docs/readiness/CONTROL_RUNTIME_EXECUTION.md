@@ -52,6 +52,21 @@ current snapshot + prepared input + feasible receipt
 
 `prepare_plan` never selects by utility. `finalize_plan` never recomputes NDU. `request_execution_grants` never converts a request into a grant. This separation prevents the global planner from owning utility facts or self-authorizing its recommendation.
 
+### Neural Circuit coordination boundary
+
+CNS is the Nervous System; TaskFlow evolves as its durable circuit execution
+foundation. Control proposes/selects only admitted routing and budget alternatives
+under the existing authority boundary. It does not own TaskFlow progression, cell
+checkpoints or effect outcomes. Timer/calendar wake-up remains in Automation;
+authenticated direct events must not fabricate schedules. Reusable circuit paths
+and bounded feedback are defined in `../modules/automation.taskflow/TECHNICAL.md`.
+
+Bind definition, routing/termination policy, public ports, model/cell bundle and
+resource allocation into the run's coherent input. Parallel joins, nested circuits
+and feedback have explicit limits and terminal conditions. Do not synchronously
+centralize every signal or relax a local stop/reconcile path when control is
+unavailable. Structural changes use the next-generation proposal lifecycle.
+
 ## 3. Coherent owner snapshot
 
 Each `OwnerSummaryV1` binds:
