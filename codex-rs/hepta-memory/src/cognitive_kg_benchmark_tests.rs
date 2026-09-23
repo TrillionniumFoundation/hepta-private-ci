@@ -122,6 +122,8 @@ async fn qualification_knowledge_graph_capacity_receipt() {
     let reopen_samples =
         configured_count("HEPTA_KG_BENCH_REOPEN_SAMPLES", DEFAULT_REOPEN_SAMPLES, 20);
 
+    eprintln!("KG_PHASE open writes={writes} queries={query_samples} reopens={reopen_samples}");
+    let benchmark_started = Instant::now();
     let temp = TempDir::new().expect("KG benchmark temp dir");
     let owner = agent_id(185);
     let owner_layout = layout(&temp, &owner);
@@ -130,6 +132,10 @@ async fn qualification_knowledge_graph_capacity_receipt() {
     let store = CognitiveStore::open(&owner_layout)
         .await
         .expect("KG benchmark store");
+    eprintln!(
+        "KG_PHASE write start elapsed_ms={}",
+        benchmark_started.elapsed().as_millis()
+    );
     let facts = facts();
 
     let cpu_before = linux_cpu_ticks();
@@ -166,6 +172,14 @@ async fn qualification_knowledge_graph_capacity_receipt() {
             .await
             .expect("KG benchmark mutation");
         mutation_ns.push(elapsed_ns(started));
+        if (index + 1).is_power_of_two() || index + 1 == writes {
+            eprintln!(
+                "KG_PHASE write completed={} total_ms={} last_ns={}",
+                index + 1,
+                total_write_start.elapsed().as_millis(),
+                mutation_ns.last().copied().unwrap_or(0)
+            );
+        }
     }
     let total_write_ns = elapsed_ns(total_write_start);
 
@@ -212,6 +226,10 @@ async fn qualification_knowledge_graph_capacity_receipt() {
         "historical append-only rows cannot be smaller than the selected generation"
     );
 
+    eprintln!(
+        "KG_PHASE query elapsed_ms={}",
+        benchmark_started.elapsed().as_millis()
+    );
     let mut query_ns = Vec::with_capacity(query_samples);
     for _ in 0..query_samples {
         let started = Instant::now();
@@ -230,7 +248,15 @@ async fn qualification_knowledge_graph_capacity_receipt() {
     let wal_path = database_path.with_extension("sqlite3-wal");
     let database_bytes = file_size(&database_path);
     let wal_bytes = file_size(&wal_path);
+    eprintln!(
+        "KG_PHASE close elapsed_ms={}",
+        benchmark_started.elapsed().as_millis()
+    );
     store.pool.close().await;
+    eprintln!(
+        "KG_PHASE reopen elapsed_ms={}",
+        benchmark_started.elapsed().as_millis()
+    );
 
     let mut reopen_ns = Vec::with_capacity(reopen_samples);
     for _ in 0..reopen_samples {
@@ -240,6 +266,11 @@ async fn qualification_knowledge_graph_capacity_receipt() {
             .expect("KG benchmark reopen");
         reopen_ns.push(elapsed_ns(started));
         reopened.pool.close().await;
+        eprintln!(
+            "KG_PHASE reopened={} elapsed_ms={}",
+            reopen_ns.len(),
+            benchmark_started.elapsed().as_millis()
+        );
     }
 
     let cpu_after = linux_cpu_ticks();
