@@ -293,25 +293,25 @@ def verify_source_identity(
 
 
 def tracked_source_paths(row: dict) -> list[str]:
-    """Return source paths whose Git objects prove this map is still current.
+    """Use the canonical evidence inventory and retain explicit legacy witnesses.
 
-    The map itself is deliberately excluded, so the evidence is not recursive.
-    Directory paths are valid and bind the complete Git tree below that owner
-    root; file paths bind the exact blob consumed by an operation/caller.
+    Source objects are an opt-in stronger binding, not permission to discard
+    tests, delegates or caller paths when normalizing the old blobSha spelling.
+    The map itself is excluded to avoid a cryptographic self-reference.
     """
-    paths: set[str] = set()
-    declared = row.get("declaredRoots", row.get("sourceRoot", []))
-    if isinstance(declared, str):
-        declared = [declared]
-    paths.update(path for path in declared if isinstance(path, str) and path)
-    for operation in row.get("operations", []):
-        path = operation.get("sourcePath") if isinstance(operation, dict) else None
-        if isinstance(path, str) and path:
-            paths.add(path)
-    for caller in row.get("productCallers", []):
-        path = caller.get("sourcePath") if isinstance(caller, dict) else None
-        if isinstance(path, str) and path:
-            paths.add(path)
+    roots = row.get(
+        "resolvedRoots", row.get("declaredRoots", row.get("sourceRoot", []))
+    )
+    if isinstance(roots, str):
+        roots = [roots]
+    paths = set(evidence_paths(row, roots))
+    for entry in row.get("sourceObjects", []):
+        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+            raise ValueError("invalid explicit source object path")
+        paths.add(entry["path"])
+    own_map = f"docs/modules/{row.get('module')}/IMPLEMENTATION_MAP.json"
+    if own_map in paths:
+        raise ValueError("source object cannot bind its own implementation map")
     for path in paths:
         checked_source_path(ROOT, path)
     return sorted(paths)

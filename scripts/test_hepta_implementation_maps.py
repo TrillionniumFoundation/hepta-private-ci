@@ -184,6 +184,46 @@ class SourceIdentityTests(unittest.TestCase):
             (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
         )
 
+    def test_source_objects_keep_tests_delegates_callers_and_legacy_witnesses(self):
+        row = self.rows["alpha"]
+        row["operations"][0]["tests"] = ["tests/native.rs"]
+        row["operations"][0]["delegatedCallees"] = ["src/beta/lib.rs"]
+        row["productCallers"] = [{"path": "host/caller.rs"}]
+        row["sourceObjects"] = [
+            {"path": "README.md", "blobSha": self.git("rev-parse", "HEAD:README.md")}
+        ]
+        self.change_maps()
+        with contextlib.redirect_stdout(io.StringIO()):
+            maps.migrate(["alpha"])
+        migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        paths = {entry["path"] for entry in migrated["sourceObjects"]}
+        self.assertTrue(
+            {"tests/native.rs", "src/beta/lib.rs", "host/caller.rs", "README.md"}
+            <= paths
+        )
+        self.commit("preserve exact source witnesses")
+        self.verify()
+        self.write("README.md", "changed explicit source witness\n")
+        self.commit("witness drift")
+        self.reject()
+
+    def test_source_objects_reject_self_reference_without_rewriting_maps(self):
+        row = self.rows["alpha"]
+        row["sourceObjects"] = [
+            {"path": "docs/modules/alpha/IMPLEMENTATION_MAP.json", "object": "0" * 40}
+        ]
+        self.change_maps()
+        before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
+        with (
+            self.assertRaisesRegex(ValueError, "own implementation map"),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            maps.migrate(["alpha"])
+        self.assertEqual(
+            before,
+            (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
+        )
+
     def test_closed_public_inventory_uses_resolved_crate_roots(self):
         self.closed_public_inventory("pub fn calculate() {}\n")
         self.verify()
