@@ -91,6 +91,18 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Multiscale DecisionCell integration target
+
+Compose one product path using the existing objective, owner evidence, NDU value, cell/organ inference, calibrated policy and context stages. Keep backend-specific Laya APIs behind inference/Neuron adapters; preserve outcomes back to the ledger. Do not add a parallel Laya control loop or store.
+
+Required targeted tests: coherent bundle across stages, required-owner outage, source/parameter drift and actual downstream outcome linkage.
+
+The shared contract and record design are in
+[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
+[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
+This target does not change the current native implementation, source status or
+product/activation evidence recorded below. No existing wire version is redefined.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

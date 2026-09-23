@@ -107,6 +107,18 @@ The V2 source path is deliberately stronger than a digest-only receipt chain:
 
 The admission verifier, serializer, tokenizer and provider-evidence verifier are explicit trusted adapter seams. Their digest identities are evidence inputs, not authority grants. A malicious or incorrectly configured adapter is outside the compiler's pure-algorithm proof and must be qualified by the owning integration. The actual runtime/provider adapter must independently satisfy the repository's final-use authority contract; this module never mints or consumes provider authority. V1 APIs remain compatibility source surfaces and do not satisfy this V2 proof chain.
 
+### Multiscale DecisionCell integration target
+
+Compile approved cell/organ observations with source and truncation provenance under the same tokenizer and context budget. Treat model messages as evidence/advice, never new authority. Bind the actually delivered content and effective model bundle so training cannot attribute an undelivered intervention to an outcome.
+
+Required targeted tests: truncation accounting, stale evidence, tokenizer mismatch and compiled-versus-delivered identity.
+
+The shared contract and record design are in
+[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
+[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
+This target does not change the current native implementation, source status or
+product/activation evidence recorded below. No existing wire version is redefined.
+
 ## 5. Contracts, ports and compatibility
 
 Produced registered contracts:

@@ -88,6 +88,18 @@ Runtime composition uses one typed attachment registry keyed by canonical module
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Multiscale DecisionCell integration target
+
+Compose cells through existing organ/Neuron/inference owners, not one service or database per node. Preserve cancellation, bounded task lifetime, generation fencing and terminal reconciliation. Attach the same product decision path rather than extending several bespoke main-loop branches per new backend.
+
+Required targeted tests: optional organ outage, task retirement, in-flight unknown effects and no duplicate executor.
+
+The shared contract and record design are in
+[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
+[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
+This target does not change the current native implementation, source status or
+product/activation evidence recorded below. No existing wire version is redefined.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

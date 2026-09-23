@@ -12,6 +12,16 @@ NDU is the typed preference and utility owner for supported feasible consequence
 
 The source implementation contains a deterministic fixed-point baseline, policy-bound aggregation and Pareto logic, recursive utility, preference updates, conditional-moment/covariance kernels, a protocol-context adapter, an append-only projection journal and a crash-bounded local durable-writer candidate. Stochastic learned coefficients remain shadow candidates. None of these operations executes an effect, selects an artifact for production, diagnoses a person, changes the current objective or issues a capability. Presence of the durable writer source is not production activation.
 
+### Theory-to-runtime separation for decision cells
+
+NDU guides System 1 forward state/preference/action formation and System 2
+recursive valuation/credit/action-parameter control. A cell is a scoped optimization
+unit beneath an existing subject, not a fifth subject class or independent goal
+owner. Local inference may consume frozen organ utility/credit boundaries; a full
+FBSDE or central RPC at each node is not required. The formal augmented state,
+parameter-gradient contract and limits are in `../learning/NDU_FBSDE_SPEC.md`.
+Current native evaluator/solver claims are unchanged by this design amendment.
+
 ## 2. Cross-organ utility contract
 
 Every organ or module contributing to one candidate supplies a bounded contribution containing:
@@ -183,6 +193,22 @@ The file image remains bounded to the 4096-record journal ceiling. The lock is a
 `NduProjectionStoreV1` is the initial V1 on-disk store format; V1 schema-open validation rejects unknown/corrupt images, and no fictitious predecessor migration is claimed. Any future format change requires an explicit deterministic migrator plus rollback compatibility evidence. Retention is fail-closed at the bounded record limit rather than silently compacting or deleting revocation history.
 
 This source candidate does **not** establish production activation. Target-host filesystem behavior, non-Unix atomic-replace/directory-durability equivalence, host authentication and enrollment, retention policy, encrypted/off-host backup transport, restore drills, monitoring, independent acceptance, canary and release remain separately governed evidence. `productionWriterState` therefore remains fail-closed until those boundaries are qualified and selected.
+
+### Organ credit and learning scheduling
+
+An organ may maintain joint value/credit estimates while cells execute locally.
+Actual behavior laws, peer policy versions, delayed outcomes and critic support
+flow through learning.ledger. Derived advantages are not new observed facts or
+authority. Value interactions are not assumed additive; existing Sum/Max/Min rules
+are used only for axes with those registered semantics. Physical resources are
+charged once and attributed, not repeatedly consumed in each hierarchy layer.
+
+The learning owner applies justified NDU-sensitive gradients, actor objectives or
+policy distillation to candidate Laya heads/adapters. The utility owner does not
+become a model trainer/executor. Freeze the parent/peer/bundle references for each
+update stage; insufficient data means no update. Publish compatible cell, organ
+and base candidates through the existing artifact-selection boundary. A change
+in utility estimator must still be tested against the same external objective.
 
 ## 7. Goodhart and wireheading controls
 

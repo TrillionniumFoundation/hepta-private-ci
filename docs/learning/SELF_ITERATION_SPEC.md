@@ -58,6 +58,27 @@ Invariant set:
 
 Mutation selection is a constrained optimization over preregistered metrics. Hard constraints filter first; Pareto or utility scoring occurs only among feasible candidates. The proposal generator cannot modify its own hard filters.
 
+### One evolution grammar across scales
+
+Cell adaptation changes registered local heads/adapters; organ adaptation changes
+coordination, termination and shared specialization; cross-organ adaptation
+changes admitted routing and budget policy; base consolidation changes common
+representation only after all affected consumer families are evaluated. Code,
+public contracts and durable schemas are separate structural candidates, not
+parameter writes hidden in an online learner. Reuse the existing lifecycle,
+artifact owner and engineering work envelope at every scale.
+
+Logical nodes have independently addressable effective parameters but normally
+share base weights, serving and training infrastructure. A new node is not a new
+crate, database, authority, provider loop or global CI lane. Growth requires a
+persistent error/task partition, adequate evidence and benefit after training,
+serving, evaluation and migration costs. Reuse, no-update, no-change, merge,
+distillation and retirement compete with specialization. Structural proposals
+name an exact predecessor, typed delta, state/optimizer transformation or declared
+reset, affected compatibility set, source lineage, resource delta, external port
+compatibility and current-admissible rollback. Unknown effects must reconcile
+before destructive retirement; deleting source is not retiring live state.
+
 ## 4. Deterministic reference algorithm
 
 ```text
@@ -85,6 +106,24 @@ Candidate generation may use a language model, search, Bayesian optimization, ev
 A trainable generator is evaluated for validity rate, diversity, duplicate rate, test adequacy, regression discovery, security/path escape attempts, resource cost and independent acceptance. Training data excludes secrets, private unrestricted source, revoked artifacts and evaluator hidden tests. Feedback from review becomes a future immutable dataset; it does not modify the running generator.
 
 Reward hacking controls include hidden independent tests, metamorphic tests, mutation testing of generated tests, evaluator/model version separation, alternative evaluators and counterexample replay. A candidate that improves a visible score while reducing test sensitivity or widening permissions is rejected.
+
+### Staged learning and inheritance
+
+Hold base and organ coordination fixed while fitting node candidates; hold a named
+node bundle fixed while fitting organ coordination; consolidate a shared base on
+a slower clock with independent retention checks across affected organs. Candidate
+training can overlap, but selection cannot create an unqualified mixed bundle.
+Publish only the affected compatibility unit, not an unnecessary whole-system
+restart. Cached features, recurrent state, normalizers, critics and calibration
+must be invalidated or transformed when their defining representation changes.
+
+Inheritance uses a compatible parent artifact plus explicit deltas and data scope.
+Consolidation/distillation transfers measured behavior; arbitrary weight averaging
+is not assumed to merge knowledge. Replayed private data or gradients cannot cross
+principal/tenant boundaries merely because the base is shared. Revocation reaches
+adapters, datasets, optimizer state, caches, checkpoints and backups. Unlearning
+without a supported selective method means revoke/retrain, not a tombstone claim.
+No-data/no-update and training-budget exhaustion preserve the selected predecessor.
 
 ## 6. Data, protocol and lineage schema
 

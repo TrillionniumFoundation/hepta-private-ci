@@ -60,6 +60,34 @@ Effective sample size is `(sum W)^2/sum(W^2)`. Estimates are invalid when positi
 
 Credit assignment conserves the bounded terminal outcome across decisions, prompt factors, models and tools. Every `CreditAssignmentReceiptV1` records allocations and residual. A policy that generated an action may propose explanatory features but cannot write conserved credit.
 
+### Cell and organ credit is derived, not a private reward authority
+
+The evaluation unit for cooperation is the organ episode or an explicitly
+randomized cluster, not every correlated cell call counted as an independent
+sample. Preserve cell graph, source/messages, policy/bundle/critic versions,
+causal ordering, actual chosen actions, intervention identity, exposure and
+independently observed terminal outcome. Missing or censored outcomes are not
+zero reward. A cell cannot label itself or its own critic successful.
+
+For simultaneous independent-policy sampling conditioned on a recorded shared
+state, one candidate counterfactual advantage is
+A_i=Q_G(s,a)-sum_b mu_i(b|o_i)*Q_G(s,(a_-i,b)).
+This is a critic-derived estimate of relative contribution, not an observed causal
+fact and not a universal NDU gradient. Common random variables, coupled routing,
+constraints or sequential decisions invalidate naive products of marginal
+probabilities. Record the actual joint/conditional assignment law or report
+unsupported off-policy estimation. For a sequential graph, counterfactual upstream
+changes must allow downstream policies to respond; do not freeze impossible
+future messages and call the result a causal advantage.
+
+Use frozen/cross-fitted critics, known-control simulations and supported
+randomization/ablation where safe. Distinguish direct effects, total downstream
+effects and resource attribution in the estimand. Value credit is not generally
+additive: do not force counterfactual advantages to sum to utility and infer a
+theorem. Resource and risk conservation are separate accounting obligations.
+Report interaction residuals and uncertainty; stop local updates without support.
+The COMA-inspired baseline is one candidate method, not mandated per-node code.
+
 ## 4. Deterministic reference algorithm
 
 The reference evaluator operates on a canonical fixture without machine learning:
@@ -236,6 +264,31 @@ Required tests cover exact OPE golden vectors, candidate-order permutation, prob
 
 Property tests assert chosen membership, probability sum, deterministic estimates, DR equality to IPS under zero outcome-model contribution, SNIPS invariance to uniform weight scale, immutable preregistration and no evaluator authority. Fault tests kill the process between every append/index update and confirm idempotent recovery.
 
+### Multiscale cooperation experiment
+
+Use the existing read-only retrieval milestone. Compare matched arms:
+(a) deterministic/existing retrieval policy, (b) shared frozen Laya with no cell
+adaptation, (c) node adapters with explicitly local training objectives, and
+(d) the same capacity with organ-level credit and staged adaptation. Randomize
+at an interference-safe organ/episode cluster, preserve identical candidate
+information and report both fixed inference budget and full lifecycle cost.
+Different training expenditure must not masquerade as an architectural gain.
+
+Split training, calibration, model/structure selection and future-time holdout.
+Evaluate one-step utility improvement, evidence recall/coverage, contradiction,
+answer quality, abstention, calibration, OOD false acceptance, task latency,
+training/serving energy or compute proxies, total cost and retention. Compare
+head-only, organ-only and node-specific deltas, masked/true modulators and temporal
+state ablations. Base model/version and language routing are controlled factors.
+
+Structural experiments test add, split, merge, rewire and retire separately,
+including no-change and model-size-matched controls. Report utility per budget,
+state migration/crash correctness and performance after returning to old tasks.
+Keep the existing future-window, support, multiple-comparison and noncompensable
+safety floors; do not lower them after observing results. Insufficient evidence
+means no adoption. Observed before/after improvement without controlled assignment
+is not by itself causal credit or proof of multiscale self-evolution.
+
 ## 11. Quantitative acceptance gates
 
 | Gate | Required threshold |
@@ -263,6 +316,16 @@ No average metric can compensate for a safety, privacy, support, retention or de
 `PAPER-HOLDER-Q-2026` informs only the bounded operator candidate evaluated by this pipeline; it does not provide causal identification or longitudinal efficacy. Candidate completeness, logged propensity, independent outcomes, OPE, future-time validation, retention, rollback and unlearning are Hepta engineering requirements, not claims of that paper.
 
 The NDU papers motivate recursive utility but do not prove that Hepta telemetry causally identifies preference change. This specification therefore keeps utility definition, outcome observation, policy assignment and evaluation in separate ownership lanes.
+
+### Relevant engineering evidence
+
+[Counterfactual multi-agent policy gradients](https://arxiv.org/abs/1705.08926)
+provides a cooperative credit construction; [QMIX](https://arxiv.org/abs/1803.11485)
+uses a particular monotone value decomposition. Their assumptions must not be
+silently generalized to arbitrary organ graphs or nonlinear recursive utility.
+[Option-Critic](https://arxiv.org/abs/1609.05140) motivates learned internal policy
+and termination for temporally extended decisions, not a proof that an arbitrary
+organ summary is Markov sufficient. These inform experiment design only.
 
 ## 13. Implementation sequence and completion rule
 

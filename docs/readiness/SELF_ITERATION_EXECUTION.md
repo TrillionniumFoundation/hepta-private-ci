@@ -9,6 +9,18 @@ Self-iteration means generating bounded candidates and evidence, not autonomousl
 
 Candidate classes are parameter, prompt factor, policy, workflow, skill, code and topology. External effects are excluded from the first code-candidate slice.
 
+### Multiscale cell and organ scope
+
+Apply this execution contract to the cell/organ evolution specified in
+`../learning/SELF_ITERATION_SPEC.md` and `../cns/TECHNICAL.md`. Parameter, routing,
+termination, topology, public protocol and source changes have distinct scopes.
+A cell is not a separate crate or permission system. Candidate creation uses
+shared existing trainers/workspaces; large tensor changes use validated artifact
+references rather than enlarging the scalar ParameterProposalV2 wire budget.
+Before add/split/merge/rewire/retire, bind state and optimizer transformations,
+in-flight classification, writer fencing, external port compatibility, cost and
+current-admissible rollback. Failed or unknown effects block unsafe cutover.
+
 ## 2. Typed mutation grammar
 
 `MutationGrammarManifestV1` defines exact operations per class:

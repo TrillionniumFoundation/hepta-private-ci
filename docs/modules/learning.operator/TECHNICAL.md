@@ -82,6 +82,18 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Multiscale DecisionCell integration target
+
+Execute bounded local tensor-training jobs for heads/adapters and justified NDU-sensitive policy updates through existing learning infrastructure. Freeze reference critics and peer bundles; proper prediction supervision does not disappear when utility is optimized. Do not interpret stochastic Z or a bounded eligibility summary as full Transformer gradients.
+
+Required targeted tests: frozen-target replay, actual trainable-tensor masks, bounded optimizer memory, deterministic seeds and unsupported estimator rejection.
+
+The shared contract and record design are in
+[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
+[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
+This target does not change the current native implementation, source status or
+product/activation evidence recorded below. No existing wire version is redefined.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

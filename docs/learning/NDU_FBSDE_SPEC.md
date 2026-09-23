@@ -14,6 +14,18 @@ This specification defines a deterministic implementation baseline and a separat
 
 Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include `evaluate_candidates`, `solve_preference_target`, `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. Reuse compatible primitives and add owner-scoped adapters; a symbol inventory proves neither a real consumer nor an implemented stochastic solver.
 
+### Engineering scope: theory, System 1 and System 2
+
+NDU guides a multiscale architecture without requiring every DecisionCell to solve
+a full FBSDE. System 1 is the Laya-backed (or compatible) Neuron/Intuition
+substrate, including state and bounded preference/action heads. System 2 supplies
+recursive valuation, credit and control optimization. A cell is an optimization
+unit of a registered system/domain/agent/episode subject, not a new subject enum.
+Organs can coordinate local critics; local inference must not wait on a global
+System 2 service. These are Hepta implementation choices, not additional theorems
+of the cited NDU papers. Existing deterministic and stochastic native profiles
+retain their meanings and compatibility boundaries.
+
 ## 2. Symbols, dimensions, units and normalization
 
 | Symbol | Meaning | Pilot bound | Representation |
@@ -75,6 +87,32 @@ Conditional expectations use only pre-boundary features. Event duration, stoppin
 
 Hard constraints are filtered before Pareto/scalarization. Preferences may change bounded allocation, exploration, evidence effort and abstention, never success criteria, observer identity, privacy, consent or authority. Parent/child exchange only bounded budget, shadow price, continuation utility, uncertainty, residual and expiry via `NduBoundaryConditionV1`. Freeze the parent revision; accept a candidate state with damping `P_next=(1-eta)P_old+eta*P_candidate`, eta in [1/16,1/4]. Do not select parent and child parameter artifacts in the same generation.
 
+### Joint action and parameter control
+
+For design analysis use augmented state S=(X,H,P,B,theta), with task state X,
+cell memory H, preference P, remaining resources B and effective trainable
+parameters theta. An admissible control is u=(a,v): task action a and bounded
+parameter-update proposal v. Write S_next=F(S,a,v,xi), U_T=G_J(S_T,Y_T), and
+U_k=R_J(S_k,u_k,Law(U_next|F_k)). Optimize U_0 over the admitted control policy.
+Training, inference, evaluation and migration costs enter B and the registered
+utility/cost profile once, not once per reporting level. Finite data and limited
+search mean this is a bounded optimization objective, not a global-optimum claim.
+
+In deployment theta_selected is immutable for a run; v updates a candidate copy.
+Only a separately admitted compatible next-snapshot bundle changes selected
+parameters. Live memory/homeostasis may change within its declared checkpoint
+rules. The objective J, observation criteria, authority and hard constraints are
+not coordinates of v. A trainable utility estimator fits fixed external outcomes;
+it cannot maximize its own output by rewriting the success measure.
+
+For organ composition, declare initiation, internal policy, termination, elapsed
+time, consumed resources, successor summary and missing-information bounds. Time
+recursion is not hierarchy recursion. Discount by gamma**duration only for a
+registered discounted profile with compatible units; a general recursive utility
+uses its declared aggregation rule. A compressed message is not automatically a
+Markov-sufficient state. Unsupported abstraction or delayed/missing observations
+must increase uncertainty or request further state, never certify exact value.
+
 ## 4. Deterministic reference algorithm
 
 Set diffusion and both increments to zero. Use the registered discrete utility profile, canonical event ordering and signed fixed-point arithmetic:
@@ -103,6 +141,39 @@ Train on immutable `DatasetSnapshotV1`, grouped by episode, principal scope, obj
 The candidate loss is a recorded weighted sum of filter, BSDE, Z regression, conservation, stability and calibration losses. Pilot optimizer defaults remain AdamW, learning rate 3e-4, weight decay 1e-4, gradient norm cap 1.0, at most 200 epochs, early stopping after 12 validation evaluations. Record exact precision, software/device tuple, batch construction, counter-based random stream and search budget. Defaults are specifications, not measured training results.
 
 Start with deterministic/scalar or tabular baselines. Add stochastic or neural complexity only after equal-resource ablations show supported improvement. Prediction, utility, policy, calibration and observer models have separate artifacts and may not self-label their own outcomes.
+
+### Utility-to-parameter learning contract
+
+Each update binds the fixed objective, behavior policy, critic/recursive-value
+revision, input filtration, observed outcomes, parameter-group mask, estimator,
+training budget and successor artifact. Recursive utility U and noise sensitivity
+Z are not parameter gradients. Obtain dU_0/dtheta by a justified differentiable
+model/unroll, appropriate adjoint or likelihood-ratio estimator; record model bias,
+conditioning and truncation. Discrete tool/environment effects are not assumed
+differentiable. A generic TD target is not a valid solver for every recursive
+aggregator.
+
+A useful initial special case freezes state and continuation estimates Q0,Q1,
+uses a binary policy p=sigmoid(z_theta), and linear conditional expectation:
+J=p*Q1+(1-p)*Q0, dJ/dtheta=(Q1-Q0)*p*(1-p)*dz_theta/dtheta.
+This is a one-step policy improvement, not the total derivative of an arbitrary
+NDU trajectory. Discounted actor-critic/distillation may implement the initial
+registered profile; more general NDU sensitivities need their own conformance.
+
+Separate prediction q_theta(y|s,a), behavior mu_theta(a|s), preference dynamics and
+value estimation. Preserve proper prediction supervision and calibration while
+improving action utility. Freeze/cross-fit the critic used to train a candidate;
+compare on independently observed later outcomes. Correlated decisions require
+joint or conditional propensities, not products of unconditional marginal scores.
+The organ credit estimator and its support checks are specified in
+`CAUSAL_LONGITUDINAL_SPEC.md`; cells may not substitute private rewards.
+
+Local head/adapter updates, organ coordination and shared-base consolidation have
+separate cadence and data minima. Frozen parent reference, bounded update norm,
+compatible bundle and no-change remain required. Parent and child can train
+candidate copies concurrently against named references; they cannot silently
+select incompatible updates into the same running generation. Local inferred
+advantages and successful numerical residuals do not establish longitudinal gain.
 
 ## 6. Data, protocol and lineage schema
 

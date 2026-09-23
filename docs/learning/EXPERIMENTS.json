@@ -136,6 +136,65 @@
         "rollback",
         "independent_acceptance"
       ]
+    },
+    {
+      "id": "decision_cell_cooperation",
+      "unit": "organ_episode_or_interference_cluster",
+      "arms": [
+        "deterministic_existing",
+        "shared_frozen_laya",
+        "cell_adapters_local_objectives",
+        "cell_adapters_organ_credit"
+      ],
+      "outcomes": [
+        "fixed_external_task_utility",
+        "evidence_coverage",
+        "calibration",
+        "ood_false_acceptance",
+        "actual_behavior_support",
+        "retention",
+        "total_training_serving_evaluation_cost"
+      ]
+    },
+    {
+      "id": "decision_cell_serving_scale",
+      "unit": "target_host_workload_profile",
+      "arms": [
+        "8_logical_cells",
+        "64_logical_cells",
+        "256_logical_cells",
+        "1024_logical_cells"
+      ],
+      "outcomes": [
+        "active_concurrency",
+        "p50_p95_p99_end_to_end_latency",
+        "queue_age_and_rejections",
+        "gpu_peak_and_rss",
+        "adapter_reload_cost",
+        "state_and_lineage_growth",
+        "crash_recovery_time"
+      ]
+    },
+    {
+      "id": "organ_structural_evolution",
+      "unit": "organ_generation",
+      "arms": [
+        "no_change",
+        "add",
+        "split",
+        "merge",
+        "rewire",
+        "retire"
+      ],
+      "outcomes": [
+        "utility_per_total_budget",
+        "public_port_compatibility",
+        "state_and_optimizer_transfer",
+        "writer_fence",
+        "unknown_effect_reconciliation",
+        "rollback_under_current_revocation",
+        "old_task_retention"
+      ]
     }
   ],
   "requirements": {

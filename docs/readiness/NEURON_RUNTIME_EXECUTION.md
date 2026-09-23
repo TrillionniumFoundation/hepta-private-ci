@@ -10,9 +10,20 @@
 
 The runtime consumes `NeuronRuntimeConfigV1` and `NeuronTickInputV1`, emits `NeuronTickReceiptV1` plus canonical checkpoint and signal receipts, and may accumulate only next-snapshot plasticity sufficient statistics. Model output is advisory and cannot override the objective, authority kernel or reflex veto.
 
+### DecisionCell host integration
+
+The existing runtime also hosts logical DecisionCell slots defined by
+`../learning/NEURAL_BIOMIMICRY_SPEC.md`. Laya is the initial backend candidate,
+not a required public protocol. The host supplies exact effective base/organ/cell
+parameters through existing inference admission; the cell does not call providers
+or install a model itself. Shared workers serve many logical cells; checkpoint
+ownership stays with the existing neuron owner and principal/subject scope.
+Prediction, action strategy and state-successor outputs remain typed and separate.
+A model's raw probability is not automatically the behavior propensity.
+
 ## 2. Runtime state layout
 
-One shard owns state for a bounded set of subject IDs. Per subject, the canonical state is:
+One shard owns state for a bounded set of subject IDs. The DecisionCell target partitions state into scoped logical cell slots beneath that owner; it does not add independent global writers or reinterpret the existing V1 key. For the current subject profile, the canonical state is:
 
 ```text
 generation and logical sequence
@@ -56,6 +67,24 @@ A subject has exactly one checkpoint writer. Routing may shard subjects, but two
 
 The checkpoint and receipt share one transaction or an outbox-backed atomic boundary. Crash before commit preserves the predecessor. Crash after commit but before acknowledgement is reconciled by tick ID and digest. Partial state mixing is forbidden.
 
+### Cell execution sequence and coherent bundles
+
+A future cell adapter uses the existing owner transaction pattern: validate scoped
+cell/organ identity and public port; freeze objective, complete candidate set and
+compatible parameter bundle; reserve budget before queue entry; perform bounded
+inference; validate exact model/input identity and current source/grant constraints;
+compute the state successor and policy; CAS checkpoint and receipt; send only an
+advisory result to the existing action owner. Expired queued work must not mutate
+state. Cancellation and acknowledgement loss reconcile by operation identity.
+
+The cell slot extends owner-local addressing; it is not silently appended to a V1
+wire record. Register incompatible serialized versions with consumers first.
+Adapter/base replacement must invalidate or migrate feature caches, normalizers,
+calibration and recurrent state. Check current revocation even for a cached bundle.
+A compatible bundle is published at a future snapshot; unrelated organs need not
+restart. Never mutate selected tensors through a training optimizer or clear old
+writer fences merely to reuse a logical name.
+
 ## 5. Failure detection and fallback
 
 Failures include encoder/head/tokenizer mismatch, stale generation, sequence gap, clock regression, dimension drift, state explosion or collapse, all-active or dead-unit collapse, threshold saturation, eligibility overflow, untrusted modulator, OOD false acceptance and attempted current-artifact mutation.
@@ -73,6 +102,18 @@ Negative tests cover adversarial activation flooding, poisoned feature manifests
 The sparse path is bounded by `O(d_h*k_f + |E_I| + k log k)` under registered fan-in and inhibition edges. Pilot signal latency is p95 `<=3 ms`, p99 `<=8 ms`, transient allocation `<=512 KiB`, active checkpoint `<=1 MiB` and checkpoint write amplification `<=4x`. No dense `d_h^2` path is allowed above `d_h=256` without a separate qualification profile.
 
 Backpressure rejects ticks before mutation. A missed optional consolidation window is recorded degradation and does not create an unbounded catch-up queue.
+
+### Laya and training capacity are separate measured profiles
+
+Sparse-tick timing above excludes full Laya inference, adapter misses and training.
+Measure those end to end through the real inference owner. Use bounded shared
+workers, per-scope queue fairness and explicit foreground/training reservations.
+Logical cell count and simultaneously active cells are separate variables. Shared
+weights do not remove question-conditioned encoder computation. No-data, rejected
+admission, expired deadline, incompatible artifact and unavailable backend produce
+their declared no-update/fallback results, not silent full-model reloads or CPU
+fallback that violates the current budget. Scaling experiment points and metrics
+are owned by `../learning/EXPERIMENTS.json`, not copied runtime capacity claims.
 
 ## 8. Lesion, ablation and golden fixtures
 

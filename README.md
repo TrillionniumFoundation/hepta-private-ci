@@ -10,6 +10,15 @@ The exact incremental import and conflict decisions are recorded in [`qualificat
 
 Adaptive and longitudinal specifications start at [`docs/learning/README.md`](docs/learning/README.md). Paper evidence is recomputed from the original pinned commit retained in `main` ancestry, not from a mutable side-branch name or verifier constants. Preserve that ancestry in subsequent merges and recovery.
 
+The target adaptive implementation uses backend-neutral DecisionCells inside the
+existing Neuron/Intuition modules, initially profiled with Laya. Shared base,
+organ and cell parameters support local specialization; NDU-guided recursive
+utility and organ credit guide actions and future parameter updates. See the
+[global design](docs/DEVELOPMENT.md#8-neuron-and-intuition),
+[cell mechanism](docs/learning/NEURAL_BIOMIMICRY_SPEC.md) and
+[organ composition](docs/cns/TECHNICAL.md). These are implementation requirements,
+not evidence that local fine-tuning or multiscale efficacy has already run.
+
 The distributed CNS, organ graph and embodied-control extension starts at [`docs/cns/README.md`](docs/cns/README.md). HNMF multimodal memory starts at [`docs/hnmf/README.md`](docs/hnmf/README.md). Both are qualification/reference layers and grant no production, physical-effect, acceptance, promotion or release authority.
 
 Implementation state machines, typed readiness protocols, all-module lane bindings, embodied-control semantics and authorized external-system assimilation start at [`docs/readiness/README.md`](docs/readiness/README.md). There is one current document set, with module-specific detail retained rather than flattened or duplicated into competing plans.

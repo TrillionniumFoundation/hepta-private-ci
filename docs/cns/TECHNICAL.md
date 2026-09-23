@@ -11,6 +11,23 @@ Hepta is organized as a distributed central nervous system rather than a single 
 
 This design is functional biomimicry, not anatomical identity. Biological names communicate control roles and failure isolation. Every claimed mechanism must remain independently testable and must not be used to infer consciousness, human psychology or biological equivalence.
 
+### Recursive decision architecture
+
+The adaptive target is DecisionCell -> organ -> cooperating organs -> system.
+A cell is the backend-neutral Neuron/Intuition unit specified in
+`../learning/NEURAL_BIOMIMICRY_SPEC.md`, initially specialized from Laya. NDU
+supplies common state/preference, recursive-utility, resource and adaptation
+semantics; it does not mandate a separate heavy solver at every cell. Existing
+system/domain/agent/episode subjects own the scoped objective and boundary.
+
+The stable architecture is typed composition and owner lifecycle. Individual
+cells are instances inside existing module/organ ownership, not new entries in
+the forty-module registry. Cell identity, organ identity, NDU subject, deployment
+process and authoritative data owner must never be substituted for one another.
+Runtime serving and training are shared services of the existing inference and
+learning modules. Replacing Laya with a qualified compatible backend must not
+require rewriting the organ graph, authority kernel or all consumer contracts.
+
 ## 2. Constitutional kernel and immune boundary
 
 The constitutional layer includes `kernel.authority`, `kernel.operations`, `kernel.evidence`, `auth.authbus` and the secret adapter boundary. Its hard fields never enter an optimizer as compensable weights. A feasible plan must first satisfy authority, scope, deletion, truth, single-writer, resource and rollback constraints. Only then may utility compare feasible alternatives.
@@ -66,6 +83,41 @@ HNMF crate is the sole declared exception: `hnmf.reference` is recorded under
 a production module. The CNS verifier rejects unknown, missing or undeclared
 qualification bindings rather than silently widening this exception.
 
+### Organ-local cell graph and composition boundary
+
+An organ combines a typed cell graph, external observation/action/termination
+ports, a fixed objective reference, resource envelope, independent outcome path,
+credit contract and state ownership. Messages bind source cell, causal sequence,
+organ/body generation, parameter-bundle compatibility, observation frontier,
+uncertainty/omission bounds, expiry and bounded payload. They carry no credentials,
+consumable capability tokens or arbitrary executable instructions. A runtime cycle
+requires bounded rounds, queue size, gain/saturation, convergence/exit conditions
+and deterministic fallback. Dependency and fallback DAG constraints remain intact.
+
+Externally an organ can act as a temporally extended decision: initiation,
+internal policy, termination, elapsed duration, consumed resources, successor
+summary and unresolved effects are explicit. An upstream cell need not know the
+organ's private node count or parameter layout. A changed public action meaning,
+state representation or port requires a compatible adapter or new contract version;
+internal surgery must not silently reinterpret old clients. Compressed states are
+not automatically sufficient statistics: retain missingness/uncertainty or bounded
+history and test the abstraction against task outcomes.
+
+Initial retrieval-organ roles are channel allocation, candidate relevance,
+contradiction support, evidence sufficiency and stopping/slow-path choice. Source
+facts, timestamps, grants, deletion and candidate generation remain with their
+existing owners. Cells cannot invent evidence, truncate the owner candidate set
+without disclosure, or create another memory writer. The outside port returns
+source-bound evidence, coverage, uncertainty, total cost and continuation/stop
+status; an organ-local cell split must not require changing this port.
+
+One selected compatibility bundle binds cell configuration, organ policy, shared
+base and adapters, calibrators and state schema. It is not a second writable
+registry: learning.artifacts owns parameter artifacts, the existing organ registry
+owns membership, and neuron.runtime owns checkpoints. Proposed serialized cell
+records remain design requirements until registered with actual consumers; the
+current BodyGraphSnapshotV1 is not redefined as a complete cell-runtime wire graph.
+
 ## 6. Organ lifecycle, addition, removal and modification
 
 The lifecycle is:
@@ -88,11 +140,54 @@ blocks publication and remains visible as stopped/quarantined state. It does
 not equate ephemeral `Ready` with qualification/activation or implement durable
 writer migration, model replacement or device control.
 
+### Cell specialization and structural surgery
+
+Specialize from a compatible organ/base reference only when persistent task
+heterogeneity and data support justify total lifecycle cost. No-data/no-update,
+reuse, distillation, pruning and no-change are legitimate alternatives to growth.
+For add/replace/split/merge/rewire/retire, bind predecessor and successor graph,
+parameter inheritance, state transform, data/source lineage, messages and in-flight
+work, optimizer/checkpoint compatibility, cost delta and rollback admission.
+
+Stop new admission before retirement. Drain or classify unresolved work, fence the
+old checkpoint/writer, transform or explicitly reset reconstructible state, publish
+the compatible successor, and remove routes only after acknowledged handoff.
+An unknown external effect blocks an unsafe transition; a model/cell restart is
+not permission to repeat it. Never rename a failed identity to bypass a fence.
+Retiring a cell does not delete shared base weights still referenced by others;
+reference-aware GC follows revocation and retention rules. Old receipts remain
+interpretable. Rollback uses a fresh generation and current revocation admission,
+not resurrection of an old authority or deleted training source.
+
+Measure each structural operation separately for task behavior and lifecycle
+correctness. Node count, graph edit validity and trained parameters alone do not
+prove self-evolution. Keep changes inside the existing organism lifecycle and
+learning.plasticity/control.engineering responsibilities, not an extra supervisor.
+
 ## 7. Objective, value and homeostasis
 
 `objective.compiler` freezes principal scope, success predicates, terminal conditions, legal and forbidden action classes and evidence requirements. `utility.ndu` may adapt bounded preference state, resource allocation, evidence effort, exploration and abstention but cannot replace the objective.
 
 Homeostasis treats compute, memory, disk, network, energy, temperature, time and risk as explicit endowments. Allocation first reserves essential floors, then distributes the remaining budget by bounded priority and need. Sum allocation can never exceed the endowment. Overload selects a declared degradation mode; it does not silently borrow from safety, rollback or evidence budgets.
+
+### Joint utility and resource conservation
+
+Cells optimize their supported contribution to a fixed organ/system objective,
+not private rewards that redefine success. Organ-level critics/credit provide
+training information; deployed cells may act locally on a compatible frozen
+boundary. Utility interactions need not be additive or monotone. Declare any value
+decomposition assumption and validate it; otherwise retain joint value estimates.
+A relevance cell that keeps everything and a stopping cell that always stops must
+not both be rewarded while organ task quality declines.
+
+Resources are charged once at the physical owner and attributed, not duplicated,
+across cells and parents. Include shared inference, queueing, training, evaluation,
+adapter reload and migration cost. Reserve bounded foreground and safety capacity
+before learning. Multi-timescale training freezes peer/parent reference revisions;
+slow organ/base adoption cannot stall local stop/reconcile/safety paths. Shared
+weights never imply permission to share private observations or optimizer state.
+Credit estimators, actual behavior propensities, delayed outcomes and intervention
+support are defined in `../learning/CAUSAL_LONGITUDINAL_SPEC.md`.
 
 ## 8. Sensory timing, calibration and body schema
 

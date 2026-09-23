@@ -3669,7 +3669,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-cell_contract",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "backend-neutral cell declaration/step/result design with explicit versioned consumer admission",
+            "separate cell, organ, NDU subject, deployment and writer identities"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "OBJ-1-OBJECTIVE-COMPILER",
@@ -4021,7 +4034,21 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-parameter_composition",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "immutable compatible base/organ/cell bundle and complete tensor lineage",
+            "large-delta versioned artifact-reference transport while keeping scalar V2 limit",
+            "reference-aware shared-base GC and optimizer/source revocation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "PIM-1-PROMPT-FACTOR-REGISTRY",
@@ -4275,7 +4302,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-utility_to_learning",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "known-value one-step action and parameter gradient reference",
+            "explicit distinctions between recursive value, stochastic Z, prediction and behavior policy"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "HBO-1-OPERATOR-SENSOR-CORE",
@@ -4519,7 +4559,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-local_parameter_training",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "bounded shared tensor trainer with frozen/cross-fitted targets and data scope",
+            "appropriate NDU sensitivity or declared discounted actor/teacher target, not generic TD equivalence"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "NEU-1-LOCAL-MODEL-BAKEOFF",
@@ -4652,7 +4705,21 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-laya_backend_profile",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "exact Laya code/weights/tokenizer/license/runtime and trainable tensor inventory",
+            "head/adapter training against deterministic and shared-frozen baselines at equal lifecycle budget",
+            "real shared-serving latency, queue, memory and adapter-miss measurements"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
@@ -4780,7 +4847,21 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-stateful_cell_host",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "scoped cell checkpoint CAS and bundle compatibility",
+            "shared inference admission, bounded event activation and source revalidation",
+            "crash/cancel/reload and cross-principal isolation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "INT-1-CALIBRATED-INTUITION-POLICY",
@@ -6192,7 +6273,21 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-retrieval_organ_experiment",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "stable read-only organ port and five bounded decision roles",
+            "four-arm decision_cell_cooperation experiment and interference-safe assignment",
+            "complete owner candidate set, future holdout, retention and lifecycle cost"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "LRN-2-CAUSAL-EVALUATION",
@@ -6324,7 +6419,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-organ_credit_evaluation",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "joint/conditional behavior recording and sequential counterfactual support",
+            "fixed external outcomes and organ-cluster evaluation rather than independent cell sample inflation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
@@ -6459,7 +6567,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-bundle_adoption",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "affected compatible bundle adoption after admission, never in-place tensor mutation",
+            "base/adapter/state/calibration invalidation or tested transform and fresh rollback"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "LONG-1-TEMPORAL-HOLDOUT",
@@ -6586,7 +6707,19 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-cooperation_efficacy",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "future-time cell/organ trials with fixed objective and equal total cost"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "LONG-2-RETENTION-FORGETTING",
@@ -6713,7 +6846,19 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-multiscale_retention",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "old-task return after specialization, structural changes and base consolidation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "LONG-3-UNLEARNING-NON-RESURRECTION",
@@ -6842,7 +6987,19 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-composed_model_unlearning",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "source deletion reaches deltas, optimizer state, checkpoints, caches, replay and restore"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "NDU-2-AGENT-DOMAIN-HIERARCHY",
@@ -6989,7 +7146,21 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-organ_utility_boundaries",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "temporal versus hierarchy aggregation with declared sufficient-state assumptions",
+            "organ-level credit and single resource accounting under fixed objective",
+            "staged cell/organ/base reference versions with no central per-cell RPC"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "BIO-1-ELIGIBILITY-HOMEOSTASIS",
@@ -7257,7 +7428,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-organ_base_consolidation",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "supported behavior distillation rather than arbitrary weight averaging",
+            "shared-base retention across affected cells and explicit cross-principal data policy"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "BIO-3-WORLD-MODEL-PREDICTION-ERROR",
@@ -7642,7 +7826,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-local_specialization",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "bounded local head/adapter candidate and no-data/no-update",
+            "gradient-oracle comparison for eligibility rules without full-Transformer equivalence"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "PLS-2-TOPOLOGY-PROPOSAL",
@@ -7769,7 +7966,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-organ_surgery",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "add/split/merge/rewire/retire with state/optimizer transforms and stable outer ports",
+            "no-change, reuse and distillation compete with growth on net utility"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "SELF-1-CODE-CANDIDATE-PIPELINE",
@@ -8121,7 +8331,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-surgery_qualification",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "independent behavior and lifecycle checks including unknown effects and writer fences",
+            "retirement leaves interpretable receipts and reference-aware storage"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "PLATFORM-0-TYPE-BOUNDARY",
@@ -8929,7 +9152,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "decision-cell-single_product_composition",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+          "requirements": [
+            "one existing product path for organ decisions, model use and independent outcomes",
+            "no per-cell database, executor, trainer, provider loop or top-level module"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "DOC-REGISTRY-CLOSED-WORLD",

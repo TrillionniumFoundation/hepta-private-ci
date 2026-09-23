@@ -83,6 +83,18 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Multiscale DecisionCell integration target
+
+Turn cell outputs into the actual legal behavior policy, including masks, exploration, abstention and escalation. Keep prediction q, critic value and behavior mu separate. Bind the complete candidate set/order and report conditional/joint propensity where multiple cells cooperate; a raw Laya score is not final behavior evidence.
+
+Required targeted tests: candidate-order mapping, omitted candidates, policy after masking, unsupported joint propensity and OOD fallback.
+
+The shared contract and record design are in
+[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
+[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
+This target does not change the current native implementation, source status or
+product/activation evidence recorded below. No existing wire version is redefined.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

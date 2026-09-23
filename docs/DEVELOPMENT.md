@@ -2,7 +2,8 @@
 
 **Plan ID:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN`
 **Version:** `8.0.0`
-**Date:** 2026-09-01
+**Date:** 2026-09-23
+**Design amendment:** multiscale DecisionCell/organ architecture; runtime and capability claims unchanged.
 **Status:** canonical policy and static registries are defined by this document set; live branch, pull-request, CI, selection and default-branch facts are resolved only from current exact-candidate receipts and are never cached here.
 
 This is the only global human-readable development authority in the working tree. Machine registries own bounded facts and `docs/STATUS.md` is generated. This document grants no runtime, model, provider, tool, network, filesystem, secret, Matrix, fleet, operator, promotion, or release authority.
@@ -16,8 +17,8 @@ The target system combines:
 ```text
 immutable authority, truth, privacy and durability kernel
 + request-bound Objective Compiler
-+ hierarchical NDU preference–utility spine
-+ local Neuron and calibrated Intuition substrate
++ NDU-guided multiscale preference, utility and learning semantics
++ trainable DecisionCells within Neuron/Intuition and recursively composed organs
 + Prompt Intervention factor pricing, portfolio and timing
 + Hölder-regular Bellman/operator learning
 + causal longitudinal learning ledger
@@ -198,6 +199,27 @@ Parent and child NDU subjects communicate bounded boundary conditions, resource/
 
 System and domain NDU snapshots are slow, local-cacheable control inputs; they must not create synchronous central RPC on local hot paths. Multi-level updates are damped and staged so parent and child policies do not chase one another without a frozen reference.
 
+### NDU-guided dual-system implementation
+
+NDU is the common theory for state/preference formation, recursive utility,
+resource allocation and utility-guided adaptation, not a mandatory central RPC
+or a complete FBSDE solver instantiated in every software node. System 1 is the
+trainable local decision substrate: approved perception, bounded temporal state,
+preference features and action policy. System 2 is recursive valuation, credit
+assignment and control optimization; it need not be a second language model.
+System 2 improves both admissible actions and future System 1 parameters.
+Backward utility recursion, parameter backpropagation and stochastic Z sensitivity
+are distinct operations. Their estimator and gradient contract must be explicit.
+
+The four registered NDU subject classes remain unchanged. A DecisionCell is an
+organ-local optimization unit belonging to a scoped subject, not a fifth subject
+class, a new authority issuer or an independently self-defined objective.
+Temporal utility recursion and cell-to-organ composition are separate mappings.
+Local reward, predicted confidence and private utility do not certify improvement
+of the fixed external objective. The normative learning equations and credit
+boundary remain in `docs/learning/NDU_FBSDE_SPEC.md` and
+`docs/learning/CAUSAL_LONGITUDINAL_SPEC.md`.
+
 ## 8. Neuron and Intuition
 
 A Hepta Neuron is the local temporal/adaptive substrate that implements or estimates preference-state dynamics and fast signals; it is not itself an NDU. The target mechanism contains:
@@ -218,6 +240,51 @@ A local model adapter, Ollama/LM Studio endpoint or checked model ID does not pr
 Hepta Intuition is a calibrated fast policy. It consumes the frozen objective, NDU preference/utility state, Neuron signals, protected Memory/KG evidence, Prompt portfolio, complete legal action set and risk/resource state. It emits an action distribution, propensity, selected action, value/confidence, OOD, abstain/ask or slow-path request. It cannot write Memory/KG, call tools/providers directly, override a hard veto or treat model prose as authority.
 
 Low-risk, read-only, reversible and supported decisions may use the fast path. High risk, OOD, insufficient support or low confidence must use the governed slow path and deterministic validation.
+
+### Unified DecisionCell and recursive organ composition
+
+The selected target architecture is a backend-neutral **DecisionCell** implemented
+inside the existing Neuron/Intuition modules. Laya is the initial open-weight,
+locally trainable implementation candidate, not a permanent framework dependency
+and not an already activated Hepta model. A cell owns a logical identity, bounded
+state, effective parameter identity, typed observation/action contract and learning
+history. It does not automatically own a process, database, model server, optimizer
+service or top-level module entry. The forty-module ownership model is unchanged.
+
+Default effective parameters compose a shared base, an organ adapter and a cell
+adapter/head. Independent effective parameters are real trainable parameters, not
+merely different prompts; they need not be full copies of Laya. Full-model forks
+require evidence of benefit at an equal total budget. Sparse event activation,
+shared inference workers and bounded training jobs are the default physical
+realization. Weight sharing does not imply reusable embeddings across different
+question/option inputs. Learned cells are for uncertain semantic choices, not
+signature verification, transactions, truth ownership, arithmetic or safety vetoes.
+
+An organ encapsulates a typed graph of cells, a joint task/utility contract,
+resource accounting, terminal observation, bounded feedback and an external port.
+An organ may be a temporally extended decision at the next scale. Internal node
+addition, specialization, split, merge, rewiring and retirement preserve that
+external contract or explicitly version it. Upstream consumers must not depend on
+private cell layout. Cell state, deployment process, NDU subject and durable data
+owner are different identities. Existing OrganHost, runtime supervision, inference,
+ledger and artifact owners remain the only corresponding infrastructure.
+
+Learning uses organ-level outcomes and explicit credit assignment rather than
+independent local reward maximization. Prediction distributions and actual behavior
+propensities stay distinct. Cell, organ and shared-base updates run at separate
+cadences with frozen reference versions, retention checks and compatible bundle
+publication. Lack of data permits no update; model count is not an efficacy metric.
+Authority, goals and observer criteria remain outside learned parameter blocks.
+
+Implementation is ordered through existing work packages: define the cell contract
+and measured Laya profile; run a read-only retrieval organ with deterministic and
+shared-model baselines; add node-local adaptation; add organ-level credit; then
+qualify structural surgery and slower shared-base consolidation. Count training,
+inference, evaluation and migration cost in every comparison. Existing source and
+product claims do not advance from this design amendment. Detailed cell mechanics
+live in `docs/learning/NEURAL_BIOMIMICRY_SPEC.md`; organ mechanics live in
+`docs/cns/TECHNICAL.md`; rollout and experiments live in the existing learning
+specifications and registries. Do not create another global plan or per-cell gate.
 
 ## 9. Prompt Intervention Market
 

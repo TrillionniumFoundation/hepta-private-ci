@@ -157,5 +157,36 @@
     "selectionDistinctFromAcceptance": true,
     "acceptanceDistinctFromPromotionAndRelease": true,
     "currentRunReplacementAllowed": false
+  },
+  "parameterCompositionDesign": {
+    "status": "design_only_not_wire_schema",
+    "existingManifestRequiredFieldsUnchanged": true,
+    "owner": "learning.artifacts",
+    "composition": [
+      "base",
+      "organ_adapter",
+      "cell_adapter_or_head"
+    ],
+    "identityIncludes": [
+      "exact_code_and_weight_revision",
+      "tensor_inventory_shapes_ranks_scaling_and_order",
+      "tokenizer_preprocessor_normalizer",
+      "numeric_device_profile",
+      "behavior_policy",
+      "calibration",
+      "state_schema_and_transform",
+      "source_dataset_and_optimizer_lineage",
+      "scope",
+      "predecessor",
+      "revocation_frontier"
+    ],
+    "serving": "immutable_shared_tensors_with_isolated_cell_state",
+    "candidateTrainingMayMutateSelectedTensors": false,
+    "bundleSelection": "existing_selector_not_trainer_or_loader",
+    "compatibilityScope": "affected_consumers_not_automatic_whole_system_barrier",
+    "scalarDeltaCompatibility": "ParameterProposalV2_4096_limit_unchanged",
+    "largeDeltaTransport": "versioned_artifact_reference_requires_registered_producer_consumer_and_tensor_validation",
+    "referenceAwareGc": true,
+    "baseReplacementRequiresConsumerRequalification": true
   }
 }

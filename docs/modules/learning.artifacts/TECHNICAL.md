@@ -99,6 +99,18 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Multiscale DecisionCell integration target
+
+Persist immutable base/organ/cell parameter bundles with complete tensor inventories and compatibility/deletion lineage. Preserve scalar ParameterProposalV2 semantics; larger updates require a versioned artifact-reference adapter. Reference-aware GC must retain shared bases still in use; the registry neither trains nor selects its own artifacts.
+
+Required targeted tests: base replacement, adapter shape/order mismatch, revoked source reload, optimizer lineage and shared-reference GC.
+
+The shared contract and record design are in
+[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
+[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
+This target does not change the current native implementation, source status or
+product/activation evidence recorded below. No existing wire version is redefined.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

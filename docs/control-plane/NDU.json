@@ -97,5 +97,28 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
+  },
+  "decisionCellApplication": {
+    "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+    "status": "design_target",
+    "subjectPolicy": "existing_subject_reference_no_new_subject_class",
+    "systemOne": "trainable_decision_cells_temporal_state_preference_and_behavior",
+    "systemTwo": "recursive_valuation_credit_and_action_parameter_control",
+    "perCellFullFbsdeRequired": false,
+    "centralSynchronousRpcRequired": false,
+    "jointControl": [
+      "admissible_action",
+      "bounded_next_snapshot_parameter_candidate"
+    ],
+    "distinctObjects": [
+      "predicted_outcome_distribution",
+      "actual_behavior_policy",
+      "recursive_utility",
+      "stochastic_Z",
+      "parameter_gradient"
+    ],
+    "temporalAndHierarchyRecursionEquivalent": false,
+    "deploymentParameterMutation": "candidate_only_then_existing_independent_selection",
+    "equations": "docs/learning/NDU_FBSDE_SPEC.md"
   }
 }

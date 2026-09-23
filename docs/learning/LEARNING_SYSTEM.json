@@ -709,5 +709,37 @@
     "neuron": "fixed_point_temporal_top_k_reference",
     "selfIteration": "bounded_grammar_plus_no_change"
   },
-  "statisticalQualificationProfile": "adaptive_longitudinal_v1"
+  "statisticalQualificationProfile": "adaptive_longitudinal_v1",
+  "multiscaleLearning": {
+    "status": "design_target_not_efficacy_evidence",
+    "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
+    "updateScopes": [
+      "cell",
+      "organ_coordination",
+      "cross_organ_policy",
+      "shared_base"
+    ],
+    "creditUnit": "organ_episode_or_declared_interference_cluster",
+    "localRewardMayRedefineSuccess": false,
+    "independentOutcomeRequired": true,
+    "behaviorLogging": "actual_joint_or_causal_conditional_policy_after_admission",
+    "sharedParameterPrivacy": "no_implicit_cross_principal_replay_or_gradient_pooling",
+    "training": "bounded_shared_trainer_frozen_reference_candidates",
+    "noDataDisposition": "no_update",
+    "adoption": "compatible_affected_bundle_at_next_snapshot",
+    "baseChangeInvalidates": [
+      "incompatible_adapters",
+      "feature_caches",
+      "state_without_transform",
+      "normalizers",
+      "critics",
+      "calibration"
+    ],
+    "artifactCompositionReference": "docs/learning/ARTIFACTS.json#parameterCompositionDesign",
+    "experimentIds": [
+      "decision_cell_cooperation",
+      "decision_cell_serving_scale",
+      "organ_structural_evolution"
+    ]
+  }
 }

@@ -18,7 +18,7 @@ This stable document is the implementation guide for `neuron.runtime`. Normative
 
 ## 1. Identity, mission and ownership
 
-Provide bounded temporal adaptive signals, eligibility traces and checkpoints without owning facts or effects.
+Provide the bounded temporal substrate for trainable DecisionCells: adaptive signals, eligibility traces and checkpoints, with backend-neutral model/parameter identity and no fact or effect authority. The Laya-backed integration is a target; current native behavior is identified separately below.
 
 The primary owner `learning-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `inference-platform` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
 
@@ -82,6 +82,18 @@ Ingress validates identity, version, size, scope and revision before domain logi
 Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+
+### Multiscale DecisionCell integration target
+
+Host scoped DecisionCell state, effective parameter identity and typed prediction signals using existing checkpoint CAS. Keep cells as organ-local instances, not new subjects or processes; delegate real model execution to inference.control. Support base/organ/cell bundle compatibility, state transformation and no-data/no-update.
+
+Required targeted tests: zero-delta equivalence, wrong-base rejection, isolated cell state, expired work and restart/CAS.
+
+The shared contract and record design are in
+[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
+[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
+This target does not change the current native implementation, source status or
+product/activation evidence recorded below. No existing wire version is redefined.
 
 ## 5. Contracts, ports and compatibility
 

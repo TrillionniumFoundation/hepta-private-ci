@@ -114,7 +114,7 @@
     "directModelCallOutsideCodexAllowed": false
   },
   "theoryBoundaries": {
-    "NDU": "preference_state_and_recursive_utility_only; deterministic baselines precede FBSDE candidates; identifiability, stability, support and counterfactual evaluation are separate evidence obligations",
+    "NDU": "endogenous_preference_and_recursive_utility_semantics_guiding_multiscale_action_and_parameter_optimization; cells are scoped implementation units, not new subjects; explicit utility-to-gradient contract; deterministic baselines before qualified FBSDE candidates; no universal per-cell solver or efficacy theorem",
     "FBSDE": "analysis_and_bounded_subject_models_not_universal_runtime_template; numerical solvers are candidate artifacts with convergence, conditioning, fallback and resource witnesses",
     "HolderBellman": "registered_smooth_subspaces_only; nonsmooth, discontinuous, authority and effect boundaries use explicit guards rather than assumed differentiability",
     "assetPricing": "prompt_control_asset_valuation_analogy_not_market_no_arbitrage_claim; shadow prices are optimization diagnostics, not financial facts or authority",
@@ -161,5 +161,28 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
+  },
+  "decisionCellArchitecture": {
+    "revision": 1,
+    "status": "specified_not_implemented_by_this_amendment",
+    "definition": "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+    "organComposition": "docs/cns/TECHNICAL.md",
+    "utilityAndGradientContract": "docs/learning/NDU_FBSDE_SPEC.md",
+    "creditAndExperiments": "docs/learning/CAUSAL_LONGITUDINAL_SPEC.md",
+    "evolution": "docs/learning/SELF_ITERATION_SPEC.md",
+    "initialBackendCandidate": "laya",
+    "backendNeutral": true,
+    "logicalCellIsTopLevelModule": false,
+    "logicalCellRequiresDedicatedProcess": false,
+    "logicalCellIsNduSubject": false,
+    "defaultParameters": [
+      "shared_base",
+      "organ_adapter",
+      "cell_adapter_or_head"
+    ],
+    "defaultServing": "shared_workers_sparse_event_activation",
+    "learningControl": "organ_aligned_utility_with_staged_cell_organ_base_updates",
+    "kernelLearnable": false,
+    "runtimeCapabilityClaimAdvanced": false
   }
 }
