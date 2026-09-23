@@ -3,14 +3,16 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "fbb3e5368a6aaea2f3476be1f6fe2f7dc9e6328e",
-    "tree": "ab48feff83d6220135555cbb4d311c79afbdbdab"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "observedAtHead": {
-    "commit": "fbb3e5368a6aaea2f3476be1f6fe2f7dc9e6328e",
-    "tree": "ab48feff83d6220135555cbb4d311c79afbdbdab"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-intelligence"
   ],
   "closedWorldPublicFunctions": true,
@@ -552,7 +554,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
     "codex-rs/hepta-intelligence"

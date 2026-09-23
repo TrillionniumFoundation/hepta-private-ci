@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -173,7 +173,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
     "codex-rs/hepta-contracts"
@@ -216,12 +217,28 @@
   ],
   "sourceObjects": [
     {
+      "path": "apps/hepta-browser/src/runtime-host.js",
+      "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "object": "fdea3a28f6c97ea94085ff24bf81dd27aed3e36f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "object": "89bf62c8da8808a59047718313b43ed74bcf5ac5"
+    },
+    {
       "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
       "object": "7840a3aab99080c99849c04553611fd728df1332"
     },
     {
+      "path": "codex-rs/hepta-contracts",
+      "object": "cf5bc4fc85d45280e5c4d1a70640c823ce525ce3"
+    },
+    {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "492f6742f89855e47d7425a9d7f5651c988fe0ba"
+      "object": "34251014ae9756e0e3d1aa1504de1967299e086f"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
@@ -229,43 +246,39 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "27c12accf347b03f77093f75a4071fe8f66c4902"
+      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "f87a5da47e13a1a04c737d6946f93ef9d7ba5c48"
+      "object": "1e172cdf2821745d28f9de3b010522d2a275800a"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "9425c4410e655c76980b96bd504566b53b64d711"
+      "object": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "object": "924fc00d4cb7404e2361222000caa04a57d33cd5"
     },
     {
       "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
-      "object": "1945f5c43e8cdc98f46dbd3ec31bffefaf6b2459"
+      "object": "e1d1840ad3c0ddbb562176791e2d9041fad40705"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "object": "5088cb4bdf8a7a09a64c4d100f36a0b5c05e89a7"
     },
     {
       "path": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "object": "3229d85009fff31669ef4d8c277070b50381d22e"
+      "object": "55e117dafe84709451a638bb8f6bafa41c38bd5a"
     },
     {
       "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
-      "object": "32b3b57698e809c23a58ea1456ddcc195a9a2cdb"
+      "object": "44e0abe36d58ca68a3cc9d5eec381cd077cb3789"
     },
     {
-      "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
-      "object": "e54c486579bde7bc9ea3f4f6735496902ce84443"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
-      "object": "fdea3a28f6c97ea94085ff24bf81dd27aed3e36f"
-    },
-    {
-      "path": "apps/hepta-browser/src/runtime-host.js",
-      "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
-    },
-    {
-      "path": "codex-rs/hepta-contracts",
-      "object": "c2bed93ef7d558b9ca21b8752b9162bc19f9c939"
+      "path": "docs/modules/kernel.authority/TECHNICAL.md",
+      "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
     }
   ]
 }

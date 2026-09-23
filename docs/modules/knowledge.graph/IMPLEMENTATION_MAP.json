@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
-    "tree": "2966b18a48c64350872ac9052acdcd0642372ada"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -163,7 +163,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
     "codex-rs/hepta-kg"
@@ -203,15 +204,13 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
-    "tree": "2966b18a48c64350872ac9052acdcd0642372ada",
-    "interpretation": "exact knowledge.graph source observation after canonical cognitive SQLite V2 convergence, default Agentd cognitive-writer profile, crash/reopen and truthful current-generation PERF-LIBRARY probes, complete query-request digest binding, full predecessor-bound publication-history and semantic-row oracle, canonical entity shape-evolution oracle, sealed prompt.registry factor-relation source, prompt substitute hard-redundancy semantics, complement no-fabricated-bonus semantics, generation-bound prompt.optimizer consumption, candidate-owned rustfmt and workspace lock closure, and KG qualification isolation from unrelated detailed-design drift; later map-only commits may project this observation while qualification results remain separate"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "observedSourcePaths": [
-    "codex-rs/Cargo.toml",
-    "codex-rs/hepta-kg",
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
     "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
     "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
     "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
@@ -223,6 +222,7 @@
     "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
     "codex-rs/hepta-contracts/CALLERS.toml",
     "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
+    "codex-rs/hepta-kg",
     "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql",
     "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
@@ -233,12 +233,12 @@
     "codex-rs/hepta-memory/src/cognitive_store.rs",
     "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
     "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+    "codex-rs/hepta-prompt-optimizer/src/graph.rs",
+    "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
+    "codex-rs/hepta-prompt-optimizer/src/lib.rs",
     "codex-rs/hepta-prompt-registry/Cargo.toml",
     "codex-rs/hepta-prompt-registry/src/lib.rs",
-    "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
-    "codex-rs/hepta-prompt-optimizer/Cargo.toml",
-    "codex-rs/hepta-prompt-optimizer/src/lib.rs",
-    "codex-rs/hepta-prompt-optimizer/src/graph.rs",
-    "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
+    "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
   ]
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e89f760eb405352660c219e694225cc1cd4bff47",
-    "tree": "551ebaf6d913a718459c19926b2e32d59a2fdd9f"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -258,17 +258,20 @@
     "release": false,
     "publicOperationInventoryComplete": true,
     "explicitReadConsumerComposed": true,
-    "defaultProductLoopWired": false
+    "defaultProductLoopWired": false,
+    "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
     "codex-rs/hepta-bellman-operator"
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "e89f760eb405352660c219e694225cc1cd4bff47",
-    "tree": "551ebaf6d913a718459c19926b2e32d59a2fdd9f"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-bellman-operator"
   ]
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
-    "tree": "2966b18a48c64350872ac9052acdcd0642372ada"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -72,7 +72,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-federation"
@@ -149,10 +150,12 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
-    "tree": "2966b18a48c64350872ac9052acdcd0642372ada"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-memory-federation"
   ]
 }

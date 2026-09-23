@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
-    "tree": "2966b18a48c64350872ac9052acdcd0642372ada"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -166,7 +166,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-retrieval"
@@ -190,27 +191,18 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "b5c094c157527da5b3577a0d6989fe494e7dbc97",
-    "tree": "2966b18a48c64350872ac9052acdcd0642372ada",
-    "interpretation": "exact memory.retrieval source/test/composition snapshot rebased on current main; later commits are documentation/projection-only and every observed source, manifest, test and qualification path must remain byte-unchanged through PR HEAD"
+    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
   },
   "observedSourcePaths": [
+    ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+    "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-memory-retrieval",
-    "codex-rs/hepta-memory/Cargo.toml",
-    "codex-rs/hepta-memory/src/cognitive_model.rs",
-    "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
-    "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
-    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
-    "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
-    "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
-    "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
-    "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
     "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/cognitive_context.rs",
-    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
     "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
     "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
@@ -219,12 +211,21 @@
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
     "codex-rs/hepta-learning-ledger/Cargo.toml",
-    "codex-rs/hepta-learning-ledger/src/model.rs",
+    "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
     "codex-rs/hepta-learning-ledger/src/ledger.rs",
+    "codex-rs/hepta-learning-ledger/src/model.rs",
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
     "codex-rs/hepta-learning-ledger/src/retrieval_assignment_tests.rs",
-    "codex-rs/hepta-learning-ledger/src/durable_codec.rs",
-    ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+    "codex-rs/hepta-memory-retrieval",
+    "codex-rs/hepta-memory/Cargo.toml",
+    "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_model.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
     "qualification/memory-retrieval/TARGET_HOST.md"
   ],
   "canonicalCognitiveRecallMigration": {
