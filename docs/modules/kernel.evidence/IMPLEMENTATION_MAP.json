@@ -17,7 +17,7 @@
     "codex-rs/hepta-evidence"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": true,
+  "productionImplementation": false,
   "productCallerState": "agentd_composed_config_gated",
   "productionWriterState": "agentd_authenticated_writer_established_config_gated",
   "operations": [
@@ -116,7 +116,9 @@
       "delegatedCallees": []
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Named source and product adapters remain present; current candidate requalification is required because mapped source/build inputs changed after the retained historical observation. Historical production proof is not rebound by navigation migration."
+  ],
   "externalEvidenceGates": [
     "independent exact-candidate acceptance",
     "external monotonic CAS/latest-frontier backend and backup publication ceremony",
@@ -125,7 +127,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": true,
+    "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,

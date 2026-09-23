@@ -17,7 +17,7 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": true,
+  "productionImplementation": false,
   "productCallerState": "composed_local_host",
   "productionWriterState": "not_applicable_read_only",
   "operations": [
@@ -134,7 +134,8 @@
     "Qualify adapt_authoritative_read_to_canonical_shadow_v1 on exact source-head and deterministic synthetic merge.",
     "Supply authoritative source-revision bindings before claiming full canonical provenance equivalence; legacy MemoryRecord citations do not carry source revisions.",
     "Migrate named downstream callers from legacy ReadResultV2 only after exact record-to-event bridge ownership is established.",
-    "Revalidate the canonical shadow against the current final-use snapshot before physical model-request attachment; a historical read receipt grants no future-use authority."
+    "Revalidate the canonical shadow against the current final-use snapshot before physical model-request attachment; a historical read receipt grants no future-use authority.",
+    "Named source and product adapters remain present; current candidate requalification is required because mapped source/build inputs changed after the retained historical observation. Historical production proof is not rebound by navigation migration."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -144,7 +145,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": true,
+    "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
