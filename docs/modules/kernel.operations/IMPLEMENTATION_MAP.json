@@ -52,7 +52,11 @@
       "designOperation": "prepare_intent",
       "mappingClass": "delegated_owner_native",
       "delegatedCallees": [
-        "cognitive.store"
+        {
+          "path": "codex-rs/hepta-cognitive-store",
+          "module": "cognitive.store",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -68,7 +72,11 @@
       "designOperation": "claim_outbox",
       "mappingClass": "delegated_owner_native",
       "delegatedCallees": [
-        "cognitive.store"
+        {
+          "path": "codex-rs/hepta-cognitive-store",
+          "module": "cognitive.store",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -85,8 +93,16 @@
       "designOperation": "authorized_dispatch",
       "mappingClass": "delegated_owner_native",
       "delegatedCallees": [
-        "kernel.authority",
-        "cognitive.store"
+        {
+          "path": "codex-rs/hepta-contracts",
+          "module": "kernel.authority",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-cognitive-store",
+          "module": "cognitive.store",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -102,7 +118,11 @@
       "designOperation": "observe_terminal",
       "mappingClass": "delegated_owner_native",
       "delegatedCallees": [
-        "cognitive.store"
+        {
+          "path": "codex-rs/hepta-cognitive-store",
+          "module": "cognitive.store",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -118,7 +138,11 @@
       "designOperation": "product_composition",
       "mappingClass": "delegated_owner_native",
       "delegatedCallees": [
-        "runtime.agentd"
+        {
+          "path": "codex-rs/hepta-agentd",
+          "module": "runtime.agentd",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -134,7 +158,11 @@
       "designOperation": "product_composition",
       "mappingClass": "delegated_owner_native",
       "delegatedCallees": [
-        "runtime.agentd"
+        {
+          "path": "codex-rs/hepta-agentd",
+          "module": "runtime.agentd",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -150,7 +178,11 @@
       "designOperation": "destination_apply",
       "mappingClass": "delegated_owner_native",
       "delegatedCallees": [
-        "automation.taskflow"
+        {
+          "path": "codex-rs/hepta-automation",
+          "module": "automation.taskflow",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {

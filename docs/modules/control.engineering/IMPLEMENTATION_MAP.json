@@ -36,7 +36,11 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "EngineeringStore.issue_work_envelope"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
+          "symbol": "EngineeringStore.issue_work_envelope",
+          "role": "source_declaration"
+        }
       ],
       "sourceBlob": "aad56312a146bd4b22e1ae4ab690a32e1be65a92"
     },
@@ -55,8 +59,16 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "EngineeringStore._transaction",
-        "bind_assignment_frontier"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
+          "symbol": "EngineeringStore._transaction",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/hardening.py",
+          "symbol": "bind_assignment_frontier",
+          "role": "source_declaration"
+        }
       ],
       "sourceBlob": "aad56312a146bd4b22e1ae4ab690a32e1be65a92"
     },
@@ -112,7 +124,11 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "SandboxCoordinator.execute"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/sandbox_control.py",
+          "symbol": "SandboxCoordinator.execute",
+          "role": "source_declaration"
+        }
       ],
       "sourceBlob": "60fef0290956f7f064c8e61264cc10e5cfdd2702"
     },
@@ -148,7 +164,11 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "EngineeringStore.record_integration_decision"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
+          "symbol": "EngineeringStore.record_integration_decision",
+          "role": "source_declaration"
+        }
       ],
       "sourceBlob": "dac5309812dc6a885d64524b48842f04414f40c8"
     },
@@ -167,8 +187,16 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "EngineeringStore._transaction",
-        "EngineeringStore._append_audit"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
+          "symbol": "EngineeringStore._transaction",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
+          "symbol": "EngineeringStore._append_audit",
+          "role": "source_declaration"
+        }
       ],
       "sourceBlob": "30607dadc50bf2e003b278fb8a32ca94b35649cf"
     },
@@ -187,9 +215,21 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "verify_persisted_distributed_fence",
-        "verify_external_audit_anchor",
-        "verify_external_key_custody"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/external_controls.py",
+          "symbol": "verify_persisted_distributed_fence",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/external_controls.py",
+          "symbol": "verify_external_audit_anchor",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/external_controls.py",
+          "symbol": "verify_external_key_custody",
+          "role": "source_declaration"
+        }
       ],
       "sourceBlob": "30607dadc50bf2e003b278fb8a32ca94b35649cf"
     },
@@ -208,16 +248,56 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "plan_engineering_work",
-        "issue_repository_work_envelope",
-        "register_worker",
-        "EngineeringStore.acquire_path_lease",
-        "claim_assignment",
-        "heartbeat_claim",
-        "submit_worker_result",
-        "observe_claim_completion",
-        "publish_integration_queue",
-        "observe_integration_stage"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/orchestration.py",
+          "symbol": "plan_engineering_work",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/orchestration.py",
+          "symbol": "issue_repository_work_envelope",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "register_worker",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
+          "symbol": "EngineeringStore.acquire_path_lease",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "claim_assignment",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "heartbeat_claim",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "submit_worker_result",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "observe_claim_completion",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/integration_controller.py",
+          "symbol": "publish_integration_queue",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/integration_controller.py",
+          "symbol": "observe_integration_stage",
+          "role": "source_declaration"
+        }
       ],
       "sourceBlob": "ad4738d8483ee33f46c8ee65a8f9cf7bfe7ab059"
     },
@@ -236,13 +316,41 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "orchestration_generations",
-        "path_leases",
-        "worker_registrations",
-        "worker_claims",
-        "worker_heartbeat_observations",
-        "worker_result_observations",
-        "worker_completion_observations"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "orchestration_generations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "path_leases",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_registrations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_claims",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_heartbeat_observations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_result_observations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_completion_observations",
+          "role": "schema_reference"
+        }
       ],
       "sourceBlob": "668b76de0b99df78b270dcf41d34eab05d8d8624"
     },
@@ -261,10 +369,26 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "worker_claims",
-        "worker_completion_observations",
-        "assignment_generations",
-        "audit_events"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_claims",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_completion_observations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "assignment_generations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "audit_events",
+          "role": "schema_reference"
+        }
       ],
       "sourceBlob": "668b76de0b99df78b270dcf41d34eab05d8d8624"
     },
@@ -283,9 +407,21 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "worker_claims",
-        "worker_result_observations",
-        "audit_events"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_claims",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_result_observations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "audit_events",
+          "role": "schema_reference"
+        }
       ],
       "sourceBlob": "668b76de0b99df78b270dcf41d34eab05d8d8624"
     },
@@ -304,10 +440,26 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "worker_claims",
-        "worker_heartbeat_observations",
-        "worker_registrations",
-        "audit_events"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_claims",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_heartbeat_observations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_registrations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "audit_events",
+          "role": "schema_reference"
+        }
       ],
       "sourceBlob": "668b76de0b99df78b270dcf41d34eab05d8d8624"
     },
@@ -326,8 +478,16 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "worker_registrations",
-        "audit_events"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_registrations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "audit_events",
+          "role": "schema_reference"
+        }
       ],
       "sourceBlob": "668b76de0b99df78b270dcf41d34eab05d8d8624"
     },
@@ -349,17 +509,61 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "EngineeringStore",
-        "plan_engineering_work",
-        "claim_assignment",
-        "observe_claim_completion",
-        "register_worker",
-        "EngineeringStore.acquire_path_lease",
-        "heartbeat_claim",
-        "submit_worker_result",
-        "publish_integration_queue",
-        "observe_integration_stage",
-        "worker_completion_observations"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
+          "symbol": "EngineeringStore",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/orchestration.py",
+          "symbol": "plan_engineering_work",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "claim_assignment",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "observe_claim_completion",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "register_worker",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/control_plane.py",
+          "symbol": "EngineeringStore.acquire_path_lease",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "heartbeat_claim",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/worker_lifecycle.py",
+          "symbol": "submit_worker_result",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/integration_controller.py",
+          "symbol": "publish_integration_queue",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/integration_controller.py",
+          "symbol": "observe_integration_stage",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "worker_completion_observations",
+          "role": "schema_reference"
+        }
       ],
       "sourceBlob": "355f913adca40e8092aeab80fa1054b362bc1ec0"
     },
@@ -378,10 +582,26 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "orchestration_generations",
-        "integration_queue_generations",
-        "integration_queue_items",
-        "audit_events"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "orchestration_generations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "integration_queue_generations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "integration_queue_items",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "audit_events",
+          "role": "schema_reference"
+        }
       ],
       "sourceBlob": "f4766f1428d380401c55967dfaf12a20fbd4a20b"
     },
@@ -400,9 +620,21 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "reconcile_integration_item",
-        "integration_queue_generations",
-        "integration_queue_items"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/integration_controller.py",
+          "symbol": "reconcile_integration_item",
+          "role": "source_declaration"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "integration_queue_generations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "integration_queue_items",
+          "role": "schema_reference"
+        }
       ],
       "sourceBlob": "f4766f1428d380401c55967dfaf12a20fbd4a20b"
     },
@@ -421,9 +653,21 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "integration_queue_generations",
-        "integration_queue_items",
-        "audit_events"
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "integration_queue_generations",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "integration_queue_items",
+          "role": "schema_reference"
+        },
+        {
+          "path": "tools/hepta-engineering-control/control_engineering_v2/SCHEMA.sql",
+          "symbol": "audit_events",
+          "role": "schema_reference"
+        }
       ],
       "sourceBlob": "f4766f1428d380401c55967dfaf12a20fbd4a20b"
     },

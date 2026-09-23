@@ -292,8 +292,8 @@
       "state": "source_implemented_external_selector_authority_required",
       "authority": "none",
       "tests": [
-        "art_12_independent_selector_binds_exact_current_and_manifest",
-        "art_12_selection_rejects_self_selection_and_revoked_selector"
+        "codex-rs/hepta-learning-artifacts/src/selection.rs::art_12_independent_selector_binds_exact_current_and_manifest",
+        "codex-rs/hepta-learning-artifacts/src/selection.rs::art_12_selection_rejects_self_selection_and_revoked_selector"
       ],
       "sourcePathExists": true,
       "designOperation": "independent_selection_verify",
@@ -307,7 +307,7 @@
       "state": "source_implemented_external_selector_authority_required",
       "authority": "none",
       "tests": [
-        "art_12_verified_selection_records_only_selected_transition"
+        "codex-rs/hepta-learning-artifacts/src/selection.rs::art_12_verified_selection_records_only_selected_transition"
       ],
       "sourcePathExists": true,
       "designOperation": "record_verified_selection",
@@ -321,7 +321,7 @@
       "state": "source_implemented_qualification_consumer_composed",
       "authority": "none",
       "tests": [
-        "existing_artifact_owner_new_process_predictions_and_revoked_rollback"
+        "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs::existing_artifact_owner_new_process_predictions_and_revoked_rollback"
       ],
       "sourcePathExists": true,
       "designOperation": "load_selected_candidate",

@@ -34,9 +34,21 @@
       "designOperation": "neuron_runtime_tick",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "InferenceControlModelPort",
-        "SparseJournal",
-        "AnchorWitnessStore"
+        {
+          "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+          "symbol": "InferenceControlModelPort",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/journal.rs",
+          "symbol": "SparseJournal",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+          "symbol": "AnchorWitnessStore",
+          "role": "source_declaration"
+        }
       ]
     },
     {
@@ -52,7 +64,11 @@
       "designOperation": "inference_control_model_port",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "inference.control::NeuronFeatureReceiptV1"
+        {
+          "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
+          "symbol": "inference.control::NeuronFeatureReceiptV1",
+          "role": "source_declaration"
+        }
       ]
     },
     {

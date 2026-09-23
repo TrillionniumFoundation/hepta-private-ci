@@ -406,7 +406,11 @@
       "designOperation": "project_z_estimate_to_coefficient_q24",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "convert_z_to_original_q24"
+        {
+          "path": "codex-rs/hepta-ndu/src/z_conversion.rs",
+          "symbol": "convert_z_to_original_q24",
+          "role": "source_declaration"
+        }
       ],
       "sourcePathExists": true
     },
@@ -444,9 +448,21 @@
       "designOperation": "NduAuthenticatedOwnerV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "FinalUseAuthority::claim",
-        "FinalUseAuthority::with_verified_use",
-        "NduProjectionStoreV1"
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "symbol": "FinalUseAuthority::claim",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "symbol": "FinalUseAuthority::with_verified_use",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store.rs",
+          "symbol": "NduProjectionStoreV1",
+          "role": "source_declaration"
+        }
       ],
       "sourcePathExists": true
     }

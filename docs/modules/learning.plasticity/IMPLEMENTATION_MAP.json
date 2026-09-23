@@ -42,7 +42,7 @@
       "state": "source_implemented_product_and_agentd_host_composed_not_target_host_qualified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-plasticity/src/lib_tests.rs::read_validation_rejects_tampered_metrics_digest_profile_and_authority"
+        "codex-rs/hepta-plasticity/src/lib_tests.rs::read_validation_rejects_tampered_metrics_digest_and_profile"
       ],
       "sourcePathExists": true,
       "designOperation": "verify_parameter_proposal_v2",
@@ -138,8 +138,16 @@
       "designOperation": "authenticated_product_composition",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.eval",
-        "learning.ledger"
+        {
+          "path": "codex-rs/hepta-intelligence-eval",
+          "module": "learning.eval",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -187,10 +195,26 @@
       "designOperation": "agentd_process_bootstrap",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.artifacts",
-        "learning.ledger",
-        "utility.ndu",
-        "neuron.runtime"
+        {
+          "path": "codex-rs/hepta-learning-artifacts",
+          "module": "learning.artifacts",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-ndu",
+          "module": "utility.ndu",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-neuron",
+          "module": "neuron.runtime",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -207,9 +231,21 @@
       "designOperation": "agentd_plasticity_runtime_owner",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.artifacts",
-        "learning.ledger",
-        "learning.eval"
+        {
+          "path": "codex-rs/hepta-learning-artifacts",
+          "module": "learning.artifacts",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval",
+          "module": "learning.eval",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -225,9 +261,21 @@
       "designOperation": "agentd_named_parameter_submission",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.plasticity",
-        "learning.ledger",
-        "learning.eval"
+        {
+          "path": "codex-rs/hepta-plasticity",
+          "module": "learning.plasticity",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval",
+          "module": "learning.eval",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -243,9 +291,21 @@
       "designOperation": "agentd_named_topology_submission",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.plasticity",
-        "learning.ledger",
-        "learning.eval"
+        {
+          "path": "codex-rs/hepta-plasticity",
+          "module": "learning.plasticity",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval",
+          "module": "learning.eval",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -264,9 +324,21 @@
       "designOperation": "agentd_parameter_host",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.artifacts",
-        "learning.ledger",
-        "learning.eval"
+        {
+          "path": "codex-rs/hepta-learning-artifacts",
+          "module": "learning.artifacts",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval",
+          "module": "learning.eval",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -286,9 +358,21 @@
       "designOperation": "agentd_owner_evidence_resolution",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.artifacts",
-        "learning.ledger",
-        "kernel.evidence"
+        {
+          "path": "codex-rs/hepta-learning-artifacts",
+          "module": "learning.artifacts",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-evidence",
+          "module": "kernel.evidence",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -308,8 +392,16 @@
       "designOperation": "concrete_owner_evidence_adapters",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.artifacts",
-        "learning.ledger"
+        {
+          "path": "codex-rs/hepta-learning-artifacts",
+          "module": "learning.artifacts",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -356,7 +448,11 @@
       "designOperation": "authenticated_topology_product_composition",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.ledger"
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -374,8 +470,16 @@
       "designOperation": "agentd_topology_host",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.artifacts",
-        "learning.ledger"
+        {
+          "path": "codex-rs/hepta-learning-artifacts",
+          "module": "learning.artifacts",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -426,7 +530,11 @@
       "designOperation": "authenticated_structural_canary_observation",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "learning.ledger"
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -444,8 +552,16 @@
       "designOperation": "runtime_topology_execution",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "kernel.authority",
-        "control.runtime"
+        {
+          "path": "codex-rs/hepta-contracts",
+          "module": "kernel.authority",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane",
+          "module": "control.runtime",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -461,8 +577,16 @@
       "designOperation": "runtime_topology_recovery",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "kernel.authority",
-        "control.runtime"
+        {
+          "path": "codex-rs/hepta-contracts",
+          "module": "kernel.authority",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane",
+          "module": "control.runtime",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     },
     {
@@ -478,9 +602,21 @@
       "designOperation": "runtime_structural_canary_fault_rollback",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
-        "kernel.authority",
-        "learning.ledger",
-        "learning.plasticity"
+        {
+          "path": "codex-rs/hepta-contracts",
+          "module": "kernel.authority",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "module": "learning.ledger",
+          "role": "declared_module_dependency_not_callsite_proof"
+        },
+        {
+          "path": "codex-rs/hepta-plasticity",
+          "module": "learning.plasticity",
+          "role": "declared_module_dependency_not_callsite_proof"
+        }
       ]
     }
   ],

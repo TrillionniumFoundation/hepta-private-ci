@@ -216,7 +216,11 @@
       "designOperation": "encode_objective_function_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "decode_objective_function_v1"
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+          "symbol": "decode_objective_function_v1",
+          "role": "source_declaration"
+        }
       ],
       "sourcePathExists": true
     },
@@ -266,7 +270,11 @@
       "designOperation": "compile_admitted_objective_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "crate::compiler::compile"
+        {
+          "path": "codex-rs/hepta-objective/src/compiler.rs",
+          "symbol": "crate::compiler::compile",
+          "role": "source_declaration"
+        }
       ],
       "sourcePathExists": true
     },
