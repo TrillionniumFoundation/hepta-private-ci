@@ -3,6 +3,7 @@
 These exercise the actual shared checker in child Python processes. Workflow
 checks cover wiring only, not a GitHub run, Rust build or process qualification.
 """
+
 from __future__ import annotations
 
 import json
@@ -16,7 +17,12 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 CHECKER = ROOT / ".github/scripts/check_ci_results.py"
 WORKFLOW = ROOT / ".github/workflows/hepta-gap-agentd-process.yml"
-LANES = ("derived-projections", "owner-formatting", "catalog-admission", "process-qualification")
+LANES = (
+    "derived-projections",
+    "owner-formatting",
+    "catalog-admission",
+    "process-qualification",
+)
 
 
 class TerminalGateTests(unittest.TestCase):
@@ -28,8 +34,12 @@ class TerminalGateTests(unittest.TestCase):
         if expected is not None:
             env["EXPECTED_NEEDS"] = json.dumps(expected)
         return subprocess.run(
-            [sys.executable, str(CHECKER)], env=env, text=True,
-            capture_output=True, timeout=10, check=False,
+            [sys.executable, str(CHECKER)],
+            env=env,
+            text=True,
+            capture_output=True,
+            timeout=10,
+            check=False,
         )
 
     def success(self):
@@ -68,20 +78,33 @@ class TerminalGateTests(unittest.TestCase):
 
     def test_existing_explicit_scope_exception_is_preserved(self):
         needs = {"scope": {"result": "success"}, "unused": {"result": "skipped"}}
-        self.assertEqual(self.run_gate(needs, expected=None, allowed=["unused"]).returncode, 0)
+        self.assertEqual(
+            self.run_gate(needs, expected=None, allowed=["unused"]).returncode, 0
+        )
         for result in ("failure", "cancelled"):
             needs["unused"]["result"] = result
-            self.assertNotEqual(self.run_gate(needs, expected=None, allowed=["unused"]).returncode, 0)
+            self.assertNotEqual(
+                self.run_gate(needs, expected=None, allowed=["unused"]).returncode, 0
+            )
 
     def test_unknown_or_malformed_scope_exceptions_rejected(self):
-        for allowed in (["absent"], "catalog-admission", [True], ["catalog-admission"] * 2):
+        for allowed in (
+            ["absent"],
+            "catalog-admission",
+            [True],
+            ["catalog-admission"] * 2,
+        ):
             with self.subTest(allowed=allowed):
-                self.assertNotEqual(self.run_gate(self.success(), allowed=allowed).returncode, 0)
+                self.assertNotEqual(
+                    self.run_gate(self.success(), allowed=allowed).returncode, 0
+                )
 
     def test_malformed_expected_set_rejected(self):
         for expected in ([], "catalog-admission", [True], list(LANES) + [LANES[0]]):
             with self.subTest(expected=expected):
-                self.assertNotEqual(self.run_gate(self.success(), expected=expected).returncode, 0)
+                self.assertNotEqual(
+                    self.run_gate(self.success(), expected=expected).returncode, 0
+                )
 
 
 class WorkflowDependencyTests(unittest.TestCase):
@@ -89,13 +112,17 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.text = WORKFLOW.read_text(encoding="utf-8")
         # Job IDs occupy exactly two spaces in this checked-in workflow.
         # This assertion intentionally checks the source graph, not YAML execution.
-        parts = re.split(r"^  ([a-z][a-z0-9-]*):\s*$", self.text.split("\njobs:\n", 1)[1], flags=re.M)
+        parts = re.split(
+            r"^  ([a-z][a-z0-9-]*):\s*$", self.text.split("\njobs:\n", 1)[1], flags=re.M
+        )
         self.jobs = dict(zip(parts[1::2], parts[2::2]))
 
     def test_behavior_and_format_lanes_have_no_predecessor_gate(self):
         for name in LANES:
             with self.subTest(name=name):
-                self.assertNotRegex(self.jobs[name], r"(?m)^    (?:needs|if|continue-on-error):")
+                self.assertNotRegex(
+                    self.jobs[name], r"(?m)^    (?:needs|if|continue-on-error):"
+                )
         for name in ("catalog-admission", "process-qualification"):
             self.assertNotIn("refresh-derived", self.jobs[name])
             self.assertNotIn("cargo fmt", self.jobs[name])
@@ -105,7 +132,9 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn("if: ${{ always() }}", job)
         matched = re.search(r"(?m)^    needs: \[([^\]]+)\]$", job)
         self.assertIsNotNone(matched)
-        self.assertEqual({name.strip() for name in matched.group(1).split(",")}, set(LANES))
+        self.assertEqual(
+            {name.strip() for name in matched.group(1).split(",")}, set(LANES)
+        )
         self.assertIn("EXPECTED_NEEDS:", job)
         self.assertNotIn("ALLOWED_SKIPPED", job)
         self.assertIn("python3 .github/scripts/check_ci_results.py", job)
@@ -113,10 +142,19 @@ class WorkflowDependencyTests(unittest.TestCase):
 
     def test_existing_behavior_suites_remain(self):
         process = self.jobs["process-qualification"]
-        for target in ("optional_module_restart", "runtime_shutdown_outcomes", "retirement_recovery", "operation_timer_fence", "destination_recovery_binding", "cognitive_product_e2e", "runtime::tests::qualification_", "cargo clippy --locked"):
+        for target in (
+            "optional_module_restart",
+            "runtime_shutdown_outcomes",
+            "retirement_recovery",
+            "operation_timer_fence",
+            "destination_recovery_binding",
+            "cognitive_product_e2e",
+            "runtime::tests::qualification_",
+            "cargo clippy --locked",
+        ):
             with self.subTest(target=target):
                 self.assertIn(target, process)
-        self.assertIn("cargo test --locked", self.jobs["catalog-admission"])
+        self.assertIn("just test --locked", self.jobs["catalog-admission"])
         self.assertIn("refresh-derived --check", self.jobs["derived-projections"])
         self.assertIn("cargo fmt", self.jobs["owner-formatting"])
         self.assertIn("-- --check", self.jobs["owner-formatting"])
@@ -136,7 +174,7 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertNotIn("exclude:", process)
         self.assertIn('test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"', process)
         self.assertIn("python3 scripts/hepta_ci_candidate.py", process)
-        self.assertIn("--base \"$BASE_SHA\" --lane base-merge", process)
+        self.assertIn('--base "$BASE_SHA" --lane base-merge', process)
         self.assertIn("merge-tree --write-tree", process)
         self.assertIn('test "$(git rev-parse HEAD^{tree})" = "$expected_tree"', process)
 
@@ -144,11 +182,13 @@ class WorkflowDependencyTests(unittest.TestCase):
         process = self.jobs["process-qualification"]
         self.assertIn("id: execution", process)
         self.assertIn('--github-output "$GITHUB_OUTPUT"', process)
-        self.assertIn('args+=(--lane source-head)', process)
+        self.assertIn("args+=(--lane source-head)", process)
         self.assertIn("steps.execution.outputs.run_native == 'true'", process)
         terminal = self.jobs["qualification-result"]
         self.assertIn("process-qualification]", terminal)
-        self.assertIn("scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"])
+        self.assertIn(
+            "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
+        )
         self.assertNotIn("continue-on-error", process)
 
     def test_catalog_and_formatter_use_the_repository_toolchain_directory(self):

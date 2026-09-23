@@ -17,7 +17,9 @@ def load(path: str):
 class ObjectiveContractAlignmentTests(unittest.TestCase):
     def test_source_envelope_capacity_matches_native_lowering(self):
         registry = load("docs/readiness/PROTOCOLS.json")
-        row = next(p for p in registry["protocols"] if p["id"] == "ObjectiveSourceEnvelopeV1")
+        row = next(
+            p for p in registry["protocols"] if p["id"] == "ObjectiveSourceEnvelopeV1"
+        )
         intent = next(f for f in row["fields"] if f["name"] == "structuredIntent")
         fields = {f["name"]: f for f in intent["properties"]}
         self.assertEqual(
@@ -25,22 +27,26 @@ class ObjectiveContractAlignmentTests(unittest.TestCase):
                 fields["legalActionClasses"]["minItems"],
                 fields["legalActionClasses"]["maxItems"],
             ),
-            (0, 127),
+            (0, 128),
         )
-        self.assertEqual(fields["confirmationActionClasses"]["maxItems"], 127)
+        self.assertEqual(fields["confirmationActionClasses"]["maxItems"], 128)
         self.assertEqual(fields["constraints"]["maxItems"], 246)
+        # Native lowering reserves one slot only when abstain is not explicit;
+        # the admitted wire array still permits 128 entries including abstain.
         # The canonical protocol now records cross-field capacity as a compact
         # invariant instead of duplicating the same fact in an aggregateBounds
         # presentation object. Guard the actual invariant that the native
         # lowering relies on, not a redundant document shape.
         self.assertIn(
-            "successPredicates+terminalConditions+evidenceRequirements<=128",
+            "success_terminal_evidence_aggregate_max_128",
             row["invariants"],
         )
 
     def test_objective_semantics_do_not_redefine_wire_fields(self):
         schemas = load("docs/contracts/PROTOCOL_SCHEMAS.json")
-        schema = next(p for p in schemas["protocols"] if p["id"] == "ObjectiveFunctionV1")
+        schema = next(
+            p for p in schemas["protocols"] if p["id"] == "ObjectiveFunctionV1"
+        )
         wire_fields = [field["name"] for field in schema["fields"]]
 
         objectives = load("docs/control-plane/OBJECTIVES.json")
@@ -50,7 +56,10 @@ class ObjectiveContractAlignmentTests(unittest.TestCase):
         # canonical wire schema. Requiring a second fieldShapeAuthority string
         # and immutableWireFields copy only recreated the same source of truth.
         self.assertEqual(contract["registeredV1Fields"], wire_fields)
-        self.assertNotIn("allowedActionClasses", contract["registeredV1Fields"])
+        self.assertIn("allowedActionClasses", contract["immutableCore"])
+        self.assertIn("evidenceRequirements", contract["immutableCore"])
+        self.assertIn("forbiddenActionClasses", contract["immutableCore"])
+        self.assertFalse(set(contract["futureVersionOnly"]).intersection(wire_fields))
         self.assertNotIn("abstentionThreshold", contract["registeredV1Fields"])
 
 

@@ -11,6 +11,7 @@ import argparse
 from collections import deque
 from pathlib import Path
 import sys
+import re
 import tomllib
 
 
@@ -90,6 +91,9 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
         queue.append(workspace / "Cargo.toml")
     seen: set[Path] = set()
     package_paths: dict[tuple[Path, str], Path] = {}
+    package_names: dict[Path, str] = {}
+    runtime_edges: dict[Path, list[tuple[str, str, Path | None]]] = {}
+    checked_owners: set[Path] = set()
     while queue:
         path = queue.popleft().resolve()
         if path in seen:
@@ -100,6 +104,25 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
             continue
         owner, package_settings = owner_settings(path, manifest)
         inherited = package_settings.get("dependencies", {})
+        if owner not in checked_owners:
+            checked_owners.add(owner)
+            for dependency, declaration in inherited.items():
+                if (
+                    isinstance(declaration, dict)
+                    and declaration.get("optional") is True
+                ):
+                    errors.append(
+                        f"{owner}: workspace.dependencies.{dependency} cannot be optional"
+                    )
+        root_document = load(owner / "Cargo.toml") or {}
+        local_patches = {}
+        for alias, declaration in (
+            root_document.get("patch", {}).get("crates-io", {}).items()
+        ):
+            if isinstance(declaration, dict) and isinstance(
+                declaration.get("path"), str
+            ):
+                local_patches[declaration.get("package", alias)] = declaration
         package = manifest.get("package", {})
         name = package.get("name")
         if not isinstance(name, str) or not name:
@@ -110,41 +133,146 @@ def verify_workspace(workspace: Path) -> tuple[int, list[str]]:
             )
         else:
             package_paths[owner, name] = path
+        if isinstance(name, str):
+            package_names[path] = name
+        runtime_edges[path] = []
+        uses_sqlx = False
+        edition = package.get("edition", "2015")
+        if isinstance(edition, dict):
+            edition = package_settings.get("package", {}).get("edition", "2015")
         for key, value in package.items():
             if isinstance(value, dict) and value.get("workspace") is True:
                 if key not in package_settings.get("package", {}):
                     errors.append(f"{path}: workspace.package.{key} is missing")
         if manifest.get("lints", {}).get("workspace") is True:
+            if set(manifest["lints"]) != {"workspace"}:
+                errors.append(f"{path}: member cannot override workspace.lints")
             if not isinstance(package_settings.get("lints"), dict):
                 errors.append(f"{path}: workspace.lints is missing")
         groups = [manifest, *manifest.get("target", {}).values()]
         for group in groups:
             for kind in ("dependencies", "dev-dependencies", "build-dependencies"):
                 for dependency, declaration in group.get(kind, {}).items():
-                    if not isinstance(declaration, dict):
-                        continue
                     origin = path.parent
-                    if declaration.get("workspace") is True:
+                    if (
+                        isinstance(declaration, dict)
+                        and declaration.get("workspace") is True
+                    ):
                         if dependency not in inherited:
                             errors.append(
                                 f"{path}: workspace.dependencies.{dependency} is missing"
                             )
                             continue
-                        declaration = inherited[dependency]
-                        origin = owner
-                    if not isinstance(declaration, dict) or "path" not in declaration:
-                        continue
-                    target = (origin / declaration["path"] / "Cargo.toml").resolve()
-                    other = load(target)
-                    if other is None:
-                        continue
-                    actual = other.get("package", {}).get("name")
-                    expected = declaration.get("package", dependency)
-                    if actual != expected:
-                        errors.append(
-                            f"{path}: {dependency} expects {expected}, but {target} names {actual}"
+                        workspace_declaration = inherited[dependency]
+                        disabled = (
+                            isinstance(workspace_declaration, dict)
+                            and workspace_declaration.get("default-features") is False
                         )
-                    queue.append(target)
+                        if (
+                            edition == "2024"
+                            and declaration.get("default-features") is False
+                            and not disabled
+                        ):
+                            errors.append(
+                                f"{path}: default-features=false cannot disable workspace.dependencies.{dependency} defaults in edition 2024"
+                            )
+                        declaration = workspace_declaration
+                        origin = owner
+                    if isinstance(declaration, str):
+                        declaration = {"version": declaration}
+                    if not isinstance(declaration, dict):
+                        errors.append(
+                            f"{path}: invalid dependency declaration for {dependency}"
+                        )
+                        continue
+                    expected = declaration.get("package", dependency)
+                    if not isinstance(expected, str) or not expected:
+                        errors.append(f"{path}: {dependency} has invalid package name")
+                        continue
+                    uses_sqlx |= expected == "sqlx"
+                    patched = False
+                    if (
+                        "path" not in declaration
+                        and "git" not in declaration
+                        and "registry" not in declaration
+                        and expected in local_patches
+                    ):
+                        declaration = local_patches[expected]
+                        origin = owner
+                        patched = True
+                    target = None
+                    if "path" in declaration:
+                        if not isinstance(declaration["path"], str):
+                            errors.append(
+                                f"{path}: invalid local dependency path for {dependency}"
+                            )
+                            continue
+                        target = (origin / declaration["path"] / "Cargo.toml").resolve()
+                        other = load(target)
+                        if other is not None:
+                            actual = other.get("package", {}).get("name")
+                            if actual != expected:
+                                message = (
+                                    f"patch {target} must name {expected}"
+                                    if patched
+                                    else f"{dependency} expects {expected}, but {target} names {actual}"
+                                )
+                                errors.append(f"{path}: {message}")
+                            queue.append(target)
+                    if kind != "dev-dependencies":
+                        runtime_edges[path].append((kind, expected, target))
+        if uses_sqlx:
+            versions = {}
+            for migration in sorted((path.parent / "migrations").glob("*.sql")):
+                prefix = migration.name.split("_", 1)[0]
+                if re.fullmatch(r"[+-]?[0-9]+", prefix) is None:
+                    continue
+                version = int(prefix)
+                if not 0 < version < 2**63:
+                    errors.append(
+                        f"{migration}: SQLx migration version must be a positive i64"
+                    )
+                    continue
+                direction = "down" if migration.name.endswith(".down.sql") else "up"
+                key = (version, direction)
+                if key in versions:
+                    errors.append(
+                        f"{path}: migration version {version} ({direction}) collides: {versions[key]} and {migration.name}"
+                    )
+                else:
+                    versions[key] = migration.name
+    # Trace actual package paths, not names: independent workspaces may carry
+    # two versions of the same execution boundary. Test-only edges stay local.
+    shared_contracts = {
+        "codex-hepta-contracts",
+        "codex-hepta-types",
+        "codex-hepta-paths",
+        "codex-hepta-wire",
+    }
+    for boundary in sorted(package_names):
+        if package_names[boundary] not in {"codex-core", "codex-extension-api"}:
+            continue
+        pending = deque([(boundary, package_names[boundary])])
+        visited = set()
+        while pending:
+            current, route = pending.popleft()
+            if current in visited:
+                continue
+            visited.add(current)
+            for kind, dependency, target in sorted(
+                runtime_edges.get(current, []),
+                key=lambda edge: (edge[0], edge[1], str(edge[2])),
+            ):
+                next_route = f"{route} --{kind}--> {dependency}"
+                if (
+                    dependency.startswith("codex-hepta")
+                    and dependency not in shared_contracts
+                ):
+                    errors.append(
+                        f"{boundary}: execution boundary reaches product implementation: {next_route}"
+                    )
+                elif target is not None:
+                    pending.append((target, next_route))
     return len(seen), sorted(set(errors))
 
 

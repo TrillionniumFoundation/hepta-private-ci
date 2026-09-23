@@ -88,6 +88,9 @@
       "successPredicates",
       "terminalConditions",
       "hardConstraints",
+      "evidenceRequirements",
+      "allowedActionClasses",
+      "forbiddenActionClasses",
       "softUtilityDimensions",
       "resourceEndowment",
       "deadlineUnixMs",
@@ -100,15 +103,15 @@
       "hardConstraints",
       "resourceEndowment",
       "deadlineUnixMs",
-      "revision"
+      "revision",
+      "evidenceRequirements",
+      "allowedActionClasses",
+      "forbiddenActionClasses"
     ],
     "boundedAdaptiveSurface": [
       "softUtilityDimensions"
     ],
     "futureVersionOnly": [
-      "evidenceRequirements",
-      "allowedActionClasses",
-      "forbiddenActionClasses",
       "resourceAllocation",
       "explorationBudget",
       "evidenceEffort",

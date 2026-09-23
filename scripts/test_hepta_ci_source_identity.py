@@ -287,6 +287,7 @@ class ImplementationMapSourceIdentityTests(unittest.TestCase):
 
     def observed_row(self) -> dict:
         return {
+            "sourceBase": {"commit": self.observed_commit, "tree": self.observed_tree},
             "observedAtHead": {
                 "commit": self.observed_commit,
                 "tree": self.observed_tree,
@@ -323,7 +324,7 @@ class ImplementationMapSourceIdentityTests(unittest.TestCase):
         self.git("commit", "-qm", "owner source drift")
         failures = self.validate()
         self.assertTrue(
-            any("observed source drift" in failure for failure in failures),
+            any("mapped source/evidence changed" in failure for failure in failures),
             failures,
         )
 
@@ -395,6 +396,25 @@ class SourceConformanceTests(unittest.TestCase):
             "nonexistent_owner_symbol"
         )
         with self.assertRaisesRegex(LANE_B.Invalid, "missing symbol"):
+            LANE_B.verify_truth(truth, maps)
+
+    def test_registered_cross_lane_delegate_preserves_owner_boundary(self):
+        truth = LANE_B.load(LANE_B.TRUTH)
+        maps = [LANE_B.load(LANE_B.ROOT / row["mapPath"]) for row in truth["modules"]]
+        agentd = next(row for row in maps if row["module"] == "runtime.agentd")
+        operation = next(
+            row
+            for row in agentd["operations"]
+            if row.get("operation") == "admit_revalidated_run_start"
+        )
+        delegate = operation["delegatedCallees"][0]
+        self.assertEqual(delegate["ownerModule"], "learning.ledger")
+        self.assertEqual(LANE_B.verify_truth(truth, maps)[0], LANE_B.OPERATION_COUNT)
+        delegate["ownerModule"] = "unregistered.owner"
+        with self.assertRaisesRegex(LANE_B.Invalid, "unregistered delegated owner"):
+            LANE_B.verify_truth(truth, maps)
+        delegate["ownerModule"] = "neuron.runtime"
+        with self.assertRaisesRegex(LANE_B.Invalid, "delegate-root escape"):
             LANE_B.verify_truth(truth, maps)
 
 

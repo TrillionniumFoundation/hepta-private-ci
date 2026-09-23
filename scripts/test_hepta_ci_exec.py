@@ -311,6 +311,15 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
                 break
             lines.append(line[10:])
         self.script = "\n".join(lines)
+        block = workflow.split(
+            "      - name: Strict Clippy independently of test outcome\n", 1
+        )[1].split("        run: |\n", 1)[1]
+        lines = []
+        for line in block.splitlines():
+            if line and not line.startswith("          "):
+                break
+            lines.append(line[10:])
+        self.lint_script = "\n".join(lines)
 
     def test_shell_preserves_test_targets_and_strict_lint_arguments(self):
         result = subprocess.run(
@@ -324,6 +333,15 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
         self.assertEqual(result.returncode, 0, result.stderr)
         folder = self.root / "hepta-command-records"
         test = json.loads((folder / "owner-test.json").read_text())
+        lint_result = subprocess.run(
+            ["bash", "-c", self.lint_script],
+            cwd=self.repo / "codex-rs",
+            env=self.env,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        self.assertEqual(lint_result.returncode, 0, lint_result.stderr)
         lint = json.loads((folder / "clippy.json").read_text())
         self.assertEqual(
             test["command"],

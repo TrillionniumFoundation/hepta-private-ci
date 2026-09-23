@@ -9,6 +9,14 @@ on:
       - "apps/**"
       - "tools/hepta-engineering-control/**"
       - "tools/hepta-os-evidence/**"
+      - ".cargo/**"
+      - "codex-rs/.cargo/**"
+      - "rust-toolchain"
+      - "rust-toolchain.toml"
+      - "codex-rs/rust-toolchain"
+      - "codex-rs/rust-toolchain.toml"
+      - "scripts/hepta_workspace.py"
+      - "scripts/test_hepta_native_feedback.py"
       - "scripts/hepta_ci_v8.py"
       - "scripts/hepta_ci_exec.py"
       - "scripts/hepta-gap-closure.py"
@@ -124,7 +132,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-workspace
-          path: ${{ runner.temp }}/hepta-command-records/*.json
+          path: ${{ runner.temp }}/hepta-command-records/*
           if-no-files-found: error
           retention-days: 30
   engineering-sandbox:
@@ -186,7 +194,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-engineering-${{ matrix.lane }}
-          path: ${{ runner.temp }}/hepta-command-records/*.json
+          path: ${{ runner.temp }}/hepta-command-records/*
           if-no-files-found: error
           retention-days: 30
   os-evidence:
@@ -213,7 +221,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-os
-          path: ${{ runner.temp }}/hepta-command-records/*.json
+          path: ${{ runner.temp }}/hepta-command-records/*
           if-no-files-found: error
           retention-days: 30
   qualification:
@@ -289,18 +297,39 @@ jobs:
           author-name: Hepta Docs CI
           author-email: hepta-docs-ci@users.noreply.github.com
           message: Synthetic merge
-      - name: Retain original document and source-owner gates
+      - name: Verify executable candidate identity
+        id: candidate
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          MERGE_SHA: ${{ steps.synthetic.outputs.sha }}
           HEPTA_CI_LANE: ${{ matrix.lane }}
         shell: bash
         run: |
           set -euo pipefail
-          # Global source/merge document and script checks run once in hepta-development-docs.
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/source-owner.json" -- python3 scripts/hepta-gap-closure.py verify
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ui-test.json" -- node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then
+            test -n "$MERGE_SHA"
+            test "$TESTED_SHA" = "$MERGE_SHA"
+          fi
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Check workspace structure before native setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_workspace.py
+      - name: Parse actual Cargo workspace before native setup
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/workspace-metadata.json" -- cargo metadata --locked --format-version 1 --no-deps
       - name: Formatting without source mutation
-        if: always()
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
           HEPTA_CI_LANE: ${{ matrix.lane }}
@@ -327,6 +356,7 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Resolve verified sandboxed V8 artifacts for Cargo
+        id: native_ready
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
@@ -343,7 +373,6 @@ jobs:
           args=()
           for package in $PACKAGES; do args+=(-p "$package"); done
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/owner-test.json" -- just test --locked "${args[@]}"
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
       - name: Qualify cognitive child-process crash and reopen
         if: matrix.lane == 'source-head'
         working-directory: codex-rs
@@ -411,8 +440,40 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py \
             --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-max-command.json" -- \
             cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
+      - name: Strict Clippy independently of test outcome
+        if: ${{ !cancelled() && steps.native_ready.outcome == 'success' }}
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          for package in $PACKAGES; do args+=(-p "$package"); done
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
+      - name: Retain original document and source-owner gates
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Global source/merge document and script checks run once in hepta-development-docs.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/source-owner.json" -- python3 scripts/hepta-gap-closure.py verify
+      - name: UI owner tests independently of document outcome
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ui-test.json" -- node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
       - name: Clean tracked source
-        if: always()
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
           PRIOR_STATUS: ${{ job.status }}
@@ -435,7 +496,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
-          path: ${{ runner.temp }}/hepta-command-records/*.json
+          path: ${{ runner.temp }}/hepta-command-records/*
           if-no-files-found: error
           retention-days: 30
 

@@ -14,9 +14,13 @@ class ModuleRegistryTests(unittest.TestCase):
     def test_repository_drift_is_machine_readable(self):
         report = compare_registry(ROOT)
         self.assertEqual(report["schema"], "hepta.module-registry-drift.v1")
-        self.assertEqual(report["canonicalModuleCount"], 40)
-        self.assertEqual(report["cargoHeptaCrateCount"], 50)
-        self.assertEqual(report["boundCrateCount"], 50)
+        modules = json.loads((ROOT / "docs/modules/MODULES.json").read_text())[
+            "modules"
+        ]
+        # Inventory changes are not bugs: coverage and unique ownership are.
+        self.assertEqual(report["canonicalModuleCount"], len(modules))
+        self.assertGreater(report["cargoHeptaCrateCount"], 0)
+        self.assertEqual(report["boundCrateCount"], report["cargoHeptaCrateCount"])
         self.assertEqual(report["status"], "aligned")
         self.assertEqual(report["unclaimedCargoCrates"], [])
 

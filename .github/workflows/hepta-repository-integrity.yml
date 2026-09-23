@@ -84,6 +84,20 @@ jobs:
 
       # These tests use disposable Git repositories. Keep their diagnostics
       # independent of global document verification and Cargo materialization.
+      - name: Exercise preflight and source-identity regressions
+        shell: bash
+        run: |
+          set -uo pipefail
+          status=0
+          for suite in test_hepta_workspace.py test_hepta_implementation_identity.py test_hepta_ci_dependency_scaling.py test_hepta_ci_nested_inputs.py test_hepta_ci_opaque_inputs.py; do
+            if python3 -m unittest discover -v -s scripts -p "$suite"; then
+              :
+            else
+              status=1
+            fi
+          done
+          exit "$status"
+
       - name: Exercise source identity migration and freshness regressions
         shell: bash
         run: python3 -m unittest discover -v -s scripts -p 'test_hepta_implementation_source_identity.py'

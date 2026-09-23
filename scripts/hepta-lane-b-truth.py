@@ -19,54 +19,11 @@ TRACE = ROOT / "qualification/lane-b/TEST_TRACEABILITY.json"
 NATIVE = ROOT / "qualification/lane-b/LANE_B_NATIVE_CLOSURE.md"
 COMPOSITION = ROOT / "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
 README = ROOT / "qualification/lane-b/README.md"
-MODULES = [
-    "runtime.supervisor",
-    "runtime.fleet",
-    "runtime.agentd",
-    "runtime.codex",
-    "inference.control",
-    "inference.worker",
-    "automation.taskflow",
-    "channel.matrix",
-    "browser.servo",
-    "ui.control",
-    "ui.native",
-]
-OPS = {
-    "runtime.supervisor": ["start_instance", "observe_health", "drain", "load_next"],
-    "runtime.fleet": ["admit_host", "allocate", "renew_or_revoke"],
-    "runtime.agentd": [
-        "compose_runtime",
-        "start_run",
-        "admit_revalidated_run_start",
-        "cancel_run",
-        "attach_context",
-        "daemon_run_lifecycle_control",
-    ],
-    "runtime.codex": [
-        "open_thread",
-        "submit_turn",
-        "dispatch_tool",
-        "observe_delivery",
-    ],
-    "inference.control": ["reserve_request", "schedule", "cancel", "settle"],
-    "inference.worker": ["load_model", "run", "unload"],
-    "automation.taskflow": [
-        "register_schedule",
-        "materialize_due",
-        "claim_occurrence",
-        "execute_step",
-    ],
-    "channel.matrix": ["admit_event", "prepare_send", "observe_send"],
-    "browser.servo": ["open_profile", "observe_page", "navigate_or_act"],
-    "ui.control": ["read_view", "submit_request", "request_stop"],
-    "ui.native": [
-        "connect_runtime",
-        "render_runtime_view",
-        "request_platform_capability",
-        "apply_shell_update",
-    ],
-}
+# The reviewed lane registry owns membership and operation coverage. Do not
+# maintain another hand-edited operation list in the verifier itself.
+_LANE_INDEX = json.loads(TRUTH.read_text(encoding="utf-8"))
+MODULES = list(_LANE_INDEX["moduleOrder"])
+OPS = {entry["module"]: list(entry["operationIds"]) for entry in _LANE_INDEX["modules"]}
 OPERATION_COUNT = sum(len(operations) for operations in OPS.values())
 HEX40 = re.compile(r"[0-9a-f]{40}")
 RUNTIME_CURRENT_SOURCE_BASE = {"commit": "$CURRENT_HEAD", "tree": "$CURRENT_TREE"}
@@ -616,6 +573,23 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         "source boundary completion contradicts module gaps or incomplete modules",
     )
     roots = {row["module"]: row["resolvedRoots"] for row in maps}
+    # A runtime module can delegate to another registered lane. Resolve only
+    # the named schema owner; lane membership is not repository ownership.
+    from hepta_module_source_roots import resolve_source_roots
+
+    registered = load(ROOT / "docs/modules/MODULES.json")["modules"]
+    owner_modules = {entry["id"]: entry for entry in registered}
+    need(len(owner_modules) == len(registered), "duplicate module owner")
+    for row in maps:
+        for operation in row["operations"]:
+            for delegate in operation.get("delegatedCallees", []):
+                owner = delegate.get("ownerModule")
+                need(
+                    owner in owner_modules,
+                    f"{row['module']}: unregistered delegated owner",
+                )
+                if owner not in roots:
+                    roots[owner] = resolve_source_roots(ROOT, owner_modules[owner])
     operations = tests = 0
     for row in maps:
         module = row["module"]

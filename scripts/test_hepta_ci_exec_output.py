@@ -39,11 +39,30 @@ class CommandOutputTests(unittest.TestCase):
 
     def execute(self, code, minimum=1, **environment):
         result = subprocess.run(
-            [sys.executable, str(RUNNER), "--output", str(self.receipt),
-             "--minimum-tests", str(minimum), "--", sys.executable, "-c", code],
-            cwd=self.repo, capture_output=True, text=True, timeout=10,
-            env={**os.environ, "SOURCE_SHA": self.sha, "TESTED_SHA": self.sha,
-                 "BASE_SHA": self.sha, "HEPTA_CI_LANE": "source-head", **environment},
+            [
+                sys.executable,
+                str(RUNNER),
+                "--output",
+                str(self.receipt),
+                "--minimum-tests",
+                str(minimum),
+                "--",
+                sys.executable,
+                "-c",
+                code,
+            ],
+            cwd=self.repo,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            env={
+                **os.environ,
+                "SOURCE_SHA": self.sha,
+                "TESTED_SHA": self.sha,
+                "BASE_SHA": self.sha,
+                "HEPTA_CI_LANE": "source-head",
+                **environment,
+            },
         )
         return result, json.loads(self.receipt.read_text())
 
@@ -112,7 +131,8 @@ class CommandOutputTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             record = execute_logged(
                 [sys.executable, "-c", "import sys; sys.stdout.write('x'*100000)"],
-                log, maximum_bytes=100,
+                log,
+                maximum_bytes=100,
             )
         self.assertTrue(record["output_limit_exceeded"])
         self.assertEqual(log.stat().st_size, 100)
@@ -154,7 +174,9 @@ class CommandOutputTests(unittest.TestCase):
         self.assertEqual(record["observed_passed_tests"], 0)
 
     def test_real_unittest_empty_suite_fails_minimum(self):
-        result, record = self.execute("import unittest; unittest.TextTestRunner().run(unittest.TestSuite())")
+        result, record = self.execute(
+            "import unittest; unittest.TextTestRunner().run(unittest.TestSuite())"
+        )
         self.assertEqual(record["command_exit_code"], 0)
         self.assertEqual(result.returncode, 1)
         self.assertEqual(record["observed_passed_tests"], 0)
@@ -166,7 +188,8 @@ class CommandOutputTests(unittest.TestCase):
             " def test_pass(self): pass\n"
             " @unittest.skip('fixture')\n"
             " def test_skipped(self): pass\n"
-            "unittest.main()\n", minimum=2,
+            "unittest.main()\n",
+            minimum=2,
         )
         self.assertEqual(record["observed_passed_tests"], 1)
         self.assertEqual(result.returncode, 1)
@@ -205,6 +228,23 @@ class CommandOutputTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(record["observed_passed_tests"], 2)
+
+    def test_swallowed_nextest_timeout_is_not_a_pass(self):
+        result, record = self.execute(
+            "print('Summary [ 1.000s] 2 tests run: 1 passed, 1 timed out, 0 skipped')"
+        )
+        self.assertEqual(record["command_exit_code"], 0)
+        self.assertEqual(record["observed_failed_tests"], 1)
+        self.assertEqual(result.returncode, 1)
+
+    def test_nextest_summary_does_not_double_count_nested_libtest(self):
+        result, record = self.execute(
+            "print('test result: ok. 1 passed; 0 failed; 0 ignored;'); "
+            "print('Summary [ 1.000s] 1 test run: 1 passed, 0 skipped')",
+            minimum=2,
+        )
+        self.assertEqual(record["observed_passed_tests"], 1)
+        self.assertEqual(result.returncode, 1)
 
     def test_existing_log_cannot_be_reused(self):
         log = self.root / "retained.log"
