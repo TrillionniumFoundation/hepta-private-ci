@@ -518,8 +518,31 @@ impl AutomationStore {
         attempt: u32,
         fence: &TaskFlowFence,
     ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
+        self.read_verified_step(run_id, step_id, attempt, Some(fence))
+            .await
+    }
+
+    pub(crate) async fn read_terminal_taskflow_step(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
+        self.read_verified_step(run_id, step_id, attempt, None)
+            .await
+    }
+
+    async fn read_verified_step(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: Option<&TaskFlowFence>,
+    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
         validate_common_without_digests(run_id, step_id, attempt, "read")?;
-        validate_fence(self, fence)?;
+        if let Some(fence) = fence {
+            validate_fence(self, fence)?;
+        }
         ensure_step_schema(self).await?;
         let mut tx = self.begin_step_tx().await?;
         let run = load_run(&mut tx, self, run_id).await?;
@@ -537,15 +560,49 @@ impl AutomationStore {
             attempt,
             &events,
         )?;
-        if receipt.state == TaskFlowStepState::Reconciled {
-            // Recovery may legitimately re-fence a still-Running run projection
-            // after this immutable step has already reached its terminal
-            // reconciliation receipt. Historical terminal evidence remains
-            // readable only under the exact fence that authored the step; this
-            // does not authorize any new step mutation or provider dispatch.
-            check_step_fence(&receipt.fence, fence)?;
+        if let Some(fence) = fence {
+            if receipt.state == TaskFlowStepState::Reconciled {
+                // Recovery may legitimately re-fence a still-Running run projection
+                // after this immutable step has already reached its terminal
+                // reconciliation receipt. Historical terminal evidence remains
+                // readable only under the exact fence that authored the step; this
+                // does not authorize any new step mutation or provider dispatch.
+                check_step_fence(&receipt.fence, fence)?;
+            } else {
+                check_historical_fence(&run, &receipt.fence, fence)?;
+            }
         } else {
-            check_historical_fence(&run, &receipt.fence, fence)?;
+            // This owner-local path only observes a completed run. It cannot
+            // settle an uncertain effect or authorize a new provider attempt.
+            let terminal = matches!(
+                (run.state, receipt.observation, receipt.final_outcome),
+                (
+                    crate::TaskFlowRunState::Succeeded,
+                    Some(TaskFlowStepObservation::Succeeded),
+                    _
+                ) | (
+                    crate::TaskFlowRunState::Failed,
+                    Some(TaskFlowStepObservation::Failed),
+                    _
+                ) | (
+                    crate::TaskFlowRunState::Succeeded,
+                    _,
+                    Some(TaskFlowReconcileOutcome::Succeeded)
+                ) | (
+                    crate::TaskFlowRunState::Failed,
+                    _,
+                    Some(TaskFlowReconcileOutcome::Failed)
+                )
+            );
+            if !terminal
+                || !matches!(
+                    receipt.state,
+                    TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
+                )
+            {
+                tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+                return Ok(None);
+            }
         }
         tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(Some(receipt))

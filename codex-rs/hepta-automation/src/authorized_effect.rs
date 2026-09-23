@@ -559,6 +559,74 @@ pub enum AuthorizedEffectError {
 }
 
 impl AutomationStore {
+    /// Observe an already settled effect under the automation owner's read
+    /// boundary. Exact intent, payload, binding, command and terminal evidence
+    /// must match. No lease is renewed, grant consumed or provider contacted.
+    /// In-flight/indeterminate observations return None and still require the
+    /// ordinary current-fence reconciliation path.
+    pub async fn read_authorized_taskflow_effect_receipt(
+        &self,
+        intent: &AuthorizedEffectIntent,
+        command_id: &str,
+    ) -> Result<Option<TaskFlowStepReceipt>, AuthorizedEffectError> {
+        let binding = intent.final_use_binding()?;
+        let intent_digest = intent.digest()?;
+        let Some(durable) = self
+            .effect_dispatch_attempt(&intent.run_id, &intent.step_id, intent.attempt)
+            .await?
+        else {
+            return Ok(None);
+        };
+        ensure_attempt_binding(
+            &durable,
+            &intent_digest,
+            &intent.payload_digest,
+            &final_use_binding_digest(&binding)?,
+            &binding,
+            command_id,
+        )?;
+        let Some(observation) = &durable.observation else {
+            return Ok(None);
+        };
+        let expected = match observation.kind {
+            EffectDispatchObservationKind::Succeeded => TaskFlowStepObservation::Succeeded,
+            EffectDispatchObservationKind::Failed => TaskFlowStepObservation::Failed,
+            EffectDispatchObservationKind::Indeterminate
+            | EffectDispatchObservationKind::ProvenAbsent => return Ok(None),
+        };
+        let Some(step) = self
+            .read_terminal_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt)
+            .await?
+        else {
+            return Ok(None);
+        };
+        let matches_outcome =
+            step.final_outcome
+                .map_or(step.observation == Some(expected), |outcome| {
+                    matches!(
+                        (expected, outcome),
+                        (
+                            TaskFlowStepObservation::Succeeded,
+                            TaskFlowReconcileOutcome::Succeeded
+                        ) | (
+                            TaskFlowStepObservation::Failed,
+                            TaskFlowReconcileOutcome::Failed
+                        )
+                    )
+                });
+        if step.intent_digest != intent_digest
+            || step.payload_digest != intent.payload_digest
+            || step.receipt_digest.as_ref() != Some(&observation.evidence_digest)
+            || !matches_outcome
+        {
+            return Err(TaskFlowError::Conflict(
+                "terminal step differs from durable provider evidence".to_string(),
+            )
+            .into());
+        }
+        Ok(Some(step))
+    }
+
     /// Dispatch one already-claimed durable TaskFlow step through a final-use
     /// authorized provider seam.
     ///

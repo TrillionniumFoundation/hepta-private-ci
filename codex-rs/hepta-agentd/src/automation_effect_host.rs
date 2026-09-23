@@ -229,6 +229,16 @@ impl AgentdAutomationEffectHost {
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AgentdError> {
         self.validate_intent(intent, wire_payload)?;
+        self.refresh_revocations()?;
+        if let Some(receipt) = store
+            .read_authorized_taskflow_effect_receipt(intent, command_id)
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!("read terminal effect receipt: {error}"))
+            })?
+        {
+            return Ok(receipt);
+        }
         let run = store
             .taskflow_run(&intent.run_id)
             .await
@@ -237,7 +247,6 @@ impl AgentdAutomationEffectHost {
                 AgentdError::Invalid("effect TaskFlow run does not exist".to_string())
             })?;
         let fence = self.current_fence(&run, now_ms)?;
-        self.refresh_revocations()?;
         let binding = intent
             .final_use_binding()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
@@ -1040,6 +1049,46 @@ mod tests {
             .await
             .expect("settled replay");
         assert_eq!(replay.receipt_digest, receipt.receipt_digest);
+        // A terminal read is not permission to substitute bytes or command
+        // identity, even though the live lease has already been cleared.
+        let mut substituted = intent.clone();
+        substituted.operation_id.push_str("-substitution");
+        assert!(
+            host.execute(
+                &fixture.store,
+                &substituted,
+                WIRE,
+                &grant,
+                "agentd-product-effect-dispatch",
+                now_ms + 7
+            )
+            .await
+            .is_err()
+        );
+        assert!(
+            host.execute(
+                &fixture.store,
+                &intent,
+                WIRE,
+                &grant,
+                "different-command",
+                now_ms + 7
+            )
+            .await
+            .is_err()
+        );
+        assert!(
+            host.execute(
+                &fixture.store,
+                &intent,
+                b"different-wire",
+                &grant,
+                "agentd-product-effect-dispatch",
+                now_ms + 7
+            )
+            .await
+            .is_err()
+        );
         server.verify().await;
     }
 }
