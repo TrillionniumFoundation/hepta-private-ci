@@ -217,5 +217,17 @@
     },
     "postCommitFailurePossible": false,
     "productionWriterReplacement": false
-  }
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "nativeSymbol": "AgentdProductionWriterHost",
+      "state": "concrete_configured_writer_host"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+      "nativeSymbol": "open_cognitive_runtime_after_generation_fence",
+      "state": "default_fenced_store_open"
+    }
+  ]
 }

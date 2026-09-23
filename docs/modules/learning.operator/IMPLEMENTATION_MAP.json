@@ -273,5 +273,12 @@
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-bellman-operator"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "nativeSymbol": "PinnedCognitiveRanker",
+      "state": "explicit_loaded_operator_read_consumer_not_training_loop"
+    }
   ]
 }

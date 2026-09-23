@@ -411,5 +411,12 @@
     "compile_admitted_objective_v1",
     "encode_objective_function_v1",
     "decode_objective_function_v1"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "nativeSymbol": "submit",
+      "state": "authenticated_configured_objective_host"
+    }
   ]
 }

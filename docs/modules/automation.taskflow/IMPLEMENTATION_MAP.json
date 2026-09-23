@@ -284,5 +284,17 @@
     "verifier": "scripts/hepta-implementation-maps.py::verify_source_identity",
     "regression": "scripts/test_hepta_module_source_roots.py::SourceRootTests::test_exact_rust_observation_requires_workspace_manifest_and_lock",
     "semantics": "Any strict exact observation whose resolved source roots enter codex-rs must include the root Cargo workspace manifest and lockfile; omission is a verification failure."
-  }
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_service.rs",
+      "nativeSymbol": "spawn_automation_service",
+      "state": "default_optional_scheduler_with_owner_retirement"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
+      "nativeSymbol": "run_automation_scheduler",
+      "state": "existing_app_server_queue_owner_consumer"
+    }
+  ]
 }

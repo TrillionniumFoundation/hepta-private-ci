@@ -327,5 +327,12 @@
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-operations"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+      "nativeSymbol": "run_production_operation_reconciler",
+      "state": "configured_product_reconciler_not_external_authority_activation"
+    }
   ]
 }

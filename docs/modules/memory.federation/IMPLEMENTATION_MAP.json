@@ -157,5 +157,17 @@
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-memory-federation"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+      "nativeSymbol": "attach_federation_after_generation_fence",
+      "state": "local_registered_owner_composition_not_cross_host_authentication"
+    },
+    {
+      "sourcePath": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "nativeSymbol": "CombinedCognitiveEphemeralContributor",
+      "state": "final_use_revalidated_local_owner_federation"
+    }
   ]
 }

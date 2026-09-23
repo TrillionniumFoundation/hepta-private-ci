@@ -731,5 +731,17 @@
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+      "nativeSymbol": "publish_integration_queue",
+      "state": "repository_product_runtime_not_independent_acceptance"
+    },
+    {
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
+      "nativeSymbol": "main",
+      "state": "explicit_dual_lane_qualification_cli_not_worker_merge_authority"
+    }
   ]
 }

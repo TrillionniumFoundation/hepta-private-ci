@@ -298,5 +298,12 @@
       "buildTarget": "codex-core"
     },
     "effectSemantics": "The hepta-infer-worker App Server profile exposes no model-visible or registered tools. dispatch_tool mappings are delegated source navigation only. Any external tool effect requires a separately authorized effect owner, final-use capability, durable operation identity, and terminal observer."
-  }
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "nativeSymbol": "run_app_server",
+      "state": "embedded_existing_app_server_spine"
+    }
+  ]
 }

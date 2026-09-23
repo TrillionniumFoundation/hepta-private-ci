@@ -237,5 +237,12 @@
     "legacyRecordIdReusedAsCanonicalEventId": false,
     "replacesLegacyOutput": false,
     "productComposed": false
-  }
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nativeSymbol": "read_with_retrieval_context_and_learning",
+      "state": "explicit_authenticated_retrieval_profile"
+    }
+  ]
 }

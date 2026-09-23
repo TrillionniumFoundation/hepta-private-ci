@@ -240,5 +240,17 @@
     "codex-rs/hepta-prompt-registry/Cargo.toml",
     "codex-rs/hepta-prompt-registry/src/lib.rs",
     "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+      "nativeSymbol": "relation_channel_tx",
+      "state": "bounded_owner_retrieval_graph_projection"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
+      "nativeSymbol": "optimize_with_factor_graph",
+      "state": "explicit_prompt_factor_graph_consumer"
+    }
   ]
 }

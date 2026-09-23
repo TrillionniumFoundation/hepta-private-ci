@@ -264,5 +264,17 @@
       "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
       "codex-rs/hepta-learning-ledger/src/run_start.rs"
     ]
-  }
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/main.rs",
+      "nativeSymbol": "codex_hepta_agentd::run",
+      "state": "default_daemon_composition_entry"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "RunStart",
+      "state": "public_lifecycle_not_canonical_intelligence"
+    }
+  ]
 }

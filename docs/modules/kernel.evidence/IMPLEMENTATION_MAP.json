@@ -136,5 +136,12 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-evidence"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/evidence_host.rs",
+      "nativeSymbol": "EvidenceHost",
+      "state": "config_gated_owner_host_not_trust_activation"
+    }
   ]
 }

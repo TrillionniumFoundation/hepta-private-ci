@@ -214,5 +214,12 @@
   "sourceRoot": [
     "codex-rs/hepta-context-compiler"
   ],
-  "sourceBaseMode": "module_local_strict"
+  "sourceBaseMode": "module_local_strict",
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "nativeSymbol": "compile_context",
+      "state": "compiled_legacy_owner_adapter_not_verified_v2_ingress"
+    }
+  ]
 }

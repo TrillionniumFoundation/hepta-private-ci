@@ -644,5 +644,17 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-plasticity"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "nativeSymbol": "compose_plasticity_runtime_v1",
+      "state": "explicit_process_bootstrap_not_autonomous_trigger"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+      "nativeSymbol": "AgentdLearningPlasticityProducerV1",
+      "state": "compiled_producer_trigger_not_product_composed"
+    }
   ]
 }
