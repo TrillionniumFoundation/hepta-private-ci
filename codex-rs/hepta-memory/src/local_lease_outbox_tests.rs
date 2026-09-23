@@ -922,10 +922,14 @@ async fn new_generation_retry_of_old_occurrence_is_stale_not_corrupt() {
             .await,
         Err(LocalLeaseOutboxError::StaleFence(_))
     ));
-    assert!(matches!(
-        next.status("occurrence:old").await,
-        Err(LocalLeaseOutboxError::StaleFence(_))
-    ));
+    // A successor may read acknowledged terminal history; mutations above
+    // remain fenced and may not turn the old occurrence into new work.
+    assert_eq!(
+        next.status("occurrence:old")
+            .await
+            .expect("terminal history read"),
+        LocalOutcomeState::RolledBack
+    );
     assert_eq!(
         next.snapshot_counts()
             .await
@@ -2819,14 +2823,22 @@ async fn sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cl
         .fetch_one(&store.pool)
         .await
         .expect("page count");
-    // SQLite PRAGMA does not bind this setting. The interpolated value is an
-    // i64 from page_count, so no SQL syntax can enter through this fixture.
-    sqlx::query(sqlx::AssertSqlSafe(format!(
-        "PRAGMA max_page_count = {page_count}"
-    )))
-    .execute(&store.pool)
-    .await
-    .expect("freeze page budget");
+    // max_page_count is connection-local. Freeze every pool connection,
+    // retaining them until all are configured so no unbounded connection can
+    // accidentally service the write and make this fault injection flaky.
+    let mut connections = Vec::new();
+    for _ in 0..store.pool.options().get_max_connections() {
+        let mut connection = store.pool.acquire().await.expect("pool connection");
+        let actual: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(format!(
+            "PRAGMA max_page_count = {page_count}"
+        )))
+        .fetch_one(&mut *connection)
+        .await
+        .expect("freeze page budget");
+        assert_eq!(actual, page_count);
+        connections.push(connection);
+    }
+    drop(connections);
 
     let before = handle.snapshot_counts().await.expect("before counts");
     let before_operations = operation_rows(&store, lease_id).await;

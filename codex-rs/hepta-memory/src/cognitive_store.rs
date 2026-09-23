@@ -180,9 +180,14 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_ledger_no_delete", "trigger"),
     ("cognitive_operation_ledger_destination_lookup", "index"),
     ("cognitive_operation_ledger_lease_lookup", "index"),
+    ("cognitive_operation_dispatch_claims", "table"),
+    ("cognitive_operation_dispatch_claims_no_update", "trigger"),
+    ("cognitive_operation_dispatch_claims_no_delete", "trigger"),
+    ("cognitive_operation_dispatch_claims_active_lookup", "index"),
+    ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "2500d2026b3ae42055d97dd14281ed030347a4db062a412d79adeb6619f96f91";
+    "241588fd801155989fda2a374b5b52a4f77b30c2a25bcb6a2e2b2d26aeec1a95";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
