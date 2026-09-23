@@ -1036,17 +1036,7 @@ def verify() -> int:
             or ".github/actions/hepta-synthetic-merge" in workflow,
             label + " synthetic merge",
         )
-    for token in (
-        "python3 scripts/hepta-algorithm-docs.py self-test",
-        "python3 scripts/hepta-algorithm-docs.py verify-sources",
-        "python3 scripts/hepta-algorithm-docs.py verify",
-        "python3 scripts/hepta-algorithm-docs.py generate-status",
-    ):
-        need(token in dedicated_workflow, "dedicated workflow token " + token)
-        # Global verification owns the subordinate verify call; self-tests and
-        # source checks remain separate commands.
-        if token != "python3 scripts/hepta-algorithm-docs.py verify":
-            need(token in global_workflow, "global workflow token " + token)
+    verify_algorithm_workflow_commands(dedicated_workflow, global_workflow)
 
     print(
         json.dumps(
@@ -1066,6 +1056,31 @@ def verify() -> int:
         )
     )
     return 0
+
+
+def verify_algorithm_workflow_commands(dedicated: str, global_workflow: str) -> None:
+    """Owner workflow runs self-tests; global verification checks current inputs.
+
+    Requiring the same owner self-test a second time in the global workflow
+    added no coverage and conflicted with the scoped CI policy. The dedicated
+    workflow still must run it, and the global verifier still calls verify.
+    """
+    prefix = "python3 scripts/hepta-algorithm-docs.py "
+
+    def invokes(workflow: str, command: str) -> bool:
+        # Comments and a verify-sources command cannot stand in for verify.
+        pattern = r"(?m)^\s*" + re.escape(prefix + command) + r"(?:[ \t]|$)"
+        return re.search(pattern, workflow) is not None
+
+    for command in ("self-test", "verify-sources", "verify", "generate-status"):
+        need(
+            invokes(dedicated, command), "dedicated workflow token " + prefix + command
+        )
+    for command in ("verify-sources", "generate-status"):
+        need(
+            invokes(global_workflow, command),
+            "global workflow token " + prefix + command,
+        )
 
 
 def self_test() -> int:
