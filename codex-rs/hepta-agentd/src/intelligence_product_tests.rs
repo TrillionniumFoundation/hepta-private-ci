@@ -11,8 +11,10 @@ fn product_test_coordinator() -> AgentRunCoordinator {
 }
 
 use crate::AgentRunCoordinator;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use crate::RunPhase;
 use crate::RuntimeComposition;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use std::fs::OpenOptions;
 
 use super::*;
@@ -33,10 +35,15 @@ use codex_hepta_intuition::OodArtifactV1;
 use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::AppendDisposition;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::DurableLedger;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::LedgerAnchor;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::LedgerEvent;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_ndu::AggregationOperator;
 use codex_hepta_ndu::AxisAggregationRule;

@@ -1049,15 +1049,25 @@ mod tests {
             serde_json::json!(1),
             "combined payload must preserve typed failure coverage",
         );
+        assert_eq!(payload["s"], "verified_cognitive_v3");
+        let hashes = payload["sha256"].as_array().expect("complete digest table");
+        let resolve_hash = |index: &serde_json::Value| {
+            let index = usize::try_from(index.as_u64().expect("digest index")).expect("index fits");
+            hashes
+                .get(index)
+                .expect("digest table entry")
+                .as_str()
+                .expect("full digest")
+        };
         let memories = payload["m"].as_array().expect("combined memories");
         assert_eq!(memories.len(), 2);
-        assert_eq!(memories[0]["h"], "22".repeat(32));
+        assert_eq!(resolve_hash(&memories[0]["h"]), "22".repeat(32));
         assert_eq!(
             memories[0]["q"].as_array().expect("local citations").len(),
             1
         );
-        assert_eq!(memories[0]["q"][0]["h"], "33".repeat(32));
-        assert_eq!(memories[1]["h"], "44".repeat(32));
+        assert_eq!(resolve_hash(&memories[0]["q"][0]["h"]), "33".repeat(32));
+        assert_eq!(resolve_hash(&memories[1]["h"]), "44".repeat(32));
         assert_eq!(
             memories[1]["q"]
                 .as_array()
@@ -1065,7 +1075,7 @@ mod tests {
                 .len(),
             1
         );
-        assert_eq!(memories[1]["q"][0]["h"], "55".repeat(32));
+        assert_eq!(resolve_hash(&memories[1]["q"][0]["h"]), "55".repeat(32));
 
         let changed = combine_cognitive_materials(
             &input,
