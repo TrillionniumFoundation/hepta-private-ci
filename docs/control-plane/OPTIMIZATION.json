@@ -66,5 +66,18 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
+  },
+  "circuitPolicyDesign": {
+    "status": "design_target",
+    "reference": "docs/modules/automation.taskflow/TECHNICAL.md",
+    "selection": "admitted_paths_and_termination_under_frozen_version",
+    "candidateSetIncludes": [
+      "no_change",
+      "abstain_or_declared_fallback"
+    ],
+    "onlineArbitraryGraphPatchAllowed": false,
+    "policyLearning": "separate_cell_only_routing_only_joint_and_structure_evaluation",
+    "durability": "record_actual_choices_before_effect_relevant_progress",
+    "baseRuntimeOwnerUnchanged": true
   }
 }

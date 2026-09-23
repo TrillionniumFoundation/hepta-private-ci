@@ -92,6 +92,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Compose cells through existing organ/Neuron/inference owners, not one service or database per node. Preserve cancellation, bounded task lifetime, generation fencing and terminal reconciliation. Attach the same product decision path rather than extending several bespoke main-loop branches per new backend.
 
+Compose the evolved TaskFlow owner, event ingress and existing cell/organ ports. Calendar wake-up and direct-event admission remain distinct; no fake occurrences or standalone duplicate runtime. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: optional organ outage, task retirement, in-flight unknown effects and no duplicate executor.
 
 The shared contract and record design are in

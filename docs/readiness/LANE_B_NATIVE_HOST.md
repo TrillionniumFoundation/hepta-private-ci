@@ -65,6 +65,23 @@ Pre-dispatch cancellation or connection failure records a local stop and release
 
 The journal has a 64 MiB total byte budget, an 8 MiB encoded-line budget and at most 16384 records across legacy/native types. New admission/dispatch also requires 16 MiB of remaining journal space for the next bounded observation and metadata. Append checks bounds before writing; replay bounds actual reads and checks capacity incrementally. Oversize, malformed or incomplete histories fail without truncation. At capacity, the owner refuses new durable writes; authenticated archival/retention is remaining implementation work.
 
+## Neural Circuit target: preserve the owning execution path
+
+The current automation path remains the schedule/occurrence/TaskFlow/outbox owner
+listed above. Its evolution to event-driven Neural Circuits is a design target,
+not another standalone runtime binary or a claim of new product execution.
+Automation timers supply wake-up; direct event starts require a typed ingress/run
+identity rather than a fake schedule. The TaskFlow owner persists circuit choices
+and progress, existing Neuron/inference owners perform decisions, and registered
+downstream owners execute effects and report terminal observations.
+
+Implement through the existing Agentd product composition with bounded joins,
+feedback, subcircuits, cancellation, resource fairness and choice-before-effect
+recovery. Do not turn the inert `hepta-taskflow-runtime` entry into a second executor
+or treat checkpoint receipts as cross-owner atomicity. The authoritative target
+contract is [TaskFlow/Neural Circuit](../modules/automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+All current native implementation and external-qualification limitations remain.
+
 ## Remaining implementation work
 
 - Connect economic quota and device-capacity authorities, and implement authenticated provider reconciliation after process loss. Native local-slot reservations and observed usage settlement are wired; hosted execution does not prove local model artifacts, memory/device grants or process isolation.

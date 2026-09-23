@@ -120,5 +120,22 @@
     "temporalAndHierarchyRecursionEquivalent": false,
     "deploymentParameterMutation": "candidate_only_then_existing_independent_selection",
     "equations": "docs/learning/NDU_FBSDE_SPEC.md"
+  },
+  "circuitControlDesign": {
+    "status": "design_target",
+    "reference": "docs/learning/NDU_FBSDE_SPEC.md",
+    "controlVariables": [
+      "task_action",
+      "routing_activation",
+      "resource_allocation",
+      "continuation_termination",
+      "future_parameter_or_structure_candidate"
+    ],
+    "perSignalCentralSolverRequired": false,
+    "subjectClassesUnchanged": true,
+    "timeAggregation": "registered_recursive_utility_with_actual_duration",
+    "hierarchyRecursionEqualsTimeRecursion": false,
+    "counterfactualValueIsObservedOutcome": false,
+    "fixedObjectiveAndHardBoundariesRemainExternal": true
   }
 }

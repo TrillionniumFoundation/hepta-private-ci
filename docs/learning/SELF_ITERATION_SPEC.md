@@ -79,6 +79,22 @@ reset, affected compatibility set, source lineage, resource delta, external port
 compatibility and current-admissible rollback. Unknown effects must reconcile
 before destructive retirement; deleting source is not retiring live state.
 
+### Circuit policies and structure are different mutation classes
+
+The existing CNS contains Neural Circuits whose implementation target is specified
+in `../modules/automation.taskflow/TECHNICAL.md`. Separate cell parameter updates,
+routing/activation/termination policies, and typed circuit structure proposals.
+Runtime choice among already admitted paths is not graph mutation. New nodes/edges,
+public port meanings, state transforms or effects create a next-generation
+candidate. Do not weaken TaskFlow V1's DAG validator to enable general feedback.
+
+Reuse deterministic operators, qualified subcircuits and stable organ ports before
+creating a new workflow variant. Growth, specialization and structural surgery
+compete against no-change, reuse, consolidation and retirement. A routing optimizer
+may be a DecisionCell but cannot modify the runtime's truth, authority, deduplication
+or reconciliation logic. Candidate tests distinguish cell accuracy gains from
+better coordination/termination and from additional computation.
+
 ## 4. Deterministic reference algorithm
 
 ```text
@@ -167,6 +183,17 @@ Candidate generation is bounded by envelope fields, not best effort. Pilot limit
 Equivalent-candidate detection uses normalized AST/semantic digests where available and normalized textual digests otherwise. Duplicate ratio above `50%` ends the search. Generated-test mutation score and coverage are reported with confidence bounds; neither is a sole acceptance metric.
 
 Queue depth is bounded. Backpressure rejects new envelopes rather than spawning unbounded agents. Candidate artifacts and logs have explicit retention and deletion policies.
+
+### Live circuit version transition
+
+Freeze a coherent circuit definition, route policy, cell bundle and public-port
+contract for each admitted run. Old runs finish or undergo an explicitly admitted
+migration that maps activation/frontier, outstanding children, budgets, recorded
+choices, state receipts and operation identities. New policies never rewrite past
+choices, and routing to a different node cannot manufacture a new identity for an
+uncertain external effect. Restore remains subject to current revocation and source
+non-resurrection. A model rollback without compatible circuit/state policy is not
+an admitted recovery plan. Avoid global generation barriers for unrelated organs.
 
 ## 8. Failure detection, fallback and rollback
 

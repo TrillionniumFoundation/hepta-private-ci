@@ -93,6 +93,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Apply existing lifecycle and writer-handoff mechanisms to model/organ replacement. A stopped future does not transfer checkpoint ownership. Publish the affected coherent bundle only after required drain/migration checks; unrelated organs need not restart. Retired identities retain fences and old receipts remain interpretable.
 
+Retire circuits only after admission stops and children/effects are classified. Preserve recorded choices and operation identity across policy changes, state migration and fresh-generation rollback. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: crash at every handoff, old-writer rejection, compatible state transform, revoked rollback and shared-base retirement.
 
 The shared contract and record design are in

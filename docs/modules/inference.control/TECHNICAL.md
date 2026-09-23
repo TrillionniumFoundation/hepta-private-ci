@@ -96,6 +96,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Serve cell inference through bounded shared workers with exact code/weight/adapter/tokenizer identity. Separate logical cells from resident models, account for cache misses and training reservations, and reject expired or incompatible work before dispatch. Do not assume question-conditioned embeddings are reusable merely because state text matches.
 
+Admit circuit-linked inference with exact activation, bundle, input and resource identity. A lost inference response follows the inference owner recovery contract, not a blind replay with new weights. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: mixed-adapter batches, principal isolation, deadline/cancellation, load failure and foreground contention.
 
 The shared contract and record design are in

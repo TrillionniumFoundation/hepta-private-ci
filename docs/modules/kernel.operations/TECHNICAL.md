@@ -92,6 +92,17 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Neural Circuit intent boundary (integration target)
+
+A circuit edge or learned route is not operation authority. The evolved TaskFlow
+owner commits its effect-relevant choice/outbox first, then the existing operation
+and destination owners validate final payload, identity, grant and predecessor.
+Cancellation, feedback re-entry or policy replacement must not reset logical effect
+identity. Unknown outcomes remain open until owner reconciliation; a late child
+effect survives parent cancellation. No cross-owner SQL transaction is implied.
+See the [circuit execution contract](../automation.taskflow/TECHNICAL.md#44-durable-choice-checkpoint-and-effect-ordering).
+This requirement adds no native operation or accepted wire field by itself.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

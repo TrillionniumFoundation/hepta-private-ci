@@ -741,5 +741,34 @@
       "decision_cell_serving_scale",
       "organ_structural_evolution"
     ]
+  },
+  "circuitLearning": {
+    "status": "design_target",
+    "runtimeReference": "docs/modules/automation.taskflow/TECHNICAL.md",
+    "targets": [
+      "cell_parameters",
+      "routing_activation_termination_policy",
+      "next_generation_structure"
+    ],
+    "trajectoryIdentity": [
+      "circuit_definition",
+      "run_activation_round",
+      "actual_branch_choice",
+      "causal_event_order",
+      "complete_legal_candidates",
+      "behavior_policy_and_joint_or_conditional_law",
+      "cell_model_bundle",
+      "child_duration_and_cost",
+      "independent_terminal_outcome"
+    ],
+    "operationalToLearningHandoff": "existing_idempotent_outbox_not_cross_owner_sql_write",
+    "historicalChoiceReinferenceAllowed": false,
+    "singleSignalIndependentEvaluationUnit": false,
+    "safetyConstraintsLearnable": false,
+    "experiments": [
+      "neural_circuit_execution",
+      "neural_circuit_policy"
+    ],
+    "structureExperiment": "organ_structural_evolution"
   }
 }

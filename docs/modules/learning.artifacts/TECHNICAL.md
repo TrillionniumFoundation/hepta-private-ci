@@ -103,6 +103,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Persist immutable base/organ/cell parameter bundles with complete tensor inventories and compatibility/deletion lineage. Preserve scalar ParameterProposalV2 semantics; larger updates require a versioned artifact-reference adapter. Reference-aware GC must retain shared bases still in use; the registry neither trains nor selects its own artifacts.
 
+Bind circuit routing/termination policy to compatible cell, definition and state versions. TaskFlow continues to own immutable operational definitions; artifact storage is not a second body/run registry. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: base replacement, adapter shape/order mismatch, revoked source reload, optimizer lineage and shared-reference GC.
 
 The shared contract and record design are in

@@ -90,6 +90,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Coordinate admitted organ graphs and budget boundaries without synchronously centralizing every cell inference. Preserve stable organ ports while internal cells evolve. Only select already-qualified compatible configurations under existing authority; do not turn public cell declarations into selection tokens.
 
+Coordinate admitted circuit policies and bounded budgets without owning their run ledger. Avoid a global synchronous activation scheduler; choice among frozen paths differs from structural mutation. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: bounded feedback, incompatible public ports, shared resource accounting and degraded central control.
 
 The shared contract and record design are in

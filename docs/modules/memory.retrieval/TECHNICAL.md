@@ -87,6 +87,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Host the first read-only cooperating organ: channel allocation, candidate relevance, contradiction support, evidence sufficiency and stopping. Keep owner-generated bounded candidates and current source validation; cells cannot invent relevance inputs or silently truncate the evaluated set. Expose one stable evidence/coverage/cost port to callers.
 
+Use one circuit across sufficient, conflicting, unavailable-organ and exhausted-budget contexts. Keep stable evidence/coverage/cost ports; do not hard-code a separate workflow for every context. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: full bounded candidate ranking, missing channels, contradiction/OOD, stopping policy and add/retire behind unchanged public port.
 
 The shared contract and record design are in

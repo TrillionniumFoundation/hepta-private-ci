@@ -95,6 +95,9 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Compose one product path using the existing objective, owner evidence, NDU value, cell/organ inference, calibrated policy and context stages. Keep backend-specific Laya APIs behind inference/Neuron adapters; preserve outcomes back to the ledger. Do not add a parallel Laya control loop or store.
 
+Use one product composition for circuit-triggered cell/organ calls and result feedback. Do not add an independent Laya flow engine or flatten every organ into private cells. See the
+[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+
 Required targeted tests: coherent bundle across stages, required-owner outage, source/parameter drift and actual downstream outcome linkage.
 
 The shared contract and record design are in

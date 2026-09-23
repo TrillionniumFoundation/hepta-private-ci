@@ -21,6 +21,16 @@ Before add/split/merge/rewire/retire, bind state and optimizer transformations,
 in-flight classification, writer fencing, external port compatibility, cost and
 current-admissible rollback. Failed or unknown effects block unsafe cutover.
 
+### TaskFlow to Neural Circuit migration
+
+Keep the existing V1 DAG profile and persisted run/effect identity. A richer circuit
+profile introduces explicit event ports, DecisionCell/organ calls, joins, bounded
+feedback and route/termination policies only after versioned consumer admission.
+No second executor or Nervous System authority is created. Compare legacy, fixed
+circuit and learned-policy behaviors; cutover tests include canceled joins with
+late effects and recovery after policy replacement. Runtime branch selection under
+an admitted definition is not permission to patch the active graph.
+
 ## 2. Typed mutation grammar
 
 `MutationGrammarManifestV1` defines exact operations per class:

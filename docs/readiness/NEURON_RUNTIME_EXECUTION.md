@@ -85,6 +85,18 @@ A compatible bundle is published at a future snapshot; unrelated organs need not
 restart. Never mutate selected tensors through a training optimizer or clear old
 writer fences merely to reuse a logical name.
 
+### Neural Circuit call and result handoff
+
+The circuit adapter passes a scoped activation/round, frozen definition/policy,
+legal candidate set, causal inputs, exact budget and parameter bundle to the cell
+owner through existing inference admission. Cell state commits under its own CAS;
+the run owner records the exact returned receipt and selected branch before any
+downstream effect. Cross-owner acknowledgment loss reconciles the same activation;
+it is not an atomic transaction across owners or permission to update twice.
+Committed historical choices are read back, not recomputed with a new Laya version.
+Reusable cell implementations do not imply shared mutable run state. The full
+execution contract is in `../modules/automation.taskflow/TECHNICAL.md`.
+
 ## 5. Failure detection and fallback
 
 Failures include encoder/head/tokenizer mismatch, stale generation, sequence gap, clock regression, dimension drift, state explosion or collapse, all-active or dead-unit collapse, threshold saturation, eligibility overflow, untrusted modulator, OOD false acceptance and attempted current-artifact mutation.
