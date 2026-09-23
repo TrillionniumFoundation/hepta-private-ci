@@ -203,7 +203,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The canonical source enforces at most 128 legal candidates, exactly seven owner bindings, non-zero per-stage budgets, a bounded total cognition budget and monotonic elapsed-time rejection for every real owner call. Agentd additionally applies a total worker timeout. These are source enforcement facts, not target-host latency/RSS measurements; target-host qualification remains separate.
+The canonical source enforces at most 128 legal candidates, exactly seven owner bindings, non-zero per-stage budgets, a bounded total cognition budget and monotonic elapsed-time rejection for every real owner call. Agentd additionally applies a total worker timeout and a four-worker admission bound. A permit remains owned by the actual blocking computation until it finishes, including after request timeout or cancellation. Saturation returns `Busy` without enqueueing another computation; it is not a successful advisory outcome. This bound does not wire the runner into the daemon request path. These are source enforcement facts, not target-host latency/RSS measurements; target-host qualification remains separate.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 

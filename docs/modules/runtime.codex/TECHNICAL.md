@@ -258,6 +258,10 @@ Consumed readiness protocols:
 
 Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
 
+### Owner-local cognitive lifecycle boundary
+
+App Server retains compatibility re-exports for the local development lifecycle seam, while lease/witness implementation and tests live in the existing `codex-rs/ext/hepta-memory` owner. Equality of installed cognitive runtime options delegates to `CognitiveRuntime` identity semantics, including exact handle, consumer, enrollment and omission coverage; App Server does not match every domain variant itself. This removes domain branching without introducing a second execution spine, a new store, or new capabilities. Other direct Hepta dependencies remain subject to explicit subsequent boundary review.
+
 ## 17. Source implementation receipt
 
 The bootstrap source-location obligation for `runtime.codex` is implemented by work package `P0.7B-B1B-MODEL-BOUNDARY` in:

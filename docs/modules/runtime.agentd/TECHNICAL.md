@@ -372,6 +372,12 @@ The following additional work packages are source-planning envelopes introduced 
 - `ASM-3-STATE-MIGRATION-QUALIFICATION`
 - `EMB-2-REFLEX-MOTOR-ACTUATION`
 
+### Default lifecycle composition and retirement
+
+The default `runtime.rs` path registers long-lived components through the existing `RuntimeTasks` host. Required component exit, generation fencing and rejected quarantine remain host-fatal; an optional scheduler failure removes its owner-local routes while unrelated App Server traffic remains available. Service retirement uses a child cancellation token, owner drain acknowledgement and a monotone service generation. Ordinary host shutdown must not permanently retire the durable timer. The real-process regression is `codex-rs/hepta-agentd/tests/optional_module_restart.rs`; shutdown outcome regressions are in `tests/runtime_shutdown_outcomes.rs`. These tests do not establish general dynamic code loading or authorize writer transfer.
+
+Canonical intelligence runner configuration is still distinct from a real daemon ingress that produces authenticated owner inputs and consumes the prepared envelope. Do not advertise the canonical capability or count compatibility `RunStart` as canonical execution while that producer/caller boundary is absent.
+
 ## 17. Source implementation receipt
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.

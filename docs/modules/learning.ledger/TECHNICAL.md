@@ -475,6 +475,10 @@ Consumed readiness protocols:
 
 Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
 
+### Incremental product append and exact reads
+
+`LedgerWriter` reuses the backend-validated ledger projection and constant-size frontier instead of constructing a full history snapshot for every ordinary append. Exact record/episode indexes resolve historical retries and authenticated decision references, with active-record checks preserving correction and revocation semantics. Recovery still replays and validates persisted history, and explicit dataset freeze/audit snapshots may traverse history. This is not a claim of constant-time recovery or unbounded retention. The signed product history measurement exercises append, indexed lookup, exact retry, recovery, file growth and process memory without replacing fsync, signatures or the independent witness.
+
 ## 17. Source implementation receipt
 
 The bootstrap source-location obligation for `learning.ledger` is implemented by work package `LRN-0-CAUSAL-LEARNING-CONTRACTS` in:
