@@ -241,6 +241,32 @@ EffectIndeterminate and ChildUnresolved remain recoverable open states. These ar
 target categories to map into owner errors, not unregistered additions to V1.
 Design success predicates must specify what evidence closes each outcome.
 
+### 4.6 Computational depth and gradient boundaries
+
+For the Neural Circuit target, retain causal parents, activation round and the
+Cell/transform/wait kind in the existing run trace. A depth reducer can compute
+`d_cell(v)=is_cell(v)+max_parent d_cell(parent)` over that unrolled trace. Parallel
+siblings add work but not sequential depth; feedback reactivation adds depth, not
+new independent weights. Report wait, transport retry, environment horizon and
+censoring separately. Do not infer depth from org hierarchy or a static cycle.
+
+Representation edges preserve approved tensor/structured information with bounded
+shape, precision, normalization, source scope and compression/omission metadata.
+Action edges carry admitted choices. An incompatible representation is not repaired
+by silently serializing it into a label or prompt. A source reread remains an
+owner-authorized operation, not an invisible bypass of the circuit input budget.
+Declare whether a region is tensor-connected, detached, serialized or externally
+observed; operational execution is not proof of a differentiable tape. Existing
+owners record receipts and learning.ledger references them; TaskFlow does not
+compute or apply cross-owner gradients itself.
+
+Adaptive depth selects continue/subcircuit/stop inside the frozen allowed graph,
+policy and budget. A local no-progress loop or failed gradient estimate cannot
+extend the deadline, reset resource accounting or retry an unknown effect. Recorded
+choices remain historical facts on restart even when the learned depth policy
+changes. The conditional expressivity/error model is in
+`../../learning/NEURAL_BIOMIMICRY_SPEC.md`; no UAT or scaling claim changes V1.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

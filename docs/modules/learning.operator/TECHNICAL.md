@@ -97,6 +97,14 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### Capacity, depth and learning evidence target
+
+Declare pathwise versus score/critic/distillation estimators, gradient stops and unroll length. Test local sensitivities against tractable oracles; match nonlinear NDU objectives explicitly. Treat meta-adaptation rules and optimizer state as versioned candidates, not automatic capability from local fine-tuning.
+
+Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
+and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
+planned integration requirement, not a change to source or product status.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

@@ -264,6 +264,16 @@ All normalization, units, scales, clipping locations and tolerances are manifest
 
 Reference-host p95/p99, transient memory and persistent projection targets remain design targets until bound to a named host, compiler, build profile, exact source and fixture. A solver residual is not a statistical-error or efficacy proof.
 
+### Parameter-field diagnostics do not authorize control
+
+The fixed-epoch field profile in `../learning/NDU_FBSDE_SPEC.md` binds effective
+operators/probes, anchors, declared symmetry and optimizer/task conditioning.
+Distinguish inference depth from learning time and retain multidriver/closure
+uncertainty. A field projection cannot declare its own reward or acquire authority;
+its control benefit must be tested against independent task outcomes and matched
+baseline information. Topology surgery requires a new field epoch/transport.
+No new native solver, wire protocol or production observer is introduced here.
+
 ## 9. Golden fixtures and tests
 
 - `NDU-SYS-GV-001`: deterministic zero-noise preference/utility vector reproduces exact Q32 values.

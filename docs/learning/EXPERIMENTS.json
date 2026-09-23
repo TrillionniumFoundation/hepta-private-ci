@@ -230,6 +230,79 @@
         "total_training_inference_evaluation_cost",
         "loop_and_starvation_rate"
       ]
+    },
+    {
+      "id": "meta_network_capacity_depth",
+      "unit": "known_function_history_or_organ_episode",
+      "arms": [
+        "fixed_depth",
+        "adaptive_depth",
+        "label_only",
+        "continuous_representation",
+        "admitted_source_reread"
+      ],
+      "outcomes": [
+        "target_norm_error",
+        "bottleneck_floor",
+        "actual_cell_and_gradient_depth",
+        "branch_margin",
+        "retention",
+        "matched_compute_task_utility"
+      ]
+    },
+    {
+      "id": "meta_network_scaling",
+      "unit": "task_cluster_at_frozen_resource_configuration",
+      "arms": [
+        "one_axis_sweep",
+        "equal_compute_configurations",
+        "shared_vs_independent",
+        "sparse_vs_all_active"
+      ],
+      "outcomes": [
+        "unique_and_trainable_parameters",
+        "active_compute_and_lifecycle_cost",
+        "message_and_state_budget",
+        "independent_data_and_declared_ess",
+        "quality_latency_retention",
+        "held_out_scale_prediction",
+        "plateau_and_fit_uncertainty"
+      ]
+    },
+    {
+      "id": "meta_adaptation_transfer",
+      "unit": "held_out_task_family",
+      "arms": [
+        "no_adaptation",
+        "tuned_fixed_rule",
+        "learned_adaptation_rule"
+      ],
+      "outcomes": [
+        "adaptation_curve",
+        "post_adaptation_query_utility",
+        "negative_transfer",
+        "old_task_retention",
+        "total_meta_search_training_adaptation_cost"
+      ]
+    },
+    {
+      "id": "parameter_field_closure",
+      "unit": "frozen_graph_epoch_task_cluster",
+      "arms": [
+        "role_probe_field",
+        "matched_generic_summary",
+        "richer_history_state",
+        "richer_frozen_modes"
+      ],
+      "outcomes": [
+        "effective_operator_gauge_check",
+        "conditional_moment_residual",
+        "joint_noise_rank_defect",
+        "held_out_closure_error",
+        "independent_outcome_prediction",
+        "supported_intervention_benefit",
+        "cross_scale_transfer"
+      ]
     }
   ],
   "requirements": {
@@ -315,5 +388,76 @@
       "matched_total_cost"
     ],
     "numericFloors": "existing_quantitativeProfiles_unchanged"
+  },
+  "metaNetworkPanelDesign": {
+    "status": "planned_experiment_not_capacity_claim",
+    "specification": "docs/learning/CAUSAL_LONGITUDINAL_SPEC.md",
+    "pilotAxes": {
+      "maximumCellDepth": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      "logicalCells": [
+        8,
+        32,
+        128,
+        512
+      ],
+      "representationElements": [
+        16,
+        64,
+        256
+      ],
+      "adapterRank": [
+        0,
+        4,
+        8,
+        16
+      ],
+      "independentDataMultipliers": [
+        1,
+        2,
+        4,
+        8
+      ]
+    },
+    "axisValuesChangeRuntimeLimits": false,
+    "precisionAndHardware": "fixed_named_profile_then_separate_sensitivity",
+    "schedule": "one_axis_pilots_then_selected_equal_compute_panels_not_unbounded_cartesian_product",
+    "heldOut": [
+      "scale",
+      "task_family",
+      "future_window"
+    ],
+    "fitAlternatives": [
+      "power_law_with_declared_floor",
+      "plateau",
+      "piecewise",
+      "interaction_surface"
+    ],
+    "failureDisposition": "retain_no_gain_unsupported_and_failed_runs",
+    "resources": [
+      "unique_parameters",
+      "trainable_parameters",
+      "actual_invocation_compute",
+      "communication_and_source_reread",
+      "state_and_optimizer_memory",
+      "training_evaluation_migration_and_search"
+    ],
+    "data": "independent_tasks_episodes_sources_and_declared_ess_not_replay_count",
+    "numericSafetyFloors": "existing_quantitative_profiles_unchanged",
+    "conformanceCases": [
+      "MN-01",
+      "MN-02",
+      "MN-03",
+      "MN-04",
+      "MN-05",
+      "MN-06",
+      "MN-07",
+      "MN-08"
+    ]
   }
 }

@@ -127,6 +127,19 @@ their declared no-update/fallback results, not silent full-model reloads or CPU
 fallback that violates the current budget. Scaling experiment points and metrics
 are owned by `../learning/EXPERIMENTS.json`, not copied runtime capacity claims.
 
+### Meta-network capacity profile admission target
+
+A future backend profile declares its input encoding/domain, target class, local
+parameter freedoms, representation and action output schemas, state/horizon,
+precision and error budget. A type-correct Laya result is not evidence of universal
+approximation. Preserve high-information non-authorizing outputs where required;
+handle message exhaustion through declared compression/reread/abstain semantics.
+Report actual model computation separately from Cell depth and gradient reach.
+Selected artifacts and fixed Q24 pilot bounds remain unchanged; richer profiles
+require explicit versioned compatibility and measured admission, not a prose
+exemption. Use MN-01..MN-08 in `../learning/REFERENCE_CONFORMANCE_SPEC.md` as future
+reference cases, retaining all prior runtime/fault tests.
+
 ## 8. Lesion, ablation and golden fixtures
 
 `BIO-GV-001` remains the fixed-point tie, inhibition, threshold and eligibility reference. Additional fixtures are:

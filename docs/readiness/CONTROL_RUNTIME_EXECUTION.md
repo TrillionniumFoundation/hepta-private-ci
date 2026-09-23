@@ -221,6 +221,16 @@ A failure before finalization leaves no plan receipt. A failure after durable de
 
 Central outage never enters a qualified local reflex or emergency-stop loop. Local controllers continue only within previously qualified envelopes. The global planner may become unavailable without disabling an independent safety stop.
 
+### Computation allocation without depth inflation
+
+A circuit's allowed continue/stop/deeper-subcircuit choices are supported candidates
+under one fixed objective and remaining resource profile. Compare marginal task
+benefit and actual compute/latency/risk using the registered NDU rule. Count unique
+parameters separately from repeated calls; plan shape, observed depth, gradient
+reach and environment duration are distinct observations. Unsupported value/closure
+estimates use the prior admitted baseline or abstention. More installed cells or
+hierarchy levels never justify extending authority, budgets or unresolved effects.
+
 ## 10. Capacity and performance profile
 
 Pilot bounds are:

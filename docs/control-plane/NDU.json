@@ -137,5 +137,23 @@
     "hierarchyRecursionEqualsTimeRecursion": false,
     "counterfactualValueIsObservedOutcome": false,
     "fixedObjectiveAndHardBoundariesRemainExternal": true
+  },
+  "metaNetworkControl": {
+    "status": "design_target",
+    "reference": "docs/learning/NDU_FBSDE_SPEC.md",
+    "computationChoices": [
+      "continue",
+      "invoke_admitted_subcircuit",
+      "acquire_admitted_information",
+      "stop"
+    ],
+    "hardBudgetMayBeLearnedAway": false,
+    "inferenceAndLearningTimeDistinct": true,
+    "fieldEpoch": "fixed_compatible_graph_or_explicit_transport",
+    "projectedNoise": "multidriver_unless_joint_rank_one_conditions_verified",
+    "fieldSufficiency": "held_out_closure_and_intervention_tests",
+    "rewardSource": "fixed_objective_independent_observation",
+    "gradientIsBackwardValueOrZ": false,
+    "currentClaimUnchanged": true
   }
 }
