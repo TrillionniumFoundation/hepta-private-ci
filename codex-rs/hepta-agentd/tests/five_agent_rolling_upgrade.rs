@@ -98,14 +98,17 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
     // starts the same real Agentd executable; this lifecycle test must not copy
     // and repeatedly hash a gigabyte debug binary once per isolated peer.
     for (index, agent) in agents.iter().enumerate() {
+        eprintln!("FLEET_STAGE install agent={index}");
         let initial = release(
             &fleet.registry,
             &agent.agent_id,
             &format!("initial-{index}"),
             &v1,
         )?;
+        eprintln!("FLEET_STAGE start agent={index}");
         fleet.start_release(agent, initial)?;
         let (control, health) = fleet.wait_ready(agent, 1).await?;
+        eprintln!("FLEET_STAGE ready agent={index}");
         ensure!(health.ready, "agent {index} did not become ready");
         ensure!(control.session_ingress().await?.socket_path == agent.layout.app_server_socket());
         ensure!(
@@ -326,17 +329,20 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     // starts the same real Agentd executable; this lifecycle test must not copy
     // and repeatedly hash a gigabyte debug binary once per isolated peer.
     for (index, agent) in agents.iter().enumerate() {
+        eprintln!("FLEET_STAGE install agent={index}");
         let initial = release(
             &fleet.registry,
             &agent.agent_id,
             &format!("six-initial-{index}"),
             &v1,
         )?;
+        eprintln!("FLEET_STAGE start agent={index}");
         fleet.start_release(agent, initial)?;
         let (control, health) = fleet
             .wait_ready(agent, 1)
             .await
             .with_context(|| format!("six-agent {index} readiness/control handshake"))?;
+        eprintln!("FLEET_STAGE ready six-agent={index}");
         ensure!(health.ready, "six-agent {index} did not become ready");
         let ingress = control
             .session_ingress()
@@ -728,9 +734,15 @@ async fn wait_peer_automation_materialized(
 }
 
 async fn wait_inactive(fleet: &mut FleetHarness, agent_id: &AgentId) -> Result<()> {
+    eprintln!("FLEET_STAGE await-inactive agent={agent_id}");
     timeout(RELEASE_WAIT, async {
+        let mut report_after = Instant::now();
         loop {
             let report = fleet.supervisor.tick(Instant::now());
+            if Instant::now() >= report_after {
+                eprintln!("FLEET_STOP_STATE {:?}", fleet.supervisor.snapshot(agent_id));
+                report_after = Instant::now() + Duration::from_secs(5);
+            }
             ensure!(
                 report.faults.is_empty(),
                 "Supervisor fault while stopping {agent_id}: {:?}",
@@ -761,9 +773,21 @@ async fn wait_release(
     agent: &AgentFixture,
     release_identity: &str,
 ) -> Result<(AgentdClient, codex_hepta_agentd::HealthSnapshot)> {
+    eprintln!(
+        "FLEET_STAGE await-release agent={} target={release_identity}",
+        agent.agent_id
+    );
     timeout(RELEASE_WAIT, async {
+        let mut report_after = Instant::now();
         loop {
             let report = fleet.supervisor.tick(Instant::now());
+            if Instant::now() >= report_after {
+                eprintln!(
+                    "FLEET_RELEASE_STATE {:?}",
+                    fleet.supervisor.snapshot(&agent.agent_id)
+                );
+                report_after = Instant::now() + Duration::from_secs(5);
+            }
             ensure!(
                 report.faults.is_empty(),
                 "Supervisor fault while waiting for {} release {release_identity}: {:?}",
