@@ -106,6 +106,14 @@ Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_
 and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
 planned integration requirement, not a change to source or product status.
 
+### Shared-experience and isolated-Agent integration target
+
+Allocate admitted Recall/Replay/collection budgets by expected task value and coverage rather than upload count or novelty alone. Keep source truth, read/train/derived-use rights and privacy floors outside learned utility. Use actual independent outcomes, not a collector self-score.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

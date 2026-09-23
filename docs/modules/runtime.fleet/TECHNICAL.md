@@ -84,6 +84,14 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Shared-experience and isolated-Agent integration target
+
+Distinguish durable Memory shard owner identity from ephemeral Agent generation or host. Handoff keeps current-cut/writer fences and source routing; retiring an Agent does not delete shared lineage. Network federation enrollment remains explicitly authenticated and separately qualified.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

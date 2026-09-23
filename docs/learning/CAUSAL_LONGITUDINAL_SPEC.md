@@ -190,6 +190,43 @@ frontier; hyperparameter/architecture search costs belong to the latter. A large
 feasible class retaining the old solution has a nonworse best achievable optimum,
 not guaranteed SGD performance and not a theorem of power-law improvement.
 
+### Shared experience is a lineage-checked multi-actor dataset
+
+Build training views by joining owner references, not by importing every context
+as a reward-labelled sample. Bind source/Memory revision, producer/shard/owner epoch,
+workspace/project/base and tool environment, actual delivered observation/context,
+Circuit/Cell/model/behavior policy, candidate support, action/outcome correction and
+sampling decisions. Policy and task assignment differ across actors; a late actor
+is not relabelled as current. Preserve independent result witnesses and missing,
+censored or indeterminate outcomes. A signed observation authenticates its reporter,
+not its propositional truth or causal credit.
+
+Raw-read authorization, training purpose/parameter targets and derived-artifact
+consumer scope are checked independently and recorded by reference to authoritative
+policy revisions. Read federation is not a training permission issuer. Dataset
+freeze binds exact per-owner cuts and causal parents plus source retention and
+revocation. A failed peer or absent required outcome is explicit incompleteness;
+use a separately declared restricted sample class or exclude it with reason, never
+manufacture a transition. Final batch use and artifact adoption revalidate their
+current permission boundary. Replay never re-executes a historical real effect.
+
+Deduplicate contribution identity without deleting distinct observations merely
+because payload bytes match. Track root-source and derivation clusters: repeated
+imports and cross-Agent paraphrases of one report are not independent evidence.
+Distinct actor contacts, task episodes, interventions and real independent sources
+are separate counts. Avoid selection that rewards upload volume or redundant
+successes; include supported failures, rare domains, corrections and retention.
+Recorded failure may support predictive/supervised training even when missing
+behavior support disqualifies a particular off-policy estimator. Do not apply a
+standard RL correction unchanged to a different NDU recursive objective.
+
+Collection assignment can prioritize useful task/coverage diversity under actual
+budgets, but exploration, sharing and irreversible actions require their existing
+admission. Independent workspace does not mean statistically independent data.
+Shared-model contamination, cooperative task interference and feedback between
+collectors and learners determine the randomization unit and uncertainty estimates.
+Report behavior staleness and support rather than hide it by replaying more samples.
+
 ## 6. Data, protocol and lineage schema
 
 The durable episode chain is:
@@ -413,6 +450,42 @@ with at least one withheld scale and task family; two endpoints do not identify 
 robust law. No fixed minimal pilot size overrides power, support or uncertainty
 requirements. Stop the claim at unsupported rather than extrapolating a favorable
 small-scale curve to an unmeasured system.
+
+### Clean-Agent shared-memory and learning experiment
+
+Use independent workspaces for collector A (source/interface investigation), actor
+B (implementation) and observer C (test/result observation). Their outputs retain
+separate identities and source/decision/outcome references; shared underlying
+information is not independent corroboration. Start a clean receiver D on related
+but held-out tasks. Four frozen arms are: no sharing, Recall-only, permitted trained
+artifact-only, and both. Fix environment information, task families, collection
+interaction budget, model capacity and total training/evaluation/serving cost;
+report baseline pretraining and search costs separately. Do not compare unequal
+work and attribute the result solely to shared architecture.
+
+D starts with no previous session, working files, KV cache, recurrent state or
+private adapter from A/B/C. Recall-only uses the baseline model and permitted
+memory; artifact-only uses the candidate bundle but no access to contributed
+records through retrieval, files, prompts or caches. The both arm combines those
+two admitted mechanisms. Explicit no-sharing ablations block the intended channels,
+not unrelated public task information. Record what was actually delivered/loaded;
+treat accidental access as contamination, not a favorable sample.
+
+Freeze training/calibration/model selection versus future task/source holdouts
+before collection. Evaluation material, answers, summaries, synthetic derivatives
+and feedback from the same test family remain excluded from training until the
+evaluation is retired and a new independent test is declared. A second Agent does
+not launder a holdout into training. Control cloned task templates/shared source
+roots and cluster uncertainty at the actual interference unit.
+
+Measure new-task utility, error/time-to-success, evidence correctness, calibration,
+retention and negative transfer alongside actual total cost and storage/recovery
+growth. Test harmless synthetic private sentinels, malicious quoted instructions,
+source repetition, obsolete project versions, conflicting observations, forbidden
+training audiences, delayed outcomes and revoked-derived-bundle reload. Content
+hashing or successful context isolation alone is not proof of model privacy.
+Withdraw/quarantine failed bundles and report unlearning limits. New experiment
+families and future SM-01..SM-10 conformance cases do not advance efficacy claims.
 
 ## 11. Quantitative acceptance gates
 

@@ -106,6 +106,14 @@ Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_
 and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
 planned integration requirement, not a change to source or product status.
 
+### Shared-experience and isolated-Agent integration target
+
+Use Recall circuits for current evidence, not as an implicit training exporter. Preserve exact source roots, applicability/contradictions and observed delivery. Copied claims are not independent support; shared relevance scores cannot widen access or turn text into instructions.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

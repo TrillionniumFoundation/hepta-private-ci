@@ -107,6 +107,14 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### Shared-experience and isolated-Agent integration target
+
+Coordinate independent workspace leases and base-bound artifacts/patches without allowing Agents to edit peer working trees. Prioritize useful task/experience diversity, not record volume. Implement shared experience through existing work packages and affected tests, not a parallel learning control plane.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

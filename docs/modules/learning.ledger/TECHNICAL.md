@@ -106,6 +106,14 @@ Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_
 and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
 planned integration requirement, not a change to source or product status.
 
+### Shared-experience and isolated-Agent integration target
+
+Join exact actor/source/Circuit/behavior/delivered-context/outcome references into a training view without claiming ownership of Memory or effect truth. Preserve root-source clusters, policy staleness, missing outcomes, sampling and held-out-task identity. Replay/import is not new exposure.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

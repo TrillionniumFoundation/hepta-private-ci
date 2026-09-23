@@ -260,6 +260,23 @@ check, not independent utility identification. Parameter norm cost can be a chos
 training-coordinate regularizer; it is not an intrinsic functional distance or a
 physical resource measurement unless separately justified. Report sensitivity.
 
+### Memory effort and multi-actor experience allocation
+
+NDU can choose further Recall, information acquisition, replay budget and admitted
+cell/domain training effort under fixed objectives, standing sharing policy and
+physical resource limits. Observe source coverage, marginal task value, uncertainty,
+rarity and forgetting risk instead of rewarding raw memory uploads or novelty alone.
+Privacy, deletion, source validity and legal use stay hard constraints; utility
+cannot turn a read grant into training permission. Resource accounting includes
+collection, publication, deduplication, retrieval, training and revocation cost once.
+
+Different actors keep their actual task/behavior/model versions and local states.
+Shared outcomes support common learning only when applicability, interference and
+credit are declared; no scalar aggregate score replaces the independent results.
+Memory policy evaluation uses new-task and retention benefit on held-out receiving
+Agents, not agreement between a producer's reflection and its own critic. Replay
+selection is not permission to rerun a historical effect or mutate current weights.
+
 ## 6. Data, protocol and lineage schema
 
 Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`. This correction adds no unregistered field to an existing wire version.

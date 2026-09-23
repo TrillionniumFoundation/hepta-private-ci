@@ -308,6 +308,24 @@ cadences are independently scheduled against named compatible reference bundles.
 Sharing updated parameters across principals requires explicit data-use policy;
 shared infrastructure does not authorize pooling private replay or gradients.
 
+### Shared weights with independent working memory
+
+Common/domain/Agent parameters are immutable shared artifacts; h, recurrent gates,
+eligibility/fast-adaptation state and run-local caches belong to the local Agent
+or explicitly scoped episode. Common weights do not imply shared hidden state or
+permission to pool private gradients. A new clean Agent gets admitted initial state,
+not a live clone of another's context. Shared serving must reset and namespace
+mutable buffers and KV by consumer/workspace/purpose/bundle; reuse only declared
+safe immutable computation, with scope/freshness checked.
+
+Experience affects broader parameter scopes only through permitted training views
+and evaluated compatible candidates. Keep local adaptation local until broader
+source/consumer use is explicitly allowed. Any prospective test-time fast-weight
+memory needs its own scoped mutable-state profile and checkpoint/recovery rules;
+it cannot write selected common weights in place. Data/model leakage and negative
+transfer are evaluated separately from prompt isolation. Source facts and current
+permissions still come from owner reads, never solely from learned parameters.
+
 ## 6. Data, protocol and lineage schema
 
 The following records are canonical cross-module protocols registered in `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`:

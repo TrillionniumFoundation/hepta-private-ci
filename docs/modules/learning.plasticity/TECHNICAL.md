@@ -104,6 +104,14 @@ Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_
 and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
 planned integration requirement, not a change to source or product status.
 
+### Shared-experience and isolated-Agent integration target
+
+Generate scoped parameter or skill/Circuit candidates from supported experience. Broader consolidation is a new permitted use, not automatic common-weight averaging. Record prerequisites, failure/recovery and old-task retention; recalled skill never grants its own execution.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

@@ -122,6 +122,26 @@ certify all reachable domains, successful real-model training, Markov closure,
 meta-adaptation or a scaling exponent. Do not create a per-cell global gate or
 independently writable theory-truth database.
 
+### Shared-experience design records (not new wire schemas)
+
+The complete Memory contract is in `../hnmf/TECHNICAL.md`. Register additive or
+new versioned producer/consumer interfaces before implementation; never extend
+existing private scopes or MemoryEventV1 silently.
+
+| Record/view | Required bound semantics | Existing owner |
+| --- | --- | --- |
+| contribution | original source/Memory revision and digest, producer, durable shard/owner epoch, applicability, privacy/retention and publication operation identity | cognitive.store and kernel.operations; no federation writer |
+| shared-use policy reference | raw-read audience, training purpose and parameter scope, derived-artifact consumers, generation/expiry/revocation | existing authority/data policy owners; not a memory-derived grant |
+| experience view | exact delivered observations, decision/Circuit/model/behavior, source roots, independent outcome/correction and missingness | joins cognitive and learning/effect owner references; not a duplicate ledger |
+| replay snapshot | per-owner cuts, causal dependencies, policy/source frontiers, included/excluded sample classes, split/sampler and materialization bounds | learning.ledger/artifacts with admitted source reads |
+| clean consumer manifest | workspace/project/base, session/cache/Cell state reset, permitted input/model bundle and actually delivered evidence | Agentd/context/inference owners |
+| impact disposition | revoked source/use, dependent copies/data/optimizer/artifacts, cancellation/withdrawal/retrain status, offline/restore gaps | existing source, learning/artifact and recovery owners |
+
+All lists and payloads require nonzero configured count/byte/time bounds, with
+keyset paging and stored progress for large histories. A partial scan never becomes
+complete success. Denied metadata is not exposed through aggregate counts or public
+dedup keys. Versioned hashes establish binding, not trustworthiness of source claims.
+
 ## 7. Numerical stability, complexity and resource bounds
 
 Each specification declares dimensions, asymptotic complexity and measured envelopes. Common required metrics are p50/p95/p99 latency, throughput, CPU/GPU time, resident and peak memory, allocation bytes, queue depth/age, storage growth, file descriptors, sockets, model/token cost and recovery time.
@@ -177,6 +197,28 @@ Keep these beside existing owner tests when implemented. Use known-function,
 known-state and known-driver oracles for conformance, independent future task
 outcomes for efficacy, and existing bounded negative/fault/revocation tests for
 runtime validity. New proof obligations never weaken current safety floors.
+
+### Shared-memory reference cases (SM-01 through SM-10)
+
+These are future owner-path acceptance requirements, not current product receipts.
+
+| Case | Required scenario and result |
+| --- | --- |
+| SM-01 publication | Duplicate same source/revision/operation/payload yields one admission; same identity with different payload conflicts; lost ack reconciles without another fact. |
+| SM-02 purpose | A read-only grant permits Recall but denies Replay; permitted training for Agent A cannot produce a generally loadable artifact. Expired/revoked uses reject at the relevant boundary. |
+| SM-03 evidence roots | Ten paraphrases/imports from one original count as one root; two real observations with identical text remain distinct provenance, not automatically independent or false duplicates. |
+| SM-04 coherent replay | A multi-shard outcome with a missing required decision/source parent is incomplete; unreachable shard is not valid empty. Exact dependency closure excludes forbidden sources. |
+| SM-05 clean workspace | New receiver shares permitted weights but not prior session, private files, credential environment, KV, hidden state, optimizer or current task. Cross-Agent mutable-cache substitution rejects. |
+| SM-06 applicability | Experience at project revision c1 is not a current fact at c2 without revalidation; correction preserves historical observation and changes eligible current reads. |
+| SM-07 poisoning | Signed malicious quoted text stays evidence and cannot become instruction or authorization; repeated sibling endorsements do not waive source/effect checks. |
+| SM-08 lineage | Revoke a source after replay inclusion: queued use and new bundle load reject; derived datasets/adapters/distilled descendants are withdrawn or rebuilt. Offline/backup resurrection remains blocked; incomplete erasure is reported. |
+| SM-09 evaluation | Held-out answer or its summary contributed by another Agent stays excluded; artifact-only arm cannot retrieve contributions through files/caches. Leakage invalidates the trial. |
+| SM-10 collection | Delayed/unknown effects stay nonterminal; stale actor policy is retained, not overwritten. No-sharing/Recall-only/artifact-only/both report comparable task and lifecycle budgets, retention and negative transfer. |
+
+A dependency/permission toy model checks only these examples. Real completion needs
+named owner callers, crash/ack/cancel/revocation cuts, hostile isolation tests and
+clean-Agent task measurements. No new global approval per memory item or per-Agent
+CI matrix is introduced; use affected-owner suites and the existing product pilot.
 
 ## 11. Quantitative acceptance gates
 
