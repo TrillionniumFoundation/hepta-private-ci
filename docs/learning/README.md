@@ -14,6 +14,13 @@ parameter-field control; [causal evaluation](CAUSAL_LONGITUDINAL_SPEC.md) owns
 scaling/closure experiments; [conformance](REFERENCE_CONFORMANCE_SPEC.md) gives
 MN-01..MN-08 reference cases. None of these documents certifies fixed-Laya universality.
 
+Shared experience adds a second use of Memory besides Recall: permission-checked
+Replay joins exact source, delivered decision and independent outcome references.
+[HNMF](../hnmf/TECHNICAL.md) owns the logical design;
+[causal evaluation](CAUSAL_LONGITUDINAL_SPEC.md) separates four clean-Agent arms;
+[conformance](REFERENCE_CONFORMANCE_SPEC.md) defines SM-01..SM-10. Shared data or
+weights never imply shared working context or permission to widen training scope.
+
 ## Read order
 
 1. [`ALGORITHM_SPECS.json`](ALGORITHM_SPECS.json) — closed-world coverage, exact Git blob identities and mandatory closure gates.

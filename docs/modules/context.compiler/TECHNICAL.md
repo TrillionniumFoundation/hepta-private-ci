@@ -127,6 +127,14 @@ Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_
 and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
 planned integration requirement, not a change to source or product status.
 
+### Shared-experience and isolated-Agent integration target
+
+Construct context independently from the local objective, local state and purpose-authorized shared evidence. Bind actual delivered records and truncation; another Agent context, instructions, credential environment or stale cache is not a permissible implicit input. Artifact-only experiments exclude hidden retrieval paths.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced registered contracts:

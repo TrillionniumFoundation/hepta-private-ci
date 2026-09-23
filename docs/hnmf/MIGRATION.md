@@ -28,6 +28,29 @@ Record replay candidates, activation observations, eligibility traces, outcome s
 
 Canary eligibility requires future-time evaluation, old-task retention, OOD and subgroup floors, deletion non-resurrection, crash/reopen, backup/restore, exact rollback, resource bounds, and independent acceptance. A successful reference or shadow run is not canary authority.
 
+## 7A. Shared experience delivery through existing owners
+
+These are planned extensions, not evidence that M0-M5 or a production writer ran.
+Keep the current private scopes, source IDs, MemoryEventV1 fields and read-only
+federation protocol unchanged until explicit versioned contracts are admitted.
+
+| Stage | Deliverable in existing packages | Exit evidence |
+| --- | --- | --- |
+| S0 scope and provenance | MEM-0/MEM-1/MEM-8 define admitted publication and separate read/train/derived-use policies | duplicate/conflict, scope, correction, independent-result and source-lineage fixtures |
+| S1 local multi-owner views | MEM-READ-1/MEM-2/MEM-3 read two isolated local owners; no network or shared writer shortcut | partial coverage, current cut, denied metadata, poisoned-memory and clean-context tests |
+| S2 replay snapshots | LRN-1/ART-1 join exact per-owner cuts with decision/outcome dependencies and permission/split manifests | missing-parent, acknowledgement-loss, actor-policy and revocation-before-batch tests |
+| S3 scoped learning | existing learning.operator/plasticity/eval train domain/Agent candidates against the same task budget | fixed versus shared learning, old-task retention, data and parameter isolation |
+| S4 clean receiving Agent | Agentd/context/inference plus C1 pilot run four arms on fresh receiver D | no-sharing/Recall/artifact/both, actual delivery/load evidence and contamination rejection |
+| S5 lifecycle and transport | ART-2/LONG-3/FLEET handoff, revoke/restore and then separately qualified cross-host profile | no resurrection, bounded catch-up, peer/schema/credential authentication and target-host costs |
+
+A clean-host cross-Agent view is not yet a cross-host service. Reuse original
+sources for migration; publish referenced/derived views idempotently without
+reclassifying old private records. Do not merge SQLite files or rename an Agent
+to escape a writer fence. Agent retirement does not erase durable shard lineage.
+Migrations that introduce publication/purpose metadata or a transport schema must
+be defined with compatible readers and rollback before use, not just mentioned
+in this document. No duplicate global roadmap or per-item manual gate is required.
+
 ## 8. Rollback
 
-Rollback selects the exact predecessor event/engram/synapse snapshot and rebuilds all derived indexes. It never edits historical source events. External effects are outside HNMF and cannot be declared rolled back by this migration.
+Rollback re-admits a compatible predecessor under the current source, deletion and revocation frontiers, then rebuilds eligible derived indexes. It never edits historical source events, restores revoked training access or revives a tainted model merely because its old snapshot was once valid. External effects are outside HNMF and cannot be declared rolled back by this migration.

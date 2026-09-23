@@ -82,6 +82,14 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Shared-experience and isolated-Agent integration target
+
+Represent shared contribution and experience-view requirements only through explicit versioned producer/consumer contracts. Do not reinterpret AgentPrivate/WorkspacePrivate, remove AgentId from old IDs, or embed the full learning decision/outcome in MemoryEventV1. Keep source kind, provenance, purpose, applicability and lifecycle distinct.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

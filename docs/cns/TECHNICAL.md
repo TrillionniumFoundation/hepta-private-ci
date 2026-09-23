@@ -279,6 +279,30 @@ HNMF supplies a qualification-level multimodal hippocampal substrate: immutable 
 
 The attention workspace performs bounded union, deduplication, salience selection and context compilation. It records omitted-count bounds and uncertainty. External text and tool output remain evidence channels and cannot become trusted instructions without governed transformation. High-risk contradiction, insufficient coverage or OOD forces abstention or a slow path.
 
+### Memory circuits and independent Agent instances
+
+Memory is both a current evidence substrate and input to future learning. The
+existing HNMF defines working, episodic, associative, procedural and parametric
+forms with separate owners. Recall circuits choose evidence for one local context;
+Replay circuits select immutable training views and do not replay external effects.
+A summary/procedure/model remains derived from its supported sources. Exact source
+facts, privacy, deletion and authority never become learned truth or reward weights.
+
+Within a configured sharing scope, Agents may contribute complementary experiences
+and adopt evaluated common/domain/Agent bundles. Their workspaces, current goals,
+credentials, session/Cell state and live effects remain independent. A shared code
+or weight library is not a shared hidden-state singleton. Publication, raw reading,
+training and derived-artifact distribution use distinct admitted policies. Being
+part of one CNS or principal does not remove source restrictions or independent
+verification needs; repeating one root observation is not independent confirmation.
+
+No central Memory barrier is required on the local hot path. Bounded owner snapshots,
+causal dependency closure, current source checks and explicit missing coverage
+support shared views. Contribution and training paths reuse existing owners, not
+federation mutation or a new coordinator database. The normative lifecycle and
+isolation contract is [HNMF](../hnmf/TECHNICAL.md); Agentd implements workspace and
+run boundaries. Benefits require clean-Agent and negative-transfer experiments.
+
 ## 10. World model, affordance and metacognition
 
 The world model predicts typed successor state, outcome, uncertainty and OOD for each legal candidate. It segments discrete events and deterministic hard axes rather than smoothing them into a latent vector. Affordances bind object/body state to legal action templates; they do not grant authority.

@@ -82,6 +82,24 @@ or treat checkpoint receipts as cross-owner atomicity. The authoritative target
 contract is [TaskFlow/Neural Circuit](../modules/automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
 All current native implementation and external-qualification limitations remain.
 
+## Shared-experience target and source limitations
+
+The selected Memory/multi-Agent target is in `../hnmf/TECHNICAL.md`. Existing
+Agent-local stores, read-only federation, inference serving and writer hosts are
+reused; no shared SQLite file or duplicate executor is introduced. Agents retain
+independent canonical workspaces, sessions, current objectives, credentials, Cell
+state, caches and effects while submitting permitted source/learning contributions.
+Actual context delivery is source- and recipient-bound. Shared-read admission does
+not authorize training or wider model distribution. Durable snapshots use per-owner
+cuts and dependency validation rather than an asserted global transaction.
+
+Current in-process federation and private scope types do not implement a new shared
+training/publication protocol. The target requires named contribution admission,
+purpose-specific access, training-snapshot compiler, coherent model adoption and
+revocation-through-descendants tests. Cross-host enrollment/transport still needs
+its own authenticated versioned boundary. Documentation/reference success does not
+establish clean-Agent transfer, OS isolation, target-host performance or unlearning.
+
 ## Remaining implementation work
 
 - Connect economic quota and device-capacity authorities, and implement authenticated provider reconciliation after process loss. Native local-slot reservations and observed usage settlement are wired; hosted execution does not prove local model artifacts, memory/device grants or process isolation.

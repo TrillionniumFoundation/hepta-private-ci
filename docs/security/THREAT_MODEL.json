@@ -847,5 +847,38 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
+  },
+  "sharedExperienceDesign": {
+    "status": "planned_controls_not_security_qualification",
+    "definition": "docs/hnmf/TECHNICAL.md#isolation-extends-beyond-the-context-window",
+    "existingThreatRowsAndAuthorityUnchanged": true,
+    "boundaries": [
+      {
+        "kind": "workspace_and_live_state",
+        "risk": "peer_file_credential_session_kv_or_hidden_state_access",
+        "control": "scoped_handles_isolated_mutable_state_and_explicit_handoff"
+      },
+      {
+        "kind": "evidence",
+        "risk": "poisoned_memory_or_repeated_source_laundered_as_fact_or_instruction",
+        "control": "origin_support_and_scope_with_independent_results_and_exact_effect_admission"
+      },
+      {
+        "kind": "training",
+        "risk": "read_grant_converted_to_shared_training_or_private_delta_to_common",
+        "control": "separate_training_and_derived_consumer_permission"
+      },
+      {
+        "kind": "evaluation",
+        "risk": "heldout_answer_summary_or_model_update_enters_training",
+        "control": "task_source_lineage_split_and_clean_receiver"
+      },
+      {
+        "kind": "lifecycle",
+        "risk": "revoked_source_reappears_via_copies_weights_optimizer_or_restore",
+        "control": "dependency_withdrawal_retrain_and_current_frontier_on_reopen"
+      }
+    ],
+    "testCases": "docs/learning/REFERENCE_CONFORMANCE_SPEC.md#shared-memory-reference-cases-sm-01-through-sm-10"
   }
 }

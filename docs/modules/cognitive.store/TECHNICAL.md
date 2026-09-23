@@ -100,6 +100,35 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Shared experience target: publish through the existing owner
+
+Extend the existing source/Memory owner with scoped contribution admission, not
+another shared fact store. The physical source writer and Memory-revision-bound
+fact subledger retain their current atomicity. Producer Agent identity, durable
+shard identity, owner epoch, source revision, publication audience and training
+purpose are distinct. The current AgentPrivate/WorkspacePrivate scope encoding is
+unchanged; any new shared audience/export metadata needs registered versioned
+contracts and migrations before product use. Do not erase AgentId from existing
+stable IDs or reinterpret an old private scope as common data.
+
+The target ingress validates exact policy/current source, content bounds, provenance,
+allowed raw-read/training/derived-use scopes and expected predecessor before
+idempotent admission. Store a permitted derived copy or a resolvable owner reference
+with original lineage; that publication is not an independent corroboration. Export
+intent and local state commit atomically where the existing owner permits; remote
+apply/ack uses the existing cross-owner protocol, never a pretend multi-DB transaction.
+Contribution attempts cannot replace another owner or open their writable file.
+
+A share/read view may select many owner shards while each mutation has one fenced
+writer. Stable shard data outlives a temporary Agent; retirement transfers/archives
+it with current-cut and ownership evidence rather than copying an active SQLite/WAL
+into a new identity. Snapshot references are bounded by count/bytes/frontier and
+freshness. Incomplete, revoked, schema-incompatible and unreachable sources retain
+explicit dispositions. Corrections and deletion flow to derived views/artifacts;
+retained audit links never justify retaining prohibited payload. Full semantics:
+[shared HNMF](../../hnmf/TECHNICAL.md#authorized-contribution-and-shared-view-publication).
+These are planned extensions; current source/product states below remain unchanged.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

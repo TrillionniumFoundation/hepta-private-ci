@@ -225,5 +225,33 @@
     "adapterFactorNormIsFunctionalDistance": false,
     "parameterCountDeduplicatesSharedTensors": true,
     "runtimeAuthorityDelta": "none"
+  },
+  "sharedMemoryUseDesign": {
+    "status": "design_not_wire_change",
+    "sourceUseAndConsumerScopeRequired": true,
+    "lineageIncludes": [
+      "source_revision",
+      "sharing_policy_generation",
+      "training_snapshot",
+      "preprocessing_and_normalization",
+      "optimizer_state",
+      "adapter",
+      "distilled_descendants",
+      "downstream_bundle"
+    ],
+    "scopeExpansionRequiresNewAdmittedUse": true,
+    "sameWeightCodeImpliesDataConsent": false,
+    "selectedSharedTensorsMutable": false,
+    "revocationDisposition": [
+      "block_new_use",
+      "cancel_or_reconcile_training",
+      "quarantine_candidate",
+      "withdraw_affected_bundle",
+      "supported_unlearning_or_clean_retrain",
+      "track_offline_restore_gaps"
+    ],
+    "deletionOfIndexProvesWeightUnlearning": false,
+    "referenceAwareGc": true,
+    "actualErasureMayRemainIncomplete": true
   }
 }

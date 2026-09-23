@@ -267,6 +267,14 @@ choices remain historical facts on restart even when the learned depth policy
 changes. The conditional expressivity/error model is in
 `../../learning/NEURAL_BIOMIMICRY_SPEC.md`; no UAT or scaling claim changes V1.
 
+### Shared-experience and isolated-Agent integration target
+
+Orchestrate contribution, Recall, Replay and candidate training as distinct admitted activities with stable source/operation IDs. Replay of records cannot dispatch their historical effects. Lost publication acknowledgements reconcile; retired runs retain unresolved outcomes and lineage.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

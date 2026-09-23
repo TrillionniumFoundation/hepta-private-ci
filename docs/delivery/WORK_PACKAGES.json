@@ -2308,7 +2308,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-contracts",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "versioned contribution and use-policy references",
+            "preserve private scopes and canonical MemoryEventV1 semantics"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "MEM-1-STORE",
@@ -2414,7 +2427,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-publication",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "existing-owner contribution admission and immutable source lineage",
+            "duplicate conflict correction and bounded source-root accounting"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "MEM-2-RETRIEVAL",
@@ -2510,7 +2536,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-recall",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "local Recall circuit over permitted shared sources",
+            "applicability contradiction and actual context-delivery tests"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "MEM-3-FEDERATION",
@@ -2602,7 +2641,20 @@
         "contractOutputs": [],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-read_transport",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "read-only local multi-owner views first",
+            "authenticated versioned cross-host interface before network qualification"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "MEM-4-KG",
@@ -2717,7 +2769,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-source_roots",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "source derivation and contradiction projections",
+            "paraphrases do not create independent confirmation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "MEM-5-COMPACT",
@@ -2814,7 +2879,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-consolidation",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "concept and procedure candidates retain source permissions",
+            "replay consumes records instead of rerunning actions"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "MEM-8-PRODUCTION-WRITER",
@@ -2926,7 +3004,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-write_admission",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "named contribution writer with current authority",
+            "single-owner transactions and durable acknowledgements"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "OBJ-0-OBJECTIVE-CONTRACTS",
@@ -3946,6 +4037,17 @@
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-snapshot",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "per-shard cuts with complete causal parents and independent outcomes",
+            "source grouping and missing or censored samples"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
         }
       ]
     },
@@ -4103,6 +4205,17 @@
           "requirements": [
             "capacity/field/learning-profile identities and complete tensor sharing inventory",
             "probe/anchor/optimizer graph epochs and no wire reinterpretation"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-use_lineage",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "training-purpose and derived-consumer scope across descendants",
+            "snapshot optimizer and distillation lineage"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -4638,6 +4751,17 @@
           "requirements": [
             "explicit differentiable regions, gradient cuts and unroll",
             "NDU-consistent estimator or disclosed surrogate with known-value comparisons"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-training",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "purpose-bound replay and actual actor-policy support",
+            "scoped candidates and declared estimator applicability"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -6027,7 +6151,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-collection",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "independent workspace leases and base-bound artifact exchange",
+            "task and source diversity rather than upload volume"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "RCP-1-RUNTIME-CONTROL-PLANE",
@@ -6274,7 +6411,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-workspace_isolation",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "Agentd workspace session Cell state KV and lease isolation",
+            "explicit base-bound handoff"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
@@ -6438,6 +6588,17 @@
           "requirements": [
             "same candidate information across depth/message/adapter/data sweeps",
             "equal-compute comparison before claiming scaling benefit"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-pilot",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "isolated collector actor observer and clean receiver",
+            "same task information across four sharing arms"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -6606,6 +6767,17 @@
           "requirements": [
             "withheld-scale/task fits with plateau and interaction alternatives",
             "held-out closure and intervention comparisons using independent outcomes"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-clean_receiver",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "four-arm shared-memory experiment",
+            "matched task budgets and clean-workspace retention checks"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -6780,6 +6952,17 @@
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-bundle_adoption",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "compatible future common/domain/Agent bundles and isolated live state",
+            "current-source permission and cache recovery checks"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
         }
       ]
     },
@@ -6941,6 +7124,17 @@
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-future_transfer",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "unseen-task and root-source holdouts",
+            "exclude evaluation summaries and derivatives from training"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
         }
       ]
     },
@@ -7091,6 +7285,17 @@
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-retention",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "old-task retention and negative transfer across updates",
+            "measure context and parameter privacy separately"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
         }
       ]
     },
@@ -7229,6 +7434,17 @@
           "architectureReference": "docs/architecture/ARCHITECTURE.json#decisionCellArchitecture",
           "requirements": [
             "source deletion reaches deltas, optimizer state, checkpoints, caches, replay and restore"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-revocation",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "source impact across copies datasets optimizers adapters and descendants",
+            "truthful withdrawal/retrain status with restore checks"
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
@@ -8106,6 +8322,17 @@
           ],
           "existingPackageStateDoesNotCertifyExtension": true,
           "authorityDelta": "none"
+        },
+        {
+          "id": "shared-experience-scoped_adaptation",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "local candidates require permission for broader consolidation",
+            "immutable selected common tensors"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
         }
       ]
     },
@@ -8851,7 +9078,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-shard_lifecycle",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "durable shard identity across Agent generations",
+            "owner handoff and current revocation on reconnect"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "HEPTABAO-1-SECRET-BOUNDARY",
@@ -9057,7 +9297,20 @@
         ],
         "centralSynchronousRpcAllowed": false,
         "authorityDelta": "none"
-      }
+      },
+      "designExtensions": [
+        {
+          "id": "shared-experience-source_cuts",
+          "state": "planned",
+          "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+          "requirements": [
+            "purpose-authorized revisions and missing coverage",
+            "current-cut checks and private metadata protection"
+          ],
+          "existingPackageStateDoesNotCertifyExtension": true,
+          "authorityDelta": "none"
+        }
+      ]
     },
     {
       "id": "TASKFLOW-1-EXECUTION-BOUNDARY",

@@ -84,6 +84,14 @@ The module itself is stateless. It owns no cache, pin registry, lease table, des
 
 The composed Agentd path builds an ID-indexed admitted-record map once, avoiding the former candidate-by-`read.records().iter().any(...)` scan. Ranking and byte budgeting happen only after owner-cut admission.
 
+### Shared-experience and isolated-Agent integration target
+
+Read an authorized owner cut and exact revisions for the requesting workspace/purpose. Shared-read permission does not imply training access. Expose missing/revoked/unavailable sources as coverage, enforce source-currentness at final use, and avoid denied-record existence leaks.
+
+The target [HNMF contract](../../hnmf/TECHNICAL.md) and
+[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+retain current source, wire and capability states.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

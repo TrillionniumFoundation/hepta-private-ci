@@ -174,6 +174,24 @@ its own evaluation task distribution, objective or authority.
 slower task-distribution training; it is not a convergence guarantee for this
 mixed circuit or a reason to bypass versioned parameter adoption.
 
+### Experience-to-skill consolidation across Agents
+
+A supported repeated behavior may become a procedural/Circuit candidate with explicit
+source lineage, applicability/preconditions, actions, stopping, costs, failure and
+recovery. It does not become an executable instruction merely by being recalled.
+Independent task/retention evaluation and current effect authorization remain
+separate. Provenance of generated reflections or distilled procedures cannot be
+replaced with an Agent's confidence score or a self-labelled success.
+
+Local, domain and common parameter candidates have distinct permitted-source and
+consumer scopes. Consolidating a private delta into a wider bundle requires a new
+admitted use, not automatic weight averaging. Preserve dependencies through replay,
+optimizer state, distillation and descendants. Agent retirement does not delete
+lineage; source revocation may withdraw a bundle and require clean retraining.
+Shared weights and private workspaces are compatible only while live state and
+in-place optimizer mutation remain isolated. Existing artifact selectors, not the
+collecting Agent, decide adoption under the established authority boundary.
+
 ## 6. Data, protocol and lineage schema
 
 The following records are canonical cross-module protocols registered in `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`:
