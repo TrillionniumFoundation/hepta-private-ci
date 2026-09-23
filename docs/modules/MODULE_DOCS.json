@@ -520,7 +520,9 @@
         "ModulePort::runtime.codex::runtime.agentd",
         "ModulePort::runtime.supervisor::runtime.agentd"
       ],
-      "protocols": [],
+      "protocols": [
+        "IntelligenceHostEnvelopeV1"
+      ],
       "ownedDomains": [
         "runtime_health_observation"
       ],
