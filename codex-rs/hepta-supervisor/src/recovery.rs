@@ -248,14 +248,20 @@ impl<D: ProcessDriver> Supervisor<D> {
                                     // Keep the runtime handle until exit is observed so recovery
                                     // never leaves a live unmanaged process behind.
                                     let runtime_generation = record.lifecycle.generation;
-                                    let _ = process.kill();
+                                    let kill_requested = process.kill().is_ok();
                                     slot.runtime = Some(AgentRuntime {
                                         process,
                                         identity: lease.identity.clone(),
                                         spawn_generation: lease.spawn_generation,
                                         release_id: lease.release_id.clone(),
                                         generation: runtime_generation,
-                                        phase: RuntimePhase::Killing,
+                                        // Failed termination must remain retryable; it is
+                                        // not a successfully issued Killing transition.
+                                        phase: if kill_requested {
+                                            RuntimePhase::Killing
+                                        } else {
+                                            RuntimePhase::Stopping { deadline: now }
+                                        },
                                         healthy: false,
                                         fenced: true,
                                     });

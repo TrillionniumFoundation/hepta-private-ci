@@ -132,10 +132,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         let journal = RestartBudgetJournal::new(
             agent_id.clone(),
             release_id,
-            DurableRestartWindow {
-                attempts: slot.restart_attempt,
-                window_started_unix_millis: slot.restart_window_started_unix_millis,
-            },
+            // Main-process attempts and pending intent are owned by the
+            // canonical restart-budget port, not this Matrix projection.
+            DurableRestartWindow::empty(),
             DurableRestartWindow {
                 attempts: slot.matrix.restart_attempt,
                 window_started_unix_millis: slot.matrix.restart_window_started_unix_millis,
