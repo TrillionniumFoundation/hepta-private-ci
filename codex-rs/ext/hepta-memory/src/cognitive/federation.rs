@@ -45,6 +45,11 @@ use crate::framing::digest_many;
 use crate::framing::path_identity_bytes;
 use crate::framing::workspace_digest;
 
+#[path = "combined_digest_table.rs"]
+mod combined_digest_table;
+
+use combined_digest_table::intern_combined_digests;
+
 const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
 const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
 const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 3;
@@ -574,10 +579,17 @@ fn combine_cognitive_materials(
             "t": failures.get("transport_unavailable")?,
         },
     });
+    let mut memories = [local_memory, federated_memory];
+    // V3 stores complete SHA-256 strings once. Each h is an index into sha256,
+    // including citation h fields. This is lossless interning, not truncation:
+    // owner IDs, source IDs, capability fences and both final-use guards stay
+    // unchanged. Repeated memory/source content no longer pays twice per hash.
+    let digests = intern_combined_digests(&mut memories)?;
     let content = serde_json::to_string(&json!({
-        "s": "verified_cognitive_v2",
+        "s": "verified_cognitive_v3",
+        "sha256": digests,
         "f": compact_coverage,
-        "m": [local_memory, federated_memory],
+        "m": memories,
     }))
     .ok()?;
     let claimed_token_count = u32::try_from(content.len()).ok()?;
