@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "2216ea733fc8614072568b600f6e34dc739fa239",
+    "tree": "7898bb06688b68244bc2b8dc0857a3be29dc6af3"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -150,8 +150,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "2216ea733fc8614072568b600f6e34dc739fa239",
+    "tree": "7898bb06688b68244bc2b8dc0857a3be29dc6af3"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -168,6 +168,40 @@
       "sourcePath": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
       "nativeSymbol": "CombinedCognitiveEphemeralContributor",
       "state": "final_use_revalidated_local_owner_federation"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "object": "61b143142015b17924d9f2804714fb9968b2e9a6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "909d67ee056537608cfe1062311d0dd8fe2a4d5c"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation",
+      "object": "f2fb3418d116d61deae41ade0b4e1f8e9354172d"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/src/v2.rs",
+      "object": "760d972ef2adec706a2cbeada5727a1c379f2e4d"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+      "object": "040cc8abbd8414e4df9127ffd17069c4cec12c95"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "object": "dba31518d8d4d124c631da9439c55196f919223b"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+      "object": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
+    },
+    {
+      "path": "docs/modules/memory.federation/TECHNICAL.md",
+      "object": "cfe666c5e0d3fbc76b86382b6c3c738bd065a335"
     }
   ]
 }

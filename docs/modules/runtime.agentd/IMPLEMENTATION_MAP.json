@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "2216ea733fc8614072568b600f6e34dc739fa239",
+    "tree": "7898bb06688b68244bc2b8dc0857a3be29dc6af3"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -275,6 +275,60 @@
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
       "nativeSymbol": "RunStart",
       "state": "public_lifecycle_not_canonical_intelligence"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd",
+      "object": "dafb310b481cbc1185177ab0d64dfa1c263d00d4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "object": "dfba6f9599d2736f977a84ad36482f8a0319935b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "object": "aed29fe2689084b405dba3864dfcc3375bbf6708"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "object": "60595420f4bf42089b5745830ac611df1c7ec2c2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+      "object": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
+      "object": "c7f7d080ac94724ad8625d0e5d9287df94af2abe"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "object": "a0f81cd9af7002d28ccefd532f6cd96d24fa30b2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "e09735b1cb9e5d68bd0bcb3bc7d43996d5bae1d6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "object": "cea8ee482865a731d12a9483790bcb660ac3f335"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+      "object": "8a85a1e433f29b1354b4ee3c73f27b85a1842b31"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime.rs",
+      "object": "d483e00a69756339254124a633eb4fdcd05664d7"
+    },
+    {
+      "path": "docs/modules/runtime.agentd/TECHNICAL.md",
+      "object": "ed3a8dbe6c1253181a1cccf902dc969bc8ebb8a0"
     }
   ]
 }

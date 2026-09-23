@@ -296,5 +296,67 @@
       "nativeSymbol": "run_automation_scheduler",
       "state": "existing_app_server_queue_owner_consumer"
     }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation.rs",
+      "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_service.rs",
+      "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+      "object": "151cda469da48547212d0fe2fe33c9c5e7138e3d"
+    },
+    {
+      "path": "codex-rs/hepta-automation",
+      "object": "4d5c677bddeb0c4ecc281bddf144f88ebf2f03b7"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/lifecycle.rs",
+      "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+      "object": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/scheduler.rs",
+      "object": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/store.rs",
+      "object": "176b5c7200bea7d07d6642440d1f03c37209cef3"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+      "object": "e018c0b900ae9a0c0b1f9e920969357b8e1628b0"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+      "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
+    },
+    {
+      "path": "docs/modules/automation.taskflow/TECHNICAL.md",
+      "object": "dd6706a73f8c835d3c8f2d9d90f8ecb61979ce33"
+    }
   ]
 }

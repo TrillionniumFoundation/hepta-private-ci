@@ -197,14 +197,116 @@
   ],
   "productCallers": [
     {
+      "state": "compiled_long_lived_owner_boundary_not_daemon_activated",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+      "nativeSymbol": "AgentdNeuronOwner"
+    },
+    {
+      "state": "typed_intelligence_caller_source_implemented",
+      "sourcePath": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
+      "nativeSymbol": "run_neuron_tick_v1"
+    }
+  ],
+  "sourceObjects": [
+    {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "symbol": "AgentdNeuronOwner",
-      "state": "compiled_long_lived_owner_boundary_not_daemon_activated"
+      "object": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
+      "object": "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
-      "symbol": "run_neuron_tick_v1",
-      "state": "typed_intelligence_caller_source_implemented"
+      "object": "1405c0ced8fa858a776ef980e5b76f4fe970a4b3"
+    },
+    {
+      "path": "codex-rs/hepta-neuron",
+      "object": "2e0cb699ff6d11dd63e996040d935153f4e63f57"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/deletion.rs",
+      "object": "4c7d8a6d22b7daabc65e80e2d4f39b03737c6bf5"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/deletion_tests.rs",
+      "object": "d3a39d590a251f971c50d2162385ed498ebe8433"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+      "object": "8a85a1e433f29b1354b4ee3c73f27b85a1842b31"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/inference_control_tests.rs",
+      "object": "c9c80a99f0442ec4f91bd41e4a144202b5dde997"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/journal.rs",
+      "object": "4a1a9cbba6082e259da3b8df7414aea8f87c79bb"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
+      "object": "94b34ffce20dae73053185c05d1ff838747df25b"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/journal_segment_tests.rs",
+      "object": "29158c335533fd09687aa1941317e8253aa1f369"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/plasticity.rs",
+      "object": "0bcfab2466d4b03161e6f4c4eb66fcbcf110b6ec"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/plasticity_tests.rs",
+      "object": "5c9a3d33895e647b3666b12f27c0239ad150d6fe"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/population_v2.rs",
+      "object": "2222068405ee85e2adf0f550ae626f7f8fc1ea08"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/population_v2_tests.rs",
+      "object": "5dec0a2793fd1dab221c67864cf3a4cff326155c"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/protocol.rs",
+      "object": "7afd7cdb43063e35dab9ca89f5d3b94765f43665"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/protocol_tests.rs",
+      "object": "631d1b4932fc4aa1fb486adbd475ea54c08711a7"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/qualification.rs",
+      "object": "2794951279cdb1795623dfe420d7f9f4f5f6a6d1"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/qualification_tests.rs",
+      "object": "61badd8e4f810715f727522b135e1c83700079b8"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime.rs",
+      "object": "d483e00a69756339254124a633eb4fdcd05664d7"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_tests.rs",
+      "object": "4e46c63f3c0d915ae5bbe5474dfe3ca6b13e99d6"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
+      "object": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "object": "c56bad3540aa606fcadf0d45dc4fea45145cb4c6"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness_tests.rs",
+      "object": "586bddeee18e2c9e9c8e1680397608410b23b0f0"
+    },
+    {
+      "path": "docs/modules/neuron.runtime/TECHNICAL.md",
+      "object": "aff785fa12439d958f035ca8a069029004864c24"
     }
   ]
 }

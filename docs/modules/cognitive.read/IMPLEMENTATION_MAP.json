@@ -267,45 +267,45 @@
     },
     {
       "path": "scripts/hepta-implementation-maps.py",
-      "object": "0d75b3e3e2d5d21676ccf27675cc6f251749da33"
+      "object": "645ed121a1bf834e170b933620e035765edc6975"
     }
   ],
   "productCallers": [
     {
       "role": "owner_read_adapter",
-      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "symbol": "pub(crate) async fn read(",
-      "blobSha": "d40c885f15845b6b7426897ef72afb68f3720e09"
+      "blobSha": "494043d2e03a7f738ad1de3a065766a4423cef0b",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nativeSymbol": "pub(crate) async fn read("
     },
     {
       "role": "owner_final_use_revalidation",
-      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "symbol": "pub(crate) async fn revalidate(",
-      "blobSha": "d40c885f15845b6b7426897ef72afb68f3720e09"
+      "blobSha": "494043d2e03a7f738ad1de3a065766a4423cef0b",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nativeSymbol": "pub(crate) async fn revalidate("
     },
     {
       "role": "control_protocol",
-      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-      "symbol": "CognitiveContextRevalidate {",
-      "blobSha": "8b183bae3e194ea12cca7c2471074baec5bc4e4f"
+      "blobSha": "189c22ffa72b0b767295629264cbef15220dc4b3",
+      "sourcePath": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "nativeSymbol": "CognitiveContextRevalidate {"
     },
     {
       "role": "control_client",
-      "path": "codex-rs/hepta-agentd/src/client.rs",
-      "symbol": "pub async fn revalidate_cognitive_context(",
-      "blobSha": "2e8d12a493d6b17c41e3ecf1062139ba68eb24d6"
+      "blobSha": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95",
+      "sourcePath": "codex-rs/hepta-agentd/src/client.rs",
+      "nativeSymbol": "pub async fn revalidate_cognitive_context("
     },
     {
       "role": "model_effect_consumer",
-      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "symbol": "owner.revalidate_cognitive_context(snapshot).await",
-      "blobSha": "2abfaac6402421f435076a2fea18c4ac0d6e97cb"
+      "blobSha": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "nativeSymbol": "owner.revalidate_cognitive_context(snapshot).await"
     },
     {
       "role": "durable_pre_turn_stop",
-      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-      "symbol": "pub fn stop_native_before_turn_start(",
-      "blobSha": "c23e18265b712cfc39f3ac1e3bf3e9414185795d"
+      "blobSha": "d19692beec4ffcfa0a323a4b23ee599459d081b4",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "nativeSymbol": "pub fn stop_native_before_turn_start("
     }
   ],
   "exactCandidateEvidence": {
