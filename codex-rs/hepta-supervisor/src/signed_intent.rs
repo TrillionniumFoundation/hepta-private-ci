@@ -358,7 +358,7 @@ mod tests {
             1,
             SignedIntentStatus::RecoveryRequired,
         )?;
-        let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())?;
+        let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)?;
         write_recovery_directive(dir.path(), &directive)?;
         assert_eq!(read_recovery_directive(dir.path())?, Some(directive));
         Ok(())

@@ -1023,7 +1023,7 @@ fn recovery_ignores_revoked_previous_release_and_adopts_current() -> Result<(), 
         .snapshot(&fleet.first)
         .expect("recovered current release");
     assert!(snapshot.active);
-    assert!(snapshot.healthy == false);
+    assert!(!snapshot.healthy);
     assert_eq!(
         snapshot.active_release.as_deref(),
         Some(current_release.as_str())
@@ -1240,7 +1240,7 @@ fn recovery_terminalizes_unsigned_target_from_exact_release_state_cas()
     )?;
 
     let (_recovered, report) = Supervisor::recover(
-        fleet.registry.clone(),
+        fleet.registry,
         FakeControl::default().driver(),
         config(),
         Instant::now(),
@@ -1329,7 +1329,7 @@ fn recovery_required_unsigned_source_is_terminalized_as_aborted() -> Result<(), 
         .expect("write recovery transaction");
 
     let (_recovered, report) = Supervisor::recover(
-        fleet.registry.clone(),
+        fleet.registry,
         FakeControl::default().driver(),
         config(),
         Instant::now(),

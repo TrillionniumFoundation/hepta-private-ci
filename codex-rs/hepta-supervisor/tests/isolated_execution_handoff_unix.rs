@@ -96,8 +96,8 @@ fn repeated_hanging_isolated_generations_are_killed_and_old_results_stay_fenced(
             .expect("spawn isolated hanging child");
         let mut process = spawned.process;
 
-        let outcome = enforce_process_deadline_v1(&mut process, policy.clone())
-            .expect("enforce isolated deadline");
+        let outcome =
+            enforce_process_deadline_v1(&mut process, policy).expect("enforce isolated deadline");
         assert_eq!(outcome, ProcessDeadlineOutcomeV1::KillRequestedAtDeadline);
 
         let mut exited = false;

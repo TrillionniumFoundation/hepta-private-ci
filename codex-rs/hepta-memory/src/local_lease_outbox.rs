@@ -2429,21 +2429,21 @@ impl LocalLeaseOutbox {
             && admission.fencing_token == self.fencing_token
             && outbox.generation == self.generation
             && outbox.fencing_token == self.fencing_token;
-        if !current_fence && !admission_fence {
-            if latest.generation >= self.generation
+        if !current_fence
+            && !admission_fence
+            && (latest.generation >= self.generation
                 || !lease_fence_is_terminal(
                     &mut transaction,
                     &self.lease_id,
                     latest.generation,
                     &latest.fencing_token,
                 )
-                .await?
-            {
-                return Err(LocalLeaseOutboxError::StaleFence(
+                .await?)
+        {
+            return Err(LocalLeaseOutboxError::StaleFence(
                     "indeterminate occurrence source fence is not terminal for successor reconciliation"
                         .to_string(),
                 ));
-            }
         }
 
         if let Some(existing) = find_transition(

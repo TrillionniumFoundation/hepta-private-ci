@@ -148,17 +148,16 @@ impl RestartRecord {
                 "invalid canonical restart record".to_string(),
             ));
         }
-        if let Some(main) = &self.main {
-            if main.schema_version != 1
+        if let Some(main) = &self.main
+            && (main.schema_version != 1
                 || main.window_started_unix_ms == 0
                 || (main.pending
                     && (main.attempts == 0
-                        || main.next_eligible_unix_ms < main.window_started_unix_ms))
-            {
-                return Err(SupervisorError::CorruptLease(
-                    "invalid pending restart state".to_string(),
-                ));
-            }
+                        || main.next_eligible_unix_ms < main.window_started_unix_ms)))
+        {
+            return Err(SupervisorError::CorruptLease(
+                "invalid pending restart state".to_string(),
+            ));
         }
         if let Some(companion) = &self.companion {
             companion.validate()?;

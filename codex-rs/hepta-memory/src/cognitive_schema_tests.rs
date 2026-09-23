@@ -18,7 +18,8 @@ async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejecte
     ).fetch_all(&pool).await.expect("canonical table inventory");
     let mut expected: Vec<String> = REQUIRED_SCHEMA_OBJECTS
         .iter()
-        .filter_map(|(name, kind)| (*kind == "table").then(|| (*name).to_owned()))
+        .filter(|&(_, kind)| *kind == "table")
+        .map(|(name, _)| (*name).to_owned())
         .collect();
     expected.push("_sqlx_migrations".to_owned());
     expected.sort();

@@ -716,7 +716,7 @@ mod tests {
             generator_digest: Digest32::of_bytes(b"generator"),
         };
         let first = plasticity_admission_signing_payload_v1(&evidence);
-        let mut changed = evidence.clone();
+        let mut changed = evidence;
         changed.artifact_registry_head_digest = Digest32::of_bytes(b"new-head");
         assert_ne!(first, plasticity_admission_signing_payload_v1(&changed));
     }

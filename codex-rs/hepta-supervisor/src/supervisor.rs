@@ -732,12 +732,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .release_state
                     .current
                     .as_ref()
-                    .map(|release| release.as_str());
+                    .map(codex_hepta_fleet::ReleaseId::as_str);
                 let previous = record
                     .release_state
                     .previous
                     .as_ref()
-                    .map(|release| release.as_str());
+                    .map(codex_hepta_fleet::ReleaseId::as_str);
                 match (intent.transition, transaction.phase) {
                     (H7H89ProductionTransition::Upgrade, ReleaseTransactionPhase::Committed)
                         if current == Some(intent.target_release.as_str())

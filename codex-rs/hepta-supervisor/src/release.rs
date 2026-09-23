@@ -183,12 +183,12 @@ impl<D: ProcessDriver> Supervisor<D> {
             .release_state
             .current
             .as_ref()
-            .map(|release| release.as_str());
+            .map(codex_hepta_fleet::ReleaseId::as_str);
         let previous = record
             .release_state
             .previous
             .as_ref()
-            .map(|release| release.as_str());
+            .map(codex_hepta_fleet::ReleaseId::as_str);
         let next_generation = transaction
             .expected_release_state_generation
             .checked_add(1)

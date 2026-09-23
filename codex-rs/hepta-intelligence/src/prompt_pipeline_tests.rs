@@ -86,7 +86,7 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
         &portfolio,
         &prepared,
         PromptDeliveryPrepareRequestV1 {
-            exercise: exercise.clone(),
+            exercise,
             serialization_id: id("serialization:1"),
             serialized_payload: serialized_payload.clone(),
             attachment_id: id("attachment:1"),
@@ -158,7 +158,7 @@ fn serialization_without_selected_prompt_bytes_fails_closed() {
         &portfolio,
         &prepared,
         PromptDeliveryPrepareRequestV1 {
-            exercise: exercise.clone(),
+            exercise,
             serialization_id: id("serialization:missing-prompt"),
             serialized_payload: b"provider-request-without-selected-realization".to_vec(),
             attachment_id: id("attachment:missing-prompt"),
