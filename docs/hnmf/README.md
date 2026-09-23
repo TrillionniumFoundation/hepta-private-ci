@@ -2,6 +2,12 @@
 
 This directory is the executable qualification package for the Hepta-Neuron Multimodal Memory Fabric (HNMF). It closes the implementation-design blockers identified in the V8 audit without creating a second execution spine or granting production authority.
 
+The shared-experience extension uses these owners for current Recall and future
+Replay/training while keeping Agent workspaces and live state independent. See
+[Memory forms and publication](TECHNICAL.md), [staged delivery](MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
+and [clean-Agent experiments](../learning/CAUSAL_LONGITUDINAL_SPEC.md).
+Its planned status does not change the original reference closure or private V1 scopes.
+
 Read in this order:
 
 1. [`HNMF.json`](HNMF.json) — machine-readable architecture, bounds, protocols, work packages, module ownership, and claim posture.

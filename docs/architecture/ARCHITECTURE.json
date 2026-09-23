@@ -263,5 +263,49 @@
     "scalingLaw": "empirical_hypothesis_no_transferred_exponents",
     "learnedAdaptationRequiredForMetaRl": true,
     "sourceCapabilityClaimAdvanced": false
+  },
+  "sharedExperienceArchitecture": {
+    "revision": 1,
+    "status": "planned_shared_experience_not_runtime_or_efficacy_claim",
+    "specification": "docs/hnmf/TECHNICAL.md",
+    "migration": "docs/hnmf/MIGRATION.md",
+    "defaultPolicy": "independent_agents_with_opt_in_standing_shared_scope",
+    "logicalMemoryForms": [
+      "private_working",
+      "source_bound_episodic_evidence",
+      "rebuildable_associative_concepts",
+      "qualified_procedural_candidates",
+      "versioned_parametric_artifacts"
+    ],
+    "separatePermissions": [
+      "raw_read",
+      "purpose_bound_training",
+      "derived_artifact_consumers"
+    ],
+    "independentState": [
+      "workspace_and_file_writers",
+      "current_objective",
+      "session_and_context",
+      "credentials",
+      "cell_hidden_state",
+      "kv_and_mutable_caches",
+      "optimizer_candidates",
+      "execution_leases_and_in_flight_effects"
+    ],
+    "recall": "current_task_source_bound_evidence_selection",
+    "replay": "frozen_permitted_training_view_not_effect_reexecution",
+    "memoryWriter": "cognitive.store_existing_owner_path",
+    "learningFactWriter": "learning.ledger",
+    "trainedArtifactOwner": "learning.artifacts",
+    "federationReadOnly": true,
+    "sourceAndShardIdentityOutliveAgentProcess": true,
+    "contextIsolationAloneProvesPrivacy": false,
+    "sharedAuthorityOrGlobalDatabaseCreated": false,
+    "currentPrivateScopesAndWireUnchanged": true,
+    "experiments": [
+      "shared_experience_transfer",
+      "shared_experience_isolation",
+      "shared_experience_lifecycle"
+    ]
   }
 }

@@ -501,5 +501,36 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
+  },
+  "sharedExperienceDesign": {
+    "status": "planned_extension_not_original_reference_closure",
+    "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
+    "definition": "docs/hnmf/TECHNICAL.md",
+    "migration": "docs/hnmf/MIGRATION.md",
+    "existingSourceAndProtocolSemanticsUnchanged": true,
+    "defaultNoImplicitTrainingConsent": true,
+    "standingPolicyMayAutomateBoundedContributions": true,
+    "contributionIdentity": [
+      "source_owner",
+      "source_revision",
+      "semantic_digest",
+      "publication_operation",
+      "policy_generation"
+    ],
+    "snapshot": "per_owner_exact_cuts_with_causal_dependency_closure",
+    "readFailure": "explicit_partial_or_unavailable_not_successful_empty",
+    "control": "existing_cns_cells_and_circuits_not_new_memory_owner",
+    "futureConformance": [
+      "SM-01",
+      "SM-02",
+      "SM-03",
+      "SM-04",
+      "SM-05",
+      "SM-06",
+      "SM-07",
+      "SM-08",
+      "SM-09",
+      "SM-10"
+    ]
   }
 }

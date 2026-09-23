@@ -3,7 +3,7 @@
 **Plan ID:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN`
 **Version:** `8.0.0`
 **Date:** 2026-09-23
-**Design amendment:** multiscale Cell/Circuit architecture, conditional expressivity, depth/credit, parameter-field and scaling experiments; runtime and capability claims unchanged.
+**Design amendment:** multiscale Cell/Circuit architecture, capacity/learning contracts, shared experience and isolated multi-Agent workspaces; runtime and capability claims unchanged.
 **Status:** canonical policy and static registries are defined by this document set; live branch, pull-request, CI, selection and default-branch facts are resolved only from current exact-candidate receipts and are never cached here.
 
 This is the only global human-readable development authority in the working tree. Machine registries own bounded facts and `docs/STATUS.md` is generated. This document grants no runtime, model, provider, tool, network, filesystem, secret, Matrix, fleet, operator, promotion, or release authority.
@@ -416,6 +416,56 @@ artifact/dataset lineage and unlearning
 The observing store or adapter, not the policy being evaluated, records effect and outcome facts. A policy cannot label its own action successful. Memory persistence is not long-term learning.
 
 The first closed loop must include no-intervention baselines, single-factor and pairwise ablations, timing ablations, model-version isolation, support-aware OPE and future-time validation.
+
+### Shared experience and isolated multi-Agent workspaces
+
+The selected target is shared long-term experience within an explicitly authorized
+learning scope, with private Agent/workspace execution. Sharing knowledge does not
+merge objectives, sessions, credentials, file writers, live Cell state or in-flight
+Circuits. Use the existing HNMF and owners, not a new central Memory executor.
+This is a functional architecture choice, not a claim of novelty over all memory
+research, biological identity, implemented cross-host learning or current efficacy.
+
+Memory has five logical forms: private working state; source-bound events/evidence;
+rebuildable associations/concepts; qualified procedures/Circuits; and parameter
+artifacts. They share lineage, not one writable database. The memory/fact owner
+retains source truth, learning.ledger retains decisions/outcomes/credit, and
+learning.artifacts retains trained versions. A derived episode view joins exact
+owner references; it does not redefine MemoryEventV1 as a universal ledger.
+
+Recall selects current task evidence under read permission and final-use freshness.
+Replay constructs a frozen training view under separate data-use permission;
+replay of a recorded action never re-executes its external effect. Source revisions,
+actual context delivery, behavior policy, independent outcomes, missingness and
+applicability travel with experience. Historical evidence can remain useful for
+learning without being accepted as a current fact. Model summaries, copied claims
+and repeated Agent exposures do not create independent source confirmation.
+
+Authorized same-owner Agents may publish suitable experience automatically under
+a standing policy. Same owner or common base weights alone is not consent to pool
+all data. Publication must distinguish raw-read audience, training purpose/parameter
+target and permitted derived-artifact consumers; cross-principal sharing stays
+explicit. Derived summaries, gradients and distilled weights inherit applicable
+restrictions. Credentials and evaluation answers cannot enter general replay.
+
+Keep local source writers and publish bounded immutable contributions or references
+through existing intent/outbox/admission paths. memory.federation remains read-only;
+no SQLite-file merging, remote writer shortcut or shared mutable model singleton.
+A dataset binds per-owner cuts, causal dependencies, purpose and revocation frontier;
+an incomplete shard is missing coverage, not an empty successful dataset. Durable
+shard identity survives Agent restart/retirement with an explicit owner handoff.
+
+Agents load a compatible common/domain/Agent parameter bundle while maintaining
+separate context, recurrent state, KV/cache namespaces and workspaces. Shared model
+updates create candidates for future adoption, never in-place mutation of tensors
+used by another run. Context isolation alone cannot establish privacy: data, training,
+artifact distribution and evaluation leakage need independent controls.
+
+The primary design lives in `docs/hnmf/TECHNICAL.md`; `docs/hnmf/MIGRATION.md`
+orders delivery through existing packages. Compare no sharing, Recall-only,
+trained-artifact-only and both on a clean receiving Agent with matched task and
+lifecycle budgets. Test negative transfer, poisoning, cancellation, source correction,
+revocation through derived artifacts and old-task retention before claiming benefit.
 
 ## 12. Fast runtime loop and slow learning loop
 

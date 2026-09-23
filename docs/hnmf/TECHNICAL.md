@@ -74,6 +74,39 @@ recall caches
 
 A vector database is one bounded candidate channel. Nearest-neighbor distance neither proves truth nor permits retrieval attachment. A projection generation is valid only while its source range, tombstone cutoff, encoder/preprocessor manifest, and snapshot digest remain current.
 
+### Long-term memory is both evidence and a learning substrate
+
+The target HNMF composition uses the existing Nervous System to admit experience,
+recall task-relevant evidence, select replay and form future skills/parameters.
+It is not a vector database renamed as a brain and not a claim that experience
+replay, neural memory or multi-actor learning is unprecedented. Existing reference
+closure does not certify the new shared-experience/product requirements.
+
+| Logical form | Contents and interpretation | Existing owner and default sharing |
+| --- | --- | --- |
+| Working | current objective/context, transient hypotheses, active Circuit and Cell state | Agentd/Neuron/session owners; private per run/workspace |
+| Episodic/evidence | observed source, time, environment and revision-bound Memory; references to actual actions/results | cognitive.store for Memory/source; learning.ledger for learning facts; policy-scoped publication |
+| Associative/concept | semantic/temporal/contradiction and engram projections supported by exact revisions | existing KG/retrieval/projection owners; authorized rebuildable views |
+| Procedural | candidate or qualified skills/subcircuits with preconditions, effects, stop and recovery | existing TaskFlow/organ and learning artifact owners; independent current execution admission |
+| Parametric | immutable common/domain/Agent model, adapter and policy bundles | learning.artifacts; source- and consumer-scoped future adoption |
+
+These are five logical forms, not five new stores. A fact-like source is evidence
+that particular content was observed; it is not proof every proposition in it is
+true. Retain SourceKind and verification/support state. Generated reflection and
+synthetic trajectories remain hypotheses/training material with declared purpose,
+never independent real-world observations. Distinguish current validity from
+historical explanatory/training use. A code observation binds project/base commit,
+environment/tool versions and applicability; it cannot become another workspace's
+current file truth without revalidation. Volatile facts remain external to weights.
+
+A shared experience view references source/Memory revisions, actually delivered
+context, complete decision/route candidates and behavior, operation outcomes and
+corrections, environment/applicability, publication policy and retention lineage.
+Learning facts stay with learning.ledger and effect facts with their executor.
+Do not add these fields to MemoryEventV1 by convention or reconstruct unobserved
+reasoning after the fact. Missing/late/indeterminate results have explicit states;
+success is not self-labelled by the contributing Agent.
+
 ## 4. Canonical multimodal data model
 
 ### 4.1 `ModalitySpanRefV1`
@@ -203,6 +236,45 @@ A candidate that passes hard gates can still be dropped as redundant. Redundancy
 
 `cognitive.store` remains the only authoritative writer for memory and knowledge facts. Neuron, retrieval, compaction, and learning components emit intents or candidates; they never write that store directly.
 
+### Authorized contribution and shared-view publication
+
+A sharing scope is a configured audience and purpose beneath an existing principal
+and data-owner policy. It is not a new authority issuer, a fifth NDU subject or an
+implicit widening of AgentPrivate/WorkspacePrivate. There is no sharing default
+without an admitted policy. A standing policy may automatically admit bounded,
+low-risk contributions within its exact audience/use limits; routine experience
+must not require a new human approval per event when already authorized.
+
+Keep three permissions distinct: raw evidence read, training use for a named
+purpose/parameter scope, and use/distribution of the derived artifact. A read grant
+never implies a train grant; training access need not expose raw data to every
+artifact consumer. Retention, source license/consent, redaction, credentials,
+evaluation isolation and revocation remain noncompensable. Transforming data into
+a summary, gradient or adapter does not remove its lineage or authorize wider use.
+
+The intended owner path is local admitted append -> durable contribution intent
+-> destination scope/purpose/currentness checks -> idempotent admitted reference
+or immutable permitted copy -> acknowledgement -> bounded shared projection update.
+Use existing owner operations; no Agent opens another owner's writable SQLite file,
+no database files are merged, and federation gains no mutation authority. A copy
+is a derived record linked to the original revision, not a new independent fact.
+A publication is selectable for its declared use only after durable admission.
+
+A contribution binds producer, durable shard/owner epoch, original event/revision,
+semantic content digest, policy generation, destinations and idempotent operation
+identity. An exact duplicate returns the same result; a reused ID with changed
+semantics conflicts. Lost acknowledgement resumes/reconciles the same operation.
+Keep source revision identity distinct from transport attempts and Agent process
+identity. Producer signatures/digests authenticate origin/integrity, not truth.
+
+Index exact source lineage before semantic similarity. Keep different observations
+with identical wording when their provenance differs; repeated copies of one root
+source remain one support root. Preserve contradictory claims with their conditions,
+time and provenance rather than vote-counting Agent restatements or averaging them
+into an authoritative centroid. Sharing an experience does not create a new outcome.
+Sensitive metadata and existence/counts of denied records are not disclosed through
+indexes, batch statistics or content-addressed cross-scope deduplication oracles.
+
 ## 8. Recall and contradiction path
 
 The recall path is:
@@ -227,6 +299,28 @@ Candidate channels may include lexical, vector, entity, temporal, causal, episod
 Contradiction is first class. Active nodes connected by `contradicts` are emitted as contradiction pairs. An unresolved high-risk contradiction forces abstention or slow-path review. It is invalid to average incompatible facts into a high-confidence embedding centroid.
 
 A recall packet is stale when any selected event head, source digest, scope, verification, lifecycle, validity interval, asset digest, tombstone cutoff, KG generation, engram generation, or encoder manifest changes. Physical model-request construction must revalidate the entire packet in one coherent read snapshot.
+
+### Recall and Replay are different consumers
+
+Recall is an evidence-selection circuit: it consumes the current task, admitted
+read scope and coherent source cut, then returns bounded source-bound information
+for the local context compiler. Cell decisions can choose channels, compare
+relevance, detect insufficiency and stop. Deterministic source/permission checks
+remain authoritative. A learned relevance score cannot widen the read scope.
+
+Replay is a training-selection path: it freezes eligible episodes and targets
+under training permission, estimator support, task split and resource limits.
+An item useful to Recall is not automatically a valid RL sample. Conversely a
+historical failed/obsolete observation may teach a general checking strategy while
+being explicitly invalid as a current fact. Procedure recall returns a candidate
+skill with preconditions; it never grants execution. Replay consumes records or
+admitted simulations, not live historical tool effects.
+
+Both paths reference the same provenance but use independent selection policies,
+budgets and permission checks. Recall records actual delivered evidence; Replay
+records inclusion/sampling decisions and lineage. The retrieval engine remains
+read-only and does not become a trainer or Memory writer. Current model input is
+compiled independently per Agent; shared publication is not a broadcast instruction.
 
 ## 9. Replay and consolidation
 
@@ -253,6 +347,41 @@ Consolidation may propose:
 - a structural topology candidate.
 
 Consolidation never rewrites source events. Dreamed or model-generated trajectories are tagged separately from real observations and cannot silently become factual support.
+
+### Multi-Agent replay snapshots and slow consolidation
+
+A shared dataset is a versioned view, not a live concatenation of every Agent log.
+Bind each included shard's source/learning cuts, owner epoch, schema, admitted
+training policy, snapshot manifest and current deletion/revocation frontier. Respect
+cross-shard causal parents: a decision/outcome/credit sample cannot silently omit
+required delivered inputs or predecessor evidence. A vector of valid local cuts
+is not automatically a globally simultaneous snapshot. Close declared dependencies
+by exact references or report incomplete/unavailable; unrelated shards need no
+whole-system stop barrier. Source unavailability never fabricates a successful
+empty shard. Caches/materialized batches stay derivative and scope-bound.
+
+Actor policy/model/Circuit and behavior versions may differ. Record actual routing
+and candidate support, environment, delays and collection assignment. An unavailable
+propensity may permit declared supervised/predictive use but not unsupported
+importance-weighted policy claims. Independent data is counted by episode/task
+and root source, not number of imports, replay epochs or Agents quoting it.
+Use coverage and source/domain quotas; include supported failures, rare conditions
+and retention samples, not success-only or salience-only replay. Retain synthetic
+and observed populations separately and disclose their mixing policy.
+
+Run bounded training under existing learning.operator/eval/artifact owners. Freeze
+common/domain/Agent targets and evaluator before training; preserve data-use scope
+and outcome support. A local update can remain local. Promotion to a domain/common
+bundle requires its own permitted-source and downstream-consumer set plus independent
+retention/negative-transfer tests. Weight averaging, distillation and local gradient
+aggregation are candidate training methods, not automatic safe knowledge merging.
+No immediate mutation of a shared selected model; only admitted compatible future
+bundles are loaded, with dependent state/calibration/cache invalidation or migration.
+
+Facts, concepts, procedures and parameter candidates have separate readiness states.
+Novelty or internal utility cannot certify a true fact or a qualified procedure.
+NDU may prioritize useful memory work and data coverage after privacy/safety floors,
+but may not reward raw upload volume, increase authority or redefine task success.
 
 ## 10. Eligibility, modulation and candidate plasticity
 
@@ -310,6 +439,32 @@ Applying a forget batch creates a new generation, removes the event from support
 
 Qualification requires `maximumDeletionResurrectionCount = 0` across recall, KG, vector/FTS indexes, engrams, synapses, replay datasets, artifacts, caches, and restore rehearsals.
 
+### Correction, revocation and training-impact propagation
+
+Distinguish correction, access revocation, payload deletion and removal of training
+influence. Correction appends a new valid revision without rewriting what was
+observed historically; whether historical training remains permitted is an explicit
+policy. A shared pointer or copy retains original authority and deletion lineage.
+No overwrite, export, summarization or distillation severs that dependency.
+
+Revocation blocks new Recall, batch access and artifact adoption before queued work
+can cross their respective final-use boundary. Cancellation of in-flight training
+and quarantine of its candidate are tracked; stop acknowledgement is not deletion
+proof. A source-trained bundle may require withdrawal, supported unlearning or
+retraining from an admitted clean predecessor. Dropping an embedding/tombstone is
+not proof its influence disappeared from weights or optimizer state. If no suitable
+selective method exists, revoke and retrain; retain truthful incomplete status.
+
+Propagate lineage through projections, shared copies, training/materialization,
+normalizers, optimizers, adapters, distilled descendants, caches and backups.
+Owner-reference GC does not delete a shared base still used by unaffected artifacts,
+but a tainted shared base affects all its derived bundles until cleared/replaced.
+Offline owners cannot certify erasure while disconnected; reconnect/restore first
+replays current revocation/frontiers and suppresses stale exports or model loads.
+Do not restore private payload merely to preserve an audit: retain only authorized
+non-sensitive linkage and disposition. Historical recipient disclosures cannot be
+retroactively undone; prevent future use and report the actual propagation status.
+
 ## 12. Existing-module ownership map
 
 HNMF is decomposed across existing V8 modules:
@@ -363,6 +518,34 @@ Threats include embedding poisoning, cross-modal adversarial alignment, untruste
 Controls include exact source and asset digests, bounded inputs, canonical schemas, deny-unknown-critical-fields, privacy scope checks before candidate generation, redaction manifests, per-channel and per-population bounds, stable deterministic ordering, clipped fixed-point arithmetic, source quotas, negative authority fields in proposal objects, exact predecessor generations, and independent acceptance.
 
 Raw prompts, credentials, private keys, unrestricted source payloads, and model hidden states never enter general HNMF receipts. External content remains evidence and cannot become a trusted instruction factor without separate governed transformation.
+
+### Isolation extends beyond the context window
+
+Protect five boundaries independently: workspace/effect access; session/Cell/KV and
+context state; fact applicability/provenance; training and parameter distribution;
+and evaluation/task-split leakage. A private prompt is not a guarantee that a
+common trained model cannot reveal or apply private information. Source permissions
+propagate into candidate and derived-bundle use. Do not promise zero leakage from
+redaction, aggregation, gradients or distillation without a justified method and
+measurement for that claim. Initially prefer isolated scoped deltas and raw-data
+access through existing owner controls; centralized, federated-gradient and secure
+aggregation training are distinct future choices, not implicit federation behavior.
+
+Publication ingestion treats content as evidence, including externally supplied
+text embedded in internal Memory. Authenticate source and binding, quarantine
+unsupported/malicious instructions, retain contradiction and root-source lineage,
+and exercise poisoning/deceptive-summary tests. Neither a signed contribution nor
+many sibling Agents repeating it may convert text into instruction or privileged
+action. Standing policies reduce approval overhead but preserve deterministic
+scope, credential, retention and final-use boundaries.
+
+Cache and batching namespaces include consumer/workspace/purpose/source frontier,
+model/adapter/normalizer generation and trust class. Denied/expired/revoked inputs
+must not leak through stale context, scores, shared mutable state or model reload.
+A new context begins from explicit task inputs, not another Agent's resident state.
+Optional shared evidence may degrade to a declared local-only read with disclosed
+coverage; mandatory evidence/permission failures must defer or reject, never silently
+lower training, privacy or result-completeness requirements.
 
 ## 15. Verification and acceptance
 
@@ -439,6 +622,17 @@ artifact generated != artifact selected
 operator acceptance != promotion
 promotion != release
 ```
+
+### Shared-experience completion is separate from reference closure
+
+The original HNMF counts and reference gaps remain unchanged. The shared-experience
+requirements are planned extensions of existing packages in
+`../delivery/WORK_PACKAGES.json`, ordered in `MIGRATION.md`; earlier implemented
+package state does not certify them. SM-01..SM-10 and the clean-Agent four-arm pilot
+are future acceptance criteria. A scoped policy/dedup/lineage example is not a
+product caller, operating-system isolation test, full unlearning proof or shared
+learning benefit. Keep local multi-owner execution, authenticated cross-host
+transport and measured longitudinal transfer as distinct milestones.
 
 ## 18. Work-package closure
 

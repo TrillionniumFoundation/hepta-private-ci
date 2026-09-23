@@ -103,6 +103,40 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### Independent workspaces with authorized shared experience
+
+A common Nervous System means reusable knowledge/parameters and coordinated
+collection, not one mutable context. Agentd owns each Agent's current objective,
+session linkage, workspace handle, live Circuit identity and lifecycle. Keep file
+writes, credentials, environment, sockets, Cell hidden state, KV/context caches,
+execution leases and in-flight effects in their existing private owner boundaries.
+A directory layout is not sufficient isolation: bind canonical workspace/project
+and base revision, handle symlink/path substitution, protect shared caches and
+separate process-wide mutable state. Shared physical serving is allowed only with
+per-request scoped state and tested cleanup; replicas do not grant cross-access.
+
+The context compiler selects an allowed projection of shared Memory for this run.
+No publication is broadcast into all sessions, and another Agent's objective or
+prose cannot become a system instruction. Explicit handoff carries bounded typed
+source references and task-state facts, not the sender's full private context or
+credential-bearing environment. An authorized patch/artifact is transferred with
+its base/lease/predecessor through the owning workflow, never by editing a peer's
+working directory. Worktrees alone do not isolate writable repo metadata or caches.
+
+Load a coherent immutable common/domain/Agent parameter bundle per admitted run.
+Each Agent retains its own recurrent/adaptation state. Training jobs use isolated
+candidate workspaces and cannot mutate active shared tensors or optimizer state.
+Adoption waits for the existing snapshot/lifecycle boundary with state/cache/
+calibration compatibility; a stale actor is logged or readmitted, never relabelled
+as the current policy. Private adapters cannot enter common training by default.
+
+An Agent generation is not a Memory shard's durable identity. On shutdown/retirement,
+reconcile outstanding contributions and preserve owner-routable source IDs; move
+responsibility only through a fenced owner handoff. Offline source/permission state
+cannot silently renew on restart. Existing source and wire APIs are unchanged by
+this target. [HNMF](../../hnmf/TECHNICAL.md) owns contribution/learning semantics;
+[causal evaluation](../../learning/CAUSAL_LONGITUDINAL_SPEC.md) owns clean-Agent tests.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

@@ -87,6 +87,30 @@ The hardened V2 boundary has no writer or outbox. Its bounded components are:
 
 No component in this module enrolls peers, mutates a remote store, owns credentials, issues grants, writes cognitive facts or maintains a retry queue. Current owner/capability facts stay in their existing owners. Hidden mutable singletons, unbounded queues, blind retries and implicit fallback to the legacy federation path are prohibited on the Agentd product composition.
 
+### Shared long-term view without a federation writer
+
+The shared-experience target uses this adapter only to read permitted source views.
+Contribution/export commits belong to cognitive.store and kernel.operations;
+training views and candidate publication belong to learning.ledger/artifacts.
+Do not add write authority, enrollment state or a trainer to federation, and do not
+merge per-Agent databases. Same-owner Agents still require matching consumer,
+workspace/purpose and current authority; read permission is not training consent.
+
+A future authenticated cross-host profile binds peer identity, declared durable
+shard/owner epoch, exact query/purpose, source cut and current revocation horizon.
+A response digest alone proves neither remote identity nor source truth. Transport
+schemas, credentials, peer enrollment and recovery have to be registered and
+implemented before product claims; current in-process V2 structs are not that wire
+protocol. Local multi-owner reads remain a valid first implementation step.
+
+A shared training snapshot may select multiple per-owner cuts with explicit causal
+dependency validation; the adapter does not invent a global total order. A timed-out
+peer is unavailable coverage, not zero records or a valid training empty set. Batch
+and cache consumers must recheck the appropriate purpose/currentness boundary.
+Denied record contents/existence are not revealed by dedup indexes or response
+statistics. Full publication and use separation is in
+[HNMF](../../hnmf/TECHNICAL.md#authorized-contribution-and-shared-view-publication).
+
 ## 5. Contracts, ports and compatibility
 
 Registry-produced contracts:
