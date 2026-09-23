@@ -272,12 +272,11 @@ fn apply_frame(
                 sequence,
                 frame_digest: digest,
             };
-            if let Some(current) = state.anchor {
-                if next.sequence < current.sequence
-                    || (next.sequence == current.sequence && next != current)
-                {
-                    return Err(AdaptiveAnchorJournalErrorV1::Corrupt);
-                }
+            if let Some(current) = state.anchor
+                && (next.sequence < current.sequence
+                    || (next.sequence == current.sequence && next != current))
+            {
+                return Err(AdaptiveAnchorJournalErrorV1::Corrupt);
             }
             state.anchor = Some(next);
         }

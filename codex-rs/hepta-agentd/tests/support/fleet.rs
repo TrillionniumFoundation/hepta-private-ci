@@ -267,12 +267,55 @@ impl FleetHarness {
         Ok((control, health))
     }
 
+    /// Restart acknowledges queued work. Wait for the new leased spawn before
+    /// binding a client; a stopped/draining registry generation is not its ID.
+    #[allow(dead_code)]
+    pub(crate) async fn wait_new_spawn(
+        &mut self,
+        agent: &AgentFixture,
+        previous_generation: u64,
+    ) -> Result<(AgentdClient, HealthSnapshot)> {
+        let deadline = Instant::now() + READY_TIMEOUT;
+        loop {
+            let report = self.supervisor.tick(Instant::now());
+            ensure!(
+                report.faults.is_empty(),
+                "restart faults: {:?}",
+                report.faults
+            );
+            let snapshot = self.supervisor.snapshot(&agent.agent_id);
+            if let Some(generation) = snapshot.as_ref().and_then(|value| value.spawn_generation)
+                && generation > previous_generation
+            {
+                let control = self.control_client(agent, generation)?;
+                let health = self
+                    .wait_until_ready_before(&agent.agent_id, &control, deadline)
+                    .await?;
+                return Ok((control, health));
+            }
+            ensure!(
+                Instant::now() < deadline,
+                "queued restart did not create a new spawn: {snapshot:?}"
+            );
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    }
+
     pub(crate) async fn wait_until_ready(
         &mut self,
         agent_id: &AgentId,
         control: &AgentdClient,
     ) -> Result<HealthSnapshot> {
-        let deadline = Instant::now() + READY_TIMEOUT;
+        self.wait_until_ready_before(agent_id, control, Instant::now() + READY_TIMEOUT)
+            .await
+    }
+
+    async fn wait_until_ready_before(
+        &mut self,
+        agent_id: &AgentId,
+        control: &AgentdClient,
+        deadline: Instant,
+    ) -> Result<HealthSnapshot> {
         loop {
             let report = self.supervisor.tick(Instant::now());
             ensure!(

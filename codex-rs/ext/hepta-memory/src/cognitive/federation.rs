@@ -8,7 +8,6 @@ use codex_extension_api::EphemeralModelInputContext;
 use codex_extension_api::EphemeralModelInputContributor;
 use codex_extension_api::EphemeralModelInputFinalUseGuard;
 use codex_extension_api::EphemeralModelInputProposal;
-use codex_extension_api::EphemeralModelInputSource;
 use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ExtensionMetrics;
@@ -48,7 +47,7 @@ use crate::framing::workspace_digest;
 
 const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
 const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
-const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 2;
+const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 3;
 const MAX_AUTO_CITATIONS_PER_MEMORY: usize = 8;
 const MAX_COMBINED_CITATIONS_PER_MEMORY: usize = 1;
 
@@ -484,24 +483,40 @@ struct FederatedAttachment<'a> {
     memories: &'a [FederatedAttachmentMemory],
 }
 
+// Internal model-context V3 keeps every provenance value but uses bounded
+// field labels. Full V2 labels alone exceed the conservative 999-byte budget
+// for a single ordinary memory; raising that budget would hide the regression.
 #[derive(Clone, Serialize)]
 struct FederatedAttachmentMemory {
+    #[serde(rename = "a")]
     source_agent_id: AgentId,
+    #[serde(rename = "p")]
     capability_id: String,
+    #[serde(rename = "g")]
     capability_generation: u64,
+    #[serde(rename = "v")]
     capability_revision: u64,
+    #[serde(rename = "m")]
     memory_id: String,
+    #[serde(rename = "r")]
     revision: u64,
+    #[serde(rename = "c")]
     content: String,
+    #[serde(rename = "h")]
     content_sha256: String,
+    #[serde(rename = "q")]
     citations: Vec<FederatedAttachmentCitation>,
 }
 
 #[derive(Clone, Serialize)]
 struct FederatedAttachmentCitation {
+    #[serde(rename = "a")]
     source_agent_id: AgentId,
+    #[serde(rename = "s")]
     source_id: String,
+    #[serde(rename = "r")]
     revision: u64,
+    #[serde(rename = "h")]
     content_sha256: String,
 }
 
@@ -513,8 +528,12 @@ fn combine_cognitive_materials(
     let local_value = serde_json::from_str::<Value>(&local.content).ok()?;
     let federated_value = serde_json::from_str::<Value>(&federated.content).ok()?;
     let local_memory = compact_local_memory(local_value.get("memories")?.as_array()?.first()?)?;
-    let federated_memory =
-        compact_federated_memory(federated_value.get("memories")?.as_array()?.first()?)?;
+    let memory = federated_value.get("memories")?.as_array()?.first()?;
+    let federated_memory = match federated_value.get("schema_version")?.as_u64()? {
+        2 => compact_federated_memory(memory)?,
+        3 => compact_federated_memory_v3(memory)?,
+        _ => return None,
+    };
     let federation_coverage = federated_value.get("coverage")?.as_object()?;
     for field in [
         "requested_peers",
@@ -524,9 +543,7 @@ fn combine_cognitive_materials(
         "omitted_peer_candidates",
         "truncated_items",
     ] {
-        if federation_coverage.get(field)?.as_u64().is_none() {
-            return None;
-        }
+        federation_coverage.get(field)?.as_u64()?;
     }
     let failures = federation_coverage.get("failures")?.as_object()?;
     for field in [
@@ -536,13 +553,30 @@ fn combine_cognitive_materials(
         "integrity_rejected",
         "transport_unavailable",
     ] {
-        if failures.get(field)?.as_u64().is_none() {
-            return None;
-        }
+        failures.get(field)?.as_u64()?;
     }
+    // V2 shortens labels, not evidence: r/c/f/t/o/i retain all peer/item
+    // counts; x.d/e/a/i/t retain discovery/deadline/authority/integrity/
+    // transport failures. The full source coverage remains in both the source
+    // binding and final-use guard. Do not raise the physical attachment budget.
+    let compact_coverage = json!({
+        "r": federation_coverage.get("requested_peers")?,
+        "c": federation_coverage.get("completed_peers")?,
+        "f": federation_coverage.get("failed_peers")?,
+        "t": federation_coverage.get("truncated_peers")?,
+        "o": federation_coverage.get("omitted_peer_candidates")?,
+        "i": federation_coverage.get("truncated_items")?,
+        "x": {
+            "d": failures.get("discovery_unavailable")?,
+            "e": failures.get("deadline_or_cancelled")?,
+            "a": failures.get("authority_rejected")?,
+            "i": failures.get("integrity_rejected")?,
+            "t": failures.get("transport_unavailable")?,
+        },
+    });
     let content = serde_json::to_string(&json!({
-        "s": "verified_cognitive_v1",
-        "f": federated_value.get("coverage")?,
+        "s": "verified_cognitive_v2",
+        "f": compact_coverage,
         "m": [local_memory, federated_memory],
     }))
     .ok()?;
@@ -620,6 +654,28 @@ fn compact_federated_memory(memory: &Value) -> Option<Value> {
         "c": memory.get("content")?,
         "h": memory.get("content_sha256")?,
         "q": citations,
+    }))
+}
+
+fn compact_federated_memory_v3(memory: &Value) -> Option<Value> {
+    let citations = memory
+        .get("q")?
+        .as_array()?
+        .iter()
+        .take(MAX_COMBINED_CITATIONS_PER_MEMORY)
+        .map(|citation| {
+            Some(json!({
+                "s": citation.get("s")?,
+                "r": citation.get("r")?,
+                "h": citation.get("h")?,
+            }))
+        })
+        .collect::<Option<Vec<_>>>()?;
+    Some(json!({
+        "a": memory.get("a")?, "p": memory.get("p")?,
+        "g": memory.get("g")?, "v": memory.get("v")?,
+        "m": memory.get("m")?, "r": memory.get("r")?,
+        "c": memory.get("c")?, "h": memory.get("h")?, "q": citations,
     }))
 }
 
@@ -970,14 +1026,14 @@ mod tests {
         let payload =
             serde_json::from_str::<serde_json::Value>(&boundary.content).expect("combined payload");
         assert_eq!(
-            payload["f"]["requested_peers"],
+            payload["f"]["r"],
             serde_json::json!(2),
             "combined payload must preserve requested peer coverage",
         );
-        assert_eq!(payload["f"]["completed_peers"], serde_json::json!(1));
-        assert_eq!(payload["f"]["failed_peers"], serde_json::json!(1));
+        assert_eq!(payload["f"]["c"], serde_json::json!(1));
+        assert_eq!(payload["f"]["f"], serde_json::json!(1));
         assert_eq!(
-            payload["f"]["failures"]["transport_unavailable"],
+            payload["f"]["x"]["t"],
             serde_json::json!(1),
             "combined payload must preserve typed failure coverage",
         );
@@ -1020,6 +1076,26 @@ mod tests {
                 .contains("00000000-0000-4000-8000-000000000799")
         );
         assert!(changed.content.contains("federation:v1:bbbb"));
+    }
+
+    #[test]
+    fn v3_compact_memory_preserves_v2_combined_fields_and_coverage_source() {
+        let legacy = federated_material(OWNER_ID, "federation:v1:example", 0);
+        let value: serde_json::Value = serde_json::from_str(&legacy.content).expect("legacy");
+        let record = &value["memories"][0];
+        let compact = super::compact_federated_memory(record).expect("V2 projection");
+        assert_eq!(
+            super::compact_federated_memory_v3(&compact).expect("V3 projection"),
+            compact
+        );
+        for field in ["a", "p", "g", "v", "m", "r", "c", "h", "q"] {
+            let mut incomplete = compact.clone();
+            incomplete.as_object_mut().expect("object").remove(field);
+            assert!(
+                super::compact_federated_memory_v3(&incomplete).is_none(),
+                "missing {field}"
+            );
+        }
     }
 
     fn local_material(padding: usize) -> CognitiveProposalMaterial {
@@ -1149,7 +1225,7 @@ mod tests {
                     stable_key: "federated-physical-send-memory".to_string(),
                     revision: MemoryRevisionDraft {
                         scope: CognitiveScope::AgentPrivate,
-                        content: "federated physical send must revalidate".to_string(),
+                        content: "federated physical send must revalidate the currently authorized umber lighthouse memory".to_string(),
                         verification: MemoryVerification::Verified,
                         lifecycle: MemoryLifecycleState::Active,
                         valid_from_unix_seconds: now - 1,
@@ -1243,6 +1319,22 @@ mod tests {
         assert_eq!(first.source().as_str(), FEDERATED_COGNITIVE_SOURCE);
         let (first_content, final_use_guard) = first.into_content_and_final_use_guard();
         assert!(first_content.contains(OWNER_ID));
+        assert!(
+            first_content.len()
+                <= codex_hepta_contracts::RecallLimits::conservative_default().max_total_tokens()
+                    as usize
+        );
+        let payload: serde_json::Value =
+            serde_json::from_str(&first_content).expect("model context");
+        assert_eq!(payload["schema_version"], 3);
+        assert_eq!(payload["memories"][0]["a"], OWNER_ID);
+        assert_eq!(payload["memories"][0]["p"], capability.id().as_str());
+        assert_eq!(payload["memories"][0]["q"][0]["a"], OWNER_ID);
+        assert_eq!(
+            payload["memories"][0]["h"].as_str().expect("digest").len(),
+            64
+        );
+        assert!(first_content.contains("currently authorized umber lighthouse memory"));
         assert!(first_content.contains("\"requested_peers\":1"));
         assert!(first_content.contains("\"completed_peers\":1"));
         assert!(first_content.contains("\"failed_peers\":0"));

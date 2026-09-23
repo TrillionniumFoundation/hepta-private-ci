@@ -217,8 +217,16 @@ async fn unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen
         .await
         .expect("claim")
         .expect("lease");
-    let occurrence = fixture.store.materialize_occurrence(&lease, 100).await.expect("durable occurrence");
-    fixture.store.prepare_occurrence_taskflow(&occurrence, &lease, 100, 60_000).await.expect("durable step claim");
+    let occurrence = fixture
+        .store
+        .materialize_occurrence(&lease, 100)
+        .await
+        .expect("durable occurrence");
+    fixture
+        .store
+        .prepare_occurrence_taskflow(&occurrence, &lease, 100, 60_000)
+        .await
+        .expect("durable step claim");
     fixture
         .store
         .record_dispatch_uncertain(&lease, 101)
@@ -292,11 +300,18 @@ async fn cancellation_preserves_in_flight_queue_ack_before_scheduler_exit() {
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
         .expect("running");
     fixture.state.refresh_generation().expect("generation");
-    let cognitive = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
-        .await
-        .expect("real cognitive owner");
-    fixture.state.attach_cognitive_store(Arc::new(cognitive)).expect("owner attachment");
-    fixture.state.mark_runtime_prerequisites_ready().expect("owner prerequisites");
+    let cognitive =
+        codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
+            .await
+            .expect("real cognitive owner");
+    fixture
+        .state
+        .attach_cognitive_store(Arc::new(cognitive))
+        .expect("owner attachment");
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready()
+        .expect("owner prerequisites");
     fixture.state.mark_app_server_ready().expect("ready");
     fixture.store.create_task(&draft()).await.expect("task");
     let queue = Arc::new(DelayedQueue {

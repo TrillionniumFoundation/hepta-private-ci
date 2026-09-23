@@ -124,8 +124,14 @@ async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
     let store = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
         .await
         .expect("real cognitive owner");
-    fixture.state.attach_cognitive_store(Arc::new(store)).expect("owner attachment");
-    fixture.state.mark_runtime_prerequisites_ready().expect("owner prerequisites");
+    fixture
+        .state
+        .attach_cognitive_store(Arc::new(store))
+        .expect("owner attachment");
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready()
+        .expect("owner prerequisites");
 }
 
 #[tokio::test]
@@ -149,8 +155,17 @@ async fn drain_runtime_keeps_control_reconciliation_live_until_terminal_observat
         body_digest: "3".repeat(64),
         artifact_set_digest: "4".repeat(64),
         authority_epoch: 7,
-        generation: fixture.state.current_generation().expect("current lifecycle generation"),
-        fence_digest: crate::state::objective_run_fence(&fixture.identity, fixture.state.current_generation().expect("lifecycle generation")),
+        generation: fixture
+            .state
+            .current_generation()
+            .expect("current lifecycle generation"),
+        fence_digest: crate::state::objective_run_fence(
+            &fixture.identity,
+            fixture
+                .state
+                .current_generation()
+                .expect("lifecycle generation"),
+        ),
         deadline_ms: u64::MAX - 1,
     };
     let started = fixture
@@ -356,6 +371,7 @@ fn product_write_profile_fails_closed_when_cognitive_store_is_unavailable() {
 #[tokio::test]
 async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
     let fixture = runtime_fixture();
+    attach_runtime_prerequisites(&fixture).await;
     fixture
         .registry
         .compare_and_transition(
@@ -504,6 +520,7 @@ async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
 #[tokio::test]
 async fn qualification_prepare_takes_over_expired_registry_head_without_evidence() {
     let fixture = runtime_fixture();
+    attach_runtime_prerequisites(&fixture).await;
     fixture
         .registry
         .compare_and_transition(
@@ -580,6 +597,7 @@ async fn qualification_prepare_takes_over_expired_registry_head_without_evidence
 #[tokio::test]
 async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence() {
     let fixture = runtime_fixture();
+    attach_runtime_prerequisites(&fixture).await;
     fixture
         .registry
         .compare_and_transition(

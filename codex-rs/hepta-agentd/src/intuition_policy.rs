@@ -82,7 +82,10 @@ impl AgentdIntuitionPolicyHostV1 {
                 "scorer contract pin",
             ));
         }
-        if pins.rng_owner_digest.is_some_and(|digest| digest.is_zero()) {
+        if pins
+            .rng_owner_digest
+            .is_some_and(codex_hepta_types::Digest32::is_zero)
+        {
             return Err(AgentdIntuitionPolicyError::InvalidHost("rng owner pin"));
         }
         Ok(Self {

@@ -395,13 +395,10 @@ async fn real_agentd_remember_recall_correct_and_forget_revalidate_physical_send
         "physical remember output did not bind the persisted physical and canonical KG receipt digests"
     );
 
+    let previous_generation = agent_generation(&fleet, &agent.agent_id)?;
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
-    let restarted_generation = agent_generation(&fleet, &agent.agent_id)?;
-    ensure!(restarted_generation > 1, "Agent generation did not advance");
-    let restarted_control = fleet.control_client(&agent, restarted_generation)?;
-    let restarted_health = fleet
-        .wait_until_ready(&agent.agent_id, &restarted_control)
-        .await?;
+    let (restarted_control, restarted_health) =
+        fleet.wait_new_spawn(&agent, previous_generation).await?;
     ensure!(
         restarted_health.process_id != initial_health.process_id,
         "Agentd restart reused the original process"
@@ -621,16 +618,10 @@ async fn real_agentd_local_memory_review_is_read_only_and_replayable() -> Result
     product.shutdown().await?;
     fleet.supervisor.kill(&agent.agent_id)?;
     wait_inactive(&mut fleet, &agent.agent_id).await?;
+    let previous_generation = agent_generation(&fleet, &agent.agent_id)?;
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
-    let restarted_generation = agent_generation(&fleet, &agent.agent_id)?;
-    ensure!(
-        restarted_generation > 1,
-        "Agentd restart did not advance the generation"
-    );
-    let restarted_control = fleet.control_client(&agent, restarted_generation)?;
-    let restarted_health = fleet
-        .wait_until_ready(&agent.agent_id, &restarted_control)
-        .await?;
+    let (restarted_control, restarted_health) =
+        fleet.wait_new_spawn(&agent, previous_generation).await?;
     ensure!(
         restarted_health.process_id != initial_health.process_id,
         "Agentd restart reused the original process"
@@ -824,13 +815,9 @@ async fn real_agentd_local_memory_review_hides_host_tombstone_after_reopen() -> 
 
     fleet.supervisor.kill(&agent.agent_id)?;
     wait_inactive(&mut fleet, &agent.agent_id).await?;
+    let previous_generation = agent_generation(&fleet, &agent.agent_id)?;
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
-    let generation = agent_generation(&fleet, &agent.agent_id)?;
-    ensure!(generation > 1, "Agentd reopen did not advance generation");
-    let restarted_control = fleet.control_client(&agent, generation)?;
-    fleet
-        .wait_until_ready(&agent.agent_id, &restarted_control)
-        .await?;
+    let (restarted_control, _) = fleet.wait_new_spawn(&agent, previous_generation).await?;
     let mut restarted_product = ProductClient::connect(&agent, &restarted_control).await?;
     let restarted_thread = restarted_product
         .start_thread_with_ephemeral(&agent.workspace, false)
@@ -1353,10 +1340,13 @@ async fn five_running_agents_share_only_with_the_explicit_consumer() -> Result<(
         product
             .run_turn(&thread, "Recall the unique umber lighthouse marker.")
             .await?;
+        let received = raw_requests_contain(&response, SHARED);
         ensure!(
-            raw_requests_contain(&response, SHARED) == (index == 1),
-            "five-Agent federation leaked to the wrong consumer index {index}"
+            received == (index == 1),
+            "five-Agent federation visibility mismatch: consumer={index}, authorized={}, received={received}",
+            index == 1
         );
+
         product.shutdown().await?;
     }
     Ok(())

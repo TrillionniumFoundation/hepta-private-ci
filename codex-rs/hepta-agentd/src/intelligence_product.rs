@@ -11,6 +11,21 @@
 //! represented explicitly and reconciled only by replaying the exact event with
 //! its original predecessor through a freshly recovered journal.
 
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_intelligence::AdvisoryDecisionV1;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::AppendReceipt;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::CandidateSetCompleteness;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::EpisodeDecision;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::OutcomeFinality;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::OutcomeObservation;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_types::FixedQ32;
+
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
@@ -23,7 +38,6 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::compile;
-use codex_hepta_intelligence::AdvisoryDecisionV1;
 use codex_hepta_intelligence::CanonicalFreshnessOracleV1;
 use codex_hepta_intelligence::CanonicalIntelligenceError;
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
@@ -44,16 +58,12 @@ use codex_hepta_intelligence_eval::EvaluationRequest;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_intuition::CalibratedDispositionV1;
 use codex_hepta_intuition::decide_calibrated_v2;
-use codex_hepta_learning_ledger::AppendReceipt;
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
+#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::DurableLearningJournal;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::DurableLedgerError;
-use codex_hepta_learning_ledger::EpisodeDecision;
 use codex_hepta_learning_ledger::LedgerEvent;
-use codex_hepta_learning_ledger::OutcomeFinality;
-use codex_hepta_learning_ledger::OutcomeObservation;
 use codex_hepta_ndu::ContributionSet;
 use codex_hepta_ndu::EvaluationPolicyV1;
 use codex_hepta_ndu::ScalarizationProfile;
@@ -72,7 +82,6 @@ use codex_hepta_prompt_optimizer::OptimizationRequest;
 use codex_hepta_prompt_optimizer::optimize;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;

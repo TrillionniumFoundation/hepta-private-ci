@@ -98,17 +98,26 @@ async fn two_supervised_real_agentd_processes_are_fault_isolated() -> Result<()>
         vec![memory_b.content.clone()]
     );
 
-    harness.supervisor.restart(&agent_a, Instant::now())?;
-    let restarted_generation = harness
+    let stopped_generation = harness
         .registry
         .load()?
         .agent(&agent_a)
-        .context("agent A missing after restart")?
+        .context("agent A missing before restart")?
         .lifecycle
         .generation;
-    assert_eq!(restarted_generation, 5);
-    let restarted_a = harness.control_client(&fixture_a, restarted_generation)?;
-    let restarted_health_a = harness.wait_until_ready(&agent_a, &restarted_a).await?;
+    harness.supervisor.restart(&agent_a, Instant::now())?;
+    let (restarted_a, restarted_health_a) = harness
+        .wait_new_spawn(&fixture_a, stopped_generation)
+        .await?;
+    assert_eq!(
+        harness
+            .supervisor
+            .snapshot(&agent_a)
+            .and_then(|value| value.spawn_generation),
+        Some(stopped_generation + 1)
+    );
+    // A cached pre-restart ingress must not become valid for the new process.
+    assert!(client_a.session_ingress().await.is_err());
     let still_healthy_b = client_b.health().await?;
     assert_ne!(restarted_health_a.process_id, health_a.process_id);
     assert_eq!(still_healthy_b.process_id, b_process_before);

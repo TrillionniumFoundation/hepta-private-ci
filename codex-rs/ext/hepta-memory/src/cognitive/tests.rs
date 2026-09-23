@@ -342,9 +342,9 @@ fn secret_detector_covers_common_key_shapes() {
 }
 
 #[tokio::test]
-async fn mutation_tools_require_both_explicit_write_and_available_runtime() {
+async fn mutation_tools_require_explicit_write_runtime_and_host_capability() {
     let fixture = cognitive_fixture().await;
-    let available = CognitiveExtension::new(CognitiveRuntime::Available(fixture.store));
+    let available = CognitiveExtension::new(CognitiveRuntime::Available(fixture.store.clone()));
 
     let read_only = ExtensionData::new(THREAD_ID);
     read_only.insert(HeptaMemoryThreadState::for_cognitive_test_with_write(
@@ -362,7 +362,21 @@ async fn mutation_tools_require_both_explicit_write_and_available_runtime() {
     writable.insert(HeptaMemoryThreadState::for_cognitive_test_with_write(
         true, true,
     ));
-    assert_eq!(tool_names(&available, &writable).len(), 5);
+    // A thread preference is not a host-issued mutation capability.
+    assert_eq!(
+        tool_names(&available, &writable),
+        tool_names(&available, &read_only)
+    );
+    let qualified = CognitiveExtension::new_with_mutation(
+        CognitiveRuntime::Available(fixture.store),
+        None,
+        true,
+    );
+    assert_eq!(tool_names(&qualified, &writable).len(), 5);
+    assert_eq!(
+        tool_names(&qualified, &read_only),
+        tool_names(&available, &read_only)
+    );
 
     let unavailable = CognitiveExtension::new(CognitiveRuntime::Unavailable(
         codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,

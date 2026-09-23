@@ -74,6 +74,7 @@ use codex_hepta_objective::ObjectiveStructuredIntentV1;
 use codex_hepta_objective::admit_and_compile_objective_v1;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
 use codex_hepta_prompt_optimizer::PromptCandidate;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use ed25519_dalek::Signer;

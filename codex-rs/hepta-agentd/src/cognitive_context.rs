@@ -531,7 +531,7 @@ pub(crate) async fn revalidate_with_retrieval_context(
     let plan = plan.ok_or_else(|| {
         CognitiveStoreError::Invalid("cognitive context final use requires a plan".to_string())
     })?;
-    if plan.read_allowed != !items.is_empty() {
+    if plan.read_allowed == items.is_empty() {
         return Err(CognitiveStoreError::Conflict(
             "cognitive context plan/item disposition mismatch".to_string(),
         )
