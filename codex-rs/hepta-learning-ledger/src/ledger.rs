@@ -70,7 +70,7 @@ pub(crate) struct PreparedAppend {
 #[derive(Clone, Debug, Default)]
 pub struct LearningLedger {
     records: Vec<LedgerRecord>,
-    record_digests: BTreeMap<StableId, Digest32>,
+    record_digests: BTreeMap<StableId, (Digest32, usize)>,
     record_kinds: BTreeMap<StableId, u8>,
     decisions: BTreeMap<StableId, DecisionIndex>,
     outcomes: BTreeMap<StableId, OutcomeIndex>,
@@ -149,14 +149,13 @@ impl LearningLedger {
         let record_id = event.record_id().clone();
         let event_digest = digest_event(&event);
 
-        if let Some(existing_digest) = self.record_digests.get(&record_id) {
+        if let Some((existing_digest, position)) = self.record_digests.get(&record_id) {
             if *existing_digest != event_digest {
                 return Err(LedgerError::IdentityConflict(record_id.to_string()));
             }
             let record = self
                 .records
-                .iter()
-                .find(|record| record.event.record_id() == &record_id)
+                .get(*position)
                 .ok_or(LedgerError::InternalInvariant)?;
             return Ok(PreparedAppend {
                 record: record.clone(),
@@ -655,7 +654,12 @@ impl LearningLedger {
         {
             return Err(LedgerError::UnlearningTargetInvalid);
         }
-        if self.record_digests.get(&value.source_record_id) != Some(&value.source_event_digest) {
+        if self
+            .record_digests
+            .get(&value.source_record_id)
+            .map(|(digest, _)| digest)
+            != Some(&value.source_event_digest)
+        {
             return Err(LedgerError::UnlearningSourceDigestMismatch);
         }
         if self.revoked.contains(&value.source_record_id) {
@@ -709,7 +713,7 @@ impl LearningLedger {
     fn index_record(&mut self, record: &LedgerRecord) {
         let record_id = record.event.record_id().clone();
         self.record_digests
-            .insert(record_id.clone(), record.event_digest);
+            .insert(record_id.clone(), (record.event_digest, self.records.len()));
         self.record_kinds
             .insert(record_id, event_kind(&record.event));
         match &record.event {

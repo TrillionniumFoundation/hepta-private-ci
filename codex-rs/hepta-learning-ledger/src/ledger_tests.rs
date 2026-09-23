@@ -697,3 +697,29 @@ fn rejected_runtime_delivery_preserves_rejection_lineage() {
     assert!(delivery.rejected_reason_digest.is_some());
     assert_eq!(delivery.observed_token_positions_digest, None);
 }
+
+#[test]
+fn indexed_historical_retry_survives_growth_and_snapshot_recovery() {
+    let mut ledger = LearningLedger::new();
+    let first = decision();
+    let original = must(ledger.append(LedgerEvent::Decision(first.clone())));
+    for index in 1..4096 {
+        let mut next = first.clone();
+        next.record_id = id(&format!("record-growth-{index}"));
+        next.episode_id = id(&format!("episode-growth-{index}"));
+        must(ledger.append(LedgerEvent::Decision(next)));
+    }
+    let before = ledger.snapshot();
+    let replay = must(ledger.append(LedgerEvent::Decision(first.clone())));
+    assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(replay.chain_digest, original.chain_digest);
+    assert_eq!(ledger.snapshot(), before);
+    let mut recovered = must(LearningLedger::from_snapshot(before.clone()));
+    let replay = must(recovered.append(LedgerEvent::Decision(first.clone())));
+    assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(replay.chain_digest, original.chain_digest);
+    let mut conflicting = first;
+    conflicting.policy_id = id("changed-policy");
+    assert!(matches!(recovered.append(LedgerEvent::Decision(conflicting)), Err(LedgerError::IdentityConflict(_))));
+    assert_eq!(recovered.snapshot(), before);
+}

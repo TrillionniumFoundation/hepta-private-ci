@@ -238,6 +238,16 @@ impl DurableLedger {
         }
     }
 
+    /// Borrow the already validated owner projection without copying history.
+    /// This remains crate-private and grants no alternate write surface.
+    pub(crate) fn core(&self) -> Result<&LearningLedger, DurableLedgerError> {
+        if self.poisoned {
+            Err(DurableLedgerError::Poisoned)
+        } else {
+            Ok(&self.core)
+        }
+    }
+
     pub fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
         if self.poisoned {
             Err(DurableLedgerError::Poisoned)

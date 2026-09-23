@@ -134,12 +134,16 @@ impl LedgerBackend {
         }
     }
 
+    fn core(&self) -> Result<&LearningLedger, DurableLedgerError> {
+        match self {
+            Self::Durable(value) => value.core(),
+            Self::Segmented(value) => value.core(),
+        }
+    }
+
     fn frontier(&self) -> Result<LedgerWitnessFrontier, DurableLedgerError> {
         match self {
-            Self::Durable(value) => {
-                let snapshot = value.snapshot()?;
-                Ok(frontier_from_snapshot(&snapshot))
-            }
+            Self::Durable(value) => Ok(frontier_from_records(value.records()?)),
             Self::Segmented(value) => {
                 let checkpoint = value.checkpoint()?;
                 Ok(LedgerWitnessFrontier {
@@ -194,7 +198,6 @@ impl LedgerWriter {
         if backend.binding() != witness.binding() {
             return Err(ProductionLedgerError::Binding("ledger/witness binding"));
         }
-        let snapshot = backend.snapshot()?;
         let ledger_frontier = backend.frontier()?;
         let witness_frontier = witness.frontier()?;
         if ledger_frontier.anchor.sequence > 0
@@ -205,7 +208,7 @@ impl LedgerWriter {
             witness.advance(witness_frontier, ledger_frontier)?;
         }
         let witness_frontier = witness.frontier()?;
-        validate_witness_state(&snapshot, ledger_frontier, witness_frontier)?;
+        validate_witness_state(backend.core()?.records(), ledger_frontier, witness_frontier)?;
         Ok(Self {
             backend,
             witness,
@@ -247,7 +250,7 @@ impl LedgerWriter {
     }
 
     pub fn records(&self) -> Result<Vec<LedgerRecord>, ProductionLedgerError> {
-        Ok(self.backend.snapshot()?.records().to_vec())
+        Ok(self.backend.core()?.records().to_vec())
     }
 
     /// Verify that a currently active authenticated Decision binds this exact
@@ -259,8 +262,7 @@ impl LedgerWriter {
         record_id: &StableId,
         episode_id: &StableId,
     ) -> Result<(), ProductionLedgerError> {
-        let snapshot = self.backend.snapshot()?;
-        let ledger = LearningLedger::from_snapshot(snapshot)?;
+        let ledger = self.backend.core()?;
         if ledger.active_records().into_iter().any(|record| {
             matches!(
                 &record.event,
@@ -377,8 +379,7 @@ impl LedgerWriter {
         }
         validate_outcome_time(&outcome, now)?;
 
-        let snapshot = self.backend.snapshot()?;
-        let decision = find_authenticated_decision(&snapshot, &outcome.episode_id)?;
+        let decision = find_authenticated_decision(self.backend.core()?, &outcome.episode_id)?;
         if decision.objective_digest != self.trust.verifier().objective_digest() {
             return Err(ProductionLedgerError::Binding("outcome objective"));
         }
@@ -564,8 +565,7 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<(), ProductionLedgerError> {
         verify_dataset_snapshot_receipt_v3(receipt, now)?;
-        let snapshot = self.backend.snapshot()?;
-        let ledger = LearningLedger::from_snapshot(snapshot)?;
+        let ledger = self.backend.core()?;
         let active_digests = ledger
             .active_records()
             .into_iter()
@@ -610,15 +610,19 @@ impl LedgerWriter {
         expected_predecessor: Digest32,
         event: LedgerEvent,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
-        let before_snapshot = self.backend.snapshot()?;
+        // The durable backend already owns a validated projection. Replaying
+        // or copying every historical event here turns N appends into O(N^2)
+        // work without adding integrity. Borrow it; preserve exact witness and
+        // retry-only admission when the independent witness is one event late.
+        let core = self.backend.core()?;
         let before_ledger = self.backend.frontier()?;
         let before_witness = self.witness.frontier()?;
-        let lag = validate_witness_state(&before_snapshot, before_ledger, before_witness)?;
+        let lag = validate_witness_state(core.records(), before_ledger, before_witness)?;
         if lag == 1 {
-            let Some(last) = before_snapshot.records().last() else {
+            let Some(last) = core.records().last() else {
                 return Err(ProductionLedgerError::WitnessLag);
             };
-            let replay = LearningLedger::from_snapshot(before_snapshot.clone())?
+            let replay = core
                 .prepare(event.clone())
                 .map_err(|_| ProductionLedgerError::WitnessLag)?;
             if replay.disposition != AppendDisposition::IdempotentReplay
@@ -887,25 +891,14 @@ fn ensure_independent_from_decision(
 }
 
 fn find_authenticated_decision<'a>(
-    snapshot: &'a LedgerSnapshot,
+    ledger: &'a LearningLedger,
     episode_id: &StableId,
 ) -> Result<&'a AuthenticatedDecisionRecordV2, ProductionLedgerError> {
-    let ledger = LearningLedger::from_snapshot(snapshot.clone())?;
-    let active_record_id = ledger
+    ledger
         .active_records()
         .into_iter()
         .find_map(|record| match &record.event {
             LedgerEvent::AuthenticatedDecisionV2(value) if &value.episode_id == episode_id => {
-                Some(value.record_id.clone())
-            }
-            _ => None,
-        })
-        .ok_or(ProductionLedgerError::AuthenticatedDecisionRequired)?;
-    snapshot
-        .records()
-        .iter()
-        .find_map(|record| match &record.event {
-            LedgerEvent::AuthenticatedDecisionV2(value) if value.record_id == active_record_id => {
                 Some(value)
             }
             _ => None,
@@ -1049,8 +1042,8 @@ fn signed_evidence_digest(evidence: &SignedLearningEvidenceV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn frontier_from_snapshot(snapshot: &LedgerSnapshot) -> LedgerWitnessFrontier {
-    match snapshot.records().last() {
+fn frontier_from_records(records: &[LedgerRecord]) -> LedgerWitnessFrontier {
+    match records.last() {
         Some(record) => LedgerWitnessFrontier {
             anchor: LedgerAnchor {
                 sequence: record.sequence.get(),
@@ -1064,7 +1057,7 @@ fn frontier_from_snapshot(snapshot: &LedgerSnapshot) -> LedgerWitnessFrontier {
 }
 
 fn validate_witness_state(
-    snapshot: &LedgerSnapshot,
+    records: &[LedgerRecord],
     ledger: LedgerWitnessFrontier,
     witness: LedgerWitnessFrontier,
 ) -> Result<u64, ProductionLedgerError> {
@@ -1082,8 +1075,7 @@ fn validate_witness_state(
     } else {
         let index = usize::try_from(witness.anchor.sequence - 1)
             .map_err(|_| ProductionLedgerError::WitnessLag)?;
-        let record = snapshot
-            .records()
+        let record = records
             .get(index)
             .ok_or(ProductionLedgerError::WitnessLag)?;
         if record.chain_digest != witness.anchor.chain_digest {

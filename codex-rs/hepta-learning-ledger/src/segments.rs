@@ -301,6 +301,12 @@ impl SegmentedLedger {
         Ok(current_anchor(&self.core))
     }
 
+    /// Borrow the validated projection; poison and owner fences still apply.
+    pub(crate) fn core(&self) -> Result<&LearningLedger, DurableLedgerError> {
+        self.ready()?;
+        Ok(&self.core)
+    }
+
     pub fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
         self.ready()?;
         Ok(self.core.snapshot())
