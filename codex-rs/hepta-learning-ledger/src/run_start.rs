@@ -182,7 +182,7 @@ impl From<io::Error> for RunStartStoreError {
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum StoredRunStartRecord {
     Run(Box<RunStartRecordV1>),
-    Conflict(RunStartConflictRecordV1),
+    Conflict(Box<RunStartConflictRecordV1>),
 }
 
 impl StoredRunStartRecord {
@@ -334,7 +334,7 @@ impl DurableRunStartJournal {
         record: RunStartConflictRecordV1,
     ) -> Result<RunStartAppendReceipt, RunStartStoreError> {
         validate_conflict_record(&record)?;
-        self.append_outcome(expected_predecessor, StoredRunStartRecord::Conflict(record))
+        self.append_outcome(expected_predecessor, StoredRunStartRecord::Conflict(Box::new(record)))
     }
 
     fn append_outcome(
@@ -432,7 +432,7 @@ impl DurableRunStartJournal {
             .iter()
             .filter_map(|value| match &value.record {
                 StoredRunStartRecord::Run(_) => None,
-                StoredRunStartRecord::Conflict(record) => Some(record),
+                StoredRunStartRecord::Conflict(record) => Some(record.as_ref()),
             })
             .collect())
     }
@@ -477,7 +477,7 @@ impl DurableRunStartJournal {
             .and_then(|index| self.records.get(*index))
             .and_then(|value| match &value.record {
                 StoredRunStartRecord::Run(_) => None,
-                StoredRunStartRecord::Conflict(record) => Some(record),
+                StoredRunStartRecord::Conflict(record) => Some(record.as_ref()),
             }))
     }
 
@@ -879,7 +879,8 @@ fn decode_outcome_record(input: &[u8]) -> Result<StoredRunStartRecord, RunStartS
         return decode_record(input).map(|record| StoredRunStartRecord::Run(Box::new(record)));
     }
     if input.starts_with(CONFLICT_RECORD_DOMAIN) {
-        return decode_conflict_record(input).map(StoredRunStartRecord::Conflict);
+        return decode_conflict_record(input)
+            .map(|record| StoredRunStartRecord::Conflict(Box::new(record)));
     }
     Err(RunStartStoreError::Corrupt)
 }

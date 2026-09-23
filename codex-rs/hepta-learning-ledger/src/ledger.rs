@@ -218,6 +218,45 @@ impl LearningLedger {
         &self.records
     }
 
+    /// Exact owner-local lookup through the replay-built index. It shares the
+    /// same activity predicate as full projection reads; it cannot resurrect a
+    /// revoked/corrected record, and never allocates the full active history.
+    pub(crate) fn active_record_by_id(
+        &self,
+        record_id: &StableId,
+    ) -> Result<Option<&LedgerRecord>, LedgerError> {
+        let Some((digest, position)) = self.record_digests.get(record_id) else {
+            return Ok(None);
+        };
+        let record = self
+            .records
+            .get(*position)
+            .ok_or(LedgerError::InternalInvariant)?;
+        if record.event.record_id() != record_id || record.event_digest != *digest {
+            return Err(LedgerError::InternalInvariant);
+        }
+        Ok(self.record_is_active(record).then_some(record))
+    }
+
+    pub(crate) fn active_authenticated_decision(
+        &self,
+        episode_id: &StableId,
+    ) -> Result<Option<&AuthenticatedDecisionRecordV2>, LedgerError> {
+        let Some(indexed) = self.decisions.get(episode_id) else {
+            return Ok(None);
+        };
+        let Some(record) = self.active_record_by_id(&indexed.record_id)? else {
+            return Ok(None);
+        };
+        match &record.event {
+            LedgerEvent::AuthenticatedDecisionV2(value) if &value.episode_id == episode_id => {
+                Ok(Some(value))
+            }
+            LedgerEvent::Decision(_) => Ok(None),
+            _ => Err(LedgerError::InternalInvariant),
+        }
+    }
+
     /// Returns facts that remain causally effective after corrections,
     /// revocations and explicit unlearning lineage have been applied.
     #[must_use]

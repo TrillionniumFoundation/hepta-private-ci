@@ -86,11 +86,19 @@ slow-timeout = { period = "45s", terminate-after = 2 }
 # These correctness/measurement cases deliberately retain thousands of real
 # fsyncs plus acknowledged recovery. Their workload is not a 60-second product
 # latency SLO. Keep all records and durability checks, serialize the heavy disk
-# cases, and retain a bounded 3-minute watchdog rather than skipping them.
+# cases, and retain bounded watchdogs rather than skipping them. The explicit
+# signed growth measurement also creates thousands of independent signatures;
+# its 10-minute harness budget is not a runtime latency acceptance threshold.
 [test-groups.hepta_durable_capacity]
 max-threads = 1
 
 [[profile.default.overrides]]
-filter = 'package(codex-hepta-learning-ledger) & (test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits) | test(signed_product_history_curve_append_lookup_reopen_and_exact_retry))'
+filter = 'package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)'
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 6 }
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-learning-ledger) & test(signed_product_history_curve_append_lookup_reopen_and_exact_retry)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0

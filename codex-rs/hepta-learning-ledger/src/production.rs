@@ -263,13 +263,16 @@ impl LedgerWriter {
         episode_id: &StableId,
     ) -> Result<(), ProductionLedgerError> {
         let ledger = self.backend.core()?;
-        if ledger.active_records().into_iter().any(|record| {
-            matches!(
-                &record.event,
-                LedgerEvent::AuthenticatedDecisionV2(value)
-                    if &value.record_id == record_id && &value.episode_id == episode_id
-            )
-        }) {
+        if ledger
+            .active_record_by_id(record_id)?
+            .is_some_and(|record| {
+                matches!(
+                    &record.event,
+                    LedgerEvent::AuthenticatedDecisionV2(value)
+                        if &value.record_id == record_id && &value.episode_id == episode_id
+                )
+            })
+        {
             Ok(())
         } else {
             Err(ProductionLedgerError::Binding(
@@ -895,14 +898,7 @@ fn find_authenticated_decision<'a>(
     episode_id: &StableId,
 ) -> Result<&'a AuthenticatedDecisionRecordV2, ProductionLedgerError> {
     ledger
-        .active_records()
-        .into_iter()
-        .find_map(|record| match &record.event {
-            LedgerEvent::AuthenticatedDecisionV2(value) if &value.episode_id == episode_id => {
-                Some(value)
-            }
-            _ => None,
-        })
+        .active_authenticated_decision(episode_id)?
         .ok_or(ProductionLedgerError::AuthenticatedDecisionRequired)
 }
 

@@ -726,3 +726,47 @@ fn indexed_historical_retry_survives_growth_and_snapshot_recovery() {
     ));
     assert_eq!(recovered.snapshot(), before);
 }
+
+#[test]
+fn indexed_active_reads_match_scan_after_growth_revocation_and_replay() {
+    let mut ledger = LearningLedger::new();
+    for index in 0..1024 {
+        let mut record = authenticated_decision();
+        record.record_id = id(&format!("lookup-record-{index}"));
+        record.episode_id = id(&format!("lookup-episode-{index}"));
+        must(ledger.append(LedgerEvent::AuthenticatedDecisionV2(record)));
+    }
+    for index in [0, 511, 1023] {
+        must(ledger.append(LedgerEvent::Revocation(Revocation {
+            record_id: id(&format!("lookup-revoke-{index}")),
+            target_record_id: id(&format!("lookup-record-{index}")),
+            authority_id: id("deletion-authority"),
+            reason_digest: Digest32::of_bytes(b"indexed source deletion"),
+        })));
+    }
+    let restored = must(LearningLedger::from_snapshot(ledger.snapshot()));
+    for current in [&ledger, &restored] {
+        let active = current.active_records();
+        for index in [0, 1, 127, 511, 512, 1022, 1023, 1024] {
+            let record_id = id(&format!("lookup-record-{index}"));
+            let episode_id = id(&format!("lookup-episode-{index}"));
+            let expected = active
+                .iter()
+                .copied()
+                .find(|record| record.event.record_id() == &record_id);
+            assert_eq!(must(current.active_record_by_id(&record_id)), expected);
+            let expected_decision = expected.and_then(|record| match &record.event {
+                LedgerEvent::AuthenticatedDecisionV2(value) => Some(value),
+                _ => None,
+            });
+            assert_eq!(
+                must(current.active_authenticated_decision(&episode_id)),
+                expected_decision
+            );
+        }
+    }
+    // A legacy fact is not promoted to an authenticated V2 decision by an index.
+    let mut legacy = LearningLedger::new();
+    must(legacy.append(LedgerEvent::Decision(decision())));
+    assert!(must(legacy.active_authenticated_decision(&id("episode-1"))).is_none());
+}
