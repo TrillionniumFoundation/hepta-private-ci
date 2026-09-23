@@ -221,10 +221,10 @@ async fn forced_abort_never_publishes_retirement_acknowledgement() {
         )
         .expect("spawn");
     assert!(tasks.retire_optional("feature.41").await.is_err());
-    tasks
-        .run_until(async { Ok(()) })
-        .await
-        .expect("bounded cleanup");
+    assert!(
+        tasks.run_until(async { Ok(()) }).await.is_err(),
+        "bounded cleanup must retain the failed forced-abort outcome"
+    );
     assert_eq!(tasks.active_count(), 0);
     assert_eq!(callbacks.load(Ordering::SeqCst), 0);
     assert!(tasks.retire_optional("feature.41").await.is_err());

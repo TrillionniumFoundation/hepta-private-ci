@@ -314,3 +314,32 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
     }
     Ok(())
 }
+
+#[cfg(unix)]
+#[test]
+fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistryError> {
+    use std::os::unix::fs::PermissionsExt;
+    let fleet = TestFleet::new()?;
+    let record = fleet
+        .registry
+        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;
+    for root in [
+        record.layout.agent_root(),
+        record.layout.home_root(),
+        record.layout.run_root(),
+        record.layout.logs_root(),
+        record.layout.releases_root(),
+        record.layout.cognitive_root(),
+        record.layout.matrix_root(),
+        record.layout.matrix_secrets_root(),
+        record.layout.automation_root(),
+    ] {
+        assert_eq!(
+            fs::symlink_metadata(root)?.permissions().mode() & 0o777,
+            0o700,
+            "{}",
+            root.display()
+        );
+    }
+    Ok(())
+}

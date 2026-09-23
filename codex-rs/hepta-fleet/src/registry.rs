@@ -125,7 +125,7 @@ impl FleetRegistry {
         validate_manifest_workspace(&manifest, &snapshot.agents)?;
 
         let staging_root = staging_root(self.layout.agents_root(), &manifest.agent_id);
-        std::fs::create_dir(&staging_root)?;
+        create_private_directory(&staging_root)?;
         let registration = self.stage_registration(&staging_root, &manifest);
         if let Err(error) = registration {
             let _ = std::fs::remove_dir_all(&staging_root);
@@ -223,12 +223,10 @@ impl FleetRegistry {
             "matrix",
             "automation",
         ] {
-            std::fs::create_dir(staging_root.join(name))?;
+            create_private_directory(&staging_root.join(name))?;
         }
         let matrix_secrets_root = staging_root.join("matrix/secrets");
-        std::fs::create_dir(&matrix_secrets_root)?;
-        set_private_directory_permissions(&staging_root.join("matrix"))?;
-        set_private_directory_permissions(&matrix_secrets_root)?;
+        create_private_directory(&matrix_secrets_root)?;
         write_new_file(
             &staging_root.join("agent.toml"),
             toml::to_string(manifest)?.as_bytes(),

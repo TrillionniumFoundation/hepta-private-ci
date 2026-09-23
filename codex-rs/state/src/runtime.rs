@@ -126,7 +126,14 @@ impl StateRuntime {
         default_provider: String,
         telemetry_override: Option<&dyn DbTelemetry>,
     ) -> anyhow::Result<Arc<Self>> {
-        tokio::fs::create_dir_all(sqlite.home()).await?;
+        let mut home_builder = tokio::fs::DirBuilder::new();
+        home_builder.recursive(true);
+        #[cfg(unix)]
+        home_builder.mode(0o700);
+        // New homes must satisfy the dispatch owner's existing permission
+        // contract regardless of umask. Existing directories are NOT chmodded;
+        // unsafe preexisting authority still fails at the fd-bound check.
+        home_builder.create(sqlite.home()).await?;
         // Resolve the configured home exactly once, before opening any
         // database, then retain directory fds for dispatch locking. A later
         // parent-symlink retarget cannot split the queue DB from its locks.
@@ -538,6 +545,48 @@ mod tests {
         tolerant_pool.close().await;
 
         let _ = tokio::fs::remove_dir_all(codex_home).await;
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn init_creates_private_home_and_rejects_existing_shared_home() {
+        use std::os::unix::fs::PermissionsExt;
+        let home = unique_temp_dir();
+        let runtime = StateRuntime::init(
+            crate::SqliteConfig::new_for_testing(home.as_path().abs()),
+            "test-provider".to_string(),
+        )
+        .await
+        .expect("private fresh owner");
+        assert_eq!(
+            std::fs::metadata(&home).expect("home").permissions().mode() & 0o777,
+            0o700
+        );
+        drop(runtime);
+        let _ = tokio::fs::remove_dir_all(&home).await;
+        tokio::fs::create_dir_all(&home)
+            .await
+            .expect("preexisting home");
+        std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o770))
+            .expect("shared fixture");
+        let rejected = StateRuntime::init(
+            crate::SqliteConfig::new_for_testing(home.as_path().abs()),
+            "test-provider".to_string(),
+        )
+        .await;
+        assert!(
+            rejected.is_err(),
+            "unsafe preexisting home is not silently adopted"
+        );
+        assert_eq!(
+            std::fs::metadata(&home)
+                .expect("unchanged home")
+                .permissions()
+                .mode()
+                & 0o777,
+            0o770
+        );
+        let _ = tokio::fs::remove_dir_all(&home).await;
     }
 
     #[tokio::test]
