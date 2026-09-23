@@ -224,6 +224,56 @@ class SourceIdentityTests(unittest.TestCase):
             (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
         )
 
+    def test_legacy_named_caller_normalizes_and_receives_exact_source_objects(self):
+        self.rows["alpha"]["productCallerState"] = "compiled_adapter_not_activated"
+        self.rows["alpha"]["productCallers"] = [
+            {"path": "host/caller.rs", "symbol": "caller", "state": "not_activated"}
+        ]
+        self.change_maps()
+        with contextlib.redirect_stdout(io.StringIO()):
+            maps.migrate(["alpha"])
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertEqual(
+            row["productCallers"],
+            [
+                {
+                    "sourcePath": "host/caller.rs",
+                    "nativeSymbol": "caller",
+                    "state": "not_activated",
+                }
+            ],
+        )
+        self.assertIn(
+            "host/caller.rs", {entry["path"] for entry in row["sourceObjects"]}
+        )
+        self.assertFalse(row["productionImplementation"])
+        self.assertFalse(row["claimBoundary"]["productExecutionProved"])
+        self.commit("canonical caller navigation")
+        self.verify()
+
+    def test_conflicting_legacy_caller_aliases_reject_before_any_write(self):
+        for aliases in [
+            {"path": "host/caller.rs", "sourcePath": "tests/native.rs"},
+            {"path": "host/caller.rs", "symbol": "caller", "nativeSymbol": "forged"},
+        ]:
+            with self.subTest(aliases=aliases):
+                self.rows["alpha"]["productCallers"] = [aliases]
+                self.change_maps()
+                before = (
+                    self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
+                ).read_bytes()
+                with (
+                    self.assertRaisesRegex(ValueError, "conflicting product caller"),
+                    contextlib.redirect_stdout(io.StringIO()),
+                ):
+                    maps.migrate(["alpha"])
+                self.assertEqual(
+                    before,
+                    (
+                        self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
+                    ).read_bytes(),
+                )
+
     def test_closed_public_inventory_uses_resolved_crate_roots(self):
         self.closed_public_inventory("pub fn calculate() {}\n")
         self.verify()

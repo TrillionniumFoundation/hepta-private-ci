@@ -548,6 +548,35 @@ def validate_claim_types(row: dict) -> bool:
     return any(claim.get(name) is True for claim in claims for name in EXECUTION_CLAIMS)
 
 
+def canonical_product_callers(callers: list) -> list[dict]:
+    """Normalize legacy navigation spellings without inventing composition."""
+    if not isinstance(callers, list):
+        raise ValueError("product callers must be a list")
+    result = []
+    for caller in callers:
+        if not isinstance(caller, dict):
+            raise ValueError("product caller must be a typed binding")
+        normalized = dict(caller)
+        for canonical, legacy in (("sourcePath", "path"), ("nativeSymbol", "symbol")):
+            if legacy in normalized:
+                if (
+                    canonical in normalized
+                    and normalized[canonical] != normalized[legacy]
+                ):
+                    raise ValueError("conflicting product caller " + canonical)
+                normalized[canonical] = normalized.pop(legacy)
+        source = normalized.get("sourcePath")
+        if (
+            not isinstance(source, str)
+            or not checked_source_path(ROOT, source).is_file()
+        ):
+            raise ValueError("missing product caller source")
+        if "blobSha" in normalized:
+            normalized["blobSha"] = git("rev-parse", f"HEAD:{source}")
+        result.append(normalized)
+    return result
+
+
 def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
     """Upgrade legacy v1/v2 maps without discarding implementation evidence.
 
@@ -631,6 +660,10 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "operations": operations,
         }
     )
+    if "productCallers" in migrated:
+        migrated["productCallers"] = canonical_product_callers(
+            migrated["productCallers"]
+        )
     boundary = migrated.get("claimBoundary") or migrated.get("completion")
     if not isinstance(boundary, dict):
         boundary = {}
@@ -694,10 +727,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
-    if "sourceObjects" in row:
-        # Only maps that opted into exact source-object receipts are refreshed.
-        # This keeps migration compatible while making composed maps fail closed
-        # once they publish this stronger evidence boundary.
+    if "sourceObjects" in row or migrated.get("productCallers"):
+        # Named caller navigation must bind its exact source, tests and delegates.
+        # Creating these Git objects is not evidence that the product executed.
         migrated["sourceObjects"] = current_source_objects(migrated)
     evidence = migrated.get("exactSourceEvidence")
     if isinstance(evidence, dict) and evidence.get("kind") == "path_blob_manifest_v1":
