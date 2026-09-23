@@ -805,6 +805,26 @@ def status_text(d):
     return "\n".join(lines)
 
 
+def verify_document_inventory(system, required):
+    """Validate the registry-owned inventory and its mandatory execution inputs.
+
+    Module-owned documents may extend the canonical registry without editing a
+    second allowlist here. Required verifier inputs remain mandatory; every
+    declared path is still unique, exact, present and inside the repository.
+    """
+    paths = system.get("canonicalPaths")
+    need(isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory")
+    normalized = [canonical_exact_path(path, "canonical path") for path in paths]
+    need(len(normalized) == len(set(normalized)), "duplicate canonical path")
+    missing = sorted(set(required) - set(normalized))
+    need(not missing, "missing required canonical paths " + repr(missing))
+    root = ROOT.resolve()
+    for path in normalized:
+        target = ROOT / path
+        need(target.resolve().is_relative_to(root), "canonical path escapes repository " + path)
+        need(target.is_file(), "missing canonical path " + path)
+
+
 def verify_legacy(system, paths):
     rules = [
         (x["id"], re.compile(x["regex"], re.I))
@@ -943,9 +963,16 @@ def verify_cleanup_base(system):
     for old_path in expected:
         if not old_path.lower().endswith(".json"):
             continue
-        basename_pattern = deleted_json_basename_pattern(old_path)
+        # Directly retired document names remain reserved. Copied historical
+        # trees contain generic names such as registry.json: those are path
+        # identities, not a global ban on unrelated runtime storage filenames.
+        basename_pattern = (
+            deleted_json_basename_pattern(old_path)
+            if old_path in policy["directPaths"]
+            else None
+        )
         for path, text in retained:
-            if old_path in text or basename_pattern.search(text):
+            if old_path in text or (basename_pattern and basename_pattern.search(text)):
                 consumer_hits.append({"retainedPath": path, "deletedJson": old_path})
     need(not consumer_hits, "deleted JSON consumer " + repr(consumer_hits[:10]))
     ancestor = subprocess.run(
@@ -1133,7 +1160,7 @@ def verify() -> int:
         ],
         "subordinate protocol registry closure",
     )
-    need(set(system["canonicalPaths"]) == set(req), "canonical path set")
+    verify_document_inventory(system, req)
     closures = {x["path"]: x for x in system["registryShapeClosures"]}
     need(
         set(closures) == set(FILES.values()) - {"docs/governance/DOCUMENT_SYSTEM.json"},

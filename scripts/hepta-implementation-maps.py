@@ -1033,7 +1033,7 @@ def verify(*, require_current_source: bool = True):
             validate_operation_inventory(mid, ops)
             if row.get("closedWorldPublicFunctions") is True:
                 exported = set()
-                for root in resolved_roots:
+                for root in resolved:
                     if (checked_source_path(ROOT, root) / "Cargo.toml").is_file():
                         exported.update(public_rust_functions(root))
                 mapped = {

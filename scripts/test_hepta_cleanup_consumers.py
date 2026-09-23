@@ -59,7 +59,7 @@ class CleanupConsumerTests(unittest.TestCase):
             with patch.object(VERIFIER, "ROOT", root):
                 VERIFIER.verify_exact_workflow_references()
 
-    def check_history(self, text, name=FIXTURE_NAME, wrong_count=False):
+    def check_history(self, text, name=FIXTURE_NAME, wrong_count=False, copied_name="copied.txt"):
         with tempfile.TemporaryDirectory(prefix="hepta-cleanup-test-") as directory:
             root = Path(directory)
 
@@ -78,7 +78,7 @@ class CleanupConsumerTests(unittest.TestCase):
             (root / "legacy").mkdir()
             (root / old).write_text("{}\n", encoding="utf-8")
             (root / snapshot_path).mkdir()
-            copied = root / snapshot_path / "copied.txt"
+            copied = root / snapshot_path / copied_name
             copied.write_text("historical fixture\n", encoding="utf-8")
             git("add", "--all")
             git("commit", "-q", "-m", "fixture baseline")
@@ -104,6 +104,13 @@ class CleanupConsumerTests(unittest.TestCase):
             self.assertEqual(receipt["observedDeletionCount"], 2)
             self.assertEqual(receipt["retainedDeletedJsonConsumerHits"], 0)
             return receipt
+
+    def test_copied_snapshot_does_not_reserve_runtime_storage_basenames(self):
+        self.check_history('open("registry.json")', copied_name="registry.json")
+
+    def test_exact_copied_snapshot_consumer_is_rejected(self):
+        with self.assertRaisesRegex(SystemExit, "deleted JSON consumer"):
+            self.check_history('open("legacy/snapshot/registry.json")', copied_name="registry.json")
 
     def test_longer_filename_prefix_is_not_a_consumer(self):
         self.check_history('url = "https://example.invalid/bazel_' + FIXTURE_NAME + '"')

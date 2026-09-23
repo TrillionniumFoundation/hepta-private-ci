@@ -143,6 +143,27 @@ class SourceIdentityTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.verify()
 
+    def closed_public_inventory(self, functions):
+        self.write("src/alpha/Cargo.toml", '[package]\nname = "alpha"\nversion = "0.1.0"\n')
+        self.write("src/alpha/src/lib.rs", functions)
+        self.rows["alpha"]["sourceBase"] = self.commit("public crate source")
+        self.rows["alpha"]["closedWorldPublicFunctions"] = True
+        self.change_maps()
+
+    def test_closed_public_inventory_uses_resolved_crate_roots(self):
+        self.closed_public_inventory("pub fn calculate() {}\n")
+        self.verify()
+
+    def test_closed_public_inventory_rejects_unmapped_exports(self):
+        self.closed_public_inventory("pub fn calculate() {}\npub fn omitted() {}\n")
+        with self.assertRaisesRegex(SystemExit, "public function inventory differs"):
+            self.verify()
+
+    def test_closed_public_inventory_rejects_nonexistent_exports(self):
+        self.closed_public_inventory("fn calculate() {}\n")
+        with self.assertRaisesRegex(SystemExit, "public function inventory differs"):
+            self.verify()
+
     def test_closed_world_writer_binding_preserves_exact_source_identity(self):
         row = self.rows["alpha"]
         row["productionWriterState"] = "owner_service_composed"
