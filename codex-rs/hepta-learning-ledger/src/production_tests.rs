@@ -874,31 +874,65 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
     let ledger = DurableLedger::create(fixture.file("ledger"), binding(), 512).unwrap();
     let witness = LedgerWitnessStore::create(fixture.file("witness"), binding()).unwrap();
     let directory = fixture.directory();
-    let mut writer = LedgerWriter::from_durable(ledger, witness, activated_trust(), &directory, &directory).unwrap();
+    let mut writer =
+        LedgerWriter::from_durable(ledger, witness, activated_trust(), &directory, &directory)
+            .unwrap();
     let first = decision();
-    let evidence = sign(writer.verifier(), "generator", LearningEvidenceRoleV1::Generator, &decision_signing_payload_v2(&first).unwrap());
-    let original = writer.append_decision(Digest32::ZERO, first.clone(), &evidence, 50).unwrap();
+    let evidence = sign(
+        writer.verifier(),
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &decision_signing_payload_v2(&first).unwrap(),
+    );
+    let original = writer
+        .append_decision(Digest32::ZERO, first.clone(), &evidence, 50)
+        .unwrap();
     let mut predecessor = original.chain_digest;
     for index in 1..256 {
         let mut next = decision();
         next.record_id = id(&format!("growth-record-{index}"));
         next.episode_id = id(&format!("growth-episode-{index}"));
-        let signed = sign(writer.verifier(), "generator", LearningEvidenceRoleV1::Generator, &decision_signing_payload_v2(&next).unwrap());
-        predecessor = writer.append_decision(predecessor, next, &signed, 50).unwrap().chain_digest;
+        let signed = sign(
+            writer.verifier(),
+            "generator",
+            LearningEvidenceRoleV1::Generator,
+            &decision_signing_payload_v2(&next).unwrap(),
+        );
+        predecessor = writer
+            .append_decision(predecessor, next, &signed, 50)
+            .unwrap()
+            .chain_digest;
     }
     let before = writer.witness_frontier().unwrap();
-    let retry = writer.append_decision(Digest32::ZERO, first.clone(), &evidence, 50).unwrap();
+    let retry = writer
+        .append_decision(Digest32::ZERO, first.clone(), &evidence, 50)
+        .unwrap();
     assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(writer.witness_frontier().unwrap(), before);
-    writer.verify_active_decision_binding(&first.record_id, &first.episode_id).unwrap();
+    writer
+        .verify_active_decision_binding(&first.record_id, &first.episode_id)
+        .unwrap();
     let records = writer.records().unwrap();
     assert_eq!(records.len(), 256);
     drop(writer);
-    let ledger = DurableLedger::recover(fixture.file("ledger"), binding(), 512, LedgerRecovery::Acknowledged(before.anchor)).unwrap();
+    let ledger = DurableLedger::recover(
+        fixture.file("ledger"),
+        binding(),
+        512,
+        LedgerRecovery::Acknowledged(before.anchor),
+    )
+    .unwrap();
     let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
-    let mut recovered = LedgerWriter::from_durable(ledger, witness, activated_trust(), &directory, &directory).unwrap();
+    let mut recovered =
+        LedgerWriter::from_durable(ledger, witness, activated_trust(), &directory, &directory)
+            .unwrap();
     assert_eq!(recovered.records().unwrap(), records);
-    let retry = recovered.append_decision(Digest32::ZERO, first, &evidence, 50).unwrap();
+    let retry = recovered
+        .append_decision(Digest32::ZERO, first, &evidence, 50)
+        .unwrap();
     assert_eq!(retry.chain_digest, original.chain_digest);
     assert_eq!(recovered.witness_frontier().unwrap(), before);
 }
+
+#[path = "production_growth_tests.rs"]
+mod growth;
