@@ -11,7 +11,6 @@ use codex_hepta_automation::AutomationStore;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_memory::CognitiveRuntime;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use tokio::task::JoinHandle;
 use tokio::time::Instant;
 use tokio::time::sleep;
 use tokio::time::timeout;
@@ -23,8 +22,9 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::CognitiveRetrievalMode;
+use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
-use crate::automation::run_automation_scheduler;
+use crate::automation::spawn_automation_service;
 
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
@@ -33,16 +33,7 @@ const RUN_DRAIN_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const RUN_DRAIN_GRACE: Duration = Duration::from_secs(5);
 const RUN_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum CompletedRuntimeTask {
-    Control,
-    AppServer,
-    Monitor,
-    Automation,
-    AuthBus,
-    Operations,
-    Plasticity,
-}
+const TASK_SHUTDOWN_GRACE: Duration = Duration::from_secs(3);
 
 pub async fn run(
     mut config: AgentdConfig,
@@ -248,108 +239,63 @@ pub async fn run(
         cancellation.clone(),
     )
     .await?;
-    // Spawn long-lived owner tasks only after every fallible bind above has
-    // succeeded. Dropping a JoinHandle does not cancel its task, so spawning
-    // before control bind would leak reconciliation on an early-return path.
-    let operations_cancellation = cancellation.clone();
-    let mut operations_task = tokio::spawn(async move {
-        match production_operations {
-            Some((host, interval)) => {
-                run_production_operation_reconciler(host, interval, operations_cancellation).await
-            }
-            None => {
-                operations_cancellation.cancelled().await;
-                Ok(())
-            }
+    // The single task host owns cancellation and joining on every exit path.
+    // All fallible owner opens and control binding above precede task startup.
+    let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
+    let startup: Result<(), AgentdError> = async {
+        if let Some((host, interval)) = production_operations {
+            tasks.spawn_required(
+                "production-operation-reconciler",
+                run_production_operation_reconciler(host, interval, cancellation.clone()),
+            )?;
         }
-    });
-    let mut control_task = tokio::spawn(control.run());
-    let mut app_server_task = tokio::spawn(run_app_server(
-        identity.clone(),
-        arg0_paths,
-        cognitive_runtime,
-        Arc::clone(&state),
-        production_writer_host,
-    ));
-    let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
-    let automation_cancellation = cancellation.clone();
-    let automation_state = Arc::clone(&state);
-    let mut automation_task = tokio::spawn(async move {
-        match automation_store {
-            Some(store) => {
-                run_automation_scheduler(store, automation_state, identity, automation_cancellation)
-                    .await
-            }
-            None => {
-                // Automation is an optional per-Agent product plane. A corrupt or
-                // unavailable private store must not create a second failure domain
-                // for Codex sessions, tools, or the App Server.
-                automation_cancellation.cancelled().await;
-                Ok(())
-            }
+        tasks.spawn_required("control-server", control.run())?;
+        let app_identity = identity.clone();
+        let app_state = Arc::clone(&state);
+        tasks.spawn_required("codex-app-server", async move {
+            run_app_server(
+                app_identity,
+                arg0_paths,
+                cognitive_runtime,
+                app_state,
+                production_writer_host,
+            )
+            .await
+            .map_err(AgentdError::from)
+        })?;
+        tasks.spawn_required("generation-monitor", monitor_runtime(Arc::clone(&state)))?;
+        tasks.spawn_required(
+            "authbus-relay",
+            crate::authbus_dispatch::run(Arc::clone(&state), cancellation.clone()),
+        )?;
+        if let Some(owner) = plasticity_runtime {
+            tasks.spawn_required(
+                "plasticity-owner",
+                owner.run(Arc::clone(&state), cancellation.clone()),
+            )?;
         }
-    });
-
-    let mut authbus_task = tokio::spawn(crate::authbus_dispatch::run(
-        Arc::clone(&state),
-        cancellation.clone(),
-    ));
-
-    let mut plasticity_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
-        Arc::clone(&state),
-        plasticity_runtime,
-        cancellation.clone(),
-    );
-
-    let (outcome, completed_task) = tokio::select! {
-        result = &mut authbus_task => (
-            joined("AuthBus text relay", result),
-            Some(CompletedRuntimeTask::AuthBus),
-        ),
-        result = &mut control_task => (
-            joined("control server", result),
-            Some(CompletedRuntimeTask::Control),
-        ),
-        result = &mut app_server_task => (
-            joined_io("Codex App Server", result),
-            Some(CompletedRuntimeTask::AppServer),
-        ),
-        result = &mut monitor_task => (
-            joined("generation monitor", result),
-            Some(CompletedRuntimeTask::Monitor),
-        ),
-        result = &mut automation_task => (
-            joined("automation scheduler", result),
-            Some(CompletedRuntimeTask::Automation),
-        ),
-        result = &mut operations_task => (
-            joined("production operation reconciler", result),
-            Some(CompletedRuntimeTask::Operations),
-        ),
-        result = &mut plasticity_task => (
-            joined("plasticity owner", result),
-            Some(CompletedRuntimeTask::Plasticity),
-        ),
-        signal = shutdown_signal() => {
-            signal?;
-            (drain_runtime(Arc::clone(&state)).await, None)
-        }
-    };
-    cancellation.cancel();
-    if completed_task != Some(CompletedRuntimeTask::AuthBus) {
-        abort_and_join(&mut authbus_task).await;
+        spawn_automation_service(
+            &mut tasks,
+            automation_store,
+            Arc::clone(&state),
+            identity,
+            cancellation.clone(),
+        )
+        .await?;
+        Ok(())
     }
-    cleanup_runtime_tasks(
-        completed_task,
-        &mut control_task,
-        &mut app_server_task,
-        &mut monitor_task,
-        &mut automation_task,
-        &mut operations_task,
-        &mut plasticity_task,
-    )
     .await;
-    outcome
+    if let Err(error) = startup {
+        tasks.shutdown().await;
+        return Err(error);
+    }
+    tasks
+        .run_until(async move {
+            shutdown_signal().await?;
+            // Keep control and owner reconciliation alive throughout drain.
+            drain_runtime(state).await
+        })
+        .await
 }
 
 fn require_cognitive_retrieval_context_for_mode(
@@ -553,79 +499,6 @@ async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
         Err(AgentdError::Protocol(format!(
             "agentd shutdown left {unresolved} indeterminate run(s); owner recovery is required"
         )))
-    }
-}
-
-fn joined(
-    label: &str,
-    result: Result<Result<(), AgentdError>, tokio::task::JoinError>,
-) -> Result<(), AgentdError> {
-    match result {
-        Ok(Ok(())) => Err(AgentdError::Protocol(format!(
-            "{label} exited before agentd shutdown"
-        ))),
-        Ok(Err(error)) => Err(error),
-        Err(error) => Err(AgentdError::Protocol(format!(
-            "{label} task failed: {error}"
-        ))),
-    }
-}
-
-fn joined_io(
-    label: &str,
-    result: Result<std::io::Result<()>, tokio::task::JoinError>,
-) -> Result<(), AgentdError> {
-    match result {
-        Ok(Ok(())) => Err(AgentdError::Protocol(format!(
-            "{label} exited before agentd shutdown"
-        ))),
-        Ok(Err(error)) => Err(error.into()),
-        Err(error) => Err(AgentdError::Protocol(format!(
-            "{label} task failed: {error}"
-        ))),
-    }
-}
-
-async fn abort_and_join<T>(task: &mut JoinHandle<T>) {
-    if !task.is_finished() {
-        task.abort();
-    }
-    let _ = task.await;
-}
-
-async fn cleanup_runtime_tasks<
-    ControlOutput,
-    AppServerOutput,
-    MonitorOutput,
-    AutomationOutput,
-    OperationsOutput,
-    PlasticityOutput,
->(
-    completed_task: Option<CompletedRuntimeTask>,
-    control_task: &mut JoinHandle<ControlOutput>,
-    app_server_task: &mut JoinHandle<AppServerOutput>,
-    monitor_task: &mut JoinHandle<MonitorOutput>,
-    automation_task: &mut JoinHandle<AutomationOutput>,
-    operations_task: &mut JoinHandle<OperationsOutput>,
-    plasticity_task: &mut JoinHandle<PlasticityOutput>,
-) {
-    if completed_task != Some(CompletedRuntimeTask::Control) {
-        abort_and_join(control_task).await;
-    }
-    if completed_task != Some(CompletedRuntimeTask::AppServer) {
-        abort_and_join(app_server_task).await;
-    }
-    if completed_task != Some(CompletedRuntimeTask::Monitor) {
-        abort_and_join(monitor_task).await;
-    }
-    if completed_task != Some(CompletedRuntimeTask::Automation) {
-        abort_and_join(automation_task).await;
-    }
-    if completed_task != Some(CompletedRuntimeTask::Operations) {
-        abort_and_join(operations_task).await;
-    }
-    if completed_task != Some(CompletedRuntimeTask::Plasticity) {
-        abort_and_join(plasticity_task).await;
     }
 }
 

@@ -239,11 +239,23 @@ pub(crate) async fn run_automation_scheduler(
         Ok(scheduler) => scheduler,
         Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
     };
+    run_scheduler_loop(scheduler, state, cancellation, AUTOMATION_TICK_INTERVAL).await
+}
+
+/// Cancellation stops new ticks, never an admitted tick's acknowledgement.
+/// Existing dispatch timeouts and durable recovery bound an uncertain result.
+async fn run_scheduler_loop<Q: AutomationTurnQueue>(
+    scheduler: AutomationScheduler<Q>,
+    state: Arc<AgentdState>,
+    cancellation: CancellationToken,
+    tick_interval: Duration,
+) -> Result<(), AgentdError> {
     let mut retry_budget = DispatchRetryBudget::default();
     loop {
         tokio::select! {
+            biased;
             _ = cancellation.cancelled() => return Ok(()),
-            _ = tokio::time::sleep(AUTOMATION_TICK_INTERVAL) => {}
+            _ = tokio::time::sleep(tick_interval) => {}
         }
         if !state.automation_is_available()? {
             return wait_for_cancellation(&cancellation).await;
@@ -268,31 +280,25 @@ pub(crate) async fn run_automation_scheduler(
         // work. This is bounded to one item/turn-page chain per tick and does
         // not prevent an overlap-allowed scheduler from also making progress.
         if let Err(error) =
-            automation_recovery::reconcile_one(scheduler.store(), &state, &identity, now_ms).await
+            automation_recovery::reconcile_one(scheduler.store(), &state, state.identity(), now_ms)
+                .await
         {
             return stop_after_recovery_error(error, &state, &cancellation).await;
         }
 
-        tokio::select! {
-            _ = cancellation.cancelled() => return Ok(()),
-            result = scheduler.tick(now_ms) => {
-                match result {
-                    Ok(tick) => {
-                        if handle_automation_tick(
-                            tick,
-                            &mut retry_budget,
-                            &state,
-                            &cancellation,
-                        )
-                        .await?
-                        {
-                            return Ok(());
-                        }
-                    }
-                    Err(error) => {
-                        return stop_after_automation_error(error, &state, &cancellation).await;
-                    }
+        if cancellation.is_cancelled() {
+            return Ok(());
+        }
+        // Once admitted, the tick must record the queue outcome. Dropping this
+        // future on cancellation could lose an acknowledgement after dispatch.
+        match scheduler.tick(now_ms).await {
+            Ok(tick) => {
+                if handle_automation_tick(tick, &mut retry_budget, &state, &cancellation).await? {
+                    return Ok(());
                 }
+            }
+            Err(error) => {
+                return stop_after_automation_error(error, &state, &cancellation).await;
             }
         }
     }
@@ -466,3 +472,11 @@ mod tests {
         );
     }
 }
+
+#[path = "automation_service.rs"]
+mod service;
+pub(crate) use service::spawn_automation_service;
+
+#[cfg(test)]
+#[path = "automation_service_tests.rs"]
+mod service_tests;

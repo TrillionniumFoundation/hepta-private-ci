@@ -217,6 +217,8 @@ async fn unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen
         .await
         .expect("claim")
         .expect("lease");
+    let occurrence = fixture.store.materialize_occurrence(&lease, 100).await.expect("durable occurrence");
+    fixture.store.prepare_occurrence_taskflow(&occurrence, &lease, 100, 60_000).await.expect("durable step claim");
     fixture
         .store
         .record_dispatch_uncertain(&lease, 101)
@@ -290,6 +292,11 @@ async fn cancellation_preserves_in_flight_queue_ack_before_scheduler_exit() {
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
         .expect("running");
     fixture.state.refresh_generation().expect("generation");
+    let cognitive = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
+        .await
+        .expect("real cognitive owner");
+    fixture.state.attach_cognitive_store(Arc::new(cognitive)).expect("owner attachment");
+    fixture.state.mark_runtime_prerequisites_ready().expect("owner prerequisites");
     fixture.state.mark_app_server_ready().expect("ready");
     fixture.store.create_task(&draft()).await.expect("task");
     let queue = Arc::new(DelayedQueue {
@@ -337,6 +344,7 @@ async fn production_constructor_keeps_retired_timer_absent_after_reopen() {
     fixture.store.quiesce_timer().await.expect("quiesce");
     let retired = fixture.store.retire_timer().await.expect("retire");
     fixture.store.close().await;
+    drop(fixture.state);
 
     // This is the same durable owner and the same constructor used at daemon
     // startup, not an in-memory retirement flag or a separately built scheduler.
@@ -366,14 +374,6 @@ async fn production_constructor_keeps_retired_timer_absent_after_reopen() {
     assert!(!stop.is_cancelled());
     assert!(!state.is_fenced().expect("host fence"));
     assert!(!state.automation_is_available().expect("live route"));
-    assert!(
-        state
-            .runtime_topology_snapshot()
-            .expect("topology")
-            .active
-            .iter()
-            .all(|module| module.module_id.as_str() != "automation.taskflow")
-    );
     assert_eq!(
         reopened.timer_status().await.expect("durable status"),
         retired

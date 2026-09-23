@@ -686,7 +686,7 @@ fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
+pub(crate) fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
     let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
     bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
     bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());

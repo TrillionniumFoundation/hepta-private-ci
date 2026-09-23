@@ -48,9 +48,7 @@ use tokio_util::sync::CancellationToken;
 
 use super::AgentdIdentity;
 use super::AgentdState;
-use super::CompletedRuntimeTask;
 use super::EVENT_CAPACITY;
-use super::cleanup_runtime_tasks;
 use super::drain_runtime;
 use super::monitor_runtime;
 use super::open_automation_store_after_generation_fence;
@@ -71,37 +69,6 @@ use crate::qualification_writer::prepare_qualification_turn_writer_input;
 use codex_hepta_memory::LocalLeaseHeadDisposition;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
-
-#[tokio::test]
-async fn cleanup_never_polls_the_join_handle_already_consumed_by_select() {
-    let mut control_task = tokio::spawn(async {});
-    (&mut control_task)
-        .await
-        .expect("selected control task should complete");
-    let mut app_server_task = tokio::spawn(std::future::pending::<()>());
-    let mut monitor_task = tokio::spawn(std::future::pending::<()>());
-    let mut automation_task = tokio::spawn(std::future::pending::<()>());
-    let mut operations_task = tokio::spawn(std::future::pending::<()>());
-    let mut plasticity_task = tokio::spawn(std::future::pending::<()>());
-
-    cleanup_runtime_tasks(
-        Some(CompletedRuntimeTask::Control),
-        &mut control_task,
-        &mut app_server_task,
-        &mut monitor_task,
-        &mut automation_task,
-        &mut operations_task,
-        &mut plasticity_task,
-    )
-    .await;
-
-    assert!(control_task.is_finished());
-    assert!(app_server_task.is_finished());
-    assert!(monitor_task.is_finished());
-    assert!(automation_task.is_finished());
-    assert!(operations_task.is_finished());
-    assert!(plasticity_task.is_finished());
-}
 
 struct RuntimeFixture {
     _temp: tempfile::TempDir,
@@ -153,9 +120,18 @@ fn runtime_fixture() -> RuntimeFixture {
     }
 }
 
+async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
+    let store = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
+        .await
+        .expect("real cognitive owner");
+    fixture.state.attach_cognitive_store(Arc::new(store)).expect("owner attachment");
+    fixture.state.mark_runtime_prerequisites_ready().expect("owner prerequisites");
+}
+
 #[tokio::test]
 async fn drain_runtime_keeps_control_reconciliation_live_until_terminal_observation() {
     let fixture = runtime_fixture();
+    attach_runtime_prerequisites(&fixture).await;
     fixture
         .registry
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
@@ -173,8 +149,8 @@ async fn drain_runtime_keeps_control_reconciliation_live_until_terminal_observat
         body_digest: "3".repeat(64),
         artifact_set_digest: "4".repeat(64),
         authority_epoch: 7,
-        generation: fixture.identity.spawn_generation,
-        fence_digest: "7".repeat(64),
+        generation: fixture.state.current_generation().expect("current lifecycle generation"),
+        fence_digest: crate::state::objective_run_fence(&fixture.identity, fixture.state.current_generation().expect("lifecycle generation")),
         deadline_ms: u64::MAX - 1,
     };
     let started = fixture
@@ -278,6 +254,7 @@ async fn drain_runtime_keeps_control_reconciliation_live_until_terminal_observat
 #[tokio::test]
 async fn duplicate_automation_attachment_does_not_replace_the_live_store() {
     let fixture = runtime_fixture();
+    attach_runtime_prerequisites(&fixture).await;
     fixture
         .registry
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
@@ -363,7 +340,7 @@ fn hnmf_required_retrieval_mode_fails_closed_without_current_context() {
         .expect("HNMF-required mode accepts an explicitly configured current context");
 }
 
-#[cfg(feature = "qualification-cognitive-write")]
+#[cfg(feature = "production-cognitive-write")]
 #[test]
 fn product_write_profile_fails_closed_when_cognitive_store_is_unavailable() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
@@ -777,7 +754,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     );
 }
 
-#[cfg(not(feature = "qualification-cognitive-write"))]
+#[cfg(not(feature = "production-cognitive-write"))]
 #[test]
 fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
@@ -839,6 +816,7 @@ async fn automation_generation_change_during_open_remains_fail_closed() {
 #[tokio::test]
 async fn runtime_automation_store_failure_stops_only_the_scheduler_plane() {
     let fixture = runtime_fixture();
+    attach_runtime_prerequisites(&fixture).await;
     fixture
         .registry
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)

@@ -248,6 +248,7 @@ pub(crate) fn compose_plasticity_runtime_v1(
     }
 }
 
+#[cfg(test)]
 pub(crate) fn spawn_plasticity_runtime_v1(
     state: Arc<AgentdState>,
     owner: Option<PlasticityRuntimeOwnerV1>,
