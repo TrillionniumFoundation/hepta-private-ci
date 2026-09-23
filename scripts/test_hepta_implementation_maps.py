@@ -144,11 +144,45 @@ class SourceIdentityTests(unittest.TestCase):
             self.verify()
 
     def closed_public_inventory(self, functions):
-        self.write("src/alpha/Cargo.toml", '[package]\nname = "alpha"\nversion = "0.1.0"\n')
+        self.write(
+            "src/alpha/Cargo.toml", '[package]\nname = "alpha"\nversion = "0.1.0"\n'
+        )
         self.write("src/alpha/src/lib.rs", functions)
         self.rows["alpha"]["sourceBase"] = self.commit("public crate source")
         self.rows["alpha"]["closedWorldPublicFunctions"] = True
         self.change_maps()
+
+    def test_strong_navigation_migration_without_observation_survives_commit(self):
+        self.rows["alpha"]["sourceIdentityPolicy"] = "candidate_or_exact_observation_v1"
+        self.change_maps()
+        with contextlib.redirect_stdout(io.StringIO()):
+            maps.migrate(["alpha"])
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertEqual(row["sourceBase"], row["observedAtHead"])
+        self.assertFalse(row["productionImplementation"])
+        self.commit("persist explicit source observation")
+        self.verify()
+        before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
+        with contextlib.redirect_stdout(io.StringIO()):
+            maps.migrate(["alpha"])
+        self.assertEqual(
+            before,
+            (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
+        )
+
+    def test_strong_migration_never_repairs_unproved_execution_by_adding_observation(
+        self,
+    ):
+        self.rows["alpha"]["sourceIdentityPolicy"] = "candidate_or_exact_observation_v1"
+        self.rows["alpha"]["productExecutionProved"] = True
+        self.change_maps()
+        before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
+        with self.assertRaises(ValueError), contextlib.redirect_stdout(io.StringIO()):
+            maps.migrate(["alpha"])
+        self.assertEqual(
+            before,
+            (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes(),
+        )
 
     def test_closed_public_inventory_uses_resolved_crate_roots(self):
         self.closed_public_inventory("pub fn calculate() {}\n")
@@ -176,8 +210,13 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         self.verify()
 
     def test_public_inventory_includes_const_reexports_not_types(self):
-        self.closed_public_inventory("mod api;\npub use api::calculate;\npub use api::Value;\n")
-        self.write("src/alpha/src/api.rs", "pub const fn calculate() -> u8 { 1 }\npub struct Value;\nimpl Value { pub fn method() {} }\n")
+        self.closed_public_inventory(
+            "mod api;\npub use api::calculate;\npub use api::Value;\n"
+        )
+        self.write(
+            "src/alpha/src/api.rs",
+            "pub const fn calculate() -> u8 { 1 }\npub struct Value;\nimpl Value { pub fn method() {} }\n",
+        )
         self.rows["alpha"]["sourceBase"] = self.commit("const free function")
         self.change_maps()
         self.verify()
@@ -186,8 +225,13 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         row = copy.deepcopy(self.rows["alpha"])
         row["mappingSourceIdentityMode"] = "exact_blob"
         row["operations"][0]["sourceBlob"] = "0" * 40
-        result = maps.migrate_map(row, self.modules[0], {"alpha": "test-lane"}, self.anchor)
-        self.assertEqual(result["operations"][0]["sourceBlob"], self.git("rev-parse", "HEAD:src/alpha/lib.rs"))
+        result = maps.migrate_map(
+            row, self.modules[0], {"alpha": "test-lane"}, self.anchor
+        )
+        self.assertEqual(
+            result["operations"][0]["sourceBlob"],
+            self.git("rev-parse", "HEAD:src/alpha/lib.rs"),
+        )
         self.assertFalse(result["claimBoundary"]["productExecutionProved"])
 
     def test_closed_world_writer_binding_preserves_exact_source_identity(self):

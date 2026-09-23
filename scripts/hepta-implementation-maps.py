@@ -49,7 +49,8 @@ def unique_keys(items):
 
 def load(rel: str):
     return json.loads(
-        checked_source_path(ROOT, rel).read_text(encoding="utf-8"), object_pairs_hook=unique_keys
+        checked_source_path(ROOT, rel).read_text(encoding="utf-8"),
+        object_pairs_hook=unique_keys,
     )
 
 
@@ -132,7 +133,11 @@ def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
             for entry in entries:
                 if isinstance(entry, dict):
                     path = entry.get("path", entry.get("sourcePath"))
-                    if "path" in entry and "sourcePath" in entry and entry["path"] != entry["sourcePath"]:
+                    if (
+                        "path" in entry
+                        and "sourcePath" in entry
+                        and entry["path"] != entry["sourcePath"]
+                    ):
                         raise ValueError(f"{key} has conflicting evidence paths")
                 else:
                     path = entry
@@ -508,13 +513,20 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     }
 
 
-EXECUTION_CLAIMS = frozenset({
-    "productionImplementation", "productExecutionProved",
-    "independentAcceptance", "activation", "release",
-})
+EXECUTION_CLAIMS = frozenset(
+    {
+        "productionImplementation",
+        "productExecutionProved",
+        "independentAcceptance",
+        "activation",
+        "release",
+    }
+)
 BOOLEAN_CLAIMS = EXECUTION_CLAIMS | {
-    "nativeSourceMappingComplete", "implementedOperationMappingComplete",
-    "ownedTargetProtocolSourceComplete", "sourceRootPresent",
+    "nativeSourceMappingComplete",
+    "implementedOperationMappingComplete",
+    "ownedTargetProtocolSourceComplete",
+    "sourceRootPresent",
 }
 
 
@@ -546,7 +558,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     """
     if validate_claim_types(row):
         # Rebinding navigation cannot transfer old executable evidence to new code.
-        verify_source_identity(row, resolve_source_roots(ROOT, module), current_source_base())
+        verify_source_identity(
+            row, resolve_source_roots(ROOT, module), current_source_base()
+        )
     roots = [x["path"] for x in module["rootBindings"]]
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
     if isinstance(declared, str):
@@ -654,11 +668,24 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "operator acceptance, canary, promotion and release",
         ],
     )
-    if "observedAtHead" in migrated:
-        migrated["observedAtHead"] = {**migrated["observedAtHead"], **source_base}
+    if (
+        "observedAtHead" in migrated
+        or migrated.get("sourceIdentityPolicy") == "candidate_or_exact_observation_v1"
+    ):
+        # A navigation-only migration must survive committing the map itself.
+        # Without an explicit observation, a strong-policy sourceBase equal to
+        # today's HEAD becomes invalid on the very next metadata-only commit.
+        # Execution claims were verified against the old source above; this
+        # generated observation grants no executable qualification.
+        migrated["observedAtHead"] = {
+            **migrated.get("observedAtHead", {}),
+            **source_base,
+        }
         observed_paths = set(migrated.get("observedSourcePaths", []))
         observed_paths.update(migrated["resolvedRoots"])
-        if migrated.get("sourceIdentityPolicy") == "candidate_or_exact_observation_v1" and any(
+        if migrated.get(
+            "sourceIdentityPolicy"
+        ) == "candidate_or_exact_observation_v1" and any(
             root == "codex-rs" or root.startswith("codex-rs/")
             for root in migrated["resolvedRoots"]
         ):
@@ -1051,7 +1078,10 @@ def top_level_rust_source(text: str) -> str:
                     else:
                         end += 1
             elif text[i] == "'":
-                char = re.match(r"'(?:\\(?:u\{[0-9A-Fa-f_]+\}|x[0-9A-Fa-f]{2}|.)|[^'\\\n])'", text[i:])
+                char = re.match(
+                    r"'(?:\\(?:u\{[0-9A-Fa-f_]+\}|x[0-9A-Fa-f]{2}|.)|[^'\\\n])'",
+                    text[i:],
+                )
                 if char:
                     end = i + char.end()
         if end is not None:
@@ -1142,7 +1172,11 @@ def verify(*, require_current_source: bool = True):
             if row.get("resolvedRoots") != resolved:
                 raise ValueError("resolved source roots")
             ops = row.get("operations")
-            if not isinstance(ops, list) or not ops or any(not isinstance(op, dict) for op in ops):
+            if (
+                not isinstance(ops, list)
+                or not ops
+                or any(not isinstance(op, dict) for op in ops)
+            ):
                 raise ValueError("operations")
             if "sourceRootPresent" not in row or "productionImplementation" not in row:
                 raise ValueError("status model")
