@@ -253,7 +253,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         model_digest: selected_artifact_digest,
         normalization_digest: digest("plasticity-process-normalization"),
         generation: generation(1),
-        width: 2,
+        width: 5,
         top_k: 1,
         temporal_decay_q24: Q24 / 2,
         inhibition_gain_q24: 0,
@@ -284,8 +284,8 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             input_digest: digest("plasticity-process-input"),
             sequence: 1,
             monotonic_micros: 1,
-            drive_q24: vec![Q24, Q24 / 2],
-            prediction_q24: vec![0, 0],
+            drive_q24: vec![Q24, Q24 / 2, 0, 0, 0],
+            prediction_q24: vec![0; 5],
         },
     )?;
     let neuron_anchor = neuron.current_anchor()?.expect("neuron anchor");

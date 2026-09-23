@@ -94,12 +94,15 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
     std::fs::set_permissions(&release_root, std::fs::Permissions::from_mode(0o555))?;
     let _release_root_guard = ImmutableReleaseRoot(release_root.clone());
 
+    // Install the immutable fixture launcher for every agent. Each launcher
+    // starts the same real Agentd executable; this lifecycle test must not copy
+    // and repeatedly hash a gigabyte debug binary once per isolated peer.
     for (index, agent) in agents.iter().enumerate() {
         let initial = release(
             &fleet.registry,
             &agent.agent_id,
             &format!("initial-{index}"),
-            if index == 0 { &v1 } else { &agentd_binary },
+            &v1,
         )?;
         fleet.start_release(agent, initial)?;
         let (control, health) = fleet.wait_ready(agent, 1).await?;
@@ -319,16 +322,15 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     std::fs::set_permissions(&release_root, std::fs::Permissions::from_mode(0o555))?;
     let _release_root_guard = ImmutableReleaseRoot(release_root);
 
+    // Install the immutable fixture launcher for every agent. Each launcher
+    // starts the same real Agentd executable; this lifecycle test must not copy
+    // and repeatedly hash a gigabyte debug binary once per isolated peer.
     for (index, agent) in agents.iter().enumerate() {
         let initial = release(
             &fleet.registry,
             &agent.agent_id,
             &format!("six-initial-{index}"),
-            if index == 0 || index == 5 {
-                &v1
-            } else {
-                &agentd_binary
-            },
+            &v1,
         )?;
         fleet.start_release(agent, initial)?;
         let (control, health) = fleet
