@@ -272,7 +272,10 @@ pub async fn run(
             }
             Ok(())
         })?;
-        tasks.spawn_required("generation-monitor", monitor_runtime(Arc::clone(&state)))?;
+        tasks.spawn_required(
+            "generation-monitor",
+            monitor_runtime(Arc::clone(&state), cancellation.clone()),
+        )?;
         tasks.spawn_required(
             "authbus-relay",
             crate::authbus_dispatch::run(Arc::clone(&state), cancellation.clone()),
@@ -410,7 +413,10 @@ async fn run_production_operation_reconciler(
     }
 }
 
-async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
+async fn monitor_runtime(
+    state: Arc<AgentdState>,
+    cancellation: CancellationToken,
+) -> Result<(), AgentdError> {
     let mut app_server_ready = false;
     loop {
         if state.is_fenced()? {
@@ -424,7 +430,11 @@ async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
         }
         state.expire_run_deadlines()?;
         if !app_server_ready {
-            match probe_app_server(state.identity()).await {
+            let observation = tokio::select! {
+                () = cancellation.cancelled() => return Ok(()),
+                observation = probe_app_server(state.identity()) => observation,
+            };
+            match observation {
                 Ok(()) => {
                     state.mark_app_server_ready()?;
                     if let Some(host) = state.objective_runtime.get() {
@@ -443,7 +453,10 @@ async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
                 Err(_not_ready) => {}
             }
         }
-        tokio::time::sleep(GENERATION_POLL_INTERVAL).await;
+        tokio::select! {
+            () = cancellation.cancelled() => return Ok(()),
+            () = tokio::time::sleep(GENERATION_POLL_INTERVAL) => {}
+        }
     }
 }
 

@@ -975,7 +975,7 @@ async fn automation_owner_fence_still_terminates_the_runtime_monitor() {
     fixture.state.mark_fenced();
     let result = timeout(
         Duration::from_secs(1),
-        monitor_runtime(Arc::clone(&fixture.state)),
+        monitor_runtime(Arc::clone(&fixture.state), CancellationToken::new()),
     )
     .await
     .expect("fenced monitor did not terminate");
@@ -1052,4 +1052,19 @@ async fn generation_change_during_open_is_fenced_before_serving() {
         result,
         Err(crate::AgentdError::GenerationFenced(_))
     ));
+}
+
+#[tokio::test]
+async fn generation_monitor_honors_host_cancellation_during_readiness_probe()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = runtime_fixture();
+    let cancellation = CancellationToken::new();
+    let stop = cancellation.clone();
+    let monitor = monitor_runtime(Arc::clone(&fixture.state), cancellation);
+    let (result, ()) = tokio::join!(monitor, async move {
+        tokio::task::yield_now().await;
+        stop.cancel();
+    },);
+    result?;
+    Ok(())
 }
