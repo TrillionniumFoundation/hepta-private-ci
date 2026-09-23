@@ -179,7 +179,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(false);
         }
         let record = self.record(agent_id)?;
-        let current = record.release_state.current.as_ref().map(|release| release.as_str());
+        let current = record
+            .release_state
+            .current
+            .as_ref()
+            .map(|release| release.as_str());
         let previous = record
             .release_state
             .previous
@@ -235,11 +239,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot,
             ReleaseTransactionPhase::RecoveryRequired,
         )?;
-        self.reconcile_unsigned_release_outcome(
-            agent_id,
-            slot,
-            /*allow_source_abort*/ true,
-        )
+        self.reconcile_unsigned_release_outcome(agent_id, slot, /*allow_source_abort*/ true)
     }
 
     pub(crate) fn upgrade_slot(

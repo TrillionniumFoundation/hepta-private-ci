@@ -49,9 +49,11 @@ async fn retirement_writer_fence_cancels_siblings_and_blocks_fresh_names() {
     ));
     assert!(cancellation.is_cancelled());
     assert!(sibling.is_cancelled());
-    assert!(tasks
-        .spawn_required("unrelated-new-service", pending())
-        .is_err());
+    assert!(
+        tasks
+            .spawn_required("unrelated-new-service", pending())
+            .is_err()
+    );
     tasks.shutdown().await;
 }
 
@@ -75,9 +77,11 @@ async fn rejected_or_panicking_retirement_callback_latches_host_failure() {
             .expect("service");
         assert!(tasks.retire_optional("retiring").await.is_err());
         assert!(cancellation.is_cancelled());
-        assert!(tasks
-            .spawn_required("unrelated-new-service", pending())
-            .is_err());
+        assert!(
+            tasks
+                .spawn_required("unrelated-new-service", pending())
+                .is_err()
+        );
         assert!(tasks.retire_optional("retiring").await.is_err());
         tasks.shutdown().await;
     }
@@ -94,7 +98,10 @@ async fn successful_optional_quarantine_does_not_latch_host_failure() {
             || Ok(()),
         )
         .expect("optional");
-    tasks.observe_next().await.expect("isolated optional failure");
+    tasks
+        .observe_next()
+        .await
+        .expect("isolated optional failure");
     assert!(!cancellation.is_cancelled());
     assert_eq!(tasks.failures().len(), 1);
     tasks

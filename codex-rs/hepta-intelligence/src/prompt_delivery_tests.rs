@@ -261,7 +261,10 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
             registry_model_tuple: tuple.clone(),
             context_model_profile: ContextModelProfileV2 {
                 model_digest: tuple.model_digest,
+                provider_id_digest: digest("provider"),
+                provider_model_digest: tuple.model_digest,
                 tokenizer_digest: tuple.tokenizer_digest,
+                serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
                 maximum_context_tokens: 128,
@@ -274,7 +277,7 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
     .expect("compile exercised prompt registry context");
 
     assert_eq!(
-        output.compiled.receipt.selected_item_ids,
+        output.compiled.receipt().selected_item_ids(),
         vec![id("realization:verify")]
     );
     assert_eq!(output.selected_deliveries.len(), 1);
@@ -299,11 +302,11 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
     );
     assert_eq!(
         Digest32::of_bytes(&output.serialized_payload),
-        output.serialization.payload_digest
+        output.serialization.payload_digest()
     );
     assert_eq!(
-        output.attachment.payload_digest,
-        output.serialization.payload_digest
+        output.attachment.payload_digest(),
+        output.serialization.payload_digest()
     );
     assert!(
         output
@@ -393,7 +396,10 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
             registry_model_tuple: tuple.clone(),
             context_model_profile: ContextModelProfileV2 {
                 model_digest: tuple.model_digest,
+                provider_id_digest: digest("provider"),
+                provider_model_digest: tuple.model_digest,
                 tokenizer_digest: tuple.tokenizer_digest,
+                serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
                 maximum_context_tokens: 128,
@@ -429,7 +435,10 @@ fn compiler_rejects_registry_and_context_model_drift() {
             registry_model_tuple: tuple.clone(),
             context_model_profile: ContextModelProfileV2 {
                 model_digest: digest("other-model"),
+                provider_id_digest: digest("provider"),
+                provider_model_digest: tuple.model_digest,
                 tokenizer_digest: tuple.tokenizer_digest,
+                serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
                 maximum_context_tokens: 128,

@@ -1,15 +1,28 @@
 use super::*;
 
+use std::fs::File;
 use std::fs::OpenOptions;
 
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::AppendDisposition;
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::DurableLedger;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionV1;
+use codex_hepta_learning_ledger::LearningTrustRootV1;
+use codex_hepta_learning_ledger::LedgerWitnessStore;
+use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_learning_ledger::activate_learning_trust;
 use codex_hepta_memory_retrieval::RetrievalAssignmentCompletenessV1;
 use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
 use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
@@ -21,6 +34,95 @@ fn digest(value: &str) -> Digest32 {
 
 fn owner() -> AgentId {
     AgentId::parse("00000000-0000-4000-8000-000000000141").expect("owner")
+}
+
+fn trusted(
+    name: &str,
+    controller: &str,
+    seed: u8,
+    role: LearningEvidenceRoleV1,
+) -> TrustedLearningSignerV1 {
+    let key = SigningKey::from_bytes(&[seed; 32]);
+    TrustedLearningSignerV1 {
+        principal: AuthenticatedPrincipalV1 {
+            principal_id: id(name),
+            credential_chain_digest: digest(&format!("{name}-credential")),
+            signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+            scope_digest: digest("scope"),
+            authority_epoch: 7,
+            authenticated_at: 10,
+            expires_at: 100,
+        },
+        controller_id: id(controller),
+        verifying_key: key.verifying_key().to_bytes(),
+        roles: vec![role],
+        revoked_at: None,
+    }
+}
+
+fn activated_trust() -> ActivatedLearningTrustV1 {
+    let trust = LearningEvidenceTrustV1 {
+        scope_digest: digest("scope"),
+        objective_digest: digest("objective"),
+        authority_epoch: 7,
+        signers: vec![
+            trusted(
+                "generator",
+                "generator-controller",
+                1,
+                LearningEvidenceRoleV1::Generator,
+            ),
+            trusted(
+                "observer",
+                "observer-controller",
+                2,
+                LearningEvidenceRoleV1::Observer,
+            ),
+            trusted(
+                "allocator",
+                "allocator-controller",
+                3,
+                LearningEvidenceRoleV1::CreditAllocator,
+            ),
+            trusted(
+                "evaluator",
+                "evaluator-controller",
+                4,
+                LearningEvidenceRoleV1::Evaluator,
+            ),
+            trusted(
+                "privacy-owner",
+                "privacy-controller",
+                5,
+                LearningEvidenceRoleV1::UnlearningAuthority,
+            ),
+        ],
+    };
+    let key = SigningKey::from_bytes(&[99; 32]);
+    let root = LearningTrustRootV1 {
+        root_id: id("learning-root"),
+        scope_digest: digest("scope"),
+        verifying_key: key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 200,
+        revoked_at: None,
+    };
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("trust-distribution"),
+            generation: 1,
+            effective_at: 20,
+            trust,
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 15,
+        expires_at: 90,
+        signature: [0; 64],
+    };
+    signed.signature = key
+        .sign(&signed.signing_bytes().expect("signing bytes"))
+        .to_bytes();
+    activate_learning_trust(&root, signed, None, 50).expect("activate trust")
 }
 
 fn observation(label: &str) -> RetrievalAssignmentObservationV1 {
@@ -51,16 +153,34 @@ fn observation(label: &str) -> RetrievalAssignmentObservationV1 {
 
 fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
     let temp = tempfile::tempdir().expect("temp");
-    let path = temp.path().join("learning.ledger");
-    let file = OpenOptions::new()
+    let binding = digest("agentd-retrieval-learning");
+    let ledger_path = temp.path().join("learning.ledger");
+    let witness_path = temp.path().join("learning.witness");
+    let ledger_file = OpenOptions::new()
         .create_new(true)
         .read(true)
         .write(true)
-        .open(path)
-        .expect("file");
-    let ledger =
-        DurableLedger::create(file, digest("agentd-retrieval-learning"), 128).expect("ledger");
-    (temp, CognitiveRetrievalLearningSink::new(ledger))
+        .open(&ledger_path)
+        .expect("ledger file");
+    let witness_file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(&witness_path)
+        .expect("witness file");
+    let ledger = DurableLedger::create(ledger_file, binding, 128).expect("ledger");
+    let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
+    let ledger_directory = File::open(temp.path()).expect("ledger directory");
+    let witness_directory = File::open(temp.path()).expect("witness directory");
+    let writer = LedgerWriter::from_durable(
+        ledger,
+        witness,
+        activated_trust(),
+        &ledger_directory,
+        &witness_directory,
+    )
+    .expect("product writer");
+    (temp, CognitiveRetrievalLearningSink::new(writer))
 }
 
 #[test]
@@ -75,7 +195,7 @@ fn same_rpc_and_observation_replays_idempotently() {
     assert_eq!(second.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(first.event_digest, second.event_digest);
     let snapshot = sink
-        .ledger
+        .writer
         .lock()
         .expect("lock")
         .snapshot()
@@ -93,7 +213,7 @@ fn same_rpc_with_different_assignment_is_identity_conflict() {
             .is_err()
     );
     let snapshot = sink
-        .ledger
+        .writer
         .lock()
         .expect("lock")
         .snapshot()
@@ -108,7 +228,7 @@ fn different_rpc_ids_create_distinct_assignment_records() {
     sink.append(&owner(), 1, 1, &observation).expect("first");
     sink.append(&owner(), 1, 2, &observation).expect("second");
     let snapshot = sink
-        .ledger
+        .writer
         .lock()
         .expect("lock")
         .snapshot()

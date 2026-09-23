@@ -5,7 +5,7 @@ use codex_hepta_operations::DestinationApplyStart;
 use codex_hepta_operations::DestinationDedupeStore;
 use codex_hepta_operations::DestinationOperationIdentity;
 use codex_hepta_operations::DurableOperationError;
-use codex_hepta_operations::OperationIntentV1;
+use codex_hepta_operations::DurableOperationIntentV1 as OperationIntentV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -119,7 +119,7 @@ impl AutomationStore {
                 // remains read-only, including after permanent retirement.
                 let phase = check_timer_writer(
                     apply.transaction().map_err(map_operation_error)?,
-                    self.timer_epoch,
+                    self.timer_epoch(),
                 )
                 .await?;
                 if phase != TimerPhase::Active {

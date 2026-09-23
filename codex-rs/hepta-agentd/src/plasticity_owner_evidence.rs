@@ -741,6 +741,7 @@ fn artifact_manifest_receipt_digest(manifest: &ArtifactManifest) -> Digest32 {
         ArtifactKind::Topology => 6,
         ArtifactKind::Code => 7,
         ArtifactKind::ExternalAdapter => 8,
+        ArtifactKind::SensorCore => 9,
     });
     bytes.extend_from_slice(&manifest.generation.get().to_be_bytes());
     match &manifest.predecessor_id {

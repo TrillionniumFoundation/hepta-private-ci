@@ -95,6 +95,7 @@ pub(crate) fn app_server_runtime_options(
         /*production_cognitive_mutation*/ None,
         /*qualification_turn_writer*/ None,
         /*prompt_runtime_host*/ None,
+        /*graceful_drain*/ None,
     )
 }
 
@@ -109,6 +110,7 @@ pub(crate) fn app_server_runtime_options_for_agent(
         .runtime_owner()
         .host()
         .map_err(std::io::Error::other)?;
+    let graceful_drain = state.app_server_drain_handle();
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);
     app_server_runtime_options_with_writer(
         identity,
@@ -116,6 +118,7 @@ pub(crate) fn app_server_runtime_options_for_agent(
         production_cognitive_mutation,
         writer,
         Some(prompt_runtime_host),
+        Some(graceful_drain),
     )
 }
 
@@ -125,6 +128,7 @@ fn app_server_runtime_options_with_writer(
     production_cognitive_mutation: Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
     qualification_turn_writer: Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
     prompt_runtime_host: Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
+    graceful_drain: Option<codex_app_server::AppServerDrainHandle>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let cognitive_write_enabled =
         COGNITIVE_WRITE_ENABLED || production_cognitive_mutation.is_some();
@@ -136,6 +140,7 @@ fn app_server_runtime_options_with_writer(
     Ok(AppServerRuntimeOptions {
         remote_control_startup_mode: RemoteControlStartupMode::DisabledEphemeral,
         install_shutdown_signal_handler: false,
+        graceful_drain,
         turn_queue_capacity: Some(turn_queue_capacity),
         required_sqlite_home: Some(AbsolutePathBuf::from_absolute_path(&identity.home_root)?),
         required_thread_store_mode: Some(ThreadStoreConfig::Local),

@@ -26,9 +26,9 @@ use codex_hepta_intuition::canonical_scoring_commitment_digest_v1;
 use codex_hepta_intuition::decide_calibrated_v2;
 use codex_hepta_intuition::decide_calibrated_v3;
 use codex_hepta_learning_ledger::CausalV2Error;
-use codex_hepta_learning_ledger::DurableLearningJournal;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_independent_roles;
@@ -290,7 +290,7 @@ impl StdError for QualifiedEvaluatedShadowError {}
 pub fn run_qualified_evaluated_shadow_v2<P: LaneFShadowPortsV1>(
     mut request: QualifiedEvaluatedShadowRequestV2<'_>,
     verifier: &LearningEvidenceVerifierV1,
-    ledger: &mut dyn DurableLearningJournal,
+    ledger: &mut LedgerWriter,
     ports: &mut P,
     now: u64,
 ) -> Result<QualifiedEvaluatedShadowReceiptV2, QualifiedEvaluatedShadowError> {
@@ -329,7 +329,7 @@ pub fn run_qualified_evaluated_shadow_v2<P: LaneFShadowPortsV1>(
         bytes.extend_from_slice(digest.as_array());
     }
     request.shadow.run.request_digest = Digest32::of_bytes(&bytes);
-    let shadow = run_evaluated_shadow_v1(request.shadow, verifier, ledger, ports, now)
+    let shadow = run_evaluated_shadow_v1(request.shadow, ledger, ports, now)
         .map_err(QualifiedEvaluatedShadowError::Shadow)?;
     Ok(QualifiedEvaluatedShadowReceiptV2 {
         intuition: authenticated,

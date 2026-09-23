@@ -201,6 +201,9 @@ fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(
         log_capacity: 16,
         max_log_bytes: 1_024,
         driver_poll_batch: 16,
+        restart_max_attempts: 3,
+        restart_window: Duration::from_secs(300),
+        restart_backoff_base: Duration::from_millis(250),
     };
     let start = Instant::now();
     let (mut supervisor, recovered) =

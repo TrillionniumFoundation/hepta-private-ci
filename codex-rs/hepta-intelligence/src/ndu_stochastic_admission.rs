@@ -1,6 +1,5 @@
 use std::error::Error as StdError;
 use std::fmt;
-use std::fs::File;
 
 use codex_hepta_intelligence_eval::NduConvergenceCertificateV1;
 use codex_hepta_intelligence_eval::NduConvergenceDecisionV1;
@@ -9,8 +8,8 @@ use codex_hepta_intelligence_eval::NduWellPosednessDecisionV1;
 use codex_hepta_learning_artifacts::ArtifactAdmissionError;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::PinnedCandidateLoadError;
-use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_learning_artifacts::WithdrawalBoundArtifactAdmissionV3;
 use codex_hepta_learning_artifacts::verify_artifact_admission_v3;
 use codex_hepta_ndu::AdmittedNduCoefficientProfileV1;
@@ -147,8 +146,7 @@ pub fn canonical_ndu_stochastic_solver_digest_v1(
 /// is not artifact selection, activation, promotion or release authority.
 pub fn admit_ndu_stochastic_candidate_v1(
     candidate: &mut RevalidatingCandidate,
-    current_registry_snapshot: File,
-    current_registry_receipt: RegistrySnapshotReceipt,
+    current_registry_view: VerifiedCurrentRegistryViewV1,
     request: NduStochasticAdmissionRequestV1<'_>,
     now: u64,
 ) -> Result<NduStochasticAdmissionReceiptV1, NduStochasticAdmissionError> {
@@ -220,11 +218,9 @@ pub fn admit_ndu_stochastic_candidate_v1(
             "pinned manifest",
         ));
     }
-    let artifact_bytes_digest = candidate.with_current(
-        current_registry_snapshot,
-        current_registry_receipt,
-        Digest32::of_bytes,
-    )?;
+    let registry_head_digest = current_registry_view.receipt().head_digest;
+    let artifact_bytes_digest =
+        candidate.with_current(current_registry_view, Digest32::of_bytes)?;
     if artifact_bytes_digest != manifest.bytes_digest {
         return Err(NduStochasticAdmissionError::ArtifactMismatch(
             "payload digest",
@@ -280,7 +276,7 @@ pub fn admit_ndu_stochastic_candidate_v1(
     for digest in [
         v2.manifest_digest,
         artifact_bytes_digest,
-        current_registry_receipt.head_digest,
+        registry_head_digest,
         request.current_withdrawal_head,
         request.coefficient_profile.digest(),
         request.projection.output_digest,
@@ -295,7 +291,7 @@ pub fn admit_ndu_stochastic_candidate_v1(
     Ok(NduStochasticAdmissionReceiptV1 {
         artifact_manifest_digest: v2.manifest_digest,
         artifact_bytes_digest,
-        registry_head_digest: current_registry_receipt.head_digest,
+        registry_head_digest,
         withdrawal_head_digest: request.current_withdrawal_head,
         coefficient_profile_digest: request.coefficient_profile.digest(),
         q24_output_digest: request.projection.output_digest,

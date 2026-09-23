@@ -263,6 +263,7 @@ fn new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_res
         .unwrap();
     assert_eq!(ranked, vec![original[1].clone(), original[0].clone()]);
 
+    let predecessor_head = candidate.registry.snapshot().head_digest;
     candidate
         .registry
         .append(ArtifactEvent::Revoke(StateChange {
@@ -279,7 +280,7 @@ fn new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_res
         hash("fixture-host-binding"),
     )
     .unwrap();
-    *candidate.view.0.lock().unwrap() = Some((revoked, receipt));
+    *candidate.view.0.lock().unwrap() = Some((revoked, receipt, predecessor_head));
 
     assert!(
         candidate

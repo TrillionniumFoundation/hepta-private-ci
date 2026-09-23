@@ -112,7 +112,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     let ledger_path = root.join("learning-ledger");
     let ledger_binding = digest("plasticity-process-ledger-binding");
     let mut ledger = DurableLedger::create(new_rw(&ledger_path), ledger_binding, 32)?;
-    ledger.append(
+    ledger.append_qualification(
         Digest32::ZERO,
         LedgerEvent::Decision(EpisodeDecision {
             record_id: id("decision:plasticity-process"),

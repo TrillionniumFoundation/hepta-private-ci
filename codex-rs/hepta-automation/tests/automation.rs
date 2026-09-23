@@ -300,7 +300,10 @@ async fn drain_blockers_require_classification_but_allow_durable_uncertainty() {
 
     prepare_direct_dispatch(&store, &lease, 101).await;
     assert_eq!(
-        store.drain_blockers().await.expect("classified uncertainty"),
+        store
+            .drain_blockers()
+            .await
+            .expect("classified uncertainty"),
         0,
         "a matching durable uncertain witness is already a fail-closed classification"
     );

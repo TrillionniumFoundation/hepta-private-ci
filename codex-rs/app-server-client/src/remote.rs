@@ -1520,6 +1520,7 @@ mod tests {
             pending_events: VecDeque::new(),
             server_version: None,
             codex_home: None,
+            connection_id: 1,
             worker_handle,
         };
 

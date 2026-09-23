@@ -40,15 +40,15 @@ use codex_hepta_intelligence::CurrentOwnerStateV1;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::prepare_intelligence_run;
 use codex_hepta_intelligence::validate_current_snapshot;
-use codex_hepta_intelligence_eval::Disposition as EvaluationDisposition;
 use codex_hepta_intelligence_eval::EvaluationRequest;
-use codex_hepta_intelligence_eval::evaluate;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_intuition::CalibratedDispositionV1;
 use codex_hepta_intuition::decide_calibrated_v2;
 use codex_hepta_learning_ledger::AppendReceipt;
 use codex_hepta_learning_ledger::CandidateSetCompleteness;
 use codex_hepta_learning_ledger::DurableLearningJournal;
+#[cfg(feature = "qualification-legacy-learning-write")]
+use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::DurableLedgerError;
 use codex_hepta_learning_ledger::EpisodeDecision;
 use codex_hepta_learning_ledger::LedgerEvent;
@@ -152,7 +152,7 @@ impl FileBackedFreshnessOracleV1 {
         }
         let mut seen = BTreeMap::new();
         for owner in file.owners {
-            let owner_id = StableId::new(owner.owner_id)
+            let owner_id = StableId::new(owner.owner_id.clone())
                 .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
             if seen.insert(owner_id.clone(), owner).is_some() {
                 return Err(CanonicalIntelligenceError::FreshnessUnavailable(
@@ -515,18 +515,11 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         {
             return Err(Self::reject(input.stage, "evaluation binding"));
         }
-        let started = Instant::now();
-        let receipt = evaluate(request).map_err(|_| Self::reject(input.stage, "evaluation"))?;
-        Self::within_budget(input, started)?;
-        if receipt.disposition != EvaluationDisposition::EligibleForFurtherReview {
-            return Err(Self::reject(input.stage, "evaluation disposition"));
-        }
-        Self::receipt(
-            input,
-            "learning.eval",
-            receipt.evidence_digest,
-            CanonicalPortDecisionV1::Continue,
-        )
+        let _ = request;
+        Err(Self::reject(
+            input.stage,
+            "unsigned in-process learning evaluation is not a production ingress; signed evaluation evidence is required",
+        ))
     }
 }
 
@@ -758,6 +751,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 let attachment = prepared.context_attachment();
                 let run_receipt = coordinator
                     .attach_context(
+                        wall_clock_ms()?,
                         admitted.revision,
                         crate::ContextAttachment {
                             run_id: attachment.run_id,
@@ -788,9 +782,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         }
     }
 
+    #[cfg(feature = "qualification-legacy-learning-write")]
     pub fn append_decision(
         &self,
-        journal: &mut dyn DurableLearningJournal,
+        journal: &mut DurableLedger,
         expected_predecessor: Digest32,
         prepared: &PreparedAgentdIntelligenceRunV1,
         episode_id: StableId,
@@ -822,10 +817,11 @@ impl AgentdIntelligenceProductRunnerV1 {
         )
     }
 
+    #[cfg(feature = "qualification-legacy-learning-write")]
     #[allow(clippy::too_many_arguments)]
     pub fn append_outcome(
         &self,
-        journal: &mut dyn DurableLearningJournal,
+        journal: &mut DurableLedger,
         expected_predecessor: Digest32,
         prepared: &PreparedAgentdIntelligenceRunV1,
         outcome_record_id: StableId,
@@ -856,9 +852,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         )
     }
 
+    #[cfg(feature = "qualification-legacy-learning-write")]
     fn append_event(
         &self,
-        journal: &mut dyn DurableLearningJournal,
+        journal: &mut DurableLedger,
         expected_predecessor: Digest32,
         snapshot: CanonicalIntelligenceSnapshotV1,
         event: LedgerEvent,
@@ -869,7 +866,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         );
         validate_current_snapshot(&snapshot, &mut oracle)
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
-        match journal.append(expected_predecessor, event.clone()) {
+        match journal.append_qualification(expected_predecessor, event.clone()) {
             Ok(receipt) => Ok(receipt),
             Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => Err(
                 AgentdIntelligenceLedgerError::Indeterminate(PendingIntelligenceLedgerAppendV1 {
@@ -882,9 +879,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         }
     }
 
+    #[cfg(feature = "qualification-legacy-learning-write")]
     pub fn reconcile_ledger_append(
         &self,
-        journal: &mut dyn DurableLearningJournal,
+        journal: &mut DurableLedger,
         pending: PendingIntelligenceLedgerAppendV1,
     ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
         let mut oracle = FileBackedFreshnessOracleV1::new(
@@ -894,7 +892,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         validate_current_snapshot(&pending.snapshot, &mut oracle)
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         journal
-            .append(pending.expected_predecessor, pending.event)
+            .append_qualification(pending.expected_predecessor, pending.event)
             .map_err(AgentdIntelligenceLedgerError::Ledger)
     }
 }

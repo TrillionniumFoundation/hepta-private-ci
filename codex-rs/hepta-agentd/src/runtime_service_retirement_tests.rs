@@ -99,14 +99,18 @@ async fn forty_first_running_service_retires_without_stopping_other_services() {
     for client in &clients {
         assert_eq!(ask(client, 99).await, 100);
     }
-    assert!(host.spawn_required("optional.forty-one", pending()).is_err());
+    assert!(
+        host.spawn_required("optional.forty-one", pending())
+            .is_err()
+    );
     host.shutdown().await;
 }
 
 #[tokio::test]
 async fn rejected_service_factory_is_never_invoked() {
     let (mut host, _) = host(Duration::from_millis(20));
-    host.spawn_required("occupied", pending()).expect("required");
+    host.spawn_required("occupied", pending())
+        .expect("required");
     let calls = Arc::new(AtomicUsize::new(0));
     for name in ["occupied", "", "invalid name"] {
         let called = Arc::clone(&calls);
@@ -173,7 +177,9 @@ async fn retirement_timeout_never_acknowledges_unfinished_drain() {
         .await
         .expect("bounded completion")
         .expect("late retirement completion");
-    host.retire_optional("slow").await.expect("now acknowledged");
+    host.retire_optional("slow")
+        .await
+        .expect("now acknowledged");
     assert_eq!(retired.load(Ordering::SeqCst), 1);
     host.shutdown().await;
 }

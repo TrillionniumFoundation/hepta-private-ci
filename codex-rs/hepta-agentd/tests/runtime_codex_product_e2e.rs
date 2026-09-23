@@ -99,7 +99,8 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
         revocation_revision: 1,
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
-    })?;
+    })
+    .map_err(|error| anyhow::anyhow!(error.to_string()))?;
 
     let issuer = tokio::spawn(async move { serve_one_grant(listener, signer).await });
 
@@ -109,7 +110,8 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
         generation: 1,
         model: MODEL.to_string(),
         timeout: Duration::from_secs(20),
-    })?
+    })
+    .map_err(|error| anyhow::anyhow!(error.to_string()))?
     .with_turn_start_authorizer(Arc::new(authorizer));
 
     let journal_root = tempfile::tempdir()?;
@@ -127,7 +129,8 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
             None,
             &cancellation,
         )
-        .await?;
+        .await
+        .map_err(|error| anyhow::anyhow!(error.to_string()))?;
 
     issuer
         .await

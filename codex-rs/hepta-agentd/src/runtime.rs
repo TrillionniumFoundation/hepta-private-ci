@@ -240,6 +240,7 @@ pub async fn run(
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
     }
+    state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),

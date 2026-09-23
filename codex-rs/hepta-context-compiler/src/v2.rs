@@ -868,6 +868,36 @@ pub struct ContextCompilationReceiptV2 {
 
 impl ContextCompilationReceiptV2 {
     #[must_use]
+    pub const fn compilation_id(&self) -> &StableId {
+        &self.compilation_id
+    }
+
+    #[must_use]
+    pub const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+
+    #[must_use]
+    pub const fn prompt_portfolio_digest(&self) -> Digest32 {
+        self.prompt_portfolio_digest
+    }
+
+    #[must_use]
+    pub const fn generation_vector_digest(&self) -> Digest32 {
+        self.generation_vector_digest
+    }
+
+    #[must_use]
+    pub const fn admission_verifier_digest(&self) -> Digest32 {
+        self.admission_verifier_digest
+    }
+
+    #[must_use]
+    pub const fn model_profile_digest(&self) -> Digest32 {
+        self.model_profile_digest
+    }
+
+    #[must_use]
     pub fn selected_item_ids(&self) -> &[StableId] {
         &self.selected_item_ids
     }

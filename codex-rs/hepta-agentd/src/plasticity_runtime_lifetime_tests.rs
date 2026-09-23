@@ -879,7 +879,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     let mut ledger =
         DurableLedger::create(new_file(&files.ledger), ledger_binding, 32).expect("ledger create");
     ledger
-        .append(
+        .append_qualification(
             Digest32::ZERO,
             ledger_decision(digest("plasticity-objective")),
         )

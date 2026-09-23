@@ -41,7 +41,10 @@ fn compile_request(exercise: PromptExerciseRequestV1) -> PromptContextCompileReq
     PromptContextCompileRequestV1 {
         model_profile: ContextModelProfileV2 {
             model_digest: tuple.model_digest,
+            provider_id_digest: digest("provider"),
+            provider_model_digest: tuple.model_digest,
             tokenizer_digest: tuple.tokenizer_digest,
+            serializer_digest: digest("serializer"),
             template_digest: tuple.template_digest,
             tool_schema_digest: tuple.tool_schema_digest,
             maximum_context_tokens: 4096,
@@ -65,10 +68,10 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
     )
     .expect("compile exercised portfolio");
     assert_eq!(
-        prepared.compiled.receipt.selected_item_ids,
+        prepared.compiled.receipt().selected_item_ids(),
         vec![id("realization:verify")]
     );
-    assert!(!prepared.compiled.receipt.authority.grants_any());
+    assert!(!prepared.compiled.receipt().authority().grants_any());
     assert_eq!(prepared.materialization.payloads.len(), 1);
     assert_eq!(
         prepared.materialization.payloads[0].payload,
@@ -92,14 +95,14 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
     .expect("prepare delivery");
     assert_eq!(delivery.serialized_payload, serialized_payload);
     assert_eq!(delivery.materialization, prepared.materialization);
-    assert_eq!(delivery.serialization.payload_digest, payload_digest);
+    assert_eq!(delivery.serialization.payload_digest(), payload_digest);
     assert_eq!(delivery.serialization_proof.occurrences.len(), 1);
     assert_eq!(
         delivery.serialization_proof.occurrences[0].realization_id,
         id("realization:verify")
     );
     assert!(!delivery.serialization_proof.authority.grants_any());
-    assert!(!delivery.attachment.authority.grants_any());
+    assert!(!delivery.attachment.authority().grants_any());
 
     let observation = observe_prompt_delivery_v1(
         &delivery,
@@ -108,10 +111,11 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
         true,
         ContextDeliveryDispositionV2::Delivered,
         102,
-    )
-    .expect("observe delivery");
-    assert_eq!(observation.observed_payload_digest, Some(payload_digest));
-    assert!(!observation.authority.grants_any());
+    );
+    assert_eq!(
+        observation,
+        Err(PromptPipelineErrorV1::ProviderEvidenceRequired)
+    );
 }
 
 #[test]

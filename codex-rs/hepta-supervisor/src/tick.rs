@@ -13,12 +13,12 @@ use crate::SupervisorEventKind;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::remove_lease;
+use crate::restart_budget::RestartBudgetError;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
-use crate::restart_budget::RestartBudgetError;
 
 enum RuntimeTickOutcome {
     Keep,

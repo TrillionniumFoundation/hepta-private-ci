@@ -62,7 +62,8 @@ use crate::reopen_agentd_topology_writer_v1;
 use crate::resume_agentd_plasticity_writer_v1;
 use crate::resume_agentd_topology_writer_v1;
 
-// A descriptor/recovery failure is terminal for this optional organ; callers must never\n// reinterpret it as permission to create a fresh, unanchored proposal history.\nconst DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v1";
+// A descriptor/recovery failure is terminal for this optional organ; callers must never\n// reinterpret it as permission to create a fresh, unanchored proposal history.
+const DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v1";
 const MAX_DESCRIPTOR_BYTES: u64 = 1_048_576;
 const MAX_NDU_JOURNAL_BYTES: u64 = 2 * 1_048_576;
 
@@ -372,6 +373,8 @@ pub fn load_plasticity_process_bootstrap_v1(
     )
     .map_err(|error| AgentdError::Invalid(format!("invalid dynamic owner evidence: {error}")))?;
 
+    verify_owner_policy_bindings(&descriptor, &artifacts, &dataset)?;
+
     let owner_evidence = ConcretePlasticityOwnerEvidenceResolverV1::new(
         dataset,
         artifacts.clone(),
@@ -400,7 +403,6 @@ pub fn load_plasticity_process_bootstrap_v1(
     })?;
 
     let verifier = build_verifier(&descriptor.trust, objective_digest)?;
-    verify_owner_policy_bindings(&descriptor, &artifacts, &dataset)?;
     let owner_policy = build_owner_policy(&descriptor.owner_policy)?;
     let (parameter_writer, parameter_anchor_store) =
         open_parameter_writer(&descriptor.parameter_registry)?;

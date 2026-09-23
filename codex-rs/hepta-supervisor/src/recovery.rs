@@ -237,42 +237,42 @@ impl<D: ProcessDriver> Supervisor<D> {
                         .as_ref()
                         .is_none_or(|active| active.release_id() != &lease.release_id);
                     if needs_resolution {
-                        let leased = match self.registry.resolve_release(agent_id, &lease.release_id)
-                        {
-                            Ok(release) => AgentRelease::try_from(release)?,
-                            Err(error) => {
-                                // Exact process identity has already been proven by adoption.
-                                // If the active release is no longer currently admitted (or
-                                // its admission state cannot be verified), fail closed by
-                                // fencing and killing the child before returning the fault.
-                                // Keep the runtime handle until exit is observed so recovery
-                                // never leaves a live unmanaged process behind.
-                                let runtime_generation = record.lifecycle.generation;
-                                let _ = process.kill();
-                                slot.runtime = Some(AgentRuntime {
-                                    process,
-                                    identity: lease.identity.clone(),
-                                    spawn_generation: lease.spawn_generation,
-                                    release_id: lease.release_id.clone(),
-                                    generation: runtime_generation,
-                                    phase: RuntimePhase::Killing,
-                                    healthy: false,
-                                    fenced: true,
-                                });
-                                if is_live_lifecycle(record.lifecycle.lifecycle) {
-                                    let failed = self.transition_without_runtime(
-                                        agent_id,
-                                        slot,
-                                        runtime_generation,
-                                        AgentLifecycle::Failed,
-                                    )?;
-                                    if let Some(runtime) = slot.runtime.as_mut() {
-                                        runtime.generation = failed;
+                        let leased =
+                            match self.registry.resolve_release(agent_id, &lease.release_id) {
+                                Ok(release) => AgentRelease::try_from(release)?,
+                                Err(error) => {
+                                    // Exact process identity has already been proven by adoption.
+                                    // If the active release is no longer currently admitted (or
+                                    // its admission state cannot be verified), fail closed by
+                                    // fencing and killing the child before returning the fault.
+                                    // Keep the runtime handle until exit is observed so recovery
+                                    // never leaves a live unmanaged process behind.
+                                    let runtime_generation = record.lifecycle.generation;
+                                    let _ = process.kill();
+                                    slot.runtime = Some(AgentRuntime {
+                                        process,
+                                        identity: lease.identity.clone(),
+                                        spawn_generation: lease.spawn_generation,
+                                        release_id: lease.release_id.clone(),
+                                        generation: runtime_generation,
+                                        phase: RuntimePhase::Killing,
+                                        healthy: false,
+                                        fenced: true,
+                                    });
+                                    if is_live_lifecycle(record.lifecycle.lifecycle) {
+                                        let failed = self.transition_without_runtime(
+                                            agent_id,
+                                            slot,
+                                            runtime_generation,
+                                            AgentLifecycle::Failed,
+                                        )?;
+                                        if let Some(runtime) = slot.runtime.as_mut() {
+                                            runtime.generation = failed;
+                                        }
                                     }
+                                    return Err(error.into());
                                 }
-                                return Err(error.into());
-                            }
-                        };
+                            };
                         slot.previous_release = slot.active_release.take();
                         slot.last_command = Some(leased.command().clone());
                         slot.active_release = Some(leased);

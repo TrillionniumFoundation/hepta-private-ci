@@ -31,7 +31,10 @@ async fn already_ready_shutdown_cannot_hide_unobserved_required_failure() {
     // nevertheless observe the queued task result, not drop it through join_next.
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
     assert_eq!(tasks.active_count(), 0);
-    assert_eq!(tasks.failures().back().expect("diagnostic").name, "runtime.core");
+    assert_eq!(
+        tasks.failures().back().expect("diagnostic").name,
+        "runtime.core"
+    );
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
 }
 
@@ -43,7 +46,9 @@ async fn owner_failure_after_cancellation_is_not_a_successful_shutdown() {
     tasks
         .spawn_required("runtime.core", async move {
             worker_stop.cancelled().await;
-            Err(AgentdError::GenerationFenced("drain fence lost".to_string()))
+            Err(AgentdError::GenerationFenced(
+                "drain fence lost".to_string(),
+            ))
         })
         .expect("spawn");
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
@@ -62,7 +67,9 @@ async fn optional_shared_fence_during_shutdown_still_stops_the_host() {
             "feature.41",
             async move {
                 worker_stop.cancelled().await;
-                Err(AgentdError::GenerationFenced("owner fence lost".to_string()))
+                Err(AgentdError::GenerationFenced(
+                    "owner fence lost".to_string(),
+                ))
             },
             move || {
                 callback_count.fetch_add(1, Ordering::SeqCst);
@@ -86,7 +93,9 @@ async fn optional_failure_during_shutdown_is_quarantined_exactly_once() {
             "feature.41",
             async move {
                 worker_stop.cancelled().await;
-                Err(AgentdError::Protocol("optional worker unavailable".to_string()))
+                Err(AgentdError::Protocol(
+                    "optional worker unavailable".to_string(),
+                ))
             },
             move || {
                 callback_count.fetch_add(1, Ordering::SeqCst);
@@ -94,7 +103,10 @@ async fn optional_failure_during_shutdown_is_quarantined_exactly_once() {
             },
         )
         .expect("spawn");
-    tasks.run_until(async { Ok(()) }).await.expect("isolated stop");
+    tasks
+        .run_until(async { Ok(()) })
+        .await
+        .expect("isolated stop");
     tasks.shutdown().await;
     assert_eq!(quarantines.load(Ordering::SeqCst), 1);
     assert_eq!(tasks.failures().len(), 1);
@@ -209,7 +221,10 @@ async fn forced_abort_never_publishes_retirement_acknowledgement() {
         )
         .expect("spawn");
     assert!(tasks.retire_optional("feature.41").await.is_err());
-    tasks.run_until(async { Ok(()) }).await.expect("bounded cleanup");
+    tasks
+        .run_until(async { Ok(()) })
+        .await
+        .expect("bounded cleanup");
     assert_eq!(tasks.active_count(), 0);
     assert_eq!(callbacks.load(Ordering::SeqCst), 0);
     assert!(tasks.retire_optional("feature.41").await.is_err());

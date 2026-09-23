@@ -8,7 +8,8 @@ use std::sync::Mutex;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_learning_ledger::AppendReceipt;
-use codex_hepta_learning_ledger::DurableLedger;
+use codex_hepta_learning_ledger::LedgerEvent;
+use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::retrieval_assignment_event_with_delivery_policy;
 use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
 use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
@@ -17,14 +18,14 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 pub struct CognitiveRetrievalLearningSink {
-    ledger: Mutex<DurableLedger>,
+    writer: Mutex<LedgerWriter>,
 }
 
 impl CognitiveRetrievalLearningSink {
     #[must_use]
-    pub fn new(ledger: DurableLedger) -> Self {
+    pub fn new(writer: LedgerWriter) -> Self {
         Self {
-            ledger: Mutex::new(ledger),
+            writer: Mutex::new(writer),
         }
     }
 
@@ -117,11 +118,11 @@ impl CognitiveRetrievalLearningSink {
             delivery_propensity,
         )
         .map_err(|error| error.to_string())?;
-        let mut ledger = self
-            .ledger
+        let mut writer = self
+            .writer
             .lock()
-            .map_err(|_| "retrieval learning ledger lock poisoned".to_string())?;
-        let snapshot = ledger.snapshot().map_err(|error| error.to_string())?;
+            .map_err(|_| "retrieval learning ledger writer lock poisoned".to_string())?;
+        let snapshot = writer.snapshot().map_err(|error| error.to_string())?;
         let predecessor = snapshot
             .records()
             .iter()
@@ -129,8 +130,11 @@ impl CognitiveRetrievalLearningSink {
             .map_or(snapshot.head_digest, |record| {
                 record.predecessor_chain_digest
             });
-        ledger
-            .append(predecessor, event)
+        let LedgerEvent::RetrievalAssignment(assignment) = event else {
+            return Err("retrieval assignment bridge emitted wrong event kind".to_string());
+        };
+        writer
+            .append_retrieval_assignment(predecessor, assignment)
             .map_err(|error| error.to_string())
     }
 }

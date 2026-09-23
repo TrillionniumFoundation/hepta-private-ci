@@ -255,7 +255,11 @@ fn abi_and_local_fallback_status_are_generation_bound_and_deny_all() {
 
     let fallback = host.local_fallback_status();
     assert_eq!(fallback.len(), 3);
-    assert!(fallback.iter().all(|entry| entry.generation == generation(7)));
+    assert!(
+        fallback
+            .iter()
+            .all(|entry| entry.generation == generation(7))
+    );
     assert!(fallback.iter().all(|entry| entry.available));
     assert_eq!(fallback[0].fallback_targets, vec![id("target.b")]);
     assert_eq!(host.fallback_status(), fallback);
@@ -371,7 +375,8 @@ fn successor_generation_replaces_a_read_only_organ_and_fences_old_dispatch() {
     let next_handlers = ["source", "target.a", "target.c"]
         .into_iter()
         .map(|name| {
-            Box::new(FixtureOrgan::new(name, Arc::clone(&events))) as Box<dyn TrustedReadOnlyOrganV1>
+            Box::new(FixtureOrgan::new(name, Arc::clone(&events)))
+                as Box<dyn TrustedReadOnlyOrganV1>
         })
         .collect();
     host.replace_read_only_generation(generation(7), next, next_handlers)
@@ -962,7 +967,11 @@ impl StatefulAcceptanceOwner {
             1 => true,
             _ => return Err(OrganMigrationError::Rejected),
         };
-        Ok((u64::from_be_bytes(schema), u64::from_be_bytes(value), retired))
+        Ok((
+            u64::from_be_bytes(schema),
+            u64::from_be_bytes(value),
+            retired,
+        ))
     }
 }
 
@@ -988,7 +997,9 @@ impl OrganStateMigrationV1 for StatefulAcceptanceOwner {
         self.retired = retired;
         if self.fail_candidate == Some(candidate) {
             self.value = self.value.saturating_add(1_000_000);
-            return Err(OrganMigrationError::Callback(id("stateful.migration.failed")));
+            return Err(OrganMigrationError::Callback(id(
+                "stateful.migration.failed",
+            )));
         }
         if self.retire_candidate == Some(candidate) {
             self.retired = true;
@@ -1012,7 +1023,7 @@ impl OrganStateMigrationV1 for StatefulAcceptanceOwner {
 
 #[cfg(unix)]
 fn acceptance_authority(
-    operation: &codex_hepta_operations::OperationIntentV1,
+    operation: &codex_hepta_operations::DurableOperationIntentV1,
     nonce: u8,
 ) -> (
     codex_hepta_contracts::FinalUseAuthority,
@@ -1061,7 +1072,11 @@ fn acceptance_authority(
         },
     )
     .expect("authority");
-    (authority, SignedFinalUseGrant { grant, signature }, directory)
+    (
+        authority,
+        SignedFinalUseGrant { grant, signature },
+        directory,
+    )
 }
 
 #[cfg(unix)]
@@ -1069,9 +1084,9 @@ fn acceptance_authority(
 async fn stateful_feature_history_replace_failure_retire_preserves_effect_idempotency() {
     use codex_hepta_operations::DispatchEffect;
     use codex_hepta_operations::DurableOperationError;
+    use codex_hepta_operations::DurableOperationIntentV1 as OperationIntentV1;
     use codex_hepta_operations::DurableOperationState;
     use codex_hepta_operations::DurableOperationStore;
-    use codex_hepta_operations::OperationIntentV1;
     use codex_hepta_operations::PrepareDisposition;
     use codex_hepta_operations::ReconciliationOutcome;
     use codex_hepta_operations::ReconciliationReceiptV1;
@@ -1276,7 +1291,10 @@ async fn stateful_feature_history_replace_failure_retire_preserves_effect_idempo
     let metrics = reopened.backlog_metrics().await.expect("backlog metrics");
     assert_eq!(metrics.active_operations, 0);
     assert_eq!(metrics.terminal_operations, 1);
-    assert_eq!(reopened.prune_terminal(u64::MAX, 1).await.expect("prune"), 1);
+    assert_eq!(
+        reopened.prune_terminal(u64::MAX, 1).await.expect("prune"),
+        1
+    );
     assert!(matches!(
         reopened.prepare_intent(&operation).await,
         Err(DurableOperationError::Retired(_))
@@ -1298,7 +1316,8 @@ async fn stateful_feature_history_replace_failure_retire_preserves_effect_idempo
     let retired_handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = ["source", "target.b"]
         .into_iter()
         .map(|name| {
-            Box::new(FixtureOrgan::new(name, Arc::clone(&events))) as Box<dyn TrustedReadOnlyOrganV1>
+            Box::new(FixtureOrgan::new(name, Arc::clone(&events)))
+                as Box<dyn TrustedReadOnlyOrganV1>
         })
         .collect();
     state.retire_candidate = Some(generation(10));

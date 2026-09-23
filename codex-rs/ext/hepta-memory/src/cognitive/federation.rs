@@ -843,6 +843,8 @@ mod tests {
 
     use super::COMBINED_COGNITIVE_SOURCE;
     use super::FEDERATED_COGNITIVE_SOURCE;
+    use super::FederatedAttachmentCoverage;
+    use super::FederatedAttachmentFailureCoverage;
     use super::FederatedCognitiveExtension;
     use super::combine_cognitive_materials;
     use super::federation_source_binding;
@@ -1046,6 +1048,7 @@ mod tests {
             source_binding_sha256: Sha256Digest::for_bytes(b"local-binding"),
             content_sha256: Sha256Digest::for_bytes(content.as_bytes()),
             claimed_token_count: u32::try_from(content.len()).expect("local length"),
+            final_use_guard: None,
             content,
         }
     }
@@ -1103,6 +1106,7 @@ mod tests {
             ),
             content_sha256: Sha256Digest::for_bytes(content.as_bytes()),
             claimed_token_count: u32::try_from(content.len()).expect("federated length"),
+            final_use_guard: None,
             content,
         }
     }

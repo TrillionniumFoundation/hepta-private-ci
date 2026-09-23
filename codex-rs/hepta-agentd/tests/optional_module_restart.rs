@@ -208,7 +208,10 @@ async fn worker(root: &Path, stage: &str) {
             assert_eq!(quarantines.load(Ordering::SeqCst), 1);
             assert_eq!(host.active_count(), 40);
             assert!(!stop.is_cancelled());
-            let tasks = store.list_tasks(10).await.expect("committed despite ACK loss");
+            let tasks = store
+                .list_tasks(10)
+                .await
+                .expect("committed despite ACK loss");
             assert_eq!(tasks.len(), 1);
         }
         "crash" => {
@@ -221,17 +224,24 @@ async fn worker(root: &Path, stage: &str) {
                     .await
                     .expect("reply")
                     .expect("reconcile committed task");
-                assert_eq!(receipt.disposition, DestinationApplyDisposition::AlreadyApplied);
+                assert_eq!(
+                    receipt.disposition,
+                    DestinationApplyDisposition::AlreadyApplied
+                );
             }
             assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
-            host.retire_optional(&name).await.expect("drain optional task");
+            host.retire_optional(&name)
+                .await
+                .expect("drain optional task");
             assert!(client.is_closed());
             let next = store.handoff_timer().await.expect("durable writer handoff");
             assert_eq!(
                 next.timer_status().await.expect("next status").writer_epoch,
                 initial.writer_epoch + 1
             );
-            next.resume_timer().await.expect("publish compatible successor");
+            next.resume_timer()
+                .await
+                .expect("publish compatible successor");
             let fresh = new_draft("stale writer cannot create a new effect");
             let intent = automation_task_operation_intent(
                 store.owner_agent_id(),
@@ -254,9 +264,20 @@ async fn worker(root: &Path, stage: &str) {
                 .await
                 .expect("successor response")
                 .expect("replay");
-            assert_eq!(replay.disposition, DestinationApplyDisposition::AlreadyApplied);
-            assert_eq!(next.list_tasks(10).await.expect("no duplicate effects").len(), 2);
-            host.retire_optional(&next_name).await.expect("close local route");
+            assert_eq!(
+                replay.disposition,
+                DestinationApplyDisposition::AlreadyApplied
+            );
+            assert_eq!(
+                next.list_tasks(10)
+                    .await
+                    .expect("no duplicate effects")
+                    .len(),
+                2
+            );
+            host.retire_optional(&next_name)
+                .await
+                .expect("close local route");
             next.close().await;
         }
         "crash-quiesced" => {
@@ -270,8 +291,13 @@ async fn worker(root: &Path, stage: &str) {
         "crash-cutover" => {
             assert_eq!(initial.phase, TimerPhase::Active);
             assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
-            host.retire_optional(&name).await.expect("old route drained");
-            let next = store.handoff_timer().await.expect("committed successor epoch");
+            host.retire_optional(&name)
+                .await
+                .expect("old route drained");
+            let next = store
+                .handoff_timer()
+                .await
+                .expect("committed successor epoch");
             let cutover = next.timer_status().await.expect("successor state");
             assert_eq!(cutover.phase, TimerPhase::Draining);
             assert_eq!(cutover.writer_epoch, initial.writer_epoch + 1);
@@ -294,10 +320,14 @@ async fn worker(root: &Path, stage: &str) {
             assert_eq!(initial.phase, TimerPhase::Draining);
             assert!(initial.can_handoff());
             assert!(
-                ask(&client, new_draft("must not bypass durable drain"), Fault::None)
-                    .await
-                    .expect("draining service responded")
-                    .is_err()
+                ask(
+                    &client,
+                    new_draft("must not bypass durable drain"),
+                    Fault::None
+                )
+                .await
+                .expect("draining service responded")
+                .is_err()
             );
             assert!(
                 store
@@ -311,21 +341,40 @@ async fn worker(root: &Path, stage: &str) {
                     .await
                     .expect("recovery reply")
                     .expect("historical committed receipt remains readable");
-                assert_eq!(receipt.disposition, DestinationApplyDisposition::AlreadyApplied);
+                assert_eq!(
+                    receipt.disposition,
+                    DestinationApplyDisposition::AlreadyApplied
+                );
             }
-            assert_eq!(store.list_tasks(10).await.expect("exact retained tasks").len(), 2);
+            assert_eq!(
+                store
+                    .list_tasks(10)
+                    .await
+                    .expect("exact retained tasks")
+                    .len(),
+                2
+            );
             // Explicit trusted-host resume is distinct from merely reopening.
             // It preserves the committed writer epoch and operation identities.
-            let resumed = store.resume_timer().await.expect("explicit compatible resume");
+            let resumed = store
+                .resume_timer()
+                .await
+                .expect("explicit compatible resume");
             assert_eq!(resumed.phase, TimerPhase::Active);
             assert_eq!(resumed.writer_epoch, initial.writer_epoch);
-            host.retire_optional(&name).await.expect("close recovered local route");
+            host.retire_optional(&name)
+                .await
+                .expect("close recovered local route");
         }
         "retire" => {
             assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
             host.retire_optional(&name).await.expect("drain route");
             assert_eq!(
-                store.retire_timer().await.expect("durable retirement").phase,
+                store
+                    .retire_timer()
+                    .await
+                    .expect("durable retirement")
+                    .phase,
                 TimerPhase::Retired
             );
         }
@@ -337,13 +386,21 @@ async fn worker(root: &Path, stage: &str) {
                     .expect("reply"),
                 Err(AutomationError::TimerFenced)
             );
-            assert_eq!(store.resume_timer().await, Err(AutomationError::TimerFenced));
+            assert_eq!(
+                store.resume_timer().await,
+                Err(AutomationError::TimerFenced)
+            );
             let replay = ask(&client, first.clone(), Fault::None)
                 .await
                 .expect("historical reply")
                 .expect("read-only receipt");
-            assert_eq!(replay.disposition, DestinationApplyDisposition::AlreadyApplied);
-            host.retire_optional(&name).await.expect("unpublish fixture route");
+            assert_eq!(
+                replay.disposition,
+                DestinationApplyDisposition::AlreadyApplied
+            );
+            host.retire_optional(&name)
+                .await
+                .expect("unpublish fixture route");
         }
         _ => panic!("unknown subprocess stage"),
     }
@@ -453,7 +510,10 @@ fn run_process(root: &Path, stage: &str, exit: i32) -> Option<serde_json::Value>
         assert_eq!(value["required_services_responded"], 40);
         Some(value)
     } else {
-        assert!(!report.exists(), "abrupt process loss cannot publish completion");
+        assert!(
+            !report.exists(),
+            "abrupt process loss cannot publish completion"
+        );
         None
     }
 }

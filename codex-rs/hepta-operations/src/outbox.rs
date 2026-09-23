@@ -5,8 +5,8 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::OperationError;
-use crate::OperationIntentV1;
 use crate::OperationRecord;
+use crate::model::OperationIntentV1;
 
 pub const MAX_MODEL_OUTBOX_RECORDS: usize = 16_384;
 pub const MAX_MODEL_OUTBOX_ATTEMPTS: u32 = 64;

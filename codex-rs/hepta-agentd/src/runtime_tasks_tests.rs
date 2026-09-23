@@ -16,8 +16,8 @@ use crate::AgentdError;
 
 fn host() -> (RuntimeTasks, CancellationToken) {
     let cancellation = CancellationToken::new();
-    let host =
-        RuntimeTasks::new(cancellation.clone(), Duration::from_millis(20)).expect("valid task host");
+    let host = RuntimeTasks::new(cancellation.clone(), Duration::from_millis(20))
+        .expect("valid task host");
     (host, cancellation)
 }
 
@@ -79,7 +79,9 @@ async fn forty_first_service_executes_and_failure_preserves_required_services() 
         async move {
             let (input, reply) = receive.recv().await.expect("real request");
             let _ = reply.send(input.chars().rev().collect());
-            Err(AgentdError::Protocol("injected optional failure".to_string()))
+            Err(AgentdError::Protocol(
+                "injected optional failure".to_string(),
+            ))
         },
         move || {
             count.fetch_add(1, Ordering::SeqCst);
@@ -89,7 +91,9 @@ async fn forty_first_service_executes_and_failure_preserves_required_services() 
     .expect("register the forty-first service through the same API");
     assert_eq!(host.active_count(), 41);
     assert_eq!(ask(&send, "hepta").await, "atpeh");
-    observe(&mut host).await.expect("optional failure is isolated");
+    observe(&mut host)
+        .await
+        .expect("optional failure is isolated");
     assert_eq!(quarantined.load(Ordering::SeqCst), 1);
     assert_eq!(host.active_count(), 40);
     assert!(!cancellation.is_cancelled());
@@ -98,7 +102,10 @@ async fn forty_first_service_executes_and_failure_preserves_required_services() 
     }
     assert_eq!(host.failures().len(), 1);
     assert_eq!(host.failures()[0].name, "optional.forty-one");
-    assert!(host.spawn_required("optional.forty-one", pending()).is_err());
+    assert!(
+        host.spawn_required("optional.forty-one", pending())
+            .is_err()
+    );
     host.shutdown().await;
     assert_eq!(host.active_count(), 0);
     assert!(cancellation.is_cancelled());
@@ -154,15 +161,11 @@ async fn generation_fence_cannot_be_downgraded_to_optional_availability() {
 async fn quarantine_rejection_is_fatal_and_reaps_other_tasks() {
     let (mut host, cancellation) = host();
     host.spawn_required("core", pending()).expect("core");
-    host.spawn_optional(
-        "optional",
-        async { Ok(()) },
-        || {
-            Err(AgentdError::Protocol(
-                "dependent route cannot retire".to_string(),
-            ))
-        },
-    )
+    host.spawn_optional("optional", async { Ok(()) }, || {
+        Err(AgentdError::Protocol(
+            "dependent route cannot retire".to_string(),
+        ))
+    })
     .expect("optional");
     assert!(host.run_until(pending()).await.is_err());
     assert!(cancellation.is_cancelled());
@@ -235,11 +238,9 @@ async fn shutdown_listener_error_does_not_detach_live_tasks() {
     .expect("core");
     ready.await.expect("task started");
     assert!(
-        host.run_until(async {
-            Err(AgentdError::Protocol("signal listener failed".to_string()))
-        })
-        .await
-        .is_err()
+        host.run_until(async { Err(AgentdError::Protocol("signal listener failed".to_string())) })
+            .await
+            .is_err()
     );
     assert!(dropped.load(Ordering::SeqCst));
     assert!(cancellation.is_cancelled());

@@ -33,6 +33,7 @@ pub struct AutomationStore {
     pool: SqlitePool,
     owner_agent_id: AgentId,
     path: PathBuf,
+    timer_epoch: i64,
 }
 
 impl AutomationStore {
@@ -44,7 +45,10 @@ impl AutomationStore {
         .await
     }
 
-    async fn open_root(root: PathBuf, owner_agent_id: AgentId) -> Result<Self, AutomationError> {
+    pub(crate) async fn open_root(
+        root: PathBuf,
+        owner_agent_id: AgentId,
+    ) -> Result<Self, AutomationError> {
         create_private_directory(&root)?;
         let path = root.join(AUTOMATION_DB_FILENAME);
         let sqlite_home = AbsolutePathBuf::try_from(root).map_err(|_| AutomationError::Invalid)?;
@@ -67,10 +71,21 @@ impl AutomationStore {
         .await
         .map_err(unavailable)?;
         verify_store(&pool, &owner_agent_id).await?;
+        let timer_epoch: i64 = sqlx::query_scalar(
+            "SELECT writer_epoch FROM automation_timer_lifecycle WHERE singleton = 1",
+        )
+        .fetch_one(&pool)
+        .await
+        .map_err(unavailable)?;
+        if timer_epoch <= 0 {
+            pool.close().await;
+            return Err(AutomationError::Corrupt);
+        }
         Ok(Self {
             pool,
             owner_agent_id,
             path,
+            timer_epoch,
         })
     }
 
@@ -84,6 +99,10 @@ impl AutomationStore {
 
     pub(crate) fn taskflow_owner_agent_id(&self) -> &AgentId {
         &self.owner_agent_id
+    }
+
+    pub(crate) fn timer_epoch(&self) -> i64 {
+        self.timer_epoch
     }
 
     pub fn path(&self) -> &Path {

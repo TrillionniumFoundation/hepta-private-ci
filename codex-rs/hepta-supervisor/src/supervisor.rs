@@ -85,9 +85,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
-                let process_fault = supervisor
-                    .recover_slot(&agent_id, slot, &record, now)
-                    .err();
+                let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
                 supervisor.recover_signed_intent(&agent_id, slot, &record)?;
@@ -730,29 +728,31 @@ impl<D: ProcessDriver> Supervisor<D> {
                 && transaction.source_release == intent.source_release
                 && transaction.target_release == intent.target_release
             {
-                let current = record.release_state.current.as_ref().map(|release| release.as_str());
-                let previous =
-                    record.release_state.previous.as_ref().map(|release| release.as_str());
+                let current = record
+                    .release_state
+                    .current
+                    .as_ref()
+                    .map(|release| release.as_str());
+                let previous = record
+                    .release_state
+                    .previous
+                    .as_ref()
+                    .map(|release| release.as_str());
                 match (intent.transition, transaction.phase) {
-                    (
-                        H7H89ProductionTransition::Upgrade,
-                        ReleaseTransactionPhase::Committed,
-                    ) if current == Some(intent.target_release.as_str())
-                        && previous == Some(intent.source_release.as_str()) =>
+                    (H7H89ProductionTransition::Upgrade, ReleaseTransactionPhase::Committed)
+                        if current == Some(intent.target_release.as_str())
+                            && previous == Some(intent.source_release.as_str()) =>
                     {
                         Some(SignedIntentStatus::Committed)
                     }
-                    (
-                        H7H89ProductionTransition::Upgrade,
-                        ReleaseTransactionPhase::RolledBack,
-                    ) if current == Some(intent.source_release.as_str()) => {
+                    (H7H89ProductionTransition::Upgrade, ReleaseTransactionPhase::RolledBack)
+                        if current == Some(intent.source_release.as_str()) =>
+                    {
                         Some(SignedIntentStatus::RolledBack)
                     }
-                    (
-                        H7H89ProductionTransition::Rollback,
-                        ReleaseTransactionPhase::RolledBack,
-                    ) if current == Some(intent.target_release.as_str())
-                        && previous == Some(intent.source_release.as_str()) =>
+                    (H7H89ProductionTransition::Rollback, ReleaseTransactionPhase::RolledBack)
+                        if current == Some(intent.target_release.as_str())
+                            && previous == Some(intent.source_release.as_str()) =>
                     {
                         Some(SignedIntentStatus::RolledBack)
                     }
@@ -856,6 +856,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             SignedIntentStatus::RecoveryRequired => {
                 crate::ProductionMutationStatus::RecoveryRequired
             }
+            SignedIntentStatus::Aborted => crate::ProductionMutationStatus::Aborted,
         };
         let control_revision = intent
             .expected_control_revision

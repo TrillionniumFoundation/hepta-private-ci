@@ -50,10 +50,7 @@ pub enum ReleaseTransactionPhase {
 
 impl ReleaseTransactionPhase {
     pub fn terminal(self) -> bool {
-        matches!(
-            self,
-            Self::Committed | Self::RolledBack | Self::Aborted
-        )
+        matches!(self, Self::Committed | Self::RolledBack | Self::Aborted)
     }
 }
 

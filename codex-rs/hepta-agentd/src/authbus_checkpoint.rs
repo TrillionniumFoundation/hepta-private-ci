@@ -185,7 +185,7 @@ fn read_private_file(path: &Path) -> Result<Vec<u8>, AgentdError> {
         return Err(invalid("external replay checkpoint changed while opening"));
     }
     let mut bytes = Vec::new();
-    file.by_ref()
+    std::io::Read::by_ref(&mut file)
         .take(MAX_CHECKPOINT_BYTES + 1)
         .read_to_end(&mut bytes)?;
     let after = std::fs::symlink_metadata(path)?;

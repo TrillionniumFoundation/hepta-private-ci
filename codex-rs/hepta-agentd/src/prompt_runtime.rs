@@ -211,9 +211,9 @@ impl AgentdPromptRuntimeOwner {
         }
 
         let attachment = PromptRuntimeAttachmentV1::new(
-            compiled.compiled.receipt.compilation_id.clone(),
-            compiled.attachment.attachment_digest,
-            compiled.attachment.payload_digest,
+            compiled.compiled.receipt().compilation_id().clone(),
+            compiled.attachment.attachment_digest(),
+            compiled.attachment.payload_digest(),
             model.to_owned(),
             effective_deadline_ms,
             fragments,

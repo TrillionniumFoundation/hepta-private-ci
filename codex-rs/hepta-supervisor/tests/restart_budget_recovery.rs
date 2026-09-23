@@ -185,6 +185,9 @@ fn config() -> SupervisorConfig {
         log_capacity: 16,
         max_log_bytes: 1_024,
         driver_poll_batch: 16,
+        restart_max_attempts: 3,
+        restart_window: Duration::from_secs(300),
+        restart_backoff_base: Duration::from_millis(250),
     }
 }
 

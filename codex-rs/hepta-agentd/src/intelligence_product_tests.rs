@@ -10,6 +10,9 @@ fn product_test_coordinator() -> AgentRunCoordinator {
     .expect("test runtime coordinator")
 }
 
+use crate::AgentRunCoordinator;
+use crate::RunPhase;
+use crate::RuntimeComposition;
 use std::fs::OpenOptions;
 
 use super::*;
@@ -370,6 +373,8 @@ fn fixture() -> Fixture {
 
     let utility_profile = UtilityProfile {
         profile_id: id("utility.agentd.v1"),
+        axis_registry_digest: digest("utility.agentd.v1-axis-registry"),
+        normalization_manifest_digest: digest("utility.agentd.v1-normalization"),
         dimensions: vec![(id("quality.ratio"), AxisDirection::Maximize)],
         risk_ceilings: Vec::new(),
         resource_ceilings: Vec::new(),
@@ -635,6 +640,7 @@ fn fixture() -> Fixture {
     }
 }
 
+#[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
     let fixture = fixture();
@@ -797,6 +803,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
     ));
 }
 
+#[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
     let fixture = fixture();

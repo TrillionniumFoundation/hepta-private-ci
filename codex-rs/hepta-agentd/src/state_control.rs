@@ -323,7 +323,15 @@ impl AgentdState {
                 items,
                 plan,
             } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 let Some(store) = cognitive else {
                     return self.response_with_payload(
                         request_id,
@@ -350,6 +358,10 @@ impl AgentdState {
                     require_cognitive_control_ready(
                         runtime.lifecycle,
                         runtime.app_server_ready,
+                        runtime.critical_stores_ready,
+                        runtime.revocation_ready,
+                        runtime.required_ports_ready,
+                        runtime.admission_open,
                         runtime.fenced,
                     )?;
                 }
@@ -545,7 +557,15 @@ impl AgentdState {
                 missed_run,
                 overlap,
             } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 match automation {
                     Some(store) => self.automation_result(
                         store
@@ -562,7 +582,15 @@ impl AgentdState {
                 signed_grant,
                 command_id,
             } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 let Some(store) = automation.as_ref() else {
                     return self.response_with_payload(
                         request_id,
@@ -596,7 +624,15 @@ impl AgentdState {
                 step_id,
                 attempt,
             } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 let Some(store) = automation.as_ref() else {
                     return self.response_with_payload(
                         request_id,

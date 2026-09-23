@@ -19,6 +19,7 @@ production-cognitive-write = []
 # Adds the qualification-only turn-lifecycle witness seam on top of the real
 # product mutation profile. It never substitutes for production authority.
 qualification-cognitive-write = ["production-cognitive-write"]
+qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
 
 [[bin]]
 name = "codex-hepta-agentd"
@@ -98,6 +99,8 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
+codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }

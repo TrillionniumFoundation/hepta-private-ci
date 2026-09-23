@@ -19,14 +19,14 @@ use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 
 use crate::ArtifactKind;
-use crate::ArtifactOwnerTrustV1;
-use crate::ArtifactOwnerVerifierV1;
 use crate::ArtifactLifecycleEventV1;
 use crate::ArtifactLifecycleJournalError;
 use crate::ArtifactLifecycleJournalReceiptV2;
 use crate::ArtifactLifecycleJournalV2;
 use crate::ArtifactLifecycleStateV1;
 use crate::ArtifactManifest;
+use crate::ArtifactOwnerTrustV1;
+use crate::ArtifactOwnerVerifierV1;
 use crate::LifecycleActorEvidenceV2;
 use crate::LifecycleActorRoleV2;
 use crate::PinnedCandidateLoadError;

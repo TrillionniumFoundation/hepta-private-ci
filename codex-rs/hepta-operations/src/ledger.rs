@@ -7,12 +7,12 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::OperationError;
-use crate::OperationIntentV1;
 use crate::OperationKey;
 use crate::OperationRecord;
 use crate::OperationState;
 use crate::ReconciliationOutcome;
 use crate::ReferenceAuthorityWitness;
+use crate::model::OperationIntentV1;
 
 pub const MAX_MODEL_OPERATION_RECORDS: usize = 16_384;
 

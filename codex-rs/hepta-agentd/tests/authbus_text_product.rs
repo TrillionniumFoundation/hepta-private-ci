@@ -1,5 +1,6 @@
 #![cfg(unix)]
 
+use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::time::Duration;

@@ -727,6 +727,7 @@ pub enum ProductionMutationStatus {
     Committed,
     RolledBack,
     RecoveryRequired,
+    Aborted,
 }
 
 impl ProductionMutationReceipt {

@@ -47,7 +47,11 @@ async fn rejected_retirement_remains_failed_after_cleanup() {
                 Ok(())
             },
             || Ok(()),
-            || Err(AgentdError::Protocol("unresolved owner effects".to_string())),
+            || {
+                Err(AgentdError::Protocol(
+                    "unresolved owner effects".to_string(),
+                ))
+            },
         )
         .expect("spawn service");
     assert!(tasks.retire_optional("feature.41").await.is_err());
@@ -95,7 +99,10 @@ async fn isolated_optional_failure_does_not_poison_healthy_host() {
             || Ok(()),
         )
         .expect("spawn service");
-    tasks.observe_next().await.expect("isolate optional failure");
+    tasks
+        .observe_next()
+        .await
+        .expect("isolate optional failure");
     assert_eq!(tasks.active_count(), 1);
     assert_eq!(tasks.failures().len(), 1);
     tasks.run_until(async { Ok(()) }).await.expect("clean stop");
@@ -117,7 +124,10 @@ async fn successful_optional_retirement_preserves_clean_host_outcome() {
         )
         .expect("spawn service");
     tasks.retire_optional("feature.41").await.expect("retire");
-    tasks.retire_optional("feature.41").await.expect("idempotent");
+    tasks
+        .retire_optional("feature.41")
+        .await
+        .expect("idempotent");
     assert_eq!(tasks.active_count(), 1);
     tasks.run_until(async { Ok(()) }).await.expect("clean stop");
 }
@@ -161,9 +171,9 @@ async fn late_owner_acknowledgement_after_timeout_preserves_clean_shutdown() {
             "feature.41",
             |stop| async move {
                 stop.cancelled().await;
-                completed.await.map_err(|_| {
-                    AgentdError::Protocol("owner completion dropped".to_string())
-                })?;
+                completed
+                    .await
+                    .map_err(|_| AgentdError::Protocol("owner completion dropped".to_string()))?;
                 Ok(())
             },
             || Ok(()),

@@ -722,7 +722,10 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
                 registry_model_tuple: tuple.clone(),
                 context_model_profile: ContextModelProfileV2 {
                     model_digest: tuple.model_digest,
+                    provider_id_digest: digest("provider:agentd-product"),
+                    provider_model_digest: tuple.model_digest,
                     tokenizer_digest: tuple.tokenizer_digest,
+                    serializer_digest: digest("serializer:agentd-product"),
                     template_digest: tuple.template_digest,
                     tool_schema_digest: tuple.tool_schema_digest,
                     maximum_context_tokens: 128,

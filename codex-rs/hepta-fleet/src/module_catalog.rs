@@ -87,7 +87,10 @@ pub enum RuntimeModuleCatalogErrorV1 {
         first: String,
         second: String,
     },
-    UnknownDependency { module: String, dependency: String },
+    UnknownDependency {
+        module: String,
+        dependency: String,
+    },
     DependencyCycle,
 }
 

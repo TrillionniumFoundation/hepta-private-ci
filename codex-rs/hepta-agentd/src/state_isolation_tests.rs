@@ -25,6 +25,7 @@ use ed25519_dalek::SigningKey;
 
 use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
+use crate::RunPhase;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
@@ -112,10 +113,9 @@ async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress
         },
     )
     .expect("valid runner");
-    state
-        .intelligence_product
-        .set(Arc::new(runner))
-        .expect("attach runner once");
+    if state.intelligence_product.set(Arc::new(runner)).is_err() {
+        panic!("attach runner once");
+    }
 
     let response = state
         .response(
@@ -434,9 +434,27 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600)).expect("private trust");
     };
     write_trust(false);
-    let ingress = crate::authbus_ingress::TextIngress::open(state.identity(), trust_file.clone())
-        .await
-        .expect("open trust");
+    let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
+    let checkpoint = serde_json::json!({
+        "schema_version": 1,
+        "agent_id": state.identity.agent_id.to_string(),
+        "generation": 1,
+        "digest": Digest32::of_bytes(b"run-start-replay-checkpoint").to_string(),
+    });
+    fs::write(
+        &checkpoint_file,
+        serde_json::to_vec(&checkpoint).expect("checkpoint json"),
+    )
+    .expect("write checkpoint");
+    fs::set_permissions(&checkpoint_file, fs::Permissions::from_mode(0o600))
+        .expect("private checkpoint");
+    let ingress = crate::authbus_ingress::TextIngress::open(
+        state.identity(),
+        trust_file.clone(),
+        checkpoint_file,
+    )
+    .await
+    .expect("open trust");
     state
         .authbus
         .set(Arc::new(ingress))

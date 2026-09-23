@@ -15,12 +15,12 @@ use crate::Constraint;
 use crate::ConstraintClass;
 use crate::ConstraintRelation;
 use crate::ObjectiveError;
-use crate::model::ObjectiveSourceEnvelope;
 use crate::PredicateTerminality;
 use crate::SoftDirection;
 use crate::SoftPreference;
 use crate::SourceTrust;
 use crate::SuccessPredicate;
+use crate::model::ObjectiveSourceEnvelope;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {

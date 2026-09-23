@@ -3,6 +3,8 @@ use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_app_server::AppServerDrainHandle;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_automation::AutomationStore;
@@ -54,6 +56,7 @@ pub(crate) struct AgentdState {
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
     runs: Mutex<AgentRunCoordinator>,
+    app_server_drain: AppServerDrainHandle,
     pub(crate) prompt_pipeline: Arc<crate::AgentdPromptPipelineOwner>,
 }
 
@@ -61,6 +64,10 @@ struct RuntimeState {
     current_generation: u64,
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    critical_stores_ready: bool,
+    revocation_ready: bool,
+    required_ports_ready: bool,
+    admission_open: bool,
     fenced: bool,
 }
 
@@ -133,6 +140,10 @@ impl AgentdState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
                 app_server_ready: false,
+                critical_stores_ready: false,
+                revocation_ready: false,
+                required_ports_ready: false,
+                admission_open: false,
                 fenced: false,
             }),
             identity,
@@ -141,6 +152,7 @@ impl AgentdState {
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
             runs: Mutex::new(run_coordinator),
+            app_server_drain: AppServerDrainHandle::new(),
             prompt_pipeline,
         })
     }
@@ -287,6 +299,12 @@ impl AgentdState {
         Arc::clone(&self.prompt_pipeline)
     }
 
+    pub(crate) fn authbus(
+        &self,
+    ) -> Result<Option<Arc<crate::authbus_ingress::TextIngress>>, AgentdError> {
+        Ok(self.authbus.get().cloned())
+    }
+
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {
         // Registration/startup retains fleet-wide validation. Serving an
         // already admitted generation must not scan or depend on peer stores.
@@ -339,7 +357,23 @@ impl AgentdState {
             runtime.current_generation = record.lifecycle.generation;
             runtime.lifecycle = record.lifecycle.lifecycle;
             if runtime.lifecycle != AgentLifecycle::Running {
+                runtime.admission_open = false;
+            }
+            if matches!(
+                runtime.lifecycle,
+                AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
+            ) {
                 runtime.app_server_ready = false;
+                runtime.required_ports_ready = false;
+            }
+            if runtime.lifecycle == AgentLifecycle::Running
+                && runtime.app_server_ready
+                && runtime.critical_stores_ready
+                && runtime.revocation_ready
+                && runtime.required_ports_ready
+                && !runtime.fenced
+            {
+                runtime.admission_open = true;
             }
             self.events
                 .lock()
@@ -369,6 +403,10 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         if runtime.lifecycle != AgentLifecycle::Running
             || !runtime.app_server_ready
+            || !runtime.critical_stores_ready
+            || !runtime.revocation_ready
+            || !runtime.required_ports_ready
+            || !runtime.admission_open
             || runtime.fenced
         {
             return Err(AgentdError::GenerationFenced(
@@ -379,10 +417,30 @@ impl AgentdState {
         Ok(runtime.current_generation)
     }
 
+    /// Freeze owner-local startup prerequisites under this generation. The
+    /// default Agentd composition has zero production effect authority, so a
+    /// current zero-authority revocation baseline is sufficient here; any
+    /// effect-authorized composition must replace it before opening admission.
+    pub(crate) fn mark_runtime_prerequisites_ready(&self) -> Result<(), AgentdError> {
+        let critical_stores_ready = self.cognitive.lock().map_err(poisoned_state)?.is_some();
+        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.critical_stores_ready = critical_stores_ready;
+        runtime.revocation_ready = true;
+        Ok(())
+    }
+
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         if !runtime.app_server_ready {
             runtime.app_server_ready = true;
+            runtime.required_ports_ready = true;
+            if runtime.lifecycle == AgentLifecycle::Running
+                && runtime.critical_stores_ready
+                && runtime.revocation_ready
+                && !runtime.fenced
+            {
+                runtime.admission_open = true;
+            }
             self.events
                 .lock()
                 .map_err(poisoned_state)?
@@ -394,6 +452,9 @@ impl AgentdState {
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.app_server_ready = false;
+        runtime.required_ports_ready = false;
+        runtime.admission_open = false;
+        self.app_server_drain.request_drain();
         self.events
             .lock()
             .map_err(poisoned_state)?
@@ -407,9 +468,61 @@ impl AgentdState {
         Ok(())
     }
 
+    pub(crate) fn app_server_drain_handle(&self) -> AppServerDrainHandle {
+        self.app_server_drain.clone()
+    }
+
+    pub(crate) async fn request_drain(
+        &self,
+        automation: Option<&AutomationStore>,
+    ) -> Result<DrainSnapshot, AgentdError> {
+        self.refresh_generation()?;
+        {
+            let runtime = self.runtime.lock().map_err(poisoned_state)?;
+            if runtime.lifecycle != AgentLifecycle::Draining || runtime.fenced {
+                return Err(AgentdError::GenerationFenced(
+                    "Agentd drain requires the current supervisor generation to be Draining"
+                        .to_string(),
+                ));
+            }
+        }
+        self.mark_draining()?;
+        let automation_blockers = match automation {
+            Some(store) => store.drain_blockers().await?,
+            None => 1,
+        };
+        self.drain_snapshot(automation_blockers)
+    }
+
+    pub(crate) fn drain_snapshot(
+        &self,
+        automation_blockers: u32,
+    ) -> Result<DrainSnapshot, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
+            AgentdError::Protocol("running assistant turn count exceeds u32".to_string())
+        })?;
+        Ok(DrainSnapshot {
+            admission_closed: runtime.lifecycle == AgentLifecycle::Draining
+                && !runtime.app_server_ready
+                && !runtime.fenced,
+            running_turns,
+            drained: runtime.lifecycle == AgentLifecycle::Draining
+                && !runtime.fenced
+                && self.app_server_drain.drained()
+                && running_turns == 0
+                && automation_blockers == 0,
+            lifecycle: runtime.lifecycle,
+            fenced: runtime.fenced,
+        })
+    }
+
     pub(crate) fn mark_fenced(&self) {
         if let Ok(mut runtime) = self.runtime.lock() {
             runtime.app_server_ready = false;
+            runtime.required_ports_ready = false;
+            runtime.admission_open = false;
             runtime.fenced = true;
         }
         if let Ok(mut events) = self.events.lock() {
@@ -433,6 +546,10 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
+            && runtime.critical_stores_ready
+            && runtime.revocation_ready
+            && runtime.required_ports_ready
+            && runtime.admission_open
             && !runtime.fenced)
     }
 

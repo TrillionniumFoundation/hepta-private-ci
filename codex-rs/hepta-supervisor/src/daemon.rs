@@ -1698,10 +1698,9 @@ mod tests {
             cancellation.clone(),
             None,
         ));
-        let client = crate::SupervisordClient::new(
-            registry.layout().supervisor_socket().to_path_buf(),
-        )
-        .expect("client");
+        let client =
+            crate::SupervisordClient::new(registry.layout().supervisor_socket().to_path_buf())
+                .expect("client");
         let deadline = Instant::now() + Duration::from_secs(2);
         let health = loop {
             match client.health().await {

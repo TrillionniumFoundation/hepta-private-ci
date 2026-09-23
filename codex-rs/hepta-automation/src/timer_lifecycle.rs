@@ -50,7 +50,7 @@ impl TimerDrainStatus {
 impl AutomationStore {
     /// Read the durable owner, even through an old, fenced observer handle.
     pub async fn timer_status(&self) -> Result<TimerDrainStatus, AutomationError> {
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
         let status = read_status(&mut transaction).await?;
         transaction.commit().await.map_err(unavailable)?;
         Ok(status)
@@ -97,7 +97,7 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
         let next = self
-            .timer_epoch
+            .timer_epoch()
             .checked_add(1)
             .ok_or(AutomationError::Conflict)?;
         sqlx::query("UPDATE automation_timer_lifecycle SET writer_epoch = ? WHERE singleton = 1")
@@ -107,12 +107,12 @@ impl AutomationStore {
             .map_err(unavailable)?;
         transaction.commit().await.map_err(unavailable)?;
         let root = self
-            .path
+            .path()
             .parent()
             .ok_or(AutomationError::Corrupt)?
             .to_path_buf();
-        let successor = Self::open_root(root, self.owner_agent_id.clone()).await?;
-        if successor.timer_epoch != next {
+        let successor = Self::open_root(root, self.owner_agent_id().clone()).await?;
+        if successor.timer_epoch() != next {
             successor.close().await;
             return Err(AutomationError::Conflict);
         }
@@ -130,7 +130,7 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
         let next = self
-            .timer_epoch
+            .timer_epoch()
             .checked_add(1)
             .ok_or(AutomationError::Conflict)?;
         sqlx::query(
@@ -152,8 +152,8 @@ impl AutomationStore {
     pub(super) async fn begin_timer_write(
         &self,
     ) -> Result<(Transaction<'_, Sqlite>, TimerPhase), AutomationError> {
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-        let phase = check_timer_writer(&mut transaction, self.timer_epoch).await?;
+        let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
+        let phase = check_timer_writer(&mut transaction, self.timer_epoch()).await?;
         Ok((transaction, phase))
     }
 }

@@ -31,11 +31,9 @@ fn unbound() -> CodexOperationIntent {
 #[test]
 fn wire_v2_can_only_produce_indeterminate_authority_free_request() -> Result<(), Box<dyn StdError>>
 {
-    let envelope = encode_codex_operation_intent_wire_v2(
-        &unbound(),
-        id("runtime.agentd"),
-        Generation::new(3)?,
-    )?;
+    let intent = unbound();
+    let envelope =
+        encode_codex_operation_intent_wire_v2(&intent, id("runtime.agentd"), Generation::new(3)?)?;
     let receipt = adapt_wire_v2(1, &envelope)?;
     assert_eq!(receipt.status, AdapterStatus::Indeterminate);
     assert!(!receipt.model_authority);
@@ -117,7 +115,7 @@ fn wire_v2_rejects_unknown_fields_and_payload_drift() -> Result<(), Box<dyn StdE
         .into_bytes(),
     )?;
     assert!(matches!(
-        adapt_wire_v2(1, &wrong_producer, None),
+        adapt_wire_v2(1, &wrong_producer),
         Err(WireAdapterError::UnexpectedProducer(_))
     ));
     Ok(())

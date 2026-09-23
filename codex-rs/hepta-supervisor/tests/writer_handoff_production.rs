@@ -163,8 +163,9 @@ async fn recovered_handoff_physically_fences_old_writer_before_successor_admissi
     let acknowledged = journal.checkpoint().clone();
     drop(journal);
 
-    let mut recovered = DurableWriterHandoffJournalV1::recover_at_least(handoff_file(&temp), &acknowledged)
-        .expect("recover handoff after old fence");
+    let mut recovered =
+        DurableWriterHandoffJournalV1::recover_at_least(handoff_file(&temp), &acknowledged)
+            .expect("recover handoff after old fence");
     assert_eq!(
         recovered.checkpoint().phase,
         WriterHandoffPhaseV1::OldWriterFenced

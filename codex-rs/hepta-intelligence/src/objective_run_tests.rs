@@ -308,11 +308,11 @@ fn authenticated_objective_is_durable_before_product_receipt_returns() {
             .expect("journal");
     let profile = profile();
     let envelope = envelope();
-    let context = context(&profile, &envelope);
+    let admission_context = context(&profile, &envelope);
     let receipt = compile_and_publish_objective_run_v1(
         &envelope,
         &profile,
-        &context,
+        &admission_context,
         bindings("run-1", Digest32::ZERO),
         &mut journal,
     )
@@ -385,11 +385,11 @@ fn exact_product_retry_is_idempotent_and_semantic_drift_conflicts() {
             .expect("journal");
     let profile = profile();
     let envelope = envelope();
-    let context = context(&profile, &envelope);
+    let admission_context = context(&profile, &envelope);
     let first = compile_and_publish_objective_run_v1(
         &envelope,
         &profile,
-        &context,
+        &admission_context,
         bindings("run-1", Digest32::ZERO),
         &mut journal,
     )
@@ -397,7 +397,7 @@ fn exact_product_retry_is_idempotent_and_semantic_drift_conflicts() {
     let retry = compile_and_publish_objective_run_v1(
         &envelope,
         &profile,
-        &context,
+        &admission_context,
         bindings("run-1", Digest32::ZERO),
         &mut journal,
     )

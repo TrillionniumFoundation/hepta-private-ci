@@ -72,7 +72,9 @@ fn writer_handoff_rejects_acknowledged_prefix_rollback_before_tail_repair() {
     let root = TempDir::new().expect("temp");
     let mut journal = DurableWriterHandoffJournalV1::create(file(&root), plan()).expect("create");
     let old_length = journal.durable_length;
-    let acknowledged = journal.advance(step(WriterHandoffPhaseV1::AdmissionStopped)).expect("advance");
+    let acknowledged = journal
+        .advance(step(WriterHandoffPhaseV1::AdmissionStopped))
+        .expect("advance");
     drop(journal);
     let mut raw = file(&root);
     raw.set_len(old_length).expect("simulate restored backup");
@@ -84,7 +86,10 @@ fn writer_handoff_rejects_acknowledged_prefix_rollback_before_tail_repair() {
         DurableWriterHandoffJournalV1::recover_at_least(file(&root), &acknowledged),
         Err(WriterHandoffErrorV1::AcknowledgedCheckpointMissing)
     ));
-    assert_eq!(file(&root).metadata().expect("metadata").len(), old_length + 5);
+    assert_eq!(
+        file(&root).metadata().expect("metadata").len(),
+        old_length + 5
+    );
 }
 
 #[test]
@@ -109,7 +114,9 @@ fn writer_handoff_rejects_oversized_sparse_history_and_releases_failed_lock() {
     let checkpoint = journal.checkpoint().clone();
     let length = journal.durable_length;
     drop(journal);
-    file(&root).set_len(MAX_JOURNAL_BYTES * 128).expect("sparse file");
+    file(&root)
+        .set_len(MAX_JOURNAL_BYTES * 128)
+        .expect("sparse file");
     assert!(matches!(
         DurableWriterHandoffJournalV1::recover(file(&root)),
         Err(WriterHandoffErrorV1::JournalTooLarge)

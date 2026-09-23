@@ -356,8 +356,7 @@ impl DurableWriterHandoffJournalV1 {
         if step.phase == self.checkpoint.phase
             && step.evidence_digest == self.checkpoint.evidence_digest
             && (step.outbox_watermark == self.checkpoint.outbox_watermark
-                || (step.outbox_watermark.is_none()
-                    && step.phase != WriterHandoffPhaseV1::Drained))
+                || (step.outbox_watermark.is_none() && step.phase != WriterHandoffPhaseV1::Drained))
             && step.unknown_effect_count == self.checkpoint.unknown_effect_count
         {
             return Ok(self.checkpoint.clone());

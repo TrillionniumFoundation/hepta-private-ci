@@ -45,6 +45,7 @@ use crate::LedgerSnapshot;
 use crate::LedgerWitnessFrontier;
 use crate::LedgerWitnessStore;
 use crate::OutcomeTerminalityV1;
+use crate::RetrievalAssignmentFact;
 use crate::SegmentedLedger;
 use crate::SignedEvidenceError;
 use crate::SignedLearningEvidenceV1;
@@ -533,6 +534,22 @@ impl LedgerWriter {
             artifact_id: request.artifact_id,
             append,
         })
+    }
+
+    /// Append the exact retrieval assignment emitted by the authoritative
+    /// retrieval owner. This fact is owner-native rather than externally
+    /// signed, but it still crosses the sole product writer so predecessor CAS,
+    /// durable witness advancement and recovery semantics are identical to the
+    /// authenticated Decision/Outcome path.
+    pub fn append_retrieval_assignment(
+        &mut self,
+        expected_predecessor: Digest32,
+        assignment: RetrievalAssignmentFact,
+    ) -> Result<AppendReceipt, ProductionLedgerError> {
+        self.commit(
+            expected_predecessor,
+            LedgerEvent::RetrievalAssignment(assignment),
+        )
     }
 
     /// Revalidate a frozen dataset immediately before final artifact use.

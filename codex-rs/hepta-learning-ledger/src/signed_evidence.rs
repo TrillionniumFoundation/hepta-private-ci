@@ -26,6 +26,7 @@ pub enum LearningEvidenceRoleV1 {
     Evaluator,
     CreditAllocator,
     UnlearningAuthority,
+    Selector,
 }
 
 impl LearningEvidenceRoleV1 {
@@ -36,6 +37,7 @@ impl LearningEvidenceRoleV1 {
             Self::Evaluator => 2,
             Self::CreditAllocator => 3,
             Self::UnlearningAuthority => 4,
+            Self::Selector => 5,
         }
     }
 }
@@ -167,7 +169,7 @@ impl LearningEvidenceVerifierV1 {
                 || signer.principal.authority_epoch != trust.authority_epoch
                 || signer.principal.signing_key_digest != Digest32::of_bytes(&signer.verifying_key)
                 || signer.roles.is_empty()
-                || signer.roles.len() > 5
+                || signer.roles.len() > 6
             {
                 return Err(SignedEvidenceError::InvalidTrust);
             }
@@ -331,6 +333,32 @@ pub fn verify_signed_actor_separation(
             return Err(SignedEvidenceError::ValidityWindow);
         }
         if evidence.revoked_at.is_some_and(|at| now >= at) {
+            return Err(SignedEvidenceError::Revoked);
+        }
+    }
+    verify_independent_roles(&left.principal, &right.principal, now)?;
+    if left.controller_id == right.controller_id {
+        return Err(SignedEvidenceError::ControllerCollision);
+    }
+    Ok(())
+}
+
+pub fn verify_verified_role_separation(
+    left: &VerifiedLearningEvidenceV1,
+    right: &VerifiedLearningEvidenceV1,
+    now: u64,
+) -> Result<(), SignedEvidenceError> {
+    if left.trust_digest != right.trust_digest || left.objective_digest != right.objective_digest {
+        return Err(SignedEvidenceError::ContextMismatch);
+    }
+    for evidence in [left, right] {
+        if now < evidence.issued_at || now > evidence.expires_at {
+            return Err(SignedEvidenceError::ValidityWindow);
+        }
+        if evidence
+            .revoked_at
+            .is_some_and(|revoked_at| revoked_at <= now)
+        {
             return Err(SignedEvidenceError::Revoked);
         }
     }

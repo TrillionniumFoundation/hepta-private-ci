@@ -15,6 +15,7 @@ use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
+use codex_hepta_context_compiler::SerializedContextV2;
 use codex_hepta_prompt_registry::CompatibleRealizationSetV2;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::DurableRegistryError;
@@ -55,9 +56,11 @@ pub struct PromptRegistryCompiledContextV2 {
     pub exercise_receipt_digest: Digest32,
     pub portfolio_receipt_digest: Digest32,
     pub compiled: CompiledContextV2,
+    pub model_profile: ContextModelProfileV2,
     pub selected_deliveries: Vec<RealizationDeliveryV2>,
     pub serialized_payload: Vec<u8>,
     pub serialization: ContextSerializationReceiptV2,
+    pub serialized_context: SerializedContextV2,
     pub attachment: ContextAttachmentV2,
     pub delivery_set_digest: Digest32,
     pub authority: AuthorityPosture,
@@ -76,11 +79,11 @@ impl PromptRegistryCompiledContextV2 {
             || self.delivery_set_digest.is_zero()
             || self.exercise_receipt_digest.is_zero()
             || self.portfolio_receipt_digest.is_zero()
-            || self.compiled.receipt.prompt_portfolio_digest != self.portfolio_receipt_digest
+            || self.compiled.receipt().prompt_portfolio_digest() != self.portfolio_receipt_digest
         {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
         }
-        let selected = &self.compiled.receipt.selected_item_ids;
+        let selected = self.compiled.receipt().selected_item_ids();
         if selected.len() != self.selected_deliveries.len()
             || selected
                 .iter()
@@ -96,15 +99,22 @@ impl PromptRegistryCompiledContextV2 {
                 .map_err(PromptRegistryCompilationErrorV2::Registry)?;
         }
         if self.serialized_payload.is_empty()
-            || Digest32::of_bytes(&self.serialized_payload) != self.serialization.payload_digest
+            || Digest32::of_bytes(&self.serialized_payload) != self.serialization.payload_digest()
         {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
         }
-        self.serialization
-            .validate_for(&self.compiled)
+        self.serialized_context
+            .validate_for(&self.compiled, &self.model_profile)
             .map_err(PromptRegistryCompilationErrorV2::Context)?;
+        if self.serialized_context.receipt() != &self.serialization {
+            return Err(PromptRegistryCompilationErrorV2::Integrity);
+        }
         self.attachment
-            .validate(&self.compiled, &self.serialization)
+            .validate_for(
+                &self.compiled,
+                &self.serialized_context,
+                &self.model_profile,
+            )
             .map_err(PromptRegistryCompilationErrorV2::Context)?;
         if self.delivery_set_digest != self.compute_delivery_set_digest() {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
@@ -118,9 +128,9 @@ impl PromptRegistryCompiledContextV2 {
         bytes.extend_from_slice(self.compatible.set_digest.as_array());
         bytes.extend_from_slice(self.exercise_receipt_digest.as_array());
         bytes.extend_from_slice(self.portfolio_receipt_digest.as_array());
-        bytes.extend_from_slice(self.compiled.receipt.receipt_digest.as_array());
-        bytes.extend_from_slice(self.serialization.receipt_digest.as_array());
-        bytes.extend_from_slice(self.attachment.attachment_digest.as_array());
+        bytes.extend_from_slice(self.compiled.receipt().receipt_digest().as_array());
+        bytes.extend_from_slice(self.serialization.receipt_digest().as_array());
+        bytes.extend_from_slice(self.attachment.attachment_digest().as_array());
         bytes.extend_from_slice(
             &u64::try_from(self.selected_deliveries.len())
                 .unwrap_or(u64::MAX)
@@ -146,6 +156,7 @@ pub fn compile_prompt_registry_v2(
     {
         return Err(PromptRegistryCompilationErrorV2::ProfileMismatch);
     }
+    let model_profile = request.context_model_profile.clone();
     let prepared = compile_exercised_prompt_context_v1(
         registry,
         portfolio,
@@ -177,8 +188,8 @@ pub fn compile_prompt_registry_v2(
         .collect::<BTreeMap<_, _>>();
     let selected_deliveries = prepared
         .compiled
-        .receipt
-        .selected_item_ids
+        .receipt()
+        .selected_item_ids()
         .iter()
         .map(|id| {
             by_id
@@ -219,9 +230,11 @@ pub fn compile_prompt_registry_v2(
         exercise_receipt_digest: delivery.exercise.receipt_digest,
         portfolio_receipt_digest: portfolio.receipt.receipt_digest,
         compiled: prepared.compiled,
+        model_profile,
         selected_deliveries,
         serialized_payload,
         serialization: delivery.serialization,
+        serialized_context: delivery.serialized_context,
         attachment: delivery.attachment,
         delivery_set_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,

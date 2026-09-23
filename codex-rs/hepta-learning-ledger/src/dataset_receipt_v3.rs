@@ -16,6 +16,10 @@ use crate::AuthenticatedPrincipalV1;
 use crate::CausalV2Error;
 use crate::DatasetFreezeRequestV1;
 use crate::DatasetSnapshotV2;
+use crate::LearningLedger;
+use crate::LedgerError;
+use crate::LedgerEvent;
+use crate::LedgerSnapshot;
 use crate::freeze_dataset;
 
 const MAX_DATASET_RECORDS: usize = 1_000_000;
@@ -98,6 +102,54 @@ pub fn verify_dataset_snapshot_receipt_v3(
     Ok(())
 }
 
+/// Rebind an issued dataset receipt to the authoritative replayed ledger.
+pub fn verify_dataset_snapshot_receipt_against_ledger_v3(
+    receipt: &DatasetSnapshotReceiptV3,
+    ledger_snapshot: &LedgerSnapshot,
+    now: u64,
+) -> Result<(), DatasetReceiptError> {
+    verify_dataset_snapshot_receipt_v3(receipt, now)?;
+    if receipt.snapshot.ledger_head_digest != ledger_snapshot.head_digest {
+        return Err(DatasetReceiptError::LedgerHeadMismatch);
+    }
+    let expected =
+        derive_active_source_digests(ledger_snapshot, receipt.snapshot.eligible_frontier)?;
+    if receipt.snapshot.source_record_digests != expected {
+        return Err(DatasetReceiptError::LedgerSourceSetMismatch);
+    }
+    Ok(())
+}
+
+fn derive_active_source_digests(
+    snapshot: &LedgerSnapshot,
+    eligible_frontier: u64,
+) -> Result<Vec<Digest32>, DatasetReceiptError> {
+    if eligible_frontier == 0 {
+        return Err(DatasetReceiptError::InvalidFrontier);
+    }
+    let head_sequence = snapshot
+        .records()
+        .last()
+        .map_or(0, |record| record.sequence.get());
+    if eligible_frontier > head_sequence {
+        return Err(DatasetReceiptError::InvalidFrontier);
+    }
+    let ledger = LearningLedger::from_snapshot(snapshot.clone())?;
+    let mut digests = ledger
+        .active_records()
+        .into_iter()
+        .filter(|record| record.sequence.get() <= eligible_frontier)
+        .filter(|record| !matches!(record.event, LedgerEvent::Revocation(_)))
+        .map(|record| record.event_digest)
+        .collect::<Vec<_>>();
+    digests.sort_unstable();
+    digests.dedup();
+    if digests.is_empty() || digests.len() > MAX_DATASET_RECORDS {
+        return Err(DatasetReceiptError::RecordLimit);
+    }
+    Ok(digests)
+}
+
 fn digest_receipt(receipt: &DatasetSnapshotReceiptV3) -> Result<Digest32, DatasetReceiptError> {
     let snapshot = &receipt.snapshot;
     let mut bytes = b"hepta.learning-ledger.dataset-snapshot.v2".to_vec();
@@ -165,6 +217,9 @@ pub enum DatasetReceiptError {
     NonCanonicalRecords,
     DigestMismatch,
     Arithmetic,
+    LedgerHeadMismatch,
+    LedgerSourceSetMismatch,
+    Ledger(LedgerError),
 }
 
 impl fmt::Display for DatasetReceiptError {
@@ -183,8 +238,17 @@ impl StdError for DatasetReceiptError {
             | Self::RecordLimit
             | Self::NonCanonicalRecords
             | Self::DigestMismatch
-            | Self::Arithmetic => None,
+            | Self::Arithmetic
+            | Self::LedgerHeadMismatch
+            | Self::LedgerSourceSetMismatch => None,
+            Self::Ledger(error) => Some(error),
         }
+    }
+}
+
+impl From<LedgerError> for DatasetReceiptError {
+    fn from(value: LedgerError) -> Self {
+        Self::Ledger(value)
     }
 }
 

@@ -32,6 +32,7 @@ struct Fixture {
     registry: FleetRegistry,
     key: SigningKey,
     trust_file: PathBuf,
+    checkpoint_file: PathBuf,
 }
 
 impl Fixture {
@@ -79,6 +80,15 @@ impl Fixture {
         std::fs::set_permissions(&identity.home_root, std::fs::Permissions::from_mode(0o700))
             .unwrap();
         let trust_file = identity.home_root.join("text-trust.json");
+        let checkpoint_file = root.join("authbus-replay-checkpoint.json");
+        let checkpoint = serde_json::json!({
+            "schema_version": 1,
+            "agent_id": identity.agent_id.to_string(),
+            "generation": 1,
+            "digest": codex_hepta_types::Digest32::of_bytes(b"authbus-dispatch-checkpoint").to_string(),
+        });
+        std::fs::write(&checkpoint_file, serde_json::to_vec(&checkpoint).unwrap()).unwrap();
+        std::fs::set_permissions(&checkpoint_file, std::fs::Permissions::from_mode(0o600)).unwrap();
         let state =
             Arc::new(AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16).unwrap());
         state.refresh_generation().unwrap();
@@ -89,11 +99,16 @@ impl Fixture {
             registry,
             key: SigningKey::from_bytes(&[55; 32]),
             trust_file,
+            checkpoint_file,
         };
         fixture.trust(/*revoked*/ false);
-        let host = TextIngress::open(fixture.state.identity(), fixture.trust_file.clone())
-            .await
-            .unwrap();
+        let host = TextIngress::open(
+            fixture.state.identity(),
+            fixture.trust_file.clone(),
+            fixture.checkpoint_file.clone(),
+        )
+        .await
+        .unwrap();
         assert!(fixture.state.authbus.set(Arc::new(host)).is_ok());
         fixture
     }
@@ -231,9 +246,13 @@ async fn lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_recei
     tokio::time::sleep(Duration::from_millis(1100)).await;
     // A new handle recovers persisted attempts; the queue's independent state
     // survived the lost reply. No in-process claim is reused as authority.
-    let reopened = TextIngress::open(fixture.state.identity(), fixture.trust_file.clone())
-        .await
-        .unwrap();
+    let reopened = TextIngress::open(
+        fixture.state.identity(),
+        fixture.trust_file.clone(),
+        fixture.checkpoint_file.clone(),
+    )
+    .await
+    .unwrap();
     let recovered = fixture.claim(&reopened, id).await;
     assert_eq!(recovered.attempts, 2);
     deliver(&fixture.state, &reopened, &queue, recovered)

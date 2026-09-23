@@ -130,7 +130,7 @@ impl CanonicalIntelligenceSnapshotV1 {
             let owner_id =
                 StableId::new(owner).map_err(|_| CanonicalIntelligenceError::Arithmetic)?;
             if !owners.contains_key(&owner_id) {
-                return Err(CanonicalIntelligenceError::MissingOwner(owner));
+                return Err(CanonicalIntelligenceError::MissingOwner(owner.to_owned()));
             }
         }
 
@@ -193,7 +193,7 @@ impl CanonicalIntelligenceSnapshotV1 {
         let id = StableId::new(owner).map_err(|_| CanonicalIntelligenceError::Arithmetic)?;
         self.owners
             .get(&id)
-            .ok_or(CanonicalIntelligenceError::MissingOwner(owner))
+            .ok_or(CanonicalIntelligenceError::MissingOwner(owner.to_owned()))
     }
 }
 
@@ -472,7 +472,7 @@ pub enum CanonicalIntelligenceError {
     DuplicateCandidate(StableId),
     InvalidSnapshot(&'static str),
     DuplicateOwner(StableId),
-    MissingOwner(&'static str),
+    MissingOwner(String),
     InvalidBudget,
     FreshnessUnavailable(StableId),
     StaleOwner(StableId),
@@ -668,7 +668,7 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
             "objective/state binding",
         ));
     }
-    let legal = build_legal_candidates(request.legal_candidates)?;
+    let legal = build_legal_candidates(request.legal_candidates.clone())?;
     let snapshot_digest = request.snapshot.digest();
     let mut predecessor = legal.candidate_set_digest;
     let mut traces = Vec::with_capacity(7);

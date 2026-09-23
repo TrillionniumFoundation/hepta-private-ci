@@ -138,7 +138,9 @@ async fn retirement_blocks_new_effects_after_restart_but_preserves_old_receipts(
     store.quiesce_timer().await.expect("quiesce");
     store.retire_timer().await.expect("retire");
     store.close().await;
-    let recovered = AutomationStore::open(&fixture.layout).await.expect("reopen");
+    let recovered = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
     let new = draft();
     let next = automation_task_operation_intent(
         recovered.owner_agent_id(),
@@ -161,7 +163,10 @@ async fn retirement_blocks_new_effects_after_restart_but_preserves_old_receipts(
         .create_task_from_operation(&intent, &original)
         .await
         .expect("historical read-only replay");
-    assert_eq!(replay.disposition, DestinationApplyDisposition::AlreadyApplied);
+    assert_eq!(
+        replay.disposition,
+        DestinationApplyDisposition::AlreadyApplied
+    );
     assert_eq!(replay.destination_receipt, first.destination_receipt);
     assert_eq!(recovered.list_tasks(10).await.expect("tasks").len(), 1);
     assert_eq!(
