@@ -934,3 +934,55 @@ async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
         "either total or owner-local deadline must reject before admission: {result:?}"
     );
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let runner = AgentdIntelligenceProductRunnerV1::new(
+        temp.path().join("authority.json"),
+        authority_verifier(),
+    )
+    .expect("runner");
+    let mut releases = Vec::new();
+    let mut workers = Vec::new();
+    for _ in 0..MAX_CANONICAL_OWNER_WORKERS {
+        let (started, ready) = tokio::sync::oneshot::channel();
+        let (release, finish) = std::sync::mpsc::sync_channel::<()>(1);
+        let worker = runner
+            .spawn_owner_work(move || {
+                started.send(()).expect("announce worker start");
+                finish.recv().expect("test releases worker");
+            })
+            .expect("bounded admission");
+        timeout(Duration::from_secs(5), ready)
+            .await
+            .expect("worker started")
+            .expect("start acknowledgement");
+        worker.abort();
+        releases.push(release);
+        workers.push(worker);
+    }
+    assert_eq!(runner.worker_slots.available_permits(), 0);
+    let fixture = fixture();
+    let result = runner
+        .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
+        .await;
+    assert!(matches!(result, Err(AgentdIntelligenceProductError::Busy)));
+    for release in releases {
+        release.send(()).expect("release real worker");
+    }
+    for worker in workers {
+        timeout(Duration::from_secs(5), worker)
+            .await
+            .expect("bounded completion")
+            .expect("already-running worker completes");
+    }
+    assert_eq!(
+        runner.worker_slots.available_permits(),
+        MAX_CANONICAL_OWNER_WORKERS
+    );
+    let ready = runner
+        .spawn_owner_work(|| 7_u32)
+        .expect("capacity restored");
+    assert_eq!(ready.await.expect("new work completes"), 7);
+}

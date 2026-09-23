@@ -577,6 +577,7 @@ pub enum AgentdIntelligenceAdmittedOutcomeV1 {
 pub enum AgentdIntelligenceProductError {
     Canonical(CanonicalIntelligenceError),
     WorkerCrashed,
+    Busy,
     TimedOut,
     CandidateSetMismatch,
     Clock,
@@ -591,7 +592,10 @@ impl fmt::Display for AgentdIntelligenceProductError {
 }
 impl StdError for AgentdIntelligenceProductError {}
 
+const MAX_CANONICAL_OWNER_WORKERS: usize = 4;
+
 pub struct AgentdIntelligenceProductRunnerV1 {
+    worker_slots: std::sync::Arc<tokio::sync::Semaphore>,
     authority_file: PathBuf,
     authority_verifier: IntelligenceAuthorityVerifierV1,
 }
@@ -610,9 +614,32 @@ impl AgentdIntelligenceProductRunnerV1 {
             return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
         }
         Ok(Self {
+            worker_slots: std::sync::Arc::new(tokio::sync::Semaphore::new(
+                MAX_CANONICAL_OWNER_WORKERS,
+            )),
             authority_file,
             authority_verifier,
         })
+    }
+
+    // The permit belongs to the worker, not the request future. Aborting a
+    // running spawn_blocking task cannot stop its computation; releasing its
+    // permit on request timeout would allow unbounded abandoned work.
+    fn spawn_owner_work<F, T>(
+        &self,
+        work: F,
+    ) -> Result<tokio::task::JoinHandle<T>, AgentdIntelligenceProductError>
+    where
+        F: FnOnce() -> T + Send + 'static,
+        T: Send + 'static,
+    {
+        let permit = std::sync::Arc::clone(&self.worker_slots)
+            .try_acquire_owned()
+            .map_err(|_| AgentdIntelligenceProductError::Busy)?;
+        Ok(tokio::task::spawn_blocking(move || {
+            let _permit = permit;
+            work()
+        }))
     }
 
     pub async fn prepare(
@@ -656,11 +683,11 @@ impl AgentdIntelligenceProductRunnerV1 {
             .ok_or(AgentdIntelligenceProductError::Clock)?;
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
-        let mut worker = tokio::task::spawn_blocking(move || {
+        let mut worker = self.spawn_owner_work(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
-        });
+        })?;
         let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
             .await
             .map_err(|_| {
