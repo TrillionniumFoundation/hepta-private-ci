@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "e84ab050814d708f001c0b037513fc9a48ff637c",
+    "tree": "f5ff84ee02457bc012bb3dc4a41f536aa8de8bd6"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -346,7 +346,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "implementedOperationMappingComplete": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -361,17 +362,18 @@
   "sourceBaseSemantics": "historical_provenance_only_exact_candidate_derived_from_git_at_verification_time",
   "candidateIdentity": "derived_from_git_head_or_deterministic_merge_at_verification_time",
   "observedSourcePaths": [
-    "codex-rs/hepta-supervisor",
-    "codex-rs/hepta-fleet",
-    "codex-rs/hepta-agentd",
-    "codex-rs/hepta-agent-protocol",
-    "codex-rs/hepta-automation",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/app-server",
-    "codex-rs/Cargo.lock"
+    "codex-rs/hepta-agent-protocol",
+    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-automation",
+    "codex-rs/hepta-fleet",
+    "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "f73a1e308dbd00a410d5be6edc30db3a5769f194",
-    "tree": "f32481f6d676bde12225e2b58a015616249be75b",
+    "commit": "e84ab050814d708f001c0b037513fc9a48ff637c",
+    "tree": "f5ff84ee02457bc012bb3dc4a41f536aa8de8bd6",
     "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
