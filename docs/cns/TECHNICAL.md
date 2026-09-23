@@ -162,6 +162,25 @@ protocol does not require one process or store. No per-cell database or independ
 trainer/executor is introduced. A source extraction is justified by a real caller
 boundary, not by renaming the current crate to `nervous.system`.
 
+### Expressive representation versus action control
+
+The computational meta-network is the existing Cell/Circuit composition, not
+another executive or data owner. Organ hierarchy, circuit nesting and internal
+model depth are different quantities. Preserve approved representation channels
+when a downstream decision needs more than a label; keep action/control ports
+separate. Each representation binds dimension, normalization, scope, provenance,
+message/precision budget and compatible parameter generation. No latent tensor
+carries authority. A source reference is usable only through its owner's current
+read/revalidation path, with cost and timing counted.
+
+An organ summary is an abstraction with a declared task/horizon and loss criterion.
+Test additional history/fine-state predictive value, decision disagreement and
+outcome/credit degradation before relying on it as a sufficient state. Invariance
+under relabeling does not establish sufficiency. When the summary is inadequate,
+use an admitted richer port, bounded history, permitted reread or explicit
+uncertainty/abstention; do not increase downstream depth and pretend information
+has returned. Version representation changes and requalify dependent cells.
+
 ## 6. Organ lifecycle, addition, removal and modification
 
 The lifecycle is:
@@ -283,6 +302,18 @@ Acknowledgement loss leaves an operation `indeterminate`. A fenced reconciler re
 The causal ledger records state, complete candidate set, chosen propensity, delivered intervention, authorized action, independent outcome, correction, credit and deletion lineage. A policy cannot label itself successful. Missing or delayed outcome is not zero reward.
 
 Sleep consolidation samples immutable eligible episodes with source quotas, surprise, coverage and retention priorities. Revoked rows are excluded before replay. Consolidation may propose semantic prototypes, procedures, predictive transitions, local parameter deltas or topology candidates, but only as immutable next-snapshot artifacts. Future-time holdout, old-task retention, subgroup, OOD, deletion non-resurrection and rollback are mandatory before any longitudinal claim.
+
+### Capacity and training are distinct scalability contracts
+
+Measure actual unrolled Cell depth, parallel active width, unique/trainable tensors,
+representation/state budgets, gradient reach and lifecycle compute. Logical node
+count is not capacity evidence and a process boundary is not a layer. NDU can
+allocate another allowed computation round when supported benefit exceeds its
+registered marginal cost, but cannot widen hard limits or replace the objective.
+Use the composition/error conditions in `../learning/NEURAL_BIOMIMICRY_SPEC.md`;
+feedback stability, useful retention and branch-margin behavior are separate tests.
+Meta-learning and parameter-field control are experimental profiles in existing
+learning owners, not new global authorities or hidden online optimizers.
 
 ## 14. Governed self-iteration and digital twin
 

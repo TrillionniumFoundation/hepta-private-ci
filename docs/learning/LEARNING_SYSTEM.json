@@ -770,5 +770,33 @@
       "neural_circuit_policy"
     ],
     "structureExperiment": "organ_structural_evolution"
+  },
+  "metaNetworkLearning": {
+    "status": "design_target",
+    "architectureReference": "docs/architecture/ARCHITECTURE.json#metaNetworkContract",
+    "estimators": [
+      "declared_pathwise",
+      "supported_score_function",
+      "critic_or_distillation_with_bias_disclosure",
+      "governed_structural_comparison"
+    ],
+    "gradientBoundaryRequired": true,
+    "unrollAndTruncationRequired": true,
+    "metaTaskSplit": "held_out_task_family_seed_and_source_lineage",
+    "metaAdaptationBaselines": [
+      "no_adaptation",
+      "tuned_fixed_rule",
+      "learned_rule"
+    ],
+    "fieldSourceRevision": "ICLR-2027/paper-llm-theory@6bece4950d678986ac30db2f2c1fee0387ba9902",
+    "fieldIsCanonicalTruth": false,
+    "fieldProbeOwner": "existing_learning_owners",
+    "replayCountEqualsIndependentData": false,
+    "relatedExperiments": [
+      "meta_network_capacity_depth",
+      "meta_network_scaling",
+      "meta_adaptation_transfer",
+      "parameter_field_closure"
+    ]
   }
 }

@@ -119,6 +119,14 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### Capacity, depth and learning evidence target
+
+Preserve task-relevant approved representations or owner-readable references rather than silently collapsing all information into labels. Bound and record truncation, tokenizer equivalence, compression and reread costs. Typed/scoped inputs do not by themselves imply sufficient information.
+
+Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
+and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
+planned integration requirement, not a change to source or product status.
+
 ## 5. Contracts, ports and compatibility
 
 Produced registered contracts:

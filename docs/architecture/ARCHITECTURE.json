@@ -225,5 +225,43 @@
       "admitted_circuit_structure"
     ],
     "runtimeCapabilityClaimAdvanced": false
+  },
+  "metaNetworkContract": {
+    "revision": 1,
+    "status": "design_conditions_and_experiments_not_runtime_or_efficacy_evidence",
+    "definition": "mixed_stateful_stochastic_computation_network_G_Theta_rho_S",
+    "cellIsScalarActivation": false,
+    "circuitHierarchyEqualsDepth": false,
+    "specifications": {
+      "expressivity": "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+      "computeAndFieldControl": "docs/learning/NDU_FBSDE_SPEC.md",
+      "learningAndScaling": "docs/learning/CAUSAL_LONGITUDINAL_SPEC.md",
+      "metaAdaptation": "docs/learning/SELF_ITERATION_SPEC.md",
+      "conformance": "docs/learning/REFERENCE_CONFORMANCE_SPEC.md"
+    },
+    "separateClaims": [
+      "family_expressivity",
+      "composition_stability",
+      "learnability",
+      "unseen_task_adaptation",
+      "empirical_resource_scaling"
+    ],
+    "depthMetrics": [
+      "causal_activation_depth",
+      "sequential_cell_depth",
+      "model_internal_depth",
+      "contiguous_tensor_depth",
+      "gradient_reach_and_truncation",
+      "environment_horizon"
+    ],
+    "informationChannels": [
+      "scoped_representation",
+      "admitted_action"
+    ],
+    "universalApproximation": "conditional_family_containment_not_fixed_laya_checkpoint",
+    "parameterField": "training_observation_not_forward_pass_or_sufficient_state_by_definition",
+    "scalingLaw": "empirical_hypothesis_no_transferred_exponents",
+    "learnedAdaptationRequiredForMetaRl": true,
+    "sourceCapabilityClaimAdvanced": false
   }
 }

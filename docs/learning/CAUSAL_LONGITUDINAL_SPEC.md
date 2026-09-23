@@ -136,6 +136,60 @@ cluster; correlated activations do not increase the independent sample count.
 A routing intervention changes downstream observations and stopping/censoring;
 report that estimand and its support before attributing an improvement to a cell.
 
+### Hybrid credit and gradient reach
+
+A circuit forward trace is not an autograd tape. Continuous tensor regions may use
+backpropagation or declared truncated time unroll; discrete routes/termination use
+supported stochastic-policy estimators; external effects use observed outcomes;
+structural candidates use governed comparisons. Each trainable block declares
+pathwise/score-function/critic/distillation/finite-candidate method, reference
+versions, reachable input information, truncation and bias/variance diagnostics.
+Gradient stops, serialized messages, detach operations and non-differentiable
+owner calls are explicit. Do not report total executed Cell depth as gradient depth.
+
+For an expected-return special case, a stochastic route contributes a score term
+`(return-baseline)*grad log mu(chosen|history)` under the estimator's support and
+baseline conditions. This is not permission to apply the same target unchanged to
+arbitrary nonlinear recursive utility; use the NDU profile's sensitivities/adjoint
+or a documented surrogate and measure its bias. A straight-through or learned
+surrogate gradient is not exact. Local reward improvements are not a global gradient.
+Shared trainable parameters aggregate supported contributions across uses without
+confusing repeated activation with independent data. Cross-scope aggregation needs
+explicit data permission. Retain delayed/censored outcomes and behavior identity.
+
+### Resource axes and scaling-law identification
+
+Count unique independently stored parameter tensors once, reporting frozen versus
+trainable degrees separately. Cell count times backbone size is not independent
+capacity. Count each actual forward/backward execution, token/shape, routing,
+communication, reread, state access, optimizer job and candidate evaluation cost;
+shared storage does not imply shared compute. Separate end-to-end latency from
+hardware busy time/FLOPs and marginal adaptation cost from inherited pretraining.
+Declare allocation of shared batch overhead; do not charge one job at every parent.
+
+Parameter tying is an identity/constraint, not equality of checkpoint bytes.
+Independently trainable copies count separately even if initialized identically;
+replicas of one tied tensor count once for representational parameter capacity but
+once per resident replica for device memory. Report these two accounting views
+rather than deduplicating all identical hashes or calling replication new capacity.
+
+A scaling observation binds model/task distribution, initialization, curriculum,
+optimizer, tokenizer, hardware/precision, stopping, search budget and randomization
+unit. Distinguish independent task/episode count, transitions, source diversity,
+replay reuse and importance-weight ESS; replaying one trajectory does not add an
+independent sample. Log logical nodes, active nodes, depths, message/state capacity,
+unique/trainable parameters and lifecycle compute independently.
+
+An illustrative fit `E_inf + A*P^(-alpha) + B*N_eff^(-beta)` is only a candidate
+response surface on declared positive axes/metrics. Compare it with plateau,
+piecewise and interaction alternatives using withheld budgets and task families;
+include fit uncertainty and residual diagnostics. Never force an exponent positive,
+log negative utility, delete failed runs or add arbitrary floors merely to fit a
+power law. Distinguish conditional one-axis curves from an optimized compute
+frontier; hyperparameter/architecture search costs belong to the latter. A larger
+feasible class retaining the old solution has a nonworse best achievable optimum,
+not guaranteed SGD performance and not a theorem of power-law improvement.
+
 ## 6. Data, protocol and lineage schema
 
 The durable episode chain is:
@@ -327,6 +381,39 @@ after effect send, and during join cancellation with late child results. Histori
 choices and operation identities must survive policy/model replacement. Passing
 crash tests is not efficacy, and a higher utility estimate is not effect evidence.
 
+### Capacity, depth and meta-adaptation experiment design
+
+Reuse the read-only retrieval organ and add small known-function/history fixtures
+before real task trials. Sweep one axis at a time: causal/cell depth, parallel
+capacity, representation width/bit budget, adapter degrees and independent data.
+Then compare selected equal-total-compute configurations. Repeat shared versus
+independent parameters, continuous representation versus label-only versus allowed
+source reread, fixed versus adaptive depth, and sparse versus all-cell activation.
+Record both achieved quality and unspent/overspent budget; a deeper arm cannot hide
+higher training/evaluation expenditure. Synthetic approximation examples establish
+only the example, not universal approximation or a production capacity promise.
+
+For gradient reach, compare full versus bounded-unroll training on tractable
+regions and score/critic targets at discrete boundaries against known-value
+oracles. Include error-amplifying and stable compositions, hard-branch margins and
+long-history retention. A topology-depth sweep without successful credit delivery
+is a runtime scalability test, not a learnability experiment.
+
+For meta-learning, hold out complete task families and freeze the learned adapter
+before test-time adaptation; compare fixed-rule and learned-rule adaptation curves
+at matched support/query and compute budgets. For parameter fields, compare frozen
+role/probe summaries to matched-size generic summaries, richer history/state and
+richer projected modes; separate observational prediction from safe intervention
+response. Report adverse/no-gain results and uncertainty at the randomized task or
+episode cluster, preserving existing numerical safety and retention floors.
+
+Pilot axis values and metrics belong to `EXPERIMENTS.json`. They specify tests to
+implement, not installed capacity. Scale fits require several declared levels,
+with at least one withheld scale and task family; two endpoints do not identify a
+robust law. No fixed minimal pilot size overrides power, support or uncertainty
+requirements. Stop the claim at unsupported rather than extrapolating a favorable
+small-scale curve to an unmeasured system.
+
 ## 11. Quantitative acceptance gates
 
 | Gate | Required threshold |
@@ -364,6 +451,16 @@ silently generalized to arbitrary organ graphs or nonlinear recursive utility.
 [Option-Critic](https://arxiv.org/abs/1609.05140) motivates learned internal policy
 and termination for temporally extended decisions, not a proof that an arbitrary
 organ summary is Markov sufficient. These inform experiment design only.
+
+### Scaling evidence is task- and training-specific
+
+[Kaplan et al.](https://arxiv.org/abs/2001.08361) studies empirical language-model
+cross-entropy scaling, while [Hoffmann et al.](https://arxiv.org/abs/2203.15556)
+studies compute allocation between parameters and data. Neither supplies Hepta
+exponents. [Obando Ceron et al.](https://proceedings.mlr.press/v235/obando-ceron24b.html)
+reports improved parameter scaling for particular MoE/value-based RL settings;
+it does not guarantee improvement for arbitrary routing, task or NDU objectives.
+Architecture-specific replication is required before importing any scaling rule.
 
 ## 13. Implementation sequence and completion rule
 

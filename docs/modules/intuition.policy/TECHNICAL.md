@@ -98,6 +98,14 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### Capacity, depth and learning evidence target
+
+Preserve actual post-mask route/action probabilities and nondifferentiable boundaries. Prediction scores are not behavior probabilities. Hard-branch approximation needs margin or mistake-risk analysis, not a continuous-layer error bound; unsupported credit does not justify a policy update.
+
+Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
+and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
+planned integration requirement, not a change to source or product status.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

@@ -98,6 +98,14 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### Capacity, depth and learning evidence target
+
+Bind causal activation/representation/policy versions, actual chosen routes and independent outcomes. Preserve task-family/episode/source grouping, depth censoring, estimator cut points and declared ESS meaning; derived gradients or field coordinates are not observed success.
+
+Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
+and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
+planned integration requirement, not a change to source or product status.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

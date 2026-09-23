@@ -101,6 +101,14 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### Capacity, depth and learning evidence target
+
+Treat continue/deeper-subcircuit/reread/stop as admitted choices under the same fixed objective. Respect noncompensable limits and unknown-effect recovery. Field-based scheduling requires prospective closure/intervention evidence; node growth alone is not an efficiency signal.
+
+Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
+and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
+planned integration requirement, not a change to source or product status.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

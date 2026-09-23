@@ -96,6 +96,14 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### Capacity, depth and learning evidence target
+
+Compare increasing depth, width, information capacity or adapter freedom as different candidate classes. Keep no-change and fixed-update baselines. Changing representation/field dimension requires explicit dependent-state transport; learned adaptation is tested on held-out task families.
+
+Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
+and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
+planned integration requirement, not a change to source or product status.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

@@ -103,6 +103,25 @@ AlgorithmFaultReceiptV1 {
 
 Lineage covers source commit/tree, schema, fixture, dataset, training code, runtime, artifact, evaluation and selected snapshot. Test fixtures contain synthetic or approved data only. A fixture derived from private data inherits deletion and retention requirements.
 
+### Meta-network design records and evidence levels
+
+Keep these as design records beneath existing owners until versioned producer/
+consumer contracts are implemented; this document registers no new wire ID.
+
+| Record | Required semantics | Existing owner |
+| --- | --- | --- |
+| capacity profile | input domain/encoding, target class/norm/horizon, model and adapter freedoms, message/state/precision budgets, containment proof obligations, error allocation, unsupported modes | neuron/runtime and learning artifact manifests |
+| depth observation | causal activation IDs/parents/rounds, Cell predicate, model-internal depth, contiguous tensor/gradient region and truncation, actual max/quantiles/censoring, retries/waits, compute | TaskFlow operational trace, inference observations, ledger references |
+| learning block | objective/critic/behavior identity, estimator, gradient boundary, supported inputs, unroll, budget, bias/variance, target artifact | learning.operator with learning.ledger evidence |
+| field profile | exact paper/code/probe revision, role measure/anchors/gauge group, effective operators, retained modes, optimizer/environment conditioning, closure/holdout results, graph epoch transport | existing learning/artifact owners |
+| scaling panel | independent/trainable parameters, activations and message/state capacity, independent data/ESS meaning, resource units, task/split/search profile, fit family and held-out predictions, failures | learning.eval; artifacts retain immutable results |
+
+Representation, training and efficacy claims are separately indexed in the existing
+experiment/evidence system. Passing a symbolic formula or numeric fixture does not
+certify all reachable domains, successful real-model training, Markov closure,
+meta-adaptation or a scaling exponent. Do not create a per-cell global gate or
+independently writable theory-truth database.
+
 ## 7. Numerical stability, complexity and resource bounds
 
 Each specification declares dimensions, asymptotic complexity and measured envelopes. Common required metrics are p50/p95/p99 latency, throughput, CPU/GPU time, resident and peak memory, allocation bytes, queue depth/age, storage growth, file descriptors, sockets, model/token cost and recovery time.
@@ -137,6 +156,27 @@ Every adaptive package must include:
 - future-time, subgroup, OOD, retention and unlearning tests when adaptive behavior is claimed.
 
 The same implementation may not generate the sole oracle for its test. For critical numeric kernels, at least one independent scalar/tabular implementation or analytic fixture is required.
+
+### Meta-network reference cases (MN-01 through MN-08)
+
+These are required conformance cases for future owner implementations. A local
+arithmetic check may verify the numbers below; it is not an executed product test.
+
+| Case | Fixture and required conclusion |
+| --- | --- |
+| MN-01 depth | A -> B,C -> D: four active cells, maximum Cell depth three, not four; a later feedback activation D -> A' -> D' raises it to five without adding unique Cell parameters. Wrappers/waits/retries are reported separately. |
+| MN-02 bottleneck | Identity on [0,1], M=4 reconstructed values at bin midpoints: uniform error 1/8; fixed two-point encoding collision has pair error at least half target separation. A bypass/reread must be charged and changes the premise. |
+| MN-03 composition | epsilon=(1/100,2/100,3/100), L=(2,3,4): final bound 23/100. For three affine zero-input layers with positive epsilon biases, the bound is attained. A finite sample sweep does not prove the global Lipschitz/domain assumptions. |
+| MN-04 recurrence | Local error epsilon=1/100 and L=1/2 gives a finite-round geometric sum below 1/50; L>1 fixture exposes amplification. Hard routing near a threshold is outside this smooth bound. |
+| MN-05 gauge | For compatible A,B and invertible R, BA=(BR^-1)(RA); factor norm changes are allowed. Behavioral probe/optimizer-coordinate assumptions remain separate. |
+| MN-06 tied parameters | One base used by two cells counts once in unique parameters, twice in invocation cost. Fork/join critical path is a maximum, total work is a sum with shared physical work attributed once. |
+| MN-07 gradient boundary | Serialize or detach between two continuous regions: no pathwise gradient is claimed across the cut; estimator/credit record is required. Analytic and finite-difference directions agree only on the declared differentiable fixture. |
+| MN-08 evidence failure | Encoder collision, insufficient history, omitted covariance drivers, unsupported counterfactual routes and plateau/no-gain scale panels must remain failures/limitations, not favorable UAT/meta-RL/closure/scaling reports. |
+
+Keep these beside existing owner tests when implemented. Use known-function,
+known-state and known-driver oracles for conformance, independent future task
+outcomes for efficacy, and existing bounded negative/fault/revocation tests for
+runtime validity. New proof obligations never weaken current safety floors.
 
 ## 11. Quantitative acceptance gates
 

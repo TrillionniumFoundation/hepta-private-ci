@@ -3,7 +3,7 @@
 **Plan ID:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN`
 **Version:** `8.0.0`
 **Date:** 2026-09-23
-**Design amendment:** multiscale DecisionCell, Neural Circuit and Nervous System architecture; runtime and capability claims unchanged.
+**Design amendment:** multiscale Cell/Circuit architecture, conditional expressivity, depth/credit, parameter-field and scaling experiments; runtime and capability claims unchanged.
 **Status:** canonical policy and static registries are defined by this document set; live branch, pull-request, CI, selection and default-branch facts are resolved only from current exact-candidate receipts and are never cached here.
 
 This is the only global human-readable development authority in the working tree. Machine registries own bounded facts and `docs/STATUS.md` is generated. This document grants no runtime, model, provider, tool, network, filesystem, secret, Matrix, fleet, operator, promotion, or release authority.
@@ -324,6 +324,44 @@ transaction per signal. Unknown effects reconcile before dependent progress.
 The circuit specification and staged implementation truth are in
 `docs/modules/automation.taskflow/TECHNICAL.md`; `docs/cns/TECHNICAL.md` owns system
 composition. These targets do not establish trained circuits or runtime activation.
+
+### Expressivity, depth and evidence for a trainable meta-network
+
+The cognitive target is a mixed recurrent computation network `(G, Theta, rho, S)`:
+allowed circuit graph, effective model parameters, activation/routing/termination
+policy and bounded state. A DecisionCell is a trainable vector-valued stateful
+module, not merely a replacement scalar activation function. Model execution,
+circuit activation, environment time and parameter-learning time are separate.
+Organ hierarchy is not network depth. Measure realized causal/cell depth, contiguous
+tensor depth, gradient reach and environment horizon separately; sharing weights
+does not remove repeated compute or create independent parameter capacity.
+
+Representation ports may carry approved continuous features, distributions or
+re-readable source references; action ports carry admitted choices. Do not force
+all inter-cell information through an irreversible finite-label bottleneck. Every
+representation remains typed, scoped, bounded, versioned and non-authorizing.
+Public organ summaries need a sufficiency test or a declared error/missingness
+bound. Fixed precision, fixed tokenizer and fixed adapter rank are restrictions,
+not an automatic universal-approximation certificate.
+
+Keep five claims separate: model-family expressivity, compositional stability,
+learnability, held-out task adaptation, and empirical resource scaling. A finite
+circuit family containing affine/nonpolynomial-network approximants admits a
+conditional universal-approximation argument; this does not prove that a fixed
+Laya checkpoint or the current runtime meets its premises. Meta-RL additionally
+requires learning an adaptation rule across tasks and testing it on held-out tasks;
+independent fixed-optimizer fine-tuning is not sufficient. NDU values remain tied
+to the external objective and cannot redefine their own success.
+
+Parameter-field observables describe training evolution, not inference propagation.
+Their symmetry, projection error, dynamic closure and control usefulness must be
+validated separately; no rank-one driver or low-dimensional Markov closure is
+assumed. Scaling laws are hypotheses fitted to independent parameter count,
+active compute, message/memory capacity and effective data with retained failures,
+not guarantees from node count. Formal conditions and error bounds live in
+`docs/learning/NEURAL_BIOMIMICRY_SPEC.md`; field/compute control lives in
+`docs/learning/NDU_FBSDE_SPEC.md`; experiments and conformance live in the existing
+learning specifications. These requirements add no runtime or efficacy claim.
 
 ## 9. Prompt Intervention Market
 

@@ -141,6 +141,39 @@ adapters, datasets, optimizer state, caches, checkpoints and backups. Unlearning
 without a supported selective method means revoke/retrain, not a tombstone claim.
 No-data/no-update and training-budget exhaustion preserve the selected predecessor.
 
+### Meta-learning requires an adaptation objective
+
+Call the target meta-RL only when the adaptation mechanism is itself learned
+across a declared task distribution and evaluated on unseen tasks. A fixed
+optimizer separately fine-tuning cells is modular/continual learning, not evidence
+of learned adaptation. One design objective is
+
+\[
+\max_\phi\ \mathbb E_{\tau\sim p(\mathcal T)}
+ [J_\tau(\operatorname{Adapt}_\phi(\mathcal D_\tau;G_0,\Theta_0,\rho_0))
+ -\lambda C_\tau].
+\]
+
+Here phi may encode initialization, update rules, bounded training allocation or
+admissible structure proposals. The expression is a finite-budget design target;
+J uses the fixed external task objective and declared NDU profile. State and
+weight adaptation are distinguished. A learned recurrent adapter may update state
+inside a run; candidate weight or topology adoption still follows snapshot rules.
+
+Train/selection/test separation is by task family, task seed and source lineage,
+not just shuffled transitions from the same task. Meta-test observations allowed
+for adaptation are separate from query outcomes used to assess it. Freeze phi,
+initialization, update budget and stopping before meta-test; reset between tasks
+unless a continual-transfer protocol explicitly declares carryover. Compare no
+adaptation, tuned fixed adaptation and learned adaptation at matched total
+training/search/adaptation cost. Report transfer, negative transfer, retention and
+adaptation curves, not only final training return. No meta-controller can change
+its own evaluation task distribution, objective or authority.
+
+[RL2](https://arxiv.org/abs/1611.02779) motivates learning a fast algorithm through
+slower task-distribution training; it is not a convergence guarantee for this
+mixed circuit or a reason to bypass versioned parameter adoption.
+
 ## 6. Data, protocol and lineage schema
 
 The following records are canonical cross-module protocols registered in `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`:

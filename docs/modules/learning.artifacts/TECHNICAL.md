@@ -114,6 +114,14 @@ The shared contract and record design are in
 This target does not change the current native implementation, source status or
 product/activation evidence recorded below. No existing wire version is redefined.
 
+### Capacity, depth and learning evidence target
+
+Retain capacity, parameter-field and adaptation profiles under existing manifests. Bind tensor sharing, probe/anchor/coordinate epochs, optimizer lineage, representation precision and compatibility. Factor norms are not effective-operator distance; field projections do not replace original artifacts.
+
+Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
+and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
+planned integration requirement, not a change to source or product status.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
