@@ -1,0 +1,47 @@
+name: chatgpt apply cognitive.types payload
+
+on:
+  push:
+    branches:
+      - chatgpt/cognitive-types-convergence-20260925
+    paths:
+      - ".chatgpt/cognitive-types-payload/manifest"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out candidate branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Verify and apply exact payload
+        run: |
+          set -euo pipefail
+          cat .chatgpt/cognitive-types-payload/chunk-* > "$RUNNER_TEMP/payload.b64"
+          base64 --decode "$RUNNER_TEMP/payload.b64" > "$RUNNER_TEMP/payload.tgz"
+          expected="$(cut -d' ' -f1 .chatgpt/cognitive-types-payload/manifest)"
+          actual="$(sha256sum "$RUNNER_TEMP/payload.tgz" | cut -d' ' -f1)"
+          test "$actual" = "$expected"
+          tar -xzf "$RUNNER_TEMP/payload.tgz" -C .
+
+      - name: Commit applied source and remove temporary transport
+        run: |
+          set -euo pipefail
+          rm -rf .chatgpt/cognitive-types-payload
+          rm -f \
+            .github/workflows/chatgpt-apply-cognitive-types-payload.yml \
+            .github/workflows/chatgpt-cognitive-types-lock-refresh.yml \
+            .github/workflows/chatgpt-cognitive-types-source-export.yml
+          git config user.name "ChatGPT Codex Connector"
+          git config user.email "14957082+openai@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "fix(cognitive.types): close canonical contract gaps"
+          git push origin HEAD:chatgpt/cognitive-types-convergence-20260925
