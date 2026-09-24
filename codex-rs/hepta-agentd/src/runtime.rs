@@ -39,6 +39,7 @@ pub async fn run(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
+    config.require_intelligence_composition()?;
     let production_operations = config.take_production_operations();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config

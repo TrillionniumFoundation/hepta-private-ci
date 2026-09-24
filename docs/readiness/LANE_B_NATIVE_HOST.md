@@ -105,8 +105,11 @@ establish clean-Agent transfer, OS isolation, target-host performance or unlearn
 Default Agentd uses RuntimeTasks, including real automation retirement and
 shutdown. Canonical preparation is reached from authenticated ObjectiveStart;
 host composition supplies current owner inputs and signed evaluation, not wire
-profiles. The ordinary CLI still needs an explicitly configured invocation
-provider; automatic construction for every task/domain is not claimed.
+profiles. The shipped CLI does not yet construct a native invocation provider.
+Runner-only/provider-only daemon configuration is rejected before owner services
+open; a complete pair also requires Objective profile, AuthBus trust and replay
+checkpoint. An unconfigured compatibility profile remains distinct. Startup
+validation is not evidence of a seven-owner invocation or Circuit execution.
 
 Automation repair recognizes displaced histories by checksums, preserves SQL,
 and rejects unknown/dirty/conflicting state. Real-store tests reopen cuts before
@@ -124,6 +127,12 @@ expiry closes a loaded consumer. The complete native API and rejection boundarie
 [runtime.agentd](../modules/runtime.agentd/TECHNICAL.md#same-host-shared-replay-composition).
 This is not Laya training, multi-source causal transfer, remote federation,
 production model selection or physical erasure of trained information.
+
+Dataset freezing now uses a replay-built objective-local record index and the
+unchanged global revocation/unlearning cut. Unrelated ordinary records do not
+force a full scan on each warm freeze. Matching-objective history, global
+withdrawals, dataset output size and all cold replay still have real costs; the
+independent full-scan signing-byte regression is not a sustained-load SLO.
 
 The history workload reports append p50/p95/p99, fit/reload, indexed dataset reads
 and full recovery at explicit Agent/history points. Recovery still replays full

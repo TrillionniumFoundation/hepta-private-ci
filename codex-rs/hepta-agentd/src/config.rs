@@ -534,6 +534,31 @@ impl AgentdConfig {
         self.intelligence_invocation_provider.clone()
     }
 
+    /// Reject a partially requested canonical profile before daemon services or
+    /// durable owners are opened. No configured component is silently ignored.
+    pub(crate) fn require_intelligence_composition(&self) -> Result<(), AgentdError> {
+        match (
+            self.intelligence_product_runner.as_ref(),
+            self.intelligence_invocation_provider.as_ref(),
+        ) {
+            (None, None) => Ok(()),
+            (Some(_), Some(_)) => {
+                if self.objective_profile_file().is_none()
+                    || self.authbus_trust_file().is_none()
+                    || self.authbus_checkpoint_file().is_none()
+                {
+                    return Err(AgentdError::Invalid(
+                        "canonical intelligence requires an Objective profile, AuthBus trust and replay checkpoint".to_string(),
+                    ));
+                }
+                Ok(())
+            }
+            _ => Err(AgentdError::Invalid(
+                "canonical intelligence runner and invocation provider must be configured together; refusing compatibility fallback".to_string(),
+            )),
+        }
+    }
+
     pub fn identity(&self) -> &AgentdIdentity {
         &self.identity
     }

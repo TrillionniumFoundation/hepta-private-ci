@@ -575,12 +575,18 @@ impl AgentdState {
         &self,
         record: &RunStartRecordV1,
     ) -> Result<Option<crate::AgentdIntelligenceAdmittedOutcomeV1>, AgentdError> {
-        let (Some(runner), Some(provider)) = (
-            self.intelligence_product.get(),
-            self.intelligence_invocation.get(),
-        ) else {
-            return Ok(None);
-        };
+        let (runner, provider) =
+            match (
+                self.intelligence_product.get(),
+                self.intelligence_invocation.get(),
+            ) {
+                (None, None) => return Ok(None),
+                (Some(runner), Some(provider)) => (runner, provider),
+                _ => return Err(AgentdError::Invalid(
+                    "incomplete canonical intelligence attachment; refusing compatibility fallback"
+                        .to_string(),
+                )),
+            };
 
         self.require_current_run_start(record)?;
         let invocation = runner
