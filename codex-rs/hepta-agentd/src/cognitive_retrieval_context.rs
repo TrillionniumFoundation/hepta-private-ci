@@ -6,6 +6,8 @@
 
 #[path = "cognitive_retrieval_context_file.rs"]
 mod file;
+#[path = "cognitive_retrieval_owner_cut.rs"]
+pub(crate) mod owner_cut;
 #[path = "cognitive_retrieval_context_config.rs"]
 mod process_config;
 
