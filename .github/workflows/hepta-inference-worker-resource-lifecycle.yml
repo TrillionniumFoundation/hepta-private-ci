@@ -25,6 +25,12 @@ jobs:
       - name: Apply resource lifecycle repair
         run: python3 scripts/apply_inference_worker_resource_lifecycle_20260925.py
 
+      - name: Format worker package
+        working-directory: codex-rs
+        run: |
+          cargo fmt -p codex-hepta-infer-worker-host
+          cargo fmt -p codex-hepta-infer-worker-host -- --check
+
       - name: Check generated patch
         run: |
           set -euo pipefail
