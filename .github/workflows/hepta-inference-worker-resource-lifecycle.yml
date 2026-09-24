@@ -37,6 +37,12 @@ jobs:
           cargo test --locked -p codex-hepta-infer-worker-host --lib
           model_worker::tests:: -- --nocapture
 
+      - name: Run strict worker lint
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked -p codex-hepta-infer-worker-host
+          --lib --tests -- -D warnings
+
       - name: Check generated patch
         run: |
           set -euo pipefail
