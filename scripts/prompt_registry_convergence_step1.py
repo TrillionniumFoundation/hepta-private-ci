@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Triggered only after the one-shot workflow exists in the branch history.
 from pathlib import Path
 
 
