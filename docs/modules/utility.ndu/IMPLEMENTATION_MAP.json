@@ -13,7 +13,7 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
+  "productCallerState": "request_local_read_only_and_registered_numeric_admission_established_authenticated_owner_source_candidate_not_product_composed",
   "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
   "operations": [
     {
@@ -422,13 +422,15 @@
         "FinalUseAuthority",
         "NduOwnerContextV1 principal/owner/host generation/fence/revocation frontier",
         "frozen NduProductionPolicyV1",
-        "NduProjectionStoreV1"
+        "NduProjectionStoreV1",
+        "optional frozen NduNumericRegistryV1 generation"
       ],
       "outputs": [
         "authenticated owner-local evaluation",
-        "final-use-bound durable projection mutations"
+        "final-use-bound durable projection mutations",
+        "registry-admitted utility signals with distinct admission receipts"
       ],
-      "state": "source_implemented_authenticated_owner_candidate_not_product_activated",
+      "state": "source_implemented_authenticated_owner_and_registered_numeric_admission_candidate_not_product_activated",
       "authority": "consumes_external_final_use_only",
       "nonClaim": "utility.ndu never mints authority; named product bootstrap, selected writer enrollment and target-host activation remain external",
       "tests": [
@@ -443,6 +445,14 @@
         {
           "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
           "symbol": "live_revocation_frontier_blocks_previously_signed_write"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "authenticated_owner_freezes_and_consumes_registered_numeric_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "unconfigured_owner_cannot_claim_registry_admission"
         }
       ],
       "designOperation": "NduAuthenticatedOwnerV1",
@@ -461,6 +471,65 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_store.rs",
           "symbol": "NduProjectionStoreV1",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+          "symbol": "NduNumericRegistryV1::admit_utility_signal",
+          "role": "source_declaration"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "admit_registered_utility_signal",
+      "nativeSymbol": "codex_hepta_ndu::NduNumericRegistryV1::admit_utility_signal",
+      "sourcePath": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+      "inputs": [
+        "immutable ContractRegistryV1 generation",
+        "UtilityProfile normalization and ordered axes",
+        "bounded NumericSignalV1"
+      ],
+      "outputs": [
+        "NduRegisteredUtilitySignalV1",
+        "RegisteredNumericConversionReceiptV1 with registry and admission digest"
+      ],
+      "state": "source_implemented_authenticated_owner_registry_admission_not_product_activated",
+      "authority": "none_registry_authentication_external",
+      "nonClaim": "pure conversion receipt alone is not registry admission; registry selection authentication and activation remain external",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+          "symbol": "registered_utility_signal_binds_registry_normalization_and_axis_order"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+          "symbol": "registry_generation_changes_admission_but_not_pure_arithmetic"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+          "symbol": "normalization_unit_and_axis_mismatch_reject_before_owner_use"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "authenticated_owner_freezes_and_consumes_registered_numeric_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "unconfigured_owner_cannot_claim_registry_admission"
+        }
+      ],
+      "designOperation": "admit_registered_utility_signal",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+          "symbol": "rescale_signal_registered",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-types/src/registry.rs",
+          "symbol": "ContractRegistryV1::registry_digest",
           "role": "source_declaration"
         }
       ],
@@ -525,7 +594,9 @@
     "independentDecisionSourceImplemented": true,
     "independentDecisionEvidenceProved": false,
     "namedHostQualificationReceiptProved": false,
-    "implementedOperationMappingComplete": true
+    "implementedOperationMappingComplete": true,
+    "registeredNumericAdmissionSourceImplemented": true,
+    "registeredNumericAdmissionProductExecutionProved": false
   },
   "sourceBase": {
     "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
@@ -536,7 +607,8 @@
     "Compose NduAuthenticatedOwnerV1 in a named authenticated product bootstrap with a selected NduProjectionStoreV1 and host-managed current fence/revocation feed before changing authenticated production product execution or writer activation claims.",
     "Execute the learning.eval signed convergence and well-posedness paths with real independently controlled producer/evaluator trust and retained evidence; source tests do not establish real independent acceptance.",
     "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation.",
-    "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated."
+    "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated.",
+    "Run current exact-head and deterministic synthetic-merge qualification for the registered numeric admission consumer."
   ],
   "externalEvidenceGates": [
     "independent semantic/security review",

@@ -49,13 +49,21 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         if phrase not in policy:
             raise VerificationError(f"boundary policy missing {phrase!r}")
     modules = matrix.get("modules")
+    module_names = (
+        [row.get("module") for row in modules if isinstance(row, dict)]
+        if isinstance(modules, list)
+        else []
+    )
     if (
         not isinstance(modules, list)
-        or [row.get("module") for row in modules if isinstance(row, dict)]
-        != EXPECTED_MODULES
+        or len(module_names) != len(EXPECTED_MODULES)
+        or len(set(module_names)) != len(module_names)
+        or set(module_names) != set(EXPECTED_MODULES)
     ):
-        raise VerificationError("closed-world module order mismatch")
-    for row in modules:
+        raise VerificationError("closed-world module set mismatch")
+    by_name = {row["module"]: row for row in modules}
+    ordered_modules = [by_name[module] for module in EXPECTED_MODULES]
+    for row in ordered_modules:
         module = row["module"]
         states = row.get("states")
         if (
@@ -90,7 +98,6 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
             raise VerificationError(f"{module}: source anchors required")
         for anchor in anchors:
             validate_anchor(module, anchor, root)
-    by_name = {row["module"]: row for row in modules}
     exact = {
         ("kernel.operations", "implementation"): "durable_owner_source_implemented",
         ("kernel.operations", "durability"): "sqlite_wal_full_integrated_owner",
@@ -113,8 +120,10 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
     for (module, axis), value in exact.items():
         if by_name[module]["states"][axis] != value:
             raise VerificationError(f"{module}: {axis} drift")
+    normalized_matrix = dict(matrix)
+    normalized_matrix["modules"] = ordered_modules
     capability = read_json(root / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json")
-    validate_capability_map(matrix, capability, root)
+    validate_capability_map(normalized_matrix, capability, root)
     native = validate_native_bindings(root)
     validate_wire_vector(root)
     validate_source_specific(root)

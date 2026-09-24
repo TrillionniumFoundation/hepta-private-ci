@@ -18,10 +18,10 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "capability_specific_source_consumers_composed_product_qualification_pending",
   "productionWriterState": "not_established",
-  "stateOwnerDisposition": "Stateless authority-free values; immutable registry generations are caller-owned inputs.",
-  "terminalObserverDisposition": "No effects or terminal observer; candidate qualification proves deterministic value semantics only.",
+  "stateOwnerDisposition": "Stateless authority-free values; immutable registry generations are caller-owned inputs and registered admission is proven by a distinct receipt.",
+  "terminalObserverDisposition": "No effect owner; prompt delivery and topology values are observations/proposals consumed by their named owners.",
   "operations": [
     {
       "operation": "bounded_values",
@@ -198,17 +198,32 @@
       "operation": "rescale_signal_registered",
       "nativeSymbol": "rescale_signal_registered",
       "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_ndu_authenticated_owner_consumer_not_product_qualified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+        "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+        "codex-rs/hepta-ndu/src/owner_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "rescale_signal_registered",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "publicSymbols": [
-        "rescale_signal_registered"
+        "rescale_signal_registered",
+        "RegisteredNumericConversionReceiptV1"
+      ],
+      "consumerCallsites": [
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+          "symbol": "NduNumericRegistryV1::admit_utility_signal",
+          "role": "registered_consumer"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner.rs",
+          "symbol": "NduAuthenticatedOwnerV1::admit_utility_signal",
+          "role": "authenticated_owner_consumer"
+        }
       ]
     },
     {
@@ -230,38 +245,152 @@
         "generated/javascript/hepta_platform_types_v1.mjs",
         "generated/typescript/hepta_platform_types_v1.d.ts"
       ]
+    },
+    {
+      "operation": "prompt_delivery_observation_v1",
+      "nativeSymbol": "PromptDeliveryObservationV1",
+      "sourcePath": "codex-rs/hepta-types/src/prompt_delivery.rs",
+      "state": "source_implemented_current_consumers_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/prompt_delivery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prompt_delivery_observation_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "PromptDeliveryObservationV1",
+        "PromptDeliveryRejectReasonV1"
+      ],
+      "consumerCallsites": [
+        {
+          "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+          "symbol": "PromptDeliveryObservationV1",
+          "role": "runtime_producer_adapter"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+          "symbol": "append_runtime_prompt_delivery_v1",
+          "role": "learning_consumer"
+        }
+      ]
+    },
+    {
+      "operation": "runtime_topology_candidate_v1",
+      "nativeSymbol": "RuntimeTopologyCandidateV1",
+      "sourcePath": "codex-rs/hepta-types/src/topology.rs",
+      "state": "source_implemented_supervisor_consumer_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/topology.rs",
+        "codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "runtime_topology_candidate_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "RuntimeTopologyCandidateV1",
+        "RuntimeTopologyDeltaV1",
+        "RuntimeTopologyOperationV1"
+      ],
+      "consumerCallsites": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/module_runtime.rs",
+          "symbol": "register_selected_topology_candidate",
+          "role": "runtime_supervisor_consumer"
+        }
+      ]
+    },
+    {
+      "operation": "random_stream_manifest_v1",
+      "nativeSymbol": "RandomStreamManifestV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_contract_only",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "random_stream_manifest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "RandomStreamManifestV1"
+      ]
+    },
+    {
+      "operation": "external_system_manifest_v1",
+      "nativeSymbol": "ExternalSystemManifestV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_contract_only",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "external_system_manifest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "ExternalSystemManifestV1",
+        "ExternalSystemClassV1",
+        "UtcTimestampV1"
+      ]
+    },
+    {
+      "operation": "sensor_calibration_manifest_v1",
+      "nativeSymbol": "SensorCalibrationManifestV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_contract_only",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sensor_calibration_manifest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "SensorCalibrationManifestV1",
+        "SensorClassV1",
+        "SensorFailurePolicyV1",
+        "SensorUncertaintyProfileV1",
+        "SensorOperatingRangeV1"
+      ]
     }
   ],
   "ownedTargetProtocols": [
     {
       "protocol": "RandomStreamManifestV1",
-      "state": "source_pending"
+      "state": "source_implemented_contract_only"
     },
     {
       "protocol": "ExternalSystemManifestV1",
-      "state": "source_pending"
+      "state": "source_implemented_contract_only"
     },
     {
       "protocol": "SensorCalibrationManifestV1",
-      "state": "source_pending"
+      "state": "source_implemented_contract_only"
     }
   ],
   "repositoryControlledGaps": [
     "Run exact-head and deterministic synthetic-merge Lane A qualification for this exact candidate.",
-    "Implement native source for RandomStreamManifestV1, ExternalSystemManifestV1 and SensorCalibrationManifestV1 before claiming full owned-target-protocol source completion."
+    "Execute the selected consumer compile/test matrix and retain current candidate receipts."
   ],
   "externalEvidenceGates": [
-    "named authenticated product composition and full consumer compile matrix",
-    "independent semantic review and target-host/product qualification",
-    "operator acceptance, canary, promotion and release"
+    "authenticated registry-generation provisioning and target-host product qualification",
+    "independent semantic review and external canonical-wire parity where required",
+    "operator acceptance canary promotion and release"
   ],
   "claimBoundary": {
     "implementedOperationMappingComplete": true,
-    "ownedTargetProtocolSourceComplete": false,
-    "nativeSourceMappingComplete": false,
+    "ownedTargetProtocolSourceComplete": true,
+    "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,

@@ -79,8 +79,49 @@ admits only the exact semantics of:
 Changing scale or rounding under the same V1 profile identity rejects.
 `rescale_signal_registered` requires the source profile, target profile and
 normalization digest to resolve in the same explicitly supplied immutable
-registry generation. Authentication/provisioning of that generation belongs to
-the product owner and is a separate composition gate.
+registry generation. It returns `RegisteredNumericConversionReceiptV1`, whose
+registry and admission digests are separate from the embedded pure arithmetic
+receipt. Authentication/provisioning of that generation belongs to the product
+owner and is a separate composition gate.
+
+`utility.ndu::NduNumericRegistryV1` is the first named native consumer. An
+`NduAuthenticatedOwnerV1` opened with that registry freezes the registry digest
+into its production-policy identity before admitting a utility signal. An owner
+opened without a registry cannot claim registered admission.
+
+
+## Shared observation and topology contracts
+
+`PromptDeliveryObservationV1` validates the physical delivery disposition,
+provider-request digest, optional bounded strictly increasing token positions
+and optional bounded rejection reason. Its semantic digest binds every field.
+It is source-consumed by the Codex adapter/Agentd path and learning ledger.
+
+`RuntimeTopologyCandidateV1` validates generation succession, rollback
+predecessor, per-operation delta shape, split/merge participants and a candidate
+digest recomputed from every implementation/evidence delta. Runtime Supervisor
+checks it again against the current serving topology and independent selection
+receipt before admission.
+
+## Owned manifest contracts
+
+`RandomStreamManifestV1` binds a nonzero root-seed digest, algorithm namespace,
+episode/decision/stream IDs, a strictly increasing counter interval and exact
+generator identity/version.
+
+`ExternalSystemManifestV1` binds the closed system class, host/OS/package/
+service/filesystem/identity/network/secret digests, a strict canonical UTC
+observation time and nonzero authorization witness. It describes a supplied
+observation; it does not scan a host.
+
+`SensorCalibrationManifestV1` binds sensor identity/class, hardware or adapter
+digest, nonzero generation, clock domain, increasing canonical UTC validity
+window, bounded uncertainty profile, operating range and closed failure policy.
+It validates calibration metadata; it does not operate a sensor.
+
+All three use private fields, checked constructors, explicit `validate` and a
+stable HPTC semantic digest. Their source implementation does not imply an
+external JSON codec or runtime driver.
 
 ## Q32 semantic split
 
@@ -101,8 +142,11 @@ binding, JavaScript runtime binding and TypeScript declarations under
 consumer compatibility gates.
 
 Generated bindings cover the frozen foundational identity/profile/authority
-wire/numeric-profile/Q32/canonical constants. They do not make arbitrary Rust
-domain structs into external schemas and do not constitute product activation.
+wire/numeric-profile/Q32/canonical constants. JavaScript profile/ID lookups use
+own-property membership, so inherited names such as `constructor`, `toString`
+and `__proto__` reject consistently with Python and Rust. Generated bindings do
+not make arbitrary Rust domain structs into external schemas and do not
+constitute product activation.
 
 ## Conformance
 

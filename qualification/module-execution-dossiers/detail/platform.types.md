@@ -3,140 +3,104 @@
 Parent: `docs/modules/platform.types/TECHNICAL.md`. Lane:
 `LANE-A-FOUNDATION`.
 
-Status: bounded/profiled primitives, sealed non-authorizing posture, canonical
-HPTC V1 encoding/validation, immutable schema/normalization and numeric-profile
-registry, deterministic numeric conversion, conformance suite and generated
-Python/JavaScript/TypeScript bindings are source implemented. Three
-registry-owned target protocols remain source-pending. Named product composition,
-candidate qualification and independent acceptance are separate gates.
+Status: the bounded foundational types, HPTC V1, immutable registry, generated
+bindings, prompt-delivery/topology contracts and all three owned manifest
+contracts are source implemented. A registered numeric-conversion consumer is
+composed through the authenticated NDU owner. Exact-candidate qualification,
+authenticated registry provisioning and external acceptance remain separate.
 
 ## 1. Source and work envelope
 
 Root: `codex-rs/hepta-types`. Bootstrap package:
-`PLATFORM-0-TYPE-BOUNDARY`. The module is stateless and authority-free.
-
-`productCallerState = not_composed`. Source-level interoperability or generated
-bindings do not count as production execution.
+`PLATFORM-0-TYPE-BOUNDARY`. The module is stateless and authority-free. The
+only cross-owner source touched by the registered-consumer slice is
+`codex-rs/hepta-ndu`, where the immutable registry is frozen and consumed.
 
 ## 2. Public operations and contract details
 
-- `validate_id(raw, profile)` validates bounded V1 ID grammar before owned
-  construction. Schema, normalization, execution, receipt and artifact profiles
-  bind explicit namespaces.
-- `AuthorityPosture::try_from_wire_bytes(raw)` is a one-byte negative ingress:
-  zero produces deny-all; every nonzero grant bit rejects. `AuthorityPosture`
-  and `NonAuthorizingPosture` cannot encode authority.
-- `canonical_encode_v1` / `canonical_digest_v1` produce the frozen HPTC V1
-  representation. `canonical_validate_v1` independently validates supplied V1
-  bytes and rejects invalid tags/bools, ordering, depth, size, truncation and
-  trailing data.
-- `ContractRegistryV1` holds one immutable bounded caller-owned definition
-  generation. Definition kind is bound to ID namespace.
-- `NumericProfileDefinitionV1` binds profile identity, definition version,
-  scale and rounding to a canonical digest.
-- `rescale_signal_registered` requires source profile, target profile and
-  normalization definition in the same registry generation before checked
-  numeric conversion.
-- generated Python/JavaScript runtime bindings and TypeScript declarations are
-  deterministically emitted from `PLATFORM_TYPES_BINDINGS_V1.json`.
+- `validate_id` checks profile-specific ID grammar before owned construction.
+- `AuthorityPosture::try_from_wire_bytes` admits exactly deny-all and rejects
+  all grant bits.
+- `canonical_encode_v1`, `canonical_digest_v1` and
+  `canonical_validate_v1` implement frozen HPTC V1.
+- `ContractRegistryV1` holds one bounded immutable generation.
+- `rescale_signal` emits a pure arithmetic receipt.
+- `rescale_signal_registered` additionally emits
+  `RegisteredNumericConversionReceiptV1`, binding registry,
+  normalization, profiles and exact input/output evidence.
+- `PromptDeliveryObservationV1` binds physical prompt-delivery observation
+  fields without granting authority.
+- `RuntimeTopologyCandidateV1` binds every topology delta and participant into
+  the candidate digest before supervisor admission.
+- `RandomStreamManifestV1`, `ExternalSystemManifestV1` and
+  `SensorCalibrationManifestV1` use private fields, checked constructors,
+  `validate` and `semantic_digest`; they do not execute the systems described.
+- generated Python/JavaScript/TypeScript surfaces come only from the checked
+  foundational binding spec.
 
 ## 3. State, authority and transaction design
 
-There is no authoritative state, clock, credential, filesystem handle, global
-registry, migration or transaction. All values are immutable or caller-owned.
-
-The only authority-related operation is rejection: untrusted raw authority bits
-cannot become a trusted shared type. Real authority belongs to
-`kernel.authority`.
-
-Authentication and distribution of a registry generation are product-owner
-responsibilities. `platform.types` proves semantic identity of definitions, not
-who approved them.
+There is no authoritative mutable state, transaction or recovery protocol in
+`platform.types`. Registry authentication belongs to the caller. The NDU
+consumer owns an immutable `NduNumericRegistryV1`, records its digest in the
+owner production-policy digest at open, and returns a registered utility-signal
+type that cannot be confused with a plain arithmetic receipt.
 
 ## 4. Deterministic algorithms
 
-ID validation performs no case folding or normalization. Canonical V1 binds
-domain, namespaced type ID, schema version, type tags, integer widths, lengths
-and canonical ordering. Arrays preserve semantic order. V1 deliberately does no
-Unicode normalization.
-
-Numeric conversion uses checked i128 intermediates and target profile rounding;
-there is no saturation. Numeric profile admission refuses scale/rounding drift
-under an existing V1 identity.
-
-`FixedQ32` compatibility multiply/divide is
-`fixed-q32-toward-zero-v1`. `signed-q32-nearest-ties-even-v1` shares the raw
-2^32 scale but is explicitly not arithmetic-compatible.
+HPTC V1 sorts fields/maps by accepted byte names and preserves array order.
+Numeric conversion uses checked wide intermediates and the target profile's
+rounding. Manifest semantic digests cover every native semantic field. UTC
+manifest timestamps use a canonical bounded parser and chronological key;
+invalid calendar dates, offsets, excess precision and reversed windows reject.
 
 ## 5. Enforced bounds
 
-- stable identifier: <= 128 encoded bytes;
-- canonical HPTC V1: <= 256 KiB;
-- canonical array/map/field collection: <= 4096 entries;
-- canonical nesting: <= 16;
-- immutable registry: <= 256 total ordinary/profile definitions;
-- ordinary registry definition: <= 4096 UTF-8 bytes;
-- aggregate ordinary registry definition bytes: <= 256 KiB;
-- numeric signal elements: <= 4096.
-
-These are source-enforced limits, not target-host latency measurements.
+- ID: 128 encoded bytes;
+- HPTC: 256 KiB, 4096 items, depth 16;
+- registry: 256 definitions/profiles and 256 KiB aggregate ordinary text;
+- numeric signal: 4096 values;
+- manifest enum/version/timestamp/clock/unit text: fixed per-field limits;
+- random counter range: strictly increasing;
+- sensor confidence: `1..=1_000_000` ppm;
+- sensor uncertainty, operating and validity ranges: ordered.
 
 ## 6. Concrete verification
 
-- TYPES-01: positive and negative half ties follow target profile rounding.
-- TYPES-02: conversion digests bind source/output profile, normalization,
-  shape/range/unit and exact rational error bound.
-- TYPES-03: overflow, unit/shape/range/normalization mismatch and unregistered
-  profile fail closed.
-- TYPES-04: all eight raw authority grant bits reject before trusted posture
-  construction.
-- TYPES-05: five canonical accepted vectors agree across Rust/Python/Node,
-  including integer boundaries and NFC/NFD non-normalization.
-- TYPES-06: seven rejection vectors cover duplicate field/key, zero schema,
-  oversize, depth overflow, invalid bool and invalid tag.
-- TYPES-07: generated bindings regenerate without drift and Python/JavaScript
-  consumers agree on ID, authority, profile and Q32 semantics.
-- TYPES-08: registry definition kind/namespace, duplicate identity/profile and
-  aggregate byte bounds reject.
-
-Exact-head and deterministic synthetic-merge workflow success are required
-candidate receipts. Static test identities are not pass receipts.
+- TYPES-01 through TYPES-08 retain the existing numeric, authority, canonical,
+  registry and generated-binding coverage.
+- TYPES-09 rejects JavaScript prototype-chain names in generated ID/profile
+  lookups and verifies the same rejection set in Python and Rust.
+- TYPES-10 covers random-stream identity/seed/counter/generator binding and
+  rejection.
+- TYPES-11 covers external-system digests, closed class values and strict UTC
+  observation time.
+- TYPES-12 covers sensor class, generation, clock, uncertainty, operating range,
+  failure policy and increasing validity window.
+- TYPES-13 proves the registered conversion receipt changes with the registry
+  generation even when pure arithmetic output is unchanged.
+- TYPES-14 proves an authenticated NDU owner without a configured registry
+  cannot claim admission, while a configured owner freezes and consumes the
+  registry digest.
 
 ## 7. Completion vocabulary
 
-`implementedOperationMappingComplete` means every operation claimed as
-implemented in this candidate maps to public source and tests.
-
-`ownedTargetProtocolSourceComplete` means every protocol canonically owned by
-`platform.types` has native source. It remains false while
-`RandomStreamManifestV1`, `ExternalSystemManifestV1` and
-`SensorCalibrationManifestV1` are source-pending.
-
-The legacy broad `nativeSourceMappingComplete` must not be interpreted as full
-module source completion and is false for this candidate.
+`implementedOperationMappingComplete` covers every operation listed in the
+module implementation map. `ownedTargetProtocolSourceComplete` is true only
+because all three owned manifest protocols now have native source and tests.
+This still does not imply an external wire codec, product activation or host
+qualification.
 
 ## 8. Current native implementation
 
-Implemented source surfaces:
+Implemented files include `bounded.rs`, `identity.rs`, `digest.rs`,
+`canonical_digest.rs`, `fixed.rs`, `registry.rs`, `numeric_profile.rs`,
+`numeric_conversion.rs`, `prompt_delivery.rs`, `topology.rs`, `manifests.rs`,
+`bindings/**`, `generated/**` and `conformance/**`.
 
-- `src/bounded.rs`: bounded text/bytes;
-- `src/identity.rs`: IDs, monotonic values, raw authority rejection and sealed
-  postures;
-- `src/digest.rs`: Digest32;
-- `src/canonical_digest.rs`: HPTC V1 encode/digest/validate;
-- `src/fixed.rs`: FixedQ32/ProbabilityQ32 and explicit arithmetic profile;
-- `src/registry.rs`: immutable contract/profile registry;
-- `src/numeric_profile.rs`: native profile semantics and
-  `NumericProfileDefinitionV1`;
-- `src/numeric_conversion.rs`: native and registry-admitted conversion;
-- `bindings/**`, `generated/**`, `conformance/**`: generated language
-  surfaces and independent compatibility oracles.
-
-Remaining repository-controlled source work for full target ownership:
-`RandomStreamManifestV1`, `ExternalSystemManifestV1`,
-`SensorCalibrationManifestV1`.
-
-Remaining integration/evidence work: named product composition, authenticated
-registry-generation provisioning, full consumer compile matrix, independent
-semantic review, target-host/product qualification, then activation/operator
-acceptance/promotion/release.
+Current consumers are `hepta-codex-adapter`/Agentd plus `learning.ledger` for
+prompt delivery, `hepta-supervisor` for topology, and
+`NduAuthenticatedOwnerV1` for registry-admitted numeric utility signals.
+Remaining gates are exact-head and synthetic-merge qualification, the selected
+consumer compile matrix, authenticated registry provisioning, target-host
+qualification and external acceptance.
