@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::fs;
+use std::fs::File;
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -14,6 +15,7 @@ use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::NduProjectionJournalError;
 use codex_hepta_ndu::NduProjectionJournalV1;
 use codex_hepta_ndu::NduProjectionKindV1;
+use codex_hepta_ndu::NduProjectionStoreError;
 use codex_hepta_ndu::NduProjectionStoreV1;
 use codex_hepta_ndu::RequiredOrganSet;
 use codex_hepta_ndu::UtilityContribution;
@@ -33,7 +35,9 @@ const MAX_CANDIDATES: usize = 128;
 const MAX_ORGANS: usize = 32;
 const MAX_UTILITY_AXES: usize = 8;
 const MAX_RISK_RESOURCE_AXES: usize = 32;
-const JOURNAL_CAPACITY: usize = 4096;
+const JOURNAL_RECORD_CAPACITY: usize = 4096;
+const LIVE_PROJECTION_CAPACITY: usize = JOURNAL_RECORD_CAPACITY / 2;
+const OVERSIZED_IMAGE_BYTES: u64 = 2 * 1024 * 1024;
 
 #[derive(Clone)]
 struct EvaluationFixture {
@@ -89,7 +93,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut journal = NduProjectionJournalV1::new();
     let objective = digest("capacity-objective");
     let subject = digest("capacity-subject");
-    for index in 0..JOURNAL_CAPACITY {
+    for index in 0..LIVE_PROJECTION_CAPACITY {
         journal.append_projection(
             NduProjectionKindV1::Preference,
             digest(&format!("capacity-identity-{index}")),
@@ -98,9 +102,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             digest(&format!("capacity-payload-{index}")),
         )?;
     }
-    let journal_capacity_micros = journal_started.elapsed().as_micros();
-    if journal.entries().len() != JOURNAL_CAPACITY {
-        return Err("journal capacity underfilled".into());
+    if journal.entries().len() != LIVE_PROJECTION_CAPACITY {
+        return Err("journal live-projection envelope underfilled".into());
     }
     let overflow = journal
         .append_projection(
@@ -110,42 +113,71 @@ fn main() -> Result<(), Box<dyn Error>> {
             subject,
             digest("capacity-overflow-payload"),
         )
-        .expect_err("4097th record must reject");
-    if overflow != NduProjectionJournalError::RecordLimitExceeded {
-        return Err("journal capacity boundary mismatch".into());
+        .expect_err("ordinary history must not consume reserved revocation capacity");
+    if overflow != NduProjectionJournalError::RevocationCapacityExhausted {
+        return Err("journal revocation-reserve boundary mismatch".into());
+    }
+    let first_capacity_projection = digest("capacity-payload-0");
+    journal.revoke_projection(
+        digest("capacity-revocation"),
+        objective,
+        subject,
+        first_capacity_projection,
+    )?;
+    let reopened_capacity = NduProjectionJournalV1::reopen(&journal.export_bytes())?;
+    if reopened_capacity.entries() != journal.entries() {
+        return Err("full-envelope journal recovery drift".into());
+    }
+    let journal_capacity_micros = journal_started.elapsed().as_micros();
+
+    let root_nonce = format!("{}", std::process::id());
+    let store_root = std::env::temp_dir().join(format!("hepta-ndu-named-host-{root_nonce}"));
+    let restore_root =
+        std::env::temp_dir().join(format!("hepta-ndu-named-host-restore-{root_nonce}"));
+    let oversized_root =
+        std::env::temp_dir().join(format!("hepta-ndu-named-host-oversized-{root_nonce}"));
+    for root in [&store_root, &restore_root, &oversized_root] {
+        let _ = fs::remove_dir_all(root);
+        fs::create_dir(root)?;
     }
 
-    let store_root =
-        std::env::temp_dir().join(format!("hepta-ndu-named-host-{}", std::process::id()));
-    let restore_root = std::env::temp_dir().join(format!(
-        "hepta-ndu-named-host-restore-{}",
-        std::process::id()
-    ));
-    let _ = fs::remove_dir_all(&store_root);
-    let _ = fs::remove_dir_all(&restore_root);
-    fs::create_dir(&store_root)?;
-    fs::create_dir(&restore_root)?;
+    let durability_started = Instant::now();
+    let durable_objective = digest("durable-objective");
+    let durable_subject = digest("durable-subject");
     let projection = digest("durable-projection");
     {
         let mut store = NduProjectionStoreV1::open(&store_root)?;
         store.append_projection(
             NduProjectionKindV1::Preference,
             digest("durable-projection-id"),
-            objective,
-            subject,
+            durable_objective,
+            durable_subject,
             projection,
         )?;
-        store.select_projection(digest("durable-select-id"), objective, subject, projection)?;
+        store.select_projection_if_current(
+            digest("durable-select-id"),
+            durable_objective,
+            durable_subject,
+            None,
+            projection,
+        )?;
     }
     let backup;
     {
         let mut reopened = NduProjectionStoreV1::open(&store_root)?;
-        if reopened.selected_projection_digest(objective, subject)? != Some(projection) {
+        if reopened.selected_projection_digest(durable_objective, durable_subject)?
+            != Some(projection)
+        {
             return Err("durable reopen lost selection".into());
         }
-        reopened.revoke_projection(digest("durable-revoke-id"), objective, subject, projection)?;
+        reopened.revoke_projection(
+            digest("durable-revoke-id"),
+            durable_objective,
+            durable_subject,
+            projection,
+        )?;
         if reopened
-            .selected_projection_digest(objective, subject)?
+            .selected_projection_digest(durable_objective, durable_subject)?
             .is_some()
         {
             return Err("durable revocation did not clear selection".into());
@@ -156,7 +188,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut restored = NduProjectionStoreV1::open(&restore_root)?;
         restored.restore_backup(&backup)?;
         if restored
-            .selected_projection_digest(objective, subject)?
+            .selected_projection_digest(durable_objective, durable_subject)?
             .is_some()
         {
             return Err("backup restore resurrected revoked projection".into());
@@ -165,8 +197,23 @@ fn main() -> Result<(), Box<dyn Error>> {
             return Err("backup restore record count mismatch".into());
         }
     }
-    let _ = fs::remove_dir_all(&store_root);
-    let _ = fs::remove_dir_all(&restore_root);
+
+    let oversized = File::create(oversized_root.join("projection.journal"))?;
+    oversized.set_len(OVERSIZED_IMAGE_BYTES)?;
+    oversized.sync_all()?;
+    drop(oversized);
+    if NduProjectionStoreV1::open(&oversized_root)
+        .err()
+        .ok_or("oversized image unexpectedly opened")?
+        != NduProjectionStoreError::BackupTooLarge
+    {
+        return Err("oversized image did not fail at bounded-read admission".into());
+    }
+    let durability_micros = durability_started.elapsed().as_micros();
+
+    for root in [&store_root, &restore_root, &oversized_root] {
+        let _ = fs::remove_dir_all(root);
+    }
 
     let cpu_after = process_cpu_ticks()?;
     let cpu_ticks = cpu_after.saturating_sub(cpu_before);
@@ -185,7 +232,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let json = format!(
         concat!(
             "{{\n",
-            "  \"schema\": \"hepta.ndu.named-host-qualification.v1\",\n",
+            "  \"schema\": \"hepta.ndu.named-host-qualification.v2\",\n",
             "  \"hostId\": \"{}\",\n",
             "  \"lane\": \"{}\",\n",
             "  \"sourceSha\": \"{}\",\n",
@@ -199,10 +246,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             "\"targetP95Micros\": 2000, \"targetP99Micros\": 5000, \"targetPass\": {}}},\n",
             "  \"maxCapacity\": {{\"candidates\": {}, \"contributions\": {}, ",
             "\"utilityAxes\": {}, \"riskResourceAxes\": {}, \"elapsedMicros\": {}}},\n",
-            "  \"journal\": {{\"records\": 4096, \"overflowRejected\": true, ",
+            "  \"journal\": {{\"recordCapacity\": {}, \"liveProjectionCapacity\": {}, ",
+            "\"reservedRevocationSlots\": {}, \"ordinaryOverflowRejected\": true, ",
+            "\"fullEnvelopeRevocation\": true, \"restartRecovery\": true, ",
             "\"elapsedMicros\": {}}},\n",
-            "  \"durability\": {{\"restartReopen\": true, \"revocationNonResurrection\": true, ",
-            "\"backupRestore\": true}},\n",
+            "  \"durability\": {{\"restartReopen\": true, ",
+            "\"revocationNonResurrection\": true, \"backupRestore\": true, ",
+            "\"oversizedImageBoundedReject\": true, \"faultCutRegressionPrecondition\": true, ",
+            "\"elapsedMicros\": {}}},\n",
             "  \"process\": {{\"cpuMicros\": {}, \"maxRssKiB\": {}}}\n",
             "}}\n"
         ),
@@ -226,7 +277,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         MAX_UTILITY_AXES,
         MAX_RISK_RESOURCE_AXES,
         max_capacity_micros,
+        JOURNAL_RECORD_CAPACITY,
+        LIVE_PROJECTION_CAPACITY,
+        LIVE_PROJECTION_CAPACITY,
         journal_capacity_micros,
+        durability_micros,
         cpu_micros,
         max_rss_kib
     );
