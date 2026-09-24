@@ -413,5 +413,27 @@
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-types"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+      "nativeSymbol": "NduNumericRegistryV1::admit_utility_signal",
+      "state": "authenticated_owner_registered_numeric_source_composed_product_qualification_pending"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/owner.rs",
+      "nativeSymbol": "NduAuthenticatedOwnerV1::admit_utility_signal",
+      "state": "authenticated_owner_entrypoint_source_composed_product_qualification_pending"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "nativeSymbol": "LedgerWriter::append_runtime_prompt_delivery_v1",
+      "state": "durable_prompt_delivery_consumer_source_composed_product_qualification_pending"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/module_runtime.rs",
+      "nativeSymbol": "RuntimeModuleSupervisor::register_selected_topology_candidate",
+      "state": "runtime_topology_consumer_source_composed_product_qualification_pending"
+    }
   ]
 }
