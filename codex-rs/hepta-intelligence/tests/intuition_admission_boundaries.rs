@@ -35,9 +35,12 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use std::error::Error;
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).expect("fixture id")
+type TestResult<T = ()> = Result<T, Box<dyn Error>>;
+
+fn id(value: &str) -> TestResult<StableId> {
+    Ok(StableId::new(value)?)
 }
 
 fn d(value: &str) -> Digest32 {
@@ -70,9 +73,9 @@ impl Fixture {
     }
 }
 
-fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
+fn fixture(evidence_objective: Digest32, observer_controller: &str) -> TestResult<Fixture> {
     let candidates = vec![CalibratedActionCandidateV1 {
-        candidate_id: id("candidate"),
+        candidate_id: id("candidate")?,
         legal: true,
         hard_veto: false,
         utility: FixedQ32::ONE,
@@ -81,10 +84,10 @@ fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
         assignment_probability: ProbabilityQ32::ZERO,
         support_digest: d("support"),
     }];
-    let set = canonical_candidate_set_digest_v1(&candidates).expect("set");
-    let order = canonical_candidate_order_digest_v1(&candidates).expect("order");
+    let set = canonical_candidate_set_digest_v1(&candidates)?;
+    let order = canonical_candidate_order_digest_v1(&candidates)?;
     let request = CalibratedDecisionRequestV1 {
-        decision_id: id("decision"),
+        decision_id: id("decision")?,
         objective_digest: d("objective"),
         objective_class_digest: d("class"),
         state_digest: d("state"),
@@ -131,7 +134,7 @@ fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
         candidates,
     };
     let profile = CanonicalPolicyProfileV1 {
-        profile_id: id("profile"),
+        profile_id: id("profile")?,
         policy_digest: d("policy"),
         objective_class_digest: d("class"),
         generation: 1,
@@ -160,7 +163,7 @@ fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
         feature_schema_digest: profile.scorer.feature_schema_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
         candidate_set_digest: set,
-        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).expect("scores"),
+        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request)?,
         policy_digest: request.policy_digest,
         policy_generation: request.policy_generation,
     };
@@ -175,13 +178,15 @@ fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
         LearningEvidenceRoleV1::Observer,
     ];
     let controllers = [
-        "generator-controller",
-        "evaluator-controller",
-        observer_controller,
+        id("generator-controller")?,
+        id("evaluator-controller")?,
+        id(observer_controller)?,
     ];
+    let principal_ids = [id("principal-0")?, id("principal-1")?, id("principal-2")?];
+    let evidence_ids = [id("evidence-0")?, id("evidence-1")?, id("evidence-2")?];
     let principals: [AuthenticatedPrincipalV1; 3] =
         std::array::from_fn(|index| AuthenticatedPrincipalV1 {
-            principal_id: id(&format!("principal-{index}")),
+            principal_id: principal_ids[index].clone(),
             credential_chain_digest: d(&format!("chain-{index}")),
             signing_key_digest: Digest32::of_bytes(&keys[index].verifying_key().to_bytes()),
             scope_digest: d("scope"),
@@ -196,28 +201,26 @@ fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
         signers: (0..3)
             .map(|index| TrustedLearningSignerV1 {
                 principal: principals[index].clone(),
-                controller_id: id(controllers[index]),
+                controller_id: controllers[index].clone(),
                 verifying_key: keys[index].verifying_key().to_bytes(),
                 roles: vec![roles[index]],
                 revoked_at: None,
             })
             .collect(),
-    })
-    .expect("trust");
+    })?;
     let payloads = [
-        canonical_completeness_evidence_payload_v1(&request).expect("completeness"),
-        canonical_profile_qualification_payload_v1(&profile).expect("profile"),
+        canonical_completeness_evidence_payload_v1(&request)?,
+        canonical_profile_qualification_payload_v1(&profile)?,
         canonical_runtime_commitment_payload_v1(
             &request,
             &profile,
             &scoring,
             &AssignmentCommitmentV1::Deterministic,
-        )
-        .expect("runtime"),
+        )?,
     ];
     let signed = std::array::from_fn(|index| {
         let mut evidence = SignedLearningEvidenceV1 {
-            evidence_id: id(&format!("evidence-{index}")),
+            evidence_id: evidence_ids[index].clone(),
             principal_id: principals[index].principal_id.clone(),
             role: roles[index],
             trust_digest: verifier.trust_digest(),
@@ -230,53 +233,57 @@ fn fixture(evidence_objective: Digest32, observer_controller: &str) -> Fixture {
             signature: [0; 64],
         };
         evidence.signature = keys[index].sign(&evidence.signing_bytes()).to_bytes();
-        // The negative cases use valid signatures, not tampered signature bytes.
-        verifier
-            .verify(roles[index], &evidence, &payloads[index], 150)
-            .expect("cryptographically valid role evidence");
         evidence
     });
-    Fixture {
+    // Fixture failures fail the test. Negative cases must reach admission with
+    // independently verified signatures, not accidentally invalid evidence.
+    for (index, evidence) in signed.iter().enumerate() {
+        verifier.verify(roles[index], evidence, &payloads[index], 150)?;
+    }
+    Ok(Fixture {
         request,
         profile,
         scoring,
         verifier,
         signed,
-    }
+    })
 }
 
 #[test]
-fn independent_same_objective_evidence_still_succeeds() {
+fn independent_same_objective_evidence_still_succeeds() -> TestResult {
     assert!(
-        fixture(d("objective"), "observer-controller")
+        fixture(d("objective"), "observer-controller")?
             .decide()
             .is_ok()
     );
+    Ok(())
 }
 
 #[test]
-fn valid_signatures_for_another_objective_are_rejected() {
+fn valid_signatures_for_another_objective_are_rejected() -> TestResult {
     assert_eq!(
-        fixture(d("different-objective"), "observer-controller").decide(),
+        fixture(d("different-objective"), "observer-controller")?.decide(),
         Err(IntuitionQualificationError::Evidence(
             SignedEvidenceError::ContextMismatch
         ))
     );
+    Ok(())
 }
 
 #[test]
-fn distinct_evaluator_observer_keys_do_not_hide_controller_collision() {
+fn distinct_evaluator_observer_keys_do_not_hide_controller_collision() -> TestResult {
     assert_eq!(
-        fixture(d("objective"), "evaluator-controller").decide(),
+        fixture(d("objective"), "evaluator-controller")?.decide(),
         Err(IntuitionQualificationError::Evidence(
             SignedEvidenceError::ControllerCollision
         ))
     );
+    Ok(())
 }
 
 #[test]
-fn candidate_limit_is_checked_before_signature_or_payload_work() {
-    let mut value = fixture(d("objective"), "observer-controller");
+fn candidate_limit_is_checked_before_signature_or_payload_work() -> TestResult {
+    let mut value = fixture(d("objective"), "observer-controller")?;
     value.request.candidates = vec![value.request.candidates[0].clone(); 129];
     value.signed[0].signature = [0; 64];
     assert_eq!(
@@ -285,4 +292,5 @@ fn candidate_limit_is_checked_before_signature_or_payload_work() {
             QualifiedCalibratedError::Policy(CalibratedError::CandidateCountOutOfRange)
         ))
     );
+    Ok(())
 }

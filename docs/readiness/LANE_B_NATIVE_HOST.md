@@ -128,6 +128,23 @@ expiry closes a loaded consumer. The complete native API and rejection boundarie
 This is not Laya training, multi-source causal transfer, remote federation,
 production model selection or physical erasure of trained information.
 
+Recovery support is not yet a complete filesystem-fault qualification. In
+`learning-artifacts/src/owner_host.rs`, the exact-existing branch of
+`write_bounded_create_only_or_exact` compares record bytes and syncs the parent
+directory, but does not repeat the file sync. If the first file sync was
+uncertain after all bytes became readable, a matching retry must not be treated
+as proof that those bytes reached stable storage. Re-establishing both durability
+barriers on retry, with independent file-sync and directory-sync failure tests,
+remains required. Successful ordinary reopen tests do not cover that cut.
+
+The provider qualification workflow observes immutable source-head and canonical
+prospective-merge identities. Formatting is check-only; the job has no repository
+write credentials and never repairs, commits or pushes its candidate. Format,
+provider-seam tests and strict lint report independently through the existing
+execution recorder. A successful provider-seam test is not evidence that the
+ordinary daemon constructs authoritative seven-owner inputs or consumes a Circuit.
+Neither a failed nor an interrupted qualification can be relabeled as completion.
+
 Dataset freezing now uses a replay-built objective-local record index and the
 unchanged global revocation/unlearning cut. Unrelated ordinary records do not
 force a full scan on each warm freeze. Matching-objective history, global
