@@ -1,0 +1,86 @@
+name: Hepta learning.operator materialization v2
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - scripts/apply_learning_operator_convergence_20260925_v2.py
+      - .github/workflows/hepta-learning-operator-materialize-v2.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-operator-materialize-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: ${{ !contains(github.event.head_commit.message, '[learning-operator-materialized-v2]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ${{ github.ref_name }}
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Materialize known-safe transformations
+        run: python3 scripts/apply_learning_operator_convergence_20260925_v2.py
+
+      - name: Verify Lane E and implementation maps
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 -m unittest scripts.tests.test_hepta_ci_scope
+
+      - name: Prove topology gate executes tests
+        run: |
+          set -euo pipefail
+          output="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology_v2 -- --nocapture 2>&1)"
+          printf '%s\n' "$output"
+          printf '%s\n' "$output" | grep -Eq 'test result: ok\. [1-9][0-9]* passed'
+
+      - name: Format, test and strict lint affected packages
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-bellman-operator \
+            --package codex-hepta-intelligence-eval \
+            --package codex-hepta-agentd \
+            --package codex-hepta-plasticity \
+            -- --check
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-agentd --lib
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-intelligence-eval \
+            -p codex-hepta-agentd \
+            -p codex-hepta-plasticity \
+            --all-targets -- -D warnings
+
+      - name: Commit verified candidate without overwriting concurrent work
+        run: |
+          set -euo pipefail
+          rm -f scripts/apply_learning_operator_convergence_20260925.py
+          rm -f scripts/apply_learning_operator_convergence_20260925_v2.py
+          rm -f .github/workflows/hepta-learning-operator-materialize.yml
+          rm -f .github/workflows/hepta-learning-operator-materialize-v2.yml
+          git add -A
+          test -n "$(git status --porcelain)"
+          git config user.name 'Hepta Convergence Bot'
+          git config user.email 'hepta-convergence@users.noreply.github.com'
+          git commit -m 'fix(learning.operator): close Lane E source and caller boundaries [learning-operator-materialized-v2]'
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
