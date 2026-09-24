@@ -33,7 +33,7 @@ jobs:
       - name: Install Rust 1.88.0
         run: |
           set -euo pipefail
-          rustup toolchain install 1.88.0 --profile minimal
+          rustup toolchain install 1.88.0 --profile minimal --component rustfmt
           rustup override set 1.88.0
           rustc -vV
           cargo -vV
@@ -63,7 +63,7 @@ jobs:
             cp /tmp/browser-servo-worker-transform.log browser-servo-worker-bootstrap-error.log
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add browser-servo-worker-bootstrap-error.log
+            git add -f browser-servo-worker-bootstrap-error.log
             git commit -m "ci(browser.servo): retain worker transform failure [skip ci]"
             git push origin HEAD:codex/browser-servo-convergence-20260925
             exit "$transform_status"
