@@ -29,6 +29,7 @@ jobs:
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
@@ -64,6 +65,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/provider-evidence"
           test "$(git rev-parse HEAD)" = "$TESTED"
+          printf 'TESTED_SHA=%s\n' "$TESTED" >> "$GITHUB_ENV"
           git diff --check
           {
             printf 'source=%s\nbase=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" "$LANE"
@@ -113,6 +115,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --exit-code
           git diff --cached --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
