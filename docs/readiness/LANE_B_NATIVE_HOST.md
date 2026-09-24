@@ -100,6 +100,31 @@ revocation-through-descendants tests. Cross-host enrollment/transport still need
 its own authenticated versioned boundary. Documentation/reference success does not
 establish clean-Agent transfer, OS isolation, target-host performance or unlearning.
 
+## Bounded three-group convergence
+
+Default Agentd uses RuntimeTasks, including real automation retirement and
+shutdown. Canonical preparation is reached from authenticated ObjectiveStart;
+host composition supplies current owner inputs and signed evaluation, not wire
+profiles. The ordinary CLI still needs an explicitly configured invocation
+provider; automatic construction for every task/domain is not claimed.
+
+Automation repair recognizes displaced histories by checksums, preserves SQL,
+and rejects unknown/dirty/conflicting state. Real-store tests reopen cuts before
+and after repair. Shared-use grants reserve a terminal revision, while training
+support binds owner/Memory/revision rather than just text.
+
+The native terminal Cell is one-state tabular. Its same-host Replay consumer
+resolves bounded indexed source records, trains a candidate and uses existing
+artifact persistence/loading. Withdrawal blocks later use of a loaded candidate.
+This is not Laya training, multi-source causal transfer, remote federation,
+production model selection or physical erasure of trained information.
+
+The history workload reports append p50/p95/p99, fit/reload, indexed dataset reads
+and full recovery at explicit Agent/history points. Recovery still replays full
+authenticated history; the log says `not_cold_compaction=true`. Checkpoint/cold
+compaction and sustained-history SLOs remain unfinished. Exact-ID lookup and
+bounded pages do not certify them. Bind results to an exact committed candidate.
+
 ## Remaining implementation work
 
 - Connect economic quota and device-capacity authorities, and implement authenticated provider reconciliation after process loss. Native local-slot reservations and observed usage settlement are wired; hosted execution does not prove local model artifacts, memory/device grants or process isolation.

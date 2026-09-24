@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8a0db0f05806ddcc44037feb101cba477377c2fc",
-    "tree": "243d8765a5d68f97fdd969d9ce5f2b8b3359957b"
+    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -213,6 +213,66 @@
       "nativeSymbol": "pub struct AgentdNeuronOwner",
       "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
       "sourcePathExists": true
+    },
+    {
+      "operation": "shared_terminal_cell_train",
+      "designOperation": "shared_terminal_cell_train",
+      "nativeSymbol": "pub async fn train(",
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "kind": "native_integration",
+          "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+        }
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+    },
+    {
+      "operation": "shared_terminal_cell_load",
+      "designOperation": "shared_terminal_cell_load",
+      "nativeSymbol": "pub async fn load(",
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "kind": "native_integration",
+          "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+        }
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+    },
+    {
+      "operation": "shared_terminal_cell_predict",
+      "designOperation": "shared_terminal_cell_predict",
+      "nativeSymbol": "pub async fn predict(",
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "kind": "native_integration",
+          "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+        }
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
     }
   ],
   "repositoryControlledGaps": [
@@ -284,7 +344,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "27750fed7f15dcca8822554c7cd9614b1f85fbd0"
+      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -311,6 +371,10 @@
       "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "object": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/state.rs",
       "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
     },
@@ -321,6 +385,10 @@
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
       "object": "99cc98a37001d488201b874b90435bf6540fc25a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
@@ -336,7 +404,7 @@
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "1c6ddbdb11eccef235df6e9f6456084825580041"
+      "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
     }
   ]
 }

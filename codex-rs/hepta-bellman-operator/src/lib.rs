@@ -19,6 +19,12 @@ use codex_hepta_types::StableId;
 
 mod authenticated;
 mod dataset_bound;
+mod owner_terminal;
+pub use owner_terminal::FrozenTerminalCellV1;
+pub use owner_terminal::TerminalCellError;
+pub use owner_terminal::TerminalCellProfileV1;
+pub use owner_terminal::fit_terminal_cell_from_owner_v1;
+pub use owner_terminal::freeze_terminal_cell_from_owner_v1;
 mod learned;
 mod loaded;
 pub use loaded::LoadedTabularOperatorV1;

@@ -590,22 +590,44 @@ impl LedgerWriter {
     ) -> Result<(), ProductionLedgerError> {
         verify_dataset_snapshot_receipt_v3(receipt, now)?;
         let ledger = self.backend.core()?;
-        let active_digests = ledger
-            .active_records()
-            .into_iter()
-            .map(|record| record.event_digest)
-            .collect::<BTreeSet<_>>();
-        if receipt
+        for digest in &receipt.snapshot.source_record_digests {
+            if ledger.active_record_by_digest(digest)?.is_none() {
+                return Err(ProductionLedgerError::Binding(
+                    "dataset source revoked, corrected or unavailable",
+                ));
+            }
+        }
+        Ok(())
+    }
+
+    /// Resolve only the bounded frozen dataset through the replay-built digest
+    /// index. Current corrections/revocations are checked before returning any
+    /// borrowed records in source sequence order; callers revalidate again before publishing
+    /// a trained artifact. Record order never depends on content-hash ordering.
+    pub fn read_dataset_records(
+        &self,
+        receipt: &DatasetSnapshotReceiptV3,
+        now: u64,
+    ) -> Result<Vec<&LedgerRecord>, ProductionLedgerError> {
+        if receipt.snapshot.source_record_digests.len() > 4096 {
+            return Err(ProductionLedgerError::Binding(
+                "dataset materialization bound",
+            ));
+        }
+        self.revalidate_dataset_snapshot(receipt, now)?;
+        let ledger = self.backend.core()?;
+        let mut records = receipt
             .snapshot
             .source_record_digests
             .iter()
-            .any(|digest| !active_digests.contains(digest))
-        {
-            return Err(ProductionLedgerError::Binding(
-                "dataset source revoked, corrected or unavailable",
-            ));
-        }
-        Ok(())
+            .map(|digest| {
+                ledger
+                    .active_record_by_digest(digest)?
+                    .ok_or(ProductionLedgerError::Binding("dataset source unavailable"))
+            })
+            .collect::<Result<Vec<_>, ProductionLedgerError>>()?;
+        records.sort_unstable_by_key(|record| record.sequence);
+        Ok(records)
     }
 
     /// Build a dataset receipt from the current anchored ledger. Source records,

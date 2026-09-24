@@ -105,7 +105,8 @@ fn op_06_tabular_fit_requires_exact_frozen_dataset_evidence() {
 #[test]
 fn op_06_world_model_requires_exact_frozen_dataset_evidence() {
     let records = [digest("record-a"), digest("record-b")];
-    let receipt = receipt(vec![records[0], records[1], digest("support-record")]);
+    let extra_support = receipt(vec![records[0], records[1], digest("support-record")]);
+    let receipt = receipt(vec![records[0], records[1]]);
     let rows = vec![
         WorldModelSampleV1 {
             sample_id: id("sample-a"),
@@ -124,6 +125,11 @@ fn op_06_world_model_requires_exact_frozen_dataset_evidence() {
             evidence_digest: records[1],
         },
     ];
+    // A frozen record with no corresponding model row is not silently ignored.
+    assert!(matches!(
+        verify_world_model_dataset_v2(id("world-model"), rows.clone(), &extra_support, 50),
+        Err(OperatorDatasetBindingError::EvidenceSetMismatch)
+    ));
     let verified =
         verify_world_model_dataset_v2(id("world-model"), rows, &receipt, 50).expect("bind rows");
     let model = fit_transition_model_verified_v2(verified).expect("fit");

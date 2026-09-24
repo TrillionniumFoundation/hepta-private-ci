@@ -129,6 +129,26 @@ retained audit links never justify retaining prohibited payload. Full semantics:
 [shared HNMF](../../hnmf/TECHNICAL.md#authorized-contribution-and-shared-view-publication).
 These are planned extensions; current source/product states below remain unchanged.
 
+### Implemented same-host shared-use subset
+
+`CognitiveStore::{grant_shared_experience,read_shared_experience,
+revalidate_shared_experience,revoke_shared_experience}` uses the existing SQLite
+owner, exact Memory revision and separately bound Recall/Replay purposes.
+Replay also binds parameter scope and artifact consumer. This is a local owner
+API, not a new cross-host protocol or public Memory scope.
+
+The immutable policy log permits 1024 ordinary revisions and reserved terminal
+revision 1025. Renewal exhaustion cannot prevent withdrawal; the final slot cannot
+contain an active grant. Repeated withdrawal and reopening preserve rejection.
+`SharedExperienceUseV1::source_support_digest` binds owner, Memory identity,
+revision and content: equal text in another record is not the same training source.
+Permission and source currentness are checked again at consumer use. This subset
+accepts current verified evidence, not general historical Replay eligibility.
+
+Source: [shared_experience.rs](../../../codex-rs/hepta-memory/src/shared_experience.rs).
+Tests: [shared_experience_tests.rs](../../../codex-rs/hepta-memory/src/shared_experience_tests.rs).
+These tests do not establish OS isolation, cross-host enrollment or model unlearning.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

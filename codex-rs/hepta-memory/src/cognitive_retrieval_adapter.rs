@@ -114,25 +114,6 @@ impl RetrievalExecutionContextV1 {
     }
 }
 
-pub(crate) fn recall_owner_observation(
-    observation: &RetrievalObservation,
-    cut: &DurableCognitiveSnapshot,
-    context: &RetrievalExecutionContextV1,
-    request_digest: Digest32,
-    acquired_at_unix_ms: u64,
-    lease_expires_unix_ms: u64,
-) -> Result<GeneratedRecallV1, CognitiveStoreError> {
-    execute_owner_observation(
-        observation,
-        cut,
-        context,
-        request_digest,
-        acquired_at_unix_ms,
-        lease_expires_unix_ms,
-    )
-    .map(|execution| execution.recall)
-}
-
 pub fn execute_owner_observation(
     observation: &RetrievalObservation,
     cut: &DurableCognitiveSnapshot,

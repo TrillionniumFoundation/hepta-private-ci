@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
@@ -279,6 +279,20 @@
         "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs"
       ],
       "delegatedCallees": []
+    },
+    {
+      "operation": "read_dataset_records",
+      "designOperation": "read_dataset_records",
+      "nativeSymbol": "pub fn read_dataset_records(",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -368,6 +382,10 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+    },
+    {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
       "object": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
     },
@@ -385,7 +403,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
-      "object": "3cb4ba044e4f524e5395a3b9b8e9bd7e84be79bf"
+      "object": "e0413c9f6eecfd1665bafb7a1673c9726a9f71fa"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -413,7 +431,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production.rs",
-      "object": "d5899780ca173f53fb6b60b61c20387898efc0e4"
+      "object": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production_tests.rs",

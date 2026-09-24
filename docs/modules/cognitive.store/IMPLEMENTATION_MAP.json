@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -169,6 +169,62 @@
           "path": "codex-rs/hepta-memory/src/production_writer.rs"
         }
       ]
+    },
+    {
+      "operation": "grant_shared_experience",
+      "designOperation": "grant_shared_experience",
+      "nativeSymbol": "pub async fn grant_shared_experience(",
+      "sourcePath": "codex-rs/hepta-memory/src/shared_experience.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/shared_experience_tests.rs::last_active_revision_can_be_revoked_and_stays_revoked_after_restart"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "read_shared_experience",
+      "designOperation": "read_shared_experience",
+      "nativeSymbol": "pub async fn read_shared_experience(",
+      "sourcePath": "codex-rs/hepta-memory/src/shared_experience.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/shared_experience_tests.rs::last_active_revision_can_be_revoked_and_stays_revoked_after_restart"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "revalidate_shared_experience",
+      "designOperation": "revalidate_shared_experience",
+      "nativeSymbol": "pub async fn revalidate_shared_experience(",
+      "sourcePath": "codex-rs/hepta-memory/src/shared_experience.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/shared_experience_tests.rs::last_active_revision_can_be_revoked_and_stays_revoked_after_restart"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "revoke_shared_experience",
+      "designOperation": "revoke_shared_experience",
+      "nativeSymbol": "pub async fn revoke_shared_experience(",
+      "sourcePath": "codex-rs/hepta-memory/src/shared_experience.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/shared_experience_tests.rs::last_active_revision_can_be_revoked_and_stays_revoked_after_restart"
+      ],
+      "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+      "authority": "none",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -265,7 +321,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "object": "49655bba37f6cbc00d9c80c282bed30e745fe256"
+      "object": "b52e3a1aa275c178a075677f5df9faa832173b41"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
@@ -292,12 +348,20 @@
       "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
     },
     {
+      "path": "codex-rs/hepta-memory/src/shared_experience.rs",
+      "object": "e1dc7dda1084a83a3c7110984568c0be224c297f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/shared_experience_tests.rs",
+      "object": "44519863c30d7ad5067b50a371c932441f302e7a"
+    },
+    {
       "path": "codex-rs/state/src/sqlite_recovery_tests.rs",
       "object": "1d7a466d80bb7056ccccd60340bcf33d9eac39ef"
     },
     {
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
-      "object": "446018178d5293becb16a5e88b7b84d9205b218d"
+      "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
     }
   ]
 }

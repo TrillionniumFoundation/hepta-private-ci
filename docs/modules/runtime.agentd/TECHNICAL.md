@@ -139,6 +139,22 @@ cannot silently renew on restart. Existing source and wire APIs are unchanged by
 this target. [HNMF](../../hnmf/TECHNICAL.md) owns contribution/learning semantics;
 [causal evaluation](../../learning/CAUSAL_LONGITUDINAL_SPEC.md) owns clean-Agent tests.
 
+### Same-host shared Replay composition
+
+[AgentdSharedReplayHostV1](../../../codex-rs/hepta-agentd/src/shared_terminal_cell.rs)
+consumes existing Memory, ledger and artifact owners. It binds Replay to the
+consumer/workspace/parameter scope, and binds each training decision to the exact
+owner/Memory/revision support rather than equal text. Train, load and prediction
+revalidate source use and frozen ledger. Load/prediction also check the supplied
+artifact-owner registry and exact bytes. The embedding owner must supply the
+current registry; this candidate API does not mint signed production CURRENT.
+
+The integration test uses separate source/receiver stores and covers no sharing,
+Recall-only, Replay-only, both, altered bytes/targets/workspaces, independent
+artifact revocation and support withdrawal after loading. This is an owner-path
+behavioral test, not a real-task transfer study, process-isolation proof or
+production Laya service. Selected model state and effect authority are unchanged.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

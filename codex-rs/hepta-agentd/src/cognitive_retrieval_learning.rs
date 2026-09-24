@@ -108,7 +108,7 @@ impl CognitiveRetrievalLearningSink {
         .map_err(|error| error.to_string())?;
 
         let event = retrieval_assignment_event_with_delivery_policy(
-            record_id.clone(),
+            record_id,
             episode_id,
             observation,
             delivered_candidates,

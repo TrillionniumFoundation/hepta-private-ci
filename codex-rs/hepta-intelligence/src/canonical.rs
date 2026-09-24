@@ -762,7 +762,8 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
     let neural_receipt_digest = stage_output(&output, CanonicalStageV1::NeuralSignalCollected)?;
     let prompt_receipt_digest = stage_output(&output, CanonicalStageV1::PromptPortfolioBuilt)?;
     let context_receipt_digest = stage_output(&output, CanonicalStageV1::ContextCompiled)?;
-    let evaluation_receipt_digest = stage_output(&output, CanonicalStageV1::EvaluationAdmitted)?;
+    // The final chain predecessor is the admitted evaluation output, not an earlier stage.
+    let evaluation_receipt_digest = predecessor;
 
     let mut bytes = b"hepta.intelligence.host-envelope.v1\0".to_vec();
     push_id(&mut bytes, &request.run_id)?;

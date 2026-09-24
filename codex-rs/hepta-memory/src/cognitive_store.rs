@@ -61,6 +61,10 @@ const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
+    ("shared_experience_use_events", "table"),
+    ("shared_experience_use_no_update", "trigger"),
+    ("shared_experience_use_no_delete", "trigger"),
+    ("shared_experience_use_consumer_lookup", "index"),
     ("cognitive_meta", "table"),
     ("cognitive_meta_no_update", "trigger"),
     ("cognitive_meta_no_delete", "trigger"),
@@ -196,7 +200,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "7b7f0b2060bb51393a4866689a33abff89ddf04d8556d1019f7e8415126a736e";
+    "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -841,26 +845,13 @@ async fn verify_migration_ledger(pool: &SqlitePool) -> Result<(), CognitiveStore
             ))
         })
         .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
-    if migrations
-        != [
-            (1, true),
-            (2, true),
-            (3, true),
-            (4, true),
-            (5, true),
-            (6, true),
-            (7, true),
-            (8, true),
-            (9, true),
-            (10, true),
-            (11, true),
-            (12, true),
-            (13, true),
-            (14, true),
-        ]
-    {
+    let expected: Vec<_> = MIGRATOR
+        .iter()
+        .map(|migration| (migration.version, true))
+        .collect();
+    if migrations != expected {
         return Err(CognitiveStoreError::Corrupt(format!(
-            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011/0012/0013/0014 set: {migrations:?}"
+            "cognitive migration ledger is not the exact successful compiled migration set: {migrations:?}"
         )));
     }
 

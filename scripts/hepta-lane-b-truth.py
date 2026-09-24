@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -98,6 +99,24 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
 
 def verify_module_source_base(row: dict[str, Any], label: str) -> tuple[str, str]:
     policy = row.get("sourceIdentityPolicy", "legacy_shared_literal")
+    if policy == "candidate_or_exact_observation_v1":
+        # Do not duplicate or weaken the shared verifier's mapped-source,
+        # workspace-input, clean-checkout and historical-anchor requirements.
+        spec = importlib.util.spec_from_file_location(
+            "hepta_lane_b_canonical_source_identity",
+            Path(__file__).with_name("hepta-implementation-maps.py"),
+        )
+        need(spec is not None and spec.loader is not None, "canonical verifier loader")
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        verifier.ROOT = ROOT
+        roots = row.get("resolvedRoots")
+        need(isinstance(roots, list) and bool(roots), f"{label}: resolved roots")
+        try:
+            verifier.verify_source_identity(row, roots, verifier.current_source_base())
+        except (ValueError, OSError, subprocess.CalledProcessError) as error:
+            raise Invalid(f"{label}: canonical source identity: {error}") from error
+        return verify_source_base(row.get("sourceBase"), label)
     if policy == "runtime_current_candidate":
         need(
             row.get("sourceBase") == RUNTIME_CURRENT_SOURCE_BASE,
