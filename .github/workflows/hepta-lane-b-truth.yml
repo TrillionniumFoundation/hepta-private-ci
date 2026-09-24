@@ -86,7 +86,7 @@ jobs:
           python3 scripts/hepta-lane-b-path-guard.py self-test
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py self-test
-          python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py scripts/test_hepta_lane_b_path_guard.py
           python3 scripts/hepta-lane-b-truth.py verify
           git diff --check
 
