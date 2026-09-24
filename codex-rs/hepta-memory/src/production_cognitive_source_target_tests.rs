@@ -5,12 +5,15 @@ use super::*;
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::Sha256Digest;
@@ -252,6 +255,107 @@ impl crate::FinalUseProductionOutboxTarget for LostAckTarget {
                 CognitiveSourceTerminalObservation::Quarantined { reason } => {
                     ProductionTerminalObservation::Quarantined { reason }
                 }
+                CognitiveSourceTerminalObservation::Indeterminate { reason } => {
+                    ProductionTerminalObservation::Indeterminate { reason }
+                }
+                CognitiveSourceTerminalObservation::Unavailable { reason } => {
+                    ProductionTerminalObservation::Unavailable { reason }
+                }
+            }
+        })
+    }
+}
+
+#[derive(Clone, Debug)]
+struct PausedTarget {
+    inner: CognitiveSourceOutboxTarget,
+    entered: Arc<tokio::sync::Notify>,
+    release: Arc<tokio::sync::Notify>,
+}
+
+impl ProductionOutboxTarget for PausedTarget {
+    fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
+        Box::pin(async move {
+            self.entered.notify_one();
+            self.release.notified().await;
+            self.inner.dispatch(request).await
+        })
+    }
+}
+
+impl crate::FinalUseProductionOutboxTarget for PausedTarget {
+    fn destination_id(&self) -> &str {
+        COGNITIVE_SOURCE_DESTINATION_V1
+    }
+
+    fn observe_terminal<'a>(
+        &'a self,
+        request: &'a ProductionDispatchRequest,
+    ) -> ProductionTerminalObservationFuture<'a> {
+        Box::pin(async move {
+            match self.inner.observe_terminal(request).await {
+                CognitiveSourceTerminalObservation::Applied { receipt } => {
+                    ProductionTerminalObservation::Applied { receipt }
+                }
+                CognitiveSourceTerminalObservation::NotApplied => {
+                    ProductionTerminalObservation::NotApplied {
+                        reason: "destination terminal proof records NotApplied".to_string(),
+                    }
+                }
+                CognitiveSourceTerminalObservation::Quarantined { reason } => {
+                    ProductionTerminalObservation::Quarantined { reason }
+                }
+                CognitiveSourceTerminalObservation::Indeterminate { reason } => {
+                    ProductionTerminalObservation::Indeterminate { reason }
+                }
+                CognitiveSourceTerminalObservation::Unavailable { reason } => {
+                    ProductionTerminalObservation::Unavailable { reason }
+                }
+            }
+        })
+    }
+}
+
+#[derive(Clone, Debug)]
+struct CountingTarget {
+    inner: CognitiveSourceOutboxTarget,
+    entries: Arc<AtomicUsize>,
+}
+
+impl ProductionOutboxTarget for CountingTarget {
+    fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
+        Box::pin(async move {
+            self.entries.fetch_add(1, Ordering::SeqCst);
+            self.inner.dispatch(request).await
+        })
+    }
+}
+
+impl crate::FinalUseProductionOutboxTarget for CountingTarget {
+    fn destination_id(&self) -> &str {
+        COGNITIVE_SOURCE_DESTINATION_V1
+    }
+
+    fn observe_terminal<'a>(
+        &'a self,
+        request: &'a ProductionDispatchRequest,
+    ) -> ProductionTerminalObservationFuture<'a> {
+        Box::pin(async move {
+            match self.inner.observe_terminal(request).await {
+                CognitiveSourceTerminalObservation::Applied { receipt } => {
+                    ProductionTerminalObservation::Applied { receipt }
+                }
+                CognitiveSourceTerminalObservation::NotApplied => {
+                    ProductionTerminalObservation::NotApplied {
+                        reason: "destination terminal proof records NotApplied".to_string(),
+                    }
+                }
+                CognitiveSourceTerminalObservation::Quarantined { reason } => {
+                    ProductionTerminalObservation::Quarantined { reason }
+                }
+                CognitiveSourceTerminalObservation::Indeterminate { reason } => {
+                    ProductionTerminalObservation::Indeterminate { reason }
+                }
                 CognitiveSourceTerminalObservation::Unavailable { reason } => {
                     ProductionTerminalObservation::Unavailable { reason }
                 }
@@ -317,6 +421,191 @@ async fn predecessor_mismatch_is_deterministic_not_applied_inside_destination_tr
         target.observe_terminal(&request).await,
         CognitiveSourceTerminalObservation::NotApplied
     );
+    let proof_count: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM cognitive_operation_destination_terminal
+         WHERE destination_id = ? AND operation_id = ? AND disposition = 'not_applied'",
+    )
+    .bind(COGNITIVE_SOURCE_DESTINATION_V1)
+    .bind(operation_id)
+    .fetch_one(&target.store.pool)
+    .await
+    .expect("terminal proof count");
+    assert_eq!(proof_count, 1);
+}
+
+#[tokio::test]
+async fn absent_destination_record_is_indeterminate_not_negative_proof() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let target =
+        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
+            .expect("target");
+    let operation_id = "operation:cognitive-not-yet-entered";
+    let (draft, payload) = source_payload(operation_id, b"not-yet-entered");
+    let intent = operation(&owner, operation_id, &payload, &draft, None);
+    let request = direct_request(&intent, payload);
+
+    assert!(matches!(
+        target.observe_terminal(&request).await,
+        CognitiveSourceTerminalObservation::Indeterminate { .. }
+    ));
+}
+
+#[tokio::test]
+async fn revocation_before_async_effect_entry_keeps_target_entry_count_zero() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let writer = ProductionDurableWriter::open(
+        store.clone(),
+        production_authority(owner.clone()),
+        &AllowVerifier,
+        "production:h4:revoked-before-entry",
+        1,
+    )
+    .await
+    .expect("production writer");
+    let entries = Arc::new(AtomicUsize::new(0));
+    let target = Arc::new(CountingTarget {
+        inner: CognitiveSourceOutboxTarget::new(
+            store,
+            CognitiveAccess::agent_private(owner.clone()),
+        )
+        .expect("target"),
+        entries: entries.clone(),
+    });
+    let issuer = SigningKey::from_bytes(&[92; 32]);
+    let final_use = final_use(&temp, &issuer);
+
+    let operation_id = "operation:cognitive-revoked-before-entry";
+    let (draft, payload) = source_payload(operation_id, b"must-not-enter");
+    let queued = writer
+        .prepare_operation(
+            operation(&owner, operation_id, &payload, &draft, None),
+            COGNITIVE_SOURCE_TOPIC_V1,
+            &payload,
+        )
+        .await
+        .expect("prepare");
+    let binding = writer
+        .final_use_binding(&queued, COGNITIVE_SOURCE_DESTINATION_V1)
+        .await
+        .expect("binding");
+    let signed = signed_final_use(&issuer, binding.clone(), "revoked-before-entry-grant");
+    final_use
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 111,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        })
+        .expect("revoke before effect entry");
+    let dispatcher = ProductionFinalUseOutboxDispatcher::attach(final_use, target);
+
+    assert!(matches!(
+        dispatcher
+            .dispatch(&writer, &signed, &binding, queued)
+            .await,
+        Err(crate::ProductionWriterError::FinalUse(
+            FinalUseError::Revoked
+        ))
+    ));
+    assert_eq!(entries.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        writer.status(operation_id).await.expect("status"),
+        LocalOutcomeState::Rejected
+    );
+}
+
+#[tokio::test]
+async fn active_async_effect_blocks_revocation_and_absence_cannot_terminalize_it() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let writer = ProductionDurableWriter::open(
+        store.clone(),
+        production_authority(owner.clone()),
+        &AllowVerifier,
+        "production:h4:active-async-effect",
+        1,
+    )
+    .await
+    .expect("production writer");
+    let real_target =
+        CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
+            .expect("target");
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let release = Arc::new(tokio::sync::Notify::new());
+    let target = Arc::new(PausedTarget {
+        inner: real_target,
+        entered: entered.clone(),
+        release: release.clone(),
+    });
+    let issuer = SigningKey::from_bytes(&[93; 32]);
+    let final_use = final_use(&temp, &issuer);
+    let dispatcher = ProductionFinalUseOutboxDispatcher::attach(final_use.clone(), target);
+
+    let operation_id = "operation:cognitive-active-async-effect";
+    let (draft, payload) = source_payload(operation_id, b"late-commit");
+    let queued = writer
+        .prepare_operation(
+            operation(&owner, operation_id, &payload, &draft, None),
+            COGNITIVE_SOURCE_TOPIC_V1,
+            &payload,
+        )
+        .await
+        .expect("prepare");
+    let binding = writer
+        .final_use_binding(&queued, COGNITIVE_SOURCE_DESTINATION_V1)
+        .await
+        .expect("binding");
+    let signed = signed_final_use(&issuer, binding.clone(), "active-effect-grant");
+    let task_dispatcher = dispatcher.clone();
+    let task_writer = writer.clone();
+    let task_signed = signed.clone();
+    let task_binding = binding.clone();
+    let dispatch = tokio::spawn(async move {
+        task_dispatcher
+            .dispatch(&task_writer, &task_signed, &task_binding, queued)
+            .await
+    });
+
+    entered.notified().await;
+    assert_eq!(
+        final_use.update_revocations(FinalUseRevocations {
+            authority_epoch: 111,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        }),
+        Err(FinalUseError::DispatchInProgress)
+    );
+    assert_eq!(
+        dispatcher.reconcile(&writer, 8).await.expect("reconcile"),
+        1
+    );
+    assert_eq!(
+        writer.status(operation_id).await.expect("status"),
+        LocalOutcomeState::Indeterminate,
+        "temporary destination absence must not terminalize an active effect"
+    );
+
+    release.notify_one();
+    let receipt = dispatch
+        .await
+        .expect("dispatch task")
+        .expect("dispatch result");
+    assert_eq!(receipt.state, LocalOutcomeState::Committed);
+    assert_eq!(
+        writer.status(operation_id).await.expect("terminal status"),
+        LocalOutcomeState::Committed
+    );
+    final_use
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 111,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
+        })
+        .expect("revocation after effect completion");
 }
 
 #[tokio::test]

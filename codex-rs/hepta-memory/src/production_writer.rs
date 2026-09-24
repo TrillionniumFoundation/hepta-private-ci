@@ -1299,9 +1299,12 @@ impl ProductionDurableWriter {
         let entered_claim =
             operation_claims::mark_entered(&self.store, &owner_claim, now_unix_ms()?).await?;
 
-        // Then consume the single-use grant and revalidate it immediately at
-        // target entry. If either check fails before the adapter is entered we
-        // know no external effect happened, so settle local state as Rejected.
+        // Then consume the single-use grant and revalidate it at the actual
+        // asynchronous target effect. The active-effect fence spans the whole
+        // future: revocation that wins before entry keeps the target untouched;
+        // revocation racing an already-entered effect returns DispatchInProgress
+        // until completion or cancellation. If entry itself fails, no target
+        // effect occurred and the local intent can be rejected deterministically.
         let token = match final_use.claim(signed, expected) {
             Ok(token) => token,
             Err(error) => {
@@ -1324,16 +1327,17 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let future = match final_use
-            .with_verified_use(token, expected, || target.dispatch(request.clone()))
+        let outcome = match final_use
+            .with_verified_use_async(token, expected, || target.dispatch(request.clone()))
+            .await
         {
-            Ok(future) => future,
+            Ok(outcome) => outcome,
             Err(error) => {
                 if self
                     .settle_pre_dispatch_rejection(
                         &receipt.occurrence_key,
                         inherited_from_generation.is_some(),
-                        format!("final-use entry rejected: {error}"),
+                        format!("final-use effect entry rejected: {error}"),
                     )
                     .await
                     .is_ok()
@@ -1348,7 +1352,6 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let outcome = future.await;
         let settled = if inherited_from_generation.is_some() {
             self.settle_inherited_dispatch_outcome(
                 request,
