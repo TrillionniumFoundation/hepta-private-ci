@@ -259,10 +259,8 @@ impl NduAuthenticatedOwnerV1 {
             objective_digest,
             generation,
         );
-        let receipt_digest = authenticated_evaluation_receipt_digest(
-            source_context_digest,
-            &evaluation,
-        );
+        let receipt_digest =
+            authenticated_evaluation_receipt_digest(source_context_digest, &evaluation);
         Ok(NduAuthenticatedEvaluationReceiptV1 {
             evaluation,
             source_context_digest,
@@ -336,7 +334,7 @@ impl NduAuthenticatedOwnerV1 {
                     subject_digest,
                     expected_predecessor,
                     projection_digest,
-                } => self.store.select_projection(
+                } => self.store.select_projection_if_current(
                     identity_digest,
                     objective_digest,
                     subject_digest,
