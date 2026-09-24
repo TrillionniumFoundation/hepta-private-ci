@@ -1,4 +1,5 @@
 use super::*;
+use crate::test_support::FixtureValue;
 
 fn id(value: &str) -> StableId {
     match StableId::new(value.to_owned()) {
@@ -175,4 +176,60 @@ fn artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent() {
         validate_artifact_manifest_v2(missing, 50),
         Err(ArtifactClosureError::RollbackPredecessorMissing)
     );
+}
+
+#[test]
+fn manifest_persisted_encoding_preserves_identity_and_rejects_truncation() {
+    let validated =
+        validate_artifact_manifest_v2(manifest(digest("dataset")), 50).fixture("manifest codec");
+    let bytes = encode_manifest(&validated.manifest).fixture("manifest codec");
+    assert_eq!(Digest32::of_bytes(&bytes), validated.manifest_digest);
+    assert_eq!(
+        decode_manifest(&bytes, 50).fixture("manifest codec"),
+        validated
+    );
+    for end in 0..bytes.len() {
+        assert!(decode_manifest(&bytes[..end], 50).is_err(), "prefix {end}");
+    }
+    let mut trailing = bytes.clone();
+    trailing.push(0);
+    assert!(decode_manifest(&trailing, 50).is_err());
+    assert_eq!(
+        decode_manifest(&bytes, 101),
+        Err(ArtifactClosureError::ManifestTimeWindow)
+    );
+    assert_eq!(
+        decode_manifest(&bytes, 9),
+        Err(ArtifactClosureError::ManifestTimeWindow)
+    );
+    let mut excessive = bytes;
+    let start = b"hepta.learning-artifacts.manifest.v2".len();
+    excessive[start..start + 4].copy_from_slice(&u32::MAX.to_be_bytes());
+    assert!(decode_manifest(&excessive, 50).is_err());
+}
+
+#[test]
+fn manifest_persisted_encoding_bounds_large_lineage_and_rejects_noncanonical_order() {
+    let mut value = manifest(digest("dataset"));
+    value.lineage_digests = (0..MAX_LINEAGE_DIGESTS)
+        .map(|i| digest(&format!("lineage-{i}")))
+        .collect();
+    let validated = validate_artifact_manifest_v2(value, 50).fixture("manifest codec");
+    let bytes = encode_manifest(&validated.manifest).fixture("manifest codec");
+    assert!(bytes.len() > 16 * 1024);
+    assert!(bytes.len() <= MAX_ENCODED_MANIFEST_BYTES);
+    assert_eq!(
+        decode_manifest(&bytes, 50).fixture("manifest codec"),
+        validated
+    );
+    let mut noncanonical = validated.manifest;
+    noncanonical.lineage_digests.reverse();
+    assert!(
+        decode_manifest(
+            &encode_manifest(&noncanonical).fixture("manifest codec"),
+            50
+        )
+        .is_err()
+    );
+    assert!(decode_manifest(&vec![0; MAX_ENCODED_MANIFEST_BYTES + 1], 50).is_err());
 }

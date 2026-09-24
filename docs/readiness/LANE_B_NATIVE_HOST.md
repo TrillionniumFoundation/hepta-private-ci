@@ -117,8 +117,10 @@ The native terminal Cell is one-state tabular. Its same-host Replay consumer
 resolves bounded indexed source records, trains a candidate and uses existing
 artifact persistence/loading. Independently signed selections and bounded versioned
 recovery bundles now support owner-backed restore without retraining. Every use
-checks the live artifact owner, not a supplied historical registry. Withdrawal
-closes a loaded consumer. The complete native API and rejection boundaries are in
+checks the live artifact owner, not a supplied historical registry. Full V2
+manifest bytes, declared source lineage and original expiry are part of recovery;
+a valid selection over the lossy V1 index alone is insufficient. Withdrawal or
+expiry closes a loaded consumer. The complete native API and rejection boundaries are in
 [runtime.agentd](../modules/runtime.agentd/TECHNICAL.md#same-host-shared-replay-composition).
 This is not Laya training, multi-source causal transfer, remote federation,
 production model selection or physical erasure of trained information.

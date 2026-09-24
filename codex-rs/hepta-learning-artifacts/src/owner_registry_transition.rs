@@ -19,6 +19,7 @@ impl LearningArtifactOwnerHost {
             .verify(selection, &current, now)
             .map_err(|_| ArtifactOwnerHostError::CurrentHeadConflict)?;
         let manifest = verified.manifest();
+        self.read_registered_manifest(manifest, now)?;
         let path = self.root.join("payloads").join(format!(
             "{}-{}.bin",
             manifest.artifact_id, manifest.content_digest

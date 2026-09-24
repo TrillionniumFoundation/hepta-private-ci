@@ -343,3 +343,6 @@ mod shared_tests;
 
 #[path = "support/shared_terminal_process_tests.rs"]
 mod shared_process_tests;
+
+#[path = "support/shared_terminal_manifest_tests.rs"]
+mod shared_manifest_tests;

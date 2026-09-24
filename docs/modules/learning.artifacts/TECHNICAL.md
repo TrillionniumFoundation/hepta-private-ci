@@ -67,9 +67,22 @@ Source implementation is therefore not equivalent to product activation. The cra
 
 `LearningArtifactOwnerHost::read_current_selected_payload` obtains the live signed
 CURRENT from the existing fenced owner, independently verifies selection, then
-resolves exact registered bytes. A cloned `ArtifactRegistry` or old signed view
-cannot replace that owner read. Selection remains DENY_ALL load eligibility, not
+resolves exact registered bytes. `read_current_selected_manifest` additionally
+returns the full validated metadata from the live selected owner entry.
+A cloned `ArtifactRegistry` or old signed view cannot replace that owner read. Selection remains DENY_ALL load eligibility, not
 activation, promotion, training permission or effect authority.
+
+The V1 compatibility index's `support_digest` is the complete V2 manifest digest,
+not a single dataset digest. The owner persists that manifest's existing canonical
+binary encoding in `transactions/<manifest-digest>.manifest-v2` before publication
+checkpoint acknowledgement. No manifest or registry digest format changes.
+Selected loading verifies canonical form, every V1 projection field, full lineage
+and the original V2 validity window. Manifest reads are bounded to 64 KiB; collection
+lengths are checked before allocation. Missing, truncated or mismatched metadata
+cannot be reconstructed from an otherwise valid model payload or old selection.
+An old publication may retain its exact metadata through `resume_publication`
+only with the complete transaction snapshot matching its durable checkpoint and
+current writer authorization. Recovery never synthesizes missing lineage.
 
 `persist_selected_descriptor` stores the canonical signed selection in
 `transactions/<digest>.selection`; `read_selected_descriptor` verifies its bounded

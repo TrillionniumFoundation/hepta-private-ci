@@ -134,7 +134,11 @@ pub(crate) fn encode(
 
 /// The caller must authenticate the complete bundle through the live artifact
 /// owner first. The inner model pin is not independent selection authority.
-pub(crate) fn decode(bytes: &[u8], manifest: &ArtifactManifest) -> Result<RecoveredTerminal> {
+pub(crate) fn decode(
+    bytes: &[u8],
+    manifest: &ArtifactManifest,
+    admitted: &codex_hepta_learning_artifacts::ValidatedArtifactManifestV2,
+) -> Result<RecoveredTerminal> {
     if bytes.len() > MAX_BUNDLE_BYTES
         || bytes.len() as u64 != manifest.encoded_size_bytes
         || Digest32::of_bytes(bytes) != manifest.content_digest
@@ -207,6 +211,16 @@ pub(crate) fn decode(bytes: &[u8], manifest: &ArtifactManifest) -> Result<Recove
         || dataset.snapshot.objective_digest != pin.objective_digest
     {
         return Err(SharedTerminalCellError::Binding("recovery manifest"));
+    }
+    let full = &admitted.manifest;
+    if admitted.manifest_digest != manifest.support_digest
+        || full.provenance_mode != codex_hepta_learning_artifacts::ProvenanceModeV1::DatasetDerived
+        || full.source_dataset_digests.as_slice() != [pin.dataset_digest]
+        || !full.lineage_digests.contains(&pin.artifact_digest)
+    {
+        return Err(SharedTerminalCellError::Binding(
+            "authoritative manifest lineage",
+        ));
     }
     let loaded = LoadedTabularOperatorV1::from_pinned_payload(&b.model, &pin)
         .map_err(|_| SharedTerminalCellError::Binding("recovery model pin"))?;

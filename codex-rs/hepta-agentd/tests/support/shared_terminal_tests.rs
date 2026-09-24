@@ -227,6 +227,15 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
         .unwrap();
     let payload = candidate.encode_payload().unwrap();
     assert!(!String::from_utf8_lossy(&payload).contains(&memory.content));
+    super::shared_manifest_tests::rejects_mismatched_admitted_lineage(
+        Arc::clone(&source),
+        consumer.clone(),
+        receiver_id.clone(),
+        &ledger,
+        &candidate,
+        &fixture.root,
+    )
+    .await;
     let selection = artifact_owner.publish(candidate.artifact(), &payload);
     let selection_digest = artifact_owner
         .owner

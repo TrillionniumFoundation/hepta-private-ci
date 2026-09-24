@@ -74,6 +74,7 @@ pub struct SharedTerminalModelV1 {
     loaded: LoadedTabularOperatorV1,
     selection: SignedArtifactSelectionV1,
     manifest: ArtifactManifest,
+    manifest_expires_at: u64,
     closed: bool,
 }
 
@@ -210,13 +211,20 @@ impl AgentdSharedReplayHostV1 {
         if selection.encoded_size_bytes > 4 * 1024 * 1024 {
             return Err(SharedTerminalCellError::Binding("recovery payload bound"));
         }
-        let (manifest, bytes) = binding
-            .owner
-            .lock()
-            .map_err(|_| SharedTerminalCellError::Binding("artifact owner poisoned"))?
-            .read_current_selected_payload(&binding.selector, &selection, now)
-            .map_err(|_| SharedTerminalCellError::Binding("current artifact selection"))?;
-        let recovered = crate::shared_terminal_recovery::decode(&bytes, &manifest)?;
+        let (manifest, admitted, bytes) = {
+            let owner = binding
+                .owner
+                .lock()
+                .map_err(|_| SharedTerminalCellError::Binding("artifact owner poisoned"))?;
+            let (manifest, bytes) = owner
+                .read_current_selected_payload(&binding.selector, &selection, now)
+                .map_err(|_| SharedTerminalCellError::Binding("current artifact selection"))?;
+            let admitted = owner
+                .read_current_selected_manifest(&binding.selector, &selection, now)
+                .map_err(|_| SharedTerminalCellError::Binding("current artifact manifest"))?;
+            (manifest, admitted, bytes)
+        };
+        let recovered = crate::shared_terminal_recovery::decode(&bytes, &manifest, &admitted)?;
         let source = self
             .source
             .read_shared_experience(&self.consumer, &recovered.policy_id, &self.purpose)
@@ -263,6 +271,7 @@ impl AgentdSharedReplayHostV1 {
             loaded: recovered.loaded,
             selection,
             manifest,
+            manifest_expires_at: admitted.manifest.expires_at,
             closed: false,
         })
     }
@@ -281,6 +290,11 @@ impl AgentdSharedReplayHostV1 {
             return Err(SharedTerminalCellError::Binding("model consumer closed"));
         }
         model.closed = true;
+        if now > model.manifest_expires_at {
+            return Err(SharedTerminalCellError::Binding(
+                "artifact manifest expired",
+            ));
+        }
         self.revalidate(&model.source, &model.dataset, ledger, now)
             .await?;
         let binding = self

@@ -130,6 +130,15 @@ impl Artifacts {
         artifact: &TabularOperatorArtifactV1,
         bytes: &[u8],
     ) -> SignedArtifactSelectionV1 {
+        self.publish_with_manifest(artifact, bytes, |_| {})
+    }
+
+    pub(super) fn publish_with_manifest(
+        &self,
+        artifact: &TabularOperatorArtifactV1,
+        bytes: &[u8],
+        change: impl FnOnce(&mut LearningArtifactManifestV2),
+    ) -> SignedArtifactSelectionV1 {
         let owner = self.owner.lock().unwrap();
         let mut registry = owner.recover_current_registry(50).unwrap();
         let previous = registry.snapshot().head_digest;
@@ -139,7 +148,7 @@ impl Artifacts {
             .map_or(Generation::new(1).unwrap(), |h| {
                 h.signed.witness.generation.next().unwrap()
             });
-        let manifest = LearningArtifactManifestV2 {
+        let mut manifest = LearningArtifactManifestV2 {
             artifact_id: artifact.artifact_id.clone(),
             kind: ArtifactKind::Policy,
             generation: artifact.generation,
@@ -161,6 +170,7 @@ impl Artifacts {
             created_at: 20,
             expires_at: 1000,
         };
+        change(&mut manifest);
         let admission = admit_manifest_at_withdrawal_head_v3(
             &self.withdrawals,
             self.withdrawals.head_digest(),

@@ -162,6 +162,14 @@ text. Its complete bytes are bound by the independently selected manifest. Limit
 are 4 MiB per bundle and 4096 source records; unknown fields, altered bytes,
 unsupported versions and mismatched producer/consumer identities are rejected.
 The old raw-table candidate interface is not an implicit recovery fallback.
+The full V2 manifest is separately restored from the same artifact owner and
+matched to the V1 support digest. This one-source profile requires exactly the
+frozen dataset as its declared dataset set, dataset-derived provenance, and the
+inner artifact digest in its declared lineage. An independently signed CURRENT
+with a different declared dataset is not accepted. Original manifest expiry is
+retained in the loaded handle and checked on every prediction, independently of
+the selector credential lifetime. Expiry closes the handle even if a later call
+supplies an earlier time.
 
 `persist_selected_descriptor` stores the signed selection in the existing artifact
 owner transaction directory under its content digest. A native composition must
@@ -175,6 +183,9 @@ The integration test uses independent source/receiver stores and separate restor
 processes without passing a training candidate. It covers Recall/Replay separation,
 source identity substitution, missing/tampered bytes and descriptors, independent
 artifact revocation with a still-valid old signed view, and source withdrawal.
+The manifest regression additionally checks unrelated/extra datasets, wrong
+lineage, dataset-independent substitution, missing/truncated full metadata,
+metadata larger than 16 KiB, and a manifest expiring before its selector.
 It is not ordinary-daemon bootstrap, a paid-model run, Laya training, remote peer
 isolation or proof of improved learning utility. The repository-shipped canonical
 invocation provider and Circuit-to-Cell product consumer remain incomplete.

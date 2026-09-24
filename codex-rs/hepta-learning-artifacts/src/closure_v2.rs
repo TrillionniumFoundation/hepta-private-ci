@@ -18,6 +18,11 @@ use codex_hepta_types::StableId;
 use crate::ArtifactKind;
 use crate::limits::MAX_DURABLE_ARTIFACT_RECORDS;
 
+#[path = "manifest_encoding.rs"]
+mod manifest_encoding;
+pub(crate) use manifest_encoding::decode_manifest;
+pub(crate) const MAX_ENCODED_MANIFEST_BYTES: usize = 64 * 1024;
+
 const MAX_ARTIFACT_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_DATASET_INPUTS: usize = 64;
 const MAX_LINEAGE_DIGESTS: usize = 1_024;
@@ -138,7 +143,7 @@ pub fn validate_artifact_manifest_v2(
         return Err(ArtifactClosureError::RollbackPredecessorMissing);
     }
 
-    let manifest_digest = digest_manifest(&manifest)?;
+    let manifest_digest = Digest32::of_bytes(&encode_manifest(&manifest)?);
     Ok(ValidatedArtifactManifestV2 {
         manifest,
         manifest_digest,
@@ -600,6 +605,7 @@ const fn allowed_transition(
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ArtifactClosureError {
+    ManifestEncoding,
     EmptyDigest(&'static str),
     ArtifactSize,
     ManifestTimeWindow,
@@ -634,9 +640,9 @@ impl fmt::Display for ArtifactClosureError {
 
 impl StdError for ArtifactClosureError {}
 
-fn digest_manifest(
+pub(crate) fn encode_manifest(
     manifest: &LearningArtifactManifestV2,
-) -> Result<Digest32, ArtifactClosureError> {
+) -> Result<Vec<u8>, ArtifactClosureError> {
     let mut bytes = b"hepta.learning-artifacts.manifest.v2".to_vec();
     push_id(&mut bytes, &manifest.artifact_id);
     bytes.push(manifest.kind.tag());
@@ -662,7 +668,7 @@ fn digest_manifest(
     push_id(&mut bytes, &manifest.producer_id);
     bytes.extend_from_slice(&manifest.created_at.to_be_bytes());
     bytes.extend_from_slice(&manifest.expires_at.to_be_bytes());
-    Ok(Digest32::of_bytes(&bytes))
+    Ok(bytes)
 }
 
 fn validate_withdrawal_notice(

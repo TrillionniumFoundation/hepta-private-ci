@@ -53,6 +53,8 @@ use crate::write_candidate_payload_beneath;
 use crate::write_registry_head_witness_beneath;
 use crate::write_registry_snapshot_beneath;
 
+#[path = "owner_manifest.rs"]
+mod manifest;
 #[path = "owner_registry_transition.rs"]
 mod registry_transition;
 #[path = "owner_selected_descriptor.rs"]
@@ -493,6 +495,7 @@ impl LearningArtifactOwnerHost {
             expected_registry_predecessor_head,
             now,
         )?;
+        self.persist_publication_manifest(&transaction)?;
         self.persist_checkpoint(&transaction)?;
         Ok(transaction)
     }
@@ -990,7 +993,9 @@ impl LearningArtifactOwnerHost {
         if expected != recovery.checkpoint {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
         }
-        Ok(ArtifactPublicationTransactionV1::from_snapshot(snapshot)?)
+        let transaction = ArtifactPublicationTransactionV1::from_snapshot(snapshot)?;
+        self.persist_publication_manifest(&transaction)?;
+        Ok(transaction)
     }
 
     pub fn discover_current_head(
@@ -1475,6 +1480,17 @@ fn ensure_real_directory(root: &Path, name: &str) -> Result<(), ArtifactOwnerHos
 }
 
 fn write_create_only_or_exact(path: &Path, bytes: &[u8]) -> Result<(), ArtifactOwnerHostError> {
+    write_bounded_create_only_or_exact(path, bytes, MAX_SMALL_RECORD_BYTES)
+}
+
+fn write_bounded_create_only_or_exact(
+    path: &Path,
+    bytes: &[u8],
+    limit: usize,
+) -> Result<(), ArtifactOwnerHostError> {
+    if bytes.len() > limit {
+        return Err(ArtifactOwnerHostError::Capacity);
+    }
     let mut options = OpenOptions::new();
     options.read(true).write(true).create_new(true);
     #[cfg(unix)]
@@ -1490,7 +1506,7 @@ fn write_create_only_or_exact(path: &Path, bytes: &[u8]) -> Result<(), ArtifactO
             )
         }
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-            if read_small_record(path, MAX_SMALL_RECORD_BYTES)? == bytes {
+            if read_small_record(path, limit)? == bytes {
                 sync_owner_directory(
                     path.parent()
                         .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?,
