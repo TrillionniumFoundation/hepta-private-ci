@@ -5,6 +5,7 @@
 //! It converts ranks and completeness already observed by CognitiveStore into
 //! typed, generation-bound retrieval evidence.
 
+use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
 use codex_hepta_cognitive_types::CognitiveSnapshot;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
@@ -31,7 +32,6 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::CognitiveStoreError;
-use crate::DurableCognitiveSnapshot;
 use crate::MAX_RETRIEVAL_CHANNEL_CANDIDATES;
 use crate::MemoryRevalidationBinding;
 use crate::RetrievalChannel;
@@ -116,11 +116,9 @@ impl RetrievalExecutionContextV1 {
 
 pub fn execute_owner_observation(
     observation: &RetrievalObservation,
-    cut: &DurableCognitiveSnapshot,
+    authoritative: &AuthoritativeSnapshotV1,
     context: &RetrievalExecutionContextV1,
     request_digest: Digest32,
-    acquired_at_unix_ms: u64,
-    lease_expires_unix_ms: u64,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
     context.validate()?;
     if request_digest.is_zero() {
@@ -128,13 +126,13 @@ pub fn execute_owner_observation(
             "retrieval request digest must be non-zero".to_string(),
         ));
     }
-    let authoritative = cut
-        .bind_context(
-            context.generation_vector.clone(),
-            acquired_at_unix_ms,
-            lease_expires_unix_ms,
-        )
-        .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    if authoritative.snapshot_key().vector != context.generation_vector
+        || authoritative.snapshot_key().vector_digest != context.generation_vector.digest()
+    {
+        return Err(CognitiveStoreError::Conflict(
+            "authoritative retrieval cut belongs to another Lane C generation".to_string(),
+        ));
+    }
     let generated = generated_input_from_owner_observation(
         observation,
         authoritative.snapshot_key(),
@@ -205,7 +203,10 @@ pub(crate) fn generated_input_from_owner_observation(
                 channel: semantic_channel,
                 channel_rank: channel_rank.rank,
                 normalized_score: reciprocal_rank_score(channel_rank.rank)?,
-                ood: ProbabilityQ32::ZERO,
+                // SQLite owner channels do not currently produce a calibrated
+                // OOD observation. Use the conservative upper bound rather than
+                // falsely encoding an independently measured zero risk.
+                ood: ProbabilityQ32::ONE,
                 support_digest: owner_support_digest(
                     owner_observation_digest,
                     &record,
