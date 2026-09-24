@@ -1,0 +1,54 @@
+name: Reviewer Cargo cache export
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - .github/workflows/reviewer-cargo-cache-export.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Export locked Cargo cache
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt
+
+      - name: Fetch locked workspace dependencies
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup run 1.95.0 cargo fetch --locked
+
+      - name: Pack Cargo home
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -C "$HOME" -czf "$RUNNER_TEMP/reviewer-cargo-home.tar.gz" .cargo/registry .cargo/git 2>/dev/null || \
+            tar -C "$HOME" -czf "$RUNNER_TEMP/reviewer-cargo-home.tar.gz" .cargo/registry
+          sha256sum "$RUNNER_TEMP/reviewer-cargo-home.tar.gz" > "$RUNNER_TEMP/reviewer-cargo-home.tar.gz.sha256"
+
+      - name: Upload Cargo home
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-cargo-home-locked
+          path: |
+            ${{ runner.temp }}/reviewer-cargo-home.tar.gz
+            ${{ runner.temp }}/reviewer-cargo-home.tar.gz.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
