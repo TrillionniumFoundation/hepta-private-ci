@@ -1,0 +1,39 @@
+name: Temporary learning artifacts source export
+
+on:
+  push:
+    branches:
+      - temp/learning-artifacts-source-export-20260925
+
+permissions:
+  contents: read
+
+jobs:
+  export-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact canonical head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 4e8a2dc5e41f376afbaacf01b11e8f2b8793f1d4
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Export source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "4e8a2dc5e41f376afbaacf01b11e8f2b8793f1d4"
+          tar --exclude=.git -czf "$RUNNER_TEMP/hepta-source-4e8a2dc.tar.gz" .
+          sha256sum "$RUNNER_TEMP/hepta-source-4e8a2dc.tar.gz" > "$RUNNER_TEMP/hepta-source-4e8a2dc.tar.gz.sha256"
+
+      - name: Upload exact source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: temp-hepta-source-4e8a2dc
+          path: |
+            ${{ runner.temp }}/hepta-source-4e8a2dc.tar.gz
+            ${{ runner.temp }}/hepta-source-4e8a2dc.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
