@@ -1168,7 +1168,7 @@ def public_rust_functions(root: str) -> set[str]:
     return functions
 
 
-def verify(*, require_current_source: bool = True):
+def verify(*, require_current_source: bool = True, expected_sha: str | None = None):
     """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
 
     Legacy anchor records are accepted only after the same exact source proof,
@@ -1176,6 +1176,14 @@ def verify(*, require_current_source: bool = True):
     """
     candidate = current_source_base()
     try:
+        # Bind the CI event's candidate independently of module-local anchors.
+        # A historical anchor with unchanged mapped bytes is not permission to
+        # validate a different checkout from the one requested by the caller.
+        if expected_sha is not None:
+            if not re.fullmatch(r"[0-9a-f]{40}", expected_sha):
+                raise ValueError("expected source must be a full lowercase commit SHA")
+            if candidate["commit"] != expected_sha:
+                raise ValueError("candidate HEAD does not match expected source SHA")
         require_clean_candidate(candidate)
         modules = load("docs/modules/MODULES.json")["modules"]
         if not isinstance(modules, list) or not modules:
@@ -1418,17 +1426,24 @@ def main():
         action="store_true",
         help="Compatibility alias: verify always requires clean, exact mapped source; not execution qualification.",
     )
+    parser.add_argument(
+        "--expected-sha",
+        help="Require this exact CI candidate commit in addition to mapped-source verification (verify only).",
+    )
     args = parser.parse_args()
+    if args.expected_sha is not None and args.command != "verify":
+        parser.error("--expected-sha applies only to verify")
     if args.require_current_source and args.command != "verify":
         parser.error("--require-current-source applies only to verify")
     if args.modules is not None and args.command != "migrate":
         parser.error("--module applies only to migrate")
     if args.command == "migrate":
         migrate(args.modules)
+    elif args.command == "verify":
+        verify(expected_sha=args.expected_sha)
     else:
         {
             "generate": generate,
-            "verify": verify,
             "sync-plasticity-status": sync_plasticity_status,
         }[args.command]()
 
