@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "edb54393d4acd76e4f810e8c84f6cc96b6c61fc9",
-    "tree": "05dbb4f2c19360880f95f8dffca194bd0a6ee6a2"
+    "commit": "4087aaac96365190ffb8d88f28947195282d4a12",
+    "tree": "6cd258100325166346aaa1e9db6fbf9f4f7aecfc"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
@@ -34,7 +34,7 @@
           "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
-      "sourceSemantics": "Authenticates endpoint manifest, protocol version, session identity, and process generation.",
+      "sourceSemantics": "Validates endpoint/session identity and reconciles durable pending operations; authenticated gateway composition remains a product gate.",
       "operation": "connect_runtime",
       "nativeSymbol": "pub fn connect_runtime(",
       "sourcePath": "apps/hepta-native/src/runtime.rs",
@@ -57,7 +57,7 @@
           "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
-      "sourceSemantics": "Rejects mixed/regressed view generations and exposes one coherent presentation state.",
+      "sourceSemantics": "Consumes backend runtime observations and validates session/view monotonicity; fixture observations are not physical product evidence.",
       "operation": "render_runtime_view",
       "nativeSymbol": "pub fn refresh_runtime_view(",
       "sourcePath": "apps/hepta-native/src/runtime.rs",
@@ -80,7 +80,7 @@
           "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
-      "sourceSemantics": "Requires both platform permission and final-payload-bound operation identity before invoking a narrow OS adapter.",
+      "sourceSemantics": "Binds owned payload and session identity, durably journals dispatch, consumes current kernel final-use authority and preserves uncertain effects without replay.",
       "operation": "request_platform_capability",
       "nativeSymbol": "pub fn request_platform_capability(",
       "sourcePath": "apps/hepta-native/src/runtime.rs",
@@ -103,7 +103,7 @@
           "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
-      "sourceSemantics": "Requires independent selection, signature/compatibility verification, explicit restart, and predecessor rollback on uncertain update.",
+      "sourceSemantics": "Verifies signed staging and predecessor-bound activation; serializes update transitions and refuses rollback over unrelated installed state.",
       "operation": "apply_shell_update",
       "nativeSymbol": "pub fn verify_and_stage(",
       "sourcePath": "apps/hepta-native/src/updater.rs",
