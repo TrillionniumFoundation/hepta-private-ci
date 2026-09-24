@@ -20,6 +20,9 @@ fn main() -> anyhow::Result<()> {
         let mut intelligence_authority_file = None;
         let mut intelligence_authority_signer = None;
         let mut intelligence_authority_verifying_key = None;
+        let mut memory_retrieval_context_file = None;
+        let mut memory_retrieval_context_signer = None;
+        let mut memory_retrieval_context_verifying_key = None;
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
@@ -73,7 +76,33 @@ fn main() -> anyhow::Result<()> {
                     intelligence_authority_verifying_key.is_none(),
                     "duplicate --intelligence-authority-verifying-key"
                 );
-                intelligence_authority_verifying_key = Some(parse_verifying_key_hex(path)?);
+                intelligence_authority_verifying_key = Some(parse_verifying_key_hex(
+                    path,
+                    "intelligence authority",
+                )?);
+            } else if flag == "--memory-retrieval-context-file" {
+                anyhow::ensure!(
+                    memory_retrieval_context_file.is_none(),
+                    "duplicate --memory-retrieval-context-file"
+                );
+                memory_retrieval_context_file = Some(PathBuf::from(path));
+            } else if flag == "--memory-retrieval-context-signer" {
+                anyhow::ensure!(
+                    memory_retrieval_context_signer.is_none(),
+                    "duplicate --memory-retrieval-context-signer"
+                );
+                memory_retrieval_context_signer = Some(path.into_string().map_err(|_| {
+                    anyhow::anyhow!("memory retrieval context signer must be UTF-8")
+                })?);
+            } else if flag == "--memory-retrieval-context-verifying-key" {
+                anyhow::ensure!(
+                    memory_retrieval_context_verifying_key.is_none(),
+                    "duplicate --memory-retrieval-context-verifying-key"
+                );
+                memory_retrieval_context_verifying_key = Some(parse_verifying_key_hex(
+                    path,
+                    "memory retrieval context",
+                )?);
             } else if flag == "--objective-profile-file" {
                 anyhow::ensure!(
                     objective_profile.is_none(),
@@ -133,6 +162,25 @@ fn main() -> anyhow::Result<()> {
                 ));
             }
         }
+        match (
+            memory_retrieval_context_file,
+            memory_retrieval_context_signer,
+            memory_retrieval_context_verifying_key,
+        ) {
+            (None, None, None) => {}
+            (Some(path), Some(signer_id), Some(verifying_key)) => {
+                config = config.with_signed_memory_retrieval_context_file(
+                    path,
+                    signer_id,
+                    verifying_key,
+                )?;
+            }
+            _ => {
+                return Err(anyhow::anyhow!(
+                    "--memory-retrieval-context-file, --memory-retrieval-context-signer and --memory-retrieval-context-verifying-key must be supplied together"
+                ));
+            }
+        }
         anyhow::ensure!(
             authbus_trust.is_some() == authbus_checkpoint.is_some(),
             "--authbus-trust-file and --authbus-checkpoint-file must be configured together"
@@ -185,19 +233,19 @@ fn main() -> anyhow::Result<()> {
     })
 }
 
-fn parse_verifying_key_hex(value: OsString) -> anyhow::Result<[u8; 32]> {
+fn parse_verifying_key_hex(value: OsString, label: &str) -> anyhow::Result<[u8; 32]> {
     let value = value
         .into_string()
-        .map_err(|_| anyhow::anyhow!("intelligence verifying key must be UTF-8 hex"))?;
+        .map_err(|_| anyhow::anyhow!("{label} verifying key must be UTF-8 hex"))?;
     anyhow::ensure!(
         value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_hexdigit()),
-        "intelligence verifying key must contain exactly 64 hex characters"
+        "{label} verifying key must contain exactly 64 hex characters"
     );
     let mut output = [0_u8; 32];
     for (index, slot) in output.iter_mut().enumerate() {
         let offset = index * 2;
         *slot = u8::from_str_radix(&value[offset..offset + 2], 16)
-            .map_err(|_| anyhow::anyhow!("invalid intelligence verifying key hex"))?;
+            .map_err(|_| anyhow::anyhow!("invalid {label} verifying key hex"))?;
     }
     Ok(output)
 }
