@@ -3,42 +3,127 @@ name: automation-taskflow-focused
 on:
   push:
     branches:
-      - work/automation-taskflow-durable-causal-chain
+      - work/product-convergence-20260923
     paths:
-      - codex-rs/hepta-automation/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-contracts/**
-      - codex-rs/hepta-operations/**
-      - codex-rs/hepta-types/**
-      - codex-rs/Cargo.lock
+      - scripts/apply_automation_taskflow_convergence_20260925.py
       - .github/workflows/automation-taskflow-focused.yml
-  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: automation-taskflow-convergence-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  focused:
+  materialize:
+    if: ${{ !contains(github.event.head_commit.message, '[automation-taskflow-materialized]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    defaults:
-      run:
-        working-directory: codex-rs
+    timeout-minutes: 120
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Check out exact canonical candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          persist-credentials: false
-      - name: Rustfmt changed automation owners
-        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
-      - name: Check automation, operations and Agentd
-        run: cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
-      - name: Test kernel operation contract
-        run: cargo test -p codex-hepta-operations
-      - name: Test durable automation causal chain
-        run: cargo test -p codex-hepta-automation --test durable_causal_chain
-      - name: Test automation package
-        run: cargo test -p codex-hepta-automation
-      - name: Test automation qualification profile
-        run: cargo test -p codex-hepta-automation --features taskflow-structural-qualification
-      - name: Test Agentd library
-        run: cargo test -p codex-hepta-agentd --lib
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ${{ github.sha }}
+
+      - name: Require unchanged canonical head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${GITHUB_REF_NAME}"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse origin/${GITHUB_REF_NAME})" = "${GITHUB_SHA}"
+
+      - name: Install pinned Rust and repository tools
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Install pinned test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Materialize bounded owner changes
+        run: python3 scripts/apply_automation_taskflow_convergence_20260925.py
+
+      - name: Format exact owners and reject unrelated churn
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && just fmt)
+          allowed='^(codex-rs/hepta-automation/|codex-rs/hepta-agentd/src/automation_recovery.rs$|scripts/apply_automation_taskflow_convergence_20260925.py$|.github/workflows/(automation-taskflow-focused|hepta-automation-taskflow-convergence).yml$)'
+          while IFS= read -r path; do
+            if ! printf '%s\n' "$path" | grep -Eq "$allowed"; then
+              git checkout -- "$path"
+            fi
+          done < <(git diff --name-only)
+          git diff --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-automation -p codex-hepta-agentd -- --check
+
+      - name: Run focused negative regressions
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-automation \
+            -E 'test(v1_store_migrates_atomically_to_dispatch_outcome_schema) | test(durable_recovery_cursor_rotates_past_a_long_running_occurrence) | test(exact_pending_lookup_is_not_limited_by_the_discovery_page) | test(exhausted_version_space_rejects_same_version_successor)' \
+            --retries 0 --test-threads 2
+
+      - name: Run complete affected owner suites
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-automation \
+            --features taskflow-structural-qualification \
+            --retries 0 --test-threads 4
+          just test --locked -p codex-hepta-agentd --lib \
+            --retries 0 --test-threads 4
+
+      - name: Run strict lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked \
+            -p codex-hepta-automation -p codex-hepta-agentd \
+            --all-targets \
+            --features codex-hepta-automation/taskflow-structural-qualification \
+            -- -D warnings
+
+      - name: Run source truth and TaskFlow Bazel qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-b-path-guard.py self-test
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/hepta-lane-b-truth.py self-test
+          python3 -m unittest scripts/test_hepta_lane_b_truth.py scripts/test_hepta_lane_b_path_guard.py
+          python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          bazel test --test_output=errors \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-step-qualification-test
+
+      - name: Restore registered workflow and commit verified source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show origin/main:.github/workflows/automation-taskflow-focused.yml \
+            > .github/workflows/automation-taskflow-focused.yml
+          rm -f .github/workflows/hepta-automation-taskflow-convergence.yml
+          rm -f scripts/apply_automation_taskflow_convergence_20260925.py
+          git add -A
+          git diff --cached --check
+          test -n "$(git status --porcelain)"
+          git config user.name 'Hepta Convergence Bot'
+          git config user.email 'hepta-convergence@users.noreply.github.com'
+          git commit -m 'fix(automation.taskflow): make recovery fair and migrations real [automation-taskflow-materialized]'
+          git fetch origin "${GITHUB_REF_NAME}"
+          test "$(git rev-parse HEAD^)" = "$(git rev-parse origin/${GITHUB_REF_NAME})"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
