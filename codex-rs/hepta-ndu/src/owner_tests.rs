@@ -288,7 +288,10 @@ fn authenticated_evaluation_receipt_binds_the_original_owner_context() {
         .expect("second evaluation");
 
     assert_eq!(first.evaluation(), second.evaluation());
-    assert_ne!(first.source_context_digest(), second.source_context_digest());
+    assert_ne!(
+        first.source_context_digest(),
+        second.source_context_digest()
+    );
     assert_ne!(first.receipt_digest(), second.receipt_digest());
 }
 

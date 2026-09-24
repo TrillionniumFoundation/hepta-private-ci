@@ -142,7 +142,10 @@ fn stale_selection_cannot_replace_newer_selection() {
         None,
         projection_b,
     ));
-    assert_eq!(replay, selected_b, "exact operation replay stays idempotent");
+    assert_eq!(
+        replay, selected_b,
+        "exact operation replay stays idempotent"
+    );
     assert_eq!(
         journal.selected_projection_digest(objective, subject),
         Some(projection_b)

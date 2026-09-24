@@ -191,8 +191,7 @@ impl NduProjectionJournalV1 {
         if self.is_revoked(objective_digest, subject_digest, projection_digest) {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
-        if self.selected_projection_digest(objective_digest, subject_digest)
-            != expected_predecessor
+        if self.selected_projection_digest(objective_digest, subject_digest) != expected_predecessor
         {
             return Err(NduProjectionJournalError::SelectionPredecessorMismatch);
         }
