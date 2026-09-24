@@ -73,8 +73,10 @@ fn damped_preference_update_emits_local_solver_receipts() {
         receipts
             .iter()
             .map(|receipt| receipt.residual_raw)
+            // The solve receipt includes the initial residual, before damping.
+            .chain(std::iter::once(FixedQ32::ONE.raw()))
             .max()
-            .expect("maximum residual")
+            .expect("maximum residual including initial state")
     );
     assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
 }
