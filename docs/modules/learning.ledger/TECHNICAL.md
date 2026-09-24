@@ -248,11 +248,23 @@ standalone snapshot helpers still validate their untrusted snapshot by replay.
 Withdrawal resolves the historical source identity through the existing index,
 including inactive records needed for exact idempotent retries.
 
-This removes redundant allocation and replay, not the remaining history scans,
-resident core history, or full-history restart cost. Dataset-sized identity sets
-and output digests remain necessary. The opt-in signed-writer and freeze growth
-curves are host observations, not accepted deployment budgets. No long-running
-capacity or compaction claim follows from these changes.
+The validated append/replay path now also builds an objective-local dataset
+index. Frozen signing inputs visit that objective's authenticated decisions,
+outcomes, corrections and credit batches, rather than every unrelated record.
+Activity checks still use the canonical correction/revocation predicate. The V2
+global revocation/unlearning cut remains global, including withdrawals of an
+unrelated objective; it is not replaced with a cheaper but weaker local cut.
+Index offsets are private, are populated only on a validated new append, and are
+rebuilt by recovery. An idempotent retry cannot add another offset.
+
+Warm derivation visits O(N_objective + N_global_revocations) indexed records,
+plus the existing set, activity-lookup and output-sorting costs. It does not
+claim constant-time freeze, bounded total resident history, or checkpoint-based
+cold recovery. The independent full-scan oracle in
+`production_objective_index_tests.rs` compares complete signing bytes through
+unrelated-history growth, corrections, decision/outcome withdrawal, unlearning,
+idempotent replay and recovery. The opt-in growth curves remain host observations,
+not deployment budgets. No compaction or lifetime-capacity claim follows.
 
 ## 11. Observability and operations
 

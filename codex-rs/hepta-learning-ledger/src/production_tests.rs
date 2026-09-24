@@ -939,3 +939,6 @@ mod growth;
 
 #[path = "production_freeze_tests.rs"]
 mod freeze_tests;
+
+#[path = "production_objective_index_tests.rs"]
+mod objective_index_tests;

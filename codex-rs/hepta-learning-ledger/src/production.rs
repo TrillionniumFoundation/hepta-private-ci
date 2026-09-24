@@ -1008,7 +1008,7 @@ fn derive_dataset_from_core(
         .last()
         .ok_or(ProductionLedgerError::Binding("empty ledger"))?;
     let mut episodes = BTreeSet::new();
-    for record in ledger.active_records_iter() {
+    for record in ledger.active_records_for_objective(&plan.objective_digest) {
         if let LedgerEvent::AuthenticatedDecisionV2(decision) = &record.event
             && decision.objective_digest == plan.objective_digest
         {
@@ -1021,13 +1021,16 @@ fn derive_dataset_from_core(
 
     let mut source_record_digests = Vec::new();
     let mut correction_digests = Vec::new();
-    let mut revocation_digests = Vec::new();
+    let revocation_digests: Vec<_> = ledger
+        .dataset_revocations()
+        .map(|record| record.event_digest)
+        .collect();
     let mut outcome_watermark = 0_u64;
     let mut pending_outcomes = 0_u32;
     let mut censored_outcomes = 0_u32;
     let mut outcome_episodes = BTreeSet::new();
 
-    for record in ledger.active_records_iter() {
+    for record in ledger.active_records_for_objective(&plan.objective_digest) {
         match &record.event {
             LedgerEvent::AuthenticatedDecisionV2(value) if episodes.contains(&value.episode_id) => {
                 source_record_digests.push(record.event_digest);
@@ -1067,16 +1070,13 @@ fn derive_dataset_from_core(
         .checked_add(missing_outcomes)
         .ok_or(ProductionLedgerError::Binding("pending count"))?;
 
-    for record in ledger.records() {
+    for record in ledger.records_for_objective(&plan.objective_digest) {
         match &record.event {
             LedgerEvent::AuthenticatedOutcomeV2(value)
                 if episodes.contains(&value.episode_id)
                     && value.correction_predecessor.is_some() =>
             {
                 correction_digests.push(record.event_digest);
-            }
-            LedgerEvent::Revocation(_) | LedgerEvent::UnlearningLineageV1(_) => {
-                revocation_digests.push(record.event_digest);
             }
             _ => {}
         }

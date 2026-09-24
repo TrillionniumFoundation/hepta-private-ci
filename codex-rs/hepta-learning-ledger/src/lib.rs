@@ -9,6 +9,7 @@
 
 mod causal_v2;
 mod checkpoint;
+mod dataset_index;
 mod dataset_receipt_v3;
 mod durable;
 mod durable_codec;
