@@ -31,10 +31,7 @@ use crate::AgentdIdentity;
 use crate::AgentdIntelligenceOwnerInputsV1;
 use crate::AgentdSignedEvaluationV1;
 
-type RequestOwnerV1 = dyn Fn(
-        &AgentdIdentity,
-        &RunStartRecordV1,
-    ) -> Result<CanonicalIntelligenceRunRequestV1, AgentdError>
+type RequestOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<CanonicalIntelligenceRunRequestV1, AgentdError>
     + Send
     + Sync;
 type ObjectiveOwnerV1 = dyn Fn(
@@ -68,22 +65,13 @@ type NeuronOwnerV1 = dyn Fn(
     ) -> Result<(SparseConfig, SparseTick, Option<SparseCheckpoint>), AgentdError>
     + Send
     + Sync;
-type PromptOwnerV1 = dyn Fn(
-        &AgentdIdentity,
-        &RunStartRecordV1,
-    ) -> Result<OptimizationRequest, AgentdError>
+type PromptOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<OptimizationRequest, AgentdError>
     + Send
     + Sync;
-type IntuitionOwnerV1 = dyn Fn(
-        &AgentdIdentity,
-        &RunStartRecordV1,
-    ) -> Result<CalibratedDecisionRequestV1, AgentdError>
+type IntuitionOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<CalibratedDecisionRequestV1, AgentdError>
     + Send
     + Sync;
-type ContextOwnerV1 = dyn Fn(
-        &AgentdIdentity,
-        &RunStartRecordV1,
-    ) -> Result<CompilationRequest, AgentdError>
+type ContextOwnerV1 = dyn Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<CompilationRequest, AgentdError>
     + Send
     + Sync;
 type EvaluationOwnerV1 = dyn Fn(
@@ -154,14 +142,12 @@ impl AgentdIntelligenceInvocationV1 {
         N: Fn(
                 &AgentdIdentity,
                 &RunStartRecordV1,
-            ) -> Result<(SparseConfig, SparseTick, Option<SparseCheckpoint>), AgentdError>
+            )
+                -> Result<(SparseConfig, SparseTick, Option<SparseCheckpoint>), AgentdError>
             + Send
             + Sync
             + 'static,
-        P: Fn(
-                &AgentdIdentity,
-                &RunStartRecordV1,
-            ) -> Result<OptimizationRequest, AgentdError>
+        P: Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<OptimizationRequest, AgentdError>
             + Send
             + Sync
             + 'static,
@@ -172,17 +158,15 @@ impl AgentdIntelligenceInvocationV1 {
             + Send
             + Sync
             + 'static,
-        C: Fn(
-                &AgentdIdentity,
-                &RunStartRecordV1,
-            ) -> Result<CompilationRequest, AgentdError>
+        C: Fn(&AgentdIdentity, &RunStartRecordV1) -> Result<CompilationRequest, AgentdError>
             + Send
             + Sync
             + 'static,
         E: Fn(
                 &AgentdIdentity,
                 &RunStartRecordV1,
-            ) -> Result<(EvaluationRequest, Option<AgentdSignedEvaluationV1>), AgentdError>
+            )
+                -> Result<(EvaluationRequest, Option<AgentdSignedEvaluationV1>), AgentdError>
             + Send
             + Sync
             + 'static,
@@ -283,13 +267,11 @@ impl AgentdIntelligenceInvocationProviderV1 for AuthoritativeInvocationProviderV
             (self.objective_owner)(identity, record)?;
         let (utility_contributions, utility_profile, utility_scalarization, utility_policy) =
             (self.utility_owner)(identity, record)?;
-        let (neural_config, neural_tick, neural_previous) =
-            (self.neuron_owner)(identity, record)?;
+        let (neural_config, neural_tick, neural_previous) = (self.neuron_owner)(identity, record)?;
         let prompt_request = (self.prompt_owner)(identity, record)?;
         let intuition_request = (self.intuition_owner)(identity, record)?;
         let context_request = (self.context_owner)(identity, record)?;
-        let (evaluation_request, signed_evaluation) =
-            (self.evaluation_owner)(identity, record)?;
+        let (evaluation_request, signed_evaluation) = (self.evaluation_owner)(identity, record)?;
         let invocation = AgentdIntelligenceInvocationV1 {
             request,
             inputs: AgentdIntelligenceOwnerInputsV1 {
@@ -336,14 +318,38 @@ mod tests {
     #[test]
     fn repository_supplies_separated_authoritative_provider_composition() {
         let provider = AgentdIntelligenceInvocationV1::authoritative_provider(
-            |_, _| Err(AgentdError::Invalid("request owner unavailable".to_string())),
-            |_, _| Err(AgentdError::Invalid("objective owner unavailable".to_string())),
-            |_, _| Err(AgentdError::Invalid("utility owner unavailable".to_string())),
+            |_, _| {
+                Err(AgentdError::Invalid(
+                    "request owner unavailable".to_string(),
+                ))
+            },
+            |_, _| {
+                Err(AgentdError::Invalid(
+                    "objective owner unavailable".to_string(),
+                ))
+            },
+            |_, _| {
+                Err(AgentdError::Invalid(
+                    "utility owner unavailable".to_string(),
+                ))
+            },
             |_, _| Err(AgentdError::Invalid("neuron owner unavailable".to_string())),
             |_, _| Err(AgentdError::Invalid("prompt owner unavailable".to_string())),
-            |_, _| Err(AgentdError::Invalid("intuition owner unavailable".to_string())),
-            |_, _| Err(AgentdError::Invalid("context owner unavailable".to_string())),
-            |_, _| Err(AgentdError::Invalid("evaluation owner unavailable".to_string())),
+            |_, _| {
+                Err(AgentdError::Invalid(
+                    "intuition owner unavailable".to_string(),
+                ))
+            },
+            |_, _| {
+                Err(AgentdError::Invalid(
+                    "context owner unavailable".to_string(),
+                ))
+            },
+            |_, _| {
+                Err(AgentdError::Invalid(
+                    "evaluation owner unavailable".to_string(),
+                ))
+            },
         );
         let _: Arc<dyn AgentdIntelligenceInvocationProviderV1> = provider;
     }
