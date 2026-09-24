@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "module": "intelligence.control",
   "canonicalFacade": "prepare_intelligence_run",
-  "namedProductCaller": "codex-rs/hepta-agentd/src/intelligence_product.rs::AgentdIntelligenceProductRunnerV1 (named runner; daemon ingress not yet routed)",
+  "namedProductCaller": "codex-rs/hepta-agentd/src/objective_runtime.rs::ObjectiveRuntimeHost::submit -> AgentdState::start_canonical_intelligence -> AgentdIntelligenceProductRunnerV1::prepare_for_composition (configured canonical profile; physical provider qualification separate)",
   "compatibilitySurfaces": [
     "compose",
     "run_read_only_vertical",

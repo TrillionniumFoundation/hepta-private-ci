@@ -216,7 +216,6 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose a canonical non-test caller that supplies authenticated request/objective/body/artifact/authority identities to run.lifecycle without synthetic hashes.",
     "Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.",
     "Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.",
     "Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton."
@@ -273,8 +272,13 @@
     },
     {
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
-      "nativeSymbol": "RunStart",
-      "state": "public_lifecycle_not_canonical_intelligence"
+      "nativeSymbol": "ObjectiveStart",
+      "state": "authenticated_objective_ingress_routes_canonical_profile_or_explicit_compatibility"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
+      "nativeSymbol": "start_canonical_intelligence",
+      "state": "configured_canonical_profile_freezes_prepared_run_and_context"
     }
   ],
   "sourceObjects": [

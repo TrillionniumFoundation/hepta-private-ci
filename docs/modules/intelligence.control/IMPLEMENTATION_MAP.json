@@ -518,8 +518,14 @@
     {
       "caller": "AgentdIntelligenceProductRunnerV1",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "state": "named_runner_admits_agentd_run_but_daemon_ingress_not_routed",
-      "entrypoint": "prepare_and_admit"
+      "state": "authenticated_objective_ingress_routed_when_host_owned_provider_is_configured",
+      "entrypoint": "prepare_for_composition"
+    },
+    {
+      "caller": "AgentdState::start_canonical_intelligence",
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
+      "state": "daemon_objective_ingress_freezes_exact_prepared_run_and_context",
+      "entrypoint": "start_canonical_intelligence"
     },
     {
       "caller": "AppServerModelDriver::run_intelligence",
@@ -536,7 +542,7 @@
     "currentnessVerifier": "IntelligenceAuthorityVerifierV1"
   },
   "repositoryControlledGaps": [
-    "Wire an actual Agentd daemon ingress/product path that invokes AgentdIntelligenceProductRunnerV1::prepare, appends the durable Decision, freezes the exact run/context envelope, and supplies that binding to the physical App Server caller. Merely storing the runner in AgentdState is not product composition.",
+    "Complete durable product Decision/Outcome append and process-loss reconciliation, then exercise the daemon-prepared binding through the physical App Server caller; the authenticated ObjectiveStart-to-canonical-run route is now source-wired.",
     "Make ambiguous Decision/Outcome append recovery survive Agentd process loss; PendingIntelligenceLedgerAppendV1 is currently only an in-memory replay object.",
     "Obtain current exact-head and deterministic synthetic-merge green receipts for this candidate; prior candidate receipts are provenance only.",
     "Run the real Agentd/App Server intelligence-bound product E2E, including turn/start lost-ack, dependency outage, restart and revocation races.",
