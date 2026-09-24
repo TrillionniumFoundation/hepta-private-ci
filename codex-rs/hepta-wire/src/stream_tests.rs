@@ -113,3 +113,130 @@ fn blocking_reader_allocates_and_reads_only_after_admission() -> Result<(), Box<
     assert_eq!(cursor.position(), frame.len() as u64);
     Ok(())
 }
+
+#[test]
+fn valid_prefix_and_terminal_error_are_reported_atomically() -> Result<(), Box<dyn Error>> {
+    let valid = WireEnvelopeV2::new(
+        stable("hepta.stream.v2")?,
+        stable("runtime.codex")?,
+        Generation::new(4)?,
+        b"valid-prefix".to_vec(),
+    )?
+    .encode();
+    let mut invalid = valid.clone();
+    invalid[0] = b'X';
+    let mut chunk = valid.clone();
+    chunk.extend_from_slice(&invalid);
+
+    let mut decoder = StreamingDecoder::new();
+    let batch = decoder.push_batch(&chunk);
+    assert_eq!(batch.frames().len(), 1);
+    assert_eq!(batch.frames()[0].payload(), b"valid-prefix");
+    assert_eq!(batch.terminal_error(), Some(&StreamDecodeError::Magic));
+    assert!(decoder.is_poisoned());
+    assert_eq!(decoder.buffered_len(), 0);
+    assert_eq!(decoder.push(&valid), Err(StreamDecodeError::Magic));
+
+    decoder.clear();
+    assert!(!decoder.is_poisoned());
+    assert_eq!(decoder.push(&valid)?.len(), 1);
+    Ok(())
+}
+
+#[test]
+fn every_chunk_boundary_preserves_the_same_valid_prefix_and_terminal_error()
+-> Result<(), Box<dyn Error>> {
+    let valid = WireEnvelopeV2::new(
+        stable("hepta.stream.v2")?,
+        stable("runtime.codex")?,
+        Generation::new(5)?,
+        b"same-prefix".to_vec(),
+    )?
+    .encode();
+    let mut invalid = valid.clone();
+    invalid[0] = b'X';
+
+    let mut bytes = valid;
+    bytes.extend_from_slice(&invalid);
+    let mut coalesced = StreamingDecoder::new();
+    let expected = coalesced.push_batch(&bytes);
+    assert_eq!(expected.frames().len(), 1);
+    assert_eq!(expected.terminal_error(), Some(&StreamDecodeError::Magic));
+
+    for split_at in 0..=bytes.len() {
+        let mut decoder = StreamingDecoder::new();
+        let first = decoder.push_batch(&bytes[..split_at]);
+        let mut frames = first.frames().to_vec();
+        let terminal_error = match first.terminal_error().cloned() {
+            Some(error) => Some(error),
+            None => {
+                let second = decoder.push_batch(&bytes[split_at..]);
+                frames.extend_from_slice(second.frames());
+                second.terminal_error().cloned()
+            }
+        };
+
+        assert_eq!(
+            frames,
+            expected.frames(),
+            "valid prefix changed at chunk boundary {split_at}"
+        );
+        assert_eq!(
+            terminal_error.as_ref(),
+            expected.terminal_error(),
+            "terminal error changed at chunk boundary {split_at}"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn invalid_header_never_copies_the_advertised_body() -> Result<(), Box<dyn Error>> {
+    let mut chunk =
+        WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?.encode();
+    chunk[0] = b'X';
+    chunk.resize(MAX_WIRE_PAYLOAD_BYTES, 0);
+
+    let mut decoder = StreamingDecoder::new();
+    let batch = decoder.push_batch(&chunk);
+    assert_eq!(batch.terminal_error(), Some(&StreamDecodeError::Magic));
+    assert_eq!(decoder.buffered_len(), 0);
+    assert!(decoder.is_poisoned());
+    Ok(())
+}
+
+#[test]
+fn many_small_frames_transfer_ownership_without_retaining_suffix() -> Result<(), Box<dyn Error>> {
+    let frame =
+        WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?.encode();
+    let chunk = frame.repeat(8_192);
+    let mut decoder = StreamingDecoder::new();
+    let batch = decoder.push_batch(&chunk);
+    assert_eq!(batch.frames().len(), 8_192);
+    assert!(batch.terminal_error().is_none());
+    assert_eq!(decoder.buffered_len(), 0);
+    Ok(())
+}
+
+#[test]
+fn compatibility_push_returns_valid_prefix_before_latched_error() -> Result<(), Box<dyn Error>> {
+    let valid = WireEnvelopeV2::new(
+        stable("hepta.stream.v2")?,
+        stable("runtime.codex")?,
+        Generation::new(6)?,
+        b"compat-prefix".to_vec(),
+    )?
+    .encode();
+    let mut invalid = valid.clone();
+    invalid[0] = b'X';
+    let mut chunk = valid.clone();
+    chunk.extend_from_slice(&invalid);
+
+    let mut decoder = StreamingDecoder::new();
+    let frames = decoder.push(&chunk)?;
+    assert_eq!(frames.len(), 1);
+    assert_eq!(frames[0].payload(), b"compat-prefix");
+    assert_eq!(decoder.terminal_error(), Some(&StreamDecodeError::Magic));
+    assert_eq!(decoder.push(&valid), Err(StreamDecodeError::Magic));
+    Ok(())
+}

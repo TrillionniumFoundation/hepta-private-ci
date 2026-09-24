@@ -33,6 +33,7 @@ use codex_hepta_types::PromptDeliveryErrorV1;
 pub use codex_hepta_types::PromptDeliveryObservationV1;
 pub use codex_hepta_types::PromptDeliveryRejectReasonV1;
 pub use wire::CODEX_OPERATION_INTENT_WIRE_PRODUCER_V2;
+pub use wire::CODEX_OPERATION_INTENT_WIRE_SCHEMA_V3;
 
 pub use runtime_prompt::PromptRuntimeAttachmentV1;
 pub use runtime_prompt::PromptRuntimeDeveloperFragmentV1;
@@ -47,13 +48,19 @@ pub use runtime_prompt::PromptRuntimeRecordFuture;
 pub use runtime_prompt::PromptRuntimeTerminalOutcomeV1;
 pub use runtime_prompt::PromptRuntimeTerminalRecordV1;
 pub use runtime_prompt::install_prompt_runtime;
+pub use wire::AppServerRequestBindingWireV3;
 pub use wire::CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2;
 pub use wire::CodexOperationIntentWireV2;
+pub use wire::CodexOperationIntentWireV3;
 pub use wire::WireAdapterError;
+pub use wire::adapt_product_wire_v3;
 pub use wire::adapt_wire_v2;
 pub use wire::codex_operation_intent_wire_schema_v2;
+pub use wire::codex_operation_intent_wire_schema_v3;
 pub use wire::decode_codex_operation_intent_wire_v2;
+pub use wire::decode_codex_operation_intent_wire_v3;
 pub use wire::encode_codex_operation_intent_wire_v2;
+pub use wire::encode_codex_operation_intent_wire_v3;
 
 const MAX_APP_SERVER_VERSION_BYTES: usize = 128;
 pub const APP_SERVER_V2_PROTOCOL_ID: &str = "codex.app-server.v2";

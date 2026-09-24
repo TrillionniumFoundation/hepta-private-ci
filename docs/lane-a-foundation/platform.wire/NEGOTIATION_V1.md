@@ -43,6 +43,11 @@ requires schema admission must pass both requirements. If the only common
 version cannot satisfy the required properties, negotiation fails rather than
 silently falling back.
 
+`NegotiatedWire.capabilities` contains only capabilities effective for the
+selected version. `common_advertised_capabilities` separately records the raw
+intersection for diagnostics, so a V1 selection cannot be mistaken for a V2
+metadata-bound session merely because both peers advertised that capability.
+
 A future peer may advertise an unknown raw version number. An older
 implementation preserves that advertisement as data but never invents semantics
 for it and never selects it.
@@ -59,6 +64,14 @@ The current implementation advertises versions `1, 2` and capability mask
   `4850544e00010200000000000000000700010002`
 
 The same vector is frozen in `HPTN_V1_CONFORMANCE.json` and native tests.
+
+## Session binding
+
+After negotiation, a live byte stream uses `NegotiatedStreamingDecoder`. A
+frame whose HPTA version differs from the selected HPTN version terminates and
+poisons that connection-local decoder. The generic `decode_frame` function is
+an offline multi-version parser and is not a replacement for session binding.
+A fresh connection negotiates again.
 
 ## Authentication requirement
 

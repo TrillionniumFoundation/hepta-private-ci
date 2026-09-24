@@ -12,7 +12,8 @@ fuzz_target!(|data: &[u8]| {
 
     let mut decoder = StreamingDecoder::new();
     for chunk in data.chunks(17) {
-        if decoder.push(chunk).is_err() {
+        let batch = decoder.push_batch(chunk);
+        if batch.terminal_error().is_some() {
             break;
         }
     }

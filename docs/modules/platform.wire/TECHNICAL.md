@@ -27,13 +27,15 @@ bind them to native source.
 |---|---|---|
 | Frozen HPTA V1 envelope | implemented, immutable | `src/envelope.rs`, `WIRE_V1.md` |
 | HPTA V2 metadata-bound frame digest | implemented | `src/envelope_v2.rs`, `WIRE_V2.md` |
-| HPTN version/capability negotiation | implemented | `src/version.rs`, `NEGOTIATION_V1.md` |
-| Multi-version frame dispatch | implemented | `src/frame.rs` |
+| HPTN version/capability negotiation | implemented | `src/version.rs`, `NEGOTIATION_V1.md`; selected-version effective capabilities are explicit |
+| Negotiated session decode | implemented | `src/session.rs`; a live connection rejects frames outside the selected version |
+| Multi-version offline frame dispatch | implemented | `src/frame.rs` |
 | Schema admission + typed payload codec boundary | implemented framework | `src/schema.rs`; registered port adapters additionally pin producer identity |
-| Bounded incremental stream decoder | implemented | `src/stream.rs` |
+| Bounded incremental stream decoder | implemented | `src/stream.rs`; header-first body admission, prefix+error batches and terminal poison state |
 | Property tests + fuzz target | implemented source evidence | `src/property_tests.rs`, `fuzz/fuzz_targets/decode_frames.rs` |
-| Rust↔Python raw binary session | implemented qualification source | `hepta-shadow-qualification/tests/cross_runtime_wire_session.rs` |
+| Rust↔Python raw binary session | implemented bidirectional qualification source | `hepta-shadow-qualification/tests/cross_runtime_wire_session.rs` |
 | Read-only runtime/gateway caller | source-composed | explicit V2 `Accept` on existing runtime status route |
+| Product-bound runtime.codex caller | source-composed | normal `hepta-infer-worker-host` path uses HPTA V2 plus payload schema V3 before final-use claim |
 | Exact-head/merge qualification, deployment and external acceptance | not granted by this guide | separate evidence gates remain mandatory |
 
 V1 continues to use a payload-only digest. V2 binds schema, producer,
@@ -71,7 +73,7 @@ None.
 
 ### Native source and scope
 
-The frozen V1 source remains [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). Current versioned source additionally includes `envelope_v2.rs`, `version.rs`, `frame.rs`, `schema.rs` and `stream.rs`; public exports are collected in `src/lib.rs`. A named read-only caller is source-composed through `hepta-runtime` and `hepta-native-gateway`; registered `context.compiler` and `runtime.codex` adapters enforce schema plus canonical producer admission before domain decode, while production activation and acceptance remain separate gates. Read [CURRENT_IMPLEMENTATION.md](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md) and the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the target requirements in this guide.
+The frozen V1 source remains [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). Current versioned source additionally includes `envelope_v2.rs`, `version.rs`, `session.rs`, `frame.rs`, `schema.rs` and `stream.rs`; public exports are collected in `src/lib.rs`. A named read-only caller is source-composed through `hepta-runtime` and `hepta-native-gateway`. Registered `context.compiler` and `runtime.codex` adapters enforce schema plus canonical producer admission before domain decode. The normal `hepta-infer-worker-host` runtime.codex path now admits its complete App Server binding through `hepta.codex-operation-intent.v3` before the existing final-use claim and physical `turn/start`; production activation and acceptance remain separate gates. Read [CURRENT_IMPLEMENTATION.md](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md) and the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the target requirements in this guide.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -98,8 +100,8 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 The bounded components are:
 
 - `framing and codec boundary`
-- `version negotiation`
-- `bounded decoder`
+- `version negotiation and selected-version session binding`
+- `bounded header-first decoder with terminal poison state`
 - `transport-neutral error mapping`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -121,7 +123,15 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-None.
+- HPTA frame V1 and V2;
+- HPTN negotiation hello V1;
+- `hepta.codex-operation-intent.v2` compatibility payload (unbound);
+- `hepta.codex-operation-intent.v3` product payload (complete App Server binding required).
+
+The V2 payload schema remains closed and is not widened in place. Payload schema
+V3 still uses HPTA frame version 2; payload and framing versions are independent.
+The field-level V3 contract and effect boundary are specified in
+[`RUNTIME_CODEX_V3.md`](../../lane-a-foundation/platform.wire/RUNTIME_CODEX_V3.md).
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -145,11 +155,26 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
+Connection-local decode has three explicit outcomes: incomplete input, completed
+frames, or a terminal error. `StreamDecodeBatch` preserves a completed prefix
+when a later frame in the same chunk fails. A terminal decoder is poisoned; it
+cannot accept more bytes until the old connection is discarded. Header bytes
+are admitted before a declared body, and completed frames transfer ownership
+rather than front-draining and shifting a shared buffer. Live negotiated
+connections use `NegotiatedStreamingDecoder`; `decode_frame` remains an offline
+multi-version parser.
+
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
+
+A protocol, resource or selected-version mismatch terminates the connection-local
+decoder. The owning transport closes/quarantines that connection and negotiates
+a new session; clearing a decoder does not restore trust in the same byte
+stream. Valid frames completed before a later terminal error are returned in the
+same batch and must not disappear because of transport chunking.
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
@@ -167,7 +192,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as host qualification. Current native limits belong to [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs) and the linked implementation components. `StreamingDecoder` validates the fixed header before body admission and transfers each completed frame out of its buffer; the owning transport bounds each feed using the configured maximum-frame byte budget, and an over-budget feed is rejected before consumption.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -187,13 +212,16 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs): frozen V1, truncation and bounds.
 - `codex-rs/hepta-wire/src/envelope_v2_tests.rs`: frozen V2 and metadata-tamper rejection.
-- `codex-rs/hepta-wire/src/version_tests.rs`: negotiation, capability pinning and downgrade rejection.
+- `codex-rs/hepta-wire/src/version_tests.rs`: negotiation, selected-version effective capabilities, capability pinning and downgrade rejection.
+- `codex-rs/hepta-wire/src/session_tests.rs`: negotiated frame-version binding and valid-prefix preservation.
 - `codex-rs/hepta-wire/src/schema_tests.rs`: registration, missing/unknown critical field rejection.
-- `codex-rs/hepta-wire/src/stream_tests.rs`: incremental completion and pre-body allocation bounds.
+- `codex-rs/hepta-wire/src/stream_tests.rs`: chunking-invariant prefix delivery, header-first body admission, terminal poison state, incremental completion and buffer bounds.
 - `codex-rs/hepta-wire/src/property_tests.rs` and `codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs`: property/fuzz surfaces.
-- `codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs`: raw-binary Rust↔Python negotiation and typed V2 load.
+- `codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs`: bidirectional raw-binary Rust↔Python negotiation and typed V2 load, including strict duplicate-key and boolean/integer rejection.
 - `codex-rs/hepta-native-gateway/src/lib.rs`: explicit content-negotiated read-only product callsite tests.
-- `codex-rs/hepta-context-compiler/src/wire_tests.rs` and `codex-rs/hepta-codex-adapter/src/wire_tests.rs`: strict schema, payload and wrong-producer rejection at registered product ports.
+- `codex-rs/hepta-context-compiler/src/wire_tests.rs`: strict schema, payload and wrong-producer rejection.
+- `codex-rs/hepta-codex-adapter/src/wire_tests.rs`: V2 compatibility rejection plus V3 complete-binding round trip, mutation and producer tests.
+- `codex-rs/hepta-infer-worker-host/src/native_app_server.rs` and the existing runtime.codex product E2E: normal product caller source and target-host test path.
 
 In `codex-rs`, run `just test -p codex-hepta-wire`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
 
@@ -296,10 +324,12 @@ This receipt records repository source bindings for the current documentation ca
 |---|---|---|---|
 | `wire_v1` | `WireEnvelope` | `codex-rs/hepta-wire/src/envelope.rs` | V1 unit/boundary/frozen-vector tests |
 | `wire_v2` | `WireEnvelopeV2` | `codex-rs/hepta-wire/src/envelope_v2.rs` | V2 digest/mutation/frozen-vector tests |
-| `negotiate` | `negotiate` | `codex-rs/hepta-wire/src/version.rs` | capability/downgrade tests |
+| `negotiate` | `negotiate` | `codex-rs/hepta-wire/src/version.rs` | effective-capability/downgrade tests |
+| `session_decode` | `NegotiatedStreamingDecoder` | `codex-rs/hepta-wire/src/session.rs` | negotiated-version/prefix tests |
 | `schema_admit` | `SchemaRegistry` / `PayloadCodec` | `codex-rs/hepta-wire/src/schema.rs` | strict typed-codec tests |
-| `stream_decode` | `StreamingDecoder` | `codex-rs/hepta-wire/src/stream.rs` | incremental/buffer-bound tests |
+| `stream_decode` | `StreamingDecoder` | `codex-rs/hepta-wire/src/stream.rs` | header-first/prefix/poison/buffer tests |
+| `runtime_codex_v3` | `adapt_product_wire_v3` | `codex-rs/hepta-codex-adapter/src/wire.rs` | complete-binding round-trip/mutation tests and normal worker callsite |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- The read-only runtime status path is now a named source-composed caller, and the registered context/compiler and runtime/Codex adapters pin canonical producer identities; these source facts are not deployment or operator acceptance.
+- The read-only runtime status path and the normal inference-worker runtime.codex V3 admission path are named source-composed callers. Registered context/compiler and runtime/Codex adapters pin canonical producer identities; these source facts are not target-host execution, deployment or operator acceptance.
 - Exact-head and synthetic-merge execution, authenticated transport/session binding, target-host qualification, independent acceptance, activation, promotion and release remain separate evidence gates.

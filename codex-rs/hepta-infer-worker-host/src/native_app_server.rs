@@ -51,7 +51,7 @@ use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
 use codex_hepta_codex_adapter::adapt_observed_event;
 use codex_hepta_codex_adapter::adapt_observed_server_rejection;
 use codex_hepta_codex_adapter::adapt_observed_thread_read_reconciliation;
-use codex_hepta_codex_adapter::adapt_request;
+use codex_hepta_codex_adapter::adapt_product_wire_v3;
 use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::EnteredUseToken;
@@ -595,7 +595,11 @@ impl AppServerModelDriver {
                 connection_id,
             }),
         };
-        let request_receipt = adapt_request(adapted_at_ms, adapter_intent.clone())?;
+        let request_receipt = adapt_product_wire_v3(
+            adapted_at_ms,
+            &adapter_intent,
+            Generation::new(self.config.generation)?,
+        )?;
         let authority_binding = final_use_binding(
             &self.config.agent_id,
             &adapter_intent,

@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "source_composed_read_only_and_registered_port_adapters",
+  "productCallerState": "source_composed_read_only_and_product_bound_callers",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -46,7 +46,9 @@
         "codex-rs/hepta-wire/src/envelope_v2_tests.rs",
         "codex-rs/hepta-native-gateway/src/lib.rs",
         "codex-rs/hepta-context-compiler/src/wire_tests.rs",
-        "codex-rs/hepta-codex-adapter/src/wire_tests.rs"
+        "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "wire_v2",
@@ -55,7 +57,9 @@
         "codex-rs/hepta-runtime/src/lib.rs",
         "codex-rs/hepta-native-gateway/src/lib.rs",
         "codex-rs/hepta-context-compiler/src/wire.rs",
-        "codex-rs/hepta-codex-adapter/src/wire.rs"
+        "codex-rs/hepta-codex-adapter/src/wire.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
       ]
     },
     {
@@ -66,10 +70,26 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/version_tests.rs",
+        "codex-rs/hepta-wire/src/session_tests.rs",
         "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "negotiate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "session_decode",
+      "nativeSymbol": "NegotiatedStreamingDecoder",
+      "sourcePath": "codex-rs/hepta-wire/src/session.rs",
+      "state": "source_implemented_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/session_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "session_decode",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -105,10 +125,28 @@
       "designOperation": "stream_decode",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "runtime_codex_v3_admission",
+      "nativeSymbol": "adapt_product_wire_v3",
+      "sourcePath": "codex-rs/hepta-codex-adapter/src/wire.rs",
+      "state": "source_implemented_source_composed_product_caller",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "runtime_codex_v3_admission",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge tests for the versioned implementation and registered product source callers.",
+    "Run exact-head and deterministic synthetic-merge tests for the versioned implementation and named product callers.",
     "Bind HPTN negotiation and encoded HPTA frames to the selected authenticated production transport/session.",
     "Register and qualify each additional product-domain schema codec before admitting it."
   ],
@@ -138,6 +176,16 @@
       "state": "source_composed_read_only_product_caller",
       "tests": [
         "codex-rs/hepta-native-gateway/src/lib.rs"
+      ]
+    },
+    {
+      "id": "hepta-infer-worker-host.runtime-codex-v3",
+      "nativeSymbol": "AppServerModelDriver::run_once",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "state": "source_composed_product_bound_caller",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
       ]
     }
   ],
