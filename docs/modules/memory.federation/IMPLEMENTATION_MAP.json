@@ -178,21 +178,21 @@
     "tree": "cd50cd9c14adef5380e1d38a14367adc0546c7a7"
   },
   "observedSourcePaths": [
+    ".github/workflows/memory-federation-v2-final-verify.yml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
+    "codex-rs/app-server/src/lib.rs",
+    "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-memory-federation",
     "codex-rs/hepta-memory/src/cognitive_federation.rs",
     "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
     "codex-rs/hepta-memory/src/cognitive_runtime.rs",
     "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_store.rs",
-    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
-    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
-    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-    "codex-rs/hepta-agentd/src/runtime.rs",
-    "codex-rs/app-server/src/lib.rs",
-    "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
-    ".github/workflows/memory-federation-v2-final-verify.yml"
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
   ],
   "productCallers": [
     {
@@ -217,6 +217,22 @@
       "object": "edf2ca5f0a35bac166d6b1418a4f1cca4315ea4e"
     },
     {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "object": "99097c543655d1c150b03df3a5e777af2c5dd2b8"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
+      "object": "d34e4c243d3bd4f09b8fffd18a7121f11ee9abf9"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "object": "d519c6e77db1ab79dd8f5f781b8642ef5a5eb468"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "d6384bb4095218d6ba5a2e3c09256d0b83efa661"
+    },
+    {
       "path": "codex-rs/hepta-memory-federation",
       "object": "f2fb3418d116d61deae41ade0b4e1f8e9354172d"
     },
@@ -237,6 +253,10 @@
       "object": "409d3fa02777cfbceee099a52deb034f21b1a767"
     },
     {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+      "object": "dfc79598fc33fef2a7c9228037d39179b05310ec"
+    },
+    {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
       "object": "8ce82124cdc7cd50af8d9725ae1be5726700999c"
     },
@@ -251,26 +271,6 @@
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
       "object": "b04217a0de797501c61262b20b8c52d2bd1b1822"
-    },
-    {
-      "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
-      "object": "dfc79598fc33fef2a7c9228037d39179b05310ec"
-    },
-    {
-      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-      "object": "d519c6e77db1ab79dd8f5f781b8642ef5a5eb468"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "d6384bb4095218d6ba5a2e3c09256d0b83efa661"
-    },
-    {
-      "path": "codex-rs/app-server/src/lib.rs",
-      "object": "99097c543655d1c150b03df3a5e777af2c5dd2b8"
-    },
-    {
-      "path": "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
-      "object": "d34e4c243d3bd4f09b8fffd18a7121f11ee9abf9"
     },
     {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
