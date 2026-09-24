@@ -1,0 +1,53 @@
+name: chatgpt cognitive.types source export
+
+on:
+  push:
+    branches:
+      - chatgpt/cognitive-types-convergence-20260925
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Build exact source archive
+        run: |
+          git rev-parse HEAD > SOURCE_HEAD.txt
+          tar -czf hepta-cognitive-types-source.tgz \
+            SOURCE_HEAD.txt \
+            .github/workflows/hnmf-qualification.yml \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-types \
+            codex-rs/hepta-cognitive-types \
+            codex-rs/hepta-cognitive-read \
+            codex-rs/hepta-cognitive-store \
+            codex-rs/hepta-memory-retrieval \
+            codex-rs/hepta-compact-engine \
+            codex-rs/hepta-intelligence \
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs \
+            qualification/cognitive-types-v1 \
+            qualification/hnmf-contract-reference \
+            qualification/hnmf-adversarial-reference \
+            qualification/hnmf-reference \
+            docs/modules/cognitive.types \
+            docs/hnmf \
+            qualification/module-execution-dossiers/detail/cognitive.types.md \
+            scripts/hepta-hnmf.py \
+            scripts/hepta-implementation-maps.py
+
+      - name: Retain exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: chatgpt-cognitive-types-source
+          path: hepta-cognitive-types-source.tgz
+          if-no-files-found: error
+          retention-days: 1
