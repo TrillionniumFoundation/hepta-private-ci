@@ -5,6 +5,10 @@ on:
     paths:
       - codex-rs/hepta-agentd/src/intelligence_ingress.rs
       - codex-rs/hepta-agentd/src/intelligence_ingress_tests.rs
+      - codex-rs/hepta-agentd/src/intelligence_invocation_owner_tests.rs
+      - codex-rs/hepta-agentd/src/intelligence_run_start_tests.rs
+      - codex-rs/hepta-agentd/src/objective_runtime.rs
+      - scripts/test_hepta_provider_workflow.py
       - .github/workflows/intelligence-provider-qualification.yml
 
 # Qualification observes immutable source. It must never repair or push the
@@ -18,7 +22,6 @@ concurrency:
 
 jobs:
   qualify:
-    if: github.event.pull_request.number == 999
     name: Provider seam (${{ matrix.lane }})
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -100,7 +103,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/provider-evidence/tests.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(intelligence_ingress)' --retries 0 --test-threads 2
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/provider-evidence/tests.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(intelligence_ingress)' --retries 0 --test-threads 2
 
       - name: Strict provider lint, independent of tests
         if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.rust.outcome == 'success' }}
