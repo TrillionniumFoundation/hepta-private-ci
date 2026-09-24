@@ -189,6 +189,23 @@ jobs:
           fi
       - name: Exercise real namespace isolation and candidate evaluation
         run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/engineering-${{ matrix.lane }}.json" -- python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+      - name: Measure bounded engineering-control host profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control \
+            python3 -m control_engineering_v2.qualification_profile \
+              --repository "$GITHUB_WORKSPACE" \
+              --iterations 7 \
+              --sandbox-mode strong \
+              --output "$RUNNER_TEMP/control-engineering-host-profile.json"
+      - name: Retain host qualification profile
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-host-profile-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/control-engineering-host-profile.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Retain real command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

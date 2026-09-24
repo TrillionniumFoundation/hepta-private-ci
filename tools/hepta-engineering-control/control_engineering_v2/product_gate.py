@@ -1,7 +1,7 @@
 """Repository product caller for the Engineering Control Plane.
 
 The caller runs only after repository qualification jobs succeed. It proves that
-the actual repository CI composes the SQLite v9 named product owner across planning,
+the actual repository CI composes the SQLite v10 named product owner across planning,
 fenced worker lifecycle, durable integration reconciliation and reopen recovery.
 Its in-process signatures/digests are explicit execution fixtures, not independent
 acceptance or external observations. It never grants merge, deployment, promotion,
@@ -22,7 +22,12 @@ import time
 
 from .control_plane import DENIED_AUTHORITIES, WorkEnvelope
 from .evidence import HmacTrustStore
-from .integration_controller import IntegrationStageReceipt
+from .integration_controller import (
+    IntegrationStageReceipt,
+    IntegrationTerminalReceipt,
+    integration_context_binding,
+    integration_receipt_context,
+)
 from .git_security import run_git, run_git_bytes
 from .product_runtime import EngineeringControlProduct
 from .orchestration import (
@@ -259,6 +264,7 @@ def build_product_receipt(
             ("engineering_evidence_binder", "product-candidate-observer-key"): b"product-candidate-observer",
             ("github_review_observer", "product-review-observer-key"): b"product-review-observer",
             ("ci_executor", "product-integration-ci-key"): b"product-integration-ci",
+            ("integration_terminal_observer", "product-terminal-observer-key"): b"terminal-observer-fixture",
         }
     )
     worker_id = "github-actions-product-worker"
@@ -283,7 +289,10 @@ def build_product_receipt(
     reopened_claim_state = ""
     queue_generation_id = f"product-integration-{tested_sha[:20]}"
     integration_state = ""
-    reopened_integration_state = ""
+    terminal_integration_state = ""
+    reopened_terminal_integration_state = ""
+    startup_recovery = None
+    reopened_startup_recovery = None
     with tempfile.TemporaryDirectory(prefix="hepta-engineering-product-") as directory:
         database_path = Path(directory) / "engineering.sqlite3"
         with EngineeringControlProduct(
@@ -412,6 +421,12 @@ def build_product_receipt(
                 base_tree=integration_base_tree,
                 now_ns=now + 7,
             )
+            integration_binding = integration_context_binding(
+                product.store,
+                queue.queue_generation_id,
+                package.package_id,
+            )
+            receipt_context = integration_receipt_context(integration_binding)
             candidate_observation = IntegrationStageReceipt(
                 queue.queue_generation_id,
                 package.package_id,
@@ -424,6 +439,7 @@ def build_product_receipt(
                 "product-candidate-observer-key",
                 now + 8,
                 now + 120_000_000_000,
+                **receipt_context,
             )
             candidate_observation = _signed_fixture(
                 candidate_observation,
@@ -443,6 +459,7 @@ def build_product_receipt(
                 "product-review-observer-key",
                 now + 9,
                 now + 120_000_000_000,
+                **receipt_context,
             )
             review_observation = _signed_fixture(
                 review_observation,
@@ -462,6 +479,7 @@ def build_product_receipt(
                 "product-integration-ci-key",
                 now + 10,
                 now + 120_000_000_000,
+                **receipt_context,
             )
             ci_observation = _signed_fixture(
                 ci_observation,
@@ -493,7 +511,7 @@ def build_product_receipt(
                 stage_receipt=ci_observation,
                 now_ns=now + 10,
             )
-            anchor = product.audit_anchor()
+            ready_anchor = product.audit_anchor()
             completed_claim_id = completed.claim_id
             completed_state = completed.state
             integration_state = integration.state
@@ -504,9 +522,10 @@ def build_product_receipt(
             expected_repository=EXPECTED_REPOSITORY,
             trust_store=lifecycle_trust,
         ) as reopened:
+            startup_recovery = reopened.startup_reconcile(now_ns=now + 11)
             replayed_registration_digest = reopened.register_worker(
                 registration,
-                now_ns=now + 9,
+                now_ns=now + 11,
             )
             replayed_lease = reopened.acquire_lease(
                 lease.lease_id,
@@ -515,7 +534,7 @@ def build_product_receipt(
                 ("tools/hepta-engineering-control",),
                 authority_epoch=1,
                 expires_unix_ns=now + 240_000_000_000,
-                now_ns=now + 9,
+                now_ns=now + 11,
             )
             replayed_claim = reopened.claim(
                 plan.generation_id,
@@ -523,22 +542,22 @@ def build_product_receipt(
                 worker_id,
                 lease.lease_id,
                 heartbeat_ttl_ns=60_000_000_000,
-                now_ns=now + 9,
+                now_ns=now + 11,
             )
             replayed_heartbeat = reopened.heartbeat(
                 heartbeat,
                 heartbeat_ttl_ns=60_000_000_000,
-                now_ns=now + 9,
+                now_ns=now + 11,
             )
             replayed_result = reopened.submit_result(
                 result,
-                now_ns=now + 9,
+                now_ns=now + 11,
             )
             replayed_completion = reopened.observe_completion(
                 completed_claim_id,
                 envelope,
                 completion,
-                now_ns=now + 9,
+                now_ns=now + 11,
             )
             reopened.reconcile_integration(
                 queue_generation_id,
@@ -556,7 +575,7 @@ def build_product_receipt(
                 stage_receipt=review_observation,
                 now_ns=now + 11,
             )
-            replayed_integration = reopened.reconcile_integration(
+            replayed_ready = reopened.reconcile_integration(
                 queue_generation_id,
                 package.package_id,
                 current_base_commit=integration_base_commit,
@@ -564,12 +583,46 @@ def build_product_receipt(
                 stage_receipt=ci_observation,
                 now_ns=now + 11,
             )
+            replayed_ready_anchor = reopened.audit_anchor()
+            terminal_binding = integration_context_binding(
+                reopened.store,
+                queue_generation_id,
+                package.package_id,
+            )
+            terminal_receipt = IntegrationTerminalReceipt(
+                queue_generation_id,
+                package.package_id,
+                str(replayed_ready.candidate_digest),
+                str(replayed_ready.review_digest),
+                str(replayed_ready.ci_digest),
+                "merged_observed",
+                "integration_terminal_observer",
+                "product-terminal-observer-key",
+                now + 12,
+                now + 120_000_000_000,
+                **integration_receipt_context(terminal_binding),
+            )
+            terminal_receipt = _signed_fixture(
+                terminal_receipt,
+                lifecycle_trust,
+                terminal_receipt.issuer,
+                terminal_receipt.signing_identity,
+            )
+            terminal_integration = reopened.reconcile_integration(
+                queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                terminal_outcome="merged_observed",
+                terminal_receipt=terminal_receipt,
+                now_ns=now + 12,
+            )
+            terminal_anchor = reopened.audit_anchor()
             reopened_claim_state = replayed_completion.state
             reopened_completion_observation_digest = (
                 reopened.completion_observation_digest(completed_claim_id)
             )
-            reopened_integration_state = replayed_integration.state
-            reopened_anchor = reopened.audit_anchor()
+            terminal_integration_state = terminal_integration.state
             if (
                 replayed_registration_digest != registration_digest
                 or replayed_lease.lease_id != lease.lease_id
@@ -580,6 +633,25 @@ def build_product_receipt(
             ):
                 raise RuntimeError("product_reopen_ack_replay_mismatch")
 
+        with EngineeringControlProduct(
+            database_path,
+            root,
+            expected_repository=EXPECTED_REPOSITORY,
+            trust_store=lifecycle_trust,
+        ) as final_reopen:
+            reopened_startup_recovery = final_reopen.startup_reconcile(now_ns=now + 13)
+            replayed_terminal = final_reopen.reconcile_integration(
+                queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                terminal_outcome="merged_observed",
+                terminal_receipt=terminal_receipt,
+                now_ns=now + 13,
+            )
+            reopened_terminal_integration_state = replayed_terminal.state
+            final_anchor = final_reopen.audit_anchor()
+
     if completed_state != "completed_observed" or reopened_claim_state != "completed_observed":
         raise RuntimeError("product_worker_lifecycle_not_recovered")
     if (
@@ -587,10 +659,23 @@ def build_product_receipt(
         or completion_observation_digest == "0" * 64
     ):
         raise RuntimeError("product_completion_evidence_not_recovered")
-    if integration_state != "ready_external_merge" or reopened_integration_state != "ready_external_merge":
+    if (
+        integration_state != "ready_external_merge"
+        or terminal_integration_state != "terminal_merged"
+        or reopened_terminal_integration_state != "terminal_merged"
+    ):
         raise RuntimeError("product_integration_reconciliation_not_recovered")
-    if reopened_anchor != anchor:
+    if replayed_ready_anchor != ready_anchor or final_anchor != terminal_anchor:
         raise RuntimeError("product_reopen_audit_anchor_drift")
+    if startup_recovery is None or reopened_startup_recovery is None:
+        raise RuntimeError("product_startup_recovery_missing")
+    for report in (startup_recovery, reopened_startup_recovery):
+        if (
+            report.active_claims
+            or report.awaiting_completion_claims
+            or report.active_capacity_reservations != 0
+        ):
+            raise RuntimeError("product_startup_recovery_incomplete")
 
     if tuple(row.package_id for row in plan.assignments) != (
         "control.engineering.repository-product-gate",
@@ -620,7 +705,8 @@ def build_product_receipt(
         "orderedParents": list(parents),
         "canonicalWorkPackage": canonical_package,
         "plan": asdict(plan),
-        "auditAnchor": anchor,
+        "auditAnchor": terminal_anchor,
+        "readyAuditAnchor": ready_anchor,
         "workerLifecycle": {
             "registrationDigest": registration_digest,
             "leaseId": lease.lease_id,
@@ -632,13 +718,17 @@ def build_product_receipt(
             "independentlyObservedCompletion": False,
             "completionEvidenceClass": "ci_reference_hmac_fixture",
             "trustClass": "ci_reference_hmac_fixture",
+            "startupRecovery": asdict(startup_recovery),
+            "reopenedStartupRecovery": asdict(reopened_startup_recovery),
         },
         "integrationReconciliation": {
             "queueGenerationId": queue_generation_id,
             "baseCommit": integration_base_commit,
             "baseTree": integration_base_tree,
             "state": integration_state,
-            "reopenedState": reopened_integration_state,
+            "terminalState": terminal_integration_state,
+            "reopenedTerminalState": reopened_terminal_integration_state,
+            "contextDigest": integration_binding.context_digest,
             "mergeAuthority": False,
             "observationEvidenceClass": "ci_reference_digest_fixture",
             "externalObservationProved": False,
@@ -769,16 +859,29 @@ def _verify_product_receipt(
         or not lifecycle["claimId"]
     ):
         raise ValueError("product_receipt_worker_lifecycle")
+    for key in ("startupRecovery", "reopenedStartupRecovery"):
+        recovery = lifecycle.get(key)
+        if (
+            not isinstance(recovery, Mapping)
+            or recovery.get("active_capacity_reservations") != 0
+            or recovery.get("active_claims") not in ((), [])
+            or recovery.get("awaiting_completion_claims") not in ((), [])
+        ):
+            raise ValueError("product_receipt_startup_recovery")
     integration = value.get("integrationReconciliation")
     if (
         not isinstance(integration, Mapping)
         or integration.get("state") != "ready_external_merge"
-        or integration.get("reopenedState") != "ready_external_merge"
+        or integration.get("terminalState") != "terminal_merged"
+        or integration.get("reopenedTerminalState") != "terminal_merged"
         or integration.get("mergeAuthority") is not False
         or integration.get("observationEvidenceClass") != "ci_reference_digest_fixture"
         or integration.get("externalObservationProved") is not False
         or not isinstance(integration.get("queueGenerationId"), str)
         or not integration["queueGenerationId"]
+        or not isinstance(integration.get("contextDigest"), str)
+        or _SHA256.fullmatch(integration["contextDigest"]) is None
+        or integration["contextDigest"] == "0" * 64
     ):
         raise ValueError("product_receipt_integration_reconciliation")
     return digest

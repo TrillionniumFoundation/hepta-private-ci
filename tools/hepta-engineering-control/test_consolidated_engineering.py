@@ -107,7 +107,54 @@ class OwnerTransactionTests(unittest.TestCase):
                 EngineeringStore(path)
             self.assertEqual(path.read_bytes(), before)
 
-    def test_schema_v5_adds_current_owner_tables_through_v9(self):
+    def test_current_schema_missing_column_is_rejected_at_open(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "owner.sqlite3"
+            with EngineeringStore(path):
+                pass
+            with sqlite3.connect(path) as connection:
+                connection.execute(
+                    "ALTER TABLE worker_registrations DROP COLUMN profile_digest"
+                )
+            with self.assertRaisesRegex(
+                EngineeringError, "store_schema_definition_mismatch"
+            ):
+                EngineeringStore(path)
+
+    def test_current_schema_constraint_drift_is_rejected_at_open(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "owner.sqlite3"
+            with EngineeringStore(path):
+                pass
+            with sqlite3.connect(path) as connection:
+                connection.execute("PRAGMA writable_schema=ON")
+                connection.execute(
+                    "UPDATE sqlite_master SET sql=replace(sql,?,?) "
+                    "WHERE type='table' AND name='worker_registrations'",
+                    (
+                        "CHECK(capacity_units BETWEEN 1 AND 1000000)",
+                        "CHECK(capacity_units >= 1)",
+                    ),
+                )
+                connection.execute("PRAGMA writable_schema=OFF")
+            with self.assertRaisesRegex(
+                EngineeringError, "store_schema_definition_mismatch"
+            ):
+                EngineeringStore(path)
+
+    def test_schema_version_metadata_disagreement_is_rejected_at_open(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "owner.sqlite3"
+            with EngineeringStore(path):
+                pass
+            with sqlite3.connect(path) as connection:
+                connection.execute("PRAGMA user_version=9")
+            with self.assertRaisesRegex(
+                EngineeringError, "store_schema_version_mismatch"
+            ):
+                EngineeringStore(path)
+
+    def test_schema_v5_adds_current_owner_tables_through_v10(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "owner.sqlite3"
             with EngineeringStore(path):
@@ -128,7 +175,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(
                     store.connection.execute("PRAGMA user_version").fetchone()[0],
-                    9,
+                    10,
                 )
                 for table in (
                     "distributed_cluster_frontiers",
@@ -136,6 +183,7 @@ class OwnerTransactionTests(unittest.TestCase):
                     "orchestration_generations",
                     "worker_registrations",
                     "worker_claims",
+                    "worker_capacity_reservations",
                     "worker_completion_observations",
                     "integration_queue_generations",
                     "integration_queue_items",
@@ -165,7 +213,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(store.audit_projection(), before)
                 self.assertEqual(
-                    store.connection.execute("PRAGMA user_version").fetchone()[0], 9
+                    store.connection.execute("PRAGMA user_version").fetchone()[0], 10
                 )
                 self.assertEqual(
                     store.connection.execute(

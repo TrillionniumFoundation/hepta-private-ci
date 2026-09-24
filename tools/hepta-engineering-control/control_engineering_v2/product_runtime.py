@@ -35,13 +35,16 @@ from .orchestration import (
 from .worker_lifecycle import (
     WorkerClaim,
     WorkerHeartbeatReceipt,
+    WorkerRecoveryReport,
     WorkerRegistrationReceipt,
     WorkerResultReceipt,
     claim_assignment,
     heartbeat_claim,
     observe_claim_completion,
+    recover_worker_lifecycle,
     register_worker,
     submit_worker_result,
+    worker_capacity_usage,
     worker_claim,
     worker_completion_observation_digest,
 )
@@ -131,6 +134,16 @@ class EngineeringControlProduct:
             generation_id=generation_id,
             now_ns=now_ns,
         )
+
+    def startup_reconcile(
+        self,
+        *,
+        now_ns: int | None = None,
+    ) -> WorkerRecoveryReport:
+        return recover_worker_lifecycle(self.store, now_ns=now_ns)
+
+    def worker_capacity(self, worker_id: str):
+        return worker_capacity_usage(self.store, worker_id)
 
     def register_worker(
         self,

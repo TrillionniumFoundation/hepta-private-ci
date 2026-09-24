@@ -130,13 +130,31 @@ class ProductGateTests(unittest.TestCase):
                 "independentlyObservedCompletion": False,
                 "completionEvidenceClass": "ci_reference_hmac_fixture",
                 "trustClass": "ci_reference_hmac_fixture",
+                "startupRecovery": {
+                    "observed_unix_ns": 1,
+                    "heartbeat_expired_claims": [],
+                    "reconciled_claims": [],
+                    "active_claims": [],
+                    "awaiting_completion_claims": [],
+                    "active_capacity_reservations": 0,
+                },
+                "reopenedStartupRecovery": {
+                    "observed_unix_ns": 1,
+                    "heartbeat_expired_claims": [],
+                    "reconciled_claims": [],
+                    "active_claims": [],
+                    "awaiting_completion_claims": [],
+                    "active_capacity_reservations": 0,
+                },
             },
             "integrationReconciliation": {
                 "queueGenerationId": "queue-a",
                 "baseCommit": base,
                 "baseTree": "7" * 40,
                 "state": "ready_external_merge",
-                "reopenedState": "ready_external_merge",
+                "terminalState": "terminal_merged",
+                "reopenedTerminalState": "terminal_merged",
+                "contextDigest": "8" * 64,
                 "mergeAuthority": False,
                 "observationEvidenceClass": "ci_reference_digest_fixture",
                 "externalObservationProved": False,
@@ -228,8 +246,8 @@ class ProductGateTests(unittest.TestCase):
         )
         self.assertTrue(receipt["integrationReconciliationFixtureExecuted"])
         self.assertEqual(
-            receipt["integrationReconciliation"]["reopenedState"],
-            "ready_external_merge",
+            receipt["integrationReconciliation"]["reopenedTerminalState"],
+            "terminal_merged",
         )
         self.assertTrue(receipt["reopenRecoveryFixtureExecuted"])
         self.assertFalse(receipt["mergeAuthority"])

@@ -10,6 +10,7 @@ requires an explicit new generation.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import json
 import re
 
 from .control_plane import (
@@ -40,6 +41,23 @@ _MUTABLE_STATES = frozenset(
 
 
 @dataclass(frozen=True)
+class IntegrationContextBinding:
+    queue_generation_id: str
+    package_id: str
+    queue_semantic_digest: str
+    orchestration_generation_id: str
+    orchestration_semantic_digest: str
+    envelope_id: str
+    envelope_semantic_digest: str
+    source_commit: str
+    source_tree: str
+    base_commit: str
+    base_tree: str
+    owner_context_digest: str
+    context_digest: str
+
+
+@dataclass(frozen=True)
 class IntegrationStageReceipt:
     queue_generation_id: str
     package_id: str
@@ -50,6 +68,15 @@ class IntegrationStageReceipt:
     signing_identity: str
     observed_unix_ns: int
     expires_unix_ns: int
+    queue_semantic_digest: str = ""
+    orchestration_semantic_digest: str = ""
+    envelope_semantic_digest: str = ""
+    source_commit: str = ""
+    source_tree: str = ""
+    base_commit: str = ""
+    base_tree: str = ""
+    owner_context_digest: str = ""
+    context_digest: str = ""
     signature: str = ""
 
 
@@ -65,6 +92,15 @@ class IntegrationTerminalReceipt:
     signing_identity: str
     observed_unix_ns: int
     expires_unix_ns: int
+    queue_semantic_digest: str = ""
+    orchestration_semantic_digest: str = ""
+    envelope_semantic_digest: str = ""
+    source_commit: str = ""
+    source_tree: str = ""
+    base_commit: str = ""
+    base_tree: str = ""
+    owner_context_digest: str = ""
+    context_digest: str = ""
     signature: str = ""
 
 
@@ -142,6 +178,191 @@ def _item(row) -> IntegrationQueueItem:
         None if row["reason"] is None else str(row["reason"]),
         int(row["revision"]),
         int(row["updated_unix_ns"]),
+    )
+
+
+def _decode_stored_json(value: object, code: str):
+    try:
+        raw = value if isinstance(value, str) else bytes(value).decode("utf-8")
+        return json.loads(raw)
+    except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+        raise EngineeringError(code) from None
+
+
+def integration_context_binding(
+    store: EngineeringStore,
+    queue_generation_id: str,
+    package_id: str,
+) -> IntegrationContextBinding:
+    """Recompute the complete immutable context that an observation must sign."""
+    if not isinstance(store, EngineeringStore):
+        raise EngineeringError("invalid_engineering_store")
+    checked_id(queue_generation_id, "queue_generation_id")
+    checked_id(package_id, "package_id")
+    generation = store.connection.execute(
+        "SELECT * FROM integration_queue_generations WHERE queue_generation_id=?",
+        (queue_generation_id,),
+    ).fetchone()
+    if generation is None:
+        raise EngineeringError("integration_generation_unknown")
+    item = store.connection.execute(
+        "SELECT position FROM integration_queue_items "
+        "WHERE queue_generation_id=? AND package_id=?",
+        (queue_generation_id, package_id),
+    ).fetchone()
+    if item is None:
+        raise EngineeringError("integration_item_unknown")
+    queue_items = store.connection.execute(
+        "SELECT position,package_id FROM integration_queue_items "
+        "WHERE queue_generation_id=? ORDER BY position",
+        (queue_generation_id,),
+    ).fetchall()
+    expected_positions = tuple(range(1, len(queue_items) + 1))
+    if tuple(int(row["position"]) for row in queue_items) != expected_positions:
+        raise EngineeringError("integration_queue_context_invalid")
+    queue_record = {
+        "queueGenerationId": queue_generation_id,
+        "orchestrationGenerationId": str(generation["orchestration_generation_id"]),
+        "baseCommit": str(generation["base_commit"]),
+        "baseTree": str(generation["base_tree"]),
+        "items": [
+            {"position": int(row["position"]), "packageId": str(row["package_id"])}
+            for row in queue_items
+        ],
+    }
+    queue_digest = semantic_digest(queue_record)
+    if queue_digest != str(generation["semantic_digest"]):
+        raise EngineeringError("integration_queue_context_invalid")
+
+    orchestration = store.connection.execute(
+        "SELECT semantic_digest,plan_json FROM orchestration_generations "
+        "WHERE generation_id=?",
+        (generation["orchestration_generation_id"],),
+    ).fetchone()
+    if orchestration is None:
+        raise EngineeringError("orchestration_generation_unknown")
+    plan = _decode_stored_json(
+        orchestration["plan_json"], "orchestration_generation_invalid"
+    )
+    orchestration_digest = str(orchestration["semantic_digest"])
+    if not isinstance(plan, dict) or semantic_digest(plan) != orchestration_digest:
+        raise EngineeringError("orchestration_generation_invalid")
+
+    assignment = store.connection.execute(
+        "SELECT envelope_id,semantic_digest FROM assignment_generations "
+        "WHERE generation_id=?",
+        (generation["orchestration_generation_id"],),
+    ).fetchone()
+    if assignment is None or str(assignment["semantic_digest"]) != orchestration_digest:
+        raise EngineeringError("assignment_generation_invalid")
+    envelope = store.connection.execute(
+        "SELECT * FROM work_envelopes WHERE envelope_id=?",
+        (assignment["envelope_id"],),
+    ).fetchone()
+    if envelope is None:
+        raise EngineeringError("unknown_envelope")
+    allowed_paths = tuple(
+        _decode_stored_json(envelope["allowed_paths_json"], "integration_envelope_invalid")
+    )
+    denied_authorities = tuple(
+        _decode_stored_json(
+            envelope["denied_authorities_json"], "integration_envelope_invalid"
+        )
+    )
+    envelope_record = {
+        "envelope_id": str(envelope["envelope_id"]),
+        "source_commit": str(envelope["source_commit"]),
+        "source_tree": str(envelope["source_tree"]),
+        "objective_digest": str(envelope["objective_digest"]),
+        "contract_digest": str(envelope["contract_digest"]),
+        "owner": str(envelope["owner"]),
+        "allowed_paths": allowed_paths,
+        "denied_authorities": denied_authorities,
+        "maximum_assignments": int(envelope["maximum_assignments"]),
+        "expires_unix_ns": int(envelope["expires_unix_ns"]),
+        "revision": int(envelope["revision"]),
+    }
+    envelope_digest = semantic_digest(envelope_record)
+    if envelope_digest != str(envelope["semantic_digest"]):
+        raise EngineeringError("integration_envelope_invalid")
+    owner_context_digest = semantic_digest(
+        {
+            "owner": str(envelope["owner"]),
+            "envelopeId": str(envelope["envelope_id"]),
+            "envelopeSemanticDigest": envelope_digest,
+            "objectiveDigest": str(envelope["objective_digest"]),
+            "contractDigest": str(envelope["contract_digest"]),
+            "allowedPathsDigest": semantic_digest(allowed_paths),
+            "deniedAuthoritiesDigest": semantic_digest(denied_authorities),
+            "revision": int(envelope["revision"]),
+        }
+    )
+    context_record = {
+        "queueGenerationId": queue_generation_id,
+        "packageId": package_id,
+        "queueSemanticDigest": queue_digest,
+        "orchestrationGenerationId": str(generation["orchestration_generation_id"]),
+        "orchestrationSemanticDigest": orchestration_digest,
+        "envelopeId": str(envelope["envelope_id"]),
+        "envelopeSemanticDigest": envelope_digest,
+        "sourceCommit": str(envelope["source_commit"]),
+        "sourceTree": str(envelope["source_tree"]),
+        "baseCommit": str(generation["base_commit"]),
+        "baseTree": str(generation["base_tree"]),
+        "ownerContextDigest": owner_context_digest,
+    }
+    return IntegrationContextBinding(
+        queue_generation_id,
+        package_id,
+        queue_digest,
+        str(generation["orchestration_generation_id"]),
+        orchestration_digest,
+        str(envelope["envelope_id"]),
+        envelope_digest,
+        str(envelope["source_commit"]),
+        str(envelope["source_tree"]),
+        str(generation["base_commit"]),
+        str(generation["base_tree"]),
+        owner_context_digest,
+        semantic_digest(context_record),
+    )
+
+
+def integration_receipt_context(
+    binding: IntegrationContextBinding,
+) -> dict[str, str]:
+    if not isinstance(binding, IntegrationContextBinding):
+        raise EngineeringError("integration_context_binding_required")
+    return {
+        "queue_semantic_digest": binding.queue_semantic_digest,
+        "orchestration_semantic_digest": binding.orchestration_semantic_digest,
+        "envelope_semantic_digest": binding.envelope_semantic_digest,
+        "source_commit": binding.source_commit,
+        "source_tree": binding.source_tree,
+        "base_commit": binding.base_commit,
+        "base_tree": binding.base_tree,
+        "owner_context_digest": binding.owner_context_digest,
+        "context_digest": binding.context_digest,
+    }
+
+
+def _receipt_context_matches(
+    receipt: IntegrationStageReceipt | IntegrationTerminalReceipt,
+    binding: IntegrationContextBinding,
+) -> bool:
+    return (
+        receipt.queue_generation_id == binding.queue_generation_id
+        and receipt.package_id == binding.package_id
+        and receipt.queue_semantic_digest == binding.queue_semantic_digest
+        and receipt.orchestration_semantic_digest
+        == binding.orchestration_semantic_digest
+        and receipt.envelope_semantic_digest == binding.envelope_semantic_digest
+        and receipt.source_commit == binding.source_commit
+        and receipt.source_tree == binding.source_tree
+        and receipt.base_commit == binding.base_commit
+        and receipt.base_tree == binding.base_tree
+        and receipt.owner_context_digest == binding.owner_context_digest
+        and receipt.context_digest == binding.context_digest
     )
 
 
@@ -341,7 +562,7 @@ def observe_integration_stage(
     trust_store: SignatureTrustStore,
     now_ns: int | None = None,
 ) -> IntegrationQueueItem:
-    """Verify one typed stage observation before mutating integration readiness."""
+    """Verify one typed, complete-context observation before mutating readiness."""
     if not isinstance(store, EngineeringStore):
         raise EngineeringError("invalid_engineering_store")
     if not isinstance(receipt, IntegrationStageReceipt):
@@ -349,48 +570,49 @@ def observe_integration_stage(
     checked_id(queue_generation_id, "queue_generation_id")
     checked_id(package_id, "package_id")
     now = store._now(now_ns)
-    if (
-        receipt.queue_generation_id != queue_generation_id
-        or receipt.package_id != package_id
-        or receipt.stage not in _STAGE_ISSUERS
-        or receipt.issuer != _STAGE_ISSUERS.get(receipt.stage)
-        or receipt.satisfied is not True
-    ):
-        raise EngineeringError("integration_stage_receipt_binding")
-    checked_sha256(receipt.evidence_digest, "integration_stage_evidence_digest")
-    if receipt.evidence_digest == "0" * 64:
-        raise EngineeringError("integration_stage_receipt_binding")
-    if (
-        not receipt.signing_identity
-        or type(receipt.observed_unix_ns) is not int
-        or type(receipt.expires_unix_ns) is not int
-        or receipt.observed_unix_ns > now
-        or receipt.expires_unix_ns <= receipt.observed_unix_ns
-        or now >= receipt.expires_unix_ns
-        or not trust_store.verify(
-            receipt,
-            receipt.issuer,
-            receipt.signing_identity,
-            receipt.signature,
+    with store._transaction():
+        binding = integration_context_binding(store, queue_generation_id, package_id)
+        if (
+            receipt.stage not in _STAGE_ISSUERS
+            or receipt.issuer != _STAGE_ISSUERS.get(receipt.stage)
+            or receipt.satisfied is not True
+            or not _receipt_context_matches(receipt, binding)
+        ):
+            raise EngineeringError("integration_stage_receipt_binding")
+        checked_sha256(receipt.evidence_digest, "integration_stage_evidence_digest")
+        if receipt.evidence_digest == "0" * 64:
+            raise EngineeringError("integration_stage_receipt_binding")
+        if (
+            not receipt.signing_identity
+            or type(receipt.observed_unix_ns) is not int
+            or type(receipt.expires_unix_ns) is not int
+            or receipt.observed_unix_ns > now
+            or receipt.expires_unix_ns <= receipt.observed_unix_ns
+            or now >= receipt.expires_unix_ns
+            or not trust_store.verify(
+                receipt,
+                receipt.issuer,
+                receipt.signing_identity,
+                receipt.signature,
+            )
+        ):
+            raise EngineeringError("integration_stage_receipt_binding")
+        observation_digest = semantic_digest(asdict(receipt))
+        supplied = {
+            "candidate": {"candidate_digest": observation_digest},
+            "review": {"review_digest": observation_digest},
+            "ci": {"ci_digest": observation_digest},
+        }[receipt.stage]
+        return reconcile_integration_item(
+            store,
+            queue_generation_id,
+            package_id,
+            current_base_commit=current_base_commit,
+            current_base_tree=current_base_tree,
+            trust_store=trust_store,
+            now_ns=now,
+            **supplied,
         )
-    ):
-        raise EngineeringError("integration_stage_receipt_binding")
-    observation_digest = semantic_digest(asdict(receipt))
-    supplied = {
-        "candidate": {"candidate_digest": observation_digest},
-        "review": {"review_digest": observation_digest},
-        "ci": {"ci_digest": observation_digest},
-    }[receipt.stage]
-    return reconcile_integration_item(
-        store,
-        queue_generation_id,
-        package_id,
-        current_base_commit=current_base_commit,
-        current_base_tree=current_base_tree,
-        trust_store=trust_store,
-        now_ns=now,
-        **supplied,
-    )
 
 
 def reconcile_integration_item(
@@ -448,6 +670,7 @@ def reconcile_integration_item(
         ).fetchone()
         if row is None:
             raise EngineeringError("integration_item_unknown")
+        binding = integration_context_binding(store, queue_generation_id, package_id)
 
         row_state = str(row["state"])
         if row_state in _TERMINAL_STATES:
@@ -460,8 +683,7 @@ def reconcile_integration_item(
                 "ci": None if row["ci_digest"] is None else str(row["ci_digest"]),
             }
             if (
-                terminal_receipt.queue_generation_id != queue_generation_id
-                or terminal_receipt.package_id != package_id
+                not _receipt_context_matches(terminal_receipt, binding)
                 or terminal_receipt.outcome != stored_terminal
                 or terminal_receipt.candidate_digest != expected["candidate"]
                 or terminal_receipt.review_digest != expected["review"]
@@ -593,8 +815,7 @@ def reconcile_integration_item(
                 if value == "0" * 64:
                     raise EngineeringError("integration_terminal_receipt_binding")
             if (
-                terminal_receipt.queue_generation_id != queue_generation_id
-                or terminal_receipt.package_id != package_id
+                not _receipt_context_matches(terminal_receipt, binding)
                 or terminal_receipt.candidate_digest != observed["candidate"]
                 or terminal_receipt.review_digest != observed["review"]
                 or terminal_receipt.ci_digest != observed["ci"]

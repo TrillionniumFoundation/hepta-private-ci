@@ -8,6 +8,7 @@ observes responses and never opens its SQLite writer.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -26,6 +27,12 @@ class ServiceError(RuntimeError):
 
 class IndeterminateOperation(ServiceError):
     """Dispatch may have committed. Reconcile; do not automatically repeat it."""
+
+
+STARTUP_RESPONSE_TIMEOUT_SECONDS = 10.0
+REQUEST_RESPONSE_TIMEOUT_SECONDS = 10.0
+SERVICE_IDLE_TIMEOUT_SECONDS = 30.0
+MAX_CHILD_DIAGNOSTIC_BYTES = 4096
 
 
 def _decode_message(raw):
@@ -114,13 +121,14 @@ class DisposableCounterService:
         self.expires = 0.0
         self.sequence = 0
         self.channel_indeterminate = False
+        self.last_child_diagnostic = None
 
     def start(self):
         if self.channel_indeterminate:
             raise IndeterminateOperation("new_client_and_reconciliation_required")
         if self.process is not None:
             raise ServiceError("reconcile_existing_process_before_restart")
-        self.expires = time.monotonic() + 30
+        self.expires = time.monotonic() + SERVICE_IDLE_TIMEOUT_SECONDS
         self.process = subprocess.Popen(
             [
                 sys.executable,
@@ -138,13 +146,16 @@ class DisposableCounterService:
             env={"LC_ALL": "C", "PYTHONDONTWRITEBYTECODE": "1"},
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
             bufsize=0,
             close_fds=True,
             start_new_session=True,
         )
         try:
-            ready = self._read()
+            ready = self._read(
+                timeout_seconds=STARTUP_RESPONSE_TIMEOUT_SECONDS,
+                phase="startup",
+            )
             if (
                 type(ready.get("pid")) is not int
                 or ready["pid"] != self.process.pid
@@ -229,26 +240,76 @@ class DisposableCounterService:
             # request consume the acknowledgement of an interrupted operation.
             self.channel_indeterminate = True
             raise
+        # The lifetime is an inactivity deadline, not a fixed wall-clock budget for
+        # the full bounded 256-request session. Renew only after a completely bound
+        # response; an unknown/indeterminate effect never keeps the channel alive.
+        self.expires = time.monotonic() + SERVICE_IDLE_TIMEOUT_SECONDS
         del response["sequence"]  # Preserve the public response shape.
         return response
 
-    def _read(self):
+    def _capture_child_diagnostic(self, phase: str) -> None:
+        process = self.process
+        if process is None:
+            return
+        return_code = process.poll()
+        diagnostic = bytearray()
+        if process.stderr is not None:
+            with selectors.DefaultSelector() as selector:
+                selector.register(process.stderr, selectors.EVENT_READ)
+                while len(diagnostic) <= MAX_CHILD_DIAGNOSTIC_BYTES:
+                    if not selector.select(0):
+                        break
+                    value = os.read(
+                        process.stderr.fileno(),
+                        min(1024, MAX_CHILD_DIAGNOSTIC_BYTES + 1 - len(diagnostic)),
+                    )
+                    if not value:
+                        break
+                    diagnostic.extend(value)
+        raw = bytes(diagnostic[:MAX_CHILD_DIAGNOSTIC_BYTES])
+        self.last_child_diagnostic = {
+            "phase": phase,
+            "exitCode": return_code,
+            "stderrBytes": len(raw),
+            "stderrTruncated": len(diagnostic) > MAX_CHILD_DIAGNOSTIC_BYTES,
+            "stderrSha256": hashlib.sha256(raw).hexdigest(),
+        }
+
+    def _read(
+        self,
+        *,
+        timeout_seconds: float = REQUEST_RESPONSE_TIMEOUT_SECONDS,
+        phase: str = "request",
+    ):
         if self.process is None:
             raise ServiceError("service_unavailable")
-        deadline = min(self.expires, time.monotonic() + 2)
+        if (
+            not isinstance(timeout_seconds, (int, float))
+            or timeout_seconds <= 0
+            or phase not in {"startup", "request"}
+        ):
+            raise ServiceError("invalid_response_wait")
+        deadline = min(self.expires, time.monotonic() + float(timeout_seconds))
         data = bytearray()
         with selectors.DefaultSelector() as selector:
             selector.register(self.process.stdout, selectors.EVENT_READ)
             while len(data) <= 2048:
                 remaining = deadline - time.monotonic()
                 if remaining <= 0 or not selector.select(remaining):
-                    raise ServiceError("response_timeout")
+                    self._capture_child_diagnostic(phase)
+                    raise ServiceError(
+                        "service_process_exited"
+                        if self.process.poll() is not None
+                        else "response_timeout"
+                    )
                 value = os.read(self.process.stdout.fileno(), 1)
                 if not value:
+                    self._capture_child_diagnostic(phase)
                     raise ServiceError("response_channel_closed")
                 if value == b"\n":
                     return _decode_message(data)
                 data.extend(value)
+        self._capture_child_diagnostic(phase)
         raise ServiceError("response_limit")
 
     def close(self):
@@ -273,6 +334,8 @@ class DisposableCounterService:
         finally:
             process.stdin.close()
             process.stdout.close()
+            if process.stderr is not None:
+                process.stderr.close()
 
 
 def _migrate(database, generation, minimum_counter, implementation_version, fault):

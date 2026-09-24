@@ -80,6 +80,27 @@ class OwnedServiceTests(unittest.TestCase):
             rows = observer.execute("SELECT id,value,origin_generation FROM operations ORDER BY value").fetchall()
             self.assertEqual(rows, [("before", 1, 0), ("after", 2, 2), ("rollbackwrite", 3, 0)])
 
+    def test_startup_failure_retains_bounded_safe_child_diagnostic(self):
+        first = self.target()
+        first.start()
+        first.request("step", "retained")
+        first.close()
+        failed = self.target(
+            2,
+            1,
+            implementation_version=2,
+            migration_fault="before_commit",
+        )
+        with self.assertRaises(ServiceError):
+            failed.start()
+        diagnostic = failed.last_child_diagnostic
+        self.assertIsInstance(diagnostic, dict)
+        self.assertEqual(diagnostic["phase"], "startup")
+        self.assertIsInstance(diagnostic["exitCode"], int)
+        self.assertLessEqual(diagnostic["stderrBytes"], 4096)
+        self.assertEqual(len(diagnostic["stderrSha256"]), 64)
+        self.assertNotIn("stderr", diagnostic)
+
     def test_migration_crash_before_commit_rolls_back_schema_and_fence(self):
         first = self.target()
         first.start()

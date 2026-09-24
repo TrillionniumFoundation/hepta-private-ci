@@ -89,6 +89,25 @@ class WorkerClaim:
     failure_class: str | None
 
 
+@dataclass(frozen=True)
+class WorkerCapacityUsage:
+    worker_id: str
+    capacity_units: int
+    reserved_units: int
+    available_units: int
+    active_claims: int
+
+
+@dataclass(frozen=True)
+class WorkerRecoveryReport:
+    observed_unix_ns: int
+    heartbeat_expired_claims: tuple[str, ...]
+    reconciled_claims: tuple[tuple[str, str, str], ...]
+    active_claims: tuple[str, ...]
+    awaiting_completion_claims: tuple[str, ...]
+    active_capacity_reservations: int
+
+
 def _now(value: int | None) -> int:
     result = time.time_ns() if value is None else value
     if type(result) is not int or result < 0:
@@ -121,6 +140,67 @@ def _claim(row) -> WorkerClaim:
         None if row["result_digest"] is None else str(row["result_digest"]),
         None if row["failure_class"] is None else str(row["failure_class"]),
     )
+
+
+def worker_capacity_usage(
+    store: EngineeringStore,
+    worker_id: str,
+) -> WorkerCapacityUsage:
+    checked_id(worker_id, "worker_id")
+    registration = store.connection.execute(
+        "SELECT capacity_units FROM worker_registrations WHERE worker_id=?",
+        (worker_id,),
+    ).fetchone()
+    if registration is None:
+        raise EngineeringError("unknown_worker")
+    reservation = store.connection.execute(
+        "SELECT COALESCE(SUM(capacity_units),0) AS reserved,COUNT(*) AS claims "
+        "FROM worker_capacity_reservations WHERE worker_id=? AND state='active'",
+        (worker_id,),
+    ).fetchone()
+    capacity = int(registration["capacity_units"])
+    reserved = int(reservation["reserved"])
+    if reserved > capacity:
+        raise EngineeringError("worker_capacity_state_oversubscribed")
+    return WorkerCapacityUsage(
+        worker_id,
+        capacity,
+        reserved,
+        capacity - reserved,
+        int(reservation["claims"]),
+    )
+
+
+def _release_capacity_reservation(
+    store: EngineeringStore,
+    claim_id: str,
+    *,
+    reason: str,
+    now: int,
+) -> bool:
+    row = store.connection.execute(
+        "SELECT state FROM worker_capacity_reservations WHERE claim_id=?",
+        (claim_id,),
+    ).fetchone()
+    if row is None:
+        raise EngineeringError("worker_capacity_reservation_missing")
+    if str(row["state"]) == "released":
+        return False
+    if str(row["state"]) != "active":
+        raise EngineeringError("worker_capacity_reservation_state_mismatch")
+    updated = store.connection.execute(
+        "UPDATE worker_capacity_reservations SET state='released',"
+        "released_unix_ns=?,release_reason=? WHERE claim_id=? AND state='active'",
+        (now, reason, claim_id),
+    )
+    if updated.rowcount != 1:
+        raise EngineeringError("worker_capacity_reservation_race")
+    store._append_audit(
+        "worker_capacity_released",
+        {"claimId": claim_id, "reason": reason},
+        now,
+    )
+    return True
 
 
 def register_worker(
@@ -233,12 +313,24 @@ def revoke_worker(
             "recorded_unix_ns=? WHERE worker_id=? AND revision=?",
             (expected_revision + 1, now, worker_id, expected_revision),
         )
+        claims = store.connection.execute(
+            "SELECT claim_id FROM worker_claims WHERE worker_id=? "
+            "AND state IN ('claimed','running') ORDER BY claim_fence",
+            (worker_id,),
+        ).fetchall()
         store.connection.execute(
             "UPDATE worker_claims SET state='failed',revision=revision+1,"
             "failure_class='worker_revoked',updated_unix_ns=? "
             "WHERE worker_id=? AND state IN ('claimed','running','retryable')",
             (now, worker_id),
         )
+        for claim in claims:
+            _release_capacity_reservation(
+                store,
+                str(claim["claim_id"]),
+                reason="worker_revoked",
+                now=now,
+            )
         store._append_audit(
             "worker_revoked",
             {"workerId": worker_id, "revision": expected_revision + 1},
@@ -313,6 +405,12 @@ def claim_assignment(
             None,
         )
         if package is None or plan_worker is None:
+            raise EngineeringError("orchestration_generation_invalid")
+        reservation_units = package.get("capacity_units")
+        if (
+            type(reservation_units) is not int
+            or not 1 <= reservation_units <= 1_000_000
+        ):
             raise EngineeringError("orchestration_generation_invalid")
 
         registration = store.connection.execute(
@@ -391,6 +489,9 @@ def claim_assignment(
             attempt = int(previous["attempt"]) + 1
         if attempt > MAX_CLAIM_ATTEMPTS:
             raise EngineeringError("claim_attempts_exhausted")
+        usage = worker_capacity_usage(store, worker_id)
+        if usage.reserved_units + reservation_units > usage.capacity_units:
+            raise EngineeringError("worker_capacity_exhausted")
         fence = int(
             store.connection.execute(
                 "SELECT COALESCE(MAX(claim_fence),0)+1 FROM worker_claims"
@@ -412,6 +513,7 @@ def claim_assignment(
             "attempt": attempt,
             "claimFence": fence,
             "heartbeatDeadlineUnixNs": deadline,
+            "capacityUnits": reservation_units,
         }
         digest = semantic_digest(identity)
         claim_id = digest[:32]
@@ -436,6 +538,27 @@ def claim_assignment(
                 now,
             ),
         )
+        reservation_digest = semantic_digest(
+            {
+                "claimId": claim_id,
+                "workerId": worker_id,
+                "capacityUnits": reservation_units,
+                "reservedUnixNs": now,
+            }
+        )
+        store.connection.execute(
+            "INSERT INTO worker_capacity_reservations VALUES(?,?,?,?,?,?,?,?)",
+            (
+                claim_id,
+                worker_id,
+                reservation_units,
+                "active",
+                now,
+                None,
+                None,
+                reservation_digest,
+            ),
+        )
         store._append_audit(
             "worker_assignment_claimed",
             {
@@ -445,6 +568,8 @@ def claim_assignment(
                 "workerId": worker_id,
                 "attempt": attempt,
                 "claimFence": fence,
+                "capacityUnits": reservation_units,
+                "workerReservedUnits": usage.reserved_units + reservation_units,
             },
             now,
         )
@@ -708,6 +833,12 @@ def submit_worker_result(
                 receipt.expected_revision,
             ),
         )
+        _release_capacity_reservation(
+            store,
+            receipt.claim_id,
+            reason=(failure or "result_submitted"),
+            now=now,
+        )
         store._append_audit(
             "worker_result_submitted",
             {
@@ -752,6 +883,12 @@ def expire_stale_claims(
                 "WHERE claim_id=? AND revision=?",
                 (state, revision, now, row["claim_id"], row["revision"]),
             )
+            _release_capacity_reservation(
+                store,
+                str(row["claim_id"]),
+                reason="heartbeat_timeout",
+                now=now,
+            )
             store._append_audit(
                 "worker_claim_expired",
                 {
@@ -763,6 +900,126 @@ def expire_stale_claims(
             )
             expired.append(str(row["claim_id"]))
     return tuple(expired)
+
+
+def recover_worker_lifecycle(
+    store: EngineeringStore,
+    *,
+    now_ns: int | None = None,
+) -> WorkerRecoveryReport:
+    """Reconcile persisted claims at product startup without redispatching effects."""
+    if not isinstance(store, EngineeringStore):
+        raise EngineeringError("invalid_engineering_store")
+    now = _now(now_ns)
+    reconciled: list[tuple[str, str, str]] = []
+    with store._transaction():
+        store._expire_leases(now)
+        heartbeat_expired = expire_stale_claims(store, now_ns=now)
+        rows = store.connection.execute(
+            "SELECT c.*,w.state AS worker_state,w.expires_unix_ns AS worker_expiry,"
+            "l.state AS lease_state,l.expires_unix_ns AS lease_expiry,"
+            "l.holder AS lease_holder,l.envelope_id AS lease_envelope,"
+            "a.envelope_id AS generation_envelope,e.expires_unix_ns AS envelope_expiry "
+            "FROM worker_claims c "
+            "LEFT JOIN worker_registrations w ON w.worker_id=c.worker_id "
+            "LEFT JOIN path_leases l ON l.lease_id=c.lease_id "
+            "LEFT JOIN assignment_generations a ON a.generation_id=c.generation_id "
+            "LEFT JOIN work_envelopes e ON e.envelope_id=a.envelope_id "
+            "WHERE c.state IN ('claimed','running') ORDER BY c.claim_fence"
+        ).fetchall()
+        for row in rows:
+            if (
+                row["worker_state"] is None
+                or row["lease_state"] is None
+                or row["generation_envelope"] is None
+                or row["envelope_expiry"] is None
+                or str(row["lease_holder"]) != str(row["worker_id"])
+                or str(row["lease_envelope"]) != str(row["generation_envelope"])
+            ):
+                raise EngineeringError("worker_recovery_state_invalid")
+            reason: str | None = None
+            retryable = False
+            if int(row["envelope_expiry"]) <= now:
+                reason = "envelope_expired"
+            elif str(row["worker_state"]) != "active":
+                reason = "worker_revoked"
+            elif int(row["worker_expiry"]) <= now:
+                reason = "worker_registration_expired"
+            elif str(row["lease_state"]) != "active":
+                reason = "lease_" + str(row["lease_state"])
+                retryable = True
+            elif int(row["lease_expiry"]) <= now:
+                reason = "lease_expired"
+                retryable = True
+            if reason is None:
+                continue
+            state = (
+                "retryable"
+                if retryable and int(row["attempt"]) < MAX_CLAIM_ATTEMPTS
+                else "failed"
+            )
+            revision = int(row["revision"]) + 1
+            updated = store.connection.execute(
+                "UPDATE worker_claims SET state=?,revision=?,failure_class=?,"
+                "updated_unix_ns=? WHERE claim_id=? AND revision=? "
+                "AND state IN ('claimed','running')",
+                (
+                    state,
+                    revision,
+                    reason,
+                    now,
+                    row["claim_id"],
+                    row["revision"],
+                ),
+            )
+            if updated.rowcount != 1:
+                raise EngineeringError("worker_recovery_race")
+            _release_capacity_reservation(
+                store,
+                str(row["claim_id"]),
+                reason=reason,
+                now=now,
+            )
+            store._append_audit(
+                "worker_claim_startup_reconciled",
+                {
+                    "claimId": str(row["claim_id"]),
+                    "state": state,
+                    "reason": reason,
+                    "revision": revision,
+                },
+                now,
+            )
+            reconciled.append((str(row["claim_id"]), state, reason))
+        active_claims = tuple(
+            str(row[0])
+            for row in store.connection.execute(
+                "SELECT claim_id FROM worker_claims "
+                "WHERE state IN ('claimed','running') ORDER BY claim_fence"
+            )
+        )
+        awaiting_completion = tuple(
+            str(row[0])
+            for row in store.connection.execute(
+                "SELECT claim_id FROM worker_claims "
+                "WHERE state='result_submitted' ORDER BY claim_fence"
+            )
+        )
+        active_reservations = int(
+            store.connection.execute(
+                "SELECT COUNT(*) FROM worker_capacity_reservations WHERE state='active'"
+            ).fetchone()[0]
+        )
+        if active_reservations != len(active_claims):
+            raise EngineeringError("worker_capacity_reservation_state_mismatch")
+    return WorkerRecoveryReport(
+        now,
+        tuple(heartbeat_expired),
+        tuple(reconciled),
+        active_claims,
+        awaiting_completion,
+        active_reservations,
+    )
 
 
 def observe_claim_completion(
@@ -843,6 +1100,12 @@ def observe_claim_completion(
             "UPDATE worker_claims SET state='completed_observed',revision=?,"
             "updated_unix_ns=? WHERE claim_id=? AND revision=?",
             (revision, now, claim_id, claim["revision"]),
+        )
+        _release_capacity_reservation(
+            store,
+            claim_id,
+            reason="completion_observed",
+            now=now,
         )
         store._append_audit(
             "worker_claim_completed_observed",
