@@ -45,6 +45,8 @@ pub use model::RolloutMigrationState;
 /// Preferred entrypoint: owns configuration and metrics.
 pub use runtime::StateRuntime;
 pub use sqlite::SqliteConfig;
+pub use sqlite::open_durable_sqlite_pool;
+pub use sqlite::open_in_memory_sqlite_pool;
 pub use sqlite_recovery::ExistingSqliteRecoveryGuard;
 pub use sqlite_recovery::SqliteRecoveryError;
 

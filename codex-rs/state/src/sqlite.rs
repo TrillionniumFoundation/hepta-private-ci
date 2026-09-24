@@ -297,18 +297,7 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5))
-            .log_statements(LevelFilter::Off);
-        SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
-            .await
+        open_durable_sqlite_pool(path, /*max_connections*/ 5).await
     }
 
     /// Checkpoint a private recovery candidate after all validation handles close.
@@ -381,3 +370,56 @@ impl SqliteConfig {
             .await
     }
 }
+
+/// Open a durable owner database through the single Codex SQLite connection shim.
+///
+/// Callers retain schema/migration ownership. This function centralizes only the
+/// connection invariants: WAL, FULL synchronous durability, foreign keys and the
+/// bounded busy timeout. The caller supplies its bounded pool size.
+pub async fn open_durable_sqlite_pool(
+    path: &Path,
+    max_connections: u32,
+) -> Result<SqlitePool, Error> {
+    if max_connections == 0 {
+        return Err(Error::Protocol(
+            "SQLite pool must have at least one connection".to_string(),
+        ));
+    }
+    let options = SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full)
+        .foreign_keys(true)
+        .busy_timeout(Duration::from_secs(5))
+        .log_statements(LevelFilter::Off);
+    SqlitePoolOptions::new()
+        .max_connections(max_connections)
+        .connect_with(options)
+        .await
+}
+
+/// Open a transient in-memory SQLite reference through the centralized shim.
+///
+/// This is intended for migration/schema comparison, never as an authoritative
+/// durable owner.
+pub async fn open_in_memory_sqlite_pool(max_connections: u32) -> Result<SqlitePool, Error> {
+    if max_connections != 1 {
+        return Err(Error::Protocol(
+            "in-memory SQLite reference must use exactly one connection".to_string(),
+        ));
+    }
+    let options = SqliteConnectOptions::new()
+        .filename(":memory:")
+        .create_if_missing(true)
+        .foreign_keys(true)
+        .log_statements(LevelFilter::Off);
+    SqlitePoolOptions::new()
+        .max_connections(max_connections)
+        .connect_with(options)
+        .await
+}
+
+#[cfg(test)]
+#[path = "sqlite_owner_pool_tests.rs"]
+mod owner_pool_tests;

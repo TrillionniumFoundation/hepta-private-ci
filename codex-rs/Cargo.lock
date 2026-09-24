@@ -3532,6 +3532,7 @@ name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-state",
  "ed25519-dalek",
  "pretty_assertions",
  "serde",
@@ -4055,6 +4056,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-state",
  "ed25519-dalek",
  "sqlx",
  "tempfile",
