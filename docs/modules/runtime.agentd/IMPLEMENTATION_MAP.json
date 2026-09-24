@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8de45ee70daac9e76da82eefb4ac51532d0fd2c9",
-    "tree": "04385bd5a674ab0ff1c41d39ba6f3698905a6022"
+    "commit": "82ffc6aad9c995fc43c884889eb51ddaf0f6ce48",
+    "tree": "9dceb55e586fd052e6eccc6aba3325cb7a914b0e"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -370,7 +370,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "cd2a3618b59a793a8beb52602a0c2f71d30f16ac"
+      "object": "0136c15ee192a188762c5c592dbfd104d343607c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_intelligence_tests.rs",
+      "object": "5c4f842a6d0f9c38c69cb133776c8f4b43c81f41"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -402,7 +406,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "79cc394f09c47ff532b25248421155796afa5ec4"
+      "object": "7ff37ab5ae3c3ca68ed5efc32946288b29b5209c"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
@@ -434,7 +438,7 @@
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "dc00529db7c47bf26a01db1b228adfba83ac498b"
+      "object": "b8e5ec34f0b50367accf2355fd96a4294486ff4c"
     }
   ]
 }
