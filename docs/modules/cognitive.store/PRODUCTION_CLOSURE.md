@@ -1,166 +1,160 @@
 # cognitive.store production convergence
 
-Status: source candidate implementation plan and qualification contract.
+Status: source implementation and qualification contract. This document records the current product boundary; it is not activation, operator acceptance, promotion, or release evidence.
 
-This document fixes the production ownership decision that was previously
-ambiguous between `hepta-cognitive-store` and `hepta-memory`.
+## 1. Canonical ownership and compiled module tree
 
-## 1. Final ownership decision
+`codex-hepta-cognitive-store` owns the module-facing semantic contract. Its compiled source tree is `src/lib.rs`, `src/durable.rs`, and `src/v2.rs` plus their directly included tests. `durable.rs` re-exports the one physical SQLite owner instead of creating a second database or writer.
 
-`codex-hepta-cognitive-store` is the product-facing authoritative owner of the
-memory and knowledge-fact domains.
+`codex-hepta-memory::CognitiveStore` owns the physical schema, migrations, WAL/FULL durability, transactions, recovery implementation, Memory revisions, and the Memory-revision-bound knowledge-fact subledger. `AgentdProductionWriterHost` is the named product composition seam. Files or tests not reachable from this module tree are not implementation or qualification evidence.
 
-`codex-hepta-memory` remains the physical SQLite durability engine and may own
-backend implementation details, migrations, projection tables and local
-transaction helpers. It is not a second product-facing cognitive-store
-boundary.
-
-The canonical product composition is:
+The selected product chain is:
 
 ```text
-product / agentd / observation
-        |
-        v
-codex-hepta-cognitive-store::ProductionCognitiveStore
-        |  authority + writer fence + owner boundary
-        v
-codex-hepta-memory::CognitiveStore
-        |  SQLite WAL/FULL + append-only durable tables
-        v
+trusted host bootstrap
+  |  independently authenticated exact-current-cut witness
+  |  externally verified authority lease + live verifier
+  v
+AgentdProductionWriterHost::open_with_recovery
+  v
+hepta-memory::CognitiveStore::open_with_recovery
+  v
+ProductionDurableWriter
+  v
+sealed ProductionCognitiveMutationCapability
+  v
+remember_with_kg / correct_with_kg / forget_with_kg
+  v
 cognitive_1.sqlite3
 ```
 
-Product code must not acquire a raw durable cognitive backend in order to
-perform authoritative writes. Qualification tests may exercise the backend
-directly, but those call sites are not production composition evidence.
+No second cognitive database, dual-write path, raw product writer fallback, or self-minted current-cut witness is permitted.
 
 ## 2. Memory and knowledge-fact authority
 
-The durable memory ledger is the append-only `memory_revisions` family plus its
-citations and current-head projection.
+The authoritative Memory ledger is the immutable `memory_revisions` family, its citations, and its current-head projection.
 
-The durable knowledge-fact ledger is the append-only KG revision family:
+The authoritative knowledge-fact state is the Memory-revision-bound subledger:
 
-- `kg_revision_fact_sets`
-- `kg_revision_entities`
-- `kg_revision_relations`
-- associated immutable citation/count invariants
+- `kg_revision_fact_sets`;
+- `kg_revision_entities`;
+- `kg_revision_relations`;
+- their immutable source/citation and count invariants.
 
-`MemoryKind::Fact` and the V2 `KnowledgeFactRecordV2`/frontier are semantic
-oracle and snapshot representations. They are not a second independently
-writable durable fact database. This resolves the previous ambiguity: the
-canonical durable fact authority is the SQLite KG revision chain, while V2
-fact records are deterministic projections used to verify owner semantics.
+A correction creates a successor Memory revision and complete successor fact set. A forget creates a tombstoned Memory revision and an empty fact set. Knowledge facts have no independently writable head, CAS domain, or second writer. Knowledge-graph generations are derived projections and never become the fact source of truth.
 
-## 3. Single-writer rule
+The in-memory V2 store is a semantic and image-integrity oracle. It is not the production durability backend.
 
-A production mutation is legal only when all of the following hold:
+## 3. Production mutation boundary
 
-1. the caller enters through `ProductionCognitiveStore`;
-2. an externally verified `ProductionAuthorityLease` matches the Agent owner;
-3. the grant-bound fencing token and authority/owner epochs match;
-4. `ProductionDurableWriter` holds the process-lifetime OS writer lock;
-5. the active lease head matches the requested generation;
-6. the SQLite transaction and append-only revision/CAS invariants succeed.
+A production semantic mutation is admitted only through a live-verified `ProductionDurableWriter` and its sealed `ProductionCognitiveMutationCapability`. The normal product build does not expose the qualification-only already-open-store seam.
 
-The lower-level raw-store constructor in Agentd is qualification-only and is
-kept solely for existing fixtures. It must not be used by product startup.
+For `remember`, `correct`, and `forget`, operation admission, authoritative source/Memory/fact/projection mutation, and terminal provenance are committed in the same `BEGIN IMMEDIATE` SQLite transaction. The production receipt binds at least:
 
-## 4. Reopen, recovery and rollback protection
+- operation and semantic-input digests;
+- expected predecessor revision where applicable;
+- authoritative source identity, revision, digest, and observation time;
+- grant digest, authority epoch, owner epoch, lease ID, and writer generation;
+- committed write digest and provenance event identities.
 
-There are two distinct guarantees and they must not be conflated.
+A semantic-validation failure rolls the local admission and domain mutation back together. Queue admission or handler return is not an external-effect success.
 
-### Durable reopen
+Live authority must be revalidated at the actual owner-use boundary. A check performed only before waiting for the SQLite writer lock is not sufficient proof that a later commit was authorized. Exact transaction-entry and pre-commit revocation regressions remain required qualification evidence until the implementation and tests establish that ordering.
 
-Ordinary `ProductionCognitiveStore::open` opens/migrates the SQLite store,
-verifies required schema/integrity and reconstructs the same durable logical cut.
-The owner crate contains a mutate/drop/reopen test that compares exact recovery
-anchors before and after reopen.
+## 4. Ordinary open, recovery, and publication
 
-### Rollback-sensitive recovery admission
+Ordinary `CognitiveStore::open` verifies the registered schema and logical integrity and reconstructs the durable state. It does not independently prove that the opened database is the latest acknowledged cut and therefore is not a rollback-sensitive production-writer recovery path.
 
-`ProductionCognitiveStore::open_with_recovery` delegates to the descriptor-safe
-recovery boundary. It never falls back to ordinary open when recovery semantics
-were requested. The current `codex-state` backend still intentionally returns
-`Unavailable` for writer recovery until a descriptor-backed SQLite VFS,
-non-reconnecting writer connection and current writer fence are implemented.
+`CognitiveStore::open_with_recovery` is the writable recovery path. It:
 
-Therefore an exact-current-cut anchor is currently qualification evidence and a
-cold-image integrity input, not permission to resume a writer. No document may
-claim descriptor-bound writer recovery is complete until that backend exists and
-its fault-injection tests pass.
+1. requires an independently authenticated exact-current-cut anchor and an externally verified production authority;
+2. takes the exclusive cognitive-store fence;
+3. binds retained source database/WAL/journal descriptors;
+4. materializes a bounded private generation without reopening the suspect source path through SQLite;
+5. verifies registered schema, logical cut equality, SQLite integrity, and the authority/fence;
+6. checkpoints and reopens the private generation;
+7. atomically publishes the active-generation pointer only after the final checks;
+8. retains the exclusive fence for the returned recovered generation.
 
-## 5. Legacy-to-owner cutover
+Recovery failure never falls back to ordinary open. If pointer publication durability is ambiguous, the result remains `Indeterminate`; the possibly active generation is not deleted or treated as safely unpublished.
 
-The repository currently uses the same `cognitive_1.sqlite3` durable format, so
-this convergence does not require copying durable records into a second database.
-The migration is a route/authority cutover, not a data duplication migration.
+The external verifier must also be current immediately before active-generation publication. Tests must cover revocation while copying, before checkpoint, after checkpoint, and immediately before publication. Source implementation does not manufacture the independent latest-witness fact.
 
-For an existing installation:
+## 5. Trusted witness and normal daemon bootstrap
 
-1. stop new production cognitive writes;
-2. drain local durable outbox work to a recorded watermark;
-3. release or expire the old production writer lease;
-4. capture an exact recovery anchor and counts/frontiers;
-5. verify `memory_revisions`, tombstones, citations, KG revision fact sets,
-   entities and relations against their declared invariants;
-6. start the new binary with the same durable database and a strictly newer
-   externally verified writer generation/epoch;
-7. open the writer only through `ProductionCognitiveStore`;
-8. capture the post-open anchor and verify that the pre-cutover logical cut is
-   unchanged before admitting a new mutation;
-9. perform one canary mutation, reopen the store, and verify the new cut;
-10. publish the new route/generation only after exact-head and synthetic-merge
-    qualification evidence is green.
+The host, not `cognitive.store`, owns authentication and independent retention of the latest current-cut witness. The witness is an exact equality fence; by itself it is not a signature, monotonic counter, grant, or proof that the latest witness was retained.
 
-No dual-write phase is permitted.
+Normal daemon write startup is complete only when a trusted bootstrap supplies:
 
-## 6. Rollback
+- the current authenticated witness or an explicit revoked/pending disposition;
+- the matching authority lease and retained live verifier;
+- the writer lease identity and strictly governed generation;
+- restart reconciliation for a database commit whose successor witness was not acknowledged.
 
-Rollback is route based and preserves the same compatible SQLite state:
+A pending witness update must fail closed on restart. The daemon must query the durable operation result and reconcile the external witness; it must not repeat the semantic mutation or accept the database itself as proof that its own state is current.
 
-1. stop the new writer and drain/reconcile known local outcomes;
-2. release/rollback its lease and record the terminal lease head;
-3. verify the durable cut and schema are readable by the rollback binary;
-4. acquire a fresh rollback generation/authority lease; never reuse the old
-   active fence;
-5. reopen the same durable database through the authoritative owner seam;
-6. verify memory/KG counts, tombstones and frontiers before resuming writes.
+Until this normal bootstrap and restart protocol has exact executable evidence, `productCallerState` remains externally bootstrapped/pending and `productionImplementation` remains false.
 
-If schema compatibility is not satisfied, rollback stops. Restoring an old
-backup without an independently current witness is forbidden because it can
-resurrect deleted or superseded facts.
+## 6. Duplicate request and response-loss contract
 
-## 7. Required production qualification
+The durable operation identity is semantic. Reusing it with changed content conflicts. Repeating an already committed semantic request must never append a second source, Memory revision, fact set, graph generation, or provenance occurrence.
 
-The claim boundary may be raised to `productionImplementation=true` only after
-all repository-controlled checks below are green on the exact candidate and its
-deterministic base merge:
+A caller that lost the original response must be able to query a durable, typed terminal result for the exact operation identity. A generic `IllegalTransition("committed")` may prevent duplicate execution, but it is not the final product result contract. The query result must distinguish at least not found, queued, committed, rejected, indeterminate, and rolled back, and a committed result must bind the original operation and durable write identities.
 
-- `codex-hepta-cognitive-store` package tests, including durable SQLite reopen;
-- `codex-hepta-memory` package tests;
-- `codex-hepta-agentd` product composition tests;
-- strict Clippy/all-target compilation;
-- one-process writer exclusion and stale grant/epoch cases;
-- real SQLite CAS/concurrent writer tests;
-- migration/cutover idempotency and rollback compatibility checks;
-- module registry/docs/implementation-map validation.
+Result lookup grants no authority to repeat a mutation and does not convert an old grant into current authority.
 
-Descriptor-bound corruption recovery is a separate blocking capability. Until
-`codex-state` can safely return an identity-bound durable writer pool, the
-recovery claim remains explicitly incomplete even if ordinary durable reopen is
-qualified.
+## 7. Shared experience and capacity
 
-## 8. Claim vocabulary
+Shared-experience grants use the same SQLite owner and exact Memory revision. Recall and Replay are distinct purposes; Replay additionally binds parameter scope and artifact consumer. Current source eligibility and permission are checked again at consumer use.
 
-Use these terms consistently:
+Capacity is defined over active, unexpired policy heads, not every policy identity ever present in immutable history. Revoked and expired history remains auditable while releasing its live-capacity slot. The current-head projection must be verified against immutable history on open/recovery, and renewal/revocation must remain possible at the declared boundary.
 
-- **semantic oracle implemented**: V2 invariants exist and are tested;
-- **durable owner composed**: product path enters through
-  `ProductionCognitiveStore` and uses the SQLite backend;
-- **production implementation proved**: exact candidate tests/CI establish the
-  composed source implementation;
-- **recovery admission proved**: descriptor-bound writer recovery plus current
-  witness/fence is tested;
-- **activated / accepted / released**: external lifecycle states, never inferred
-  from source implementation.
+Per-policy revision limits, owner event/outbox limits, Lane-C page ancestry limits, and retained immutable history remain explicit capacity boundaries. Paging limits response materialization; it is not evidence that each page avoids all scope-wide work. Long-term archive/pruning may be added only with predecessor, tombstone, revocation, source-lineage, current-cut, and recovery proofs intact.
+
+## 8. Cutover and rollback
+
+This convergence is an authority/route cutover over the same compatible SQLite owner; it is not a data-copy or dual-write migration.
+
+Cutover requires draining known local outcomes, closing the predecessor writer, authenticating the exact current cut, acquiring a current authority under the intended generation, opening only through the recovery-gated host, and proving that the pre-cutover logical cut is unchanged before the first new mutation.
+
+Rollback uses the same compatible database under a fresh generation and current authority. Reusing an earlier fence or restoring an old backup without an independently current witness is forbidden because it can resurrect corrected or forgotten content.
+
+## 9. Required qualification
+
+The following commands or their workflow-equivalent exact commands must complete on the exact candidate and every applicable deterministic merge candidate:
+
+```text
+python3 scripts/hepta-docs.py verify
+python3 scripts/hepta-implementation-maps.py verify
+cargo test --locked -p codex-hepta-cognitive-store
+cargo test --locked -p codex-hepta-memory
+cargo test --locked -p codex-hepta-agentd --test cognitive_store_product_writer
+cargo clippy --locked -p codex-hepta-cognitive-store --all-targets -- -D warnings
+cargo clippy --locked -p codex-hepta-memory --all-targets -- -D warnings
+cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
+```
+
+Qualification also requires executed evidence for:
+
+- revocation while waiting for the write lock and immediately before commit;
+- recovery revocation at copy/checkpoint/publication cuts;
+- child-process crash/reopen and ambiguous active-pointer publication;
+- response loss followed by typed result query without re-execution;
+- current, stale, revoked, and pending external witness startup;
+- writer handoff and old-backup rejection;
+- shared-experience active-capacity migration, expiry, withdrawal, reactivation, and reopen;
+- the 256-record and 16,384-record durable profiles;
+- selected target-host latency, storage, memory, and recovery acceptance.
+
+A canceled, skipped, stale-head, or unrelated workflow is not success evidence for these items.
+
+## 10. Claim vocabulary
+
+- **semantic oracle implemented**: V2 invariants and tests exist;
+- **durable owner source-implemented**: the SQLite owner and recovery/mutation code exist;
+- **product composition source-bound**: the named Agentd host and sealed capability are wired in source;
+- **production implementation proved**: exact-candidate executable qualification has passed;
+- **product execution proved**: the normal daemon used authenticated external inputs through the selected path;
+- **accepted / activated / promoted / released**: separate independently governed lifecycle states.
+
+Keep `productionImplementation=false`, `productExecutionProved=false`, and acceptance/activation/promotion/release false until their own current evidence exists.
