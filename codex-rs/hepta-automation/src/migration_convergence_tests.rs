@@ -125,51 +125,68 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
     }
 }
 
-#[tokio::test]
-async fn persisted_legacy_or_rebound_history_reopens_through_real_store() {
-    for displaced in [false, true] {
-        for after_rebind in [false, true] {
-            let temp = tempfile::tempdir().expect("private owner root");
-            let root = temp.path().join("owner");
-            std::fs::create_dir(&root).expect("owner directory");
-            let pool = historical_pool(displaced).await;
-            let before: Vec<Vec<u8>> =
-                sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
-                    .fetch_all(&pool)
-                    .await
-                    .expect("original history");
-            if after_rebind {
-                reconcile_legacy_migration_ids(&pool)
-                    .await
-                    .expect("bounded repair");
-            }
-            // Reopen exactly the persisted cut before or after the repair transaction,
-            // before later migrations: no live connection supplies hidden state.
-            sqlx::query("VACUUM INTO ?")
-                .bind(root.join(AUTOMATION_DB_FILENAME).to_str().expect("path"))
-                .execute(&pool)
-                .await
-                .expect("persist historical cut");
-            pool.close().await;
-            let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner ID");
-            let store = AutomationStore::open_root(root.clone(), owner.clone())
-                .await
-                .expect("real open");
-            let after: Vec<Vec<u8>> =
-                sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
-                    .fetch_all(&store.pool)
-                    .await
-                    .expect("retained history");
-            assert!(before.iter().all(|checksum| after.contains(checksum)));
-            assert_eq!(after.len(), MIGRATOR.iter().count());
-            store.close().await;
-            let reopened = AutomationStore::open_root(root, owner)
-                .await
-                .expect("idempotent restart");
-            assert!(reopened.timer_epoch() > 0);
-            reopened.close().await;
-        }
+async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
+    let temp = tempfile::tempdir().expect("private owner root");
+    let root = temp.path().join("owner");
+    std::fs::create_dir(&root).expect("owner directory");
+    let pool = historical_pool(displaced).await;
+    let before: Vec<Vec<u8>> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&pool)
+            .await
+            .expect("original history");
+    if after_rebind {
+        reconcile_legacy_migration_ids(&pool)
+            .await
+            .expect("bounded repair");
     }
+    // Reopen exactly the persisted cut before or after the repair transaction,
+    // before later migrations: no live connection supplies hidden state.
+    sqlx::query("VACUUM INTO ?")
+        .bind(root.join(AUTOMATION_DB_FILENAME).to_str().expect("path"))
+        .execute(&pool)
+        .await
+        .expect("persist historical cut");
+    pool.close().await;
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner ID");
+    let store = AutomationStore::open_root(root.clone(), owner.clone())
+        .await
+        .expect("real open");
+    let after: Vec<Vec<u8>> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&store.pool)
+            .await
+            .expect("retained history");
+    assert!(before.iter().all(|checksum| after.contains(checksum)));
+    assert_eq!(after.len(), MIGRATOR.iter().count());
+    store.close().await;
+    let reopened = AutomationStore::open_root(root, owner)
+        .await
+        .expect("idempotent restart");
+    assert!(reopened.timer_epoch() > 0);
+    reopened.close().await;
+}
+
+// Independent on-disk histories retain the default per-test watchdog and all
+// checksum/restart assertions; one case cannot consume another case's budget.
+#[tokio::test]
+async fn canonical_cut_before_rebind_reopens() {
+    reopen_persisted_history(false, false).await;
+}
+
+#[tokio::test]
+async fn canonical_cut_after_rebind_reopens() {
+    reopen_persisted_history(false, true).await;
+}
+
+#[tokio::test]
+async fn displaced_cut_before_rebind_reopens() {
+    reopen_persisted_history(true, false).await;
+}
+
+#[tokio::test]
+async fn displaced_cut_after_rebind_reopens() {
+    reopen_persisted_history(true, true).await;
 }
 
 #[tokio::test]
