@@ -1,82 +1,83 @@
-# memory.federation V2 final verification
+# memory.federation V2 current verification
 
-- branch: `fix/memory-federation-v2-closure-20260920`
-- base main: `a74246c4d7657d4c6b09fc50c41f1d715ace5e0e`
-- frozen candidate implementation head: `395244ed716934c0e63a4a01dbe708a8c989276e`
-- frozen candidate implementation tree: `64951a030a3642179408aa1b821fe60a07002ebe`
-- status: `pending_exact_current_head_and_merge_candidate_execution`
-- current main parent: `a74246c4d7657d4c6b09fc50c41f1d715ace5e0e`
-- claim boundary: source/product-composition candidate only; `productionImplementation`, `productExecutionProved`, activation, independent acceptance, promotion and release remain false.
+- canonical convergence branch: `work/product-convergence-20260923`
+- source candidate parent: `5fa16b2a05a365169419b49150d45ff3c9f911cd`
+- frozen source candidate: `95b8d75ab67bc4aee31bf166ec794936d5018a05`
+- frozen source tree: `cd50cd9c14adef5380e1d38a14367adc0546c7a7`
+- PR base main at source freeze: `7ddbfac88525196e7a4b31387ceae194958275f5`
+- status: `source_candidate_local_regressions_passed_pending_exact_and_merge_execution`
+- claim boundary: read-only local product-composition candidate; `productionImplementation`, `productExecutionProved`, independent acceptance, activation, promotion and release remain false
 
 ## Candidate boundary
 
-The frozen candidate is the last non-metadata commit and includes the physical HTTP regression proving a rejecting final-use guard runs after provider-policy admission but before provider dispatch. Commits after it may modify only:
+The frozen source candidate contains the implementation, tests, focused workflow and technical documentation for this convergence. Later commits may update only the metadata paths declared in `IMPLEMENTATION_MAP.json` unless the source candidate identity is regenerated.
 
-- `docs/modules/memory.federation/IMPLEMENTATION_MAP.json`
-- `qualification/memory-federation/FINAL_V2_VERIFICATION.md`
+The candidate adds or retains these source-level properties:
 
-Any later change to code, tests, product composition, technical documentation, dossier/profile truth, Cargo state or derived document indexes invalidates this receipt and requires a new candidate head/tree.
+- exact query-bound and domain-separated V2 response/result integrity;
+- live authority observation before transport and after I/O;
+- one interruptible attempt per nonce with no engine-owned retry;
+- bounded deterministic multi-owner product aggregation;
+- active owner database generation resolved through the memory owner's validated pointer;
+- active generation included in the V2 product generation binding;
+- predecessor reader fencing before and after capability/data reads;
+- missing active pointer fails closed after any recovered generation exists and cannot resurrect the legacy database;
+- recovered-owner revoke, correction and forget regressions;
+- incremental bounded discovery that preserves completed healthy results and exposes bad or unresolved owners as typed failure coverage;
+- V2-only product attachment and batch final-use revalidation;
+- a physical provider regression proving a rejecting final-use guard runs before HTTP dispatch;
+- exact-head and deterministic current-main synthetic-merge jobs using locked Cargo state and focused strict lint.
 
-The candidate establishes the following source-level properties without promoting them to executed qualification. The canonical implementation profile intentionally remains `specified_not_product_evidence`, as required by the closed-world profile validator:
+The source candidate remains an in-process checked adapter over local owner stores. The Rust structs and response digest are not a registered authenticated cross-host wire protocol and do not authenticate a remote machine.
 
-- exact query-bound and domain-separated remote response digest verification;
-- prefix-sensitive evidence ordering for bounded selection;
-- `Partial + []` preservation;
-- live capability/revocation/generation observation before dispatch and after I/O;
-- result lifetime bounded by response, lease, query and live-authority horizons;
-- interruptible single-attempt async transport with no engine-owned retry;
-- exact-scope owner data frontier acquired from the same SQLite snapshot as candidates;
-- Agentd composition through `CognitiveRuntime::AvailableFederatedV2`;
-- V2-only product retrieval/revalidation APIs and a regression preventing `with_federation()` from downgrading an already-composed V2 runtime;
-- concurrent bounded peer fan-out under one global horizon with deterministic post-aggregation ordering;
-- explicit requested/completed/failed peers, peer truncation, owner-candidate omission, item truncation and typed discovery/deadline-authority/integrity/transport failure coverage;
-- bounded fail-closed final model-input revalidation, with same-owner/capability bindings sharing one SQLite read snapshot under one total final-use deadline, a fresh post-batch wall-clock check that rejects capability expiry crossing or clock regression before provider transport entry, plus an HTTP-path regression proving a rejecting final-use guard prevents physical provider dispatch;
-- final-use revocation semantics aligned to the repository-wide dispatch contract: the guard fences source currentness before transport entry but does not claim retroactive cancellation authority over an already admitted provider attempt;
-- one-peer ownership in the canonical checked engine, with <=16-peer discovery/aggregation owned by the product orchestrator;
-- documentation truth that the current V2 structs are in-process Rust contracts, not a registered authenticated cross-host wire protocol.
-- local `observed_frontier` is an exact-scope append-only memory-revision count from the same retrieval snapshot, not an authenticated cut digest or rollback witness.
+## Local evidence
 
-The module implementation map uses `sourceIdentityPolicy = candidate_or_exact_observation_v1`: its `sourceBase` and `observedAtHead` are the frozen current-main merge candidate above, and the declared federation source root must remain byte-unchanged through metadata-only receipt commits. The candidate tree is built from current main plus only the reviewed #935 file set; overlapping generated indexes, Cargo lock state and the implementation-map verifier were forward-ported before the merge.
+`LOCAL_QUALIFICATION.md` records the focused local commands and their limitations. The important negative path was reproduced before the fix and then reversed by the candidate:
 
-## Required executable checks
+- before: recovered owner state could be revoked while legacy-path discovery and final-use revalidation still accepted predecessor evidence;
+- after: current discovery follows the recovered owner, predecessor readers are rejected, recovered correction/forget state wins, and pointer loss fails closed rather than selecting the predecessor database.
 
-The current PR head must pass `.github/workflows/memory-federation-v2-final-verify.yml` plus the normal exact-current-head and deterministic merge-candidate gates before `productExecutionProved` can change. The merge job resolves `origin/main` at execution time and must not use the PR object's frozen creation-time `base.sha` as current-main evidence.
+A diagnostic one-second discovery horizon was also rejected after the existing 17-owner test completed only half of the healthy owners under shared-host contention. The candidate uses one bounded three-second product horizon with at most two seconds for incremental discovery, leaving a bounded remainder for admitted reads. Isolated hosted execution is the authoritative final check; the shared workstation measurements are not deployment performance evidence.
 
-Focused execution must cover:
+## Required hosted execution
 
-- formatting;
-- `codex-hepta-memory-federation` contract and adversarial/race tests;
-- `codex-hepta-memory` product runtime and legacy-downgrade regression;
-- Memory extension federation attachment, structured coverage propagation and physical-send revalidation;
-- concurrent product peer orchestration plus peer-truncation/owner-omission regressions;
-- Agentd product composition;
-- implementation-map/source-attestation verification;
-- all-target compilation and strict Clippy;
-- clean tracked-source/diff checks.
+The final metadata head must run `.github/workflows/memory-federation-v2-final-verify.yml` through `workflow_dispatch` or PR execution. Both jobs must pass:
 
-A queued workflow, source presence, test source identity, or a PASS on an older commit is not acceptance evidence for this candidate.
+### Exact head
+
+- exact checkout identity;
+- memory.federation map migration with zero diff;
+- focused formatting;
+- canonical federation contract tests;
+- memory runtime and federation recovery/discovery tests;
+- Memory extension attachment/final-use tests;
+- Core physical HTTP final-use regression;
+- Agentd and App Server composition check;
+- strict `-D warnings` lint for the canonical/product crates with dependency lints isolated;
+- clean patch state.
+
+### Deterministic merge
+
+- resolve `origin/main` at execution time;
+- construct and attest the deterministic synthetic merge;
+- execute the same map, format, test, composition, physical-send and strict-lint suite on that tree.
+
+A queued job, source presence, a pass on an older SHA or a local-only result is not a hosted acceptance receipt. Run IDs and final conclusions are added only after both jobs complete on the final metadata head.
+
+## Remaining repository-controlled gap
+
+Product turn cancellation is safe through host future-drop propagation and cannot attach evidence after cancellation wins, but the product caller does not yet emit a canonical cancellation receipt identifying which federation phase was interrupted. This remains an observability gap; it does not authorize retry or stale attachment.
 
 ## External gates
 
-This receipt does not satisfy or waive:
+This verification does not satisfy or waive:
 
-- independent semantic/security review;
-- authenticated cross-process or multi-host peer transport;
-- remote peer identity, credential/grant binding and coherent remote data-frontier evidence;
-- two-real-host fault E2E;
-- target-host capacity/latency/backpressure qualification;
+- independent semantic and security acceptance;
+- registered cross-host schemas and version negotiation;
+- authenticated peer identity and credential/grant binding;
+- coherent remote owner cut/frontier evidence;
+- two-real-host disconnect, delay, cancellation, revocation and recovery tests;
+- target-host p95/p99, peak memory, overload and backpressure qualification;
 - operator acceptance, canary, promotion or release.
 
-The current product composition remains the existing in-process/read-only owner-store path. A response digest proves integrity of the bound response fields; it does not authenticate a remote host identity.
-
-## Historical note
-
-The earlier `fix/memory-federation-v2-hardening-final` receipt was a failing development receipt, not acceptance evidence. Its actionable federation-local failures (authority-horizon fixture inconsistency, missing extension test import, and strict Clippy enum-size lint) were repaired before this frozen candidate.
-
-This candidate additionally closes a compatibility split-brain edge found during security review: the legacy `with_federation()` helper now preserves `AvailableFederatedV2` rather than replacing it with `AvailableFederated`. The canonical V2 product APIs still reject the legacy variant.
-
-The current frozen candidate also removes the stale per-binding extension final-use path: direct federated proposals now delegate to the same batch revalidation helper used by combined proposals, so same-owner/capability bindings share one SQLite snapshot and the source compiles against the canonical `revalidate_many` surface. A subsequent security review found that the batch originally reused its start-time wall clock for the whole bounded operation; the candidate now samples the wall clock again after batch revalidation and rejects capability expiry crossing or clock regression before physical provider dispatch.
-
-## Remaining repository-controlled observability gap
-
-Product turn cancellation currently inherits the host's future-drop semantics: Core wraps turn-input contribution in the turn cancellation token and drops the federation future when cancellation wins, which drops in-flight authority/transport futures and prevents attachment. The canonical engine also supports `FederationStopReasonV2::Cancelled`, but the product caller does not currently attribute that outer drop to an observable canonical cancellation receipt. This gap does not authorize post-cancel attachment or retry; it remains explicit until a product-level receipt path is wired without making the generic extension API tokio-specific.
+Those gates stay explicit. No production activation, automatic merge or release is asserted by this receipt.

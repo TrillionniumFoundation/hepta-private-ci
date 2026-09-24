@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "addfa146f289059cb7007c44fd4c3df5507e72b3",
-    "tree": "9cb9616cf4715ffef58ad7625959e1c361aae384"
+    "commit": "95b8d75ab67bc4aee31bf166ec794936d5018a05",
+    "tree": "cd50cd9c14adef5380e1d38a14367adc0546c7a7"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -18,26 +18,33 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "composed_candidate_pending_execution",
+  "productCallerState": "composed_candidate_local_regressions_passed_pending_exact_and_merge_execution",
   "productionWriterState": "not_applicable_read_only",
   "operations": [
     {
       "operation": "execute_once",
       "nativeSymbol": "execute_once",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_hardened_candidate_pending_execution",
+      "state": "source_hardened_candidate_local_regressions_passed_pending_exact_and_merge_execution",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-memory-federation/src/v2_tests.rs",
-        "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs"
+        "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "execute_once",
       "mappingClass": "owner_native",
       "delegatedCallees": [
         "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+        "codex-rs/hepta-memory/src/cognitive_federation.rs",
+        "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
         "codex-rs/hepta-agentd/src/runtime.rs",
-        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "codex-rs/app-server/src/lib.rs"
       ]
     },
     {
@@ -56,14 +63,15 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved.",
+    "Run the current exact-source and deterministic current-main synthetic-merge federation workflow, including locked tests, final-use HTTP regression, product checks and strict no-deps lint; keep productExecutionProved false until both jobs pass on the final metadata head.",
     "Product turn cancellation is currently enforced by host future-drop propagation; add explicit product cancellation attribution/receipt wiring if canonical cancellation observability is required."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
-    "multi-host authenticated transport qualification when federation crosses a process or host boundary",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "registered authenticated cross-host wire protocol, peer credentials and coherent remote cut witness",
+    "two-real-host fault, revocation, cancellation and recovery qualification",
+    "target-host capacity, latency, backpressure and operator acceptance",
+    "canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -79,12 +87,12 @@
     "codex-rs/hepta-memory-federation"
   ],
   "headAttestation": {
-    "candidateBranch": "fix/memory-federation-v2-closure-20260920",
-    "baseCommit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
-    "candidateHead": "395244ed716934c0e63a4a01dbe708a8c989276e",
-    "candidateTree": "64951a030a3642179408aa1b821fe60a07002ebe",
-    "headMeaning": "current_main_merged canonical_v2 integrity ordered_prefix partial_empty live_authority interruptible_transport concurrent_product_fanout typed_failure_coverage peer_omission_visibility batch_final_use post_batch_expiry_recheck physical_http_final_use_guard current_verifier_and_generated_indexes",
-    "status": "pending_exact_current_head_and_merge_candidate_execution",
+    "candidateBranch": "work/product-convergence-20260923",
+    "baseCommit": "5fa16b2a05a365169419b49150d45ff3c9f911cd",
+    "candidateHead": "95b8d75ab67bc4aee31bf166ec794936d5018a05",
+    "candidateTree": "cd50cd9c14adef5380e1d38a14367adc0546c7a7",
+    "headMeaning": "current_product_convergence_base canonical_v2 active_owner_generation no_predecessor_resurrection recovery_revoke_correct_forget bounded_incremental_discovery healthy_owner_fault_isolation physical_http_final_use exact_and_merge_workflow",
+    "status": "source_candidate_local_regressions_passed_pending_exact_and_merge_execution",
     "scope": [
       "remote_response_field_binding",
       "cross_query_response_replay_protection",
@@ -116,11 +124,20 @@
       "bounded_concurrent_peer_fanout_one_global_horizon",
       "peer_truncation_and_owner_candidate_omission_visibility",
       "typed_failure_coverage_bound_to_result_and_attachment",
-      "dispatch_contract_aligned_final_use_revocation_semantics"
+      "dispatch_contract_aligned_final_use_revocation_semantics",
+      "active_owner_database_generation_binding",
+      "recovered_owner_predecessor_reader_fencing",
+      "missing_active_pointer_no_legacy_fallback",
+      "recovered_owner_revoke_correction_forget_regressions",
+      "bounded_incremental_discovery_completion",
+      "healthy_owner_result_retention_beside_bad_or_stalled_owner",
+      "focused_module_map_zero_diff_gate",
+      "locked_exact_head_and_synthetic_merge_qualification"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
       "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation.rs",
       "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
       "codex-rs/app-server/src/lib.rs"
     ],
@@ -140,23 +157,42 @@
       "docs/modules/MODULE_DOCS.json",
       "qualification/module-execution-dossiers/DETAILS.json",
       "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
-      "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs"
+      "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
+      "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "qualification/memory-federation/LOCAL_QUALIFICATION.md"
     ],
-    "note": "sourceBase uses candidate_or_exact_observation_v1 and is bound to the frozen current-main merge candidate. The candidate includes current main, exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, concurrent bounded product peer fan-out under one global horizon, deterministic aggregation, explicit peer truncation and owner-candidate omission, typed discovery/deadline-authority/integrity/transport failure coverage bound into result/attachment evidence, V2-only product attachment, batch final-use revalidation, a fresh post-batch wall-clock check that rejects capability expiry crossing or clock regression before provider transport entry, and dispatch-contract-aligned revocation semantics. Product cancellation safety currently relies on the host dropping the contributor future through its turn cancellation token; explicit canonical cancellation receipt attribution remains a repository-controlled observability gap. productExecutionProved, independent acceptance, activation and release remain false until executable and external gates pass.",
+    "note": "The frozen source candidate is based on the current product-convergence head and binds the local owner adapter to the memory owner validated active database generation. Recovery publication fences predecessor readers; a missing active pointer cannot fall back to a legacy database when recovered generations exist; revoke, correction and forget regressions fail closed. Discovery retains completed healthy owners and records bad or unresolved owners as bounded typed failure coverage under one shared three-second product horizon with a two-second discovery horizon. Focused local regressions passed, but exact-source and current-main synthetic-merge hosted receipts remain pending. The Rust V2 contract is still an in-process checked adapter, not an authenticated cross-host wire protocol. productionImplementation, productExecutionProved, independent acceptance, activation and release remain false.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
-      "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
+      "qualification/memory-federation/FINAL_V2_VERIFICATION.md",
+      "qualification/memory-federation/LOCAL_QUALIFICATION.md",
+      "docs/modules/MODULE_DOCS.json",
+      "qualification/module-execution-dossiers/DETAILS.json",
+      "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "addfa146f289059cb7007c44fd4c3df5507e72b3",
-    "tree": "9cb9616cf4715ffef58ad7625959e1c361aae384"
+    "commit": "95b8d75ab67bc4aee31bf166ec794936d5018a05",
+    "tree": "cd50cd9c14adef5380e1d38a14367adc0546c7a7"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory/src/cognitive_federation.rs",
+    "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/app-server/src/lib.rs",
+    "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
+    ".github/workflows/memory-federation-v2-final-verify.yml"
   ],
   "productCallers": [
     {
@@ -165,19 +201,20 @@
       "state": "local_registered_owner_composition_not_cross_host_authentication"
     },
     {
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "nativeSymbol": "retrieve_product_federated/revalidate_product_federated_batch",
+      "state": "active_owner_generation_bound_bounded_product_orchestrator"
+    },
+    {
       "sourcePath": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-      "nativeSymbol": "CombinedCognitiveEphemeralContributor",
+      "nativeSymbol": "CombinedCognitiveEphemeralContributor/FederatedFinalUseGuard",
       "state": "final_use_revalidated_local_owner_federation"
     }
   ],
   "sourceObjects": [
     {
-      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-      "object": "d519c6e77db1ab79dd8f5f781b8642ef5a5eb468"
-    },
-    {
-      "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "d6384bb4095218d6ba5a2e3c09256d0b83efa661"
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "object": "edf2ca5f0a35bac166d6b1418a4f1cca4315ea4e"
     },
     {
       "path": "codex-rs/hepta-memory-federation",
@@ -192,16 +229,60 @@
       "object": "040cc8abbd8414e4df9127ffd17069c4cec12c95"
     },
     {
+      "path": "codex-rs/hepta-memory/src/cognitive_federation.rs",
+      "object": "aa58c673d7ea6dc4fe4a49d1d96b270e07ace44d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+      "object": "409d3fa02777cfbceee099a52deb034f21b1a767"
+    },
+    {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
-      "object": "7ad7a60f7832b037819ae1966b25054d048c641f"
+      "object": "8ce82124cdc7cd50af8d9725ae1be5726700999c"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
-      "object": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
+      "object": "cd3c4ac1e413e8fc2c0f6ad212c1bf999c0fa006"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "object": "6c61d871977128fd7b22f42848fb996b272e6db6"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "object": "b04217a0de797501c61262b20b8c52d2bd1b1822"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+      "object": "dfc79598fc33fef2a7c9228037d39179b05310ec"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "object": "d519c6e77db1ab79dd8f5f781b8642ef5a5eb468"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "d6384bb4095218d6ba5a2e3c09256d0b83efa661"
+    },
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "object": "99097c543655d1c150b03df3a5e777af2c5dd2b8"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/model_provider_policy_http_ephemeral.rs",
+      "object": "d34e4c243d3bd4f09b8fffd18a7121f11ee9abf9"
     },
     {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
-      "object": "cfe666c5e0d3fbc76b86382b6c3c738bd065a335"
+      "object": "be4f33d58c797648a027227e07f5ed533a76f151"
+    },
+    {
+      "path": "docs/modules/memory.federation/V2_HARDENING.md",
+      "object": "d05958fda937e886e3059627c3e90be706fe0403"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/memory.federation.md",
+      "object": "82f29b5a928eae4d128ae2f47e52bcee08dd480c"
     }
   ]
 }
