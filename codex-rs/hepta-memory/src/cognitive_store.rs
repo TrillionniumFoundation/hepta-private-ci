@@ -62,6 +62,12 @@ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("shared_experience_use_events", "table"),
+    ("shared_experience_use_heads", "table"),
+    ("shared_experience_use_active_expiry", "index"),
+    ("shared_experience_use_project_head", "trigger"),
+    ("shared_experience_use_heads_valid_insert", "trigger"),
+    ("shared_experience_use_heads_valid_update", "trigger"),
+    ("shared_experience_use_heads_no_delete", "trigger"),
     ("shared_experience_use_no_update", "trigger"),
     ("shared_experience_use_no_delete", "trigger"),
     ("shared_experience_use_consumer_lookup", "index"),
@@ -200,7 +206,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2";
+    "31599890a038124cfd843deb125db1f255046efac0c1ae0122f85164f3f6f8de";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -646,6 +652,7 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
             "cognitive database belongs to agent {stored_owner}, not {owner}"
         )));
     }
+    crate::shared_experience::verify_current_use_heads(pool).await?;
     let foreign_owned_rows: i64 = sqlx::query_scalar(
         "SELECT (
              SELECT COUNT(*) FROM source_ledger WHERE owner_agent_id != ?
