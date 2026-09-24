@@ -38,8 +38,8 @@ jobs:
             cp phase-a.log .hepta-diagnostics/platform-types-phase-a.log
             git config user.name "Hepta Platform Types Convergence"
             git config user.email "hepta-platform-types@users.noreply.github.com"
-            git add .hepta-diagnostics/platform-types-phase-a.log
-            git commit -s -m "chore(platform.types): retain phase-A failure diagnostic" || true
+            git add -f .hepta-diagnostics/platform-types-phase-a.log
+            git commit -s -m "chore(platform.types): retain phase-A failure diagnostic"
             git push origin HEAD:codex/platform-types-full-convergence-20260925
             exit "$code"
           fi
