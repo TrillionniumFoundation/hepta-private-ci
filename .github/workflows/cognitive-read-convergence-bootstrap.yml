@@ -127,6 +127,6 @@ jobs:
             scripts/cognitive-read-convergence-phase1-fix.py
           git add -A
           git commit -m "docs(cognitive.read): bind convergence candidate identity"
-          python3 scripts/hepta-implementation-maps.py check --module cognitive.read
+          python3 scripts/hepta-implementation-maps.py verify --module cognitive.read
           test -z "$(git status --porcelain)"
           git push origin "HEAD:${GITHUB_REF_NAME}"
