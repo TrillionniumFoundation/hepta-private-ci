@@ -22,6 +22,7 @@ mod secret_boundary_v1;
 pub use final_use_host::BaoConsumerCallback;
 pub use final_use_host::BaoFinalUseHost;
 pub use final_use_host::BaoFinalUseHostError;
+pub use final_use_host::BaoProductHostError;
 pub use final_use_host::RegisteredBaoConsumer;
 pub use https_consumer::BaoAuthBusAdmission;
 pub use https_consumer::BaoAuthBusError;
