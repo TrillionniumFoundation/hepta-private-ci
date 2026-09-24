@@ -1,0 +1,525 @@
+name: Apply runtime.agentd lifecycle convergence patch
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - .github/workflows/hepta-agentd-convergence-patch.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-agentd-convergence-patch
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Apply bounded lifecycle and qualification fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_exact(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected exactly one replacement, found {count}")
+              file.write_text(text.replace(old, new))
+
+          lane = "codex-rs/hepta-agentd/src/lane_b_runtime.rs"
+          replace_exact(
+              lane,
+              '''        require_revision(record, expected_revision)?;
+          let expired = expire_record(record, now_ms)?;
+          if expired {
+              let disposition = match record.phase {
+                  RunPhase::Cancelled => CancellationDisposition::AlreadyTerminal,
+                  RunPhase::Cancelling => CancellationDisposition::CancellingAfterDispatch,
+                  _ => return Err(AgentRunError::InvalidTransition),
+              };
+              return Ok((disposition, receipt(record, /*idempotent*/ false)));
+          }
+          ''',
+              '''        let previous_revision = expected_revision
+              .checked_add(1)
+              .is_some_and(|revision| revision == record.revision);
+          if previous_revision
+              && matches!(
+                  record.phase,
+                  RunPhase::Cancelled | RunPhase::Cancelling | RunPhase::Indeterminate
+              )
+          {
+              if record.cancel_reason.as_deref() != Some(reason) {
+                  return Err(AgentRunError::Conflict);
+              }
+              let expired = expire_record(record, now_ms)?;
+              let disposition = match record.phase {
+                  RunPhase::Cancelled => CancellationDisposition::AlreadyTerminal,
+                  RunPhase::Cancelling | RunPhase::Indeterminate => {
+                      CancellationDisposition::CancellingAfterDispatch
+                  }
+                  _ => return Err(AgentRunError::InvalidTransition),
+              };
+              return Ok((
+                  disposition,
+                  receipt(record, /*idempotent*/ !expired),
+              ));
+          }
+          require_revision(record, expected_revision)?;
+          if matches!(record.phase, RunPhase::Cancelling | RunPhase::Indeterminate)
+              && record.cancel_reason.as_deref() != Some(reason)
+          {
+              return Err(AgentRunError::Conflict);
+          }
+          let expired = expire_record(record, now_ms)?;
+          if expired {
+              let disposition = match record.phase {
+                  RunPhase::Cancelled => CancellationDisposition::AlreadyTerminal,
+                  RunPhase::Cancelling | RunPhase::Indeterminate => {
+                      CancellationDisposition::CancellingAfterDispatch
+                  }
+                  _ => return Err(AgentRunError::InvalidTransition),
+              };
+              return Ok((disposition, receipt(record, /*idempotent*/ false)));
+          }
+          ''',
+          )
+          replace_exact(
+              lane,
+              '''            RunPhase::Indeterminate => return Err(AgentRunError::TerminalObservationRequired),
+          ''',
+              '''            RunPhase::Indeterminate => {
+                  return Ok((
+                      CancellationDisposition::CancellingAfterDispatch,
+                      receipt(record, /*idempotent*/ true),
+                  ));
+              }
+          ''',
+          )
+
+          lane_tests = "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
+          marker = '''#[test]
+          fn operation_identity_is_idempotent_only_for_equal_semantics() {
+          '''
+          test = '''#[test]
+          fn cancellation_ack_loss_replays_current_receipt_without_hidden_mutation() {
+              let mut before = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+              before.start_run(100, snapshot()).expect("admit");
+              let cancelled = before
+                  .cancel_run(200, "run.1", 1, "operator_request")
+                  .expect("cancel before dispatch");
+              let replayed = before
+                  .cancel_run(201, "run.1", 1, "operator_request")
+                  .expect("replay lost pre-dispatch acknowledgement");
+              assert_eq!(replayed.0, CancellationDisposition::AlreadyTerminal);
+              assert!(replayed.1.idempotent);
+              assert_eq!(replayed.1.revision, cancelled.1.revision);
+              assert_eq!(replayed.1.phase, RunPhase::Cancelled);
+
+              let mut after = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+              after.start_run(100, snapshot()).expect("admit");
+              after
+                  .attach_context(200, 1, attachment())
+                  .expect("attach");
+              after
+                  .mark_dispatched(300, "run.1", 2)
+                  .expect("dispatch");
+              let cancelling = after
+                  .cancel_run(400, "run.1", 3, "operator_request")
+                  .expect("cancel after dispatch");
+              let replayed = after
+                  .cancel_run(450, "run.1", 3, "operator_request")
+                  .expect("replay lost post-dispatch acknowledgement");
+              assert!(replayed.1.idempotent);
+              assert_eq!(replayed.1.revision, cancelling.1.revision);
+              assert_eq!(replayed.1.phase, RunPhase::Cancelling);
+
+              let timed_out = after
+                  .cancel_run(3_400, "run.1", 4, "operator_request")
+                  .expect("advance cancellation acknowledgement timeout");
+              assert_eq!(timed_out.0, CancellationDisposition::CancellingAfterDispatch);
+              assert!(!timed_out.1.idempotent);
+              assert_eq!(timed_out.1.phase, RunPhase::Indeterminate);
+              assert_eq!(timed_out.1.revision, 5);
+              assert_eq!(timed_out.1.cancel_ack_deadline_ms, None);
+
+              let replayed = after
+                  .cancel_run(3_401, "run.1", 4, "operator_request")
+                  .expect("replay lost timeout acknowledgement");
+              assert!(replayed.1.idempotent);
+              assert_eq!(replayed.1.phase, RunPhase::Indeterminate);
+              assert_eq!(replayed.1.revision, 5);
+              assert_eq!(
+                  after.cancel_run(3_402, "run.1", 5, "different_reason"),
+                  Err(AgentRunError::Conflict)
+              );
+          }
+
+          '''
+          replace_exact(lane_tests, marker, test + marker)
+
+          native_tests = "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+          replace_exact(
+              native_tests,
+              '''    let turn_start = source
+              .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+              .expect("physical turn start");
+          ''',
+              '''    let turn_start = source
+              .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+              .expect("physical turn start");
+          ''',
+          )
+
+          support = "codex-rs/hepta-agentd/src/test_support.rs"
+          replace_exact(
+              support,
+              '''        let app_server_task = tokio::spawn(run_app_server(
+              identity.clone(),
+              Arg0DispatchPaths::default(),
+              CognitiveRuntime::Available(Arc::clone(&store)),
+          ''',
+              '''        let arg0_paths = Arg0DispatchPaths {
+              codex_self_exe: Some(std::env::current_exe()?),
+              ..Arg0DispatchPaths::default()
+          };
+              let app_server_task = tokio::spawn(run_app_server(
+              identity.clone(),
+              arg0_paths,
+              CognitiveRuntime::Available(Arc::clone(&store)),
+          ''',
+          )
+
+          control = "codex-rs/hepta-agentd/src/control.rs"
+          replace_exact(
+              control,
+              '''use crate::AgentdError;
+          use crate::AgentdPayload;
+          ''',
+              '''use crate::AgentdError;
+          use crate::AgentdMethod;
+          use crate::AgentdPayload;
+          ''',
+          )
+          replace_exact(
+              control,
+              '''const CONNECTION_CAPACITY: usize = 32;
+          const IO_TIMEOUT: Duration = Duration::from_secs(2);
+          const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
+          ''',
+              '''const CONNECTION_CAPACITY: usize = 32;
+          const LONG_OPERATION_CAPACITY: usize = 4;
+          const IO_TIMEOUT: Duration = Duration::from_secs(2);
+          const DEFAULT_OPERATION_TIMEOUT: Duration = Duration::from_secs(2);
+          const OBJECTIVE_VALIDITY_LIMIT_MS: u64 = 300_000;
+          const OBJECTIVE_RESPONSE_MARGIN_MS: u64 = 5_000;
+          const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
+          ''',
+          )
+          replace_exact(
+              control,
+              '''    connections: Arc<Semaphore>,
+          }
+          ''',
+              '''    connections: Arc<Semaphore>,
+              long_operations: Arc<Semaphore>,
+          }
+          ''',
+          )
+          replace_exact(
+              control,
+              '''            connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+              })
+          ''',
+              '''            connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+                  long_operations: Arc::new(Semaphore::new(LONG_OPERATION_CAPACITY)),
+              })
+          ''',
+          )
+          replace_exact(
+              control,
+              '''            let state = Arc::clone(&self.state);
+              tokio::spawn(async move {
+                  let _permit = permit;
+                  let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+              });
+          ''',
+              '''            let state = Arc::clone(&self.state);
+              let long_operations = Arc::clone(&self.long_operations);
+              tokio::spawn(async move {
+                  let _permit = permit;
+                  let _ = serve_connection(stream, state, long_operations).await;
+              });
+          ''',
+          )
+          old_serve = '''async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+              let (reader, mut writer) = tokio::io::split(stream);
+              let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
+              let mut frame = Vec::new();
+              let count = reader.read_until(b'\\n', &mut frame).await?;
+              if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\\n") {
+                  return Err(AgentdError::Protocol(
+                      "agentd control request must be one bounded newline JSON frame".to_string(),
+                  ));
+              }
+              let request: AgentdRequest = serde_json::from_slice(&frame)?;
+              let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
+                  error_response(
+                      &state,
+                      request.request_id,
+                      request.spawn_generation,
+                      "unsupported_schema",
+                      "unsupported agentd control schema",
+                  )
+              } else {
+                  match state
+                      .response(request.request_id, request.spawn_generation, request.method)
+                      .await
+                  {
+                      Ok(response) => response,
+                      Err(error) => error_response(
+                          &state,
+                          request.request_id,
+                          request.spawn_generation,
+                          "request_rejected",
+                          &error.to_string(),
+                      ),
+                  }
+              };
+              let mut bytes = serde_json::to_vec(&response)?;
+              bytes.push(b'\\n');
+              if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
+                  return Err(AgentdError::Protocol(
+                      "agentd control response exceeded frame bound".to_string(),
+                  ));
+              }
+              writer.write_all(&bytes).await?;
+              writer.shutdown().await?;
+              Ok(())
+          }
+          '''
+          new_serve = '''async fn serve_connection(
+              stream: UnixStream,
+              state: Arc<AgentdState>,
+              long_operations: Arc<Semaphore>,
+          ) -> Result<(), AgentdError> {
+              let (reader, mut writer) = tokio::io::split(stream);
+              let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
+              let mut frame = Vec::new();
+              let count = timeout(IO_TIMEOUT, reader.read_until(b'\\n', &mut frame))
+                  .await
+                  .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
+              if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\\n") {
+                  return Err(AgentdError::Protocol(
+                      "agentd control request must be one bounded newline JSON frame".to_string(),
+                  ));
+              }
+              let request: AgentdRequest = serde_json::from_slice(&frame)?;
+              let _long_operation_permit = if request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
+                  && is_long_operation(&request.method)
+              {
+                  match long_operations.try_acquire_owned() {
+                      Ok(permit) => Some(permit),
+                      Err(_) => {
+                          timeout(OVERLOAD_WRITE_TIMEOUT, async {
+                              writer.write_all(AGENTD_CONTROL_OVERLOAD_FRAME).await?;
+                              writer.shutdown().await
+                          })
+                          .await
+                          .map_err(|_| {
+                              AgentdError::Protocol(
+                                  "agentd control overload response timed out".to_string(),
+                              )
+                          })??;
+                          return Ok(());
+                      }
+                  }
+              } else {
+                  None
+              };
+              let operation_timeout = request_timeout(&request.method);
+              let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
+                  error_response(
+                      &state,
+                      request.request_id,
+                      request.spawn_generation,
+                      "unsupported_schema",
+                      "unsupported agentd control schema",
+                  )
+              } else {
+                  match timeout(
+                      operation_timeout,
+                      state.response(request.request_id, request.spawn_generation, request.method),
+                  )
+                  .await
+                  {
+                      Ok(Ok(response)) => response,
+                      Ok(Err(error)) => error_response(
+                          &state,
+                          request.request_id,
+                          request.spawn_generation,
+                          "request_rejected",
+                          &error.to_string(),
+                      ),
+                      Err(_) => error_response(
+                          &state,
+                          request.request_id,
+                          request.spawn_generation,
+                          "request_timed_out",
+                          "agentd operation exceeded its bounded execution horizon",
+                      ),
+                  }
+              };
+              let mut bytes = serde_json::to_vec(&response)?;
+              bytes.push(b'\\n');
+              if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
+                  return Err(AgentdError::Protocol(
+                      "agentd control response exceeded frame bound".to_string(),
+                  ));
+              }
+              timeout(IO_TIMEOUT, async {
+                  writer.write_all(&bytes).await?;
+                  writer.shutdown().await
+              })
+              .await
+              .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
+              Ok(())
+          }
+
+          pub(crate) fn request_timeout(method: &AgentdMethod) -> Duration {
+              match method {
+                  AgentdMethod::ObjectiveStart { request } => {
+                      objective_operation_timeout(request.expires_at_ms, wall_clock_ms())
+                  }
+                  _ => DEFAULT_OPERATION_TIMEOUT,
+              }
+          }
+
+          fn is_long_operation(method: &AgentdMethod) -> bool {
+              matches!(method, AgentdMethod::ObjectiveStart { .. })
+          }
+
+          fn objective_operation_timeout(expires_at_ms: u64, now_ms: u64) -> Duration {
+              let remaining = expires_at_ms
+                  .saturating_sub(now_ms)
+                  .min(OBJECTIVE_VALIDITY_LIMIT_MS);
+              Duration::from_millis(remaining.saturating_add(OBJECTIVE_RESPONSE_MARGIN_MS))
+          }
+
+          fn wall_clock_ms() -> u64 {
+              std::time::SystemTime::now()
+                  .duration_since(std::time::UNIX_EPOCH)
+                  .ok()
+                  .and_then(|duration| u64::try_from(duration.as_millis()).ok())
+                  .unwrap_or(u64::MAX)
+          }
+          '''
+          replace_exact(control, old_serve, new_serve)
+          control_path = Path(control)
+          control_text = control_path.read_text()
+          tests = '''
+
+          #[cfg(test)]
+          mod tests {
+              use super::*;
+
+              #[test]
+              fn objective_timeout_tracks_signed_expiry_with_margin_and_cap() {
+                  assert_eq!(
+                      objective_operation_timeout(/*expires_at_ms*/ 10_000, /*now_ms*/ 9_000),
+                      Duration::from_secs(6)
+                  );
+                  assert_eq!(
+                      objective_operation_timeout(/*expires_at_ms*/ 9_000, /*now_ms*/ 10_000),
+                      Duration::from_secs(5)
+                  );
+                  assert_eq!(
+                      objective_operation_timeout(u64::MAX, /*now_ms*/ 1),
+                      Duration::from_secs(305)
+                  );
+              }
+          }
+          '''
+          if tests.strip() in control_text:
+              raise SystemExit(f"{control}: timeout tests already present")
+          control_path.write_text(control_text + tests)
+
+          client = "codex-rs/hepta-agentd/src/client.rs"
+          replace_exact(
+              client,
+              '''use crate::SessionIngress;
+          ''',
+              '''use crate::SessionIngress;
+          use crate::control::request_timeout;
+          ''',
+          )
+          replace_exact(
+              client,
+              '''    async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
+              let expected_request_id = request.request_id;
+          ''',
+              '''    async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
+              let expected_request_id = request.request_id;
+              let response_timeout = request_timeout(&request.method);
+          ''',
+          )
+          replace_exact(
+              client,
+              '''        let count = timeout(self.timeout, reader.read_until(b'\\n', &mut response_bytes))
+          ''',
+              '''        let count = timeout(response_timeout, reader.read_until(b'\\n', &mut response_bytes))
+          ''',
+          )
+          PY
+
+      - name: Format and test exact Agentd boundaries
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-agentd --package codex-hepta-infer-worker-host -- --check
+          cargo test --locked -p codex-hepta-agentd --lib \
+            lane_b_runtime::tests::cancellation_ack_loss_replays_current_receipt_without_hidden_mutation \
+            -- --exact --nocapture
+          cargo test --locked -p codex-hepta-agentd --lib control::tests -- --nocapture
+          cargo test --locked -p codex-hepta-infer-worker-host --lib \
+            native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start \
+            -- --exact --nocapture
+          cargo test --locked -p codex-hepta-infer-worker-host --lib \
+            native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \
+            -- --exact --nocapture
+          cargo clippy --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host \
+            --no-deps --all-targets -- -D warnings
+
+      - name: Commit tested patch and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/hepta-agentd-convergence-patch.yml
+          git diff --check
+          git config user.name "Hepta Agentd CI"
+          git config user.email "hepta-agentd-ci@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-agentd/src/lane_b_runtime.rs \
+            codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs \
+            codex-rs/hepta-agentd/src/control.rs \
+            codex-rs/hepta-agentd/src/client.rs \
+            codex-rs/hepta-agentd/src/test_support.rs \
+            codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs \
+            .github/workflows/hepta-agentd-convergence-patch.yml
+          git commit -m "runtime.agentd: close cancellation and control qualification gaps"
+          git fetch origin work/product-convergence-20260923
+          git rebase origin/work/product-convergence-20260923
+          git push origin HEAD:work/product-convergence-20260923
