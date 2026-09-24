@@ -1,7 +1,9 @@
 use std::collections::BTreeMap;
 
-use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
+
+#[path = "run_start_projection.rs"]
+mod run_start_projection;
 
 const MAX_SUPPORTED_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
@@ -228,39 +230,7 @@ impl AgentRunCoordinator {
         now_ms: u64,
         record: &RunStartRecordV1,
     ) -> Result<RunReceipt, AgentRunError> {
-        if record.objective_function_v1_digest.is_zero()
-            || record.objective_function_v1_bytes.is_empty()
-        {
-            return Err(AgentRunError::InvalidRunStart(
-                "canonical ObjectiveFunctionV1 identity",
-            ));
-        }
-        if record.disposition != RunStartObjectiveDispositionV1::Compiled {
-            return Err(AgentRunError::InvalidRunStart("objective disposition"));
-        }
-        if record.admission.authority.grants_any() {
-            return Err(AgentRunError::InvalidRunStart("authority"));
-        }
-        let deadline_ms = record
-            .admission
-            .deadline_unix_micros
-            .checked_add(999)
-            .map(|value| value / 1_000)
-            .ok_or(AgentRunError::ArithmeticOverflow)?;
-        self.start_run(
-            now_ms,
-            RunSnapshot {
-                run_id: record.snapshot.run_id.to_string(),
-                request_digest: record.admission.admitted_source_digest.to_string(),
-                objective_digest: record.snapshot.objective_digest.to_string(),
-                body_digest: record.runtime_body_digest.to_string(),
-                artifact_set_digest: record.snapshot.artifact_set_digest.to_string(),
-                authority_epoch: record.snapshot.authority_epoch,
-                generation: record.snapshot.generation,
-                fence_digest: record.snapshot.fence_digest.to_string(),
-                deadline_ms,
-            },
-        )
+        self.start_run(now_ms, RunSnapshot::from_revalidated_run_start(record)?)
     }
 
     pub fn attach_context(

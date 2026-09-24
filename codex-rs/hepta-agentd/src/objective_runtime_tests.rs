@@ -24,6 +24,7 @@ fn record(
     let objective = format!("objective:{run_id}").into_bytes();
     RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
+            signed_body_bytes: Vec::new(),
             issuer_id: id("issuer.objective"),
             key_epoch: 1,
             message_id: id(&format!("message.{run_id}")),
@@ -224,17 +225,31 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
 
     let now_ms = 10_000;
     let mut durable = record("run.trust", 21, RunStartObjectiveDispositionV1::Compiled);
+    let body = AuthBusObjectiveBody {
+        spawn_generation: identity.spawn_generation,
+        run_id: durable.snapshot.run_id.to_string(),
+        objective_revision: 1,
+        source_envelope_json: "{}".to_string(),
+        runtime_body_digest: durable.runtime_body_digest.to_string(),
+        preference_state_digest: durable.snapshot.preference_state_digest.to_string(),
+        model_tuple_digest: durable.snapshot.model_tuple_digest.to_string(),
+        prompt_registry_digest: durable.snapshot.prompt_registry_digest.to_string(),
+        artifact_set_digest: durable.snapshot.artifact_set_digest.to_string(),
+        authority_epoch: durable.snapshot.authority_epoch,
+    };
+    let signed_body_bytes = serde_json::to_vec(&body).expect("canonical input");
     let claims = SignedMessageClaims {
         issuer_id: id("issuer.objective"),
         key_epoch: codex_hepta_types::Generation::new(1).expect("epoch"),
         message_id: id("message.run.trust"),
         subject_id: StableId::new(identity.agent_id.as_str()).expect("subject"),
         scope_digest: objective_scope(&identity),
-        payload_digest: digest("signed:run.trust"),
+        payload_digest: Digest32::of_bytes(&signed_body_bytes),
         sequence: 21,
         expires_at_ms: now_ms + 60_000,
     };
     durable.authentication = RunStartAuthenticationV1 {
+        signed_body_bytes,
         issuer_id: claims.issuer_id.clone(),
         key_epoch: claims.key_epoch.get(),
         message_id: claims.message_id.clone(),
@@ -251,6 +266,16 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
         authentication_is_current(&durable, &current, &identity, now_ms)
             .expect("current authentication")
     );
+
+    let mut missing = durable.clone();
+    missing.authentication.signed_body_bytes.clear();
+    assert!(!authentication_is_current(&missing, &current, &identity, now_ms).unwrap());
+    let mut replaced = durable.clone();
+    replaced.snapshot.artifact_set_digest = digest("substituted selection");
+    assert!(authentication_is_current(&replaced, &current, &identity, now_ms).is_err());
+    let mut changed_bytes = durable.clone();
+    changed_bytes.authentication.signed_body_bytes[0] ^= 1;
+    assert!(authentication_is_current(&changed_bytes, &current, &identity, now_ms).is_err());
 
     write_trust(/*key_epoch*/ 1, /*revoked*/ true);
     let revoked = TextTrust::load(&trust_path, &identity).expect("revoked trust");

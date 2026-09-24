@@ -5,8 +5,6 @@ use std::time::UNIX_EPOCH;
 
 use codex_app_server::AppServerDrainHandle;
 use codex_hepta_agent_protocol::DrainSnapshot;
-use codex_hepta_authbus::SignedMessage;
-use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_contracts::Sha256Digest;
@@ -15,7 +13,6 @@ use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::AgentRunCoordinator;
@@ -586,8 +583,21 @@ impl AgentdState {
             return Ok(None);
         };
 
-        let invocation = provider.build(&self.identity, record)?;
-        invocation.validate(&self.identity, record)?;
+        self.require_current_run_start(record)?;
+        let invocation = runner
+            .build_invocation(Arc::clone(provider), self.identity.clone(), record.clone())
+            .await?;
+        let now_ms = self.require_current_run_start(record)?;
+        let durable_snapshot =
+            crate::RunSnapshot::from_revalidated_run_start(record).map_err(run_error)?;
+        let remaining_ms = durable_snapshot
+            .deadline_ms
+            .min(record.authentication.expires_at_ms)
+            .checked_sub(now_ms)
+            .filter(|value| *value > 0)
+            .ok_or_else(|| {
+                AgentdError::Invalid("RunStart expired during owner input production".to_string())
+            })?;
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
@@ -598,60 +608,39 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .composition()
             .clone();
-        let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "canonical intelligence preparation failed: {error}"
-                ))
-            })?;
+        let outcome = tokio::time::timeout(
+            std::time::Duration::from_millis(remaining_ms),
+            runner.prepare_for_composition(&composition, invocation.request, invocation.inputs),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("RunStart expired during canonical preparation".to_string())
+        })?
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "canonical intelligence preparation failed: {error}"
+            ))
+        })?;
 
         match outcome {
-            crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
+            crate::AgentdIntelligenceProductOutcomeV1::Ready(mut prepared) => {
                 // Owner preparation is asynchronous. Revalidate the durable
                 // signed Objective and Fleet fence again after it completes,
                 // twice as the compatibility path does at its final boundary.
                 let first_now = self.require_current_run_start(record)?;
                 let second_now = self.require_current_run_start(record)?;
                 let now_ms = first_now.max(second_now);
+                prepared
+                    .bind_revalidated_run_start(record, now_ms)
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!("canonical RunStart binding failed: {error}"))
+                    })?;
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let admitted = runs
-                    .start_run(
-                        now_ms,
-                        crate::RunSnapshot {
-                            run_id: snapshot.run_id,
-                            request_digest: snapshot.request_digest,
-                            objective_digest: snapshot.objective_digest,
-                            body_digest: snapshot.body_digest,
-                            artifact_set_digest: snapshot.artifact_set_digest,
-                            authority_epoch: snapshot.authority_epoch,
-                            generation: snapshot.generation,
-                            fence_digest: snapshot.fence_digest,
-                            deadline_ms: snapshot.deadline_ms,
-                        },
-                    )
-                    .map_err(run_error)?;
+                let admitted = runs.start_run(now_ms, snapshot.into()).map_err(run_error)?;
                 let run_receipt = runs
-                    .attach_context(
-                        now_ms,
-                        admitted.revision,
-                        crate::ContextAttachment {
-                            run_id: attachment.run_id,
-                            request_digest: attachment.request_digest,
-                            objective_digest: attachment.objective_digest,
-                            body_digest: attachment.body_digest,
-                            artifact_set_digest: attachment.artifact_set_digest,
-                            authority_epoch: attachment.authority_epoch,
-                            generation: attachment.generation,
-                            fence_digest: attachment.fence_digest,
-                            deadline_ms: attachment.deadline_ms,
-                            context_digest: attachment.context_digest,
-                            compilation_receipt_digest: attachment.compilation_receipt_digest,
-                        },
-                    )
+                    .attach_context(now_ms, admitted.revision, attachment.into())
                     .map_err(run_error)?;
                 Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
                     prepared,
@@ -722,36 +711,19 @@ impl AgentdState {
 
         let host = crate::authbus_ingress::attached(self)?;
         let trust = host.trust(self)?;
-        let authentication = &record.authentication;
-        let message = SignedMessage {
-            claims: SignedMessageClaims {
-                issuer_id: authentication.issuer_id.clone(),
-                key_epoch: Generation::new(authentication.key_epoch).map_err(|error| {
-                    AgentdError::Invalid(format!("durable run-start key epoch: {error}"))
-                })?,
-                message_id: authentication.message_id.clone(),
-                subject_id: StableId::new(self.identity.agent_id.as_str()).map_err(|error| {
-                    AgentdError::Invalid(format!("durable run-start subject: {error}"))
-                })?,
-                scope_digest: authentication.scope_digest,
-                payload_digest: authentication.signed_body_digest,
-                sequence: authentication.sequence,
-                expires_at_ms: authentication.expires_at_ms,
-            },
-            signature: authentication.signature,
-        };
-        message
-            .authenticate(
-                &trust.issuer()?,
-                objective_run_scope(&self.identity),
-                authentication.signed_body_digest,
-                now_ms,
-            )
-            .map_err(|error| {
-                AgentdError::Invalid(format!(
-                    "durable run-start authentication is not current: {error}"
-                ))
-            })?;
+        if !crate::objective_runtime::authentication_is_current(
+            record,
+            &trust,
+            &self.identity,
+            now_ms,
+        )? {
+            return Err(AgentdError::Invalid(
+                "durable run-start authentication is not current".to_string(),
+            ));
+        }
+        if let Some(owner) = self.objective_runtime.get() {
+            owner.revalidate_projection(record, &self.identity)?;
+        }
         Ok(now_ms)
     }
 
@@ -789,12 +761,6 @@ impl AgentdState {
 
 pub(super) fn run_error(error: AgentRunError) -> AgentdError {
     AgentdError::Protocol(format!("agent run lifecycle rejected: {error:?}"))
-}
-
-fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
-    let mut bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    Digest32::of_bytes(&bytes)
 }
 
 pub(crate) fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {

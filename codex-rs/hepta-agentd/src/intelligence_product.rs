@@ -606,6 +606,7 @@ pub enum AgentdIntelligenceProductError {
     Busy,
     TimedOut,
     CandidateSetMismatch,
+    RunStartBinding,
     Clock,
     InvalidAuthorityVerifier,
     Run(crate::AgentRunError),
@@ -627,6 +628,8 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
 }
 
+#[path = "intelligence_run_start.rs"]
+mod run_start;
 #[path = "intelligence_product_runner.rs"]
 mod runner;
 

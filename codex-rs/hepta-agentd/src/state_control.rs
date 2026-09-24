@@ -443,7 +443,7 @@ impl AgentdState {
                     .runs
                     .lock()
                     .map_err(poisoned_state)?
-                    .start_run(now_ms()?, internal_run_snapshot(snapshot))
+                    .start_run(now_ms()?, snapshot.into())
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
@@ -462,11 +462,7 @@ impl AgentdState {
                     .runs
                     .lock()
                     .map_err(poisoned_state)?
-                    .attach_context(
-                        now_ms()?,
-                        expected_revision,
-                        internal_context_attachment(attachment),
-                    )
+                    .attach_context(now_ms()?, expected_revision, attachment.into())
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
@@ -1273,36 +1269,6 @@ fn require_current_run_identity(
         ));
     }
     Ok(())
-}
-
-fn internal_run_snapshot(value: crate::AgentRunSnapshot) -> crate::RunSnapshot {
-    crate::RunSnapshot {
-        run_id: value.run_id,
-        request_digest: value.request_digest,
-        objective_digest: value.objective_digest,
-        body_digest: value.body_digest,
-        artifact_set_digest: value.artifact_set_digest,
-        authority_epoch: value.authority_epoch,
-        generation: value.generation,
-        fence_digest: value.fence_digest,
-        deadline_ms: value.deadline_ms,
-    }
-}
-
-fn internal_context_attachment(value: crate::AgentContextAttachment) -> crate::ContextAttachment {
-    crate::ContextAttachment {
-        run_id: value.run_id,
-        request_digest: value.request_digest,
-        objective_digest: value.objective_digest,
-        body_digest: value.body_digest,
-        artifact_set_digest: value.artifact_set_digest,
-        authority_epoch: value.authority_epoch,
-        generation: value.generation,
-        fence_digest: value.fence_digest,
-        deadline_ms: value.deadline_ms,
-        context_digest: value.context_digest,
-        compilation_receipt_digest: value.compilation_receipt_digest,
-    }
 }
 
 fn internal_run_phase(value: crate::AgentRunPhase) -> crate::RunPhase {

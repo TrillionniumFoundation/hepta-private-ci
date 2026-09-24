@@ -504,3 +504,19 @@ The bootstrap source-location obligation for `learning.ledger` is implemented by
 - `codex-rs/hepta-learning-ledger`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and the ledger/Lane-E/Lane-F workflows, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The native source now includes `LedgerWriter`, `LedgerWitnessStore`, `LearningTrustRootV1`, root-signed `ActivatedLearningTrustV1`, registered protocol adapters and `LedgerIndexCheckpointV1`. This receipt is source implementation evidence only; the exact PR head must still pass current CI before source qualification is claimed. It grants no live product-writer deployment, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Original signed RunStart input persistence
+
+The existing journal retains original ObjectiveStart request bytes in record-v3
+and conflict-v2 payloads. The file header and hash-chain model are unchanged.
+Request bodies are bounded at 48 KiB and checked against the retained body digest
+before append and during recovery. Mixed historical record-v1/v2 and conflict-v1
+payloads remain readable without rewriting earlier frames; missing original
+request bytes are represented explicitly.
+
+Agentd requires current trust, owner projection and generation checks before
+new-format records can be used. Historical records without original input are
+readable for reconciliation, not executable through reconstructed input. The
+storage codec itself neither issues nor verifies an external AuthBus signature.
+Regression tests cover mixed-version recovery, byte-preserving exact retries,
+bounded inputs, truncation, and body substitution.

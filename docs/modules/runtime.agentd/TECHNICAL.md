@@ -433,3 +433,26 @@ This receipt records repository source bindings for the current documentation ca
 - Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+## RunStart input recovery and canonical preparation
+
+The existing ObjectiveStart owner retains the original canonical signed request
+body in the learning-owned RunStart journal. Recovery checks current AuthBus
+trust and Fleet fencing, then recomputes the objective projection from that
+source, the selected profile and the original admission time. An exact lost-ACK
+retry reuses the committed publication and original deadline rather than
+recompiling with a later clock.
+
+Historical records without retained input remain readable for reconciliation,
+but cannot be resumed by constructing replacement input. Existing outcomes must
+be resolved before admitting new work; this is not permission to redispatch.
+
+Canonical input production and preparation share one bounded owner-worker pool.
+Timed-out blocking work retains its permit until it exits. The run coordinator
+mutex is not held during owner computation. Prepared results are bound back to
+the revalidated durable record before context attachment.
+
+These changes strengthen the existing provider interface. A repository-installed
+seven-owner invocation provider, its selected owner inputs and independent
+evaluator trust still require product composition; none is created by this
+recovery change.

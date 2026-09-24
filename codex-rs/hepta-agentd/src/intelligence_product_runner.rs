@@ -222,40 +222,11 @@ impl AgentdIntelligenceProductRunnerV1 {
             AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
                 let snapshot = prepared.run_snapshot();
                 let admitted = coordinator
-                    .start_run(
-                        wall_clock_ms()?,
-                        crate::RunSnapshot {
-                            run_id: snapshot.run_id,
-                            request_digest: snapshot.request_digest,
-                            objective_digest: snapshot.objective_digest,
-                            body_digest: snapshot.body_digest,
-                            artifact_set_digest: snapshot.artifact_set_digest,
-                            authority_epoch: snapshot.authority_epoch,
-                            generation: snapshot.generation,
-                            fence_digest: snapshot.fence_digest,
-                            deadline_ms: snapshot.deadline_ms,
-                        },
-                    )
+                    .start_run(wall_clock_ms()?, snapshot.into())
                     .map_err(AgentdIntelligenceProductError::Run)?;
                 let attachment = prepared.context_attachment();
                 let run_receipt = coordinator
-                    .attach_context(
-                        wall_clock_ms()?,
-                        admitted.revision,
-                        crate::ContextAttachment {
-                            run_id: attachment.run_id,
-                            request_digest: attachment.request_digest,
-                            objective_digest: attachment.objective_digest,
-                            body_digest: attachment.body_digest,
-                            artifact_set_digest: attachment.artifact_set_digest,
-                            authority_epoch: attachment.authority_epoch,
-                            generation: attachment.generation,
-                            fence_digest: attachment.fence_digest,
-                            deadline_ms: attachment.deadline_ms,
-                            context_digest: attachment.context_digest,
-                            compilation_receipt_digest: attachment.compilation_receipt_digest,
-                        },
-                    )
+                    .attach_context(wall_clock_ms()?, admitted.revision, attachment.into())
                     .map_err(AgentdIntelligenceProductError::Run)?;
                 Ok(AgentdIntelligenceAdmittedOutcomeV1::Ready {
                     prepared,

@@ -1,4 +1,5 @@
 use super::*;
+use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
@@ -406,6 +407,7 @@ fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence()
     let d = |value: &str| Digest32::of_bytes(value.as_bytes());
     let record = RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
+            signed_body_bytes: Vec::new(),
             issuer_id: id("issuer.1"),
             key_epoch: 2,
             message_id: id("message.1"),
@@ -468,6 +470,7 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
     let d = |value: &str| Digest32::of_bytes(value.as_bytes());
     let record = RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
+            signed_body_bytes: Vec::new(),
             issuer_id: id("issuer.1"),
             key_epoch: 2,
             message_id: id("message.2"),

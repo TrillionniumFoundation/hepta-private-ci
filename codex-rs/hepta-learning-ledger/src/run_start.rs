@@ -26,13 +26,16 @@ const HEADER: usize = 72;
 const FRAME_OVERHEAD: usize = 112;
 const RECORD_DOMAIN_V1: &[u8] = b"hepta.run-start-record.v1";
 const RECORD_DOMAIN: &[u8] = b"hepta.run-start-record.v2";
+const RECORD_DOMAIN_V3: &[u8] = b"hepta.run-start-record.v3";
 const CONFLICT_RECORD_DOMAIN: &[u8] = b"hepta.run-start-conflict.v1";
+const CONFLICT_RECORD_DOMAIN_V2: &[u8] = b"hepta.run-start-conflict.v2";
+const MAX_SIGNED_BODY_BYTES: usize = 48 * 1024;
 const CHAIN_DOMAIN: &[u8] = b"hepta.run-start-chain.v1";
 const MAX_RECORDS: usize = 4096;
 const MAX_OBJECTIVE_SEMANTIC_BYTES: usize = 256 * 1024;
 const MAX_OBJECTIVE_PROTOCOL_BYTES: usize = 256 * 1024;
 const MAX_RUN_START_PAYLOAD_BYTES: usize =
-    MAX_OBJECTIVE_SEMANTIC_BYTES + MAX_OBJECTIVE_PROTOCOL_BYTES + 4096;
+    MAX_OBJECTIVE_SEMANTIC_BYTES + MAX_OBJECTIVE_PROTOCOL_BYTES + MAX_SIGNED_BODY_BYTES + 4096;
 const MAX_FILE_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -61,6 +64,9 @@ pub struct RunStartAuthenticationV1 {
     pub expires_at_ms: u64,
     pub scope_digest: Digest32,
     pub signed_body_digest: Digest32,
+    /// Exact canonical bytes authenticated at ingress. Empty only for historical
+    /// records; the product must not reconstruct missing signed input on replay.
+    pub signed_body_bytes: Vec<u8>,
     pub signature: [u8; 64],
 }
 
@@ -539,6 +545,7 @@ fn validate_record_compat(
     record: &RunStartRecordV1,
     require_protocol: bool,
 ) -> Result<(), RunStartStoreError> {
+    validate_signed_body(&record.authentication)?;
     if record.authentication.key_epoch == 0
         || record.authentication.sequence == 0
         || record.authentication.expires_at_ms == 0
@@ -615,6 +622,7 @@ fn validate_record_compat(
 }
 
 fn validate_conflict_record(record: &RunStartConflictRecordV1) -> Result<(), RunStartStoreError> {
+    validate_signed_body(&record.authentication)?;
     if record.authentication.key_epoch == 0
         || record.authentication.sequence == 0
         || record.authentication.expires_at_ms == 0
@@ -664,9 +672,25 @@ fn validate_conflict_record(record: &RunStartConflictRecordV1) -> Result<(), Run
     Ok(())
 }
 
+fn validate_signed_body(auth: &RunStartAuthenticationV1) -> Result<(), RunStartStoreError> {
+    if auth.signed_body_bytes.len() > MAX_SIGNED_BODY_BYTES {
+        return Err(RunStartStoreError::InvalidSnapshot("signedBodyBytes"));
+    }
+    if !auth.signed_body_bytes.is_empty()
+        && Digest32::of_bytes(&auth.signed_body_bytes) != auth.signed_body_digest
+    {
+        return Err(RunStartStoreError::InvalidSnapshot("signedBodyDigest"));
+    }
+    Ok(())
+}
+
 fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     let snapshot = &record.snapshot;
-    let mut bytes = RECORD_DOMAIN.to_vec();
+    let mut bytes = if record.authentication.signed_body_bytes.is_empty() {
+        RECORD_DOMAIN.to_vec()
+    } else {
+        RECORD_DOMAIN_V3.to_vec()
+    };
     push_id(&mut bytes, &record.authentication.issuer_id);
     push_u64(&mut bytes, record.authentication.key_epoch);
     push_id(&mut bytes, &record.authentication.message_id);
@@ -675,6 +699,10 @@ fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     push_digest(&mut bytes, record.authentication.scope_digest);
     push_digest(&mut bytes, record.authentication.signed_body_digest);
     bytes.extend_from_slice(&record.authentication.signature);
+    if !record.authentication.signed_body_bytes.is_empty() {
+        push_len(&mut bytes, record.authentication.signed_body_bytes.len());
+        bytes.extend_from_slice(&record.authentication.signed_body_bytes);
+    }
     push_id(&mut bytes, &record.admission.profile_id);
     push_u64(&mut bytes, record.admission.profile_revision);
     push_digest(&mut bytes, record.admission.profile_digest);
@@ -711,7 +739,11 @@ fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
 }
 
 fn encode_conflict_record(record: &RunStartConflictRecordV1) -> Vec<u8> {
-    let mut bytes = CONFLICT_RECORD_DOMAIN.to_vec();
+    let mut bytes = if record.authentication.signed_body_bytes.is_empty() {
+        CONFLICT_RECORD_DOMAIN.to_vec()
+    } else {
+        CONFLICT_RECORD_DOMAIN_V2.to_vec()
+    };
     push_id(&mut bytes, &record.authentication.issuer_id);
     push_u64(&mut bytes, record.authentication.key_epoch);
     push_id(&mut bytes, &record.authentication.message_id);
@@ -720,6 +752,10 @@ fn encode_conflict_record(record: &RunStartConflictRecordV1) -> Vec<u8> {
     push_digest(&mut bytes, record.authentication.scope_digest);
     push_digest(&mut bytes, record.authentication.signed_body_digest);
     bytes.extend_from_slice(&record.authentication.signature);
+    if !record.authentication.signed_body_bytes.is_empty() {
+        push_len(&mut bytes, record.authentication.signed_body_bytes.len());
+        bytes.extend_from_slice(&record.authentication.signed_body_bytes);
+    }
     push_id(&mut bytes, &record.admission.profile_id);
     push_u64(&mut bytes, record.admission.profile_revision);
     push_digest(&mut bytes, record.admission.profile_digest);
@@ -745,13 +781,16 @@ fn encode_outcome_record(record: &StoredRunStartRecord) -> Vec<u8> {
 }
 
 fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
-    let (input, require_protocol) = if let Some(value) = input.strip_prefix(RECORD_DOMAIN) {
-        (value, true)
-    } else if let Some(value) = input.strip_prefix(RECORD_DOMAIN_V1) {
-        (value, false)
-    } else {
-        return Err(RunStartStoreError::Corrupt);
-    };
+    let (input, require_protocol, require_signed_body) =
+        if let Some(value) = input.strip_prefix(RECORD_DOMAIN_V3) {
+            (value, true, true)
+        } else if let Some(value) = input.strip_prefix(RECORD_DOMAIN) {
+            (value, true, false)
+        } else if let Some(value) = input.strip_prefix(RECORD_DOMAIN_V1) {
+            (value, false, false)
+        } else {
+            return Err(RunStartStoreError::Corrupt);
+        };
     let mut reader = Reader(input);
     let authentication = RunStartAuthenticationV1 {
         issuer_id: reader.id()?,
@@ -765,6 +804,15 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
             .bytes(64)?
             .try_into()
             .map_err(|_| RunStartStoreError::Corrupt)?,
+        signed_body_bytes: if require_signed_body {
+            let length = reader.len()?;
+            if length == 0 || length > MAX_SIGNED_BODY_BYTES {
+                return Err(RunStartStoreError::Corrupt);
+            }
+            reader.bytes(length)?.to_vec()
+        } else {
+            Vec::new()
+        },
     };
     let admission = RunStartAdmissionBindingV1 {
         profile_id: reader.id()?,
@@ -829,9 +877,14 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
 }
 
 fn decode_conflict_record(input: &[u8]) -> Result<RunStartConflictRecordV1, RunStartStoreError> {
-    let input = input
-        .strip_prefix(CONFLICT_RECORD_DOMAIN)
-        .ok_or(RunStartStoreError::Corrupt)?;
+    let (input, require_signed_body) =
+        if let Some(value) = input.strip_prefix(CONFLICT_RECORD_DOMAIN_V2) {
+            (value, true)
+        } else if let Some(value) = input.strip_prefix(CONFLICT_RECORD_DOMAIN) {
+            (value, false)
+        } else {
+            return Err(RunStartStoreError::Corrupt);
+        };
     let mut reader = Reader(input);
     let authentication = RunStartAuthenticationV1 {
         issuer_id: reader.id()?,
@@ -845,6 +898,15 @@ fn decode_conflict_record(input: &[u8]) -> Result<RunStartConflictRecordV1, RunS
             .bytes(64)?
             .try_into()
             .map_err(|_| RunStartStoreError::Corrupt)?,
+        signed_body_bytes: if require_signed_body {
+            let length = reader.len()?;
+            if length == 0 || length > MAX_SIGNED_BODY_BYTES {
+                return Err(RunStartStoreError::Corrupt);
+            }
+            reader.bytes(length)?.to_vec()
+        } else {
+            Vec::new()
+        },
     };
     let admission = RunStartAdmissionBindingV1 {
         profile_id: reader.id()?,
@@ -878,10 +940,13 @@ fn decode_conflict_record(input: &[u8]) -> Result<RunStartConflictRecordV1, RunS
 }
 
 fn decode_outcome_record(input: &[u8]) -> Result<StoredRunStartRecord, RunStartStoreError> {
-    if input.starts_with(RECORD_DOMAIN) || input.starts_with(RECORD_DOMAIN_V1) {
+    if input.starts_with(RECORD_DOMAIN_V3)
+        || input.starts_with(RECORD_DOMAIN)
+        || input.starts_with(RECORD_DOMAIN_V1)
+    {
         return decode_record(input).map(|record| StoredRunStartRecord::Run(Box::new(record)));
     }
-    if input.starts_with(CONFLICT_RECORD_DOMAIN) {
+    if input.starts_with(CONFLICT_RECORD_DOMAIN_V2) || input.starts_with(CONFLICT_RECORD_DOMAIN) {
         return decode_conflict_record(input)
             .map(|record| StoredRunStartRecord::Conflict(Box::new(record)));
     }

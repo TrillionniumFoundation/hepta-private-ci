@@ -246,6 +246,7 @@ fn context(
 fn bindings(run: &str, expected: Digest32) -> ObjectiveRunBindingsV1 {
     ObjectiveRunBindingsV1 {
         authentication: RunStartAuthenticationV1 {
+            signed_body_bytes: Vec::new(),
             issuer_id: id("issuer.objective"),
             key_epoch: 3,
             message_id: id(&format!("message.{run}")),
