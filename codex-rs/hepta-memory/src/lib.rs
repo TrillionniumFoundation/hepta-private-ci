@@ -39,6 +39,11 @@ mod production_writer;
 mod recall;
 mod shadow_advisory;
 mod shadow_model_runtime;
+mod shared_experience;
+
+pub use shared_experience::SharedExperienceGrantV1;
+pub use shared_experience::SharedExperiencePurposeV1;
+pub use shared_experience::SharedExperienceUseV1;
 
 pub use lane_c_snapshot::CognitiveOwnerFrontiers;
 pub use lane_c_snapshot::DURABLE_SQLITE_MEMORY_KIND;
