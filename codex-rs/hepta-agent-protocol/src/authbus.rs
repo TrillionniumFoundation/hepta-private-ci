@@ -42,6 +42,17 @@ pub struct AuthBusObjectiveBody {
     pub authority_epoch: u64,
 }
 
+impl AuthBusObjectiveBody {
+    /// Maximum decoded UTF-8 source document accepted by the normal daemon
+    /// product route. The generic compiler may support larger offline inputs;
+    /// those are not valid Agentd control-frame inputs.
+    pub const MAX_SOURCE_ENVELOPE_JSON_BYTES: usize = 32 * 1024;
+
+    /// Maximum canonical JSON size of this signed body before outer ingress
+    /// metadata and control-frame framing are added.
+    pub const MAX_CANONICAL_BODY_JSON_BYTES: usize = 48 * 1024;
+}
+
 /// Signed objective ingress. The signature covers the body plus the
 /// host-derived owner and objective route; it carries no effect authority.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
