@@ -97,7 +97,6 @@ pub trait ContextProviderDeliveryVerifierV2 {
     /// Authenticate provider-owned attempt evidence against this exact
     /// pre-dispatch preparation. The provider witness remains provider-owned;
     /// context.compiler does not reinterpret it as a raw preparation digest.
-
     fn verify_delivery(
         &self,
         receipt: &ProviderInvocationReceipt,
@@ -1992,6 +1991,10 @@ impl ContextDeliveryReceiptV2 {
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the public delivery receipt binds eight independently authenticated inputs"
+)]
 pub fn observe_delivery(
     preparation: &ContextDeliveryPreparationV2,
     attachment: &ContextAttachmentV2,
