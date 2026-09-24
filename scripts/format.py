@@ -133,13 +133,26 @@ def python_scripts_formatter_group(*, check: bool) -> FormatterGroup:
     return FormatterGroup("Python scripts", (Command(tuple(args)),))
 
 
-def formatter_groups(*, check: bool) -> tuple[FormatterGroup, ...]:
-    return (
-        just_formatter_group(check=check),
-        rust_formatter_group(check=check),
-        buildifier_formatter_group(check=check),
-        python_sdk_formatter_group(check=check),
-        python_scripts_formatter_group(check=check),
+FORMATTER_SCOPES = ("just", "rust", "bazel", "python-sdk", "python-scripts")
+
+
+def formatter_groups(
+    *, check: bool, only: list[str] | None = None
+) -> tuple[FormatterGroup, ...]:
+    factories = {
+        "just": just_formatter_group,
+        "rust": rust_formatter_group,
+        "bazel": buildifier_formatter_group,
+        "python-sdk": python_sdk_formatter_group,
+        "python-scripts": python_scripts_formatter_group,
+    }
+    selected = set(factories) if only is None else set(only)
+    if not selected or selected - factories.keys():
+        raise ValueError("formatter scope must name at least one known group")
+    # Do not even construct unrelated groups: a local Rust edit must not resolve
+    # SDK tooling or enumerate Bazel inputs. Without a selector, retain full CI.
+    return tuple(
+        factory(check=check) for key, factory in factories.items() if key in selected
     )
 
 
@@ -175,8 +188,19 @@ def main() -> int:
         action="store_true",
         help="check formatting without modifying files",
     )
+    parser.add_argument(
+        "--only",
+        action="append",
+        choices=FORMATTER_SCOPES,
+        help="explicit local formatter group; repeat for several groups (default: all)",
+    )
     args = parser.parse_args()
-    groups = formatter_groups(check=args.check)
+    groups = formatter_groups(check=args.check, only=args.only)
+    if args.only is not None:
+        print(
+            "Selected formatter groups only (not full-repository validation): "
+            + ", ".join(dict.fromkeys(args.only))
+        )
 
     failures: list[str] = []
     with ThreadPoolExecutor(max_workers=len(groups)) as executor:

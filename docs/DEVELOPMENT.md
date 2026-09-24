@@ -49,6 +49,12 @@ be added to an ordinary source-only change just to satisfy a document gate.
 Path-filtered CI selects the qualification checks from the changed boundary;
 it does not use a global checklist as a proxy for evidence.
 
+For a local Rust/scripts change, `just fmt --only rust --only python-scripts`
+runs those existing formatter groups without downloading Python SDK tooling.
+The command explicitly reports its limited scope. Unscoped `just fmt` and
+`just fmt-check` retain all formatter groups for repository-wide review/CI;
+a local scoped pass is never a replacement for an applicable full check.
+
 Ordinary authorized development has no hard changed-path quota. Work packages
 are bounded by semantic scope, ownership, authority change, durable-domain
 impact and required tests. A coherent cross-owner change may be reviewed in one
