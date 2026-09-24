@@ -2300,3 +2300,113 @@ fn finish_release_drain(
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
+
+// Real release installation, process-lease recovery and the shared on-disk
+// restart codec; FakeDriver supplies observations, never storage state.
+fn recovered_companion_budget_case(
+    attempts: u32,
+    future_clock: bool,
+) -> Result<(), SupervisorError> {
+    use crate::restart_journal::DurableRestartWindow;
+    use crate::restart_journal::RestartBudgetJournal;
+    use crate::restart_journal::read_main_restart_budget;
+    use crate::restart_journal::unix_millis_now;
+    use crate::restart_journal::write_restart_journal;
+
+    let fleet = TestFleet::new()?;
+    let release_id = ReleaseId::parse("recovered-companion-v1")?;
+    let source = fleet.write_release_source()?;
+    fleet.registry.install_release_bundle(
+        release_id.clone(),
+        &source,
+        Vec::new(),
+        Some(&source),
+        Vec::new(),
+    )?;
+    fleet.registry.allow_release(&fleet.first, &release_id)?;
+    write_matrix_binding(&fleet.registry, &fleet.first, 1)?;
+    let release =
+        AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &release_id)?)?;
+    let now = Instant::now();
+    let control = FakeControl::default();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start_release(&fleet.first, release, now)?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("agent");
+    crate::restart_budget::claim_restart(
+        record.layout.run_root(),
+        3,
+        Duration::from_secs(60),
+        Duration::from_millis(1),
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let main_before = read_main_restart_budget(record.layout.run_root())?;
+    let wall = unix_millis_now()? + if future_clock { 60_000 } else { 0 };
+    let journal = RestartBudgetJournal::new(
+        fleet.first.clone(),
+        release_id,
+        DurableRestartWindow::empty(),
+        DurableRestartWindow {
+            attempts,
+            window_started_unix_millis: Some(wall),
+        },
+    )?;
+    write_restart_journal(record.layout.run_root(), &journal)?;
+    drop(supervisor);
+
+    let expected_attempts = if future_clock { 3 } else { attempts };
+    // Repeated normal host recovery must neither replenish a companion budget
+    // nor overwrite the independently owned pending main restart.
+    for _ in 0..2 {
+        let (recovered, report) =
+            Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+        assert_eq!(report, TickReport::default());
+        let state = recovered.snapshot(&fleet.first).expect("recovered agent");
+        assert_eq!(state.matrix.restart_attempt, expected_attempts);
+        assert_eq!(state.restart_attempt, 1);
+        assert_eq!(
+            read_main_restart_budget(record.layout.run_root())?,
+            main_before
+        );
+        drop(recovered);
+    }
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    control.set_healthy(&fleet.first);
+    assert_eq!(recovered.tick(now), TickReport::default());
+    assert_eq!(
+        control.matrix_spawn_count(&fleet.first),
+        0,
+        "recovery must not bypass the companion fence/backoff"
+    );
+    assert_eq!(
+        recovered.tick(now + Duration::from_secs(2)),
+        TickReport::default()
+    );
+    assert_eq!(
+        control.matrix_spawn_count(&fleet.first),
+        usize::from(expected_attempts < 3)
+    );
+    Ok(())
+}
+
+#[test]
+fn recovered_companion_exhaustion_preserves_main_pending_restart() -> Result<(), SupervisorError> {
+    recovered_companion_budget_case(3, false)
+}
+
+#[test]
+fn recovered_companion_clock_rollback_cannot_replenish_attempts() -> Result<(), SupervisorError> {
+    recovered_companion_budget_case(1, true)
+}
+
+#[test]
+fn recovered_companion_retains_bounded_retry_delay() -> Result<(), SupervisorError> {
+    recovered_companion_budget_case(2, false)
+}

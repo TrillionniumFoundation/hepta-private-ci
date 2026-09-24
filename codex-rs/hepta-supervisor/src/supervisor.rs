@@ -87,6 +87,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
+                supervisor.restore_matrix_restart_budget(&agent_id, slot, &record, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
                 supervisor.recover_signed_intent(&agent_id, slot, &record)?;
                 Ok(process_fault)
