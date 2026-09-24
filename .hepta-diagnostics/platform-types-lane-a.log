@@ -1,0 +1,112 @@
+lane-a-foundation verification failed: kernel.authority: missing '.with_verified_use(' in codex-rs/hepta-fleet/src/authority_port.rs
+lane-a-foundation verification failed: kernel.authority: missing '.with_verified_use(' in codex-rs/hepta-fleet/src/authority_port.rs
+....FE.E.E......E.
+======================================================================
+ERROR: test_every_current_capability_has_one_evidence_mapping (qualification.module-execution-dossiers.test_lane_a_foundation.LaneAFoundationTruthTests.test_every_current_capability_has_one_evidence_mapping)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/test_lane_a_foundation.py", line 43, in test_every_current_capability_has_one_evidence_mapping
+    verify.validate_capability_map(self.matrix, self.capability_map)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 195, in validate_capability_map
+    validate_anchor(f"{capability_id}/{field}", anchor, root)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 113, in validate_anchor
+    raise VerificationError(
+lane_a_foundation_core.VerificationError: platform.types.canonical-v1.v1/negativeTests: missing 'rejection oracle accepted invalid case' in codex-rs/hepta-types/conformance/verify_rejections.py
+
+======================================================================
+ERROR: test_exact_repository_truth_is_valid (qualification.module-execution-dossiers.test_lane_a_foundation.LaneAFoundationTruthTests.test_exact_repository_truth_is_valid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/test_lane_a_foundation.py", line 28, in test_exact_repository_truth_is_valid
+    verify.validate_matrix(self.matrix)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 100, in validate_matrix
+    validate_anchor(module, anchor, root)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 113, in validate_anchor
+    raise VerificationError(
+lane_a_foundation_core.VerificationError: kernel.authority: missing '.with_verified_use(' in codex-rs/hepta-fleet/src/authority_port.rs
+
+======================================================================
+ERROR: test_matrix_validation_is_order_independent (qualification.module-execution-dossiers.test_lane_a_foundation.LaneAFoundationTruthTests.test_matrix_validation_is_order_independent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/test_lane_a_foundation.py", line 40, in test_matrix_validation_is_order_independent
+    verify.validate_matrix(value)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 100, in validate_matrix
+    validate_anchor(module, anchor, root)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 113, in validate_anchor
+    raise VerificationError(
+lane_a_foundation_core.VerificationError: kernel.authority: missing '.with_verified_use(' in codex-rs/hepta-fleet/src/authority_port.rs
+
+======================================================================
+ERROR: test_source_receipt_preserves_scope_and_nonclaims (qualification.module-execution-dossiers.test_lane_a_foundation.LaneAFoundationTruthTests.test_source_receipt_preserves_scope_and_nonclaims)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/test_lane_a_foundation.py", line 138, in test_source_receipt_preserves_scope_and_nonclaims
+    verify.write_source_receipt(output, verify.git_value("rev-parse", "HEAD"))
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 249, in write_source_receipt
+    write_receipt(output, expected, native=False)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 183, in write_receipt
+    binding = validate_matrix(matrix)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 100, in validate_matrix
+    validate_anchor(module, anchor, root)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 113, in validate_anchor
+    raise VerificationError(
+lane_a_foundation_core.VerificationError: kernel.authority: missing '.with_verified_use(' in codex-rs/hepta-fleet/src/authority_port.rs
+
+======================================================================
+FAIL: test_current_protocol_registry_is_closed_world_and_non_authorizing (qualification.module-execution-dossiers.test_lane_a_foundation.LaneAFoundationTruthTests.test_current_protocol_registry_is_closed_world_and_non_authorizing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/test_lane_a_foundation.py", line 218, in test_current_protocol_registry_is_closed_world_and_non_authorizing
+    self.assertEqual(
+AssertionError: Lists differ: ['pla[75 chars]rnel.operations', 'kernel.evidence', 'auth.aut[21 chars]bao'] != ['pla[75 chars]rnel.evidence', 'auth.authbus', 'secrets.heptabao']
+
+First differing element 4:
+'kernel.operations'
+'kernel.evidence'
+
+First list contains 1 additional elements.
+First extra element 7:
+'secrets.heptabao'
+
+  ['platform.types',
+   'platform.wire',
+   'kernel.authority',
+   'kernel.operations',
+-  'kernel.operations',
+   'kernel.evidence',
+   'auth.authbus',
+   'secrets.heptabao']
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.054s
+
+FAILED (failures=1, errors=4)
+..................................E......................................
+======================================================================
+ERROR: test_native_binding_blobs_and_exports_bind_the_current_checkout (implementation_contract_tests_core.NativeBindingCoverageTests.test_native_binding_blobs_and_exports_bind_the_current_checkout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/implementation_contracts.py", line 308, in current_native_bindings
+    return observe_native_bindings(root, observations, [row['module'] for row in profiles['modules']])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/native_source_bindings.py", line 111, in observe_native_bindings
+    raise BindingError(
+native_source_bindings.BindingError: runtime.codex: missing native symbols in codex-rs/hepta-codex-adapter/src/lib.rs: ['AppServerObservation', 'adapt']
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/implementation_contract_tests_core.py", line 82, in test_native_binding_blobs_and_exports_bind_the_current_checkout
+    actual = c.current_native_bindings(c.ROOT)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/implementation_contracts.py", line 310, in current_native_bindings
+    raise Invalid(str(error)) from error
+implementation_contracts.Invalid: runtime.codex: missing native symbols in codex-rs/hepta-codex-adapter/src/lib.rs: ['AppServerObservation', 'adapt']
+
+----------------------------------------------------------------------
+Ran 73 tests in 0.277s
+
+FAILED (errors=1)
+FAIL_HEPTA_IMPLEMENTATION_MAPS: candidate checkout changed or is dirty; commit source before verification
