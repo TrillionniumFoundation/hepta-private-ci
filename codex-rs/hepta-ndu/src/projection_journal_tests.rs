@@ -31,7 +31,7 @@ fn projection_journal_round_trips_and_restores_selection() {
         subject,
         projection,
     ));
-    must(journal.select_projection(
+    must(journal.select_projection_if_current(
         digest("selection-identity"),
         objective,
         subject,
@@ -107,7 +107,7 @@ fn stale_selection_cannot_replace_newer_selection() {
         subject,
         projection_b,
     ));
-    must(journal.select_projection(
+    must(journal.select_projection_if_current(
         digest("selection-a"),
         objective,
         subject,
@@ -117,7 +117,7 @@ fn stale_selection_cannot_replace_newer_selection() {
 
     assert_eq!(
         journal
-            .select_projection(
+            .select_projection_if_current(
                 digest("stale-selection-b"),
                 objective,
                 subject,
@@ -128,14 +128,14 @@ fn stale_selection_cannot_replace_newer_selection() {
         NduProjectionJournalError::SelectionPredecessorMismatch
     );
 
-    let selected_b = must(journal.select_projection(
+    let selected_b = must(journal.select_projection_if_current(
         digest("selection-b"),
         objective,
         subject,
         Some(projection_a),
         projection_b,
     ));
-    let replay = must(journal.select_projection(
+    let replay = must(journal.select_projection_if_current(
         digest("selection-b"),
         objective,
         subject,
@@ -162,7 +162,7 @@ fn revocation_prevents_projection_resurrection() {
         subject,
         projection,
     ));
-    must(journal.select_projection(
+    must(journal.select_projection_if_current(
         digest("selection-identity"),
         objective,
         subject,
@@ -178,7 +178,7 @@ fn revocation_prevents_projection_resurrection() {
     assert_eq!(journal.selected_projection_digest(objective, subject), None);
     assert_eq!(
         journal
-            .select_projection(
+            .select_projection_if_current(
                 digest("second-selection"),
                 objective,
                 subject,
@@ -214,7 +214,7 @@ fn revocation_is_scoped_to_objective_and_subject() {
         projection,
     ));
     must(journal.revoke_projection(digest("revoke-a"), objective_a, subject_a, projection));
-    must(journal.select_projection(
+    must(journal.select_projection_if_current(
         digest("select-b"),
         objective_b,
         subject_b,
