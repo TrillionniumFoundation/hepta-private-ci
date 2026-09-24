@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "edb54393d4acd76e4f810e8c84f6cc96b6c61fc9",
+    "tree": "05dbb4f2c19360880f95f8dffca194bd0a6ee6a2"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
@@ -14,7 +14,7 @@
   "resolvedRoots": [
     "apps/hepta-native"
   ],
-  "stateOwnerDisposition": "Owns shell/window/session state and opaque platform references; domain facts and secrets remain with their owners.",
+  "stateOwnerDisposition": "Rust shell owns its bounded local operation journal; kernel.authority retains final-use authority. Local persistence is not domain-write authority.",
   "terminalObserverDisposition": "The backend, platform permission adapter, and updater each supply their own observations; the shell cannot self-issue success.",
   "operations": [
     {
@@ -22,22 +22,22 @@
       "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "apps/hepta-native/src/shell-runtime.js",
-        "symbol": "async connectRuntime(",
+        "path": "apps/hepta-native/src/runtime.rs",
+        "symbol": "pub fn connect_runtime(",
         "buildTarget": "hepta-native"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "apps/hepta-native/test/shell-runtime.test.js",
-          "kind": "node_product_boundary",
-          "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
+          "path": "apps/hepta-native/tests/runtime.rs",
+          "kind": "rust_integration",
+          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Authenticates endpoint manifest, protocol version, session identity, and process generation.",
       "operation": "connect_runtime",
-      "nativeSymbol": "async connectRuntime(",
-      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "nativeSymbol": "pub fn connect_runtime(",
+      "sourcePath": "apps/hepta-native/src/runtime.rs",
       "sourcePathExists": true
     },
     {
@@ -45,22 +45,22 @@
       "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "apps/hepta-native/src/shell-runtime.js",
-        "symbol": "renderRuntimeView(",
+        "path": "apps/hepta-native/src/runtime.rs",
+        "symbol": "pub fn refresh_runtime_view(",
         "buildTarget": "hepta-native"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "apps/hepta-native/test/shell-runtime.test.js",
-          "kind": "node_product_boundary",
-          "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
+          "path": "apps/hepta-native/tests/backend.rs",
+          "kind": "rust_integration",
+          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Rejects mixed/regressed view generations and exposes one coherent presentation state.",
       "operation": "render_runtime_view",
-      "nativeSymbol": "renderRuntimeView(",
-      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "nativeSymbol": "pub fn refresh_runtime_view(",
+      "sourcePath": "apps/hepta-native/src/runtime.rs",
       "sourcePathExists": true
     },
     {
@@ -68,22 +68,22 @@
       "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "apps/hepta-native/src/shell-runtime.js",
-        "symbol": "async requestPlatformCapability(",
+        "path": "apps/hepta-native/src/runtime.rs",
+        "symbol": "pub fn request_platform_capability(",
         "buildTarget": "hepta-native"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "apps/hepta-native/test/shell-runtime.test.js",
-          "kind": "node_product_boundary",
-          "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
+          "path": "apps/hepta-native/tests/runtime.rs",
+          "kind": "rust_integration",
+          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Requires both platform permission and final-payload-bound operation identity before invoking a narrow OS adapter.",
       "operation": "request_platform_capability",
-      "nativeSymbol": "async requestPlatformCapability(",
-      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "nativeSymbol": "pub fn request_platform_capability(",
+      "sourcePath": "apps/hepta-native/src/runtime.rs",
       "sourcePathExists": true
     },
     {
@@ -91,36 +91,41 @@
       "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "apps/hepta-native/src/shell-runtime.js",
-        "symbol": "async applyShellUpdate(",
+        "path": "apps/hepta-native/src/updater.rs",
+        "symbol": "pub fn verify_and_stage(",
         "buildTarget": "hepta-native"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "apps/hepta-native/test/shell-runtime.test.js",
-          "kind": "node_product_boundary",
-          "command": "node --test apps/hepta-native/test/shell-runtime.test.js"
+          "path": "apps/hepta-native/tests/security_updater.rs",
+          "kind": "rust_integration",
+          "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"
         }
       ],
       "sourceSemantics": "Requires independent selection, signature/compatibility verification, explicit restart, and predecessor rollback on uncertain update.",
       "operation": "apply_shell_update",
-      "nativeSymbol": "async applyShellUpdate(",
-      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "nativeSymbol": "pub fn verify_and_stage(",
+      "sourcePath": "apps/hepta-native/src/updater.rs",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Current main gateway authentication is not yet composed with the restored native backend.",
+    "Current kernel authority store does not establish non-Unix durable final-use qualification.",
+    "Strict exact-head and merge tests require actual execution on the committed locked candidate.",
+    "Bounded OS launcher waits, UI thread responsiveness, and durable retirement remain unqualified.",
+    "Physical package, accessibility, IME, multi-monitor DPI and performance acceptance remain unproved."
+  ],
   "externalEvidenceGates": [
-    "selected native framework and supported platform matrix",
-    "real code signing/notarization/keychain and updater trust roots",
-    "packaged crash/restart/accessibility/update rollback qualification"
+    "Independent platform signing/notarization and release-channel custody.",
+    "Independent physical target-host and operator acceptance."
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
