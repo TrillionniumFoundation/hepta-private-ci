@@ -550,7 +550,7 @@ proposal
 → rollback-capable selection
 ```
 
-Hepta may self-generate, self-test, self-evaluate, self-diagnose and self-propose. It may not self-authorize, self-review, self-select, self-merge, self-accept, self-promote or self-release.
+Hepta may self-generate, self-test, self-diagnose and self-propose. Internal candidate evaluation is diagnostic only; it cannot supply the independent evaluation or acceptance of that same candidate. The independent-evaluation boundary is the adaptive-module invariant in `docs/architecture/ARCHITECTURE.json`. Hepta may not self-authorize, self-review, self-select, self-merge, self-accept, self-promote or self-release.
 
 ## 17. Runtime and Engineering Control Planes
 
