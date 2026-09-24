@@ -26,6 +26,13 @@ use codex_hepta_learning_ledger::OutcomeObservation;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_types::FixedQ32;
 
+#[path = "intelligence_evaluation.rs"]
+mod evaluation;
+pub use evaluation::AgentdEvaluationBindingV1;
+pub use evaluation::AgentdIntelligenceEvaluationError;
+pub use evaluation::AgentdSignedEvaluationV1;
+pub use evaluation::intelligence_evaluation_binding_payload_v1;
+
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
@@ -710,3 +717,7 @@ impl StdError for AgentdIntelligenceLedgerError {}
 #[cfg(test)]
 #[path = "intelligence_product_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "intelligence_evaluation_tests.rs"]
+mod evaluation_tests;
