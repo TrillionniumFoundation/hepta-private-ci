@@ -202,13 +202,23 @@
     },
     {
       "sourcePath": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
-      "nativeSymbol": "retrieve_product_federated/revalidate_product_federated_batch",
-      "state": "active_owner_generation_bound_bounded_product_orchestrator"
+      "nativeSymbol": "retrieve_product_federated",
+      "state": "active_owner_generation_bound_bounded_product_retrieval"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "nativeSymbol": "revalidate_product_federated_batch",
+      "state": "active_owner_generation_bound_batch_final_use_revalidation"
     },
     {
       "sourcePath": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-      "nativeSymbol": "CombinedCognitiveEphemeralContributor/FederatedFinalUseGuard",
+      "nativeSymbol": "CombinedCognitiveEphemeralContributor",
       "state": "final_use_revalidated_local_owner_federation"
+    },
+    {
+      "sourcePath": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "nativeSymbol": "FederatedFinalUseGuard",
+      "state": "physical_send_currentness_guard"
     }
   ],
   "sourceObjects": [
