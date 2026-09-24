@@ -205,6 +205,57 @@ impl LocalLeaseState {
     }
 }
 
+/// One fixed same-generation transition; callers cannot independently mix a
+/// journal kind, target state and replay policy. Wire strings remain unchanged.
+#[derive(Clone, Copy)]
+enum LocalOutcomeTransition {
+    Indeterminate,
+    DispatchClaim,
+    Committed,
+    Rejected,
+    RolledBack,
+}
+
+impl LocalOutcomeTransition {
+    fn spec(
+        self,
+    ) -> (
+        &'static str,
+        &'static [LocalOutcomeState],
+        LocalOutcomeState,
+        bool,
+    ) {
+        use LocalOutcomeState as S;
+        match self {
+            Self::Indeterminate => (
+                "indeterminate",
+                &[S::Queued, S::Indeterminate],
+                S::Indeterminate,
+                true,
+            ),
+            Self::DispatchClaim => ("indeterminate", &[S::Queued], S::Indeterminate, false),
+            Self::Committed => (
+                "reconcile_committed",
+                &[S::Queued, S::Indeterminate],
+                S::Committed,
+                true,
+            ),
+            Self::Rejected => (
+                "reconcile_rejected",
+                &[S::Queued, S::Indeterminate],
+                S::Rejected,
+                true,
+            ),
+            Self::RolledBack => (
+                "rolled_back",
+                &[S::Queued, S::Indeterminate, S::RolledBack],
+                S::RolledBack,
+                true,
+            ),
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct LocalLease {
     pub lease_id: String,
@@ -1709,10 +1760,8 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         self.append_outcome(
             occurrence_key.into(),
-            "indeterminate",
             reason.into(),
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Indeterminate,
+            LocalOutcomeTransition::Indeterminate,
         )
         .await
     }
@@ -1816,13 +1865,10 @@ impl LocalLeaseOutbox {
         let occurrence_key = occurrence_key.into();
         self.verify_dispatch_operation_binding(&occurrence_key, grant_digest, operation_digest)
             .await?;
-        self.append_outcome_with_replay_policy(
+        self.append_outcome(
             occurrence_key,
-            "indeterminate",
             format!("dispatch_started_pending_ack:{}", operation_digest.as_str()),
-            &[LocalOutcomeState::Queued],
-            LocalOutcomeState::Indeterminate,
-            /*allow_exact_replay*/ false,
+            LocalOutcomeTransition::DispatchClaim,
         )
         .await
     }
@@ -2227,10 +2273,8 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         self.append_outcome(
             occurrence_key.into(),
-            "reconcile_committed",
             receipt.into(),
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
+            LocalOutcomeTransition::Committed,
         )
         .await
     }
@@ -2245,10 +2289,8 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         self.append_outcome(
             occurrence_key.into(),
-            "reconcile_rejected",
             reason.into(),
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Rejected,
+            LocalOutcomeTransition::Rejected,
         )
         .await
     }
@@ -2529,14 +2571,8 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         self.append_outcome(
             occurrence_key.into(),
-            "rolled_back",
             reason.into(),
-            &[
-                LocalOutcomeState::Queued,
-                LocalOutcomeState::Indeterminate,
-                LocalOutcomeState::RolledBack,
-            ],
-            LocalOutcomeState::RolledBack,
+            LocalOutcomeTransition::RolledBack,
         )
         .await
     }
@@ -2544,30 +2580,8 @@ impl LocalLeaseOutbox {
     async fn append_outcome(
         &self,
         occurrence_key: String,
-        kind: &str,
         payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        self.append_outcome_with_replay_policy(
-            occurrence_key,
-            kind,
-            payload,
-            allowed,
-            resulting_state,
-            /*allow_exact_replay*/ true,
-        )
-        .await
-    }
-
-    async fn append_outcome_with_replay_policy(
-        &self,
-        occurrence_key: String,
-        kind: &str,
-        payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        transition: LocalOutcomeTransition,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         let mut transaction = self
             .store
@@ -2576,15 +2590,7 @@ impl LocalLeaseOutbox {
             .await
             .map_err(crate::cognitive_store::unavailable)?;
         let outcome = self
-            .append_outcome_in_transaction(
-                &mut transaction,
-                occurrence_key,
-                kind,
-                payload,
-                allowed,
-                resulting_state,
-                allow_exact_replay,
-            )
+            .append_outcome_in_transaction(&mut transaction, occurrence_key, payload, transition)
             .await?;
         transaction
             .commit()
@@ -2606,11 +2612,8 @@ impl LocalLeaseOutbox {
         self.append_outcome_in_transaction(
             transaction,
             occurrence_key,
-            "reconcile_committed",
             receipt,
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
-            /*allow_exact_replay*/ true,
+            LocalOutcomeTransition::Committed,
         )
         .await
     }
@@ -2619,12 +2622,10 @@ impl LocalLeaseOutbox {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         occurrence_key: String,
-        kind: &str,
         payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        transition: LocalOutcomeTransition,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        let (kind, allowed, resulting_state, allow_exact_replay) = transition.spec();
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());

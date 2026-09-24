@@ -1608,8 +1608,10 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .correct_with_kg_tx(
                     &mut transaction,
                     access,
-                    memory_id,
-                    expected_revision,
+                    &crate::MemoryRevisionId {
+                        memory_id: memory_id.clone(),
+                        revision: expected_revision,
+                    },
                     source,
                     draft,
                     facts,
