@@ -7,6 +7,7 @@ use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::ContributionSet;
@@ -41,6 +42,34 @@ pub struct NduProductionPolicyV1 {
     pub scalarization: Option<ScalarizationProfile>,
 }
 
+/// Evaluation evidence created inside the authenticated owner from its frozen
+/// policy and owner context. Fields are private so a caller cannot take an
+/// authority-free evaluation and attach a claimed host/fence/frontier after the
+/// numerical decision has already been made.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NduAuthenticatedEvaluationReceiptV1 {
+    evaluation: NduEvaluationReceiptV2,
+    source_context_digest: Digest32,
+    receipt_digest: Digest32,
+}
+
+impl NduAuthenticatedEvaluationReceiptV1 {
+    #[must_use]
+    pub const fn evaluation(&self) -> &NduEvaluationReceiptV2 {
+        &self.evaluation
+    }
+
+    #[must_use]
+    pub const fn source_context_digest(&self) -> Digest32 {
+        self.source_context_digest
+    }
+
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NduOwnerMutationV1 {
     AppendProjection {
@@ -54,6 +83,7 @@ pub enum NduOwnerMutationV1 {
         identity_digest: Digest32,
         objective_digest: Digest32,
         subject_digest: Digest32,
+        expected_predecessor: Option<Digest32>,
         projection_digest: Digest32,
     },
     RevokeProjection {
@@ -112,6 +142,16 @@ impl NduOwnerMutationV1 {
             | Self::RevokeProjection {
                 projection_digest, ..
             } => *projection_digest,
+        }
+    }
+
+    fn expected_predecessor(&self) -> Option<Digest32> {
+        match self {
+            Self::SelectProjection {
+                expected_predecessor,
+                ..
+            } => *expected_predecessor,
+            Self::AppendProjection { .. } | Self::RevokeProjection { .. } => None,
         }
     }
 
@@ -204,14 +244,30 @@ impl NduAuthenticatedOwnerV1 {
     pub fn evaluate(
         &self,
         contributions: ContributionSet,
-    ) -> Result<NduEvaluationReceiptV2, NduOwnerError> {
-        evaluate_candidates_with_policy(
+    ) -> Result<NduAuthenticatedEvaluationReceiptV1, NduOwnerError> {
+        let objective_digest = contributions.objective_digest;
+        let generation = contributions.generation;
+        let evaluation = evaluate_candidates_with_policy(
             contributions,
             self.policy.utility_profile.clone(),
             self.policy.scalarization.clone(),
             self.policy.evaluation_policy.clone(),
-        )
-        .map_err(NduOwnerError::Ndu)
+        )?;
+        let source_context_digest = evaluation_source_context_digest(
+            &self.context,
+            self.production_policy_digest,
+            objective_digest,
+            generation,
+        );
+        let receipt_digest = authenticated_evaluation_receipt_digest(
+            source_context_digest,
+            &evaluation,
+        );
+        Ok(NduAuthenticatedEvaluationReceiptV1 {
+            evaluation,
+            source_context_digest,
+            receipt_digest,
+        })
     }
 
     pub fn final_use_binding(
@@ -226,6 +282,11 @@ impl NduAuthenticatedOwnerV1 {
         ] {
             if digest.is_zero() {
                 return Err(NduOwnerError::InvalidContext(name));
+            }
+        }
+        if let Some(expected_predecessor) = mutation.expected_predecessor() {
+            if expected_predecessor.is_zero() {
+                return Err(NduOwnerError::InvalidContext("selection predecessor"));
             }
         }
 
@@ -273,11 +334,13 @@ impl NduAuthenticatedOwnerV1 {
                     identity_digest,
                     objective_digest,
                     subject_digest,
+                    expected_predecessor,
                     projection_digest,
                 } => self.store.select_projection(
                     identity_digest,
                     objective_digest,
                     subject_digest,
+                    expected_predecessor,
                     projection_digest,
                 ),
                 NduOwnerMutationV1::RevokeProjection {
@@ -346,6 +409,36 @@ fn production_policy_digest(policy: &NduProductionPolicyV1) -> Result<Digest32, 
     Ok(Digest32::of_bytes(&bytes))
 }
 
+fn evaluation_source_context_digest(
+    context: &NduOwnerContextV1,
+    production_policy_digest: Digest32,
+    objective_digest: Digest32,
+    generation: Generation,
+) -> Digest32 {
+    let mut bytes = b"hepta.ndu.authenticated-evaluation-context.v1\0".to_vec();
+    push_id(&mut bytes, &context.principal_id);
+    push_id(&mut bytes, &context.owner_id);
+    bytes.extend_from_slice(&context.host_generation.to_be_bytes());
+    bytes.extend_from_slice(context.principal_scope_digest.as_array());
+    bytes.extend_from_slice(context.fence_digest.as_array());
+    bytes.extend_from_slice(context.revocation_frontier_digest.as_array());
+    bytes.extend_from_slice(production_policy_digest.as_array());
+    bytes.extend_from_slice(objective_digest.as_array());
+    bytes.extend_from_slice(&generation.get().to_be_bytes());
+    Digest32::of_bytes(&bytes)
+}
+
+fn authenticated_evaluation_receipt_digest(
+    source_context_digest: Digest32,
+    evaluation: &NduEvaluationReceiptV2,
+) -> Digest32 {
+    let mut bytes = b"hepta.ndu.authenticated-evaluation-receipt.v1\0".to_vec();
+    bytes.extend_from_slice(source_context_digest.as_array());
+    bytes.extend_from_slice(evaluation.evaluation_policy_digest.as_array());
+    bytes.extend_from_slice(evaluation.evaluation_digest_v2.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
 fn owner_scope_digest(
     context: &NduOwnerContextV1,
     production_policy_digest: Digest32,
@@ -384,6 +477,13 @@ fn mutation_payload_digest(
     bytes.extend_from_slice(mutation.identity_digest().as_array());
     bytes.extend_from_slice(mutation.objective_digest().as_array());
     bytes.extend_from_slice(mutation.subject_digest().as_array());
+    match mutation.expected_predecessor() {
+        Some(expected_predecessor) => {
+            bytes.push(1);
+            bytes.extend_from_slice(expected_predecessor.as_array());
+        }
+        None => bytes.push(0),
+    }
     bytes.extend_from_slice(mutation.projection_digest().as_array());
     bytes.extend_from_slice(production_policy_digest.as_array());
     Digest32::of_bytes(&bytes)
