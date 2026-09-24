@@ -95,11 +95,15 @@ max-threads = 1
 [[profile.default.overrides]]
 filter = 'package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)'
 test-group = 'hepta_durable_capacity'
+# Real fsync history must not compete with other tests in the same run.
+threads-required = "num-test-threads"
 slow-timeout = { period = "30s", terminate-after = 6 }
 
 [[profile.default.overrides]]
 filter = 'package(codex-hepta-learning-ledger) & test(signed_product_history_curve_append_lookup_reopen_and_exact_retry)'
 test-group = 'hepta_durable_capacity'
+# Real fsync history must not compete with other tests in the same run.
+threads-required = "num-test-threads"
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
 
@@ -109,5 +113,15 @@ retries = 0
 # measurement watchdog, not a latency acceptance SLO or a compaction claim.
 filter = 'package(codex-hepta-infer-core) & test(history_growth_emits_update_recovery_memory_and_disk_curve)'
 test-group = 'hepta_durable_capacity'
+# Real fsync history must not compete with other tests in the same run.
+threads-required = "num-test-threads"
 slow-timeout = { period = "30s", terminate-after = 10 }
+retries = 0
+
+[[profile.default.overrides]]
+# This test measures cancellation after a real durable queue admission. Preserve
+# its two-second admission/drain assertions; reserve the run's slots rather than
+# inflating those assertions or retrying failures under competing fsync workloads.
+filter = 'package(codex-hepta-agentd) & test(cancellation_preserves_in_flight_queue_ack_before_scheduler_exit)'
+threads-required = "num-test-threads"
 retries = 0
