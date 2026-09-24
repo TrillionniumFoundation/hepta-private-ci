@@ -77,7 +77,9 @@
       "authority": "externally_verified",
       "tests": [
         "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
-        "codex-rs/state/src/sqlite_recovery_tests.rs"
+        "codex-rs/state/src/sqlite_recovery_tests.rs",
+        "codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs::missing_quota_head_is_rejected_on_reopen_even_with_intact_schema",
+        "codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs::v15_upgrade_backfills_all_retained_heads_before_serving"
       ],
       "sourcePathExists": true,
       "designOperation": "open_with_recovery",
@@ -178,7 +180,13 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "codex-rs/hepta-memory/src/shared_experience_tests.rs::last_active_revision_can_be_revoked_and_stays_revoked_after_restart"
+        "codex-rs/hepta-memory/src/shared_experience_tests.rs::last_active_revision_can_be_revoked_and_stays_revoked_after_restart",
+        "codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs::revoked_history_releases_capacity_without_erasing_predecessors_after_reopen",
+        "codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs::full_active_quota_rejects_new_and_expired_reactivation_but_allows_renewal_and_revoke",
+        "codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs::expired_history_does_not_exhaust_new_identity_admission",
+        "codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs::queued_writer_does_not_admit_a_grant_that_expired_while_waiting",
+        "codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs::missing_quota_head_is_rejected_on_reopen_even_with_intact_schema",
+        "codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs::v15_upgrade_backfills_all_retained_heads_before_serving"
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",

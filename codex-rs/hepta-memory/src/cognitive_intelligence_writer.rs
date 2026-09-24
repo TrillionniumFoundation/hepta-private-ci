@@ -142,8 +142,10 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                &crate::MemoryRevisionId {
+                    memory_id: memory_id.clone(),
+                    revision: expected_revision,
+                },
                 source,
                 draft,
                 facts,
@@ -157,8 +159,7 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        predecessor: &crate::MemoryRevisionId,
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
@@ -179,8 +180,8 @@ impl CognitiveStore {
             .revise_memory_revision_tx(
                 transaction,
                 access,
-                memory_id,
-                expected_revision,
+                &predecessor.memory_id,
+                predecessor.revision,
                 &bound_draft,
             )
             .await?;

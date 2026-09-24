@@ -137,6 +137,25 @@ owner, exact Memory revision and separately bound Recall/Replay purposes.
 Replay also binds parameter scope and artifact consumer. This is a local owner
 API, not a new cross-host protocol or public Memory scope.
 
+Migration `0016_shared_experience_active_capacity.sql` adds a current-head quota
+projection inside the same SQLite owner. Immutable policy events remain the
+source of authority and predecessor identity; expiry or revocation does not delete
+that history. `MAX_ACTIVE_POLICY_IDENTITIES` limits currently unrevoked, unexpired
+grants, not every identity ever observed. A new identity or an expired/revoked
+identity returning to use must acquire a slot; renewing an already-live identity
+uses its existing slot. Withdrawal and exact retries remain available at the active-slot limit.
+The admission transaction samples expiry after acquiring the writer, so waiting
+behind another writer cannot admit an already-expired request.
+
+The partial expiry index bounds each admission count by the live quota. A trigger
+updates the projection with the event in the same transaction; direct deletion or
+substitution is rejected. Startup/recovery checks the projection against the
+latest immutable event for every identity and rejects mismatches rather than
+silently accepting an undercount. The migration backfills existing history.
+This removes the historical-identity admission limit, not historical disk cost:
+retained history and startup verification still grow with the owner history;
+checkpoint/archival and a sustained-history SLO are not claimed by this change.
+
 The immutable policy log permits 1024 ordinary revisions and reserved terminal
 revision 1025. Renewal exhaustion cannot prevent withdrawal; the final slot cannot
 contain an active grant. Repeated withdrawal and reopening preserve rejection.
@@ -147,6 +166,7 @@ accepts current verified evidence, not general historical Replay eligibility.
 
 Source: [shared_experience.rs](../../../codex-rs/hepta-memory/src/shared_experience.rs).
 Tests: [shared_experience_tests.rs](../../../codex-rs/hepta-memory/src/shared_experience_tests.rs).
+Capacity/recovery regressions: [shared_experience_capacity_tests.rs](../../../codex-rs/hepta-memory/src/shared_experience_capacity_tests.rs).
 These tests do not establish OS isolation, cross-host enrollment or model unlearning.
 
 ## 5. Contracts, ports and compatibility

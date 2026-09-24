@@ -1092,12 +1092,13 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
         assert_eq!(count, 0, "legacy {table} rows must be revoked");
     }
     assert_eq!(
-        sqlx::query_scalar::<_, String>(
-            "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
-        )
-        .fetch_one(&migrated.pool)
-        .await
-        .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
+        sqlx::query_scalar::<_, i64>("SELECT version FROM _sqlx_migrations ORDER BY version",)
+            .fetch_all(&migrated.pool)
+            .await
+            .expect("migration ledger"),
+        sqlx::migrate!("./migrations")
+            .iter()
+            .map(|migration| migration.version)
+            .collect::<Vec<_>>()
     );
 }
