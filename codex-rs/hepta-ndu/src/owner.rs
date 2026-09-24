@@ -282,10 +282,11 @@ impl NduAuthenticatedOwnerV1 {
                 return Err(NduOwnerError::InvalidContext(name));
             }
         }
-        if let Some(expected_predecessor) = mutation.expected_predecessor() {
-            if expected_predecessor.is_zero() {
+        match mutation.expected_predecessor() {
+            Some(expected_predecessor) if expected_predecessor.is_zero() => {
                 return Err(NduOwnerError::InvalidContext("selection predecessor"));
             }
+            Some(_) | None => {}
         }
 
         let scope_digest = owner_scope_digest(

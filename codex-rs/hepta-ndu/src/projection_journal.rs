@@ -359,6 +359,7 @@ impl NduProjectionJournalV1 {
             .ok_or(NduProjectionJournalError::CorruptEntryDigest)
     }
 
+    #[cfg(test)]
     fn append(
         &mut self,
         kind: NduProjectionKindV1,
