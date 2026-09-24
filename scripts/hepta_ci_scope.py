@@ -56,6 +56,8 @@ DERIVED_ONLY_DOCS = frozenset(
 )
 
 FILE_GROUPS = {
+    "scripts/hepta_inference_owner_checks.py": {"inference"},
+    "scripts/test_hepta_inference_owner_checks.py": {"inference"},
     # Stable typed contracts with a single architecture concern should not
     # expand to every Hepta lane merely because they live in a shared crate.
     "codex-rs/hepta-types/src/topology.rs": {"lifecycle"},

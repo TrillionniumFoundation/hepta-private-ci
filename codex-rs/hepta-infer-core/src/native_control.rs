@@ -218,6 +218,9 @@ pub struct NativeRunRecord {
 #[derive(Clone, Debug, Default)]
 pub(super) struct NativeJournal {
     maximum_in_flight: Option<usize>,
+    // Rebuilt by the same semantic replay as records, never loaded from an
+    // independently trusted counter. Terminal refinement cannot release twice.
+    active_reservations: usize,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
 }
 
@@ -255,6 +258,21 @@ enum Event {
         request_id: String,
         output: NativeRunOutput,
     },
+}
+
+impl Event {
+    fn request_id(&self) -> &str {
+        match self {
+            Self::Reserve { request, .. } => &request.request_id,
+            Self::Dispatch { request_id, .. }
+            | Self::Started { request_id, .. }
+            | Self::RejectBeforeStart { request_id, .. }
+            | Self::Cancel { request_id }
+            | Self::Stop { request_id, .. }
+            | Self::AbortBeforeEffect { request_id, .. }
+            | Self::Observe { request_id, .. } => request_id,
+        }
+    }
 }
 
 impl DurableInferenceControl {
@@ -483,25 +501,44 @@ impl DurableInferenceControl {
     }
 
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
-        let mut next = self.native.clone();
-        next.apply(event.clone())?;
+        if request_id != event.request_id() {
+            return Err(Error::Conflict);
+        }
+        // Preserve the global admission count, but stage only this identity.
+        // Historical output bodies must not be copied by an unrelated update.
+        let mut staged = NativeJournal {
+            maximum_in_flight: self.native.maximum_in_flight,
+            active_reservations: self.native.active_reservations,
+            records: BTreeMap::new(),
+        };
+        if let Some(previous) = self.native.records.get(request_id) {
+            staged
+                .records
+                .insert(request_id.to_string(), previous.clone());
+        }
         let json =
             serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
-        self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
-        self.native = next;
-        self.native
+        staged.apply(event)?;
+        let prepared = staged
             .records
-            .get(request_id)
-            .cloned()
-            .ok_or(Error::RequestNotFound)
+            .remove(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        let result = prepared.clone();
+        self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
+        self.native.records.insert(request_id.to_string(), prepared);
+        self.native.maximum_in_flight = staged.maximum_in_flight;
+        self.native.active_reservations = staged.active_reservations;
+        Ok(result)
     }
 }
 
 impl NativeJournal {
-    pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
-        let event =
+    pub(super) fn replay(&mut self, json: &str) -> Result<String, Error> {
+        let event: Event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
-        self.apply(event)
+        let request_id = event.request_id().to_string();
+        self.apply(event)?;
+        Ok(request_id)
     }
 
     fn apply(&mut self, event: Event) -> Result<(), Error> {
@@ -529,15 +566,13 @@ impl NativeJournal {
             {
                 return Err(Error::Conflict);
             }
-            if self
-                .records
-                .values()
-                .filter(|record| record.state != NativeReservationState::Released)
-                .count()
-                >= maximum_in_flight
-            {
+            if self.active_reservations >= maximum_in_flight {
                 return Err(Error::CapacityExceeded);
             }
+            self.active_reservations = self
+                .active_reservations
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
             self.maximum_in_flight = Some(maximum_in_flight);
             self.records.insert(
                 request.request_id.clone(),
@@ -566,6 +601,7 @@ impl NativeJournal {
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
+        let was_active = record.state != NativeReservationState::Released;
         match event {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
             Event::Dispatch { dispatch, .. } => {
@@ -746,6 +782,12 @@ impl NativeJournal {
             .revision
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
+        if was_active && record.state == NativeReservationState::Released {
+            self.active_reservations = self
+                .active_reservations
+                .checked_sub(1)
+                .ok_or(Error::CorruptJournal("native active reservations"))?;
+        }
         Ok(())
     }
 }

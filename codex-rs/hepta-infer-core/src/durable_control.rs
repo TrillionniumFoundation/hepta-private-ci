@@ -226,14 +226,19 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
-                native.replay(json)?;
+            // Each event changes exactly one identity. Check that identity
+            // against the other namespace instead of rescanning the complete
+            // legacy history after every frame (quadratic recovery work).
+            let collision = if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                let request_id = native.replay(json)?;
+                records.contains_key(&request_id)
             } else {
-                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
-            }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
-            {
+                let event = decode_event(line)?;
+                let collision = native.records.contains_key(event.request_id());
+                apply_event(&mut records, &event, /*replay*/ true)?;
+                collision
+            };
+            if records.len() + native.records.len() > capacity || collision {
                 return Err(Error::CapacityExceeded);
             }
         }
@@ -433,19 +438,22 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        // Reject invalid transitions before durable append; a rejected command
-        // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
+        // Validate only the affected immutable predecessor. Events have no
+        // cross-record transitions; global capacity/namespace admission remains
+        // with submit. A rejected event or uncertain append leaves every live
+        // record untouched, without cloning unrelated historical payloads.
+        let request_id = event.request_id().to_string();
+        let mut staged = BTreeMap::new();
+        if let Some(previous) = self.records.get(&request_id) {
+            staged.insert(request_id.clone(), previous.clone());
+        }
+        apply_event(&mut staged, &event, /*replay*/ false)?;
+        let prepared = staged.remove(&request_id).ok_or(Error::RequestNotFound)?;
+        let result = receipt(&prepared, /*idempotent*/ false);
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
-        let request_id = event.request_id().to_string();
-        self.records = next;
-        let record = self
-            .records
-            .get(&request_id)
-            .ok_or(Error::RequestNotFound)?;
-        Ok(receipt(record, /*idempotent*/ false))
+        self.records.insert(request_id, prepared);
+        Ok(result)
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {

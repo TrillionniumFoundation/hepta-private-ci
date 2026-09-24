@@ -396,3 +396,23 @@ The bootstrap source-location obligation for `inference.control` is implemented 
 - `codex-rs/hepta-inferd`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Incremental commit staging and history measurements
+
+The exclusive-writer journal stages only the affected request before append,
+fsync and in-memory publication. It does not clone the complete request history
+for each mutation. Active reservations are maintained by the event reducer and
+rebuilt during replay; terminal refinements do not release capacity twice.
+Exact retries retain the original record and journal bytes.
+
+The shared architecture/maintenance recipe is
+`scripts/hepta_inference_owner_checks.py`. It runs real history growth, exclusive
+owner handoff and process-loss recovery through `just test`, with zero retries
+and at least one observed passing test per command. Later diagnostics still run
+when an earlier command fails.
+
+The growth measurement retains 64/256/1024/4096 requests and real durable
+transitions. It records RSS, disk bytes, append percentiles, lookup and recovery.
+Its bounded test watchdog is not a deployment latency SLO. Total history remains
+retained: compaction, multi-writer delta replay and million-record qualification
+are separate unproved capabilities, not receipts produced by this recipe.

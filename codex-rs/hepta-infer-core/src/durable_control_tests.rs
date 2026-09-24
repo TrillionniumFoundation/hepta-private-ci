@@ -170,3 +170,6 @@ fn invalid_event_is_rejected_before_append() {
     drop(reopened);
     std::fs::remove_file(path).expect("cleanup");
 }
+
+#[path = "durable_incremental_tests.rs"]
+mod incremental;
