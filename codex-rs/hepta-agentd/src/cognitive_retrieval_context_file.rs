@@ -43,6 +43,8 @@ use crate::CurrentMemoryRetrievalContext;
 
 const FILE_SCHEMA_VERSION: u32 = 1;
 const MAX_CONTEXT_FILE_BYTES: u64 = 4 * 1024 * 1024;
+const MAX_CONTEXT_VALIDITY_MS: u64 = 300_000;
+const SIGNING_DOMAIN: &str = "hepta.agentd.memory-retrieval-context.v1";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -197,6 +199,27 @@ pub struct SignedMemoryRetrievalContextFileV1 {
     pub signature: Vec<u8>,
 }
 
+#[derive(Serialize)]
+struct MemoryRetrievalContextSigningPayloadV1<'a> {
+    domain: &'static str,
+    schema_version: u32,
+    agent_id: &'a str,
+    body_generation: u64,
+    context_revision: u64,
+    authority_epoch: u64,
+    issued_at_unix_ms: u64,
+    expires_at_unix_ms: u64,
+    revoked: bool,
+    objective_digest: &'a str,
+    approved_context_digest: &'a str,
+    cue_profile_digest: &'a str,
+    generation_vector: &'a RetrievalGenerationVectorFileV1,
+    retrieval_policy: &'a RetrievalPolicyFileV1,
+    engram_snapshot: &'a EngramSnapshotFileV1,
+    dynamics_policy: &'a EngramDynamicsPolicyFileV1,
+    signer_id: &'a str,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MemoryRetrievalContextVerifierV1 {
     pub signer_id: String,
@@ -208,6 +231,7 @@ struct AcceptedFrontierV1 {
     context_revision: u64,
     authority_epoch: u64,
     context_digest: Digest32,
+    signed_payload_digest: Digest32,
 }
 
 pub struct FileCurrentMemoryRetrievalContextV1 {
@@ -227,8 +251,11 @@ impl FileCurrentMemoryRetrievalContextV1 {
         owner_root: PathBuf,
         verifier: MemoryRetrievalContextVerifierV1,
     ) -> Result<Self, String> {
-        if body_generation == 0 {
-            return Err("retrieval context body generation must be non-zero".to_string());
+        if body_generation == 0 || verifier.signer_id.is_empty() {
+            return Err(
+                "retrieval context body generation and signer identity must be non-zero"
+                    .to_string(),
+            );
         }
         let value = Self {
             path,
@@ -247,19 +274,25 @@ impl FileCurrentMemoryRetrievalContextV1 {
     ) -> Result<(
         SignedMemoryRetrievalContextFileV1,
         RetrievalExecutionContextV1,
+        Digest32,
     ), String> {
         let bytes = read_owner_file(&self.path, &self.owner_root)?;
         let file: SignedMemoryRetrievalContextFileV1 = serde_json::from_slice(&bytes)
             .map_err(|error| format!("invalid retrieval context JSON: {error}"))?;
-        self.verify_file(&file)?;
+        let signed_payload = memory_retrieval_context_signing_payload_v1(&file)?;
+        self.verify_file(&file, &signed_payload)?;
         let context = decode_context(&file)?;
         context
             .validate()
             .map_err(|error| format!("invalid retrieval execution context: {error}"))?;
-        Ok((file, context))
+        Ok((file, context, Digest32::of_bytes(&signed_payload)))
     }
 
-    fn verify_file(&self, file: &SignedMemoryRetrievalContextFileV1) -> Result<(), String> {
+    fn verify_file(
+        &self,
+        file: &SignedMemoryRetrievalContextFileV1,
+        signed_payload: &[u8],
+    ) -> Result<(), String> {
         if file.schema_version != FILE_SCHEMA_VERSION
             || file.agent_id != self.owner.as_str()
             || file.body_generation != self.body_generation
@@ -275,8 +308,13 @@ impl FileCurrentMemoryRetrievalContextV1 {
             );
         }
         let now = wall_clock_ms()?;
+        let validity = file
+            .expires_at_unix_ms
+            .checked_sub(file.issued_at_unix_ms)
+            .ok_or_else(|| "retrieval context validity window regressed".to_string())?;
         if file.issued_at_unix_ms == 0
-            || file.expires_at_unix_ms <= file.issued_at_unix_ms
+            || validity == 0
+            || validity > MAX_CONTEXT_VALIDITY_MS
             || now < file.issued_at_unix_ms
             || now >= file.expires_at_unix_ms
         {
@@ -294,23 +332,21 @@ impl FileCurrentMemoryRetrievalContextV1 {
             .as_slice()
             .try_into()
             .map_err(|_| "invalid retrieval context signature length".to_string())?;
-        let signature = Signature::from_bytes(&signature_bytes);
-        key.verify(
-            &memory_retrieval_context_signing_payload_v1(file)?,
-            &signature,
-        )
-        .map_err(|_| "retrieval context signature verification failed".to_string())
+        key.verify(signed_payload, &Signature::from_bytes(&signature_bytes))
+            .map_err(|_| "retrieval context signature verification failed".to_string())
     }
 
     fn advance_frontier(
         &self,
         file: &SignedMemoryRetrievalContextFileV1,
         context: &RetrievalExecutionContextV1,
+        signed_payload_digest: Digest32,
     ) -> Result<(), String> {
         let next = AcceptedFrontierV1 {
             context_revision: file.context_revision,
             authority_epoch: file.authority_epoch,
             context_digest: context.binding_digest(),
+            signed_payload_digest,
         };
         let mut accepted = self
             .accepted
@@ -321,7 +357,8 @@ impl FileCurrentMemoryRetrievalContextV1 {
                 || next.authority_epoch < previous.authority_epoch
                 || (next.context_revision == previous.context_revision
                     && (next.authority_epoch != previous.authority_epoch
-                        || next.context_digest != previous.context_digest))
+                        || next.context_digest != previous.context_digest
+                        || next.signed_payload_digest != previous.signed_payload_digest))
             {
                 return Err("retrieval context regressed, forked or changed in place".to_string());
             }
@@ -340,8 +377,8 @@ impl CurrentMemoryRetrievalContext for FileCurrentMemoryRetrievalContextV1 {
         if owner != &self.owner || body_generation != self.body_generation {
             return Err("retrieval context requested for another Agent generation".to_string());
         }
-        let (file, context) = self.load()?;
-        self.advance_frontier(&file, &context)?;
+        let (file, context, signed_payload_digest) = self.load()?;
+        self.advance_frontier(&file, &context, signed_payload_digest)?;
         Ok(context)
     }
 }
@@ -349,25 +386,25 @@ impl CurrentMemoryRetrievalContext for FileCurrentMemoryRetrievalContextV1 {
 pub fn memory_retrieval_context_signing_payload_v1(
     file: &SignedMemoryRetrievalContextFileV1,
 ) -> Result<Vec<u8>, String> {
-    serde_json::to_vec(&(
-        "hepta.agentd.memory-retrieval-context.v1",
-        file.schema_version,
-        &file.agent_id,
-        file.body_generation,
-        file.context_revision,
-        file.authority_epoch,
-        file.issued_at_unix_ms,
-        file.expires_at_unix_ms,
-        file.revoked,
-        &file.objective_digest,
-        &file.approved_context_digest,
-        &file.cue_profile_digest,
-        &file.generation_vector,
-        &file.retrieval_policy,
-        &file.engram_snapshot,
-        &file.dynamics_policy,
-        &file.signer_id,
-    ))
+    serde_json::to_vec(&MemoryRetrievalContextSigningPayloadV1 {
+        domain: SIGNING_DOMAIN,
+        schema_version: file.schema_version,
+        agent_id: &file.agent_id,
+        body_generation: file.body_generation,
+        context_revision: file.context_revision,
+        authority_epoch: file.authority_epoch,
+        issued_at_unix_ms: file.issued_at_unix_ms,
+        expires_at_unix_ms: file.expires_at_unix_ms,
+        revoked: file.revoked,
+        objective_digest: &file.objective_digest,
+        approved_context_digest: &file.approved_context_digest,
+        cue_profile_digest: &file.cue_profile_digest,
+        generation_vector: &file.generation_vector,
+        retrieval_policy: &file.retrieval_policy,
+        engram_snapshot: &file.engram_snapshot,
+        dynamics_policy: &file.dynamics_policy,
+        signer_id: &file.signer_id,
+    })
     .map_err(|error| format!("retrieval context signing payload failed: {error}"))
 }
 
