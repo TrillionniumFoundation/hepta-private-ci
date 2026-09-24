@@ -431,6 +431,21 @@ impl CognitiveStore {
             .execute(&mut **transaction)
             .await
             .map_err(unavailable)?;
+            sqlx::query(
+                "INSERT INTO kg_revision_entity_fts (
+                    memory_id, memory_revision, entity_key, canonical_entity_id,
+                    entity_type, label
+                 ) VALUES (?, ?, ?, ?, ?, ?)",
+            )
+            .bind(memory.id.memory_id.as_str())
+            .bind(revision)
+            .bind(&entity.key)
+            .bind(&entity.canonical_entity_id)
+            .bind(&entity.entity_type)
+            .bind(&entity.label)
+            .execute(&mut **transaction)
+            .await
+            .map_err(unavailable)?;
         }
         for relation in &facts.relations {
             sqlx::query(

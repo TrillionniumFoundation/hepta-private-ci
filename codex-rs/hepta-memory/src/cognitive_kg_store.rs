@@ -262,6 +262,11 @@ pub(crate) async fn load_canonical_generation_tx(
     projection_scope: &str,
     generation: i64,
 ) -> Result<KnowledgeGenerationV2, CognitiveStoreError> {
+    if generation <= 0 {
+        return Err(CognitiveStoreError::Corrupt(
+            "KG generation must be positive".to_string(),
+        ));
+    }
     let source_snapshot_sha256: String = sqlx::query_scalar(
         "SELECT input_heads_sha256
          FROM kg_projection_generation_receipts
@@ -300,18 +305,39 @@ pub(crate) async fn load_canonical_generation_tx(
         ),
     };
 
+    // A generation is an immutable cut over revision facts. For every memory
+    // identity, select the latest trigger at or before the requested generation.
+    // This replaces complete graph copies per generation while preserving exact
+    // historical reconstruction from source-owned immutable revisions.
     let node_rows = sqlx::query(
-        "SELECT n.node_id, i.canonical_entity_id, n.entity_type, n.label,
-                n.valid_from_unix_seconds, n.valid_to_unix_seconds,
-                n.memory_id, n.memory_revision, n.source_id, n.source_revision
-         FROM kg_nodes n
-         JOIN kg_projection_node_entities i
-           ON i.projection_scope = n.projection_scope
-          AND i.generation = n.generation AND i.node_id = n.node_id
-         WHERE n.projection_scope = ? AND n.generation = ?
-         ORDER BY n.node_id LIMIT ?",
+        "WITH selected_heads AS (
+             SELECT h.trigger_memory_id AS memory_id,
+                    h.trigger_memory_revision AS memory_revision
+             FROM kg_projection_generation_receipts h
+             WHERE h.projection_scope = ?
+               AND h.generation <= ?
+               AND h.generation = (
+                   SELECT MAX(x.generation)
+                   FROM kg_projection_generation_receipts x
+                   WHERE x.projection_scope = h.projection_scope
+                     AND x.trigger_memory_id = h.trigger_memory_id
+                     AND x.generation <= ?
+               )
+         )
+         SELECT e.memory_id, e.memory_revision, e.entity_key,
+                e.canonical_entity_id, e.entity_type, e.label,
+                e.valid_from_unix_seconds, e.valid_to_unix_seconds,
+                e.source_id, e.source_revision
+         FROM selected_heads h
+         JOIN memory_revisions m
+           ON m.memory_id = h.memory_id AND m.revision = h.memory_revision
+         JOIN kg_revision_entities e
+           ON e.memory_id = h.memory_id AND e.memory_revision = h.memory_revision
+         WHERE m.verification = 'verified' AND m.lifecycle = 'active'
+         ORDER BY e.memory_id, e.memory_revision, e.entity_key LIMIT ?",
     )
     .bind(projection_scope)
+    .bind(generation)
     .bind(generation)
     .bind(limit_plus_one(MAX_SCOPE_NODES)?)
     .fetch_all(&mut **transaction)
@@ -322,40 +348,56 @@ pub(crate) async fn load_canonical_generation_tx(
             "historical KG projection exceeds the canonical node limit".to_string(),
         ));
     }
-    let nodes = node_rows
-        .into_iter()
-        .map(|row| {
-            Ok(ProjectionNode {
-                node_id: row.try_get("node_id").map_err(unavailable)?,
-                canonical_entity_id: row.try_get("canonical_entity_id").map_err(unavailable)?,
-                entity_type: row.try_get("entity_type").map_err(unavailable)?,
-                label: row.try_get("label").map_err(unavailable)?,
-                valid_from: row
-                    .try_get("valid_from_unix_seconds")
-                    .map_err(unavailable)?,
-                valid_to: row.try_get("valid_to_unix_seconds").map_err(unavailable)?,
-                memory_id: row.try_get("memory_id").map_err(unavailable)?,
-                memory_revision: row.try_get("memory_revision").map_err(unavailable)?,
-                source_id: row.try_get("source_id").map_err(unavailable)?,
-                source_revision: row.try_get("source_revision").map_err(unavailable)?,
-            })
-        })
-        .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
-
-    let occurrence_to_canonical = nodes
-        .iter()
-        .map(|node| (node.node_id.clone(), node.canonical_entity_id.clone()))
-        .collect::<BTreeMap<_, _>>();
+    let mut nodes = Vec::with_capacity(node_rows.len());
+    for row in node_rows {
+        let memory_id: String = row.try_get("memory_id").map_err(unavailable)?;
+        let memory_revision: i64 = row.try_get("memory_revision").map_err(unavailable)?;
+        let entity_key: String = row.try_get("entity_key").map_err(unavailable)?;
+        nodes.push(ProjectionNode {
+            node_id: occurrence_node_id(&memory_id, memory_revision, &entity_key),
+            canonical_entity_id: row.try_get("canonical_entity_id").map_err(unavailable)?,
+            entity_type: row.try_get("entity_type").map_err(unavailable)?,
+            label: row.try_get("label").map_err(unavailable)?,
+            valid_from: row
+                .try_get("valid_from_unix_seconds")
+                .map_err(unavailable)?,
+            valid_to: row.try_get("valid_to_unix_seconds").map_err(unavailable)?,
+            memory_id,
+            memory_revision,
+            source_id: row.try_get("source_id").map_err(unavailable)?,
+            source_revision: row.try_get("source_revision").map_err(unavailable)?,
+        });
+    }
 
     let edge_rows = sqlx::query(
-        "SELECT edge_id, from_node_id, to_node_id, relation,
-                valid_from_unix_seconds, valid_to_unix_seconds,
-                memory_id, memory_revision, source_id, source_revision
-         FROM kg_edges
-         WHERE projection_scope = ? AND generation = ?
-         ORDER BY edge_id LIMIT ?",
+        "WITH selected_heads AS (
+             SELECT h.trigger_memory_id AS memory_id,
+                    h.trigger_memory_revision AS memory_revision
+             FROM kg_projection_generation_receipts h
+             WHERE h.projection_scope = ?
+               AND h.generation <= ?
+               AND h.generation = (
+                   SELECT MAX(x.generation)
+                   FROM kg_projection_generation_receipts x
+                   WHERE x.projection_scope = h.projection_scope
+                     AND x.trigger_memory_id = h.trigger_memory_id
+                     AND x.generation <= ?
+               )
+         )
+         SELECT q.memory_id, q.memory_revision, q.relation_key,
+                q.canonical_relation_id, q.from_entity_key, q.to_entity_key,
+                q.relation, q.valid_from_unix_seconds, q.valid_to_unix_seconds,
+                q.source_id, q.source_revision
+         FROM selected_heads h
+         JOIN memory_revisions m
+           ON m.memory_id = h.memory_id AND m.revision = h.memory_revision
+         JOIN kg_revision_relations q
+           ON q.memory_id = h.memory_id AND q.memory_revision = h.memory_revision
+         WHERE m.verification = 'verified' AND m.lifecycle = 'active'
+         ORDER BY q.memory_id, q.memory_revision, q.relation_key LIMIT ?",
     )
     .bind(projection_scope)
+    .bind(generation)
     .bind(generation)
     .bind(limit_plus_one(MAX_SCOPE_EDGES)?)
     .fetch_all(&mut **transaction)
@@ -368,41 +410,17 @@ pub(crate) async fn load_canonical_generation_tx(
     }
     let mut edges = Vec::with_capacity(edge_rows.len());
     for row in edge_rows {
-        let edge_id: String = row.try_get("edge_id").map_err(unavailable)?;
         let memory_id: String = row.try_get("memory_id").map_err(unavailable)?;
         let memory_revision: i64 = row.try_get("memory_revision").map_err(unavailable)?;
-        let relation: String = row.try_get("relation").map_err(unavailable)?;
-        let from_node_id: String = row.try_get("from_node_id").map_err(unavailable)?;
-        let to_node_id: String = row.try_get("to_node_id").map_err(unavailable)?;
-        let from_canonical = occurrence_to_canonical
-            .get(&from_node_id)
-            .map(String::as_str)
-            .ok_or_else(|| {
-                CognitiveStoreError::Corrupt("historical KG edge source is missing".to_string())
-            })?;
-        let to_canonical = occurrence_to_canonical
-            .get(&to_node_id)
-            .map(String::as_str)
-            .ok_or_else(|| {
-                CognitiveStoreError::Corrupt("historical KG edge target is missing".to_string())
-            })?;
-        let canonical_relation_id = format!(
-            "kg-relation:v1:{}",
-            framed_sha256_hex(
-                b"hepta:cognitive:kg-relation-reconstruction:v1",
-                &[
-                    from_canonical.as_bytes(),
-                    relation.as_bytes(),
-                    to_canonical.as_bytes()
-                ],
-            )
-        );
+        let relation_key: String = row.try_get("relation_key").map_err(unavailable)?;
+        let from_entity_key: String = row.try_get("from_entity_key").map_err(unavailable)?;
+        let to_entity_key: String = row.try_get("to_entity_key").map_err(unavailable)?;
         edges.push(ProjectionEdge {
-            edge_id,
-            canonical_relation_id,
-            from_node_id,
-            to_node_id,
-            relation,
+            edge_id: occurrence_edge_id(&memory_id, memory_revision, &relation_key),
+            canonical_relation_id: row.try_get("canonical_relation_id").map_err(unavailable)?,
+            from_node_id: occurrence_node_id(&memory_id, memory_revision, &from_entity_key),
+            to_node_id: occurrence_node_id(&memory_id, memory_revision, &to_entity_key),
+            relation: row.try_get("relation").map_err(unavailable)?,
             valid_from: row
                 .try_get("valid_from_unix_seconds")
                 .map_err(unavailable)?,
@@ -435,6 +453,84 @@ pub(crate) async fn load_canonical_generation_tx(
         ));
     }
     Ok(rebuilt)
+}
+
+pub(crate) async fn load_compact_edge_support_index_tx(
+    transaction: &mut Transaction<'_, Sqlite>,
+    projection_scope: &str,
+    generation: i64,
+) -> Result<Option<BTreeMap<String, (String, i64)>>, CognitiveStoreError> {
+    let storage_mode: Option<String> = sqlx::query_scalar(
+        "SELECT storage_mode
+         FROM kg_projection_generation_storage
+         WHERE projection_scope = ? AND generation = ?",
+    )
+    .bind(projection_scope)
+    .bind(generation)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    let Some(storage_mode) = storage_mode else {
+        return Ok(None);
+    };
+    if storage_mode != "revision_facts_v1" {
+        return Err(CognitiveStoreError::Corrupt(format!(
+            "unsupported KG generation storage mode `{storage_mode}`"
+        )));
+    }
+
+    let rows = sqlx::query(
+        "WITH selected_heads AS (
+             SELECT h.trigger_memory_id AS memory_id,
+                    h.trigger_memory_revision AS memory_revision
+             FROM kg_projection_generation_receipts h
+             WHERE h.projection_scope = ?
+               AND h.generation <= ?
+               AND h.generation = (
+                   SELECT MAX(x.generation)
+                   FROM kg_projection_generation_receipts x
+                   WHERE x.projection_scope = h.projection_scope
+                     AND x.trigger_memory_id = h.trigger_memory_id
+                     AND x.generation <= ?
+               )
+         )
+         SELECT q.memory_id, q.memory_revision, q.relation_key
+         FROM selected_heads h
+         JOIN memory_revisions m
+           ON m.memory_id = h.memory_id AND m.revision = h.memory_revision
+         JOIN kg_revision_relations q
+           ON q.memory_id = h.memory_id AND q.memory_revision = h.memory_revision
+         WHERE m.verification = 'verified' AND m.lifecycle = 'active'
+         ORDER BY q.memory_id, q.memory_revision, q.relation_key LIMIT ?",
+    )
+    .bind(projection_scope)
+    .bind(generation)
+    .bind(generation)
+    .bind(limit_plus_one(MAX_SCOPE_EDGES)?)
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    if rows.len() > MAX_SCOPE_EDGES {
+        return Err(CognitiveStoreError::Corrupt(
+            "compact KG edge-support index exceeds the canonical edge limit".to_string(),
+        ));
+    }
+    let mut index = BTreeMap::new();
+    for row in rows {
+        let memory_id: String = row.try_get("memory_id").map_err(unavailable)?;
+        let memory_revision: i64 = row.try_get("memory_revision").map_err(unavailable)?;
+        let relation_key: String = row.try_get("relation_key").map_err(unavailable)?;
+        let edge_id = occurrence_edge_id(&memory_id, memory_revision, &relation_key);
+        if index
+            .insert(edge_id, (memory_id, memory_revision))
+            .is_some()
+        {
+            return Err(CognitiveStoreError::Corrupt(
+                "duplicate compact KG edge occurrence identity".to_string(),
+            ));
+        }
+    }
+    Ok(Some(index))
 }
 
 fn node_support(node: &ProjectionNode) -> Result<KnowledgeSupportV2, CognitiveStoreError> {
@@ -965,79 +1061,16 @@ impl CognitiveStore {
         .execute(&mut **transaction)
         .await
         .map_err(unavailable)?;
-        for node in &nodes {
-            sqlx::query(
-                "INSERT INTO kg_nodes (
-                    projection_scope, generation, node_id, entity_type, label,
-                    valid_from_unix_seconds, valid_to_unix_seconds, memory_id,
-                    memory_revision, source_id, source_revision
-                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            )
-            .bind(&projection_scope)
-            .bind(next)
-            .bind(&node.node_id)
-            .bind(&node.entity_type)
-            .bind(&node.label)
-            .bind(node.valid_from)
-            .bind(node.valid_to)
-            .bind(&node.memory_id)
-            .bind(node.memory_revision)
-            .bind(&node.source_id)
-            .bind(node.source_revision)
-            .execute(&mut **transaction)
-            .await
-            .map_err(unavailable)?;
-            sqlx::query(
-                "INSERT INTO kg_entity_fts (
-                    projection_scope, generation, node_id, entity_type, label
-                 ) VALUES (?, ?, ?, ?, ?)",
-            )
-            .bind(&projection_scope)
-            .bind(next)
-            .bind(&node.node_id)
-            .bind(&node.entity_type)
-            .bind(&node.label)
-            .execute(&mut **transaction)
-            .await
-            .map_err(unavailable)?;
-            sqlx::query(
-                "INSERT INTO kg_projection_node_entities (
-                    projection_scope, generation, node_id, canonical_entity_id
-                 ) VALUES (?, ?, ?, ?)",
-            )
-            .bind(&projection_scope)
-            .bind(next)
-            .bind(&node.node_id)
-            .bind(&node.canonical_entity_id)
-            .execute(&mut **transaction)
-            .await
-            .map_err(unavailable)?;
-        }
-        for edge in &edges {
-            sqlx::query(
-                "INSERT INTO kg_edges (
-                    projection_scope, generation, edge_id, from_node_id,
-                    to_node_id, relation, valid_from_unix_seconds,
-                    valid_to_unix_seconds, memory_id, memory_revision,
-                    source_id, source_revision
-                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            )
-            .bind(&projection_scope)
-            .bind(next)
-            .bind(&edge.edge_id)
-            .bind(&edge.from_node_id)
-            .bind(&edge.to_node_id)
-            .bind(&edge.relation)
-            .bind(edge.valid_from)
-            .bind(edge.valid_to)
-            .bind(&edge.memory_id)
-            .bind(edge.memory_revision)
-            .bind(&edge.source_id)
-            .bind(edge.source_revision)
-            .execute(&mut **transaction)
-            .await
-            .map_err(unavailable)?;
-        }
+        sqlx::query(
+            "INSERT INTO kg_projection_generation_storage (
+                projection_scope, generation, storage_mode
+             ) VALUES (?, ?, 'revision_facts_v1')",
+        )
+        .bind(&projection_scope)
+        .bind(next)
+        .execute(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
         #[cfg(test)]
         kg_projection_crash_rendezvous("after_semantic_receipt_before_current_pointer");
         let updated = sqlx::query(

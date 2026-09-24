@@ -189,28 +189,45 @@ async fn qualification_knowledge_graph_capacity_receipt() {
             .fetch_one(&store.pool)
             .await
             .expect("KG benchmark current generation");
-    let physical_counts: (i64, i64) = sqlx::query_as(
-        "SELECT
-            (SELECT COUNT(*) FROM kg_nodes
-             WHERE projection_scope = ? AND generation = ?),
-            (SELECT COUNT(*) FROM kg_edges
-             WHERE projection_scope = ? AND generation = ?)",
+    let logical_counts: (i64, i64) = sqlx::query_as(
+        "SELECT node_count, edge_count
+         FROM kg_projection_generation_receipts
+         WHERE projection_scope = ? AND generation = ?",
     )
-    .bind(scope.projection_key())
-    .bind(current_generation)
     .bind(scope.projection_key())
     .bind(current_generation)
     .fetch_one(&store.pool)
     .await
-    .expect("KG benchmark current-generation physical counts");
+    .expect("KG benchmark current-generation logical counts");
     assert_eq!(
-        physical_counts,
+        logical_counts,
         (
             i64::try_from(writes * ENTITIES_PER_WRITE).expect("bounded node count"),
             i64::try_from(writes * RELATIONS_PER_WRITE).expect("bounded edge count"),
         ),
     );
-    let historical_physical_counts: (i64, i64) = sqlx::query_as(
+    let revision_fact_counts: (i64, i64) = sqlx::query_as(
+        "SELECT
+            (SELECT COUNT(*) FROM kg_revision_entities),
+            (SELECT COUNT(*) FROM kg_revision_relations)",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .expect("KG benchmark revision fact counts");
+    assert_eq!(revision_fact_counts, logical_counts);
+    let compact_generation_rows: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM kg_projection_generation_storage
+         WHERE projection_scope = ? AND storage_mode = 'revision_facts_v1'",
+    )
+    .bind(scope.projection_key())
+    .fetch_one(&store.pool)
+    .await
+    .expect("KG benchmark compact generation witnesses");
+    assert_eq!(
+        compact_generation_rows,
+        i64::try_from(writes).expect("bounded compact generation count")
+    );
+    let legacy_snapshot_counts: (i64, i64) = sqlx::query_as(
         "SELECT
             (SELECT COUNT(*) FROM kg_nodes WHERE projection_scope = ?),
             (SELECT COUNT(*) FROM kg_edges WHERE projection_scope = ?)",
@@ -219,11 +236,11 @@ async fn qualification_knowledge_graph_capacity_receipt() {
     .bind(scope.projection_key())
     .fetch_one(&store.pool)
     .await
-    .expect("KG benchmark historical physical counts");
-    assert!(
-        historical_physical_counts.0 >= physical_counts.0
-            && historical_physical_counts.1 >= physical_counts.1,
-        "historical append-only rows cannot be smaller than the selected generation"
+    .expect("KG benchmark legacy snapshot counts");
+    assert_eq!(
+        legacy_snapshot_counts,
+        (0, 0),
+        "a fresh G14 store must not copy complete graphs per generation"
     );
 
     eprintln!(
@@ -281,13 +298,16 @@ async fn qualification_knowledge_graph_capacity_receipt() {
 
     let receipt = json!({
         "schema": "hepta.knowledge-graph-perf-library.v1",
-        "algorithm": "complete_generation_per_logical_mutation",
+        "algorithm": "revision_facts_v1_per_trigger_generation",
         "writes": writes,
         "currentGeneration": current_generation,
-        "physicalNodes": physical_counts.0,
-        "physicalEdges": physical_counts.1,
-        "historicalPhysicalNodeRows": historical_physical_counts.0,
-        "historicalPhysicalEdgeRows": historical_physical_counts.1,
+        "logicalNodes": logical_counts.0,
+        "logicalEdges": logical_counts.1,
+        "revisionEntityRows": revision_fact_counts.0,
+        "revisionRelationRows": revision_fact_counts.1,
+        "compactGenerationWitnessRows": compact_generation_rows,
+        "legacySnapshotNodeRows": legacy_snapshot_counts.0,
+        "legacySnapshotEdgeRows": legacy_snapshot_counts.1,
         "querySamples": query_samples,
         "reopenSamples": reopen_samples,
         "mutationNs": {

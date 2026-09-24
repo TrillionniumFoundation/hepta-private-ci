@@ -76,7 +76,7 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
     assert_eq!(first.projection.generation.get(), 1);
     assert_eq!(
         sqlx::query_scalar::<_, i64>(
-            "SELECT COUNT(*) FROM kg_entity_fts WHERE kg_entity_fts MATCH 'Ada'",
+            "SELECT COUNT(*) FROM kg_revision_entity_fts WHERE kg_revision_entity_fts MATCH 'Ada'",
         )
         .fetch_one(&store.pool)
         .await
@@ -106,20 +106,20 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
     assert_eq!(second.projection.generation.get(), 2);
     assert_eq!(second.projection.edge_count, 0);
     assert_eq!(
-        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM kg_edges")
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM kg_revision_relations")
             .fetch_one(&store.pool)
             .await
             .expect("historical edge count"),
         1
     );
-    let immutable = sqlx::query("DELETE FROM kg_nodes")
+    let immutable = sqlx::query("DELETE FROM kg_revision_entities")
         .execute(&store.pool)
         .await
         .expect_err("projection nodes are append-only");
     assert!(
         immutable
             .to_string()
-            .contains("projection nodes are immutable")
+            .contains("KG revision entities are immutable")
     );
 
     let sources_before: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM source_ledger")

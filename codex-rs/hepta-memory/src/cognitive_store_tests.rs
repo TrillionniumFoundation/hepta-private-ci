@@ -770,7 +770,7 @@ async fn reopen_recomputes_current_projection_digests_and_exact_fts_rows() {
     let fts_temp = TempDir::new().expect("FTS temp dir");
     let fts_owner = agent_id(83);
     let fts_store = seeded_projection_store(&fts_temp, &fts_owner).await;
-    sqlx::query("UPDATE kg_entity_fts SET label = label || ' tampered'")
+    sqlx::query("UPDATE kg_revision_entity_fts SET label = label || ' tampered'")
         .execute(&fts_store.pool)
         .await
         .expect("tamper FTS payload without changing its row count");
@@ -1098,6 +1098,6 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
         .fetch_one(&migrated.pool)
         .await
         .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13"
+        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
     );
 }

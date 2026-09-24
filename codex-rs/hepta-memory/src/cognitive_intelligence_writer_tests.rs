@@ -415,9 +415,9 @@ async fn canonical_entity_keeps_multiple_occurrences_and_conflict_rolls_everythi
     }
     assert_eq!(
         sqlx::query_scalar::<_, i64>(
-            "SELECT COUNT(*) FROM kg_projection_node_entities i
-             JOIN kg_projection p ON p.projection_scope = i.projection_scope
-                                 AND p.generation = i.generation",
+            "SELECT COUNT(*) FROM kg_revision_entity_fts f
+             JOIN memory_heads h
+               ON h.memory_id = f.memory_id AND h.revision = f.memory_revision",
         )
         .fetch_one(&store.pool)
         .await
@@ -598,7 +598,7 @@ async fn reopen_rejects_same_name_permissive_trigger_and_fts_count_tampering() {
     let fts_temp = TempDir::new().expect("temp dir");
     let fts_owner = agent_id(36);
     let fts_store = seeded_store(&fts_temp, &fts_owner).await;
-    sqlx::query("DELETE FROM kg_entity_fts")
+    sqlx::query("DELETE FROM kg_revision_entity_fts")
         .execute(&fts_store.pool)
         .await
         .expect("tamper FTS rows");

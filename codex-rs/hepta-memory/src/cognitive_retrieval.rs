@@ -27,6 +27,7 @@ use crate::ProjectionGeneration;
 use crate::SourceRevisionId;
 use crate::StableMemoryId;
 use crate::cognitive_kg_store::load_canonical_generation_tx;
+use crate::cognitive_kg_store::load_compact_edge_support_index_tx;
 use crate::cognitive_store::decode_scope;
 use crate::cognitive_store::unavailable;
 
@@ -642,35 +643,36 @@ impl CognitiveStore {
             })
             .map(|scope| scope.projection_key());
         let rows = sqlx::query(
-            "SELECT f.projection_scope, f.generation, f.node_id,
-                    i.canonical_entity_id, n.memory_id, n.memory_revision,
+            "SELECT p.projection_scope, p.generation,
+                    f.canonical_entity_id, f.memory_id, f.memory_revision,
                     s.generation_sha256
-             FROM kg_entity_fts f
-             JOIN kg_projection p ON p.projection_scope = f.projection_scope
-                                  AND p.generation = f.generation
+             FROM kg_revision_entity_fts f
+             JOIN memory_heads h
+               ON h.memory_id = f.memory_id AND h.revision = f.memory_revision
+             JOIN memory_revisions r
+               ON r.memory_id = f.memory_id AND r.revision = f.memory_revision
+             JOIN kg_revision_entities k
+               ON k.memory_id = f.memory_id
+              AND k.memory_revision = f.memory_revision
+              AND k.entity_key = f.entity_key
+              AND k.canonical_entity_id = f.canonical_entity_id
+             JOIN kg_projection p
+               ON p.projection_scope = CASE
+                    WHEN r.scope_kind = 'agent_private' THEN 'agent_private'
+                    ELSE 'workspace_private:' || r.workspace_sha256
+                  END
              LEFT JOIN kg_projection_generation_semantics s
                ON s.projection_scope = p.projection_scope
               AND s.generation = p.generation
-             JOIN kg_nodes n ON n.projection_scope = f.projection_scope
-                            AND n.generation = f.generation AND n.node_id = f.node_id
-             JOIN kg_projection_node_entities i
-               ON i.projection_scope = n.projection_scope
-              AND i.generation = n.generation AND i.node_id = n.node_id
-             JOIN kg_revision_entities k
-               ON k.memory_id = n.memory_id AND k.memory_revision = n.memory_revision
-              AND k.canonical_entity_id = i.canonical_entity_id
-             JOIN memory_heads h ON h.memory_id = n.memory_id
-                                AND h.revision = n.memory_revision
-             JOIN memory_revisions r ON r.memory_id = n.memory_id
-                                    AND r.revision = n.memory_revision
-             WHERE kg_entity_fts MATCH ?
-               AND (f.projection_scope = 'agent_private' OR f.projection_scope = ?)
-               AND n.valid_from_unix_seconds <= ?
-               AND (n.valid_to_unix_seconds IS NULL OR ? < n.valid_to_unix_seconds)
+             WHERE kg_revision_entity_fts MATCH ?
+               AND (p.projection_scope = 'agent_private' OR p.projection_scope = ?)
+               AND k.valid_from_unix_seconds <= ?
+               AND (k.valid_to_unix_seconds IS NULL OR ? < k.valid_to_unix_seconds)
                AND r.owner_agent_id = ? AND r.verification = 'verified'
                AND r.lifecycle = 'active' AND r.valid_from_unix_seconds <= ?
                AND (r.valid_to_unix_seconds IS NULL OR ? < r.valid_to_unix_seconds)
-             ORDER BY bm25(kg_entity_fts), f.projection_scope, f.node_id, n.memory_id LIMIT ?",
+             ORDER BY bm25(kg_revision_entity_fts), p.projection_scope,
+                      f.memory_id, f.memory_revision, f.entity_key LIMIT ?",
         )
         .bind(fts_query)
         .bind(workspace_scope)
@@ -876,27 +878,48 @@ impl CognitiveStore {
                 limit = RetrievalLimitObservation::LimitReached;
             }
 
+            let compact_supports = load_compact_edge_support_index_tx(
+                transaction,
+                &seed.projection_scope,
+                seed.generation,
+            )
+            .await?;
             for edge in query_result.edges {
                 for support in edge.supports {
-                    let row = sqlx::query(
-                        "SELECT memory_id, memory_revision
-                         FROM kg_edges
-                         WHERE projection_scope = ? AND generation = ? AND edge_id = ?",
-                    )
-                    .bind(&seed.projection_scope)
-                    .bind(seed.generation)
-                    .bind(support.source_id.as_str())
-                    .fetch_optional(&mut **transaction)
-                    .await
-                    .map_err(unavailable)?
-                    .ok_or_else(|| {
-                        CognitiveStoreError::Corrupt(
-                            "canonical KG edge support has no persisted occurrence".to_string(),
+                    let (memory_id, revision) = if let Some(index) = compact_supports.as_ref() {
+                        index
+                            .get(support.source_id.as_str())
+                            .cloned()
+                            .ok_or_else(|| {
+                                CognitiveStoreError::Corrupt(
+                                    "canonical compact KG edge support has no immutable revision occurrence"
+                                        .to_string(),
+                                )
+                            })?
+                    } else {
+                        let row = sqlx::query(
+                            "SELECT memory_id, memory_revision
+                             FROM kg_edges
+                             WHERE projection_scope = ? AND generation = ? AND edge_id = ?",
                         )
-                    })?;
-                    let revision: i64 = row.try_get("memory_revision").map_err(unavailable)?;
+                        .bind(&seed.projection_scope)
+                        .bind(seed.generation)
+                        .bind(support.source_id.as_str())
+                        .fetch_optional(&mut **transaction)
+                        .await
+                        .map_err(unavailable)?
+                        .ok_or_else(|| {
+                            CognitiveStoreError::Corrupt(
+                                "canonical KG edge support has no persisted occurrence".to_string(),
+                            )
+                        })?;
+                        (
+                            row.try_get("memory_id").map_err(unavailable)?,
+                            row.try_get("memory_revision").map_err(unavailable)?,
+                        )
+                    };
                     let key = MemoryKey {
-                        memory_id: row.try_get("memory_id").map_err(unavailable)?,
+                        memory_id,
                         revision: u64::try_from(revision).map_err(|_| {
                             CognitiveStoreError::Corrupt(
                                 "negative KG edge-support memory revision".to_string(),

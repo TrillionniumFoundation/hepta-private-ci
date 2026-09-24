@@ -110,11 +110,20 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("kg_projection_generation_receipts_no_update", "trigger"),
     ("kg_projection_generation_receipts_no_delete", "trigger"),
     ("kg_projection_generation_receipts_trigger_lookup", "index"),
+    (
+        "kg_projection_generation_receipts_scope_memory_generation",
+        "index",
+    ),
     ("kg_projection_generation_semantics", "table"),
     ("kg_projection_generation_semantics_no_update", "trigger"),
     ("kg_projection_generation_semantics_no_delete", "trigger"),
     ("kg_projection_generation_semantics_digest_lookup", "index"),
     ("kg_projection_current_semantics_on_update", "trigger"),
+    ("kg_projection_generation_storage", "table"),
+    ("kg_projection_generation_storage_no_update", "trigger"),
+    ("kg_projection_generation_storage_no_delete", "trigger"),
+    ("kg_projection_generation_storage_counts_match", "trigger"),
+    ("kg_revision_entity_fts", "table"),
     ("kg_projection_node_entities", "table"),
     ("kg_projection_node_entities_no_update", "trigger"),
     ("kg_projection_node_entities_no_delete", "trigger"),
@@ -187,7 +196,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "241588fd801155989fda2a374b5b52a4f77b30c2a25bcb6a2e2b2d26aeec1a95";
+    "7b7f0b2060bb51393a4866689a33abff89ddf04d8556d1019f7e8415126a736e";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -741,7 +750,12 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
     }
     let incomplete_projection_receipts: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM kg_projection_generation_receipts r
-         WHERE r.node_count != (
+         WHERE NOT EXISTS (
+             SELECT 1 FROM kg_projection_generation_storage s
+             WHERE s.projection_scope = r.projection_scope
+               AND s.generation = r.generation
+               AND s.storage_mode = 'revision_facts_v1'
+         ) AND (r.node_count != (
              SELECT COUNT(*) FROM kg_nodes n
              WHERE n.projection_scope = r.projection_scope
                AND n.generation = r.generation
@@ -757,7 +771,7 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
              SELECT COUNT(*) FROM kg_entity_fts f
              WHERE f.projection_scope = r.projection_scope
                AND f.generation = r.generation
-         )",
+         ))",
     )
     .fetch_one(pool)
     .await
@@ -842,10 +856,11 @@ async fn verify_migration_ledger(pool: &SqlitePool) -> Result<(), CognitiveStore
             (11, true),
             (12, true),
             (13, true),
+            (14, true),
         ]
     {
         return Err(CognitiveStoreError::Corrupt(format!(
-            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011/0012/0013 set: {migrations:?}"
+            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011/0012/0013/0014 set: {migrations:?}"
         )));
     }
 
@@ -908,7 +923,7 @@ async fn verify_current_projection_contents(
                 r.input_heads_sha256, r.output_sha256,
                 s.source_snapshot_sha256, s.generation_vector_sha256,
                 s.graph_profile_sha256, s.generation_sha256,
-                s.publication_sha256
+                s.publication_sha256, st.storage_mode
          FROM kg_projection p
          JOIN kg_projection_generation_receipts r
            ON r.projection_scope = p.projection_scope
@@ -916,6 +931,9 @@ async fn verify_current_projection_contents(
          LEFT JOIN kg_projection_generation_semantics s
            ON s.projection_scope = p.projection_scope
           AND s.generation = p.generation
+         LEFT JOIN kg_projection_generation_storage st
+           ON st.projection_scope = p.projection_scope
+          AND st.generation = p.generation
          ORDER BY p.projection_scope LIMIT ?",
     )
     .bind(bounded_limit(MAX_PROJECTION_SCOPES)?)
@@ -1084,155 +1102,233 @@ async fn verify_current_projection_contents(
             });
         }
 
-        let stored_node_rows = sqlx::query(
-            "SELECT n.node_id, i.canonical_entity_id, n.entity_type, n.label,
-                    n.valid_from_unix_seconds, n.valid_to_unix_seconds,
-                    n.memory_id, n.memory_revision, n.source_id, n.source_revision
-             FROM kg_nodes n
-             JOIN kg_projection_node_entities i
-               ON i.projection_scope = n.projection_scope
-              AND i.generation = n.generation AND i.node_id = n.node_id
-             WHERE n.projection_scope = ? AND n.generation = ?
-             ORDER BY n.node_id LIMIT ?",
-        )
-        .bind(&projection_scope)
-        .bind(generation)
-        .bind(bounded_limit(MAX_SCOPE_NODES)?)
-        .fetch_all(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        if stored_node_rows.len() > MAX_SCOPE_NODES {
-            return Err(CognitiveStoreError::Corrupt(
-                "stored KG projection exceeds the node reopen verification limit".to_string(),
-            ));
-        }
-        let mut stored_nodes = stored_node_rows
-            .into_iter()
-            .map(|row| {
-                Ok(ProjectionNode {
-                    node_id: row.try_get("node_id").map_err(unavailable)?,
-                    canonical_entity_id: row.try_get("canonical_entity_id").map_err(unavailable)?,
-                    entity_type: row.try_get("entity_type").map_err(unavailable)?,
-                    label: row.try_get("label").map_err(unavailable)?,
-                    valid_from: row
-                        .try_get("valid_from_unix_seconds")
-                        .map_err(unavailable)?,
-                    valid_to: row.try_get("valid_to_unix_seconds").map_err(unavailable)?,
-                    memory_id: row.try_get("memory_id").map_err(unavailable)?,
-                    memory_revision: row.try_get("memory_revision").map_err(unavailable)?,
-                    source_id: row.try_get("source_id").map_err(unavailable)?,
-                    source_revision: row.try_get("source_revision").map_err(unavailable)?,
-                })
-            })
-            .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
-        let mut expected_nodes_by_id = expected_nodes.clone();
-        expected_nodes_by_id.sort_by(|left, right| left.node_id.cmp(&right.node_id));
-        stored_nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
-        if stored_nodes != expected_nodes_by_id {
-            return Err(CognitiveStoreError::Corrupt(format!(
-                "KG current projection `{projection_scope}` nodes do not match current immutable fact supports"
-            )));
-        }
-
-        let stored_edge_rows = sqlx::query(
-            "SELECT edge_id, from_node_id, to_node_id, relation,
-                    valid_from_unix_seconds, valid_to_unix_seconds,
-                    memory_id, memory_revision, source_id, source_revision
-             FROM kg_edges
-             WHERE projection_scope = ? AND generation = ?
-             ORDER BY edge_id LIMIT ?",
-        )
-        .bind(&projection_scope)
-        .bind(generation)
-        .bind(bounded_limit(MAX_SCOPE_EDGES)?)
-        .fetch_all(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        if stored_edge_rows.len() > MAX_SCOPE_EDGES {
-            return Err(CognitiveStoreError::Corrupt(
-                "stored KG projection exceeds the edge reopen verification limit".to_string(),
-            ));
-        }
-        let mut stored_edges = stored_edge_rows
-            .into_iter()
-            .map(|row| {
-                Ok(StoredProjectionEdge {
-                    edge_id: row.try_get("edge_id").map_err(unavailable)?,
-                    from_node_id: row.try_get("from_node_id").map_err(unavailable)?,
-                    to_node_id: row.try_get("to_node_id").map_err(unavailable)?,
-                    relation: row.try_get("relation").map_err(unavailable)?,
-                    valid_from: row
-                        .try_get("valid_from_unix_seconds")
-                        .map_err(unavailable)?,
-                    valid_to: row.try_get("valid_to_unix_seconds").map_err(unavailable)?,
-                    memory_id: row.try_get("memory_id").map_err(unavailable)?,
-                    memory_revision: row.try_get("memory_revision").map_err(unavailable)?,
-                    source_id: row.try_get("source_id").map_err(unavailable)?,
-                    source_revision: row.try_get("source_revision").map_err(unavailable)?,
-                })
-            })
-            .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
-        let mut expected_stored_edges = expected_edges
-            .iter()
-            .map(StoredProjectionEdge::from)
-            .collect::<Vec<_>>();
-        stored_edges.sort();
-        expected_stored_edges.sort();
-        if stored_edges != expected_stored_edges {
-            return Err(CognitiveStoreError::Corrupt(format!(
-                "KG current projection `{projection_scope}` edges do not match current immutable fact supports"
-            )));
-        }
-
-        let fts_rows = sqlx::query(
-            "SELECT projection_scope, generation, node_id, entity_type, label
-             FROM kg_entity_fts
-             WHERE projection_scope = ? AND generation = ?
-             ORDER BY node_id, entity_type, label LIMIT ?",
-        )
-        .bind(&projection_scope)
-        .bind(generation)
-        .bind(bounded_limit(MAX_SCOPE_NODES)?)
-        .fetch_all(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        if fts_rows.len() > MAX_SCOPE_NODES {
-            return Err(CognitiveStoreError::Corrupt(
-                "stored KG entity FTS exceeds the reopen verification limit".to_string(),
-            ));
-        }
-        let mut stored_fts = fts_rows
-            .into_iter()
-            .map(|row| {
-                Ok((
-                    row.try_get::<String, _>("projection_scope")
-                        .map_err(unavailable)?,
-                    row.try_get::<i64, _>("generation").map_err(unavailable)?,
-                    row.try_get::<String, _>("node_id").map_err(unavailable)?,
-                    row.try_get::<String, _>("entity_type")
-                        .map_err(unavailable)?,
-                    row.try_get::<String, _>("label").map_err(unavailable)?,
-                ))
-            })
-            .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
-        let mut expected_fts = expected_nodes
-            .iter()
-            .map(|node| {
-                (
-                    projection_scope.clone(),
-                    generation,
-                    node.node_id.clone(),
-                    node.entity_type.clone(),
-                    node.label.clone(),
+        let storage_mode = current
+            .try_get::<Option<String>, _>("storage_mode")
+            .map_err(unavailable)?;
+        match storage_mode.as_deref() {
+            Some("revision_facts_v1") => {
+                let fts_rows = sqlx::query(
+                    "SELECT f.memory_id, CAST(f.memory_revision AS INTEGER) AS memory_revision,
+                            f.canonical_entity_id, f.entity_type, f.label
+                     FROM kg_revision_entity_fts f
+                     JOIN memory_heads h
+                       ON h.memory_id = f.memory_id AND h.revision = f.memory_revision
+                     JOIN memory_revisions r
+                       ON r.memory_id = f.memory_id AND r.revision = f.memory_revision
+                     WHERE r.owner_agent_id = ? AND r.scope_kind = ?
+                       AND r.workspace_sha256 IS ?
+                       AND r.verification = 'verified' AND r.lifecycle = 'active'
+                     ORDER BY f.memory_id, f.memory_revision, f.entity_key LIMIT ?",
                 )
-            })
-            .collect::<Vec<_>>();
-        stored_fts.sort();
-        expected_fts.sort();
-        if stored_fts != expected_fts {
-            return Err(CognitiveStoreError::Corrupt(format!(
-                "KG current projection `{projection_scope}` FTS rows do not exactly match its nodes"
-            )));
+                .bind(owner.as_str())
+                .bind(scope_kind)
+                .bind(workspace_sha256.as_deref())
+                .bind(bounded_limit(MAX_SCOPE_NODES)?)
+                .fetch_all(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if fts_rows.len() > MAX_SCOPE_NODES {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "revision-scoped KG entity FTS exceeds the reopen verification limit"
+                            .to_string(),
+                    ));
+                }
+                let mut stored_fts = fts_rows
+                    .into_iter()
+                    .map(|row| {
+                        Ok((
+                            row.try_get::<String, _>("memory_id").map_err(unavailable)?,
+                            row.try_get::<i64, _>("memory_revision")
+                                .map_err(unavailable)?,
+                            row.try_get::<String, _>("canonical_entity_id")
+                                .map_err(unavailable)?,
+                            row.try_get::<String, _>("entity_type")
+                                .map_err(unavailable)?,
+                            row.try_get::<String, _>("label").map_err(unavailable)?,
+                        ))
+                    })
+                    .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
+                let mut expected_fts = expected_nodes
+                    .iter()
+                    .map(|node| {
+                        (
+                            node.memory_id.clone(),
+                            node.memory_revision,
+                            node.canonical_entity_id.clone(),
+                            node.entity_type.clone(),
+                            node.label.clone(),
+                        )
+                    })
+                    .collect::<Vec<_>>();
+                stored_fts.sort();
+                expected_fts.sort();
+                if stored_fts != expected_fts {
+                    return Err(CognitiveStoreError::Corrupt(format!(
+                        "KG current projection `{projection_scope}` revision FTS rows do not match immutable facts"
+                    )));
+                }
+            }
+            None => {
+                let stored_node_rows = sqlx::query(
+                    "SELECT n.node_id, i.canonical_entity_id, n.entity_type, n.label,
+                        n.valid_from_unix_seconds, n.valid_to_unix_seconds,
+                        n.memory_id, n.memory_revision, n.source_id, n.source_revision
+                 FROM kg_nodes n
+                 JOIN kg_projection_node_entities i
+                   ON i.projection_scope = n.projection_scope
+                  AND i.generation = n.generation AND i.node_id = n.node_id
+                 WHERE n.projection_scope = ? AND n.generation = ?
+                 ORDER BY n.node_id LIMIT ?",
+                )
+                .bind(&projection_scope)
+                .bind(generation)
+                .bind(bounded_limit(MAX_SCOPE_NODES)?)
+                .fetch_all(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if stored_node_rows.len() > MAX_SCOPE_NODES {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "stored KG projection exceeds the node reopen verification limit"
+                            .to_string(),
+                    ));
+                }
+                let mut stored_nodes = stored_node_rows
+                    .into_iter()
+                    .map(|row| {
+                        Ok(ProjectionNode {
+                            node_id: row.try_get("node_id").map_err(unavailable)?,
+                            canonical_entity_id: row
+                                .try_get("canonical_entity_id")
+                                .map_err(unavailable)?,
+                            entity_type: row.try_get("entity_type").map_err(unavailable)?,
+                            label: row.try_get("label").map_err(unavailable)?,
+                            valid_from: row
+                                .try_get("valid_from_unix_seconds")
+                                .map_err(unavailable)?,
+                            valid_to: row.try_get("valid_to_unix_seconds").map_err(unavailable)?,
+                            memory_id: row.try_get("memory_id").map_err(unavailable)?,
+                            memory_revision: row.try_get("memory_revision").map_err(unavailable)?,
+                            source_id: row.try_get("source_id").map_err(unavailable)?,
+                            source_revision: row.try_get("source_revision").map_err(unavailable)?,
+                        })
+                    })
+                    .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
+                let mut expected_nodes_by_id = expected_nodes.clone();
+                expected_nodes_by_id.sort_by(|left, right| left.node_id.cmp(&right.node_id));
+                stored_nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
+                if stored_nodes != expected_nodes_by_id {
+                    return Err(CognitiveStoreError::Corrupt(format!(
+                        "KG current projection `{projection_scope}` nodes do not match current immutable fact supports"
+                    )));
+                }
+
+                let stored_edge_rows = sqlx::query(
+                    "SELECT edge_id, from_node_id, to_node_id, relation,
+                        valid_from_unix_seconds, valid_to_unix_seconds,
+                        memory_id, memory_revision, source_id, source_revision
+                 FROM kg_edges
+                 WHERE projection_scope = ? AND generation = ?
+                 ORDER BY edge_id LIMIT ?",
+                )
+                .bind(&projection_scope)
+                .bind(generation)
+                .bind(bounded_limit(MAX_SCOPE_EDGES)?)
+                .fetch_all(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if stored_edge_rows.len() > MAX_SCOPE_EDGES {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "stored KG projection exceeds the edge reopen verification limit"
+                            .to_string(),
+                    ));
+                }
+                let mut stored_edges = stored_edge_rows
+                    .into_iter()
+                    .map(|row| {
+                        Ok(StoredProjectionEdge {
+                            edge_id: row.try_get("edge_id").map_err(unavailable)?,
+                            from_node_id: row.try_get("from_node_id").map_err(unavailable)?,
+                            to_node_id: row.try_get("to_node_id").map_err(unavailable)?,
+                            relation: row.try_get("relation").map_err(unavailable)?,
+                            valid_from: row
+                                .try_get("valid_from_unix_seconds")
+                                .map_err(unavailable)?,
+                            valid_to: row.try_get("valid_to_unix_seconds").map_err(unavailable)?,
+                            memory_id: row.try_get("memory_id").map_err(unavailable)?,
+                            memory_revision: row.try_get("memory_revision").map_err(unavailable)?,
+                            source_id: row.try_get("source_id").map_err(unavailable)?,
+                            source_revision: row.try_get("source_revision").map_err(unavailable)?,
+                        })
+                    })
+                    .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
+                let mut expected_stored_edges = expected_edges
+                    .iter()
+                    .map(StoredProjectionEdge::from)
+                    .collect::<Vec<_>>();
+                stored_edges.sort();
+                expected_stored_edges.sort();
+                if stored_edges != expected_stored_edges {
+                    return Err(CognitiveStoreError::Corrupt(format!(
+                        "KG current projection `{projection_scope}` edges do not match current immutable fact supports"
+                    )));
+                }
+
+                let fts_rows = sqlx::query(
+                    "SELECT projection_scope, generation, node_id, entity_type, label
+                 FROM kg_entity_fts
+                 WHERE projection_scope = ? AND generation = ?
+                 ORDER BY node_id, entity_type, label LIMIT ?",
+                )
+                .bind(&projection_scope)
+                .bind(generation)
+                .bind(bounded_limit(MAX_SCOPE_NODES)?)
+                .fetch_all(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if fts_rows.len() > MAX_SCOPE_NODES {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "stored KG entity FTS exceeds the reopen verification limit".to_string(),
+                    ));
+                }
+                let mut stored_fts = fts_rows
+                    .into_iter()
+                    .map(|row| {
+                        Ok((
+                            row.try_get::<String, _>("projection_scope")
+                                .map_err(unavailable)?,
+                            row.try_get::<i64, _>("generation").map_err(unavailable)?,
+                            row.try_get::<String, _>("node_id").map_err(unavailable)?,
+                            row.try_get::<String, _>("entity_type")
+                                .map_err(unavailable)?,
+                            row.try_get::<String, _>("label").map_err(unavailable)?,
+                        ))
+                    })
+                    .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
+                let mut expected_fts = expected_nodes
+                    .iter()
+                    .map(|node| {
+                        (
+                            projection_scope.clone(),
+                            generation,
+                            node.node_id.clone(),
+                            node.entity_type.clone(),
+                            node.label.clone(),
+                        )
+                    })
+                    .collect::<Vec<_>>();
+                stored_fts.sort();
+                expected_fts.sort();
+                if stored_fts != expected_fts {
+                    return Err(CognitiveStoreError::Corrupt(format!(
+                        "KG current projection `{projection_scope}` FTS rows do not exactly match its nodes"
+                    )));
+                }
+            }
+            Some(mode) => {
+                return Err(CognitiveStoreError::Corrupt(format!(
+                    "unknown KG projection storage mode `{mode}`"
+                )));
+            }
         }
 
         let expected_output = output_digest(&projection_scope, &expected_nodes, &expected_edges);
