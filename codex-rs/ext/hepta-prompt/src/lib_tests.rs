@@ -264,3 +264,142 @@ async fn not_dispatched_never_fabricates_delivery_credit() {
         .validate()
         .unwrap_or_else(|error| panic!("record: {error}"));
 }
+
+#[tokio::test]
+async fn concurrent_resolvers_share_one_validated_preparation() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let prepared = attachment();
+    let expected = prepared.source_binding_digest;
+    let count = Arc::clone(&calls);
+    let host = PromptRuntimeHost::new(
+        "single-flight",
+        move |_| {
+            count.fetch_add(1, Ordering::SeqCst);
+            let value = prepared.clone();
+            Box::pin(async move {
+                tokio::task::yield_now().await;
+                Ok(Some(value))
+            })
+        },
+        |_| Box::pin(async { Ok(()) }),
+        |_| Box::pin(async { Ok(()) }),
+    )
+    .unwrap();
+    let extension = PromptRuntimeExtension { host };
+    let (_, thread, turn) = stores();
+    let resolve = || {
+        extension.resolve(
+            thread.level_id().into(),
+            turn.level_id().into(),
+            None,
+            &turn,
+        )
+    };
+    let (left, right) = tokio::join!(resolve(), resolve());
+    for value in [left, right] {
+        let ResolvedAttachment::Ready(value) = value else {
+            panic!("prepared attachment missing");
+        };
+        assert_eq!(value.source_binding_digest, expected);
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[tokio::test]
+async fn failed_preparation_is_cached_not_retried_by_provider_admission() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let count = Arc::clone(&calls);
+    let host = PromptRuntimeHost::new(
+        "failed-single-flight",
+        move |_| {
+            count.fetch_add(1, Ordering::SeqCst);
+            Box::pin(async {
+                Err(PromptRuntimeHostError::new(
+                    "owner-unavailable",
+                    "owner unavailable",
+                ))
+            })
+        },
+        |_| Box::pin(async { Ok(()) }),
+        |_| Box::pin(async { Ok(()) }),
+    )
+    .unwrap();
+    let extension = PromptRuntimeExtension { host };
+    let (_, thread, turn) = stores();
+    for _ in 0..2 {
+        assert!(matches!(
+            extension
+                .resolve(
+                    thread.level_id().into(),
+                    turn.level_id().into(),
+                    None,
+                    &turn
+                )
+                .await,
+            ResolvedAttachment::Failed(_)
+        ));
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[tokio::test]
+async fn cancelled_preparation_does_not_publish_a_partial_attachment() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let count = Arc::clone(&calls);
+    let started = Arc::new(tokio::sync::Notify::new());
+    let notify = Arc::clone(&started);
+    let host = PromptRuntimeHost::new(
+        "cancelled-single-flight",
+        move |_| {
+            let first = count.fetch_add(1, Ordering::SeqCst) == 0;
+            let notify = Arc::clone(&notify);
+            Box::pin(async move {
+                if first {
+                    notify.notify_one();
+                    std::future::pending::<()>().await;
+                }
+                Ok(Some(attachment()))
+            })
+        },
+        |_| Box::pin(async { Ok(()) }),
+        |_| Box::pin(async { Ok(()) }),
+    )
+    .unwrap();
+    let extension = PromptRuntimeExtension { host };
+    let turn = Arc::new(ExtensionData::new("turn:cancelled"));
+    let task = {
+        let extension = extension.clone();
+        let turn = Arc::clone(&turn);
+        tokio::spawn(async move {
+            extension
+                .resolve(
+                    "thread:cancelled".into(),
+                    turn.level_id().into(),
+                    None,
+                    &turn,
+                )
+                .await
+        })
+    };
+    started.notified().await;
+    task.abort();
+    assert!(matches!(task.await, Err(error) if error.is_cancelled()));
+    assert!(
+        turn.get_or_init(PromptRuntimeTurnState::default)
+            .resolved
+            .get()
+            .is_none()
+    );
+    assert!(matches!(
+        extension
+            .resolve(
+                "thread:cancelled".into(),
+                turn.level_id().into(),
+                None,
+                &turn
+            )
+            .await,
+        ResolvedAttachment::Ready(_)
+    ));
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+}
