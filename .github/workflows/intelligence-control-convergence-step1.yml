@@ -40,6 +40,10 @@ jobs:
       - name: Validate traceability JSON
         run: python3 -m json.tool docs/modules/intelligence.control/TEST_TRACEABILITY.json >/dev/null
 
+      - name: Format modified intelligence source
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-intelligence
+
       - name: Verify formatting
         working-directory: codex-rs
         run: cargo fmt -p codex-hepta-intelligence -- --check
