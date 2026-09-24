@@ -1,0 +1,46 @@
+name: chatgpt cognitive.types reference lock refresh
+
+on:
+  push:
+    branches:
+      - chatgpt/cognitive-types-convergence-20260925
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Show Rust toolchain identity
+        run: |
+          rustc --version --verbose
+          cargo --version --verbose
+
+      - name: Refresh standalone reference lockfiles
+        run: |
+          cargo generate-lockfile --manifest-path qualification/hnmf-contract-reference/Cargo.toml
+          cargo generate-lockfile --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml
+          cargo generate-lockfile --manifest-path qualification/hnmf-reference/Cargo.toml
+          git diff --check
+          git diff -- \
+            qualification/hnmf-contract-reference/Cargo.lock \
+            qualification/hnmf-adversarial-reference/Cargo.lock \
+            qualification/hnmf-reference/Cargo.lock
+
+      - name: Retain refreshed lockfiles
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: chatgpt-cognitive-types-reference-locks
+          path: |
+            qualification/hnmf-contract-reference/Cargo.lock
+            qualification/hnmf-adversarial-reference/Cargo.lock
+            qualification/hnmf-reference/Cargo.lock
+          if-no-files-found: error
+          retention-days: 1
