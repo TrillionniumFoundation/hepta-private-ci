@@ -145,11 +145,30 @@ impl NduProjectionJournalV1 {
         )
     }
 
+    /// Compatibility entry for first selection only. It fails closed when a
+    /// predecessor is already selected; replacements must use
+    /// `select_projection_if_current` with the exact current predecessor.
+    pub fn select_projection(
+        &mut self,
+        operation_identity_digest: Digest32,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        projection_digest: Digest32,
+    ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
+        self.select_projection_if_current(
+            operation_identity_digest,
+            objective_digest,
+            subject_digest,
+            None,
+            projection_digest,
+        )
+    }
+
     /// Selects a recorded projection only if the caller's expected selected
     /// predecessor still equals the authoritative selected view. `None` means
     /// that no projection may currently be selected for this objective/subject.
     /// Exact identity replay remains idempotent after a successful commit.
-    pub fn select_projection(
+    pub fn select_projection_if_current(
         &mut self,
         operation_identity_digest: Digest32,
         objective_digest: Digest32,
@@ -540,7 +559,7 @@ impl NduProjectionJournalV1 {
                 NduProjectionKindV1::SelectedProjection => {
                     let selected_predecessor =
                         journal.selected_projection_digest(objective_digest, subject_digest);
-                    journal.select_projection(
+                    journal.select_projection_if_current(
                         identity_digest,
                         objective_digest,
                         subject_digest,
