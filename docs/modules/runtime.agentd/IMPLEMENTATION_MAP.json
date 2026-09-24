@@ -222,11 +222,17 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+        {
+          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "kind": "native_integration",
+          "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+        }
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
     },
     {
       "operation": "shared_terminal_cell_load",
@@ -236,11 +242,17 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+        {
+          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "kind": "native_integration",
+          "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+        }
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
     },
     {
       "operation": "shared_terminal_cell_predict",
@@ -250,11 +262,17 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs::clean_agent_recall_replay_training_load_and_source_withdrawal"
+        {
+          "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "kind": "native_integration",
+          "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+        }
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "buildTarget": "codex-hepta-agentd",
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
     }
   ],
   "repositoryControlledGaps": [

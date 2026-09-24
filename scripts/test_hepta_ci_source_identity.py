@@ -86,6 +86,28 @@ class GitSourceIdentityTests(unittest.TestCase):
         self.git("commit", "-qm", message)
         return self.git("rev-parse", "HEAD")
 
+    def test_lane_b_modern_policy_uses_exact_shared_source_checks(self) -> None:
+        row = {
+            "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+            "sourceBase": {
+                "commit": self.head,
+                "tree": self.git("rev-parse", "HEAD^{tree}"),
+            },
+            "resolvedRoots": ["owned"],
+            "operations": [{"sourcePath": "owned/provider.py"}],
+        }
+        with mock.patch.object(LANE_B, "ROOT", self.root):
+            self.assertEqual(
+                LANE_B.verify_module_source_base(row, "fixture")[0], self.head
+            )
+            (self.root / "owned/provider.py").write_text("changed", encoding="utf-8")
+            with self.assertRaisesRegex(LANE_B.Invalid, "canonical source identity"):
+                LANE_B.verify_module_source_base(row, "fixture")
+            self.git("add", "owned/provider.py")
+            self.git("commit", "-qm", "committed source drift")
+            with self.assertRaisesRegex(LANE_B.Invalid, "canonical source identity"):
+                LANE_B.verify_module_source_base(row, "fixture")
+
     def lane_a(self) -> subprocess.CompletedProcess:
         self.event_path.write_text(json.dumps(self.event), encoding="utf-8")
         return subprocess.run(
