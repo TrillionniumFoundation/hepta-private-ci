@@ -12,8 +12,10 @@ on:
       - "codex-rs/app-server/**"
       - "docs/modules/knowledge.graph/**"
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
+      - "qualification/knowledge-graph/**"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-knowledge-graph-target-measure.py"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
   push:
@@ -28,8 +30,10 @@ on:
       - "codex-rs/app-server/**"
       - "docs/modules/knowledge.graph/**"
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
+      - "qualification/knowledge-graph/**"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-knowledge-graph-target-measure.py"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
 
 permissions:
@@ -102,6 +106,10 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Self-test target-host evidence harness
+        shell: bash
+        run: python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
 
       - name: Observe repository-wide detailed-design health
         continue-on-error: true
