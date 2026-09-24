@@ -67,7 +67,7 @@ fn freeze(owner: &LedgerWriter, name: &str) -> DatasetSnapshotReceiptV3 {
         objective_digest: digest("objective"),
         inclusion_policy_digest: digest("all-active-owner-episodes"),
     };
-    let payload = dataset_freeze_signing_payload_v2(&owner.snapshot().unwrap(), &plan).unwrap();
+    let payload = owner.dataset_freeze_signing_payload(&plan).unwrap();
     let signed = sign(
         owner.verifier(),
         "evaluator",

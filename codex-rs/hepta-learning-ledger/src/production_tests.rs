@@ -936,3 +936,6 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
 
 #[path = "production_growth_tests.rs"]
 mod growth;
+
+#[path = "production_freeze_tests.rs"]
+mod freeze_tests;

@@ -292,10 +292,15 @@ impl LearningLedger {
     /// revocations and explicit unlearning lineage have been applied.
     #[must_use]
     pub fn active_records(&self) -> Vec<&LedgerRecord> {
+        self.active_records_iter().collect()
+    }
+
+    /// Borrow the same activity predicate without allocating a global pointer
+    /// list when an owner operation only needs a sequential projection pass.
+    pub(crate) fn active_records_iter(&self) -> impl Iterator<Item = &LedgerRecord> {
         self.records
             .iter()
             .filter(|record| self.record_is_active(record))
-            .collect()
     }
 
     #[must_use]

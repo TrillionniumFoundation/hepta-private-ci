@@ -236,6 +236,24 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host. The executable [target-host harness](../../../codex-rs/hepta-learning-ledger/examples/target_host_qualification.rs) records exact source/tree/binary identity, append and rotation p50/p95/p99, sustained append throughput, reopen time, storage growth and RSS on the machine where it is run. Its receipt deliberately keeps power-loss, longitudinal-efficacy and production-activation claims false.
 
+### Borrowed dataset freeze and withdrawal lookup
+
+`LedgerWriter::dataset_freeze_signing_payload` derives the evaluator signing
+bytes from the already validated owner core. `freeze_dataset` derives the current
+view again before signature verification, so an intervening append, correction or
+withdrawal cannot reuse a signature for an older head. Its result preserves the
+existing dataset protocol bytes and causal cuts. The owner path does not clone
+and replay the complete history or allocate a global active-record pointer list;
+standalone snapshot helpers still validate their untrusted snapshot by replay.
+Withdrawal resolves the historical source identity through the existing index,
+including inactive records needed for exact idempotent retries.
+
+This removes redundant allocation and replay, not the remaining history scans,
+resident core history, or full-history restart cost. Dataset-sized identity sets
+and output digests remain necessary. The opt-in signed-writer and freeze growth
+curves are host observations, not accepted deployment budgets. No long-running
+capacity or compaction claim follows from these changes.
+
 ## 11. Observability and operations
 
 Use `LedgerWriter` for composed writes. The writer combines the native durable backend, pinned-root-authenticated signer distribution and independently retained `LedgerWitnessStore`. Inspect and reopen existing state before admitting new records; failure of anchored recovery is not permission to fall back to unanchored opening. Segment rotation, retention and backup must preserve both record and topology frontiers. The host remains responsible for selecting and authorizing the correct directory handles, witness placement/isolation, encryption and physical-storage qualification; `LedgerWriter` performs the required directory `sync_all` before acknowledging creation/topology that depends on those entries.
