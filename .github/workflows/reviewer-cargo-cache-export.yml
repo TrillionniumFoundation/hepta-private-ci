@@ -1,5 +1,6 @@
 name: Reviewer Cargo cache export
 
+# Split refresh: 2026-09-25T03:08+09:00
 on:
   push:
     branches:
@@ -12,7 +13,7 @@ permissions:
 
 jobs:
   export:
-    name: Export locked Cargo cache
+    name: Export split locked Cargo cache
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -34,21 +35,63 @@ jobs:
           set -euo pipefail
           rustup run 1.95.0 cargo fetch --locked
 
-      - name: Pack Cargo home
+      - name: Pack split Cargo home
         shell: bash
         run: |
           set -euo pipefail
-          tar -C "$HOME" -czf "$RUNNER_TEMP/reviewer-cargo-home.tar.gz" .cargo/registry .cargo/git 2>/dev/null || \
-            tar -C "$HOME" -czf "$RUNNER_TEMP/reviewer-cargo-home.tar.gz" .cargo/registry
-          sha256sum "$RUNNER_TEMP/reviewer-cargo-home.tar.gz" > "$RUNNER_TEMP/reviewer-cargo-home.tar.gz.sha256"
+          mkdir -p "$RUNNER_TEMP/cargo-cache-parts"
+          for part in registry/index registry/cache registry/src git/db git/checkouts; do
+            src="$HOME/.cargo/$part"
+            name="${part//\//-}"
+            archive="$RUNNER_TEMP/cargo-cache-parts/${name}.tar.gz"
+            if test -d "$src"; then
+              tar -C "$HOME" -czf "$archive" ".cargo/$part"
+              sha256sum "$archive" > "$archive.sha256"
+              du -h "$archive"
+            fi
+          done
 
-      - name: Upload Cargo home
+      - name: Upload registry index
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: reviewer-cargo-home-locked
-          path: |
-            ${{ runner.temp }}/reviewer-cargo-home.tar.gz
-            ${{ runner.temp }}/reviewer-cargo-home.tar.gz.sha256
+          name: reviewer-cargo-registry-index
+          path: ${{ runner.temp }}/cargo-cache-parts/registry-index.tar.gz*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+      - name: Upload registry cache
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-cargo-registry-cache
+          path: ${{ runner.temp }}/cargo-cache-parts/registry-cache.tar.gz*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+      - name: Upload registry sources
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-cargo-registry-src
+          path: ${{ runner.temp }}/cargo-cache-parts/registry-src.tar.gz*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+      - name: Upload git database
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-cargo-git-db
+          path: ${{ runner.temp }}/cargo-cache-parts/git-db.tar.gz*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+      - name: Upload git checkouts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-cargo-git-checkouts
+          path: ${{ runner.temp }}/cargo-cache-parts/git-checkouts.tar.gz*
           if-no-files-found: error
           compression-level: 0
           retention-days: 1
