@@ -61,7 +61,9 @@ fn distinct_model_versions_remain_reopenable() {
     let temp = tempfile::tempdir().must("temp");
     let path = temp.path().join("owner");
     let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
-    owner.commit(|core| add_payload(core, 0)).must("first profile");
+    owner
+        .commit(|core| add_payload(core, 0))
+        .must("first profile");
 
     let current = owner.registry().must("current");
     let mut second = current
