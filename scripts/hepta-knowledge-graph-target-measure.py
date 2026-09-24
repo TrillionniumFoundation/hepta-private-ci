@@ -99,11 +99,11 @@ def parse_receipt(output: str, expected_profile_id: str) -> dict[str, Any]:
     if positive_int(work.get("relationEdgesScanned"), "boundedQueryWork.relationEdgesScanned") < returned + omitted:
         fail("bounded query edge scan count is smaller than its match count")
 
-    storage = receipt.get("storageBytes")
+    storage = receipt.get("storage")
     if not isinstance(storage, dict):
         fail("missing DB/WAL storage measurements")
-    positive_int(storage.get("database"), "storageBytes.database", allow_zero=True)
-    positive_int(storage.get("wal"), "storageBytes.wal", allow_zero=True)
+    positive_int(storage.get("databaseBytes"), "storage.databaseBytes", allow_zero=True)
+    positive_int(storage.get("walBytes"), "storage.walBytes", allow_zero=True)
 
     process = receipt.get("process")
     if not isinstance(process, dict):
@@ -190,7 +190,7 @@ def self_test() -> int:
             "relationEdgesScanned": 4,
             "selectedEdgesCloned": 1,
         },
-        "storageBytes": {"database": 0, "wal": 0},
+        "storage": {"databaseBytes": 0, "walBytes": 0},
         "process": {"peakRssKiB": 1},
     }
     parsed = parse_receipt(PREFIX + json.dumps(fixture), "self-test")
