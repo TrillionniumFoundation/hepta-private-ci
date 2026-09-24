@@ -44,14 +44,30 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake curl git libdbus-1-dev libfontconfig1-dev \
-            libfreetype6-dev libgl1-mesa-dev libglib2.0-dev libssl-dev \
-            libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config python3
+            libfreetype6-dev libgl1-mesa-dev libssl-dev libx11-dev libxcb1-dev \
+            libxkbcommon-dev llvm pkg-config python3
 
       - name: Apply worker identity binding
         run: |
-          set -euo pipefail
-          python3 tools/apply_browser_servo_worker_binding.py
-          rustfmt --edition 2024 apps/hepta-browser/servo-worker/src/main.rs
+          set +e
+          {
+            python3 -X dev tools/apply_browser_servo_worker_binding.py
+            transform_status=$?
+            if [ "$transform_status" -eq 0 ]; then
+              rustfmt --edition 2024 apps/hepta-browser/servo-worker/src/main.rs
+              transform_status=$?
+            fi
+          } > /tmp/browser-servo-worker-transform.log 2>&1
+          cat /tmp/browser-servo-worker-transform.log
+          if [ "$transform_status" -ne 0 ]; then
+            cp /tmp/browser-servo-worker-transform.log browser-servo-worker-bootstrap-error.log
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add browser-servo-worker-bootstrap-error.log
+            git commit -m "ci(browser.servo): retain worker transform failure [skip ci]"
+            git push origin HEAD:codex/browser-servo-convergence-20260925
+            exit "$transform_status"
+          fi
 
       - name: Generate and verify exact dependency lock
         run: |
@@ -76,13 +92,10 @@ jobs:
           cargo test --locked --manifest-path "$WORKER_MANIFEST"
 
       - name: Run complete Browser source regressions
-        run: |
-          set -euo pipefail
-          node --test apps/hepta-browser/test/*.test.js
+        run: node --test apps/hepta-browser/test/*.test.js
 
       - name: Verify source formatting
         run: |
-          set -euo pipefail
           rustfmt --edition 2024 --check apps/hepta-browser/servo-worker/src/main.rs
           git diff --check
 
@@ -91,6 +104,7 @@ jobs:
           set -euo pipefail
           git rm tools/apply_browser_servo_worker_binding.py
           git rm .github/workflows/browser-servo-worker-binding-bootstrap.yml
+          rm -f browser-servo-worker-bootstrap-error.log
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apps/hepta-browser/servo-worker/src/main.rs "$WORKER_LOCK"
