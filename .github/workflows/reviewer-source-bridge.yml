@@ -117,3 +117,47 @@ jobs:
             ${{ runner.temp }}/ledger-portable-output/*.log
           if-no-files-found: error
           retention-days: 1
+
+  ledger-native-repack:
+    name: Split retained diagnostic artifact for transport
+    if: contains(github.event.head_commit.message, '[ledger-native-repack]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Retrieve and verify existing exact-source artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/10824628702/zip > native.zip
+          echo 'dca60c622c89d810e85f2cbba8fa3dddcd2449bda84307724d34677a0a4052f4  native.zip' | sha256sum --check
+          split -b 400M -d native.zip ledger-native-part-
+      - name: Retain first transport part
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-ledger-native-c52-part-00
+          path: ${{ runner.temp }}/ledger-native-part-00
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
+      - name: Retain second transport part
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-ledger-native-c52-part-01
+          path: ${{ runner.temp }}/ledger-native-part-01
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
+      - name: Retain final transport part
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reviewer-ledger-native-c52-part-02
+          path: ${{ runner.temp }}/ledger-native-part-02
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
