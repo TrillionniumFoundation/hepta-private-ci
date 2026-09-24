@@ -1,0 +1,68 @@
+name: intelligence-control authoritative provider qualification
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-agentd/src/intelligence_ingress.rs
+      - .github/workflows/intelligence-provider-qualification.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: intelligence-provider-qualification-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    if: github.event.pull_request.number == 999
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "2"
+      GH_TOKEN: ${{ github.token }}
+      TARGET_BRANCH: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Check out exact provider head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Format Agentd provider source
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-agentd
+
+      - name: Commit formatting when needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            exit 0
+          fi
+          git diff --check
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          git add codex-rs/hepta-agentd/src/intelligence_ingress.rs
+          git commit -m "fix(intelligence.control): format authoritative provider"
+          git fetch origin "${TARGET_BRANCH}"
+          git rebase "origin/${TARGET_BRANCH}"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Test authoritative provider composition
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agentd intelligence_ingress::tests::repository_supplies_separated_authoritative_provider_composition -- --nocapture
+
+      - name: Strict provider lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
