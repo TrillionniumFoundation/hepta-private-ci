@@ -34,6 +34,7 @@ pub use https_consumer::BaoToken;
 
 pub use lease_lifecycle::DurableLeaseRegistryV1;
 pub use lease_lifecycle::LeaseOperationKindV1;
+pub use lease_lifecycle::LeaseOperationResultV1;
 pub use lease_lifecycle::LeaseOperationStateV1;
 pub use lease_lifecycle::LeaseOperationV1;
 pub use lease_lifecycle::LeaseRegistryErrorV1;
