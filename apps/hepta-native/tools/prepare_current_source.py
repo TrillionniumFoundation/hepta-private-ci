@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Freeze committed native sources; never generate a second implementation.
+"""Freeze committed native sources and refresh only native identity metadata.
 
-The one-time #830/current-owner migration is already committed. Subsequent
-changes are ordinary reviewed source commits. Only formatting, dependency
-locking and identity metadata may be refreshed by the candidate workflow.
+The one-time source migration is already committed. This command does not
+create implementation, alter owner authority, or turn test sources into passes.
 """
 import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -21,9 +21,13 @@ def git(*args):
     return subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
 
 
-def prepare():
+def require_branch():
     if git('branch', '--show-current') != BRANCH:
-        raise RuntimeError('source preparation is restricted to the named native candidate')
+        raise RuntimeError('metadata writes are restricted to the named native candidate')
+
+
+def prepare():
+    require_branch()
     subprocess.run(['git', 'merge-base', '--is-ancestor', BASE, 'HEAD'], cwd=ROOT, check=True)
     if git('status', '--porcelain'):
         raise RuntimeError('source preparation requires a clean committed candidate')
@@ -43,6 +47,7 @@ def fingerprint(write):
     observed = {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in names}
     if write:
+        require_branch()
         path.write_text(json.dumps({
             'schema': 'hepta.ui.native.current-source.v1',
             'baselineCommit': BASE,
@@ -62,30 +67,96 @@ def fingerprint(write):
         print(f'verified {len(observed)} native source identities')
 
 
+def native_row(data, collection):
+    rows = [row for row in data[collection] if row.get('module') == 'ui.native']
+    if len(rows) != 1:
+        raise RuntimeError(f'expected exactly one ui.native row in {collection}')
+    return rows[0]
+
+
+def rewrite_retired_navigation(value):
+    replacements = {
+        'apps/hepta-native/src/native.js': 'apps/hepta-native/src/runtime.rs',
+        'apps/hepta-native/src/shell-runtime.js': 'apps/hepta-native/src/runtime.rs',
+        'apps/hepta-native/test/native.test.js': 'apps/hepta-native/tests/journal_regressions.rs',
+        'apps/hepta-native/test/shell-runtime.test.js': 'apps/hepta-native/tests/runtime.rs',
+        'buildNativeIntent': 'request_platform_capability',
+        'observeNativeOutcome': 'reconcile_pending',
+    }
+    if isinstance(value, str):
+        if value.startswith('node --test apps/hepta-native/'):
+            return 'cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets'
+        return replacements.get(value, value)
+    if isinstance(value, list):
+        return [rewrite_retired_navigation(child) for child in value]
+    if isinstance(value, dict):
+        return {key: rewrite_retired_navigation(child) for key, child in value.items()}
+    return value
+
+
+def sync_registry_metadata():
+    changes = {}
+    relative = 'docs/modules/CARGO_BINDINGS.json'
+    data = json.loads((ROOT / relative).read_text(encoding='utf-8'))
+    matching = [row for row in data['bindings'] if row['packagePath'] == 'apps/hepta-native']
+    if len(matching) > 1 or any(row['module'] != 'ui.native' for row in matching):
+        raise RuntimeError('native Cargo package has conflicting owner bindings')
+    if not matching:
+        data['bindings'].append({'packagePath': 'apps/hepta-native', 'module': 'ui.native'})
+        data['bindings'].sort(key=lambda row: row['packagePath'])
+    changes[relative] = json.dumps(data, indent=2, ensure_ascii=False) + '\n'
+    for relative, collection in [
+        ('docs/modules/SOURCE_BINDINGS.json', 'bindings'),
+        ('docs/modules/MODULE_DOCS.json', 'modules'),
+    ]:
+        data = json.loads((ROOT / relative).read_text(encoding='utf-8'))
+        row = native_row(data, collection)
+        updated = rewrite_retired_navigation(row)
+        row.clear()
+        row.update(updated)
+        if relative.endswith('MODULE_DOCS.json'):
+            text = (ROOT / row['path']).read_text(encoding='utf-8')
+            row.update(sha256=hashlib.sha256(text.encode('utf-8')).hexdigest(),
+                       bytes=len(text.encode('utf-8')), words=len(re.findall(r'\b[\w.-]+\b', text)))
+            if any(heading not in text for heading in row['requiredSections']):
+                raise RuntimeError('native technical guide is missing a registered section')
+        changes[relative] = json.dumps(data, indent=2, ensure_ascii=False) + '\n'
+    relative = 'qualification/module-execution-dossiers/DETAILS.json'
+    data = json.loads((ROOT / relative).read_text(encoding='utf-8'))
+    rows = [row for row in data['rows'] if row.get('path') ==
+            'qualification/module-execution-dossiers/detail/ui.native.md']
+    if len(rows) != 1:
+        raise RuntimeError('native dossier index coverage mismatch')
+    text = (ROOT / rows[0]['path']).read_text(encoding='utf-8')
+    rows[0]['sha256'] = hashlib.sha256(text.encode('utf-8')).hexdigest()
+    changes[relative] = json.dumps(data, separators=(',', ':'), ensure_ascii=False) + '\n'
+    for relative, text in changes.items():
+        (ROOT / relative).write_text(text, encoding='utf-8')
+    # The freeze workflow commits these exact scoped registry changes with the
+    # native map; no unrelated owner source or authority registry is staged.
+    subprocess.run(['git', 'add', '--', *changes], cwd=ROOT, check=True)
+
+
 def sync_metadata():
+    require_branch()
     source = git('rev-parse', 'HEAD')
     tree = git('rev-parse', 'HEAD^{tree}')
     path = ROOT / 'docs/modules/ui.native/IMPLEMENTATION_MAP.json'
     data = json.loads(path.read_text(encoding='utf-8'))
     entries = {
-        'connect_runtime': ('runtime.rs', 'pub fn connect_runtime(', 'tests/runtime.rs',
-            'Validates endpoint/session identity and reconciles durable pending operations; authenticated gateway composition remains a product gate.'),
-        'render_runtime_view': ('runtime.rs', 'pub fn refresh_runtime_view(', 'tests/backend.rs',
-            'Consumes backend runtime observations and validates session/view monotonicity; fixture observations are not physical product evidence.'),
-        'request_platform_capability': ('runtime.rs', 'pub fn request_platform_capability(', 'tests/runtime.rs',
-            'Binds owned payload and session identity, durably journals dispatch, consumes current kernel final-use authority and preserves uncertain effects without replay.'),
-        'apply_shell_update': ('updater.rs', 'pub fn verify_and_stage(', 'tests/security_updater.rs',
-            'Verifies signed staging and predecessor-bound activation; serializes update transitions and refuses rollback over unrelated installed state.'),
+        'connect_runtime': ('runtime.rs', 'pub fn connect_runtime(', 'tests/runtime.rs'),
+        'render_runtime_view': ('runtime.rs', 'pub fn refresh_runtime_view(', 'tests/backend.rs'),
+        'request_platform_capability': ('runtime.rs', 'pub fn request_platform_capability(', 'tests/runtime.rs'),
+        'apply_shell_update': ('updater.rs', 'pub fn verify_and_stage(', 'tests/security_updater.rs'),
     }
     data['sourceBase'] = {'commit': source, 'tree': tree}
     for op in data['operations']:
-        filename, symbol, test, semantics = entries[op['designOperation']]
+        filename, symbol, test = entries[op['designOperation']]
         source_path = f'apps/hepta-native/src/{filename}'
         op['ownerEntrypoint'].update(path=source_path, symbol=symbol, buildTarget='hepta-native')
         op['nativeSymbol'] = symbol
         op['sourcePath'] = source_path
         op['sourcePathExists'] = True
-        op['sourceSemantics'] = semantics
         op['tests'] = [{'path': f'apps/hepta-native/{test}', 'kind': 'rust_integration',
             'command': 'cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets'}]
     for key in ['repositoryControlledSourceBoundaryGapsClosed', 'productExecutionComplete',
@@ -118,6 +189,7 @@ def sync_metadata():
     if len(changed) != 1:
         raise RuntimeError(f'expected one native source binding, found {len(changed)}')
     path.write_text(json.dumps(bindings, indent=2) + '\n', encoding='utf-8')
+    sync_registry_metadata()
     print('bound native mapping to committed source', source)
 
 
