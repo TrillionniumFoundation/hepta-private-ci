@@ -178,7 +178,7 @@ Current focused evidence sources (references, not pass receipts):
 - `numeric_conversion_tests.rs`: rounding/overflow, distinct registered receipt, registry digest and normalization/profile admission;
 - `prompt_delivery_tests.rs` + `topology.rs` tests: disposition/token and topology-delta/candidate binding;
 - `manifests_tests.rs`: all three manifests, closed enums, nonzero digests, strict timestamps and ordered ranges;
-- `hepta-ndu` numeric-admission/owner tests: immutable registry provisioning and exact registered-consumer binding;
+- complete `hepta-ndu` library tests, including numeric admission/owner binding and the existing preference/durability invariants, so a filtered integration run cannot hide a consumer regression;
 - `CANONICAL_V1_CONFORMANCE.json`: five accepted + seven rejected vectors with Python/Node oracles;
 - `bindings/generate_bindings.py --check` plus Python/JavaScript inherited-name rejection and consumer gates.
 

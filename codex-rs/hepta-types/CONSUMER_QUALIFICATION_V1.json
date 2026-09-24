@@ -8,43 +8,73 @@
       "id": "generated.python",
       "kind": "generated_runtime_binding",
       "path": "codex-rs/hepta-types/bindings/verify_generated.py",
-      "mustContain": ["unknown numeric profile", "__proto__"]
+      "mustContain": [
+        "unknown numeric profile",
+        "__proto__"
+      ]
     },
     {
       "id": "generated.javascript",
       "kind": "generated_runtime_binding",
       "path": "codex-rs/hepta-types/bindings/verify_generated.mjs",
-      "mustContain": ["admitted unknown numeric profile", "admitted unknown ID profile"]
+      "mustContain": [
+        "admitted unknown numeric profile",
+        "admitted unknown ID profile"
+      ]
     },
     {
       "id": "canonical.python-node",
       "kind": "cross_language_canonical_conformance",
       "path": "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
-      "mustContain": ["unicode-nfc-is-not-normalized-v1", "invalid-value-tag-v1"]
+      "mustContain": [
+        "unicode-nfc-is-not-normalized-v1",
+        "invalid-value-tag-v1"
+      ]
     },
     {
       "id": "utility.ndu.registered-numeric",
       "kind": "authenticated_owner_source_consumer",
       "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
-      "mustContain": ["NduNumericRegistryV1", "rescale_signal_registered", "NduRegisteredUtilitySignalV1"]
+      "mustContain": [
+        "NduNumericRegistryV1",
+        "rescale_signal_registered",
+        "NduRegisteredUtilitySignalV1"
+      ]
     },
     {
       "id": "runtime.codex.prompt-delivery",
       "kind": "runtime_observation_producer",
       "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
-      "mustContain": ["PromptDeliveryObservationV1"]
+      "mustContain": [
+        "PromptDeliveryObservationV1"
+      ]
     },
     {
       "id": "learning.ledger.prompt-delivery",
       "kind": "durable_observation_consumer",
       "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
-      "mustContain": ["append_runtime_prompt_delivery_v1", "semantic_digest"]
+      "mustContain": [
+        "append_runtime_prompt_delivery_v1",
+        "semantic_digest"
+      ]
     },
     {
       "id": "runtime.supervisor.topology",
       "kind": "topology_admission_consumer",
       "path": "codex-rs/hepta-supervisor/src/module_runtime.rs",
-      "mustContain": ["register_selected_topology_candidate", "candidate.validate()"]
+      "mustContain": [
+        "register_selected_topology_candidate",
+        "candidate.validate()"
+      ]
     }
+  ],
+  "qualificationScript": "scripts/run_platform_types_consumer_qualification.sh",
+  "requiredExecution": [
+    "complete_hepta_types_all_targets",
+    "complete_utility_ndu_library_tests",
+    "prompt_delivery_producer_tests",
+    "prompt_delivery_ledger_tests",
+    "runtime_topology_admission_tests",
+    "strict_utility_ndu_library_lint"
   ]
 }

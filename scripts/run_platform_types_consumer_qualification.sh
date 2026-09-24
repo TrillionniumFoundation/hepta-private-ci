@@ -21,9 +21,10 @@ cargo check --locked --manifest-path "$MANIFEST" \
   --lib
 
 cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets
-cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib numeric_admission::tests::
-cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib owner::tests::authenticated_owner_freezes_and_consumes_registered_numeric_generation
-cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib owner::tests::unconfigured_owner_cannot_claim_registry_admission
+# Run the complete consumer package rather than only the newly added filters;
+# otherwise a pre-existing owner or numerical regression could be hidden by a
+# green platform.types integration slice.
+cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib
 cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-codex-adapter --lib prompt_delivery
 cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-learning-ledger --lib runtime_delivery
 cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-supervisor --lib topology_candidate

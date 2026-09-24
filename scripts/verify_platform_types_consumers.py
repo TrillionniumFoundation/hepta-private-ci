@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MATRIX = ROOT / "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json"
+QUALIFICATION = ROOT / "scripts/run_platform_types_consumer_qualification.sh"
 EXPECTED = [
     "generated.python",
     "generated.javascript",
@@ -24,10 +25,33 @@ def main() -> int:
         value.get("schema") != "hepta.platform-types.consumer-qualification.v1"
         or value.get("schemaVersion") != 1
         or value.get("module") != "platform.types"
+        or value.get("qualificationScript")
+        != "scripts/run_platform_types_consumer_qualification.sh"
+        or value.get("requiredExecution")
+        != [
+            "complete_hepta_types_all_targets",
+            "complete_utility_ndu_library_tests",
+            "prompt_delivery_producer_tests",
+            "prompt_delivery_ledger_tests",
+            "runtime_topology_admission_tests",
+            "strict_utility_ndu_library_lint",
+        ]
         or not isinstance(rows, list)
         or [row.get("id") for row in rows if isinstance(row, dict)] != EXPECTED
     ):
         raise SystemExit("platform.types consumer matrix header/order mismatch")
+    qualification = QUALIFICATION.read_text(encoding="utf-8")
+    for command in (
+        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets',
+        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib',
+        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-codex-adapter --lib prompt_delivery',
+        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-learning-ledger --lib runtime_delivery',
+        'cargo test --locked --manifest-path "$MANIFEST" -p codex-hepta-supervisor --lib topology_candidate',
+        'cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib',
+    ):
+        if command not in qualification:
+            raise SystemExit(f"platform.types qualification command drift: {command}")
+
     seen: set[str] = set()
     for row in rows:
         identifier = row["id"]
