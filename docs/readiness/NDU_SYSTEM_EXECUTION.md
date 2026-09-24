@@ -105,7 +105,7 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. If the registered residual tolerance is not reached inside that bound, the solver returns `PreferenceSolverUnavailable`; the last bounded numerical state is not exposed as a successful terminal state.
+`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. If the registered residual tolerance is not reached inside that bound, the solver returns `PreferenceSolverUnavailable`; the last bounded numerical state is not exposed as a successful terminal state. When iterations exist, the termination maximum is computed only from the emitted iteration receipts; the pre-iteration residual is not folded into that field. A zero-iteration no-op uses its validated initial residual for both terminal and maximum residual.
 
 Parent/child staging is scoped by an explicit stable hierarchy identity. Different subject levels within the same hierarchy cannot select new artifacts in one generation. Unrelated hierarchy roots may advance in the same generation; a global subject-class ban is not the intended invariant.
 
@@ -116,7 +116,7 @@ Parent/child staging is scoped by an explicit stable hierarchy identity. Differe
 - disposition;
 - iteration count;
 - terminal residual;
-- true maximum residual across all iterations;
+- maximum residual across the emitted iteration receipts, or the validated initial residual for a zero-iteration no-op;
 - cumulative projection count;
 - predecessor and terminal state digests.
 
@@ -158,7 +158,7 @@ A numeric covariance fixture proves algebra only. It does not prove conditional 
 
 ### 6.2 Projection journal semantic recovery
 
-Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist.
+Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist, and replacement requires an exact expected-predecessor compare-and-set. Exact operation replay remains idempotent; a late selection cannot overwrite a newer selected projection.
 
 `NduProjectionJournalV1` is the bounded state-machine and serialization layer. Each entry binds:
 
@@ -178,6 +178,7 @@ The journal enforces equal-identity/equal-semantics replay, rejects identity dri
 The V1 writer provides:
 
 - one advisory writer lock held for the open store lifetime;
+- metadata-size admission before allocation plus a bounded `max + 1` read before semantic reopen;
 - bounded reopen through the semantic journal parser;
 - stale uncommitted temporary-image removal only after lock acquisition;
 - copy-on-mutate so failed persistence does not advance the in-memory journal;
@@ -188,7 +189,7 @@ The V1 writer provides:
 - exact backup export;
 - validated backup restore only when the current committed history is an exact prefix of the restored history, preventing an old valid backup from deleting a later revocation.
 
-The file image remains bounded to the 4096-record journal ceiling. The lock is advisory and assumes a host-private directory; a hostile process that ignores the lock is outside this mechanism's threat model.
+The file image remains bounded to the 4096-record journal ceiling. Ordinary projection and selection history is admitted only while enough slots remain to revoke every currently live projection; revocation itself may consume that reserved frontier. The full-capacity fixture proves that ordinary history is rejected first, a revocation still commits, and reopen preserves the result. The lock is advisory and assumes a host-private directory; a hostile process that ignores the lock is outside this mechanism's threat model.
 
 `NduProjectionStoreV1` is the initial V1 on-disk store format; V1 schema-open validation rejects unknown/corrupt images, and no fictitious predecessor migration is claimed. Any future format change requires an explicit deterministic migrator plus rollback compatibility evidence. Retention is fail-closed at the bounded record limit rather than silently compacting or deleting revocation history.
 

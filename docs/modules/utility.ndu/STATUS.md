@@ -24,13 +24,13 @@ The accurate capability description is:
 
 The repository contains a deterministic policy-bound evaluator, bounded preference solver, recursive utility support, owner-local protocol binding, conditional covariance/backward-regression numerical support, semantic projection journal, crash-bounded `NduProjectionStoreV1` durable-writer source candidate, and explicit original/whitened Z-coordinate to signed-Q24 conversion evidence. A real request-local read-only call chain is established through Agentd and Control. The stochastic/FBSDE material remains a separately qualified candidate design and numerical substrate; this page does not claim a production learned-FBSDE policy.
 
-Preference fixed-point exhaustion is unavailable after the registered 64-iteration bound. A bounded solver may publish a successful local termination receipt only when it converges within that bound.
+Preference fixed-point exhaustion is unavailable after the registered 64-iteration bound. A bounded solver may publish a successful local termination receipt only when it converges within that bound. For a run that emits iterations, `maximum_residual_raw` is the maximum over those emitted iteration receipts and does not silently mix in the pre-iteration residual; a zero-iteration no-op reports its validated initial residual as both terminal and maximum.
 
 Staged hierarchy validation is identity-based: parent/child conflicts are determined from explicit subject and parent identities, while unrelated hierarchies may update in the same generation. Reusing one subject/generation for a different artifact is a conflict.
 
-The owner-local projection journal is a durability reference. Reopen must replay the journal state machine, not only verify the hash chain; a correctly rehashed but semantically invalid selection or revocation is rejected. Revocation is scoped by objective and subject.
+The owner-local projection journal is a durability reference. Reopen must replay the journal state machine, not only verify the hash chain; a correctly rehashed but semantically invalid selection or revocation is rejected. Selection replacement requires the exact currently selected predecessor, and the authenticated owner binds that predecessor into the final-use grant payload. Revocation is scoped by objective and subject. Non-revocation history reserves enough capacity to revoke every live projection, while oversized persistent images are rejected before unbounded allocation or read.
 
-The source truth is intentionally two-level: `sourceBase` remains the canonical repository baseline used by the closed-world implementation-map set, while `currentSourceEvidence` records the post-base current-main implementation commit and scope. These must not be conflated, and neither field substitutes for an exact-head passing qualification receipt.
+`sourceBase`, `sourceObjects` and `currentSourceEvidence` identify the exact source candidate and mapped objects described by the implementation map. They are regenerated when mapped source changes; none of them substitutes for a passing exact-head and synthetic-merge qualification receipt.
 
 ## Production closure is not established
 
