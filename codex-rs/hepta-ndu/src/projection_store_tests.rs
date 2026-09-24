@@ -17,12 +17,15 @@ use codex_hepta_types::Digest32;
 use super::FsProjectionPersistenceV1;
 use super::JOURNAL_FILE;
 use super::LOCK_FILE;
+use super::MAX_BACKUP_BYTES;
 use super::NduProjectionStoreError;
 use super::NduProjectionStoreV1;
 use super::ProjectionPersistenceV1;
 use super::TEMP_FILE;
 use crate::NduProjectionJournalError;
+use crate::NduProjectionJournalV1;
 use crate::NduProjectionKindV1;
+use crate::projection_journal::MAX_RECORDS;
 
 static NONCE: AtomicU64 = AtomicU64::new(1);
 
@@ -116,7 +119,13 @@ fn durable_writer_round_trips_selected_and_revoked_state() {
             subject,
             projection,
         ));
-        must(store.select_projection(digest("selection-id"), objective, subject, projection));
+        must(store.select_projection(
+            digest("selection-id"),
+            objective,
+            subject,
+            None,
+            projection,
+        ));
         assert_eq!(
             must(store.selected_projection_digest(objective, subject)),
             Some(projection)
@@ -161,7 +170,13 @@ fn backup_restore_is_validated_before_replacing_live_state() {
             subject,
             projection,
         ));
-        must(source.select_projection(digest("selection-id"), objective, subject, projection));
+        must(source.select_projection(
+            digest("selection-id"),
+            objective,
+            subject,
+            None,
+            projection,
+        ));
         must(source.backup_bytes())
     };
 
@@ -201,7 +216,13 @@ fn older_valid_backup_cannot_remove_a_later_revocation() {
         subject,
         projection,
     ));
-    must(store.select_projection(digest("selection-id"), objective, subject, projection));
+    must(store.select_projection(
+        digest("selection-id"),
+        objective,
+        subject,
+        None,
+        projection,
+    ));
     let old_backup = must(store.backup_bytes());
     must(store.revoke_projection(digest("revocation-id"), objective, subject, projection));
     assert_eq!(
@@ -217,6 +238,80 @@ fn older_valid_backup_cannot_remove_a_later_revocation() {
     );
     assert_eq!(
         must(store.selected_projection_digest(objective, subject)),
+        None
+    );
+}
+
+#[test]
+fn oversized_sparse_image_is_rejected_before_unbounded_read() {
+    let root = TempRoot::new("oversized-image");
+    let file = File::create(root.0.join(JOURNAL_FILE)).expect("create oversized fixture");
+    let oversized = u64::try_from(MAX_BACKUP_BYTES)
+        .expect("backup bound fits u64")
+        .saturating_add(1);
+    file.set_len(oversized).expect("extend sparse fixture");
+    drop(file);
+
+    assert_eq!(
+        NduProjectionStoreV1::open(&root.0)
+            .err()
+            .expect("oversized image must reject"),
+        NduProjectionStoreError::BackupTooLarge
+    );
+}
+
+#[test]
+fn full_capacity_envelope_preserves_revocation_and_restart_recovery() {
+    let root = TempRoot::new("revocation-capacity");
+    let objective = digest("capacity-objective");
+    let subject = digest("capacity-subject");
+    let mut journal = NduProjectionJournalV1::new();
+
+    for index in 0..(MAX_RECORDS / 2) {
+        must(journal.append_projection(
+            NduProjectionKindV1::Preference,
+            digest(&format!("capacity-identity-{index}")),
+            objective,
+            subject,
+            digest(&format!("capacity-projection-{index}")),
+        ));
+    }
+    let mut file = File::create(root.0.join(JOURNAL_FILE)).expect("create capacity fixture");
+    file.write_all(&journal.export_bytes())
+        .expect("write capacity fixture");
+    file.sync_all().expect("sync capacity fixture");
+    drop(file);
+
+    let first_projection = digest("capacity-projection-0");
+    {
+        let mut store = must(NduProjectionStoreV1::open(&root.0));
+        assert_eq!(must(store.entries()).len(), MAX_RECORDS / 2);
+        assert_eq!(
+            store
+                .select_projection(
+                    digest("capacity-selection"),
+                    objective,
+                    subject,
+                    None,
+                    first_projection,
+                )
+                .expect_err("ordinary selection cannot consume reserved revocation capacity"),
+            NduProjectionStoreError::Journal(
+                NduProjectionJournalError::RevocationCapacityExhausted
+            )
+        );
+        must(store.revoke_projection(
+            digest("capacity-revocation"),
+            objective,
+            subject,
+            first_projection,
+        ));
+    }
+
+    let reopened = must(NduProjectionStoreV1::open(&root.0));
+    assert_eq!(must(reopened.entries()).len(), MAX_RECORDS / 2 + 1);
+    assert_eq!(
+        must(reopened.selected_projection_digest(objective, subject)),
         None
     );
 }
