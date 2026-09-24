@@ -40,6 +40,16 @@ jobs:
           mkdir -p "$RUNNER_TEMP/intuition-evidence"
           git rev-parse HEAD | tee "$RUNNER_TEMP/intuition-evidence/base-sha.txt"
           python3 scripts/apply_intuition_commitments_20260925.py
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs')
+          text = path.read_text()
+          old = '        candidate_set_digest,\n        scored_outputs_digest:'
+          new = '        candidate_set_digest: canonical_candidate_identity_digest_v2(&request.candidates)?,\n        scored_outputs_digest:'
+          if text.count(old) != 1:
+              raise SystemExit('Unexpected benchmark scoring initializer')
+          path.write_text(text.replace(old, new))
+          PY
           rm scripts/apply_intuition_commitments_20260925.py
           rm .github/workflows/hepta-intuition-commitment-materialize.yml
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-intuition --package codex-hepta-intelligence
