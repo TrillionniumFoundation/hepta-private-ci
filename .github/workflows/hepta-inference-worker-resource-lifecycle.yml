@@ -14,12 +14,6 @@ permissions:
 jobs:
   qualify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
-    env:
-      CARGO_INCREMENTAL: "0"
-      CARGO_PROFILE_DEV_DEBUG: "0"
-      CARGO_PROFILE_TEST_DEBUG: "0"
-      CARGO_BUILD_JOBS: "2"
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -39,7 +33,9 @@ jobs:
 
       - name: Run worker resource lifecycle regressions
         working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-infer-worker-host --lib model_worker::tests:: -- --nocapture
+        run: >-
+          cargo test --locked -p codex-hepta-infer-worker-host --lib
+          model_worker::tests:: -- --nocapture
 
       - name: Check generated patch
         run: |
