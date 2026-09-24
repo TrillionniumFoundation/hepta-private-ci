@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "cccf0d612fa3d2ee5d8afd58d899842cb151897d",
-    "tree": "751c3d3b164db99982c1789044560c65f5384542"
+    "commit": "addfa146f289059cb7007c44fd4c3df5507e72b3",
+    "tree": "9cb9616cf4715ffef58ad7625959e1c361aae384"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -171,7 +171,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "494043d2e03a7f738ad1de3a065766a4423cef0b"
+      "object": "7711a457a8080943e4ebd99e400cf208802bbf28"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
@@ -179,7 +179,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
-      "object": "21b5cb0e03f66fc86645a73fd978626ce1e9638a"
+      "object": "82c08bbf12ee661f45725114d5e42050e7ef9e5e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
@@ -273,13 +273,13 @@
   "productCallers": [
     {
       "role": "owner_read_adapter",
-      "blobSha": "494043d2e03a7f738ad1de3a065766a4423cef0b",
+      "blobSha": "7711a457a8080943e4ebd99e400cf208802bbf28",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn read("
     },
     {
       "role": "owner_final_use_revalidation",
-      "blobSha": "494043d2e03a7f738ad1de3a065766a4423cef0b",
+      "blobSha": "7711a457a8080943e4ebd99e400cf208802bbf28",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn revalidate("
     },
@@ -314,8 +314,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "cccf0d612fa3d2ee5d8afd58d899842cb151897d",
-    "tree": "751c3d3b164db99982c1789044560c65f5384542"
+    "commit": "addfa146f289059cb7007c44fd4c3df5507e72b3",
+    "tree": "9cb9616cf4715ffef58ad7625959e1c361aae384"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
