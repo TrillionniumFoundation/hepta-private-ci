@@ -13,6 +13,7 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::TryLockError;
 use std::io::Read;
+#[cfg(test)]
 use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
@@ -55,10 +56,15 @@ use crate::write_registry_snapshot_beneath;
 
 #[path = "owner_manifest.rs"]
 mod manifest;
+#[path = "owner_record_io.rs"]
+mod record_io;
 #[path = "owner_registry_transition.rs"]
 mod registry_transition;
 #[path = "owner_selected_descriptor.rs"]
 mod selected_descriptor;
+use record_io::sync_owner_directory;
+use record_io::write_bounded_create_only_or_exact;
+use record_io::write_create_only_or_exact;
 
 const MAX_TRUSTED_SIGNERS: usize = 32;
 const MAX_HEAD_RECORDS: usize = 4_096;
@@ -1479,54 +1485,6 @@ fn ensure_real_directory(root: &Path, name: &str) -> Result<(), ArtifactOwnerHos
     Ok(())
 }
 
-fn write_create_only_or_exact(path: &Path, bytes: &[u8]) -> Result<(), ArtifactOwnerHostError> {
-    write_bounded_create_only_or_exact(path, bytes, MAX_SMALL_RECORD_BYTES)
-}
-
-fn write_bounded_create_only_or_exact(
-    path: &Path,
-    bytes: &[u8],
-    limit: usize,
-) -> Result<(), ArtifactOwnerHostError> {
-    if bytes.len() > limit {
-        return Err(ArtifactOwnerHostError::Capacity);
-    }
-    let mut options = OpenOptions::new();
-    options.read(true).write(true).create_new(true);
-    #[cfg(unix)]
-    options.mode(0o600);
-    match options.open(path) {
-        Ok(mut file) => {
-            file.write_all(bytes)
-                .and_then(|()| file.sync_all())
-                .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
-            sync_owner_directory(
-                path.parent()
-                    .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?,
-            )
-        }
-        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-            if read_small_record(path, limit)? == bytes {
-                sync_owner_directory(
-                    path.parent()
-                        .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?,
-                )
-            } else {
-                Err(ArtifactOwnerHostError::IdentityConflict)
-            }
-        }
-        Err(error) => Err(error.into()),
-    }
-}
-
-// A file acknowledgement is not a directory-entry durability acknowledgement.
-// Unsupported directory flushing fails closed rather than claiming persistence.
-fn sync_owner_directory(path: &Path) -> Result<(), ArtifactOwnerHostError> {
-    File::open(path)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| ArtifactOwnerHostError::Indeterminate)
-}
-
 fn read_small_record(path: &Path, limit: usize) -> Result<Vec<u8>, ArtifactOwnerHostError> {
     let metadata = fs::symlink_metadata(path)?;
     if metadata.file_type().is_symlink() || !metadata.is_file() || metadata.len() > limit as u64 {
@@ -1695,10 +1653,10 @@ mod tests {
 
     static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
 
-    struct TestDir(PathBuf);
+    pub(super) struct TestDir(pub(super) PathBuf);
 
     impl TestDir {
-        fn new() -> Self {
+        pub(super) fn new() -> Self {
             let id = NEXT_TEST_DIR.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir().join(format!(
                 "hepta-learning-artifact-owner-{}-{id}",
