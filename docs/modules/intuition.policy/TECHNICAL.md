@@ -214,6 +214,26 @@ Current focused test sources (source references, not pass receipts):
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
 
+### Independent exact-candidate command records
+
+The dedicated `hepta-intuition-qualification.yml` workflow retains one execution
+record and raw log for format, all-target compilation, strict Clippy, tests, host
+profile and both fast gates on **each** source-head/synthetic-merge lane. It uses
+the existing `scripts/hepta_ci_exec.py`: source-head must match the clean source
+commit, and a merge must match the ordered base/source parents and the independently
+recomputed merge tree. Test execution requires observed passing tests and disables
+retries. A successful command with zero executed tests is not qualification.
+
+After identity admission, lint failure does not suppress the independent test and
+measurement steps, but still fails its job. Upload runs even after failed commands;
+missing/failed/running records are never passing evidence. JSON receipts, raw logs
+and CSV files live under the runner temporary directory, outside the source tree,
+so retaining evidence cannot itself dirty the tested checkout. Both lanes retain
+their own records; source evidence does not certify a different merged tree.
+`test_hepta_intuition_workflow.py` tests the declared shell/recorder/Git integration
+with deliberately failing stub commands; these harness tests are not Rust policy
+or performance qualification. Read the real workflow records for those results.
+
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
 ## 13. Implementation sequence and work packages
