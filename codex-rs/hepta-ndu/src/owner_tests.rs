@@ -26,7 +26,9 @@ use crate::AxisValue;
 use crate::ContributionSet;
 use crate::EvaluationPolicyV1;
 use crate::FeasibilityPosture;
+use crate::NduProjectionJournalError;
 use crate::NduProjectionKindV1;
+use crate::NduProjectionStoreError;
 use crate::RequiredOrganSet;
 use crate::UtilityContribution;
 use crate::UtilityProfile;
@@ -155,6 +157,10 @@ struct Fixture {
 }
 
 fn fixture() -> Fixture {
+    fixture_with_host_generation(7)
+}
+
+fn fixture_with_host_generation(host_generation: u64) -> Fixture {
     let store_dir = tempfile::tempdir().expect("store tempdir");
     let authority_dir = tempfile::tempdir().expect("authority tempdir");
     std::fs::set_permissions(store_dir.path(), std::fs::Permissions::from_mode(0o700))
@@ -182,7 +188,7 @@ fn fixture() -> Fixture {
         NduOwnerContextV1 {
             principal_id: id("agentd-principal"),
             owner_id: id("utility.ndu"),
-            host_generation: 7,
+            host_generation,
             principal_scope_digest: digest("principal-scope"),
             fence_digest: digest("host-fence"),
             revocation_frontier_digest: digest("revocation-frontier"),
@@ -241,12 +247,49 @@ fn append_mutation(label: &str) -> NduOwnerMutationV1 {
     }
 }
 
+fn select_mutation(
+    label: &str,
+    expected_predecessor: Option<Digest32>,
+    projection_digest: Digest32,
+) -> NduOwnerMutationV1 {
+    NduOwnerMutationV1::SelectProjection {
+        identity_digest: digest(&format!("{label}-identity")),
+        objective_digest: digest("objective"),
+        subject_digest: digest("subject"),
+        expected_predecessor,
+        projection_digest,
+    }
+}
+
 #[test]
 fn owner_freezes_policy_and_evaluates_without_caller_supplied_relaxations() {
     let fixture = fixture();
     let receipt = fixture.owner.evaluate(contributions()).expect("evaluation");
+    let replay = fixture.owner.evaluate(contributions()).expect("replay");
     assert!(!fixture.owner.production_policy_digest().is_zero());
-    assert_eq!(receipt.base.advisory_recommendation, Some(id("work")));
+    assert_eq!(
+        receipt.evaluation().base.advisory_recommendation,
+        Some(id("work"))
+    );
+    assert!(!receipt.source_context_digest().is_zero());
+    assert!(!receipt.receipt_digest().is_zero());
+    assert_eq!(receipt, replay, "same frozen owner context replays exactly");
+}
+
+#[test]
+fn authenticated_evaluation_receipt_binds_the_original_owner_context() {
+    let first = fixture_with_host_generation(7)
+        .owner
+        .evaluate(contributions())
+        .expect("first evaluation");
+    let second = fixture_with_host_generation(8)
+        .owner
+        .evaluate(contributions())
+        .expect("second evaluation");
+
+    assert_eq!(first.evaluation(), second.evaluation());
+    assert_ne!(first.source_context_digest(), second.source_context_digest());
+    assert_ne!(first.receipt_digest(), second.receipt_digest());
 }
 
 #[test]
@@ -268,6 +311,71 @@ fn exact_signed_binding_is_required_for_durable_mutation() {
         .owner
         .apply_mutation(&signed, first)
         .expect("authorized append");
+}
+
+#[test]
+fn selection_grant_binds_expected_predecessor_and_stale_selection_rejects() {
+    let mut fixture = fixture();
+    let first = append_mutation("first");
+    let first_projection = digest("first-projection");
+    let signed = fixture.sign(&first, "grant-append-first");
+    fixture
+        .owner
+        .apply_mutation(&signed, first)
+        .expect("append first");
+
+    let second = append_mutation("second");
+    let second_projection = digest("second-projection");
+    let signed = fixture.sign(&second, "grant-append-second");
+    fixture
+        .owner
+        .apply_mutation(&signed, second)
+        .expect("append second");
+
+    let select_first = select_mutation("select-first", None, first_projection);
+    let signed = fixture.sign(&select_first, "grant-select-first");
+    fixture
+        .owner
+        .apply_mutation(&signed, select_first)
+        .expect("select first");
+
+    let stale = select_mutation("select-second-stale", None, second_projection);
+    let stale_signed = fixture.sign(&stale, "grant-select-second-stale");
+    let current = select_mutation(
+        "select-second-stale",
+        Some(first_projection),
+        second_projection,
+    );
+    assert!(matches!(
+        fixture.owner.apply_mutation(&stale_signed, current),
+        Err(NduOwnerError::Authority(
+            codex_hepta_contracts::FinalUseError::BindingMismatch
+        ))
+    ));
+    assert!(matches!(
+        fixture.owner.apply_mutation(&stale_signed, stale),
+        Err(NduOwnerError::Store(NduProjectionStoreError::Journal(
+            NduProjectionJournalError::SelectionPredecessorMismatch
+        )))
+    ));
+
+    let current = select_mutation(
+        "select-second-current",
+        Some(first_projection),
+        second_projection,
+    );
+    let signed = fixture.sign(&current, "grant-select-second-current");
+    fixture
+        .owner
+        .apply_mutation(&signed, current)
+        .expect("current predecessor selection");
+    assert_eq!(
+        fixture
+            .owner
+            .selected_projection_digest(digest("objective"), digest("subject"))
+            .expect("selected query"),
+        Some(second_projection)
+    );
 }
 
 #[test]
