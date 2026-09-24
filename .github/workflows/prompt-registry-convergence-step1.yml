@@ -1,0 +1,53 @@
+name: Prompt Registry Convergence Step 1
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - scripts/prompt_registry_convergence_step1.py
+      - .github/workflows/prompt-registry-convergence-step1.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prompt-registry-convergence-step1
+  cancel-in-progress: false
+
+jobs:
+  patch-test-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply exact convergence patch
+        run: python3 scripts/prompt_registry_convergence_step1.py
+      - name: Remove one-shot convergence machinery
+        run: |
+          rm scripts/prompt_registry_convergence_step1.py
+          rm .github/workflows/prompt-registry-convergence-step1.yml
+      - name: Verify formatting
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-prompt-registry -- --check
+      - name: Run prompt registry tests
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-prompt-registry --retries 0
+      - name: Check all targets
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-prompt-registry --all-targets
+      - name: Run strict Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-prompt-registry --all-targets -- -D warnings
+      - name: Commit exact tested candidate
+        env:
+          TARGET_BRANCH: work/product-convergence-20260923
+        run: |
+          git diff --check
+          git config user.name "ProfHepta"
+          git config user.email "102159240+ProfHepta@users.noreply.github.com"
+          git add -A
+          git commit -s -m "fix(prompt.registry): preserve profile and retry invariants"
+          git push origin "HEAD:${TARGET_BRANCH}"
