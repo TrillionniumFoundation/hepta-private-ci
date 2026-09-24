@@ -61,6 +61,7 @@ codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
 codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
 codex-hepta-cognitive-store = { path = "../hepta-cognitive-store" }
+codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
@@ -83,6 +84,7 @@ codex-utils-home-dir = { workspace = true }
 codex-state = { workspace = true }
 ed25519-dalek = { workspace = true }
 http = { workspace = true }
+libc = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
@@ -101,7 +103,6 @@ tokio-util = { workspace = true }
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-operations = { workspace = true }
-codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
