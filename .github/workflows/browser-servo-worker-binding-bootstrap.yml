@@ -1,0 +1,98 @@
+name: Browser Servo worker binding bootstrap
+
+on:
+  push:
+    branches:
+      - codex/browser-servo-convergence-20260925
+    paths:
+      - tools/apply_browser_servo_worker_binding.py
+      - .github/workflows/browser-servo-worker-binding-bootstrap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: browser-servo-worker-binding-bootstrap
+  cancel-in-progress: false
+
+env:
+  SERVO_PIN: 84bcc9ac701874fa9819e5cdee06356b961d736c
+  WORKER_MANIFEST: apps/hepta-browser/servo-worker/Cargo.toml
+  WORKER_LOCK: apps/hepta-browser/servo-worker/Cargo.lock
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/browser-servo-convergence-20260925
+          fetch-depth: 0
+
+      - name: Install Rust 1.88.0
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup override set 1.88.0
+          rustc -vV
+          cargo -vV
+
+      - name: Install Servo build prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake curl git libdbus-1-dev libfontconfig1-dev \
+            libfreetype6-dev libgl1-mesa-dev libglib2.0-dev libssl-dev \
+            libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config python3
+
+      - name: Apply worker identity binding
+        run: |
+          set -euo pipefail
+          python3 tools/apply_browser_servo_worker_binding.py
+          rustfmt --edition 2024 apps/hepta-browser/servo-worker/src/main.rs
+
+      - name: Generate and verify exact dependency lock
+        run: |
+          set -euo pipefail
+          rm -f "$WORKER_LOCK"
+          cargo generate-lockfile --manifest-path "$WORKER_MANIFEST"
+          test -s "$WORKER_LOCK"
+          grep -F "$SERVO_PIN" "$WORKER_LOCK"
+          cargo metadata --locked --format-version 1 --manifest-path "$WORKER_MANIFEST" > /tmp/worker-metadata.json
+          grep -F "$SERVO_PIN" /tmp/worker-metadata.json
+          cargo tree --locked --manifest-path "$WORKER_MANIFEST" -e features > /tmp/worker-features.txt
+          if grep -Eq '(^|[[:space:]])webdriver_server([[:space:]]|$)' /tmp/worker-features.txt; then
+            echo 'webdriver_server entered the worker dependency graph' >&2
+            exit 1
+          fi
+          sha256sum "$WORKER_LOCK"
+
+      - name: Compile and test current-pin worker
+        run: |
+          set -euo pipefail
+          cargo check --locked --manifest-path "$WORKER_MANIFEST"
+          cargo test --locked --manifest-path "$WORKER_MANIFEST"
+
+      - name: Run complete Browser source regressions
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/*.test.js
+
+      - name: Verify source formatting
+        run: |
+          set -euo pipefail
+          rustfmt --edition 2024 --check apps/hepta-browser/servo-worker/src/main.rs
+          git diff --check
+
+      - name: Commit verified worker binding and lock
+        run: |
+          set -euo pipefail
+          git rm tools/apply_browser_servo_worker_binding.py
+          git rm .github/workflows/browser-servo-worker-binding-bootstrap.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/hepta-browser/servo-worker/src/main.rs "$WORKER_LOCK"
+          git commit -m "browser.servo: bind worker outcomes to exact documents [skip ci]"
+          git push origin HEAD:codex/browser-servo-convergence-20260925
