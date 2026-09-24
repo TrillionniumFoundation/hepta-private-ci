@@ -235,3 +235,52 @@ fn different_rpc_ids_create_distinct_assignment_records() {
         .expect("snapshot");
     assert_eq!(snapshot.records().len(), 2);
 }
+
+#[test]
+fn historical_assignment_retry_keeps_original_predecessor_after_later_appends() {
+    let (_temp, sink) = sink();
+    let observation = observation("packet");
+    let first = sink.append(&owner(), 1, 1, &observation).expect("first");
+    for request in 2..=64 {
+        sink.append(&owner(), 1, request, &observation)
+            .expect("later");
+    }
+    let before = sink
+        .writer
+        .lock()
+        .expect("lock")
+        .witness_frontier()
+        .expect("frontier");
+    let retry = sink
+        .append(&owner(), 1, 1, &observation)
+        .expect("historical retry");
+    assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(retry.sequence, first.sequence);
+    assert_eq!(retry.event_digest, first.event_digest);
+    assert_eq!(retry.chain_digest, first.chain_digest);
+    let writer = sink.writer.lock().expect("lock");
+    assert_eq!(writer.witness_frontier().expect("frontier"), before);
+    assert_eq!(writer.snapshot().expect("snapshot").records().len(), 64);
+}
+
+#[test]
+fn indexed_historical_identity_does_not_accept_changed_assignment() {
+    let (_temp, sink) = sink();
+    sink.append(&owner(), 1, 1, &observation("packet-a"))
+        .expect("first");
+    sink.append(&owner(), 1, 2, &observation("packet-b"))
+        .expect("later");
+    let before = sink
+        .writer
+        .lock()
+        .expect("lock")
+        .witness_frontier()
+        .expect("frontier");
+    assert!(
+        sink.append(&owner(), 1, 1, &observation("replacement"))
+            .is_err()
+    );
+    let writer = sink.writer.lock().expect("lock");
+    assert_eq!(writer.witness_frontier().expect("frontier"), before);
+    assert_eq!(writer.snapshot().expect("snapshot").records().len(), 2);
+}

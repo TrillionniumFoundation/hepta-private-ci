@@ -122,19 +122,11 @@ impl CognitiveRetrievalLearningSink {
             .writer
             .lock()
             .map_err(|_| "retrieval learning ledger writer lock poisoned".to_string())?;
-        let snapshot = writer.snapshot().map_err(|error| error.to_string())?;
-        let predecessor = snapshot
-            .records()
-            .iter()
-            .find(|record| record.event.record_id() == &record_id)
-            .map_or(snapshot.head_digest, |record| {
-                record.predecessor_chain_digest
-            });
         let LedgerEvent::RetrievalAssignment(assignment) = event else {
             return Err("retrieval assignment bridge emitted wrong event kind".to_string());
         };
         writer
-            .append_retrieval_assignment(predecessor, assignment)
+            .append_retrieval_assignment_current(assignment)
             .map_err(|error| error.to_string())
     }
 }

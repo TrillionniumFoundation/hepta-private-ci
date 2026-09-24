@@ -556,6 +556,27 @@ impl LedgerWriter {
         )
     }
 
+    /// Append a host-observed assignment under this writer's current lock.
+    /// The durable idempotency index supplies an old predecessor only for the
+    /// same record identity. `commit` still verifies complete event semantics,
+    /// predecessor CAS, poison state and the independent witness. No historical
+    /// snapshot or active-record scan is allocated on this hot path.
+    pub fn append_retrieval_assignment_current(
+        &mut self,
+        assignment: RetrievalAssignmentFact,
+    ) -> Result<AppendReceipt, ProductionLedgerError> {
+        let core = self.backend.core()?;
+        let predecessor = core.record_by_id(&assignment.record_id)?.map_or_else(
+            || {
+                core.records()
+                    .last()
+                    .map_or(Digest32::ZERO, |record| record.chain_digest)
+            },
+            |record| record.predecessor_chain_digest,
+        );
+        self.append_retrieval_assignment(predecessor, assignment)
+    }
+
     /// Revalidate a frozen dataset immediately before final artifact use.
     ///
     /// The receipt first verifies its own immutable identity, then every frozen

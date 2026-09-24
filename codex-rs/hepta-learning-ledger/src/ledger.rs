@@ -225,6 +225,17 @@ impl LearningLedger {
         &self,
         record_id: &StableId,
     ) -> Result<Option<&LedgerRecord>, LedgerError> {
+        Ok(self
+            .record_by_id(record_id)?
+            .filter(|record| self.record_is_active(record)))
+    }
+
+    /// Historical identity lookup, including inactive records, for exact retries.
+    /// This is not active evidence and does not resurrect corrected/revoked facts.
+    pub(crate) fn record_by_id(
+        &self,
+        record_id: &StableId,
+    ) -> Result<Option<&LedgerRecord>, LedgerError> {
         let Some((digest, position)) = self.record_digests.get(record_id) else {
             return Ok(None);
         };
@@ -235,7 +246,7 @@ impl LearningLedger {
         if record.event.record_id() != record_id || record.event_digest != *digest {
             return Err(LedgerError::InternalInvariant);
         }
-        Ok(self.record_is_active(record).then_some(record))
+        Ok(Some(record))
     }
 
     pub(crate) fn active_authenticated_decision(
