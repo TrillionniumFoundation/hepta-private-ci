@@ -29,8 +29,10 @@ jobs:
           tool: just@1.51.0
 
       - name: Resolve verified sandboxed V8 artifacts
-        working-directory: codex-rs
-        run: just sandboxed-v8-resolve
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
 
       - name: Apply phase-one convergence patch
         run: python3 scripts/cognitive-read-convergence-phase1.py
