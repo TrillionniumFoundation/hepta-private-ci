@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "ac670af8d5dab3e33f73907d7f24eb4077ba39c3",
+    "tree": "4a5f1ee1fc28eafa0a5ca4562523fa4e07da5941"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.wire",
@@ -192,12 +192,16 @@
   "exactSourceEvidenceMode": "lane_a_runtime_head_tree_and_registered_callers",
   "sourceObjects": [
     {
+      "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+      "object": "bd41d2a22e4b78bd9b465d9928f7623366ed215a"
+    },
+    {
       "path": "codex-rs/hepta-codex-adapter/src/wire.rs",
-      "object": "05cb3a796f614f18ea499bd8d324772712e15a49"
+      "object": "7f61e07d67189bea1c9cc0bc31a653f80fe3f3a8"
     },
     {
       "path": "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
-      "object": "eb197f712637f86863b93759f72f2f3893f1d4b4"
+      "object": "b85fb3d89881e736d64f0e190f86db2db6cfe2bd"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/wire.rs",
@@ -206,6 +210,14 @@
     {
       "path": "codex-rs/hepta-context-compiler/src/wire_tests.rs",
       "object": "4adcc64f926aec0e65ee1c05aebf2b67d07daadc"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "fd5b6678942f0484c14a1399440dd9c18318c1af"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "object": "af4e4f869b57c0cb8bb97997db5dd940dd39fe5a"
     },
     {
       "path": "codex-rs/hepta-native-gateway/src/lib.rs",
@@ -217,15 +229,15 @@
     },
     {
       "path": "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs",
-      "object": "3d743e5a3282d48f71dd900284c7fd0dd11c4996"
+      "object": "3a8b2ae05fb0143a230edc66eb95fc41380c37a3"
     },
     {
       "path": "codex-rs/hepta-wire",
-      "object": "d8f26171ef868d94485175b6761d185074a38e74"
+      "object": "68f17daff7a99153c09e38856a7473f8105f7143"
     },
     {
       "path": "codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs",
-      "object": "296b03b20e2f6329304bfbc457cab487bd6bb379"
+      "object": "799fb6ddb63aafc70ab232a1e3043c0d3e0b6abb"
     },
     {
       "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
@@ -260,16 +272,24 @@
       "object": "a317246b9a4487ae1aaee45debfa7c79553d4c31"
     },
     {
+      "path": "codex-rs/hepta-wire/src/session.rs",
+      "object": "e8acc94f13c776561cf7329de8f0ed2553cbb5bb"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/session_tests.rs",
+      "object": "a8b7b9c46be19fa1ac936a21a984f599c612ed57"
+    },
+    {
       "path": "codex-rs/hepta-wire/src/stream.rs",
-      "object": "6e83762934b13bf6b6e2c8d1458633d0512fa543"
+      "object": "78537510016ce574cf3c9c222a37615ab73972e6"
     },
     {
       "path": "codex-rs/hepta-wire/src/stream_tests.rs",
-      "object": "0c5e22254047658110df7ec5541d9726617d25c0"
+      "object": "e7f338fec6c6a5cf7a384f31a4dacf15fae99990"
     },
     {
       "path": "codex-rs/hepta-wire/src/version.rs",
-      "object": "d4e9388500f674e0e9b33cf37161549379223dda"
+      "object": "75c32caf5177f26ed29a6d74c78a3012bb5b1bc0"
     },
     {
       "path": "codex-rs/hepta-wire/src/version_tests.rs",
@@ -277,7 +297,7 @@
     },
     {
       "path": "docs/modules/platform.wire/TECHNICAL.md",
-      "object": "c3a4a6fc43d5353de4dd419a2c92255947ce42ad"
+      "object": "e7aae98530999094d9e3acfecb39b1e10f4a9264"
     }
   ]
 }
