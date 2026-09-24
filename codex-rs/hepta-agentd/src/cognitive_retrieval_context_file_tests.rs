@@ -1,6 +1,3 @@
-use std::sync::Arc;
-use std::time::Duration;
-
 use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
 use codex_hepta_memory_retrieval::RetrievalChannelV1;
 use codex_hepta_memory_retrieval::RetrievalChannelWeightV1;
@@ -53,7 +50,7 @@ fn unsigned_file(revision: u64) -> SignedMemoryRetrievalContextFileV1 {
         context_revision: revision,
         authority_epoch: revision,
         issued_at_unix_ms,
-        expires_at_unix_ms: issued_at_unix_ms + Duration::from_secs(60).as_millis() as u64,
+        expires_at_unix_ms: issued_at_unix_ms + 60_000,
         revoked: false,
         objective_digest: digest("objective"),
         approved_context_digest: digest("approved-context"),
@@ -113,7 +110,10 @@ fn unsigned_file(revision: u64) -> SignedMemoryRetrievalContextFileV1 {
     }
 }
 
-fn sign(mut file: SignedMemoryRetrievalContextFileV1, key: &SigningKey) -> SignedMemoryRetrievalContextFileV1 {
+fn sign(
+    mut file: SignedMemoryRetrievalContextFileV1,
+    key: &SigningKey,
+) -> SignedMemoryRetrievalContextFileV1 {
     file.signature = key
         .sign(&memory_retrieval_context_signing_payload_v1(&file).expect("signing payload"))
         .to_bytes()
@@ -168,12 +168,14 @@ fn signed_provider_reloads_and_rejects_revocation() {
     let mut revoked = unsigned_file(2);
     revoked.revoked = true;
     write_file(&path, &sign(revoked, &key));
-    assert!(provider
-        .current(
-            &AgentId::parse(AGENT_ID).expect("agent id"),
-            BODY_GENERATION,
-        )
-        .is_err());
+    assert!(
+        provider
+            .current(
+                &AgentId::parse(AGENT_ID).expect("agent id"),
+                BODY_GENERATION,
+            )
+            .is_err()
+    );
 }
 
 #[test]
@@ -195,22 +197,26 @@ fn signed_provider_rejects_rollback_and_same_revision_fork() {
         .expect("advanced context");
 
     write_file(&path, &sign(unsigned_file(1), &key));
-    assert!(provider
-        .current(
-            &AgentId::parse(AGENT_ID).expect("agent id"),
-            BODY_GENERATION,
-        )
-        .is_err());
+    assert!(
+        provider
+            .current(
+                &AgentId::parse(AGENT_ID).expect("agent id"),
+                BODY_GENERATION,
+            )
+            .is_err()
+    );
 
     let mut fork = unsigned_file(2);
     fork.objective_digest = digest("forked-objective");
     write_file(&path, &sign(fork, &key));
-    assert!(provider
-        .current(
-            &AgentId::parse(AGENT_ID).expect("agent id"),
-            BODY_GENERATION,
-        )
-        .is_err());
+    assert!(
+        provider
+            .current(
+                &AgentId::parse(AGENT_ID).expect("agent id"),
+                BODY_GENERATION,
+            )
+            .is_err()
+    );
 }
 
 #[test]
@@ -222,30 +228,34 @@ fn signed_provider_rejects_wrong_generation_and_bad_signature() {
     let mut wrong_generation = unsigned_file(1);
     wrong_generation.body_generation = BODY_GENERATION + 1;
     write_file(&path, &sign(wrong_generation, &key));
-    assert!(FileCurrentMemoryRetrievalContextV1::new(
-        path.clone(),
-        AgentId::parse(AGENT_ID).expect("agent id"),
-        BODY_GENERATION,
-        root.clone(),
-        MemoryRetrievalContextVerifierV1 {
-            signer_id: "signer:test-memory-retrieval".to_string(),
-            verifying_key: key.verifying_key().to_bytes(),
-        },
-    )
-    .is_err());
+    assert!(
+        FileCurrentMemoryRetrievalContextV1::new(
+            path.clone(),
+            AgentId::parse(AGENT_ID).expect("agent id"),
+            BODY_GENERATION,
+            root.clone(),
+            MemoryRetrievalContextVerifierV1 {
+                signer_id: "signer:test-memory-retrieval".to_string(),
+                verifying_key: key.verifying_key().to_bytes(),
+            },
+        )
+        .is_err()
+    );
 
     let mut bad_signature = sign(unsigned_file(1), &key);
     bad_signature.signature[0] ^= 1;
     write_file(&path, &bad_signature);
-    assert!(FileCurrentMemoryRetrievalContextV1::new(
-        path,
-        AgentId::parse(AGENT_ID).expect("agent id"),
-        BODY_GENERATION,
-        root,
-        MemoryRetrievalContextVerifierV1 {
-            signer_id: "signer:test-memory-retrieval".to_string(),
-            verifying_key: key.verifying_key().to_bytes(),
-        },
-    )
-    .is_err());
+    assert!(
+        FileCurrentMemoryRetrievalContextV1::new(
+            path,
+            AgentId::parse(AGENT_ID).expect("agent id"),
+            BODY_GENERATION,
+            root,
+            MemoryRetrievalContextVerifierV1 {
+                signer_id: "signer:test-memory-retrieval".to_string(),
+                verifying_key: key.verifying_key().to_bytes(),
+            },
+        )
+        .is_err()
+    );
 }
