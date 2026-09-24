@@ -119,7 +119,7 @@ fn durable_writer_round_trips_selected_and_revoked_state() {
             subject,
             projection,
         ));
-        must(store.select_projection(
+        must(store.select_projection_if_current(
             digest("selection-id"),
             objective,
             subject,
@@ -170,7 +170,7 @@ fn backup_restore_is_validated_before_replacing_live_state() {
             subject,
             projection,
         ));
-        must(source.select_projection(
+        must(source.select_projection_if_current(
             digest("selection-id"),
             objective,
             subject,
@@ -216,7 +216,7 @@ fn older_valid_backup_cannot_remove_a_later_revocation() {
         subject,
         projection,
     ));
-    must(store.select_projection(
+    must(store.select_projection_if_current(
         digest("selection-id"),
         objective,
         subject,
@@ -288,7 +288,7 @@ fn full_capacity_envelope_preserves_revocation_and_restart_recovery() {
         assert_eq!(must(store.entries()).len(), MAX_RECORDS / 2);
         assert_eq!(
             store
-                .select_projection(
+                .select_projection_if_current(
                     digest("capacity-selection"),
                     objective,
                     subject,
