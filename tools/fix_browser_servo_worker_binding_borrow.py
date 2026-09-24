@@ -2,8 +2,8 @@ from pathlib import Path
 
 path = Path("apps/hepta-browser/servo-worker/src/main.rs")
 text = path.read_text(encoding="utf-8")
-needle = "OperationBinding::DocumentAction { source, action } => {"
-replacement = "OperationBinding::DocumentAction { ref source, action } => {"
+needle = "OperationBinding::DocumentAction { source, .. } => {"
+replacement = "OperationBinding::DocumentAction { ref source, .. } => {"
 count = text.count(needle)
 if count != 1:
     raise SystemExit(
