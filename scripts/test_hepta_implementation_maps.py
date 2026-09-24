@@ -143,6 +143,26 @@ class SourceIdentityTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.verify()
 
+    def test_verify_accepts_exact_expected_candidate_identity(self):
+        candidate = maps.current_source_base()
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            maps.verify(
+                expected_sha=candidate["commit"],
+                expected_tree=candidate["tree"],
+            )
+        self.assertEqual(
+            json.loads(output.getvalue())["candidateSource"],
+            candidate,
+        )
+
+    def test_verify_rejects_wrong_or_malformed_expected_candidate_identity(self):
+        candidate = maps.current_source_base()
+        with self.assertRaisesRegex(SystemExit, "expected candidate SHA"):
+            maps.verify(expected_sha="f" * 40, expected_tree=candidate["tree"])
+        with self.assertRaisesRegex(SystemExit, "--expected-tree must be"):
+            maps.verify(expected_sha=candidate["commit"], expected_tree="not-a-tree")
+
     def closed_public_inventory(self, functions):
         self.write(
             "src/alpha/Cargo.toml", '[package]\nname = "alpha"\nversion = "0.1.0"\n'

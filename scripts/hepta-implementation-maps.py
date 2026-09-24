@@ -1168,7 +1168,12 @@ def public_rust_functions(root: str) -> set[str]:
     return functions
 
 
-def verify(*, require_current_source: bool = True):
+def verify(
+    *,
+    require_current_source: bool = True,
+    expected_sha: str | None = None,
+    expected_tree: str | None = None,
+):
     """Verify current mapped bytes; the explicit flag remains a strict CLI alias.
 
     Legacy anchor records are accepted only after the same exact source proof,
@@ -1176,6 +1181,20 @@ def verify(*, require_current_source: bool = True):
     """
     candidate = current_source_base()
     try:
+        for value, label in (
+            (expected_sha, "expected-sha"),
+            (expected_tree, "expected-tree"),
+        ):
+            if value is not None and re.fullmatch(r"[0-9a-f]{40}", value) is None:
+                raise ValueError(f"--{label} must be an exact 40-character Git object id")
+        if expected_sha is not None and candidate["commit"] != expected_sha:
+            raise ValueError(
+                f"expected candidate SHA {expected_sha}, observed {candidate['commit']}"
+            )
+        if expected_tree is not None and candidate["tree"] != expected_tree:
+            raise ValueError(
+                f"expected candidate tree {expected_tree}, observed {candidate['tree']}"
+            )
         require_clean_candidate(candidate)
         modules = load("docs/modules/MODULES.json")["modules"]
         if not isinstance(modules, list) or not modules:
@@ -1418,17 +1437,30 @@ def main():
         action="store_true",
         help="Compatibility alias: verify always requires clean, exact mapped source; not execution qualification.",
     )
+    parser.add_argument(
+        "--expected-sha",
+        help="Require verify to run at this exact committed candidate SHA.",
+    )
+    parser.add_argument(
+        "--expected-tree",
+        help="Require verify to run at this exact candidate tree.",
+    )
     args = parser.parse_args()
     if args.require_current_source and args.command != "verify":
         parser.error("--require-current-source applies only to verify")
     if args.modules is not None and args.command != "migrate":
         parser.error("--module applies only to migrate")
+    if (args.expected_sha is not None or args.expected_tree is not None) and args.command != "verify":
+        parser.error("--expected-sha/--expected-tree apply only to verify")
     if args.command == "migrate":
         migrate(args.modules)
     else:
         {
             "generate": generate,
-            "verify": verify,
+            "verify": lambda: verify(
+                expected_sha=args.expected_sha,
+                expected_tree=args.expected_tree,
+            ),
             "sync-plasticity-status": sync_plasticity_status,
         }[args.command]()
 
