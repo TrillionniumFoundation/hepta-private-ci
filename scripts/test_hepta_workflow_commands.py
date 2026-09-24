@@ -9,6 +9,7 @@ import unittest
 from hepta_workflow_commands import (
     declared_commands,
     verify_synthetic_merge,
+    verify_owner_self_tests,
     workflow_commands,
 )
 
@@ -34,6 +35,28 @@ steps:
                 ["python3", "scripts/check.py", "verify"],
             ],
         )
+
+    def test_owner_self_test_is_executable_and_not_required_twice(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workflow = root / "owner.yml"
+            registry = [{"validator": "python3 scripts/owner.py verify", "workflow": "owner.yml"}]
+            workflow.write_text("steps:\n  - run: python3 scripts/owner.py self-test\n")
+            verify_owner_self_tests(registry, root)
+            for line in (
+                "# python3 scripts/owner.py self-test",
+                "echo python3 scripts/owner.py self-test",
+                "python3 scripts/owner.py verify",
+            ):
+                with self.subTest(line=line), self.assertRaisesRegex(ValueError, "must invoke"):
+                    workflow.write_text(f"steps:\n  - run: |\n      {line}\n")
+                    verify_owner_self_tests(registry, root)
+
+    def test_real_subordinate_workflows_own_their_self_tests(self):
+        import json
+
+        registry = json.loads((ROOT / "docs/governance/DOCUMENT_SYSTEM.json").read_text())
+        verify_owner_self_tests(registry["subordinateRegistries"], ROOT)
 
     def test_real_workflow_resolves_composite_action(self):
         text = (ROOT / ".github/workflows/hepta-development-docs.yml").read_text()

@@ -26,6 +26,7 @@ from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from hepta_workflow_commands import verify_owner_self_tests
 from hepta_workflow_commands import verify_synthetic_merge
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1433,6 +1434,7 @@ def verify() -> int:
     wf = (ROOT / ".github/workflows/hepta-development-docs.yml").read_text()
     try:
         verify_synthetic_merge(wf, ROOT)
+        verify_owner_self_tests(d["system"]["subordinateRegistries"], ROOT)
     except ValueError as exc:
         die("synthetic merge workflow: " + str(exc))
     for token in [
@@ -1443,11 +1445,8 @@ def verify() -> int:
         "persist-credentials: false",
         "python3 scripts/hepta-docs.py verify",
         "python3 scripts/hepta-algorithm-docs.py verify-sources",
-        "python3 scripts/hepta-readiness.py self-test",
         "python3 scripts/hepta-readiness.py generate-status --check",
-        "python3 scripts/hepta-cns.py self-test",
         "python3 scripts/hepta-cns.py generate-status --check",
-        "python3 scripts/hepta-hnmf.py self-test",
         "python3 scripts/hepta-docs.py inventory-legacy",
         "python3 scripts/hepta-docs.py cleanup-inventory",
         "python3 scripts/hepta-docs.py self-test",

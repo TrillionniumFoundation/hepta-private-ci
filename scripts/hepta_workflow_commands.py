@@ -106,3 +106,18 @@ def verify_synthetic_merge(text: str, root: Path) -> None:
     )
     if not merge_tree or not commit_tree:
         raise ValueError("missing executable merge-tree/commit-tree construction")
+
+
+def verify_owner_self_tests(registries: list[dict], root: Path) -> None:
+    """Each subordinate self-test must run in its owner workflow, not twice globally."""
+    for registry in registries:
+        validator = shlex.split(registry["validator"])
+        if len(validator) != 3 or validator[0] != "python3" or validator[-1] != "verify":
+            raise ValueError("unsupported subordinate validator command")
+        path = (root / registry["workflow"]).resolve()
+        if not path.is_relative_to(root.resolve()) or not path.is_file():
+            raise ValueError("subordinate workflow missing or outside repository")
+        expected = [*validator[:-1], "self-test"]
+        commands = declared_commands(path.read_text(encoding="utf-8"), root)
+        if expected not in commands:
+            raise ValueError(f"owner workflow {registry['workflow']} must invoke {' '.join(expected)}")
