@@ -1,0 +1,70 @@
+name: inference.worker resource lifecycle materializer
+
+on:
+  push:
+    branches:
+      - work/product-convergence-20260923
+    paths:
+      - scripts/apply_inference_worker_resource_lifecycle_20260925.py
+      - .github/workflows/hepta-inference-worker-resource-lifecycle.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-worker-resource-lifecycle-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Apply resource lifecycle repair
+        run: python3 scripts/apply_inference_worker_resource_lifecycle_20260925.py
+
+      - name: Format worker package
+        working-directory: codex-rs
+        run: |
+          cargo fmt -p codex-hepta-infer-worker-host
+          cargo fmt -p codex-hepta-infer-worker-host -- --check
+
+      - name: Run worker library regressions
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-worker-host --lib model_worker::tests:: -- --nocapture
+
+      - name: Run strict worker lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-infer-worker-host --lib --tests -- -D warnings
+
+      - name: Commit exact tested source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f scripts/apply_inference_worker_resource_lifecycle_20260925.py
+          rm -f .github/workflows/hepta-inference-worker-resource-lifecycle.yml
+          git diff --check
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(inference.worker): make model cleanup and memory accounting monotonic"
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
