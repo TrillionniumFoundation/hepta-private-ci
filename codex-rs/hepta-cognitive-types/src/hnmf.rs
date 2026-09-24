@@ -537,9 +537,7 @@ pub fn validate_span_for_asset_access_v1<R: AssetSelectorResolverV1 + ?Sized>(
     validate_span_against_manifest_v1(manifest, span)?;
     if matches!(
         &span.range,
-        SpanRangeV1::AstPath { .. }
-            | SpanRangeV1::GuiNode { .. }
-            | SpanRangeV1::JsonPointer { .. }
+        SpanRangeV1::AstPath { .. } | SpanRangeV1::GuiNode { .. } | SpanRangeV1::JsonPointer { .. }
     ) && !resolver.selector_exists(manifest, span)?
     {
         return Err(HnmfContractError::Missing("asset selector"));

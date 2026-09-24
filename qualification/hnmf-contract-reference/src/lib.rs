@@ -12,20 +12,16 @@ pub use codex_hepta_cognitive_types::hnmf::{
     CrossModalBindingV1, MemoryEventV1, ModalitySpanRefV1,
 };
 pub use codex_hepta_cognitive_types::hnmf_learning::{
-    EngramNodeV1, ForgetPropagationReceiptV1, MemoryCueV1, OutcomeSignalV1,
-    PlasticityBatchV1, RecallPacketV1, ReplaySelectionReceiptV1, SynapseV1,
-    TopologyProposalV1,
+    EngramNodeV1, ForgetPropagationReceiptV1, MemoryCueV1, OutcomeSignalV1, PlasticityBatchV1,
+    RecallPacketV1, ReplaySelectionReceiptV1, SynapseV1, TopologyProposalV1,
 };
 pub use codex_hepta_cognitive_types::wire::{
     canonical_contract_digest_v1, decode_wire_v1, encode_wire_v1,
 };
 
 pub const CANONICAL_CRATE_PATH: &str = "../../codex-rs/hepta-cognitive-types";
-pub const CANONICAL_CONTRACT_MODULES: [&str; 3] = [
-    "src/hnmf.rs",
-    "src/hnmf_learning.rs",
-    "src/wire.rs",
-];
+pub const CANONICAL_CONTRACT_MODULES: [&str; 3] =
+    ["src/hnmf.rs", "src/hnmf_learning.rs", "src/wire.rs"];
 
 pub const CURRENT_RUN_MUTATION_ALLOWED: bool = false;
 pub const ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false;

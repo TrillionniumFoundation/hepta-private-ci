@@ -639,7 +639,9 @@ impl PlasticityBatchV1 {
             .weight_proposals
             .len()
             .checked_add(self.threshold_proposals.len())
-            .ok_or(HnmfContractError::Invalid("plasticity proposal count overflow"))?;
+            .ok_or(HnmfContractError::Invalid(
+                "plasticity proposal count overflow",
+            ))?;
         if proposal_count > MAX_PLASTICITY_PROPOSALS {
             return Err(HnmfContractError::LimitExceeded {
                 field: "plasticityProposals",
@@ -748,9 +750,7 @@ impl TopologyTypedNodesEdgesV1 {
                 edge.target_node_id.clone(),
                 edge.relation,
             )) {
-                return Err(HnmfContractError::DuplicateIdentity(
-                    "topologyEdgeIdentity",
-                ));
+                return Err(HnmfContractError::DuplicateIdentity("topologyEdgeIdentity"));
             }
         }
         Ok(())
@@ -835,7 +835,9 @@ impl ForgetPropagationReceiptV1 {
             .retired_node_ids
             .len()
             .checked_add(self.retired_synapses.len())
-            .ok_or(HnmfContractError::Invalid("forget reference count overflow"))?;
+            .ok_or(HnmfContractError::Invalid(
+                "forget reference count overflow",
+            ))?;
         if reference_count > MAX_FORGET_REFERENCES {
             return Err(HnmfContractError::LimitExceeded {
                 field: "forgetReferences",

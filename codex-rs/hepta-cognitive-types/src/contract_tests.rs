@@ -714,7 +714,9 @@ fn logical_identity_conflicts_are_rejected_before_wire_publication() {
     let mut duplicate_active_node = recall_packet();
     let mut conflicting_activation = duplicate_active_node.active_nodes[0].clone();
     conflicting_activation.activation_ppm += 1;
-    duplicate_active_node.active_nodes.push(conflicting_activation);
+    duplicate_active_node
+        .active_nodes
+        .push(conflicting_activation);
     duplicate_active_node.resource_receipt.node_count = 2;
     duplicate_active_node.resource_receipt.active_node_count = 2;
     assert_eq!(
@@ -825,12 +827,8 @@ fn json_pointer_and_symbolic_selector_resolution_fail_closed() {
         extent: AssetExtentV1::Bytes { byte_len: 4 },
         preprocessor_manifest_sha256: text.preprocessor_manifest_sha256,
     };
-    validate_span_for_asset_access_v1(
-        &text_manifest,
-        &text,
-        &FixedSelectorResolver(false),
-    )
-    .unwrap_or_else(|error| panic!("numeric ranges need no symbolic resolver: {error}"));
+    validate_span_for_asset_access_v1(&text_manifest, &text, &FixedSelectorResolver(false))
+        .unwrap_or_else(|error| panic!("numeric ranges need no symbolic resolver: {error}"));
 }
 
 #[test]
@@ -902,8 +900,8 @@ fn structured_valid_span_property_matrix_roundtrips_deterministically() {
         };
         value.uncertainty_ppm = u32::try_from(index * 1_000).expect("bounded ppm");
         let bytes = encode_wire_v1(&value).expect("structured property encode");
-        let decoded = decode_wire_v1::<ModalitySpanRefV1>(&bytes)
-            .expect("structured property decode");
+        let decoded =
+            decode_wire_v1::<ModalitySpanRefV1>(&bytes).expect("structured property decode");
         assert_eq!(decoded, value);
         assert_eq!(
             encode_wire_v1(&decoded).expect("structured property re-encode"),
