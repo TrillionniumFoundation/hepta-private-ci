@@ -30,6 +30,48 @@ jobs:
         run: |
           set +e
           rm -rf .hepta-diagnostics
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/platform_types_phase_a.py")
+          text = path.read_text(encoding="utf-8")
+          old = '''for json_path, key in (
+              ("docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json", "modules"),
+              ("docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json", "protocols"),
+          ):
+              value = load_json(json_path)
+              rows = value[key]
+              by_name = {row["module"]: row for row in rows}
+              if set(by_name) != set(expected_modules) or len(rows) != len(expected_modules):
+                  raise RuntimeError(f"{json_path}: unexpected Lane-A module set")
+              value[key] = [by_name[name] for name in expected_modules]
+              save_json(json_path, value)
+          '''
+          new = '''matrix_path = "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json"
+          matrix_value = load_json(matrix_path)
+          matrix_rows = matrix_value["modules"]
+          matrix_by_name = {row["module"]: row for row in matrix_rows}
+          if set(matrix_by_name) != set(expected_modules) or len(matrix_rows) != len(expected_modules):
+              raise RuntimeError(f"{matrix_path}: unexpected Lane-A module set")
+          matrix_value["modules"] = [matrix_by_name[name] for name in expected_modules]
+          save_json(matrix_path, matrix_value)
+
+          protocol_path = "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json"
+          protocol_value = load_json(protocol_path)
+          protocol_rows = protocol_value["protocols"]
+          module_rank = {module: index for index, module in enumerate(expected_modules)}
+          if {row["module"] for row in protocol_rows} != set(expected_modules):
+              raise RuntimeError(f"{protocol_path}: unexpected Lane-A protocol module set")
+          protocol_value["protocols"] = sorted(
+              enumerate(protocol_rows),
+              key=lambda item: (module_rank[item[1]["module"]], item[0]),
+          )
+          protocol_value["protocols"] = [row for _, row in protocol_value["protocols"]]
+          save_json(protocol_path, protocol_value)
+          '''
+          if old not in text:
+              raise SystemExit("phase-A protocol-order patch anchor missing")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
           python3 -u scripts/platform_types_phase_a.py > phase-a.log 2>&1
           code=$?
           cat phase-a.log
