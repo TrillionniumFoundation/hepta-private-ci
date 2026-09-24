@@ -168,9 +168,14 @@
           "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
           "kind": "bounded_drain_reconciliation",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_intelligence_tests.rs",
+          "kind": "native_unit",
+          "command": "just test --locked -p codex-hepta-agentd --lib -E test(config::tests::intelligence::)"
         }
       ],
-      "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain.",
+      "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain. Default daemon startup rejects a partial canonical runner/provider profile before services open; final canonical ingress also refuses a partial-pair compatibility fallback. This is configuration rejection, not a concrete native invocation provider.",
       "operation": "daemon_run_lifecycle_control",
       "nativeSymbol": "crate::AgentdMethod::RunStart",
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",

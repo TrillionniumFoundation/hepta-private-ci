@@ -121,12 +121,18 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-learning-ledger/src/production_tests.rs",
-        "codex-rs/hepta-learning-ledger/src/production_freeze_tests.rs"
+        "codex-rs/hepta-learning-ledger/src/production_freeze_tests.rs",
+        "codex-rs/hepta-learning-ledger/src/production_objective_index_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "freeze_dataset",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/dataset_index.rs",
+          "symbol": "DatasetRecordIndex"
+        }
+      ]
     },
     {
       "operation": "revalidate_dataset_snapshot",
@@ -302,12 +308,18 @@
       "state": "source_implemented_ledger_derived",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-learning-ledger/src/production_freeze_tests.rs"
+        "codex-rs/hepta-learning-ledger/src/production_freeze_tests.rs",
+        "codex-rs/hepta-learning-ledger/src/production_objective_index_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "dataset_freeze_signing_payload",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/dataset_index.rs",
+          "symbol": "DatasetRecordIndex"
+        }
+      ]
     }
   ],
   "repositoryControlledGaps": [
