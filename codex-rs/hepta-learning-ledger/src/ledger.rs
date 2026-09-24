@@ -71,6 +71,7 @@ pub(crate) struct PreparedAppend {
 pub struct LearningLedger {
     records: Vec<LedgerRecord>,
     record_digests: BTreeMap<StableId, (Digest32, usize)>,
+    digest_positions: BTreeMap<Digest32, usize>,
     record_kinds: BTreeMap<StableId, u8>,
     decisions: BTreeMap<StableId, DecisionIndex>,
     outcomes: BTreeMap<StableId, OutcomeIndex>,
@@ -247,6 +248,25 @@ impl LearningLedger {
             return Err(LedgerError::InternalInvariant);
         }
         Ok(Some(record))
+    }
+
+    /// Replay-derived exact content identity lookup with the same active-state
+    /// predicate as projection reads. No history scan or new authority is involved.
+    pub(crate) fn active_record_by_digest(
+        &self,
+        digest: &Digest32,
+    ) -> Result<Option<&LedgerRecord>, LedgerError> {
+        let Some(position) = self.digest_positions.get(digest) else {
+            return Ok(None);
+        };
+        let record = self
+            .records
+            .get(*position)
+            .ok_or(LedgerError::InternalInvariant)?;
+        if record.event_digest != *digest {
+            return Err(LedgerError::InternalInvariant);
+        }
+        Ok(self.record_is_active(record).then_some(record))
     }
 
     pub(crate) fn active_authenticated_decision(
@@ -761,6 +781,8 @@ impl LearningLedger {
     }
 
     fn index_record(&mut self, record: &LedgerRecord) {
+        self.digest_positions
+            .insert(record.event_digest, self.records.len());
         let record_id = record.event.record_id().clone();
         self.record_digests
             .insert(record_id.clone(), (record.event_digest, self.records.len()));
