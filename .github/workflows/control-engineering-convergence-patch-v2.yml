@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: control-engineering-convergence-patch-v2
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   patch:
@@ -95,8 +95,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cd tools/hepta-engineering-control
           python3 -m unittest -v \
-            tools.hepta-engineering-control.test_candidate_sandbox_hardening.CandidateSandboxStrongIsolation
+            test_candidate_sandbox_hardening.CandidateSandboxStrongIsolation
+          cd "$GITHUB_WORKSPACE"
           PYTHONPATH=tools/hepta-engineering-control \
             python3 -m control_engineering_v2.host_qualification \
               --repository "$GITHUB_WORKSPACE" \
@@ -143,8 +145,10 @@ jobs:
             python3 scripts/hepta-gap-closure.py verify
             python3 -m unittest discover -v \
               -s tools/hepta-engineering-control -p 'test_*.py'
+            cd tools/hepta-engineering-control
             HEPTA_REQUIRE_STRONG_SANDBOX=1 python3 -m unittest -v \
-              tools.hepta-engineering-control.test_candidate_sandbox_hardening.CandidateSandboxStrongIsolation
+              test_candidate_sandbox_hardening.CandidateSandboxStrongIsolation
+            cd "$GITHUB_WORKSPACE"
             test -z "$(git status --porcelain)"
           fi
           git push origin HEAD:work/product-convergence-20260923
